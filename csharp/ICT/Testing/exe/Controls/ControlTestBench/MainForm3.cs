@@ -20,7 +20,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-*/
+ */
 
 namespace ControlTestBench
 {
@@ -46,12 +46,19 @@ namespace ControlTestBench
 
         void TestShepherd(object sender, EventArgs e)
         {
+            XmlDocument UINavigation = LoadYAMLTestFile();
+            
+            new ControlTestBench.ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
+        }
+
+
+        XmlDocument LoadYAMLTestFile()
+        {
             String yamlFile = txtYaml.Text.ToString();
             TYml2Xml parser = new TYml2Xml(yamlFile);
-            XmlDocument UINavigation = parser.ParseYML2XML();            
-    
-            new ControlTestBench.ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
-        }       
+            XmlDocument UINavigation = parser.ParseYML2XML();
+            return UINavigation;
+        }
         
         void BtnCollapsibleTestClick(object sender, EventArgs e)
         {
@@ -60,7 +67,9 @@ namespace ControlTestBench
         
         void HandlerTaskListTest(object sender, EventArgs e)
         {
-            new TaskListTest().Show();
+            XmlDocument UINavigation = LoadYAMLTestFile();
+            
+            new TaskListTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
         }
     }
 }

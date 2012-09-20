@@ -121,7 +121,7 @@ partial class TaskListCheck
 
         if (temp != null)
         {
-            if (this.taskList1.IsHidden(temp))
+            if (!this.taskList1.IsVisible(temp))
             {
                 this.taskList1.ShowTaskItem(temp);
             }

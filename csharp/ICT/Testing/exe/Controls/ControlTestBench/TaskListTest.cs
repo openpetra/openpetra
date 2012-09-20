@@ -20,6 +20,10 @@ namespace ControlTestBench
     /// </summary>
     public partial class TaskListTest : Form
     {
+        const string TASKLISTCONTROLNAME = "TaskListDemo";
+        
+        XmlNode FTestYAMNode = null;
+        
         /// <summary>
         /// </summary>
         public TaskListTest()
@@ -27,30 +31,45 @@ namespace ControlTestBench
             InitializeComponent();
         }
 
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="ATestYAMLNode"></param>
+        public TaskListTest(XmlNode ATestYAMLNode): this()
+        {
+            FTestYAMNode = ATestYAMLNode;
+        }
+        
         /// <summary>
         /// </summary>
         public void TestDefaultConstructor(object sender, EventArgs e)
         {
-            XmlNode xmlnode = GetTestXmlNode();
+            XmlNode xmlnode = GetTestXMLNode();
+            
             TaskList1 = new Ict.Common.Controls.TTaskList(xmlnode);
+            
             TaskList1.Location = new System.Drawing.Point(10,10);
             TaskList1.Size = new System.Drawing.Size(300,200);
-            this.Controls.Add(TaskList1);
+            TaskList1.Name = TASKLISTCONTROLNAME;
+
+            AddControlToForm(TaskList1);        
         }
+
         /// <summary>
         /// </summary>
         public void TestFullConstructor(object sender, EventArgs e)
         {
-            System.Xml.XmlNode xmlnode = GetTestXmlNode();
+            System.Xml.XmlNode xmlnode = GetTestXMLNode();
 
-            TaskList1 = new Ict.Common.Controls.TTaskList(xmlnode, TVisualStylesEnum.vsShepherd);
+            TaskList1 = new Ict.Common.Controls.TTaskList(xmlnode, TVisualStylesEnum.vsDashboard);
+            
             TaskList1.Location = new System.Drawing.Point(10,10);
             TaskList1.Size = new System.Drawing.Size(300,200);
-            this.Controls.Add(TaskList1);
-
-            throw new Exception(); // Reminder that this function has not been looked over yet.
+            TaskList1.Name = TASKLISTCONTROLNAME;
+            
+            AddControlToForm(TaskList1);        
         }
+        
         /// <summary>
         /// This test is meant to directly manipulate xmlnode and circumnavigate any yml text at all.
         /// That way this is a direct test of the TTaskList functionality itself and not dependent on
@@ -64,7 +83,7 @@ namespace ControlTestBench
         {
             this.Controls.Remove(TaskList1);
 
-            TaskList1 = new TTaskList(GetTestXmlNode());
+            TaskList1 = new TTaskList(GetTestXMLNode());
             TaskList1.Location = new System.Drawing.Point(10,10);
             TaskList1.Size = new System.Drawing.Size(300,200);
             TaskList1.ItemActivation += delegate
@@ -79,7 +98,7 @@ namespace ControlTestBench
                 MessageBox.Show("Click-ity-doo-da!!", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
             };
 
-//            throw new Exception(); // Reminder that this function has not been looked over yet.
+            //            throw new Exception(); // Reminder that this function has not been looked over yet.
 
             //MessageBox.Show("Now Click on the list and see a message box pop up.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
             //TODO: MessageBox.Show("Now Click on the first Item in the list, and you should see a message box pop up.", "ControlTestBench.TaskListTest.ExampleCallback", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -99,48 +118,51 @@ namespace ControlTestBench
         /// </summary>
         void DisableItemButtonClick(object sender, EventArgs e)
         {
-            /*
-            TODO: need to finish porting this test to this new form so that it's independent of other tests!
-
-            XmlNode temp = this.taskList1.GetTaskByName("Task7");
-            if(temp != null){
-                if(this.taskList1.IsDisabled(temp)){
-                    this.taskList1.EnableTaskItem(temp);
+            TTaskList TaskList = (TTaskList)this.Controls[TASKLISTCONTROLNAME];
+            XmlNode temp = TaskList.GetTaskByName("Task7");
+            
+            if(temp != null)
+            {
+                if(TaskList.IsDisabled(temp))
+                {
+                    TaskList.EnableTaskItem(temp);
                 }
-                else{
-                    this.taskList1.DisableTaskItem(temp);
+                else
+                {
+                    TaskList.DisableTaskItem(temp);
                 }
             }
-            */
         }
+        
         /// <summary>
         /// This is copied from the older version of the test written by Chadd and Ashley.
         /// </summary>
         void HideItemButtonClick(object sender, EventArgs e)
         {
-            /*
-            TODO: need to finish porting this test to this new form so that it's independent of other tests!
-
-            XmlNode temp = this.taskList1.GetTaskByName("Task4c");
-            if(temp != null){
-                if(this.taskList1.IsHidden(temp)){
-                    this.taskList1.ShowTaskItem(temp);
+            TTaskList TaskList = (TTaskList)this.Controls[TASKLISTCONTROLNAME];
+            XmlNode temp = TaskList.GetTaskByName("Task4c");
+            
+            if(temp != null)
+            {
+                if(!TaskList.IsVisible(temp))
+                {
+                    TaskList.ShowTaskItem(temp);
                 }
-                else{
-                    this.taskList1.HideTaskItem(temp);
+                else
+                {
+                    TaskList.HideTaskItem(temp);
                 }
             }
-            //temp = this.taskList1.GetTaskByNumber("3");
+            //temp = TaskList.GetTaskByNumber("3");
             //if(temp != null){
-                //this.taskList1.ShowTaskItem(temp);
+                //TaskList.ShowTaskItem(temp);
             //}
-            */
         }
 
 
         /// <summary>
         /// </summary>
-        private XmlNode GetTestXmlNode()
+        private XmlNode GetHardCodedXmlNodes()
         {
             string[] lines = new string[7];
             lines[0] = "TaskGroup:\n";
@@ -160,6 +182,35 @@ namespace ControlTestBench
         public void ExampleCallback()
         {
             MessageBox.Show("The callback worked.", "Tests.Common.Controls.TTestTaskList.ExampleCallback", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        
+        private void AddControlToForm(Control AControl)
+        {
+            Control ExistingTaskListCtrl = this.Controls[TASKLISTCONTROLNAME];
+            
+            if (ExistingTaskListCtrl != null) 
+            {
+                this.Controls.Remove(ExistingTaskListCtrl);
+            }
+
+            this.Controls.Add(AControl);
+        }
+
+
+        private XmlNode GetTestXMLNode()
+        {
+            XmlNode xmlnode;
+            
+            if (FTestYAMNode == null) 
+            {
+                xmlnode = GetHardCodedXmlNodes();
+            } 
+            else
+            {
+                xmlnode = FTestYAMNode;
+            }
+            
+            return xmlnode;
         }
     }
 }

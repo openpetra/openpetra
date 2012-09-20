@@ -5,8 +5,9 @@
 //		 chadds
 //		 ashleyc
 //       sethb
+//       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -72,6 +73,12 @@ namespace Ict.Common.Controls
         //@HACK: This works for now, but if the language changes in the YAML file this could break everything
         private System.Text.RegularExpressions.Regex TrueRegex = new Regex(".*[Tt][Rr][Uu][Ee].*");
 
+        /// <summary>
+        /// Regex that is used to check if strings are set to false (regardless of case)
+        /// </summary>
+        //@HACK: This works for now, but if the language changes in the YAML file this could break everything
+        private System.Text.RegularExpressions.Regex FalseRegex = new Regex(".*[Ff][Aa][Ll][Ss][Ee].*");
+        
         /// <summary>
         /// Regex that checks if XmlNodes are actual tasks
         /// Must be the word "Task" followed immediately by at least 1 number. Anything after is arbitrary
@@ -246,10 +253,7 @@ namespace Ict.Common.Controls
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-            #region CATALOGI18N
 
-            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            #endregion
             this.VisualStyle = new Ict.Common.Controls.TVisualStyles(Style);
             this.MasterXmlNode = MasterNode;
         }
@@ -344,10 +348,10 @@ namespace Ict.Common.Controls
                         lblTaskItem.LinkColor = VisualStyle.ContentFontColour;
                     }
 
-                    lblTaskItem.Enabled = IsActive(TaskNode);
+                    lblTaskItem.Enabled = !IsDisabled(TaskNode);
 
 
-                    if (! this.IsHidden(TaskNode))
+                    if (this.IsVisible(TaskNode))
                     {
                         //Automatic Numbering
                         String NumberText = ParentNumberText + (CurrentNumbering).ToString() + ".";
@@ -533,19 +537,45 @@ namespace Ict.Common.Controls
         /// <returns>Boolean whether given Xml Node has the passed attribute set to true</returns>
         public bool AttributeTrue(XmlNode node, string attr)
         {
-            return (node.Attributes[attr] != null) && TrueRegex.IsMatch(node.Attributes[attr].Value);
+            XmlAttributeCollection tmp = node.Attributes;
+            
+            if (node.Attributes[attr] == null) 
+            {
+                return true;    
+            }
+            
+            return TrueRegex.IsMatch(node.Attributes[attr].Value);
         }
 
         /// <summary>
-        /// Returns whether given Xml Node has the attribute hidden set to true
+        /// Method to test if an attribute of XmlNode is false.
         /// </summary>
         /// <param name="node"></param>
-        /// <returns>Boolean whether given Xml Node has the attribute hidden set to true</returns>
-        public bool IsHidden(XmlNode node)
+        /// <param name="attr"></param>
+        /// <returns>Boolean whether given Xml Node has the passed attribute set to true</returns>
+        public bool AttributeFalse(XmlNode node, string attr)
         {
-            return AttributeTrue(node, "Hidden");
+            XmlAttributeCollection tmp = node.Attributes;
+            
+            if (node.Attributes[attr] == null) 
+            {
+                return false;    
+            }
+
+            return FalseRegex.IsMatch(node.Attributes[attr].Value);
         }
 
+
+        /// <summary>
+        /// Returns whether given Xml Node has the attribute Visible set to true
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>True if the Visible attribute is set to true or if it isn't set, otherwise false.</returns>
+        public bool IsVisible(XmlNode node)
+        {
+            return AttributeTrue(node, "Visible");
+        }
+        
         /// <summary>
         /// </summary>
         /// <param name="node"></param>
@@ -556,13 +586,13 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Returns boolean whether given XmlNode has the attribute Enabled set to false
+        /// Returns whether given XmlNode has the attribute Enabled set to false
         /// </summary>
         /// <param name="node"></param>
-        /// <returns>Boolean whether given Xml Node has the attribute enabled set to false</returns>
+        /// <returns>False if the Enabled Attribute is set to false, otherwise true.</returns>
         public bool IsDisabled(XmlNode node)
         {
-            return AttributeTrue(node, "Enabled");
+            return AttributeFalse(node, "Enabled");
         }
 
         /// <summary>
@@ -632,17 +662,17 @@ namespace Ict.Common.Controls
         /// <param name="node"></param>
         public void HideTaskItem(XmlNode node)
         {
-            ChangeAttribute(node, "Hidden", "False", true);
+            ChangeAttribute(node, "Visible", "False", true);
         }
 
         /// <summary>
-        /// Method to hide a task item, given an XmlNode Object
+        /// Method to make a task item visible, given an XmlNode Object
         /// Doesn't handle possible case of the node not being a descendent of the masterNode for this list
         /// </summary>
         /// <param name="node"></param>
         public void ShowTaskItem(XmlNode node)
         {
-            ChangeAttribute(node, "Hidden", "True", true);
+            ChangeAttribute(node, "Visible", "True", true);
         }
 
         /// <summary>
