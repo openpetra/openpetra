@@ -13,6 +13,8 @@ using System.Xml;
 using System.Drawing;
 using System.Windows.Forms;
 
+using Ict.Common.Controls;
+
 namespace ControlTestBench
 {
 /// <summary>
@@ -20,6 +22,8 @@ namespace ControlTestBench
 /// </summary>
 public partial class ShepherdTest : Form
 {
+    TVisualStylesEnum FEnumStyle = TVisualStylesEnum.vsShepherd;
+    
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -35,13 +39,16 @@ public partial class ShepherdTest : Form
     /// Constructor.
     /// </summary>
     /// <param name="AXmlNode"></param>
-    public ShepherdTest(XmlNode AXmlNode)
+    /// <param name="AEnumStyle"></param>
+    public ShepherdTest(XmlNode AXmlNode, TVisualStylesEnum AEnumStyle)
     {
         //
         // The InitializeComponent() call is required for Windows Forms designer support.
         //
         InitializeComponent();
 
+        FEnumStyle = AEnumStyle;
+        tPnlCollapsible1.VisualStyleEnum = FEnumStyle;
         tPnlCollapsible1.TaskListNode = AXmlNode;
         tPnlCollapsible1.Collapse();
         tPnlCollapsible1.Expand();

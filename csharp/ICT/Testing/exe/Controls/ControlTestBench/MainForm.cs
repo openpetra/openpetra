@@ -56,16 +56,16 @@ namespace Ict.Testing.ControlTestBench
 
             switch (VisualStyle)
             {
-                case "AccordionPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
+                    case "AccordionPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
                     break;
 
-                case "TaskPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
+                    case "TaskPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
                     break;
 
-                case "Dashboard":  EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
+                    case "Dashboard":  EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
                     break;
 
-                case "Shepherd": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
+                    case "Shepherd": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
                     break;
 
                 case "HorizontalCollapse":
@@ -93,7 +93,7 @@ namespace Ict.Testing.ControlTestBench
             this.taskList1.TabIndex = 6;
             this.Controls.Add(taskList1);
             //	this.taskList1.VisualStyle = null;
-//            using ( TaskListCheck newForm = new TaskListCheck(UINavigation.FirstChild.NextSibling.FirstChild,EnumStyle) ) newForm.ShowDialog();
+            //            using ( TaskListCheck newForm = new TaskListCheck(UINavigation.FirstChild.NextSibling.FirstChild,EnumStyle) ) newForm.ShowDialog();
             //newForm.Controls.Add(
         }
 
@@ -103,32 +103,8 @@ namespace Ict.Testing.ControlTestBench
             TYml2Xml parser = new TYml2Xml(yamlFile);
             XmlDocument UINavigation = parser.ParseYML2XML();
 
-            String VisualStyle = cmbVisualStyle.Text.ToString();
-            TVisualStylesEnum EnumStyle;
 
-            switch (VisualStyle)
-            {
-                case "AccordionPanel":
-                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
-                    break;
-
-                case "TaskPanel":
-                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
-                    break;
-
-                case "Dashboard":
-                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
-                    break;
-
-                case "Shepherd":
-                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
-                    break;
-
-                case "HorizontalCollapse":
-                default:
-                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
-                    break;
-            }
+            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
 
             new MainForm2(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
         }
@@ -139,7 +115,9 @@ namespace Ict.Testing.ControlTestBench
             TYml2Xml parser = new TYml2Xml(yamlFile);
             XmlDocument UINavigation = parser.ParseYML2XML();
 
-            new ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
+            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
+            
+            new ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
         }
     }
 }

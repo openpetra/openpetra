@@ -19,8 +19,10 @@ namespace ControlTestBench
     /// </summary>
     public partial class CollapsibleTest : Form
     {
-        private Ict.Common.Controls.TPnlCollapsible FPnl;
-        private Ict.Common.Controls.TPnlCollapsible FPnl2;
+        Ict.Common.Controls.TPnlCollapsible FPnl;
+        Ict.Common.Controls.TPnlCollapsible FPnl2;
+        XmlNode FTestYAMLNode = null;
+        TVisualStylesEnum FEnumStyle = TVisualStylesEnum.vsDashboard;
         
         /// <summary>
         /// Constructor.
@@ -32,7 +34,20 @@ namespace ControlTestBench
             this.Controls.Add(FPnl);
         }
 
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="ATestYAMLNode"></param>
+        /// <param name="AEnumStyle"></param>
+        public CollapsibleTest(XmlNode ATestYAMLNode, TVisualStylesEnum AEnumStyle) : this()
+        {
+            FTestYAMLNode = ATestYAMLNode;
+            FEnumStyle = AEnumStyle;            
+            
+            FPnl.VisualStyleEnum = FEnumStyle;
+            FPnl.TaskListNode = FTestYAMLNode;
+        }
+        
         private void TestEmptyConstructor(object sender, EventArgs e)
         {
             this.Controls.Remove(this.FPnl);
@@ -44,13 +59,7 @@ namespace ControlTestBench
         {
             this.Controls.Remove(this.FPnl);
 
-
-            String yamlFile = "testYaml.yaml";
-            TYml2Xml parser = new TYml2Xml(yamlFile);
-            XmlDocument UINavigation = parser.ParseYML2XML();            
-            XmlNode localXmlNode = UINavigation.FirstChild.NextSibling.FirstChild;
-            
-            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, UINavigation, TCollapseDirection.cdVertical);
+            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMLNode, TCollapseDirection.cdVertical);
             this.Controls.Add(this.FPnl);
         }
         private void TestUserControlVerticalConstructor(object sender, EventArgs e)
@@ -79,12 +88,7 @@ namespace ControlTestBench
         {
             this.Controls.Remove(this.FPnl);
 
-            String yamlFile = "testYaml.yaml";
-            TYml2Xml parser = new TYml2Xml(yamlFile);
-            XmlDocument UINavigation = parser.ParseYML2XML();            
-            XmlNode localXmlNode = UINavigation.FirstChild.NextSibling.FirstChild;
-
-            this.FPnl = new TPnlCollapsible(localXmlNode, THostedControlKind.hckUserControl, "Foo.Bar", TVisualStylesEnum.vsHorizontalCollapse, TCollapseDirection.cdHorizontal, true);
+            this.FPnl = new TPnlCollapsible(FTestYAMLNode, THostedControlKind.hckUserControl, "Foo.Bar", FEnumStyle, TCollapseDirection.cdHorizontal, true);
             this.Controls.Add(this.FPnl);
         }
         private void TestStacked(object sender, EventArgs e)

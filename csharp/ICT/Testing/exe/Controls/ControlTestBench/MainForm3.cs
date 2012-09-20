@@ -48,7 +48,9 @@ namespace ControlTestBench
         {
             XmlDocument UINavigation = LoadYAMLTestFile();
             
-            new ControlTestBench.ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
+            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
+            
+            new ControlTestBench.ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
         }
 
 
@@ -62,14 +64,20 @@ namespace ControlTestBench
         
         void BtnCollapsibleTestClick(object sender, EventArgs e)
         {
-            new CollapsibleTest().Show();
+            XmlDocument UINavigation = LoadYAMLTestFile();
+            
+            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
+            
+            new CollapsibleTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
         }
         
         void HandlerTaskListTest(object sender, EventArgs e)
         {
             XmlDocument UINavigation = LoadYAMLTestFile();
             
-            new TaskListTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
+            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
+            
+            new TaskListTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
         }
     }
 }

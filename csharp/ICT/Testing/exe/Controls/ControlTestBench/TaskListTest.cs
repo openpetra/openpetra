@@ -23,6 +23,7 @@ namespace ControlTestBench
         const string TASKLISTCONTROLNAME = "TaskListDemo";
         
         XmlNode FTestYAMNode = null;
+        TVisualStylesEnum FEnumStyle = TVisualStylesEnum.vsDashboard;
         
         /// <summary>
         /// </summary>
@@ -35,9 +36,11 @@ namespace ControlTestBench
         /// Constructor.
         /// </summary>
         /// <param name="ATestYAMLNode"></param>
-        public TaskListTest(XmlNode ATestYAMLNode): this()
+        /// <param name="AEnumStyle"></param>
+        public TaskListTest(XmlNode ATestYAMLNode, TVisualStylesEnum AEnumStyle): this()
         {
             FTestYAMNode = ATestYAMLNode;
+            FEnumStyle = AEnumStyle;
         }
         
         /// <summary>
@@ -61,7 +64,7 @@ namespace ControlTestBench
         {
             System.Xml.XmlNode xmlnode = GetTestXMLNode();
 
-            TaskList1 = new Ict.Common.Controls.TTaskList(xmlnode, TVisualStylesEnum.vsDashboard);
+            TaskList1 = new Ict.Common.Controls.TTaskList(xmlnode, FEnumStyle);    
             
             TaskList1.Location = new System.Drawing.Point(10,10);
             TaskList1.Size = new System.Drawing.Size(300,200);
