@@ -88,7 +88,7 @@ namespace Ict.Common.Controls
         /// This will return the correct numerical index that btnToggle.ImageIndex should be.
         /// The values are defined in the static constructor.
         /// </summary>
-        private static Dictionary<TCollapseDirection, Dictionary<bool, Dictionary<bool, int>>> ArrowGraphicIndecies;
+        private readonly static Dictionary<TCollapseDirection, Dictionary<bool, Dictionary<bool, int>>> ArrowGraphicIndecies;
 
         /// <summary>Keeps track of the collapsed/expanded state</summary>
         private bool FIsCollapsed = true;
@@ -103,7 +103,7 @@ namespace Ict.Common.Controls
         /// This is the operating definition of which styles are compatible with which directions.
         /// The values are defined in the static constructor.
         /// </summary>
-        public static Dictionary<TCollapseDirection, List<TVisualStylesEnum>> FDirStyleMapping;
+        public readonly static Dictionary<TCollapseDirection, List<TVisualStylesEnum>> FDirStyleMapping;
 
         /// <summary>
         ///  If the direction changes without stating visual style,
@@ -111,7 +111,7 @@ namespace Ict.Common.Controls
         ///  but will change style to a compatible one. This defines the default style
         ///  for each direction.
         /// </summary>
-        public static Dictionary<TCollapseDirection, TVisualStylesEnum> DEFAULT_STYLE;
+        public readonly static Dictionary<TCollapseDirection, TVisualStylesEnum> DEFAULT_STYLE;
 
         /// <summary></summary>
         public Dictionary<TCollapseDirection, TVisualStylesEnum> StoredStyles;
@@ -345,15 +345,16 @@ namespace Ict.Common.Controls
             //assign the variables that should be constant, but I couldn't figure out how to technically do that.
             FDirStyleMapping = new Dictionary<TCollapseDirection, List<TVisualStylesEnum>>();
 
-                List<TVisualStylesEnum> tmp =  new List<TVisualStylesEnum>();
-                tmp.Add(TVisualStylesEnum.vsHorizontalCollapse);
-                tmp.Add(TVisualStylesEnum.vsShepherd);
+            List<TVisualStylesEnum> tmp =  new List<TVisualStylesEnum>();
+            tmp.Add(TVisualStylesEnum.vsAccordionPanel);
+            tmp.Add(TVisualStylesEnum.vsHorizontalCollapse);
+            tmp.Add(TVisualStylesEnum.vsShepherd);
             FDirStyleMapping.Add(TCollapseDirection.cdHorizontal, tmp);
 
-                List<TVisualStylesEnum> tmp2 =  new List<TVisualStylesEnum>();
-                tmp2.Add(TVisualStylesEnum.vsAccordionPanel);
-                tmp2.Add(TVisualStylesEnum.vsDashboard);
-                tmp2.Add(TVisualStylesEnum.vsTaskPanel);
+            List<TVisualStylesEnum> tmp2 =  new List<TVisualStylesEnum>();
+            tmp2.Add(TVisualStylesEnum.vsAccordionPanel);
+            tmp2.Add(TVisualStylesEnum.vsDashboard);
+            tmp2.Add(TVisualStylesEnum.vsTaskPanel);
             FDirStyleMapping.Add(TCollapseDirection.cdVertical, tmp2);
 
             DEFAULT_STYLE = new Dictionary<TCollapseDirection, TVisualStylesEnum>();
@@ -387,6 +388,7 @@ namespace Ict.Common.Controls
         ///     Ict.Common.Controls.TVisualStylesEnum   = The last parameter of this Type will be set as panel's VisualStyleEnum
         ///     bool || System.Boolean                  = The last parameter of this Type will be set as panel's IsCollapsed property value.
         ///     System.Xml.XmlNode                      = The last parameter of this Type will be set as panel's TaskListNode
+        ///     int || System.Int32                     = The last parameter of this Type will be set as panel's ExpandedSize
         /// </summary>
         public TPnlCollapsible(params object[] Args)
         {
@@ -405,7 +407,7 @@ namespace Ict.Common.Controls
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 
             #region defaults
-            this.Text = "## Developer needs to change this ##"; //TODO: Catolog.GetString?
+            this.Text = "## Developer needs to change this ##";
             this.HostedControlKind = THostedControlKind.hckTaskList;
             this.UserControlNamespace = "";
             this.UserControlClass = "";
@@ -435,7 +437,10 @@ namespace Ict.Common.Controls
                 }
                 else if(arg is Ict.Common.Controls.TCollapseDirection)
                 {
-                    this.CollapseDirection = (TCollapseDirection) arg;
+                    if (this.CollapseDirection != (TCollapseDirection) arg) 
+                    {
+                        this.CollapseDirection = (TCollapseDirection) arg;    
+                    }                   
                 }
                 else if(arg is Ict.Common.Controls.TVisualStylesEnum)
                 {

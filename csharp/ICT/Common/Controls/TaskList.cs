@@ -53,6 +53,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Height of a TaskList Item
         /// Used for spacing purposes
+        /// This is changed by setting a visual style
         /// </summary>
         private int TaskHeight = 30;
 
@@ -205,6 +206,7 @@ namespace Ict.Common.Controls
             //Sets Automatic Numbers & Task Indentation
             this.InternalAutomaticNumbering = InternalVisualStyle.AutomaticNumbering;
             this.TaskIndentation = InternalVisualStyle.TaskIndentation;
+            this.TaskHeight = InternalVisualStyle.TaskHeight;
 
             //If use content gradient
             if (this.VisualStyle.UseContentGradient)
@@ -329,12 +331,12 @@ namespace Ict.Common.Controls
                     lblTaskItem.LinkClicked += new LinkLabelLinkClickedEventHandler(lblTaskItem_LinkClicked);
                     lblTaskItem.Links[0].LinkData = TaskNode;
 
+                    lblTaskItem.MouseEnter += new System.EventHandler(this.LinkLabelMouseEnter);
+                    lblTaskItem.MouseLeave += new System.EventHandler(this.LinkLabelMouseLeave);
+                    lblTaskItem.Click += new System.EventHandler(this.ActivateClickedTaskItem);
+                    
                     if (VisualStyle.UseContentBackgroundColours)
                     {
-                        lblTaskItem.MouseEnter += new System.EventHandler(this.LinkLabelMouseEnter);
-                        lblTaskItem.MouseLeave += new System.EventHandler(this.LinkLabelMouseLeave);
-                        lblTaskItem.Click += new System.EventHandler(this.ActivateClickedTaskItem);
-
                         if (this.IsActive(TaskNode))
                         {
                             lblTaskItem.BackColor = this.VisualStyle.ContentActivatedBackgroundColour;

@@ -71,7 +71,7 @@ namespace Ict.Common.Controls
         }
 
         private Color InternalTitleFontColour;
-        /// <summary>The TitleFontxColour gets the value of the InternalTitleFontColour </summary>
+        /// <summary>The TitleFontColour gets the value of the InternalTitleFontColour </summary>
         /// <value> The TItleFontColour property represents the Colour specification of the TitleFont of the user control</value>
         public Color TitleFontColour {
             get
@@ -81,8 +81,8 @@ namespace Ict.Common.Controls
         }
 
         private Color InternalContentFontColour;
-        /// <summary>The HoverTitleFontColour property gets the value of the InternalHoverTitleFontColour</summary>
-        /// <value> The HoverTitleFontColour property represents the Colour specification of the title text when the mouse hovers over the title </value>
+        /// <summary>The ContentFontColour property gets the value of the InternalContentFontColour</summary>
+        /// <value> The ContentFontColour property represents the Colour specification of the Content text when the mouse is not hovering over the Content text</value>
         public Color ContentFontColour {
             get
             {
@@ -244,6 +244,16 @@ namespace Ict.Common.Controls
             }
         }
 
+        private int InternalTaskHeight;
+        /// <summary> The TaskHeight property gets the value of the InternalTaskHeight</summary>
+        /// <value> The TaskHeight property represents the distance that tasks are vertically separated by in the content panel</value>
+        public int TaskHeight {
+            get
+            {
+                return InternalTaskHeight;
+            }
+        }
+        
         private bool InternalAutomaticNumbering;
         /// <summary>The AutomaticNumbering property gets the value of the InternalAutomaticNumbering</summary>
         /// <value> The AutomaticNumbering property determines if automatic numbering is on</value>
@@ -281,16 +291,16 @@ namespace Ict.Common.Controls
             {
                 case TVisualStylesEnum.vsAccordionPanel:
                     //TitleFont Variables
-                    InternalTitleFont = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
-                    InternalTitleFontColour = Color.FromArgb(89, 101, 165);
-                    InternalHoverTitleFontColour = Color.FromArgb(20, 65, 142);
+                    InternalTitleFont = new System.Drawing.Font("Verdana", 13, System.Drawing.FontStyle.Bold);
+                    InternalTitleFontColour = Color.FromArgb(21, 66, 139);     // Color.FromArgb(89, 101, 165)
+                    InternalHoverTitleFontColour = InternalTitleFontColour;  //  Color.FromArgb(20, 65, 142)
                     InternalTitleHeight = 100;
 
                     //ContentFont Variables
                     //underline hover is default
                     InternalContentFont = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
-                    InternalContentFontColour = Color.FromArgb(89, 101, 165);
-                    InternalContentHoverFontColour = Color.FromArgb(37, 101, 212);
+                    InternalContentFontColour = Color.FromArgb(21, 66, 139);  // Color.FromArgb(89, 101, 165)
+                    InternalContentHoverFontColour = Color.FromArgb(32, 123, 231);   // Color.FromArgb(37, 101, 212);
                     InternalContentActivatedFontColour = InternalContentHoverFontColour;
 
                     //Gradient Variables
@@ -302,7 +312,8 @@ namespace Ict.Common.Controls
                     InternalContentGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
 
                     //Layout Variables
-                    InternalTaskIndentation = 50;
+                    InternalTaskIndentation = 30;
+                    InternalTaskHeight = 18;
                     InternalAutomaticNumbering = false;
 
                     //bool variables
@@ -336,6 +347,7 @@ namespace Ict.Common.Controls
 
                     //Layout Variables
                     InternalTaskIndentation = 15;
+                    InternalTaskHeight = 15;
                     InternalAutomaticNumbering = false;
 
                     //bool variables
@@ -364,7 +376,8 @@ namespace Ict.Common.Controls
                     InternalPanelGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
 
                     //Layout Variables
-                    InternalTaskIndentation = 45;
+                    InternalTaskIndentation = 25;
+                    InternalTaskHeight = 20;
                     InternalAutomaticNumbering = false;
 
                     //bool variables
@@ -402,6 +415,7 @@ namespace Ict.Common.Controls
 
                     //Layout Variables
                     InternalTaskIndentation = 15;
+                    InternalTaskHeight = 20;
                     InternalAutomaticNumbering = true;
 
                     //bool variables

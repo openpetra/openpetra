@@ -59,7 +59,7 @@ namespace ControlTestBench
         {
             this.Controls.Remove(this.FPnl);
 
-            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMLNode, TCollapseDirection.cdVertical);
+            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMLNode, TCollapseDirection.cdVertical, 120, false, FEnumStyle);
             this.Controls.Add(this.FPnl);
         }
         private void TestUserControlVerticalConstructor(object sender, EventArgs e)
@@ -73,8 +73,7 @@ namespace ControlTestBench
         {
             this.Controls.Remove(this.FPnl);
 
-            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TYml2Xml.CreateXmlDocument(), TCollapseDirection.cdHorizontal);
-            this.FPnl.CollapseDirection = TCollapseDirection.cdHorizontal;
+            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMLNode, TCollapseDirection.cdHorizontal, 175, false, FEnumStyle);
             this.Controls.Add(this.FPnl);
         }
         private void TestTaskListExpandedConstructor(object sender, EventArgs e)
