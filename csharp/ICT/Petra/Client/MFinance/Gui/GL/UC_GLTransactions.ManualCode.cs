@@ -113,7 +113,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ShowData();
-            ShowDetails(GetSelectedDetailRow());
+            ShowDetails();
 
             btnNew.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
             btnRemove.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
@@ -476,7 +476,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPetraUtilsObject.SetChangedFlag();
 
-                InvokeFocusedRowChanged(rowIndex);
+                SelectRowInGrid(rowIndex, true);
 
                 if (grdDetails.Rows.Count < 2)
                 {

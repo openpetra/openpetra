@@ -154,7 +154,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 //                DoRecalculateScreenParts();
 
                 //TODO: move to template
-                InvokeFocusedRowChanged(newCurrentRowPos);
+                SelectRowInGrid(newCurrentRowPos, true);
 
                 DoRecalculateScreenParts();
             }

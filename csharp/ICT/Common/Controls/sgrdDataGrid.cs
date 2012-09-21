@@ -1420,8 +1420,9 @@ namespace Ict.Common.Controls
 
                     //Select and show specified row
                     this.Selection.FocusStyle = FocusStyle.None;
-                    this.Selection.SelectRow(ARowNumberInGrid, true);
-                    this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
+                    this.Selection.Focus(Position.Empty, true);                         // ensure the current cell is un-highlighted first
+                    this.Selection.SelectRow(ARowNumberInGrid, true);                   // move the row selection
+                    this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);  // select cell in column 0
                     this.Selection.FocusStyle = FocusStyle.Default;
 
                     break;

@@ -166,14 +166,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ACorporateExchangeRate.DefaultView);
 
-            SelectDetailRowByDataTableIndex(FMainDS.ACorporateExchangeRate.Rows.Count - 1);
-            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+            SelectDetailRowByDataTableIndex(FMainDS.ACorporateExchangeRate.Rows.Count - 1, true);
 
-            //Must be set after the FocusRowChanged event is called as it sets this flag to false
-            FNewRecordUnsavedInFocus = true;
-
-            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-            ShowDetails(FPreviouslySelectedDetailRow);
+            ShowDetails();
 
             Control[] pnl = this.Controls.Find("pnlDetails", true);
 

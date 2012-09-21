@@ -197,9 +197,13 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             this.btnPromote.Enabled = CurrentRow < grdDetails.Rows.Count - 1;
         }
 
-        // These three methods are not used because we do not have a details panel beneath the grid
+        // These four methods are not used because we do not have a details panel beneath the grid
         // However, they need to be here to get the auto-gen code to compile
         private void NewRowManual(ref PDataLabelUseRow ARow)
+        {
+        }
+
+        private void ShowDetails()
         {
         }
 
