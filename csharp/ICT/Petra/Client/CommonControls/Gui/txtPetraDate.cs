@@ -124,8 +124,7 @@ namespace Ict.Petra.Client.CommonControls
                         if (!FSuppressTextChangeEvent)
                         {
                             // MessageBox.Show('set_Date: calling VerifyDate...');
-                            // Verify the Date. If it is OK, the Text will be changed to correspond to the
-                            // 'Petra Date' format.
+                            // Verify the Date. If it is OK, the Text will correspond to the 'Petra Date' format.
                             if (VerifyDate())
                             {
                                 DateChangeArgs = new TPetraDateChangedEventArgs(FDate, true);
@@ -143,7 +142,7 @@ namespace Ict.Petra.Client.CommonControls
                     {
                         FDate = null;
 
-                        // Raise OnDateChanged Event whether the Date was valid or not!
+                        // Raise On DateChanged Event whether the Date was valid or not!
                         OnDateChanged(new TPetraDateChangedEventArgs(FDate, true));
                     }
                 }
@@ -311,7 +310,7 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// procedure Date_TextChanged(sender: System.Object; e: System.EventArgs);
+        /// Date_TextChanged(sender: System.Object; e: System.EventArgs);
         /// </summary>
         /// <returns>void</returns>
         private void OnDateChanged(TPetraDateChangedEventArgs e)
@@ -328,7 +327,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// procedure TtxtPetraDate.Date_TextChanged(sender: System.Object; e: System.EventArgs);var  DateChangeArgs: TPetraDateChangedEventArgs;begin/  if DesignMode then/  begin/    return;/  end;/  if not FSuppressTextChangeEvent then
         /// beginMessageBox.Show('Entering TtxtPetraDate.Date_TextChanged...');     Verify the Date. If it is OK, the Text will be changed to correspond to the     'Petra Date' format.    if VerifyDate then    begin      DateChangeArgs := new
-        /// TPetraDateChangedEventArgs.Create(FDate, true);    end    else    begin      DateChangeArgs := TPetraDateChangedEventArgs(DateTime.MinValue, false);    end;/     Raise OnDateChanged Event  whether the Date was valid or not!
+        /// TPetraDateChangedEventArgs.Create(FDate, true);    end    else    begin      DateChangeArgs := TPetraDateChangedEventArgs(DateTime.MinValue, false);    end;/     Raise On DateChanged Event  whether the Date was valid or not!
         /// OnDateChanged(DateChangeArgs);  end;end;
         /// </summary>
         /// <returns>void</returns>
@@ -422,7 +421,7 @@ namespace Ict.Petra.Client.CommonControls
                         // Reset the Date to what it was before!
                         // this.Date := FDate;
 
-                        OnDateChanged(new TPetraDateChangedEventArgs(FDate, false));
+//                      OnDateChanged(new TPetraDateChangedEventArgs(FDate, false));
 
                         return false;
                     }
@@ -440,11 +439,7 @@ namespace Ict.Petra.Client.CommonControls
                             TMessages.MsgGeneralError(DateVerificationResult2, this.FindForm().GetType());
                         }
 
-                        // Reset the Date to what it was before!
-                        // this.Date := FDate;
-
-                        OnDateChanged(new TPetraDateChangedEventArgs(FDate, false));
-
+//                      OnDateChanged(new TPetraDateChangedEventArgs(FDate, false));
                         return false;
                     }
                 }
@@ -461,11 +456,7 @@ namespace Ict.Petra.Client.CommonControls
                             TMessages.MsgGeneralError(DateVerificationResult2, this.FindForm().GetType());
                         }
 
-                        // Reset the Date to what it was before!
-                        // this.Date := FDate;
-
-                        OnDateChanged(new TPetraDateChangedEventArgs(FDate, false));
-
+//                      OnDateChanged(new TPetraDateChangedEventArgs(FDate, false));
                         return false;
                     }
                 }
@@ -516,11 +507,12 @@ namespace Ict.Petra.Client.CommonControls
                 ReturnValue = false;
             }
 
+/*
             if (DateBeforeChange != FDate)
             {
                 OnDateChanged(new TPetraDateChangedEventArgs(FDate, true));
             }
-
+*/
             return ReturnValue;
         }
 
