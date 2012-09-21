@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
@@ -88,6 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
+            	ClearControls();
                 ((TFrmRecurringGiftBatch) this.ParentForm).DisableTransactionsTab();
             }
 
@@ -235,20 +237,50 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool deletionSuccessful = false;
 
+            int batchNumber = ARowToDelete.BatchNumber;
+            
             try
             {
-                //Normally need to set the message parameters before the delete is performed if requiring any of the row values
                 ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
-                    ARowToDelete.BatchNumber);
+                    batchNumber);
 
-                ARowToDelete.Delete();
+                // Delete the associated recurring gift detail rows.
+				DataView viewGiftDetail = new DataView(FMainDS.ARecurringGiftDetail);
+				viewGiftDetail.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+				                               ARecurringGiftTable.GetLedgerNumberDBName(),
+				                               FLedgerNumber,
+				                               ARecurringGiftTable.GetBatchNumberDBName(),
+				                               batchNumber);
 
-                //ARowToDelete = null;
+				foreach (DataRowView row in viewGiftDetail)
+				{
+					row.Delete();
+				}
+                
+                // Delete the associated recurring gift rows.
+				DataView viewGift = new DataView(FMainDS.ARecurringGift);
+				viewGift.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+				                               ARecurringGiftTable.GetLedgerNumberDBName(),
+				                               FLedgerNumber,
+				                               ARecurringGiftTable.GetBatchNumberDBName(),
+				                               batchNumber);
+
+				foreach (DataRowView row in viewGift)
+				{
+					row.Delete();
+				}
+
+				// Delete the recurring batch row.
+				ARowToDelete.Delete();
+
+                FPreviouslySelectedDetailRow = null;
 
                 deletionSuccessful = true;
             }
             catch (Exception ex)
             {
+                FPreviouslySelectedDetailRow = ARowToDelete;
+
                 ACompletionMessage = ex.Message;
                 MessageBox.Show(ex.Message,
                     "Deletion Error",
@@ -305,11 +337,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ClearControls()
         {
-            txtDetailBatchDescription.Clear();
+        	FPetraUtilsObject.DisableDataChangedEvent();
+        	txtDetailBatchDescription.Clear();
             txtDetailHashTotal.NumberValueDecimal = 0;
             cmbDetailBankCostCentre.SelectedIndex = -1;
             cmbDetailBankAccountCode.SelectedIndex = -1;
             cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+        	FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         private void Submit(System.Object sender, System.EventArgs e)

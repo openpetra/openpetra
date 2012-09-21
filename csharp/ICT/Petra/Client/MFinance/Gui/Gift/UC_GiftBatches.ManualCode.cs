@@ -589,12 +589,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ClearControls()
         {
-            txtDetailBatchDescription.Clear();
+        	FPetraUtilsObject.DisableDataChangedEvent();
+        	txtDetailBatchDescription.Clear();
             txtDetailHashTotal.NumberValueDecimal = 0;
             dtpDetailGlEffectiveDate.Clear();
             cmbDetailBankCostCentre.SelectedIndex = -1;
             cmbDetailBankAccountCode.SelectedIndex = -1;
             cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+        	FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         private void PostBatch(System.Object sender, EventArgs e)
