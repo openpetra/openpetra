@@ -119,15 +119,20 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Contains data about a Link that got clicked by the user.
+        /// </summary>
+        public delegate void TaskLinkClicked(XmlNode ATaskListNode, LinkLabel AItemClicked);
+        
         /// TODO: document the EventArgs passed.
         /// <summary></summary>
-        public event System.EventHandler ItemActivation;
+        public event TaskLinkClicked ItemActivation;
 
         private void OnItemActivation(XmlNode ATaskListNode, LinkLabel AItemClicked)
         {
             if(ItemActivation != null)
             {
-                ItemActivation(this, new ItemActivationEventArgs(ATaskListNode, AItemClicked));
+                ItemActivation(ATaskListNode, AItemClicked);
             }
         }
 
@@ -321,11 +326,8 @@ namespace Ict.Common.Controls
                     //Background color for link is already implemented
 
 
-                    lblTaskItem.Click += delegate
-                    {
-                        this.OnItemActivation(TaskNode, lblTaskItem);
-                    };
-
+                    lblTaskItem.LinkClicked += new LinkLabelLinkClickedEventHandler(lblTaskItem_LinkClicked);
+                    lblTaskItem.Links[0].LinkData = TaskNode;
 
                     if (VisualStyle.UseContentBackgroundColours)
                     {
@@ -379,6 +381,11 @@ namespace Ict.Common.Controls
 
                 TaskNode = TaskNode.NextSibling;
             }
+        }
+
+        void lblTaskItem_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {            
+            OnItemActivation((XmlNode)e.Link.LinkData, (LinkLabel)sender);
         }
 
             #endregion

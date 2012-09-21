@@ -40,8 +40,6 @@ namespace ControlTestBench
         {
             this.btnTestDefaultConstructor = new System.Windows.Forms.Button();
             this.btnTestFullConstructor = new System.Windows.Forms.Button();
-            this.btnTestCallbacks = new System.Windows.Forms.Button();
-            this.btnDisableHide = new System.Windows.Forms.Button();
             this.btnDisable = new System.Windows.Forms.Button();
             this.btnHide = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -66,43 +64,23 @@ namespace ControlTestBench
             this.btnTestFullConstructor.UseVisualStyleBackColor = true;
             this.btnTestFullConstructor.Click += new System.EventHandler(this.TestFullConstructor);
             // 
-            // btnTestCallbacks
-            // 
-            this.btnTestCallbacks.Location = new System.Drawing.Point(269, 163);
-            this.btnTestCallbacks.Name = "btnTestCallbacks";
-            this.btnTestCallbacks.Size = new System.Drawing.Size(147, 23);
-            this.btnTestCallbacks.TabIndex = 2;
-            this.btnTestCallbacks.Text = "Test Callbacks";
-            this.btnTestCallbacks.UseVisualStyleBackColor = true;
-            this.btnTestCallbacks.Click += new System.EventHandler(this.TestCallbacks);
-            // 
-            // btnDisableHide
-            // 
-            this.btnDisableHide.Location = new System.Drawing.Point(269, 192);
-            this.btnDisableHide.Name = "btnDisableHide";
-            this.btnDisableHide.Size = new System.Drawing.Size(147, 23);
-            this.btnDisableHide.TabIndex = 3;
-            this.btnDisableHide.Text = "Test Disable/Hide";
-            this.btnDisableHide.UseVisualStyleBackColor = true;
-            this.btnDisableHide.Click += new System.EventHandler(this.TestDisableHide);
-            // 
             // btnDisable
             // 
-            this.btnDisable.Location = new System.Drawing.Point(422, 192);
+            this.btnDisable.Location = new System.Drawing.Point(269, 192);
             this.btnDisable.Name = "btnDisable";
-            this.btnDisable.Size = new System.Drawing.Size(54, 23);
+            this.btnDisable.Size = new System.Drawing.Size(147, 23);
             this.btnDisable.TabIndex = 4;
-            this.btnDisable.Text = "Disable";
+            this.btnDisable.Text = "Disable/Enable Task";
             this.btnDisable.UseVisualStyleBackColor = true;
             this.btnDisable.Click += new System.EventHandler(this.DisableItemButtonClick);
             // 
             // btnHide
             // 
-            this.btnHide.Location = new System.Drawing.Point(482, 192);
+            this.btnHide.Location = new System.Drawing.Point(269, 221);
             this.btnHide.Name = "btnHide";
-            this.btnHide.Size = new System.Drawing.Size(54, 23);
+            this.btnHide.Size = new System.Drawing.Size(147, 23);
             this.btnHide.TabIndex = 5;
-            this.btnHide.Text = "Hide";
+            this.btnHide.Text = "Hide/Show Task";
             this.btnHide.UseVisualStyleBackColor = true;
             this.btnHide.Click += new System.EventHandler(this.HideItemButtonClick);
             // 
@@ -114,8 +92,6 @@ namespace ControlTestBench
             this.ClientSize = new System.Drawing.Size(674, 500);
             this.Controls.Add(this.btnHide);
             this.Controls.Add(this.btnDisable);
-            this.Controls.Add(this.btnDisableHide);
-            this.Controls.Add(this.btnTestCallbacks);
             this.Controls.Add(this.btnTestFullConstructor);
             this.Controls.Add(this.btnTestDefaultConstructor);
             this.Name = "TaskListTest";
@@ -124,8 +100,6 @@ namespace ControlTestBench
         }
         private System.Windows.Forms.Button btnDisable;
         private System.Windows.Forms.Button btnHide;
-        private System.Windows.Forms.Button btnDisableHide;
-        private System.Windows.Forms.Button btnTestCallbacks;
         private System.Windows.Forms.Button btnTestFullConstructor;
         private System.Windows.Forms.Button btnTestDefaultConstructor;
         private Ict.Common.Controls.TTaskList TaskList1;

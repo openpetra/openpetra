@@ -54,8 +54,9 @@ namespace ControlTestBench
             TaskList1.Location = new System.Drawing.Point(10,10);
             TaskList1.Size = new System.Drawing.Size(300,200);
             TaskList1.Name = TASKLISTCONTROLNAME;
-
+            
             AddControlToForm(TaskList1);        
+            HookupTaskListEvents(TaskList1);
         }
 
         /// <summary>
@@ -71,51 +72,9 @@ namespace ControlTestBench
             TaskList1.Name = TASKLISTCONTROLNAME;
             
             AddControlToForm(TaskList1);        
+            HookupTaskListEvents(TaskList1);
         }
         
-        /// <summary>
-        /// This test is meant to directly manipulate xmlnode and circumnavigate any yml text at all.
-        /// That way this is a direct test of the TTaskList functionality itself and not dependent on
-        /// TYml2Xml working.
-        ///
-        /// Some remaining questions:
-        ///
-        ///  1) Where will the actual callback function be defined? in some .manual.cs file?
-        /// </summary>
-        public void TestCallbacks(object sender, EventArgs e)
-        {
-            this.Controls.Remove(TaskList1);
-
-            TaskList1 = new TTaskList(GetTestXMLNode());
-            TaskList1.Location = new System.Drawing.Point(10,10);
-            TaskList1.Size = new System.Drawing.Size(300,200);
-            TaskList1.ItemActivation += delegate
-            {
-                MessageBox.Show("The `ItemActivaion` event works (from inside TaskList GUI form directly)!", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            };
-
-            this.Controls.Add(TaskList1);
-
-            TaskList1.Click += delegate
-            {
-                MessageBox.Show("Click-ity-doo-da!!", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            };
-
-            //            throw new Exception(); // Reminder that this function has not been looked over yet.
-
-            //MessageBox.Show("Now Click on the list and see a message box pop up.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //TODO: MessageBox.Show("Now Click on the first Item in the list, and you should see a message box pop up.", "ControlTestBench.TaskListTest.ExampleCallback", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-
-        /// <summary>
-        /// This is meant to be a bridge to the old tests written by Chadd and Ashley.
-        /// </summary>
-        public void TestDisableHide(object Sender, EventArgs e)
-        {
-            //TODO: setup a tasklist with the assumptions needed for Disable/Hide (see below funcitons).
-        }
-
         /// <summary>
         /// This is copied from the older version of the test written by Chadd and Ashley.
         /// </summary>
@@ -214,6 +173,16 @@ namespace ControlTestBench
             }
             
             return xmlnode;
+        }
+        
+        private void HookupTaskListEvents(TTaskList ATaskList)
+        {
+            ATaskList.ItemActivation += new TTaskList.TaskLinkClicked(ATaskList_ItemActivation);
+        }
+
+        void ATaskList_ItemActivation(XmlNode ATaskListNode, LinkLabel AItemClicked)
+        {
+            MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
         }
     }
 }
