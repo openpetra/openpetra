@@ -450,6 +450,7 @@ namespace {#NAMESPACE}
     * All we do is store the previous row from/to and the previous UTC time
     * These three form level variables are totally private to this event call.
     * **************************************************************************************************************/
+
     private DateTime FDtPrevLeaving = DateTime.UtcNow;
     private int FPrevLeavingFrom = -1;
     private int FPrevLeavingTo = -1;
