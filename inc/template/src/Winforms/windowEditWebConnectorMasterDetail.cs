@@ -390,6 +390,9 @@ namespace {#NAMESPACE}
     * These three form level variables are totally private to this event call.
     * **************************************************************************************************************/
 
+    /// <summary>
+    /// Used for determining the time elapsed between FocusRowLeaving Events.
+    /// </summary>
     private DateTime FDtPrevLeaving = DateTime.UtcNow;
     private int FPrevLeavingFrom = -1;
     private int FPrevLeavingTo = -1;
