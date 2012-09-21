@@ -201,3 +201,12 @@ msgstr "do not translate"
 
 msgid "eg. \"TEN,01\",\"TEN,02\""
 msgstr "do not translate"
+
+msgid "eg. \"TEN,01\",\"TEN,02\""
+msgstr "do not translate"
+
+msgid "%"
+msgstr "do not translate"
+
+msgid "OpenPetra"
+msgstr "do not translate"
