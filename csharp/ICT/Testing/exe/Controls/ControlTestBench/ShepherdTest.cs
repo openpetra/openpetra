@@ -22,7 +22,7 @@ namespace ControlTestBench
 /// </summary>
 public partial class ShepherdTest : Form
 {
-    TVisualStylesEnum FEnumStyle = TVisualStylesEnum.vsShepherd;
+    XmlNode FTestYAMNode = null;
     
     /// <summary>
     /// Constructor.
@@ -39,19 +39,21 @@ public partial class ShepherdTest : Form
     /// Constructor.
     /// </summary>
     /// <param name="AXmlNode"></param>
-    /// <param name="AEnumStyle"></param>
-    public ShepherdTest(XmlNode AXmlNode, TVisualStylesEnum AEnumStyle)
+    public ShepherdTest(XmlNode AXmlNode) : this()
     {
-        //
-        // The InitializeComponent() call is required for Windows Forms designer support.
-        //
-        InitializeComponent();
-
-        FEnumStyle = AEnumStyle;
-        tPnlCollapsible1.VisualStyleEnum = FEnumStyle;
-        tPnlCollapsible1.TaskListNode = AXmlNode;
-        tPnlCollapsible1.Collapse();
-        tPnlCollapsible1.Expand();
+        FTestYAMNode = AXmlNode;
+        
+        this.Controls.Clear();
+        
+        this.tPnlCollapsible1 = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMNode, TCollapseDirection.cdHorizontal, 240, false, TVisualStylesEnum.vsShepherd);
+        this.tPnlCollapsible1.BorderStyle = BorderStyle.FixedSingle;
+        this.tPnlCollapsible1.Text = "My Shepherd Test";
+        this.Controls.Add(this.tPnlCollapsible1);
+        
+//        tPnlCollapsible1.VisualStyleEnum = TVisualStylesEnum.vsShepherd;
+//        tPnlCollapsible1.TaskListNode = AXmlNode;
+//        tPnlCollapsible1.Collapse();
+//        tPnlCollapsible1.Expand();                
     }
 }
 }

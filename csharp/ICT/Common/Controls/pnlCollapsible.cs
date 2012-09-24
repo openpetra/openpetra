@@ -616,6 +616,25 @@ namespace Ict.Common.Controls
 
             btnToggle.ImageIndex = 1;
             FIsCollapsed = true;
+        
+            switch (FHostedControlKind)
+            {
+                case THostedControlKind.hckUserControl:
+                    if (FUserControl != null) 
+                    {
+                        FUserControl.Visible = false;    
+                    }
+                    
+                    break;
+
+                case THostedControlKind.hckTaskList:
+                    if (FTaskListInstance != null) 
+                    {
+                        FTaskListInstance.Visible = false;    
+                    }
+                    
+                    break;
+            }
         }
 
         /// <summary>
@@ -639,11 +658,27 @@ namespace Ict.Common.Controls
             switch (FHostedControlKind)
             {
                 case THostedControlKind.hckUserControl:
-                    InstantiateUserControl();
+                    if (FUserControl != null) 
+                    {
+                        FUserControl.Visible = true;    
+                    }
+                    else
+                    {
+                        InstantiateUserControl();
+                    }
+                    
                     break;
 
                 case THostedControlKind.hckTaskList:
-                    InstantiateTaskList();
+                    if (FTaskListInstance != null) 
+                    {
+                        FTaskListInstance.Visible = true;    
+                    }
+                    else
+                    {
+                        InstantiateTaskList();
+                    }
+                    
                     break;
             }
         }
@@ -885,24 +920,51 @@ namespace Ict.Common.Controls
             this.lblDetailHeading.Height = style.TitleFont.Height;
             
             this.lblDetailHeading.ForeColor = style.TitleFontColour;
-            this.tipCollapseExpandHints.ForeColor = style.HoverTitleFontColour;
+            this.tipCollapseExpandHints.ForeColor = style.TitleFontColourHover;
 
             //TODO: border
 
             //Gradient
-            if (this.VisualStyle.UsePanelGradient)
+            if (this.VisualStyle.UseTitleGradient)
             {
-                this.pnlTitle.GradientColorBottom = style.ContentGradientEnd;
-                this.pnlTitle.GradientColorTop = style.ContentGradientStart;
-                this.pnlTitle.GradientMode = style.ContentGradientMode;
+                this.SuspendLayout();
+                this.pnlTitle.GradientColorBottom = style.TitleGradientEnd;
+                this.pnlTitle.GradientColorTop = style.TitleGradientStart;
+                this.pnlTitle.GradientMode = style.TitleGradientMode;
+                this.pnlTitleText.GradientColorBottom = style.TitleGradientEnd;
+                this.pnlTitleText.GradientColorTop = style.TitleGradientStart;
+                this.pnlTitleText.GradientMode = style.TitleGradientMode;
+                this.ResumeLayout();
             }
             else
             {
-                this.pnlTitle.GradientColorBottom = style.ContentBackgroundColour;
-                this.pnlTitle.GradientColorTop = style.ContentBackgroundColour;
+                this.SuspendLayout();
+                this.pnlTitle.GradientColorBottom = style.TitleBackgroundColour;
+                this.pnlTitle.GradientColorTop = style.TitleBackgroundColour;
                 this.pnlTitle.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;
+                this.pnlTitleText.GradientColorBottom = style.TitleBackgroundColour;
+                this.pnlTitleText.GradientColorTop = style.TitleBackgroundColour;
+                this.pnlTitleText.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;                
+                this.ResumeLayout();
             }                       
 
+            if (this.VisualStyle.UseContentGradient)
+            {
+                this.SuspendLayout();
+                this.pnlContent.GradientColorBottom = style.ContentGradientEnd;
+                this.pnlContent.GradientColorTop = style.ContentGradientEnd;
+                this.pnlContent.GradientMode = style.ContentGradientMode;
+                this.ResumeLayout();
+            }
+            else
+            {
+                this.SuspendLayout();
+                this.pnlContent.GradientColorBottom = style.ContentBackgroundColour;
+                this.pnlContent.GradientColorTop = style.ContentBackgroundColour;
+                this.pnlContent.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;
+                this.ResumeLayout();
+            }                       
+            
             return AVisualStyle;
         }
 
@@ -939,7 +1001,7 @@ namespace Ict.Common.Controls
             TLogging.Log("BtnToggleMouseEnter: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
 
             btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][IsCollapsed][true];
-            lblDetailHeading.ForeColor = this.VisualStyle.HoverTitleFontColour;
+            lblDetailHeading.ForeColor = this.VisualStyle.TitleFontColourHover;
 
             TLogging.Log("BtnToggleMouseEnter END: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
         }

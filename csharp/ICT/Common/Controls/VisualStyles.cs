@@ -90,24 +90,13 @@ namespace Ict.Common.Controls
             }
         }
 
-        private Color InternalHoverTitleFontColour;
-        /// <summary>The HoverTitleFontColour property gets the value of the InternalHoverTitleFontColour</summary>
-        /// <value> The HoverTitleFontColour property represents the Colour specification of the title text when the mouse hovers over the title </value>
-        public Color HoverTitleFontColour {
+        private Color InternalTitleFontColourHover;
+        /// <summary>The TitleFontColourHover property gets the value of the InternalTitleFontColourHover</summary>
+        /// <value> The TitleFontColourHover property represents the Colour specification of the title text when the mouse hovers over the title</value>
+        public Color TitleFontColourHover {
             get
             {
-                return InternalHoverTitleFontColour;
-            }
-        }
-
-        private int InternalTitleHeight;
-        /// <summary>The TitleHeight property gets the value of the InternalTitleHeight</summary>
-        /// <value> The TitleHeight property represents the height of the TitleFont</value>
-        //TODO: why height?? the functional definition of the height is font.height. The philosophy puts height under Font.
-        public int TitleHeight {
-            get
-            {
-                return InternalTitleHeight;
+                return InternalTitleFontColourHover;
             }
         }
 
@@ -273,33 +262,33 @@ namespace Ict.Common.Controls
         }
 
         //Gradient Variables
-        private Color InternalPanelGradientStart;
+        private Color InternalTitleGradientStart;
         /// <summary>The PanelGradientStart property gets the value of the InternalPanelGradientStart</summary>
         /// <value> The PanelGradientStart property represents the beginning colour of the panel gradient</value>
-        public Color PanelGradientStart {
+        public Color TitleGradientStart {
             get
             {
-                return InternalPanelGradientStart;
+                return InternalTitleGradientStart;
             }
         }
 
-        private Color InternalPanelGradientEnd;
+        private Color InternalTitleGradientEnd;
         /// <summary>The PanelGradientEnd property gets the value of the InternalPanelGradientEnd</summary>
         /// <value> The PanelGradientEnd property represents the end colour of the title panel gradient.</value>
-        public Color PanelGradientEnd {
+        public Color TitleGradientEnd {
             get
             {
-                return InternalPanelGradientEnd;
+                return InternalTitleGradientEnd;
             }
         }
 
-        private LinearGradientMode InternalPanelGradientMode;
-        /// <summary>The PanelGradientMode property gets the value of the InternalPanelGradientMode</summary>
-        /// <value> The PanelGradientMode property represents the direction of the gradient in the title panel gradient</value>
-        public LinearGradientMode PanelGradientMode {
+        private LinearGradientMode InternalTitleGradientMode;
+        /// <summary>The TitleGradientMode property gets the value of the InternalTitleGradientMode</summary>
+        /// <value> The TitleGradientMode property represents the direction of the gradient in the title panel gradient</value>
+        public LinearGradientMode TitleGradientMode {
             get
             {
-                return InternalPanelGradientMode;
+                return InternalTitleGradientMode;
             }
         }
 
@@ -364,22 +353,26 @@ namespace Ict.Common.Controls
             }
         }
 
-        //bool variables for determining style in TaskList
+        #region Variables for determining style in TaskList
+        
         /// <summary>
         /// Boolean flag to specify whether the style uses a gradient background in the panel (title element)
         /// </summary>
-        public bool UsePanelGradient;
+        public bool UseTitleGradient;
+        
         /// <summary>
-        /// Boolean flag to specify whether certain controls use the background colors
+        /// Boolean flag to specify whether certain controls will use the background colours
         /// </summary>
         public bool UseContentBackgroundColours;
+        
         /// <summary>
         /// Boolean flag to specify whether the style uses a gradient background in the content section
         /// </summary>
         public bool UseContentGradient;
 
-
-        //Constructor
+        #endregion
+        
+        #region Constructor
 
         /// <summary>
         /// Constructor to create a Visual Styles Object
@@ -393,8 +386,7 @@ namespace Ict.Common.Controls
                     //TitleFont Variables
                     InternalTitleFont = new System.Drawing.Font("Verdana", 13, System.Drawing.FontStyle.Bold);
                     InternalTitleFontColour = Color.FromArgb(21, 66, 139);     // Color.FromArgb(89, 101, 165)
-                    InternalHoverTitleFontColour = InternalTitleFontColour;  //  Color.FromArgb(20, 65, 142)
-                    InternalTitleHeight = 180;
+                    InternalTitleFontColourHover = InternalTitleFontColour;  //  Color.FromArgb(20, 65, 142)
 
                     //ContentFont Variables
                     InternalContentFont = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
@@ -414,9 +406,9 @@ namespace Ict.Common.Controls
                     InternalContentPaddingBottom = 8;
                     
                     //Gradient Variables
-                    InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
-                    InternalPanelGradientEnd = Color.FromArgb(183, 202, 226);
-                    InternalPanelGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+                    InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
+                    InternalTitleGradientEnd = Color.FromArgb(183, 202, 226);
+                    InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
                     InternalContentGradientStart = Color.FromArgb(212, 228, 254);
                     InternalContentGradientEnd = Color.FromArgb(205, 218, 254);
                     InternalContentGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
@@ -427,7 +419,7 @@ namespace Ict.Common.Controls
                     InternalAutomaticNumbering = false;
 
                     //bool variables
-                    UsePanelGradient = true;
+                    UseTitleGradient = true;
                     UseContentGradient = true;
                     UseContentBackgroundColours = false;
                     break;
@@ -436,8 +428,7 @@ namespace Ict.Common.Controls
                     //TitleFont Variables
                     InternalTitleFont = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
                     InternalTitleFontColour = Color.FromArgb(30, 92, 196);
-                    InternalHoverTitleFontColour = Color.FromArgb(102, 134, 181);
-                    InternalTitleHeight = 100;
+                    InternalTitleFontColourHover = Color.FromArgb(102, 134, 181);
 
                     //ContentFont Variables
                     InternalContentFont = new System.Drawing.Font("Verdana", 7);
@@ -450,9 +441,9 @@ namespace Ict.Common.Controls
                     InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
 
                     //Gradient Variables
-                    InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
-                    InternalPanelGradientEnd = Color.FromArgb(190, 212, 254);
-                    InternalPanelGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
+                    InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
+                    InternalTitleGradientEnd = Color.FromArgb(190, 212, 254);
+                    InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
 
                     //Layout Variables
                     InternalTaskIndentation = 15;
@@ -460,7 +451,7 @@ namespace Ict.Common.Controls
                     InternalAutomaticNumbering = false;
 
                     //bool variables
-                    UsePanelGradient = true;
+                    UseTitleGradient = true;
                     UseContentGradient = false;
                     UseContentBackgroundColours = false;
                     break;
@@ -469,8 +460,7 @@ namespace Ict.Common.Controls
                     //TitleFont Variables
                     InternalTitleFont = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
                     InternalTitleFontColour = Color.FromArgb(30, 92, 196);
-                    InternalHoverTitleFontColour = Color.FromArgb(102, 134, 181);
-                    InternalTitleHeight = 100;
+                    InternalTitleFontColourHover = Color.FromArgb(102, 134, 181);
 
                     //ContentFont Variables
 
@@ -480,9 +470,9 @@ namespace Ict.Common.Controls
                     InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
 
                     //Gradient Variables
-                    InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
-                    InternalPanelGradientEnd = Color.FromArgb(190, 212, 254);
-                    InternalPanelGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
+                    InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
+                    InternalTitleGradientEnd = Color.FromArgb(190, 212, 254);
+                    InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
 
                     //Layout Variables
                     InternalTaskIndentation = 25;
@@ -490,7 +480,7 @@ namespace Ict.Common.Controls
                     InternalAutomaticNumbering = false;
 
                     //bool variables
-                    UsePanelGradient = true;
+                    UseTitleGradient = true;
                     UseContentGradient = false;
                     UseContentBackgroundColours = false;
 
@@ -500,8 +490,7 @@ namespace Ict.Common.Controls
                     //TitleFont Variables
                     InternalTitleFont = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
                     InternalTitleFontColour = Color.FromArgb(0, 0, 0);
-                    InternalHoverTitleFontColour = Color.FromArgb(60, 60, 60);
-                    InternalTitleHeight = 100;
+                    InternalTitleFontColourHover = Color.FromArgb(60, 60, 60);
 
                     //ContentFont Variables
                     InternalContentFont = new System.Drawing.Font("Verdana", 8);
@@ -511,25 +500,35 @@ namespace Ict.Common.Controls
                     InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
                     InternalContentActivatedFontUnderline = false;
                     
+                    // Padding Variables
+                    InternalTitlePaddingTop = 5;
+                    InternalTitlePaddingLeft = 5;
+                    InternalTitlePaddingRight = 8;
+                    InternalTitlePaddingBottom = 0;
+                    InternalContentPaddingTop = 15;
+                    InternalContentPaddingLeft = 0;
+                    InternalContentPaddingRight = 5;
+                    InternalContentPaddingBottom = 8;
+
                     //Gradient Variables
-                    InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
-                    InternalPanelGradientEnd = Color.FromArgb(255, 255, 255);
-                    InternalPanelGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
+                    InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
+                    InternalTitleGradientEnd = Color.FromArgb(255, 255, 255);
+                    InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
 
                     //Background variables
-                    InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
+                    InternalTitleBackgroundColour = Color.FromArgb(255, 255, 255);
                     InternalContentBackgroundColour = Color.FromArgb(255, 255, 255);
                     InternalContentHoverBackgroundColour = Color.FromArgb(255, 255, 255);  
                     InternalContentActivatedBackgroundColour = Color.FromArgb(0, 128, 192);
 
 
                     //Layout Variables
-                    InternalTaskIndentation = 15;
+                    InternalTaskIndentation = 8;
                     InternalTaskHeight = 20;
                     InternalAutomaticNumbering = true;
 
                     //bool variables
-                    UsePanelGradient = false;
+                    UseTitleGradient = false;
                     UseContentGradient = false;
                     UseContentBackgroundColours = true;
                     break;
@@ -538,8 +537,7 @@ namespace Ict.Common.Controls
                     //TitleFont Variables
                     InternalTitleFont = new System.Drawing.Font("Tahoma", 13, System.Drawing.FontStyle.Bold);
                     InternalTitleFontColour = Color.FromArgb(20, 65, 142);
-                    InternalHoverTitleFontColour = InternalTitleFontColour;
-                    InternalTitleHeight = 100;
+                    InternalTitleFontColourHover = InternalTitleFontColour;
 
                     //ContentFont Variables
 
@@ -548,20 +546,22 @@ namespace Ict.Common.Controls
                     InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
 
                     //Gradient Variables
-                    InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
-                    InternalPanelGradientEnd = Color.FromArgb(190, 212, 254);
-                    InternalPanelGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+                    InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
+                    InternalTitleGradientEnd = Color.FromArgb(190, 212, 254);
+                    InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
 
                     //Layout Variables
                     InternalTaskIndentation = 30;
                     InternalAutomaticNumbering = false;
 
                     //bool variables
-                    UsePanelGradient = true;
+                    UseTitleGradient = true;
                     UseContentGradient = false;
                     UseContentBackgroundColours = false;
                     break;
             }
         }
+        
+        #endregion
     }
 }

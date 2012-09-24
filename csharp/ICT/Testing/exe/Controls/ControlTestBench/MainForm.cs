@@ -115,9 +115,7 @@ namespace Ict.Testing.ControlTestBench
             TYml2Xml parser = new TYml2Xml(yamlFile);
             XmlDocument UINavigation = parser.ParseYML2XML();
 
-            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
-            
-            new ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
+            new ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
         }
     }
 }

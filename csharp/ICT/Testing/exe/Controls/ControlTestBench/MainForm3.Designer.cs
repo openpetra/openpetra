@@ -53,7 +53,6 @@ namespace ControlTestBench
             this.btnShepherdTest = new System.Windows.Forms.Button();
             this.btnCollapsibleTest = new System.Windows.Forms.Button();
             this.btnTaskListTest = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // txtYaml
@@ -66,11 +65,11 @@ namespace ControlTestBench
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(48, 171);
+            this.label1.Location = new System.Drawing.Point(27, 171);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(100, 23);
+            this.label1.Size = new System.Drawing.Size(136, 23);
             this.label1.TabIndex = 3;
-            this.label1.Text = "enter yaml file:";
+            this.label1.Text = "YAML File for Tests:";
             // 
             // cmbVisualStyle
             // 
@@ -88,11 +87,11 @@ namespace ControlTestBench
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(48, 198);
+            this.label2.Location = new System.Drawing.Point(27, 198);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(100, 23);
+            this.label2.Size = new System.Drawing.Size(136, 32);
             this.label2.TabIndex = 5;
-            this.label2.Text = "Visual Style";
+            this.label2.Text = "Visual Style (ignored for \'Shepherd Test\'):";
             // 
             // btnShepherdTest
             // 
@@ -110,7 +109,7 @@ namespace ControlTestBench
             this.btnCollapsibleTest.Name = "btnCollapsibleTest";
             this.btnCollapsibleTest.Size = new System.Drawing.Size(182, 23);
             this.btnCollapsibleTest.TabIndex = 9;
-            this.btnCollapsibleTest.Text = "TPnlCollapsible Test";
+            this.btnCollapsibleTest.Text = "CollapsiblePanel Test";
             this.btnCollapsibleTest.UseVisualStyleBackColor = true;
             this.btnCollapsibleTest.Click += new System.EventHandler(this.BtnCollapsibleTestClick);
             // 
@@ -123,22 +122,12 @@ namespace ControlTestBench
             this.btnTaskListTest.Text = "Test TaskList";
             this.btnTaskListTest.Click += new System.EventHandler(this.HandlerTaskListTest);
             // 
-            // label3
-            // 
-            this.label3.Location = new System.Drawing.Point(48, 130);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(242, 36);
-            this.label3.TabIndex = 11;
-            this.label3.Text = "The below settings are only used for Shepherd Test. I wish we could decouple this" +
-            "!";
-            // 
             // MainForm3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(345, 268);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.btnCollapsibleTest);
             this.Controls.Add(this.btnShepherdTest);
             this.Controls.Add(this.label2);
@@ -152,7 +141,6 @@ namespace ControlTestBench
             this.ResumeLayout(false);
             this.PerformLayout();
         }
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnShepherdTest;
         private System.Windows.Forms.Button btnCollapsibleTest;
         private System.Windows.Forms.ComboBox cmbVisualStyle;

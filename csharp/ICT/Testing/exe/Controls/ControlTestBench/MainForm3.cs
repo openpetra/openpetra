@@ -48,9 +48,7 @@ namespace ControlTestBench
         {
             XmlDocument UINavigation = LoadYAMLTestFile();
             
-            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
-            
-            new ControlTestBench.ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
+            new ControlTestBench.ShepherdTest(UINavigation.FirstChild.NextSibling.FirstChild).Show();
         }
 
 
