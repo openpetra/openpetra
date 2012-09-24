@@ -43,9 +43,6 @@ namespace ControlTestBench
         {
             FTestYAMLNode = ATestYAMLNode;
             FEnumStyle = AEnumStyle;            
-            
-            FPnl.VisualStyleEnum = FEnumStyle;
-            FPnl.TaskListNode = FTestYAMLNode;
         }
         
         private void TestEmptyConstructor(object sender, EventArgs e)
@@ -66,14 +63,16 @@ namespace ControlTestBench
         {
             this.Controls.Remove(this.FPnl);
 
-            this.FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, "Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo", TCollapseDirection.cdVertical);
+            this.FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, "Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo", TCollapseDirection.cdVertical, false, FEnumStyle);
             this.Controls.Add(this.FPnl);
         }
         private void TestTaskListHorizontalConstructor(object sender, EventArgs e)
         {
             this.Controls.Remove(this.FPnl);
 
-            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMLNode, TCollapseDirection.cdHorizontal, 175, false, FEnumStyle);
+            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMLNode, TCollapseDirection.cdHorizontal, 183, false, FEnumStyle);
+            this.FPnl.BorderStyle = BorderStyle.FixedSingle;
+            this.FPnl.Text = "&Finance";
             this.Controls.Add(this.FPnl);
         }
         private void TestTaskListExpandedConstructor(object sender, EventArgs e)

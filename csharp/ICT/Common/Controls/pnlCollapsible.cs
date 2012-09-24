@@ -78,7 +78,7 @@ namespace Ict.Common.Controls
         private const Int16 EXPANDEDHEIGHT = 153;
 
         /// <summary>Hard-coded value of the collapsed width</summary>
-        private const Int16 COLLAPSEDWIDTH = 29;
+        private const Int16 COLLAPSEDWIDTH = 33;
 
         /// <summary>Hard-coded value of the expanded width</summary>
         private const Int16 EXPANDEDWIDTH = 300;
@@ -392,6 +392,11 @@ namespace Ict.Common.Controls
         /// </summary>
         public TPnlCollapsible(params object[] Args)
         {
+            bool VisualStyleSpecified = false;
+            bool CollapseDirectionSpecified = false;
+            bool CollapseSpecified = false;
+            bool ExpandedSizeSpecified = false;
+            
             //
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
@@ -405,19 +410,16 @@ namespace Ict.Common.Controls
 
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-
+            
             #region defaults
             this.Text = "## Developer needs to change this ##";
             this.HostedControlKind = THostedControlKind.hckTaskList;
             this.UserControlNamespace = "";
             this.UserControlClass = "";
-            this.CollapseDirection = TCollapseDirection.cdVertical;
             this.StoredStyles = new Dictionary<TCollapseDirection, TVisualStylesEnum>();
             this.StoredStyles[TCollapseDirection.cdVertical] = DEFAULT_STYLE[TCollapseDirection.cdVertical];
             this.StoredStyles[TCollapseDirection.cdHorizontal] = DEFAULT_STYLE[TCollapseDirection.cdHorizontal];
             //this.VisualStyleEnum = new TVisualStyles(this.StoredStyles[CollapseDirection]);
-            this.VisualStyleEnum = DEFAULT_STYLE[this.CollapseDirection];
-            this.IsCollapsed = true;
             this.FTaskListNode = TYml2Xml.CreateXmlDocument();
             this.ExpandedSize = 153;
             //this.UserControlInstance -- intentionally left undefined at first
@@ -441,10 +443,13 @@ namespace Ict.Common.Controls
                     {
                         this.CollapseDirection = (TCollapseDirection) arg;    
                     }                   
+                    
+                    CollapseDirectionSpecified = true;
                 }
                 else if(arg is Ict.Common.Controls.TVisualStylesEnum)
                 {
                     this.VisualStyleEnum = (TVisualStylesEnum) arg;
+                    VisualStyleSpecified = true;
                 }
                 else if(arg is bool)
                 {
@@ -452,11 +457,15 @@ namespace Ict.Common.Controls
                     // correctly defined and in place. And we do not guarantee order of parameters. see end of
                     // constructor for setting isCollapse properly.
                     this.FIsCollapsed = (bool) arg;
+                    
+                    CollapseSpecified = true;
                 }
                 //else if(arg.GetType().ToString().Equals("System.Integer"))
                 else if(arg is int)
                 {
                     this.ExpandedSize = (int) arg;
+                    
+                    ExpandedSizeSpecified = true;
                 }
                 else if(arg.GetType().IsSubclassOf(typeof(System.Xml.XmlNode)))
                 {
@@ -464,9 +473,27 @@ namespace Ict.Common.Controls
                 }
             }
 
-            // this is to make sure that panel is using updated width/height
-            // since ExpandedSize may have been changed by another parameter
-            this.IsCollapsed = this.FIsCollapsed;
+            if (!VisualStyleSpecified) 
+            {
+                this.VisualStyleEnum = DEFAULT_STYLE[this.CollapseDirection];
+            }
+
+            if (!CollapseDirectionSpecified) 
+            {
+                this.CollapseDirection = TCollapseDirection.cdVertical;                
+            }
+            
+            if (!CollapseSpecified) 
+            {
+                this.IsCollapsed = true;
+            }
+                       
+            if (ExpandedSizeSpecified) 
+            {
+                // this is to make sure that panel is using updated width/height
+                // since ExpandedSize may have been changed by another parameter
+                this.IsCollapsed = this.FIsCollapsed;                
+            }
 
             //start the image assuming that it is not being hovered.
             btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][IsCollapsed][false];
@@ -726,9 +753,12 @@ namespace Ict.Common.Controls
 
             if (! DirStyleMatch(newDirection, FVisualStyleEnum)  )
             {
-                this.VisualStyleEnum = StoredStyles[newDirection];
+                this.VisualStyleEnum = StoredStyles[newDirection];                
             }
-
+            else
+            {
+                ChangeVisualStyle(StoredStyles[newDirection]);
+            }
         }
         
         private void ToggleDirection()
@@ -818,6 +848,7 @@ namespace Ict.Common.Controls
             {
                 StoredStyles[dir] = AVisualStyle;
             }
+            
             if (! DirStyleMatch(FCollapseDirection, AVisualStyle)  )
             {
                 return FVisualStyleEnum;
@@ -827,6 +858,9 @@ namespace Ict.Common.Controls
             style = new TVisualStyles(AVisualStyle);
             this.VisualStyle = style;
 
+            this.pnlTitleText.Padding = new Padding(VisualStyle.TitlePaddingLeft, VisualStyle.TitlePaddingTop, 
+                VisualStyle.TitlePaddingRight, VisualStyle.TitlePaddingBottom);                
+            
             if (this.TaskListInstance != null)
             {
                 switch (AVisualStyle)
@@ -846,33 +880,28 @@ namespace Ict.Common.Controls
                         break;
                 }
             }
-
-
             
             this.lblDetailHeading.Font = style.TitleFont;
-            //TODO: is "ForeColor" what I want to set text color?
+            this.lblDetailHeading.Height = style.TitleFont.Height;
+            
             this.lblDetailHeading.ForeColor = style.TitleFontColour;
             this.tipCollapseExpandHints.ForeColor = style.HoverTitleFontColour;
 
             //TODO: border
 
-            //Gradient Variables
-            //TODO: gradient.
-            /*
-            if (style.UsePanelGradient)
+            //Gradient
+            if (this.VisualStyle.UsePanelGradient)
             {
-                this.Change(style.PanelGradientStart);
-                this.Change(style.PanelGradientEnd);
-                this.Change(style.PanelGradientMode);
+                this.pnlTitle.GradientColorBottom = style.ContentGradientEnd;
+                this.pnlTitle.GradientColorTop = style.ContentGradientStart;
+                this.pnlTitle.GradientMode = style.ContentGradientMode;
             }
-            */
-            //this.Change(style.ContentGradientStart);
-            //this.Change(style.ContentGradientEnd);
-            //this.Change(style.ContentGradientMode);
-
-            //bool variables
-            //this.Change(style.UseContentGradient);
-            //this.Change(style.UseContentBackgroundColours);
+            else
+            {
+                this.pnlTitle.GradientColorBottom = style.ContentBackgroundColour;
+                this.pnlTitle.GradientColorTop = style.ContentBackgroundColour;
+                this.pnlTitle.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;
+            }                       
 
             return AVisualStyle;
         }

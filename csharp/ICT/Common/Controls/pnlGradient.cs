@@ -119,6 +119,7 @@ namespace Ict.Common.Controls
         /// </summary>
         public TPnlGradient()
         {
+            DoubleBuffered = true;
         }
 
         /// <summary>

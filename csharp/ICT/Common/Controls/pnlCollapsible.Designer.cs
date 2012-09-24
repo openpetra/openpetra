@@ -57,7 +57,7 @@ namespace Ict.Common.Controls
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TPnlCollapsible));
             this.pnlTitle = new Ict.Common.Controls.TPnlGradient();
-            this.pnlTitleText = new System.Windows.Forms.Panel();
+            this.pnlTitleText = new Ict.Common.Controls.TPnlGradient();
             this.lblDetailHeading = new System.Windows.Forms.Label();
             this.btnToggle = new System.Windows.Forms.Button();
             this.imlUpDownArrows = new System.Windows.Forms.ImageList(this.components);
@@ -70,7 +70,6 @@ namespace Ict.Common.Controls
             // pnlTitle
             //
             this.pnlTitle.AutoSize = true;
-            this.pnlTitle.BackColor = System.Drawing.Color.Red;
             this.pnlTitle.Controls.Add(this.pnlTitleText);
             this.pnlTitle.Controls.Add(this.pnlContent);
             this.pnlTitle.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -81,14 +80,17 @@ namespace Ict.Common.Controls
             //
             // pnlTitleText
             //
-            this.pnlTitleText.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.pnlTitleText.Controls.Add(this.lblDetailHeading);
+            this.pnlTitleText.AutoSize = true;
+            this.pnlTitleText.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;           
+            this.pnlTitleText.BackColor = System.Drawing.Color.Transparent;
             this.pnlTitleText.Controls.Add(this.btnToggle);
+            this.pnlTitleText.Controls.Add(this.lblDetailHeading);            
             this.pnlTitleText.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTitleText.Location = new System.Drawing.Point(0, 0);
             this.pnlTitleText.Name = "pnlTitleText";
             this.pnlTitleText.Size = new System.Drawing.Size(424, 24);
             this.pnlTitleText.TabIndex = 1;
+            this.pnlTitleText.Parent = pnlTitle;
             this.tipCollapseExpandHints.SetToolTip(this.pnlTitleText, "Click here to expand / collapse the panel");
             this.pnlTitleText.MouseLeave += new System.EventHandler(this.BtnToggleMouseLeave);
             this.pnlTitleText.Click += new System.EventHandler(this.BtnToggleClick);
@@ -102,11 +104,13 @@ namespace Ict.Common.Controls
             this.lblDetailHeading.Font =
                 new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDetailHeading.ForeColor = System.Drawing.Color.MediumBlue;
-            this.lblDetailHeading.Location = new System.Drawing.Point(2, 5);
+            this.lblDetailHeading.Parent = pnlTitleText;
+            this.lblDetailHeading.Location = new System.Drawing.Point(2, 2);
             this.lblDetailHeading.Name = "lblDetailHeading";
             this.lblDetailHeading.Size = new System.Drawing.Size(395, 18);
             this.lblDetailHeading.TabIndex = 1;
-            this.lblDetailHeading.Text = "Collapsible Panel";
+            this.lblDetailHeading.Text = "Collapsible Panel";            
+            this.lblDetailHeading.AutoEllipsis = true;
             this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, "Click here to expand / collapse the panel");
             this.lblDetailHeading.Click += new System.EventHandler(this.BtnToggleClick);
             //
@@ -114,14 +118,15 @@ namespace Ict.Common.Controls
             //
             this.btnToggle.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnToggle.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.btnToggle.BackColor = System.Drawing.Color.Transparent;
             this.btnToggle.FlatAppearance.BorderColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.btnToggle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnToggle.Font = new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnToggle.ImageIndex = 0;
             this.btnToggle.ImageList = this.imlUpDownArrows;
-            this.btnToggle.Location = new System.Drawing.Point(403, 2);
+            this.btnToggle.Location = new System.Drawing.Point(408, 5);
             this.btnToggle.Name = "btnToggle";
+            this.btnToggle.Parent = pnlTitleText;
             this.btnToggle.Size = new System.Drawing.Size(18, 18);
             this.btnToggle.TabIndex = 0;
             this.btnToggle.TextAlign = System.Drawing.ContentAlignment.TopLeft;
@@ -182,7 +187,7 @@ namespace Ict.Common.Controls
         private System.Windows.Forms.ImageList imlUpDownArrows;
         private System.Windows.Forms.Button btnToggle;
         private System.Windows.Forms.Label lblDetailHeading;
-        private System.Windows.Forms.Panel pnlTitleText;
+        private Ict.Common.Controls.TPnlGradient pnlTitleText;
         private Ict.Common.Controls.TPnlGradient pnlTitle;
         private Ict.Common.Controls.TPnlGradient pnlContent;
     }

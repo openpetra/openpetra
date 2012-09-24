@@ -99,6 +99,8 @@ namespace Ict.Common.Controls
         /// <summary/>
         private const TVisualStylesEnum DEFAULT_STYLE = TVisualStylesEnum.vsShepherd;
 
+        private XmlNode FActiveTaskItem = null;
+        
         #endregion
 
         #region Events (and related methods)
@@ -287,11 +289,14 @@ namespace Ict.Common.Controls
         /// <param name="ParentNumberText"></param>
         private void LoadTaskItems(XmlNode Node, int NumberingLevel, String ParentNumberText)
         {
+            this.SuspendLayout();
+            
             //If this is the base case, reset number of Tasks and clear previously painted Task Items
             if (NumberingLevel == 0)
             {
                 NumTasks = 0;
                 this.tPnlGradient1.Controls.Clear();
+                this.tPnlGradient1.Padding = new Padding(0, 0, VisualStyle.ContentPaddingRight, VisualStyle.ContentPaddingBottom);
             }
 
             int CurrentNumbering = 1;
@@ -306,54 +311,32 @@ namespace Ict.Common.Controls
                 if (TaskRegex.IsMatch(TaskNode.Name))
                 {
                     LinkLabel lblTaskItem = new LinkLabel();
-                    lblTaskItem.VisitedLinkColor = InternalVisualStyle.ContentActivatedFontColour;
-                    lblTaskItem.LinkColor = VisualStyle.ContentFontColour;
-                    //lblTaskItem.ActiveLinkColor = VisualStyle.ContentHoverFontColour;
+                    lblTaskItem.Tag = TaskNode;
+
+                    if (TaskNode != FActiveTaskItem) 
+                    {
+                        SetCommonNonActivatedLinkAppearance(lblTaskItem);
+                    }
+                    else
+                    {
+                        SetCommonActivatedLinkAppearance(lblTaskItem);
+                    }
+                    
                     lblTaskItem.Name = TaskNode.Name;
-                    lblTaskItem.BackColor = Color.Transparent;
                     lblTaskItem.AutoSize = true;
-                    lblTaskItem.Font = VisualStyle.ContentFont;
-                    lblTaskItem.LinkBehavior = LinkBehavior.HoverUnderline;
+                    lblTaskItem.Font = VisualStyle.ContentFont;                  
 
                     //@TODO: This line specifies the indentation by setting the location, however each level is indented the same amount
                     // Should allow the first level to be indented a different amount than the rest of the levels
-                    lblTaskItem.Location = new System.Drawing.Point(NumberingLevel * this.TaskIndentation, NumTasks * TaskHeight);
-
-                    //@TODO: Implement Hovering Behavior for links
-                    //Includes changing Link Color
-                    //Background color for hovering is already implemented
-
-                    //@TODO: Implement Standard Active Behavior for links
-                    //Includes adding or removing underline, changing link color
-                    //Background color for link is already implemented
-
+                    lblTaskItem.Location = new System.Drawing.Point(VisualStyle.ContentPaddingLeft + (NumberingLevel * this.TaskIndentation), VisualStyle.ContentPaddingTop + (NumTasks * TaskHeight));
 
                     lblTaskItem.LinkClicked += new LinkLabelLinkClickedEventHandler(lblTaskItem_LinkClicked);
                     lblTaskItem.Links[0].LinkData = TaskNode;
 
                     lblTaskItem.MouseEnter += new System.EventHandler(this.LinkLabelMouseEnter);
                     lblTaskItem.MouseLeave += new System.EventHandler(this.LinkLabelMouseLeave);
-                    lblTaskItem.Click += new System.EventHandler(this.ActivateClickedTaskItem);
                     
-                    if (VisualStyle.UseContentBackgroundColours)
-                    {
-                        if (this.IsActive(TaskNode))
-                        {
-                            lblTaskItem.BackColor = this.VisualStyle.ContentActivatedBackgroundColour;
-                        }
-                    }
-
-                    if (this.IsActive(TaskNode))
-                    {
-                        lblTaskItem.LinkColor = VisualStyle.ContentActivatedFontColour;
-                    }
-                    else
-                    {
-                        lblTaskItem.LinkColor = VisualStyle.ContentFontColour;
-                    }
-
                     lblTaskItem.Enabled = !IsDisabled(TaskNode);
-
 
                     if (this.IsVisible(TaskNode))
                     {
@@ -383,14 +366,80 @@ namespace Ict.Common.Controls
 
                 TaskNode = TaskNode.NextSibling;
             }
+            
+            this.ResumeLayout();
+        }
+        
+        void SetCommonActivatedLinkAppearance(LinkLabel ALinkLabel)
+        {
+            ALinkLabel.LinkColor = VisualStyle.ContentActivatedFontColour;
+            
+            if (VisualStyle.ContentActivatedFontUnderline) 
+            {
+                ALinkLabel.LinkBehavior = LinkBehavior.AlwaysUnderline;    
+            }
+            else
+            {
+                ALinkLabel.LinkBehavior = LinkBehavior.HoverUnderline;
+            }
+            
+            if (VisualStyle.UseContentBackgroundColours)                        
+            {
+                ALinkLabel.BackColor = VisualStyle.ContentActivatedBackgroundColour;
+            }
+            else
+            {
+                ALinkLabel.BackColor = Color.Transparent;                            
+            }
         }
 
+        void SetCommonNonActivatedLinkAppearance(LinkLabel ALinkLabel)
+        {
+            ALinkLabel.LinkColor = VisualStyle.ContentFontColour;                          
+            
+            if (VisualStyle.UseContentBackgroundColours)                        
+            {
+                ALinkLabel.BackColor = VisualStyle.ContentBackgroundColour;                        
+            }
+            else
+            {
+                ALinkLabel.BackColor = Color.Transparent;                            
+            }
+                
+            ALinkLabel.LinkBehavior = LinkBehavior.HoverUnderline;            
+        }
+        
         void lblTaskItem_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {            
+            LinkLabel ClickedLabel = (LinkLabel)sender;
+            FActiveTaskItem = (XmlNode)ClickedLabel.Tag;
+
+            RemoveActivatedLinkAppearenceFromNonActivated();
+            
+            // Change Link appearance to signalise to the user that the LinkLabel has been clicked
+            // Note: this is different from 'Activated' appearance
+            SetCommonActivatedLinkAppearance(ClickedLabel);
+
+            // Fire ItemActivation Event
             OnItemActivation((XmlNode)e.Link.LinkData, (LinkLabel)sender);
+            
+            // Repaint all Tasks to reflect their Activated/non-Activated state
+            // Note: This re-sets the Link appearance set above to 'Activated' appearance
+            LoadTaskItems();            
         }
 
-            #endregion
+        void RemoveActivatedLinkAppearenceFromNonActivated()
+        {
+            foreach (Control Task in tPnlGradient1.Controls) 
+            {
+                if (Task.Tag != FActiveTaskItem) 
+                {
+                    SetCommonNonActivatedLinkAppearance((LinkLabel)Task);
+                }
+            }
+        }
+        
+        #endregion
 
         #region GetTaskBy* functions
 
@@ -586,15 +635,6 @@ namespace Ict.Common.Controls
         }
         
         /// <summary>
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns>Boolean whether given Xml Node has the attribute Active set to false</returns>
-        public bool IsActive(XmlNode node)
-        {
-            return AttributeTrue(node, "Active");
-        }
-
-        /// <summary>
         /// Returns whether given XmlNode has the attribute Enabled set to false
         /// </summary>
         /// <param name="node"></param>
@@ -722,30 +762,34 @@ namespace Ict.Common.Controls
 
         #endregion
 
-        #region Event listeners/Handlers
+        #region Event Handlers
 
-        //Event Listeners for MouseHover on LinkLabel
         /// <summary>
-        /// Event Listener for changing a TaskList item when the mouse hovers
+        /// Event Handler for changing the appearence of a TaskList item when the mouse hovers over the TaskItem
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         void LinkLabelMouseEnter(object sender, System.EventArgs e)
         {
             LinkLabel lbl = (LinkLabel)sender;
+            XmlNode node = this.GetTaskByName(lbl.Name);
 
-            if (this.VisualStyle.UseContentBackgroundColours)
+            if (node != FActiveTaskItem) 
             {
-                lbl.BackColor = this.VisualStyle.ContentHoverBackgroundColour;
-            }
-            else
-            {
-                lbl.LinkColor = this.VisualStyle.ContentHoverFontColour;
+                if (this.VisualStyle.UseContentBackgroundColours)
+                {
+                    
+                    lbl.BackColor = this.VisualStyle.ContentHoverBackgroundColour;
+                }
+                else
+                {
+                    lbl.LinkColor = this.VisualStyle.ContentHoverFontColour;
+                }
             }
         }
 
         /// <summary>
-        /// Event Listener for reverting TaskList item style when the mouse leaves
+        /// Event Handler for reverting the appearence of TaskList item when the mouse leaves the TaskItem
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -754,14 +798,14 @@ namespace Ict.Common.Controls
             LinkLabel lbl = (LinkLabel)sender;
             XmlNode node = this.GetTaskByName(lbl.Name);
 
-            if ((node.Attributes["Active"] != null) && TrueRegex.IsMatch(node.Attributes["Active"].Value))
+            if (node == FActiveTaskItem) 
             {
                 if (this.VisualStyle.UseContentBackgroundColours)
                 {
                     lbl.BackColor = this.VisualStyle.ContentActivatedBackgroundColour;
                 }
 
-                lbl.LinkColor = this.VisualStyle.ContentHoverFontColour;
+                lbl.LinkColor = this.VisualStyle.ContentActivatedFontColour;
             }
             else
             {
@@ -772,34 +816,6 @@ namespace Ict.Common.Controls
 
                 lbl.LinkColor = this.VisualStyle.ContentFontColour;
             }
-        }
-
-        /// <summary>
-        /// Event listener to change TaskList item style when the item is clicked
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void ActivateClickedTaskItem(object sender, EventArgs e)
-        {
-            LinkLabel lbl = (LinkLabel)sender;
-
-            ClearAllAttributeOfType("Active", this.MasterXmlNode);
-            //TODO: there has got to be a non-ambiguous way to link labels with their respective node. ~~sethb
-            XmlNode node = this.GetTaskByName(lbl.Name);
-
-            //TODO: passing `true` to run `LoadTaskItems` runs a lot of unnessecary code: just need to clear background colors for all link labels
-            //TODO: should find manual way to clear bg colorus for all link labels; then pass `false` below and call manual method afterwards.
-            ChangeAttribute(node, "Active", "True", true);  
-        }
-
-        /// <summary>
-        /// Event listener to call delegates when TaskList item is clicked.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void TaskItemActivated(object sender, EventArgs e)
-        {
-            LinkLabel lbl = (LinkLabel)sender;
         }
 
         #endregion

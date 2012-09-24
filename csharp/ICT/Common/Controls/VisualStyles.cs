@@ -121,6 +121,106 @@ namespace Ict.Common.Controls
             }
         }
 
+        private Color InternalContentActivationEventFontColour;
+        /// <summary>The ContentActivationEventFontColour property gets the value of the InternalContentActivationEventFontColour</summary>
+        /// <value> The ContentActivationEventFontColour property represents the colour of activated content text while the activion is happening (i.e. in the moment when the 'click' for an activation happens)</value>
+        public Color ContentActivationEventFontColour {
+            get
+            {
+                return InternalContentActivationEventFontColour;
+            }
+        }
+
+        private bool InternalContentActivatedFontUnderline = true;
+        /// <summary>The ContentActivatedFontUnderline property gets the value of the InternalContentActivatedFontUnderline</summary>
+        /// <value> The ContentActivatedFontUnderline property specifies whether an activated content text should be shown underlined, or not.</value>
+        public bool ContentActivatedFontUnderline {
+            get
+            {
+                return InternalContentActivatedFontUnderline;
+            }
+        }
+        
+        private int InternalTitlePaddingTop;
+        /// <summary>The TitlePaddingTop property gets the value of the InternalTitlePaddingTop</summary>
+        /// <value> The TitlePaddingTop property represents the padding in pixels that is added before the Title (from the top)</value>       
+        public int TitlePaddingTop {
+            get
+            {
+                return InternalTitlePaddingTop;
+            }
+        }
+        
+        private int InternalTitlePaddingLeft;
+        /// <summary>The TitlePaddingLeft property gets the value of the InternalTitlePaddingLeft</summary>
+        /// <value> The TitlePaddingLeft property represents the padding in pixels that is added before the Title (from the left)</value>       
+        public int TitlePaddingLeft {
+            get
+            {
+                return InternalTitlePaddingLeft;
+            }
+        }
+        
+        private int InternalTitlePaddingBottom;
+        /// <summary>The TitlePaddingBottom property gets the value of the InternalTitlePaddingBottom</summary>
+        /// <value> The TitlePaddingBottom property represents the padding in pixels that is added after the Title (at the bottom)</value>       
+        public int TitlePaddingBottom {
+            get
+            {
+                return InternalTitlePaddingBottom;
+            }
+        }
+        
+        private int InternalTitlePaddingRight;
+        /// <summary>The TitlePaddingRight property gets the value of the InternalTitlePaddingRight</summary>
+        /// <value> The TitlePaddingRight property represents the padding in pixels that is added after the Title (to the right)</value>       
+        public int TitlePaddingRight {
+            get
+            {
+                return InternalTitlePaddingRight;
+            }
+        }
+
+        private int InternalContentPaddingTop;
+        /// <summary>The ContentPaddingTop property gets the value of the InternalContentPaddingTop</summary>
+        /// <value> The ContentPaddingTop property represents the padding in pixels that is added before the content (from the top)</value>       
+        public int ContentPaddingTop {
+            get
+            {
+                return InternalContentPaddingTop;
+            }
+        }
+        
+        private int InternalContentPaddingLeft;
+        /// <summary>The ContentPaddingLeft property gets the value of the InternalContentPaddingLeft</summary>
+        /// <value> The ContentPaddingLeft property represents the padding in pixels that is added before the content (from the left)</value>       
+        public int ContentPaddingLeft {
+            get
+            {
+                return InternalContentPaddingLeft;
+            }
+        }
+        
+        private int InternalContentPaddingBottom;
+        /// <summary>The ContentPaddingBottom property gets the value of the InternalContentPaddingBottom</summary>
+        /// <value> The ContentPaddingBottom property represents the padding in pixels that is added after the content (at the bottom)</value>       
+        public int ContentPaddingBottom {
+            get
+            {
+                return InternalContentPaddingBottom;
+            }
+        }
+        
+        private int InternalContentPaddingRight;
+        /// <summary>The ContentPaddingRight property gets the value of the InternalContentPaddingRight</summary>
+        /// <value> The ContentPaddingRight property represents the padding in pixels that is added after the content (to the right)</value>       
+        public int ContentPaddingRight {
+            get
+            {
+                return InternalContentPaddingRight;
+            }
+        }
+        
         private Color InternalContentHoverFontColour;
         /// <summary>The ContentHoverFontColour property gets the value of the InternalContentHoverFontColour</summary>
         /// <value> The ContentHOverFontColour property represents the colour of the content text when the mouse hovers over it</value>
@@ -294,18 +394,28 @@ namespace Ict.Common.Controls
                     InternalTitleFont = new System.Drawing.Font("Verdana", 13, System.Drawing.FontStyle.Bold);
                     InternalTitleFontColour = Color.FromArgb(21, 66, 139);     // Color.FromArgb(89, 101, 165)
                     InternalHoverTitleFontColour = InternalTitleFontColour;  //  Color.FromArgb(20, 65, 142)
-                    InternalTitleHeight = 100;
+                    InternalTitleHeight = 180;
 
                     //ContentFont Variables
-                    //underline hover is default
                     InternalContentFont = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
                     InternalContentFontColour = Color.FromArgb(21, 66, 139);  // Color.FromArgb(89, 101, 165)
-                    InternalContentHoverFontColour = Color.FromArgb(32, 123, 231);   // Color.FromArgb(37, 101, 212);
+                    InternalContentHoverFontColour = Color.FromArgb(32, 101, 215);   // Color.FromArgb(37, 101, 212);
                     InternalContentActivatedFontColour = InternalContentHoverFontColour;
+                    InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
 
+                    // Padding Variables
+                    InternalTitlePaddingTop = 0;
+                    InternalTitlePaddingLeft = 3;
+                    InternalTitlePaddingRight = 8;
+                    InternalTitlePaddingBottom = 3;
+                    InternalContentPaddingTop = 8;
+                    InternalContentPaddingLeft = 0;
+                    InternalContentPaddingRight = 5;
+                    InternalContentPaddingBottom = 8;
+                    
                     //Gradient Variables
                     InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
-                    InternalPanelGradientEnd = Color.FromArgb(190, 212, 254);
+                    InternalPanelGradientEnd = Color.FromArgb(183, 202, 226);
                     InternalPanelGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
                     InternalContentGradientStart = Color.FromArgb(212, 228, 254);
                     InternalContentGradientEnd = Color.FromArgb(205, 218, 254);
@@ -330,7 +440,6 @@ namespace Ict.Common.Controls
                     InternalTitleHeight = 100;
 
                     //ContentFont Variables
-                    //underline hover is default
                     InternalContentFont = new System.Drawing.Font("Verdana", 7);
                     InternalContentFontColour = Color.FromArgb(62, 117, 225);
                     InternalContentHoverFontColour = Color.FromArgb(90, 155, 252);
@@ -395,22 +504,23 @@ namespace Ict.Common.Controls
                     InternalTitleHeight = 100;
 
                     //ContentFont Variables
-                    //underline hover is default
                     InternalContentFont = new System.Drawing.Font("Verdana", 8);
                     InternalContentFontColour = Color.FromArgb(0, 0, 0);
                     InternalContentHoverFontColour = Color.FromArgb(60, 60, 60);
                     InternalContentActivatedFontColour = Color.FromArgb(255, 255, 255);
-
+                    InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
+                    InternalContentActivatedFontUnderline = false;
+                    
                     //Gradient Variables
                     InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
                     InternalPanelGradientEnd = Color.FromArgb(255, 255, 255);
                     InternalPanelGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
 
                     //Background variables
-                    InternalContentBackgroundColour = Color.FromArgb(255, 255, 255);
                     InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
-                    InternalContentHoverBackgroundColour = Color.FromArgb(210, 210, 210);
-                    InternalContentActivatedBackgroundColour = Color.FromArgb(0, 80, 160);
+                    InternalContentBackgroundColour = Color.FromArgb(255, 255, 255);
+                    InternalContentHoverBackgroundColour = Color.FromArgb(255, 255, 255);  
+                    InternalContentActivatedBackgroundColour = Color.FromArgb(0, 128, 192);
 
 
                     //Layout Variables
