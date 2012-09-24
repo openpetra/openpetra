@@ -92,10 +92,10 @@ namespace Ict.Tools.NAntTasks
                 exeName = exeName.Replace("nunit-console-x86.exe", "nunit-console.exe");
             }
 
-            process.StartInfo.FileName = "\"" + exeName + "\"";
+            process.StartInfo.FileName = exeName;
 
             process.StartInfo.Arguments = "\"" + FAssemblyName + "\"";
-            process.StartInfo.WorkingDirectory = "\"" + Path.GetDirectoryName(FAssemblyName) + "\"";
+            process.StartInfo.WorkingDirectory = Path.GetDirectoryName(FAssemblyName);
 
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.StartInfo.UseShellExecute = false;
