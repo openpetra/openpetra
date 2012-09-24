@@ -95,9 +95,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     TVerificationResultCollection VerificationResult;
 
                     MExtractMasterTable SubmitDT = new MExtractMasterTable();
-                    SubmitDT.Merge(FMainDS.MExtractMaster.GetChangesTyped());
-
-                    if (SubmitDT == null)
+                    if (FMainDS.MExtractMaster.GetChangesTyped() != null)
+                    {
+                        SubmitDT.Merge(FMainDS.MExtractMaster.GetChangesTyped());
+                    }
+                    else
                     {
                         // There is nothing to be saved.
                         // Update UI
