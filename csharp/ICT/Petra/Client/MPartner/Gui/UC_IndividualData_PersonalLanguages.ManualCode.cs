@@ -193,8 +193,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             this.DeletePmPersonLanguage();
         }
-        
-        
+
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
@@ -222,7 +221,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // no message to be shown after deletion
             ACompletionMessage = "";
-            
+
             try
             {
                 ARowToDelete.Delete();
@@ -253,7 +252,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             string ACompletionMessage)
         {
             DoRecalculateScreenParts();
-            
+
             if (grdDetails.Rows.Count <= 1)
             {
                 // hide details part and disable buttons if no record in grid (first row for headings)
@@ -261,7 +260,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 pnlDetails.Visible = false;
             }
         }
-        
+
         private void DoRecalculateScreenParts()
         {
             OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {
