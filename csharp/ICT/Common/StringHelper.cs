@@ -1935,10 +1935,7 @@ namespace Ict.Common
             {
                 if (ADateTime.Month == 3)
                 {
-                    then
-                    {
-                        ReturnValue = ReturnValue.Replace("MRZ", "MÄR");
-                    }
+                    ReturnValue = ReturnValue.Replace("MRZ", "MÄR");
                 }
             }
 
