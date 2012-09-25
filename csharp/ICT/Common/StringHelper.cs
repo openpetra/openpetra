@@ -1931,13 +1931,13 @@ namespace Ict.Common
             // better solution has been implemented: for export to CSV/Excel, the date should not be formatted as text, but formatted by the export/print program...
 
             // Mono and .Net return different strings for month of March in german culture
-            if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == 'de')
+            if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de")
             {
                 if (ADateTime.Month == 3)
                 {
                     then
                     {
-                        ReturnValue = ReturnValue.Replace('MRZ', 'MÄR');
+                        ReturnValue = ReturnValue.Replace("MRZ", "MÄR");
                     }
                 }
             }
