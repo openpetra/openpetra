@@ -917,7 +917,7 @@ namespace Ict.Common.Controls
             }
             
             this.lblDetailHeading.Font = style.TitleFont;
-            this.lblDetailHeading.Height = style.TitleFont.Height;
+            this.lblDetailHeading.Height = style.TitleFont.Height + style.TitleHeightAdjustment;
             
             this.lblDetailHeading.ForeColor = style.TitleFontColour;
             this.tipCollapseExpandHints.ForeColor = style.TitleFontColourHover;

@@ -105,7 +105,7 @@ namespace Ict.Common.Controls
                 new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDetailHeading.ForeColor = System.Drawing.Color.MediumBlue;
             this.lblDetailHeading.Parent = pnlTitleText;
-            this.lblDetailHeading.Location = new System.Drawing.Point(2, 2);
+            this.lblDetailHeading.Location = new System.Drawing.Point(2, 0);
             this.lblDetailHeading.Name = "lblDetailHeading";
             this.lblDetailHeading.Size = new System.Drawing.Size(395, 18);
             this.lblDetailHeading.TabIndex = 1;
@@ -126,10 +126,10 @@ namespace Ict.Common.Controls
             this.btnToggle.Font = new System.Drawing.Font("Verdana", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnToggle.ImageIndex = 0;
             this.btnToggle.ImageList = this.imlUpDownArrows;
-            this.btnToggle.Location = new System.Drawing.Point(408, 5);
+            this.btnToggle.Location = new System.Drawing.Point(408, 0);
             this.btnToggle.Name = "btnToggle";
             this.btnToggle.Parent = pnlTitleText;
-            this.btnToggle.Size = new System.Drawing.Size(18, 18);
+            this.btnToggle.Size = new System.Drawing.Size(16, 16);
             this.btnToggle.TabIndex = 0;
             this.btnToggle.TextAlign = System.Drawing.ContentAlignment.TopLeft;
             this.tipCollapseExpandHints.SetToolTip(this.btnToggle, "Expands / collapses the panel");
@@ -163,18 +163,16 @@ namespace Ict.Common.Controls
                                                       System.Windows.Forms.AnchorStyles.Right)));
             this.pnlContent.BackColor = System.Drawing.SystemColors.Info;
             this.pnlContent.Font = new System.Drawing.Font("Verdana", 6.75F);
-            this.pnlContent.Location = new System.Drawing.Point(0, 19);
+            this.pnlContent.Location = new System.Drawing.Point(0, 14);
             this.pnlContent.Padding = new System.Windows.Forms.Padding(0, 9, 0, 0);
             this.pnlContent.Name = "pnlContent";
-            this.pnlContent.Size = new System.Drawing.Size(424, 133);
+            this.pnlContent.Size = new System.Drawing.Size(424, 135);
             this.pnlContent.TabIndex = 2;
             //
             // TPnlCollapsible
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.pnlTitle);
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "TPnlCollapsible";

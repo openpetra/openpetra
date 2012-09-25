@@ -343,6 +343,16 @@ namespace Ict.Common.Controls
             }
         }
         
+        private int InternalTitleHeightAdjustment;
+        /// <summary> The TitleHeightAdjustment property gets the value of the InternalTitleHeightAdjustment</summary>
+        /// <value> The TitleHeightAdjustment property allows adjustment of the height of the Title</value>
+        public int TitleHeightAdjustment {
+            get
+            {
+                return InternalTitleHeightAdjustment;
+            }
+        }        
+        
         private bool InternalAutomaticNumbering;
         /// <summary>The AutomaticNumbering property gets the value of the InternalAutomaticNumbering</summary>
         /// <value> The AutomaticNumbering property determines if automatic numbering is on</value>
@@ -384,29 +394,29 @@ namespace Ict.Common.Controls
             {
                 case TVisualStylesEnum.vsAccordionPanel:
                     //TitleFont Variables
-                    InternalTitleFont = new System.Drawing.Font("Verdana", 13, System.Drawing.FontStyle.Bold);
-                    InternalTitleFontColour = Color.FromArgb(21, 66, 139);     // Color.FromArgb(89, 101, 165)
-                    InternalTitleFontColourHover = InternalTitleFontColour;  //  Color.FromArgb(20, 65, 142)
+                    InternalTitleFont = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
+                    InternalTitleFontColour = Color.FromArgb(21, 66, 139);
+                    InternalTitleFontColourHover = Color.FromArgb(32, 101, 215);
 
                     //ContentFont Variables
                     InternalContentFont = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
-                    InternalContentFontColour = Color.FromArgb(21, 66, 139);  // Color.FromArgb(89, 101, 165)
-                    InternalContentHoverFontColour = Color.FromArgb(32, 101, 215);   // Color.FromArgb(37, 101, 212);
+                    InternalContentFontColour = Color.FromArgb(21, 66, 139);
+                    InternalContentHoverFontColour = Color.FromArgb(32, 101, 215);
                     InternalContentActivatedFontColour = InternalContentHoverFontColour;
                     InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
 
                     // Padding Variables
-                    InternalTitlePaddingTop = 0;
-                    InternalTitlePaddingLeft = 3;
+                    InternalTitlePaddingTop = 4;
+                    InternalTitlePaddingLeft = 4;
                     InternalTitlePaddingRight = 8;
-                    InternalTitlePaddingBottom = 3;
+                    InternalTitlePaddingBottom = 0;
                     InternalContentPaddingTop = 8;
                     InternalContentPaddingLeft = 0;
                     InternalContentPaddingRight = 10;
                     InternalContentPaddingBottom = 5;
                     
                     //Gradient Variables
-                    InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
+                    InternalTitleGradientStart = Color.FromArgb(205, 221, 242);
                     InternalTitleGradientEnd = Color.FromArgb(183, 202, 226);
                     InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
                     InternalContentGradientStart = Color.FromArgb(212, 228, 254);
@@ -414,8 +424,9 @@ namespace Ict.Common.Controls
                     InternalContentGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
 
                     //Layout Variables
-                    InternalTaskIndentation = 30;
+                    InternalTaskIndentation = 20;
                     InternalTaskHeight = 18;
+                    InternalTitleHeightAdjustment = 0;
                     InternalAutomaticNumbering = false;
 
                     //bool variables
@@ -437,7 +448,7 @@ namespace Ict.Common.Controls
                     InternalContentActivatedFontColour = InternalContentFontColour;
 
                     // Padding Variables
-                    InternalTitlePaddingTop = 5;
+                    InternalTitlePaddingTop = 6;
                     InternalTitlePaddingLeft = 10;
                     InternalTitlePaddingRight = 8;
                     InternalTitlePaddingBottom = 0;
@@ -456,8 +467,9 @@ namespace Ict.Common.Controls
                     InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
 
                     //Layout Variables
-                    InternalTaskIndentation = 15;
+                    InternalTaskIndentation = 18;
                     InternalTaskHeight = 18;
+                    InternalTitleHeightAdjustment = 3;
                     InternalAutomaticNumbering = false;
 
                     //bool variables
@@ -476,7 +488,7 @@ namespace Ict.Common.Controls
 
 
                     // Padding Variables
-                    InternalTitlePaddingTop = 7;
+                    InternalTitlePaddingTop = 6;
                     InternalTitlePaddingLeft = 2;
                     InternalTitlePaddingRight = 8;
                     InternalTitlePaddingBottom = 0;
@@ -497,6 +509,7 @@ namespace Ict.Common.Controls
                     //Layout Variables
                     InternalTaskIndentation = 25;
                     InternalTaskHeight = 20;
+                    InternalTitleHeightAdjustment = 3;
                     InternalAutomaticNumbering = false;
 
                     //bool variables
@@ -545,6 +558,7 @@ namespace Ict.Common.Controls
                     //Layout Variables
                     InternalTaskIndentation = 8;
                     InternalTaskHeight = 20;
+                    InternalTitleHeightAdjustment = 2;
                     InternalAutomaticNumbering = true;
 
                     //bool variables
@@ -554,24 +568,37 @@ namespace Ict.Common.Controls
                     break;
 
                 case TVisualStylesEnum.vsHorizontalCollapse:
-                    //TitleFont Variables
-                    InternalTitleFont = new System.Drawing.Font("Tahoma", 13, System.Drawing.FontStyle.Bold);
-                    InternalTitleFontColour = Color.FromArgb(20, 65, 142);
-                    InternalTitleFontColourHover = InternalTitleFontColour;
+                     //TitleFont Variables
+                    InternalTitleFont = new System.Drawing.Font("Verdana", 13, System.Drawing.FontStyle.Bold);
+                    InternalTitleFontColour = Color.FromArgb(21, 66, 139);
+                    InternalTitleFontColourHover = Color.FromArgb(32, 101, 215);
 
                     //ContentFont Variables
+                    InternalContentFont = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
+                    InternalContentFontColour = Color.FromArgb(21, 66, 139);
+                    InternalContentHoverFontColour = Color.FromArgb(32, 101, 215);
+                    InternalContentActivatedFontColour = InternalContentHoverFontColour;
+                    InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
 
-                    //BackgroundVariables
-                    InternalContentBackgroundColour = Color.FromArgb(212, 221, 249);
-                    InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
-
+                    // Padding Variables
+                    InternalTitlePaddingTop = 1;
+                    InternalTitlePaddingLeft = 3;
+                    InternalTitlePaddingRight = 8;
+                    InternalTitlePaddingBottom = 0;
+                    InternalContentPaddingTop = 8;
+                    InternalContentPaddingLeft = 0;
+                    InternalContentPaddingRight = 10;
+                    InternalContentPaddingBottom = 5;
+                    
                     //Gradient Variables
                     InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
-                    InternalTitleGradientEnd = Color.FromArgb(190, 212, 254);
+                    InternalTitleGradientEnd = Color.FromArgb(183, 202, 226);
                     InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
 
                     //Layout Variables
                     InternalTaskIndentation = 30;
+                    InternalTaskHeight = 18;
+                    InternalTitleHeightAdjustment = 5;
                     InternalAutomaticNumbering = false;
 
                     //bool variables
@@ -579,7 +606,8 @@ namespace Ict.Common.Controls
                     UseContentGradient = false;
                     UseContentBackgroundColours = false;
                     break;
-            }
+                    
+           }
         }
         
         #endregion
