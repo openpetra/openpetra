@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       Chris Thomas
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,7 +52,7 @@ namespace Tests.MFinance.Server.Gift
     {
         Int32 FLedgerNumber = -1;
 		GiftBatchTDS FMainDS = null;
-      	int FRecurringBatchNumberToDelete = 2;
+      	int FRecurringBatchNumberToDelete;
 
         /// <summary>
         /// open database connection or prepare other things for this test
@@ -80,15 +80,44 @@ namespace Tests.MFinance.Server.Gift
         [Test]
         public void TestDeleteGiftBatch()
         {
+        	Int64 donorKey = 43005001;
+        	Int64 recipKey = 43000000;
+        	int giftTransNumber = 1;
+        	int giftTranDetailNumber = 1;
+        	decimal giftAmount = 100.50M;
+        	
+            TVerificationResultCollection VerficationResults = null;
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
             
-            FMainDS = new GiftBatchTDS();
-
-            ARecurringGiftBatchAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, FRecurringBatchNumberToDelete, Transaction);
-
-            ARecurringGiftAccess.LoadViaARecurringGiftBatch(FMainDS, FLedgerNumber, FRecurringBatchNumberToDelete,Transaction);
+            //Create the recurring gift batch
+        	FMainDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(FLedgerNumber);
             
-            ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(FMainDS, FLedgerNumber, FRecurringBatchNumberToDelete, Transaction);
+            FRecurringBatchNumberToDelete = FMainDS.ARecurringGiftBatch[0].BatchNumber;
+            
+            //Create the recurring gift batch's single gift header
+            ARecurringGiftRow newRow = FMainDS.ARecurringGift.NewRowTyped(true);
+            
+            newRow.LedgerNumber = FLedgerNumber;
+            newRow.BatchNumber = FRecurringBatchNumberToDelete;
+            newRow.DonorKey = donorKey;
+            newRow.GiftTransactionNumber = giftTransNumber;
+            newRow.LastDetailNumber = giftTransNumber;
+
+            FMainDS.ARecurringGift.Rows.Add(newRow);
+            
+            //Create the recurring gift batch's single gift detail
+            ARecurringGiftDetailRow newDetailRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
+            
+            newDetailRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
+            newDetailRow.LedgerNumber = FLedgerNumber;
+            newDetailRow.BatchNumber = FRecurringBatchNumberToDelete;
+            newDetailRow.GiftTransactionNumber = giftTransNumber;
+            newDetailRow.DetailNumber = giftTranDetailNumber;
+            newDetailRow.RecipientKey = recipKey;
+            newDetailRow.GiftAmount = giftAmount;
+
+            FMainDS.ARecurringGiftDetail.Rows.Add(newDetailRow);
             
             DBAccess.GDBAccessObj.RollbackTransaction();
 
@@ -113,14 +142,9 @@ namespace Tests.MFinance.Server.Gift
 			// Delete the recurring batch row.
 			FMainDS.AGiftBatch.Rows[0].Delete();
 			
-			Assert.Throws(Is.InstanceOf(typeof(Exception)), new TestDelegate(SaveChanges));                    
+			GiftBatchTDSAccess.SubmitChanges(FMainDS, out VerficationResults);
 
         }
       
-        private void SaveChanges()
-        {
-        	FMainDS.AcceptChanges();
-        }
-
     }
 }
