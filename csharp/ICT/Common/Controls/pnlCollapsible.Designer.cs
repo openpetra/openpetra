@@ -76,6 +76,8 @@ namespace Ict.Common.Controls
             this.pnlTitle.Location = new System.Drawing.Point(0, 0);
             this.pnlTitle.Name = "pnlTitle";
             this.pnlTitle.Size = new System.Drawing.Size(424, 150);
+            this.pnlTitle.MouseLeave += new System.EventHandler(this.BtnToggleMouseLeave);
+            this.pnlTitle.MouseEnter += new System.EventHandler(this.BtnToggleMouseEnter);
             this.pnlTitle.TabIndex = 2;
             //
             // pnlTitleText
@@ -92,9 +94,7 @@ namespace Ict.Common.Controls
             this.pnlTitleText.TabIndex = 1;
             this.pnlTitleText.Parent = pnlTitle;
             this.tipCollapseExpandHints.SetToolTip(this.pnlTitleText, "Click here to expand / collapse the panel");
-            this.pnlTitleText.MouseLeave += new System.EventHandler(this.BtnToggleMouseLeave);
             this.pnlTitleText.Click += new System.EventHandler(this.BtnToggleClick);
-            this.pnlTitleText.MouseEnter += new System.EventHandler(this.BtnToggleMouseEnter);
             //
             // lblDetailHeading
             //
@@ -112,6 +112,8 @@ namespace Ict.Common.Controls
             this.lblDetailHeading.Text = "Collapsible Panel";            
             this.lblDetailHeading.AutoEllipsis = true;
             this.tipCollapseExpandHints.SetToolTip(this.lblDetailHeading, "Click here to expand / collapse the panel");
+            this.lblDetailHeading.MouseEnter += new System.EventHandler(this.BtnToggleMouseEnter);
+            this.lblDetailHeading.MouseLeave += new System.EventHandler(this.BtnToggleMouseLeave);
             this.lblDetailHeading.Click += new System.EventHandler(this.BtnToggleClick);
             //
             // btnToggle
