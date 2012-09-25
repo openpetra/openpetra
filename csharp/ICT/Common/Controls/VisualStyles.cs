@@ -594,6 +594,9 @@ namespace Ict.Common.Controls
                     InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
                     InternalTitleGradientEnd = Color.FromArgb(183, 202, 226);
                     InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+                    InternalContentGradientStart = Color.FromArgb(212, 228, 254);
+                    InternalContentGradientEnd = Color.FromArgb(205, 218, 254);
+                    InternalContentGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
 
                     //Layout Variables
                     InternalTaskIndentation = 30;
@@ -603,7 +606,7 @@ namespace Ict.Common.Controls
 
                     //bool variables
                     UseTitleGradient = true;
-                    UseContentGradient = false;
+                    UseContentGradient = true;
                     UseContentBackgroundColours = false;
                     break;
                     
