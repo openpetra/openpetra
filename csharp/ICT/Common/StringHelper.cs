@@ -1930,13 +1930,17 @@ namespace Ict.Common
             // and http:www.nntp.perl.org/group/perl.datetime/2003/05/msg2250.html
             // better solution has been implemented: for export to CSV/Excel, the date should not be formatted as text, but formatted by the export/print program...
 
-            /* if CultureInfo.CurrentCulture.TwoLetterISOLanguageName = 'de' then
-             * begin
-             * if (ADateTime.Month = 3) then
-             * begin
-             * result := Result.Replace('MRZ', 'M?R');
-             * end;
-             * end; */
+            // Mono and .Net return different strings for month of March in german culture
+            if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == 'de')
+            {
+                if (ADateTime.Month == 3)
+                {
+                    then
+                    {
+                        ReturnValue = ReturnValue.Replace('MRZ', 'MÄR');
+                    }
+                }
+            }
 
             // todo use short month names from local array, similar to GetLongMonthName
             if (ATimeWithSeconds)
