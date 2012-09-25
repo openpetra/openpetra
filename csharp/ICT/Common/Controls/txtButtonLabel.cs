@@ -2040,7 +2040,7 @@ namespace Ict.Common.Controls
     /// </summary>
     /// <param name="LabelStringIn">Current Label text</param>
     /// <param name="TextBoxStringIn">Current TextBox text</param>
-    /// <param name="LabelStringOut">Updated Label text
+    /// <param name="LabelStringOut">Updated Label text</param>
     /// <param name="TextBoxStringOut">Updated TextBox text</param>
     public delegate void TDelegateButtonClick(System.String LabelStringIn,
         System.String TextBoxStringIn,

@@ -451,7 +451,7 @@ namespace {#NAMESPACE}
     /// We ignore any event that is leaving to go to row # -1
     /// We validate on the first of a cascade of events that leave to a real row.
     /// We detect a duplicate event by testing for the elapsed time since the event we validated on...
-    /// If the elapsed time is < 2 ms it is a duplicate, because repeat keypresses are separated by 30 ms
+    /// If the elapsed time is &lt; 2 ms it is a duplicate, because repeat keypresses are separated by 30 ms
     /// and these duplicates come with a gap of fractions of a microsecond, so 2 ms is a very long time!
     /// All we do is store the previous row from/to and the previous UTC time
     /// These three form level variables are totally private to this event call.
