@@ -61,7 +61,7 @@ namespace ControlTestBench
             this.txtYaml.Name = "txtYaml";
             this.txtYaml.Size = new System.Drawing.Size(100, 20);
             this.txtYaml.TabIndex = 2;
-            this.txtYaml.Text = "testYaml_AP.yaml";
+            this.txtYaml.Text = "testYaml_Shepherd.yaml";
             // 
             // label1
             // 

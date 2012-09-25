@@ -63,6 +63,7 @@ namespace Ict.Common.Controls
             //
             // tPnlGradient1
             //
+            this.tPnlGradient1.AutoScroll = true;
             this.tPnlGradient1.AutoSize = true;
             this.tPnlGradient1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tPnlGradient1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;

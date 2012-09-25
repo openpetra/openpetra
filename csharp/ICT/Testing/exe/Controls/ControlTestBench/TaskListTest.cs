@@ -155,6 +155,8 @@ namespace ControlTestBench
                 this.Controls.Remove(ExistingTaskListCtrl);
             }
 
+            AControl.Dock = DockStyle.Left;
+            
             this.Controls.Add(AControl);
         }
 
@@ -183,6 +185,6 @@ namespace ControlTestBench
         void ATaskList_ItemActivation(XmlNode ATaskListNode, LinkLabel AItemClicked)
         {
             MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
-        }
+        }        
     }
 }

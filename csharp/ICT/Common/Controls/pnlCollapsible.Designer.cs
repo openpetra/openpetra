@@ -161,7 +161,7 @@ namespace Ict.Common.Controls
                                                       System.Windows.Forms.AnchorStyles.Right)));
             this.pnlContent.BackColor = System.Drawing.SystemColors.Info;
             this.pnlContent.Font = new System.Drawing.Font("Verdana", 6.75F);
-            this.pnlContent.Location = new System.Drawing.Point(0, 24);
+            this.pnlContent.Location = new System.Drawing.Point(0, 28);
             this.pnlContent.Margin = new System.Windows.Forms.Padding(0);
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Size = new System.Drawing.Size(424, 126);
@@ -182,7 +182,7 @@ namespace Ict.Common.Controls
             this.ResumeLayout(false);
             this.PerformLayout();
         }
-
+        
         private System.Windows.Forms.ToolTip tipCollapseExpandHints;
         private System.Windows.Forms.ImageList imlUpDownArrows;
         private System.Windows.Forms.Button btnToggle;
