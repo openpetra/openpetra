@@ -775,9 +775,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 catch (Exception Exp)
                 {
                     TLogging.Log("Exception in TUC_PartnerInfo.UpdateUI: " + Exp.ToString());
-#if DEBUGMODE
-                    MessageBox.Show("Exception in TUC_PartnerInfo.UpdateUI: " + Exp.ToString());
-#endif
                 }
             }
         }

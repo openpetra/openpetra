@@ -103,12 +103,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         {
             TDBTransaction ReadTransaction;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": LoadData called.");
-            }
-#endif
+//          TLogging.LogAtLevel(9, (this.GetType().FullName + ": LoadData called.");
 
             // create the FMainDS DataSet that will later be passed to the Client
             FMainDS = new FieldOfServiceTDS(DATASETNAME);

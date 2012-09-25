@@ -78,14 +78,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             ANewExtractId = -1;
             AExtractAlreadyExists = false;
             AVerificationResults = null;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("CreateNewExtract called!");
-            }
-#endif
-
+//          TLogging.LogAtLevel(9, "CreateNewExtract called!");
             WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
@@ -123,24 +116,11 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     ReturnValue = false;
                 }
             }
-#if DEBUGMODE
-            catch (Exception e)
+            catch (Exception /* e */)
             {
                 ReturnValue = false;
-
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine(
-                        "TExtractsHandling.CreateNewExtract: Exception occured, Transaction ROLLED BACK. Exception: " +
-                        e.ToString());
-                }
+//              TLogging.LogAtLevel(8, "TExtractsHandling.CreateNewExtract: Exception occured, Transaction ROLLED BACK. Exception: " + e.ToString());
             }
-#else
-            catch (Exception)
-            {
-                ReturnValue = false;
-            }
-#endif
 
             if (ReturnValue && NewTransaction)
             {
@@ -208,17 +188,11 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     Success = false;
                 }
             }
-#if DEBUGMODE
             catch (Exception Exp)
             {
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("TExtractsHandling.DeleteExtract: Exception occured. Exception: " + Exp.ToString());
-                }
-
+                TLogging.LogAtLevel(8, "TExtractsHandling.DeleteExtract: Exception occured: " + Exp.ToString());
                 throw;
             }
-#endif
             finally
             {
                 if (Success)
@@ -226,12 +200,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine("TExtractsHandling.DeleteExtract: committed own transaction!");
-                        }
-#endif
+//                      TLogging.LogAtLevel(8, "TExtractsHandling.DeleteExtract: committed own transaction!");
                     }
                 }
                 else
@@ -239,12 +208,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine("TExtractsHandling.DeleteExtract: ROLLED BACK own transaction!");
-                        }
-#endif
+//                      TLogging.LogAtLevel(8, "TExtractsHandling.DeleteExtract: ROLLED BACK own transaction!");
                     }
                 }
             }
@@ -280,28 +244,17 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     ReturnValue = true;
                 }
             }
-#if DEBUGMODE
             catch (Exception Exp)
             {
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("TExtractsHandling.CheckExtractExists(AExtractName): Exception occured. Exception: " + Exp.ToString());
-                }
-
+                TLogging.LogAtLevel(8, "TExtractsHandling.CheckExtractExists(AExtractName): Exception occured: " + Exp.ToString());
                 throw;
             }
-#endif
             finally
             {
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("TExtractsHandling.CheckExtractExists(AExtractName): committed own transaction!");
-                    }
-#endif
+//                  TLogging.LogAtLevel(8, "TExtractsHandling.CheckExtractExists(AExtractName): committed own transaction!");
                 }
             }
 
@@ -359,10 +312,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    Console.WriteLine(
-                        "TExtractsHandling.GetExtractKeyCount: committed own transaction.");
-#endif
+//                  TLogging.LogAtLevel(8, "TExtractsHandling.GetExtractKeyCount: committed own transaction.");
                 }
             }
         }
@@ -415,17 +365,11 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     Success = false;
                 }
             }
-#if DEBUGMODE
             catch (Exception Exp)
             {
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("TExtractsHandling.UpdateExtractCount: Exception occured. Exception: " + Exp.ToString());
-                }
-
+                TLogging.LogAtLevel(8, "TExtractsHandling.UpdateExtractCount: Exception occured. Exception: " + Exp.ToString());
                 throw;
             }
-#endif
             finally
             {
                 if (Success)
@@ -433,12 +377,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine("TExtractsHandling.UpdateExtractCount: committed own transaction!");
-                        }
-#endif
+//                      TLogging.LogAtLevel(8, "TExtractsHandling.UpdateExtractCount: committed own transaction!");
                     }
                 }
                 else
@@ -446,12 +385,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine("TExtractsHandling.UpdateExtractCount: ROLLED BACK own transaction!");
-                        }
-#endif
+//                      TLogging.LogAtLevel(8, "TExtractsHandling.UpdateExtractCount: ROLLED BACK own transaction!");
                     }
                 }
             }
@@ -475,16 +409,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             AVerificationResult = null;
 
             BestAddressPK = TMailing.GetPartnersBestLocation(APartnerKey, out AVerificationResult);
-
-
-#if DEBUGMODE
-            if (TLogging.DL >= 8)
-            {
-                Console.WriteLine(
-                    "TExtractsHandling.AddPartnerToExtract:  BestAddressPK: " + BestAddressPK.SiteKey.ToString() + ", " +
-                    BestAddressPK.LocationKey.ToString());
-            }
-#endif
+//          TLogging.LogAtLevel(8, "TExtractsHandling.AddPartnerToExtract:  BestAddressPK: " + BestAddressPK.SiteKey.ToString() + ", " + BestAddressPK.LocationKey.ToString());
 
             if (BestAddressPK.LocationKey != -1)
             {
@@ -569,17 +494,11 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         return false;
                     }
                 }
-#if DEBUGMODE
                 catch (Exception Exp)
                 {
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("TExtractsHandling.AddPartnerToExtract: Exception occured. Exception: " + Exp.ToString());
-                    }
-
+//                  TLogging.LogAtLevel(8, "TExtractsHandling.AddPartnerToExtract: Exception occured. Exception: " + Exp.ToString());
                     throw;
                 }
-#endif
                 finally
                 {
                     if (Success)
@@ -587,12 +506,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         if (NewTransaction)
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                Console.WriteLine("TExtractsHandling.AddPartnerToExtract: committed own transaction!");
-                            }
-#endif
+//                          TLogging.LogAtLevel(8, "TExtractsHandling.AddPartnerToExtract: committed own transaction!");
                         }
                     }
                     else
@@ -600,12 +514,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         if (NewTransaction)
                         {
                             DBAccess.GDBAccessObj.RollbackTransaction();
-#if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                Console.WriteLine("TExtractsHandling.AddPartnerToExtract: ROLLED BACK own transaction!");
-                            }
-#endif
+//                          TLogging.LogAtLevel(8, "TExtractsHandling.AddPartnerToExtract: ROLLED BACK own transaction!");
                         }
                     }
                 }

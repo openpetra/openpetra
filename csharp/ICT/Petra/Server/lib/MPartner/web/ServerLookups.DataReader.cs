@@ -94,12 +94,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 AFieldName = AFieldName.Substring(0, AFieldName.Length - 1);
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetActiveFieldUnits called!");
-            }
-#endif
+//          TLogging.LogAtLevel(9, "TPartnerDataReaderWebConnector.GetActiveFieldUnits called!");
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
@@ -148,12 +143,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetActiveFieldUnits: committed own transaction.");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "GetActiveFieldUnits: committed own transaction.");
                 }
             }
 
@@ -183,12 +173,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 AEventName = AEventName.Substring(0, AEventName.Length - 1);
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetConferenceOrOutreachUnits called!");
-            }
-#endif
+//          TLogging.LogAtLevel(9, "TPartnerDataReaderWebConnector.GetConferenceOrOutreachUnits called!");
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
@@ -247,12 +232,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetConferenceOrOutreachUnits: committed own transaction.");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "GetConferenceOrOutreachUnits: committed own transaction.");
                 }
             }
 
@@ -283,12 +263,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ALedgerName = ALedgerName.Substring(0, ALedgerName.Length - 1);
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetLedgerUnits called!");
-            }
-#endif
+//          TLogging.LogAtLevel(9, "GetLedgerUnits called!");
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
@@ -334,12 +309,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetLedgerUnits: committed own transaction.");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "GetLedgerUnits: committed own transaction.");
                 }
             }
 

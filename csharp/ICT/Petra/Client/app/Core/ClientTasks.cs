@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.App.Core
         {
             try
             {
-                // messagebox.show('Executing Client Task #' + FClientTaskDataRow['TaskID'].ToString + ' in Thread.');
+                // MessageBox.Show('Executing Client Task #' + FClientTaskDataRow['TaskID'].ToString + ' in Thread.');
                 if (FClientTaskDataRow["TaskGroup"].ToString() == SharedConstants.CLIENTTASKGROUP_USERMESSAGE)
                 {
                     // MessageBox.Show(CLIENTTASKGROUP_USERMESSAGE + ' (Client Task #' + FClientTaskDataRow['TaskID'].ToString + '): ' + FClientTaskDataRow['TaskCode'].ToString, 'Client #' + UClientID.ToString + ' received a ClientTask.');
@@ -52,22 +52,18 @@ namespace Ict.Petra.Client.App.Core
 
                 if (FClientTaskDataRow["TaskGroup"].ToString() == SharedConstants.CLIENTTASKGROUP_CACHEREFRESH)
                 {
-                    /* $IFDEF DEBUGMODE MessageBox.Show(CLIENTTASKGROUP_CACHEREFRESH + ' (Client Task #' + FClientTaskDataRow['TaskID'].ToString + '): ' + FClientTaskDataRow['TaskCode'].ToString, 'Client #' + UClientID.ToString + ' received a
-                     *ClientTask.'); $ENDIF */
                     if (FClientTaskDataRow["TaskParameter1"].ToString() == "")
                     {
                         TDataCache.ReloadCacheTable(FClientTaskDataRow["TaskCode"].ToString());
                     }
                     else
                     {
-                        // $IFDEF DEBUGMODE MessageBox.Show(CLIENTTASKGROUP_CACHEREFRESH + ' (Client Task #' + FClientTaskDataRow['TaskID'].ToString + '): TaskParameter1=' + FClientTaskDataRow['TaskParameter1'].ToString); $ENDIF
                         TDataCache.ReloadCacheTable(FClientTaskDataRow["TaskCode"].ToString(), FClientTaskDataRow["TaskParameter1"]);
                     }
                 }
 
                 if (FClientTaskDataRow["TaskGroup"].ToString() == SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH)
                 {
-                    // $IFDEF DEBUGMODE MessageBox.Show(CLIENTTASKGROUP_USERDEFAULTSREFRESH + ' (Client Task #' + FClientTaskDataRow['TaskID'].ToString + ')', 'Client #' + UClientID.ToString + ' received a ClientTask.'); $ENDIF
                     if (FClientTaskDataRow["TaskCode"].ToString() == "All")
                     {
                         // MessageBox.Show('FClientTaskDataRow[''TaskCode''] = All!');
@@ -88,23 +84,18 @@ namespace Ict.Petra.Client.App.Core
 
                 if (FClientTaskDataRow["TaskGroup"].ToString() == SharedConstants.CLIENTTASKGROUP_USERINFOREFRESH)
                 {
-                    // $IFDEF DEBUGMODE MessageBox.Show(CLIENTTASKGROUP_USERINFOREFRESH + ' (Client Task #' + FClientTaskDataRow['TaskID'].ToString + ')', 'Client #' + UClientID.ToString + ' received a ClientTask.'); $ENDIF
                     TUserInfo.ReloadCachedUserInfo();
                 }
 
-                // messagebox.show('Finished executing Client Task #' + FClientTaskDataRow['TaskID'].ToString + ' in Thread.');
+                // MessageBox.Show('Finished executing Client Task #' + FClientTaskDataRow['TaskID'].ToString + ' in Thread.');
             }
-#if DEBUGMODE
-            catch (Exception Exp)
+            catch (Exception  /* Exp */)
             {
-                MessageBox.Show("Exception occured in TClientTaskInstance.Execute: \r\n" + Exp.ToString());
-                TLogging.Log("Exception occured in TClientTaskInstance.Execute: \r\n" + Exp.ToString());
+// These lines were previously used in DEBUGMODE:
+
+//              MessageBox.Show("Exception occured in TClientTaskInstance.Execute: \r\n" + Exp.ToString());
+//              TLogging.Log("Exception occured in TClientTaskInstance.Execute: \r\n" + Exp.ToString());
             }
-#else
-            catch (Exception)
-            {
-            }
-#endif
         }
     }
 }

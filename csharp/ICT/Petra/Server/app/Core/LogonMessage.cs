@@ -114,12 +114,7 @@ namespace Ict.Petra.Server.App.Core
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("TMaintenanceLogonMessage.GetLogonMessage: committed own transaction.");
-                    }
-#endif
+//                  TLogging.LogAtLevel(8, "TMaintenanceLogonMessage.GetLogonMessage: committed own transaction.");
                 }
             }
             return ReturnValue;

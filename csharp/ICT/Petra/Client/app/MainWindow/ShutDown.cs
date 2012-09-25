@@ -83,7 +83,7 @@ public static class Shutdown
         {
             if (TLogging.DebugLevel > 0)
             {
-                MessageBox.Show("DEBUGMODE Information: Unhandled exception while disconnecting from Servers: " + "\r\n" + Exp.ToString());
+                MessageBox.Show("DEBUG Information: Unhandled exception while disconnecting from Servers: " + "\r\n" + Exp.ToString());
             }
         }
     }

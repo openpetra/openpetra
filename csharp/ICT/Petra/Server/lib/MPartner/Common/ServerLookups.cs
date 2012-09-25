@@ -81,7 +81,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 ReturnValue = false;
             }
 
-            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('GetPartnerShortName: APartnerClass: ' + PartnerClassEnumToString(APartnerClass)); $ENDIF
             return ReturnValue;
         }
 
@@ -131,12 +130,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 out APartnerShortName,
                 out APartnerClass,
                 out PartnerStatus);
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(Convert.ToInt32(AValidPartnerClasses.Length));
-            }
-#endif
+//          TLogging.LogAtLevel(7, "VerifyPartner: " + Convert.ToInt32(AValidPartnerClasses.Length));
 
             if (AValidPartnerClasses.Length != 0)
             {
@@ -155,7 +149,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 AIsMergedPartner = false;
             }
 
-            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('VerifyPartner: APartnerClass: ' + PartnerClassEnumToString(APartnerClass)); $ENDIF
             return ReturnValue;
         }
 
@@ -215,12 +208,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("VerifyPartner: committed own transaction.");
-                        }
-#endif
+//                      TLogging.LogAtLevel(7, "VerifyPartner: committed own transaction.");
                     }
                 }
 
@@ -291,12 +279,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("VerifyPartner: committed own transaction.");
-                        }
-#endif
+//                      TLogging.LogAtLevel(7, "VerifyPartner: committed own transaction.");
                     }
                 }
 
@@ -511,12 +494,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("MergedPartnerDetails: committed own transaction.");
-                        }
-#endif
+//                      TLogging.LogAtLevel(7, "MergedPartnerDetails: committed own transaction.");
                     }
                 }
             }
@@ -678,12 +656,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             AExtractDescription = "Can not retrieve description";
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetExtractDescription called!");
-            }
-#endif
+//          TLogging.LogAtLevel(9, "GetExtractDescription called!");
 
             MExtractMasterTable ExtractMasterDT = new MExtractMasterTable();
 
@@ -706,21 +679,14 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetExtractDescription: committed own transaction.");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "GetExtractDescription: committed own transaction.");
                 }
             }
 
             if (ExtractMasterDT.Rows.Count < 1)
             {
                 ReturnValue = false;
-#if DEBUGMODE
-                Console.WriteLine("TPartnerServerLookups.GetExtractDescription: m_extract_master DB Table is empty");
-#endif
+//              TLogging.LogAtLevel(7, "TPartnerServerLookups.GetExtractDescription: m_extract_master DB Table is empty");
             }
             else
             {
@@ -755,12 +721,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             AIsFoundation = false;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetPartnerFoundationStatus called!");
-            }
-#endif
+//          TLogging.LogAtLevel(9, "GetPartnerFoundationStatus called!");
 
             POrganisationTable OrganisationDT = new POrganisationTable();
 
@@ -778,12 +739,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetPartnerFoundationStatus: committed own transaction.");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "GetPartnerFoundationStatus: committed own transaction.");
                 }
             }
 
@@ -840,12 +796,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             ARecentlyUsedPartners = new Dictionary <long, string>();
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetRecentlyUsedPartner called!");
-            }
-#endif
+//          TLogging.LogAtLevel(9, "GetRecentlyUsedPartner called!");
 
             PRecentPartnersTable RecentPartnersDT = new PRecentPartnersTable();
 
@@ -863,12 +814,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetRecentUsedPartners: committed own transaction.");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "GetRecentUsedPartners: committed own transaction.");
                 }
             }
 
@@ -899,12 +845,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("GetRecentUsedPartners: committed own transaction.");
-                        }
-#endif
+//                      TLogging.LogAtLevel(7, "GetRecentUsedPartners: committed own transaction.");
                     }
                 }
 

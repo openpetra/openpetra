@@ -328,14 +328,6 @@ namespace Ict.Petra.Client.CommonForms
                     otherString = otherString + ctrl.GetType().FullName + System.Environment.NewLine;
                 }
             }
-
-            if (otherCount > 0)
-            {
-                // warn the developer
-#if DEBUGMODE
-                MessageBox.Show(otherString, "The following controls are not checked for live changes in PetraEditBaseForm:");
-#endif
-            }
         }
 
         /// <summary>todoComment</summary>

@@ -109,10 +109,10 @@ namespace Ict.Petra.Server.MReporting
             this.depth = depth;
         }
 
-#if DEBUGMODE
+/* if DEBUGMODE
         // do not print warning too many times for the same variable
         private static SortedList <string, Int32>VariablesNotFound = new SortedList <string, int>();
-#endif
+*/
 
         /// <summary>
         /// todoComment
@@ -201,7 +201,7 @@ namespace Ict.Petra.Server.MReporting
                         newvalue = new TVariant(parameter);
                     }
 
-#if DEBUGMODE
+/* if DEBUGMODE
                     else
                     {
                         int CountWarning = 1;
@@ -231,7 +231,7 @@ namespace Ict.Petra.Server.MReporting
                             TLogging.Log("20 times: Variable " + parameter + " could not be found.");
                         }
                     }
-#endif
+*/
                 }
 
                 try

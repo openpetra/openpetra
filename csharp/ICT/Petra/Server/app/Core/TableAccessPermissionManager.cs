@@ -66,12 +66,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("TTableAccessPermissionManager.LoadTableAccessPermissions: committed own transaction.");
-                    }
-#endif
+//                  TLogging.LogAtLevel(8, "TTableAccessPermissionManager.LoadTableAccessPermissions: committed own transaction.");
                 }
             }
             return ReturnValue;

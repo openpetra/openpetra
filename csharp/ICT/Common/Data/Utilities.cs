@@ -138,14 +138,8 @@ namespace Ict.Common.Data
             TmpDS.Tables.Add((DataTable)TmpObj);
             TmpDS.Tables[0].TableName = DataTableName;
 
-            /* $IFDEF DEBUGMODE TLogging.Log('ChangeDataTableToTypedDataTable: DataTable ''' + DataTableName + ''': got added as a new DataTable to TmpDS. DataTable.TableName: ' + TmpDS.Tables[0].TableName + '; DataTable Type: ' +
-             *TmpDS.Tables[0].GetType.FullName + '; Rows: ' + TmpDS.Tables[0].Rows.Count.ToString); $ENDIF */
-
             // Now merge in data from the untyped DataTable to the Typed DataTable!
             TmpDS.Merge(ADataTable);
-
-            /* $IFDEF DEBUGMODE TLogging.Log('ChangeDataTableToTypedDataTable: DataTable ''' + DataTableName + ''': got merged into DataTable in TmpDS. Table count: ' + TmpDS.Tables.Count.ToString + '; DataTable Type: ' +
-             *TmpDS.Tables[0].GetType.FullName + '; Rows: ' + TmpDS.Tables[0].Rows.Count.ToString); $ENDIF */
 
             // The result is a Typed DataTable of the desired Type, filled with data from
             // an untyped DataTable
@@ -209,9 +203,6 @@ namespace Ict.Common.Data
                     // Increment the size
                     TmpSize = AHashDV[RowCounter][ColumnCounter].ToString().Length;
                     ASize = ASize + TmpSize;
-
-                    /* $IFDEF DEBUGMODE  if TSrvSetting.DL >= 7 then TLogging.Log('Length(AHashDV[RowCounter][ColumnCounter].ToString]): ' + TmpSize.ToString + ' (Value: ''' + AHashDV[RowCounter][ColumnCounter].ToString + ''')'); $ENDIF   if
-                     *TSrvSetting.DL >= 9 then */
                 }
             }
 
@@ -220,8 +211,6 @@ namespace Ict.Common.Data
              */
             HashingProvider = new SHA1CryptoServiceProvider();
             AHash = Convert.ToBase64String(HashingProvider.ComputeHash(Encoding.UTF8.GetBytes(HashStringBuilder.ToString())));
-
-            // $IFDEF DEBUGMODE  if TSrvSetting.DL >= 7 then TLogging.Log('HashStringBuilder.ToString: ' + HashStringBuilder.ToString); $ENDIF  if TSrvSetting.DL >= 9 then
         }
 
         /// <summary>

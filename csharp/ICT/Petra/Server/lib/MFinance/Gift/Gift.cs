@@ -454,9 +454,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    Console.WriteLine("GetLastGiftDetails: committed own transaction.");
-#endif
+//                  TLogging.LogAtLevel(7, "GetLastGiftDetails: committed own transaction.");
                 }
             }
 

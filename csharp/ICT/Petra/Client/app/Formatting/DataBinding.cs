@@ -260,7 +260,6 @@ namespace Ict.Petra.Client.App.Formatting
                         }
                         catch (Exception)
                         {
-                            // $IFDEF DEBUGMODE MessageBox.Show('Exception occured in LongDateStringToDateTime: ' + Exp.ToString); $ENDIF
                             TMessages.MsgGeneralError(TDateChecks.GetInvalidDateVerificationResult(ADescription), ATypeWhichCallsVerification);
                             return ReturnValue;
                         }
@@ -301,15 +300,9 @@ namespace Ict.Petra.Client.App.Formatting
                 AParsedDate = DateTime.Parse(AParseDate).ToString("D");
                 ReturnValue = true;
             }
-#if DEBUGMODE
-            catch (Exception Exp)
+            catch (Exception /* Exp */)
             {
-                MessageBox.Show("Exception occured in LongDateStringToDateTimeInternal: " + Exp.ToString());
-#else
-            catch (Exception)
-            {
-#endif
-
+//              MessageBox.Show("Exception occured in LongDateStringToDateTimeInternal: " + Exp.ToString());
                 TMessages.MsgGeneralError(TDateChecks.GetInvalidDateVerificationResult(ADescription), ATypeWhichCallsVerification);
             }
 

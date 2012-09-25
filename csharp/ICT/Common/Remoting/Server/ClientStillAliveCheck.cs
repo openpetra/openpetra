@@ -82,12 +82,10 @@ namespace Ict.Common.Remoting.Server
             {
                 Int16 ClientStillAliveTimeout;
 
-#if DEBUGMODE
                 if (TLogging.DL >= 10)
                 {
                     Console.WriteLine("{0} TClientStillAliveCheck created", DateTime.Now);
                 }
-#endif
 
                 // Determine timeout limit (different for Clients connected via LAN or Remote)
                 if (AClientServerConnectionType == TClientServerConnectionType.csctRemote)
@@ -113,12 +111,10 @@ namespace Ict.Common.Remoting.Server
                 UClientStillAliveCheckThread = new Thread(new ThreadStart(ClientStillAliveCheckThread));
                 UClientStillAliveCheckThread.IsBackground = true;
                 UClientStillAliveCheckThread.Start();
-#if DEBUGMODE
                 if (TLogging.DL >= 10)
                 {
                     Console.WriteLine("{0} TClientStillAliveCheck: started ClientStillAliveCheckThread.", DateTime.Now);
                 }
-#endif
             }
 
             /**
@@ -141,12 +137,10 @@ namespace Ict.Common.Remoting.Server
                 // Check whether this Thread should still execute
                 while (UKeepServerAliveCheck)
                 {
-#if DEBUGMODE
                     if (TLogging.DL >= 10)
                     {
                         Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: checking...", DateTime.Now);
                     }
-#endif
 
                     // Get the time of the last call to TPollClientTasks.PollClientTasks
                     LastPollingTime = TPollClientTasks.GetLastPollingTime();
@@ -158,44 +152,35 @@ namespace Ict.Common.Remoting.Server
                     if (Duration.TotalSeconds < UClientStillAliveTimeout)
                     {
                         // No it hasn't
-#if DEBUGMODE
                         if (TLogging.DL >= 10)
                         {
                             Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: timeout hasn't been exceeded.", DateTime.Now);
                         }
-#endif
                         try
                         {
                             // Sleep for some time. After that, this procedure is called again automatically.
-#if DEBUGMODE
                             if (TLogging.DL >= 10)
                             {
                                 Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: going to sleep...", DateTime.Now);
                             }
-#endif
                             Thread.Sleep(UClientStillAliveCheckInterval * 1000);
-#if DEBUGMODE
                             if (TLogging.DL >= 10)
                             {
                                 Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: re-awakening...", DateTime.Now);
                             }
-#endif
                         }
                         catch (ThreadAbortException)
                         {
-#if DEBUGMODE
                             if (TLogging.DL >= 10)
                             {
                                 Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: ThreadAbortException occured!!!",
                                     DateTime.Now);
                             }
-#endif
                             UKeepServerAliveCheck = false;
                         }
                     }
                     else
                     {
-                        // TODO 1 oChristianK cLogging (Console) : Put the following debug messages again in a DEBUGMODE conditional compilation directive and raise the DL to >=10; this was removed to trace problems in on live installations!
                         if (TLogging.DL >= 5)
                         {
                             Console.WriteLine(
@@ -225,25 +210,21 @@ namespace Ict.Common.Remoting.Server
                         }
                         else
                         {
-#if DEBUGMODE
                             if (TLogging.DL >= 10)
                             {
                                 Console.WriteLine(
                                     "{0} TClientStillAliveCheck: FTearDownAppDomain was not assigned -> can't tear down Client's AppDomain!",
                                     DateTime.Now);
                             }
-#endif
                         }
                     }
                 }
 
                 // Thread stops here and doesn't get called again automatically.
-#if DEBUGMODE
                 if (TLogging.DL >= 10)
                 {
                     Console.WriteLine("{0} TClientStillAliveCheck: ClientStillAliveCheckThread: Thread stopped!", DateTime.Now);
                 }
-#endif
             }
 
             /**
@@ -260,7 +241,6 @@ namespace Ict.Common.Remoting.Server
 
                 if (UClientStillAliveCheckThread != null)
                 {
-                    // TODO 1 oChristianK cLogging (Console) : Put the following debug messages again in a DEBUGMODE conditional compilation directive and raise the DL to >=10; this was removed to trace problems in on live installations!
                     if (TLogging.DL >= 5)
                     {
                         Console.WriteLine("{0} TClientStillAliveCheck: StopClientStillAliveCheckThread called: aborting Thread!", DateTime.Now);

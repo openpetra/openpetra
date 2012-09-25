@@ -98,12 +98,7 @@ namespace Ict.Petra.Server.MPartner.Common
                         if (NewTransaction)
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                            if (TLogging.DL >= 7)
-                            {
-                                Console.WriteLine("CanAccessPartnerByKey: committed own transaction.");
-                            }
-#endif
+//                          TLogging.LogAtLevel(8, "CanAccessPartnerByKey: committed own transaction.");
                         }
                     }
                 }
@@ -201,12 +196,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("CanAccessPartnerByKey: committed own transaction.");
-                        }
-#endif
+//                      TLogging.LogAtLevel(8, "CanAccessPartnerByKey: committed own transaction.");
                     }
                 }
             }

@@ -183,21 +183,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
         }
 
-#if DEBUGMODE
-        /// destructor
+/*
+/// destructor
         ~TPartnerLocationFindUIConnector()
         {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
-            }
+            TLogging.LogAtLevel (9, "TPartnerLocationFindUIConnector.FINALIZE called!");
         }
-#endif
+*/
 
 
 
         /// <summary>
-        /// todoComment
         /// </summary>
         /// <param name="APage"></param>
         /// <param name="APageSize"></param>
@@ -206,15 +202,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <returns></returns>
         public DataTable GetDataPagedResult(System.Int16 APage, System.Int16 APageSize, out System.Int32 ATotalRecords, out System.Int16 ATotalPages)
         {
+//          TLogging.LogAtLevel(7, "TPartnerLocationFindUIConnector.GetDataPagedResult called.");
             DataTable ReturnValue;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + ".GetDataPagedResult called.");
-            }
-#endif
-            Console.WriteLine(this.GetType().FullName + ".GetDataPagedResult called.");
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
             ATotalPages = FPagedDataSetObject.TotalPages;
             ATotalRecords = FPagedDataSetObject.TotalRecords;

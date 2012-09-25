@@ -165,12 +165,7 @@ namespace Tests.IctCommonRemoting.Instantiator
         /// <summary>Constructor</summary>
         public TMyServiceNamespaceLoader()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
-            }
-#endif
+//          TLogging.LogAtLevel (9, "TMyServiceNamespaceLoader created in application domain: " + Thread.GetDomain().FriendlyName);
         }
 
         /// <summary>

@@ -895,11 +895,11 @@ namespace Ict.Petra.Shared.MReporting
 
             // write headings
             strLine = "";
-#if DEBUGMODE
+/* if DEBUGMODE
             strLine = StringHelper.AddCSV(strLine, "masterRow", separator);
             strLine = StringHelper.AddCSV(strLine, "childRow", separator);
             strLine = StringHelper.AddCSV(strLine, "depth", separator);
-#endif
+*/
             strLine = StringHelper.AddCSV(strLine, "id", separator);
 
             if (FormattedParameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT1,
@@ -987,11 +987,11 @@ namespace Ict.Petra.Shared.MReporting
                 if (element.display)
                 {
                     strLine = "";
-#if DEBUGMODE
+/* if DEBUGMODE
                     strLine = StringHelper.AddCSV(strLine, element.masterRow.ToString(), separator);
                     strLine = StringHelper.AddCSV(strLine, element.childRow.ToString(), separator);
                     strLine = StringHelper.AddCSV(strLine, element.depth.ToString(), separator);
-#endif
+*/
                     strLine = StringHelper.AddCSV(strLine, element.code, separator);
 
                     if (FormattedParameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT1, -1, eParameterFit.eBestFit))

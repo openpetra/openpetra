@@ -105,13 +105,11 @@ namespace Ict.Common.Remoting.Server
             try
             {
                 ClientInfo = "'" + FAppDomainEntry.FClientName + "' (ClientID: " + FAppDomainEntry.FClientID.ToString() + ")";
-#if DEBUGMODE
                 if (TLogging.DL >= 4)
                 {
                     Console.WriteLine(TClientManager.FormatClientList(false));
                     Console.WriteLine(TClientManager.FormatClientList(true));
                 }
-#endif
 
                 if (TLogging.DL >= 4)
                 {
@@ -170,7 +168,6 @@ namespace Ict.Common.Remoting.Server
                         "Error closing Database connection on Client disconnection!" + " [Client " + ClientInfo + "]" + "Exception: " + exp.ToString());
                 }
 
-                // TODO 1 oChristianK cLogging (Console) : Put the following debug messages again in a DEBUGMODE conditional compilation directive; this was removed to trace problems in on live installations!
                 if (TLogging.DL >= 5)
                 {
                     TLogging.Log("  Before calling ClientAppDomainConnection.StopClientAppDomain...  [Client " + ClientInfo + ']',
@@ -200,14 +197,12 @@ Retry:                          //             used only for repeating Unload wh
                              * Try to unload the AppDomain. If an Exception occurs, retries are made
                              * after a delay - until a maximum of retries is reached.
                              */
-#if DEBUGMODE
                             if (TLogging.DL >= 5)
                             {
                                 Console.WriteLine(
                                     "  Unloading AppDomain '" + FAppDomainEntry.ClientAppDomainConnection.AppDomainName + "' [Client " + ClientInfo +
                                     "]");
                             }
-#endif
                             try
                             {
                                 if (TLogging.DL >= 4)
@@ -217,10 +212,11 @@ Retry:                          //             used only for repeating Unload wh
                                 }
 
                                 // Note for developers: uncomment the following code to see that the retrying of Unload really works in case Exceptions are thrown,,,
-                                // if UnloadExceptionCount < 4 then
-                                // begin
-                                // raise Exception.Create();
-                                // end;
+                                // if (UnloadExceptionCount < 4)
+                                // {
+                                //     raise Exception.Create();
+                                // }
+
                                 // Unload the AppDomain
                                 FAppDomainEntry.ClientAppDomainConnection.Unload();
 
@@ -235,12 +231,10 @@ Retry:                          //             used only for repeating Unload wh
                                 FAppDomainEntry.FClientAppDomainConnection = null;
                                 FAppDomainEntry.FClientDisconnectionFinishedTime = DateTime.Now;
                                 FAppDomainEntry.FAppDomainStatus = TAppDomainStatus.adsStopped;
-#if DEBUGMODE
                                 if (TLogging.DL >= 5)
                                 {
                                     Console.WriteLine("  AppDomain unloaded [Client " + ClientInfo + "]");
                                 }
-#endif
                             }
                             catch (Exception UnloadException)
                             {
@@ -260,12 +254,10 @@ Retry:                          //             used only for repeating Unload wh
                                 goto Retry;
                             }
 
-#if DEBUGMODE
                             if (TLogging.DL >= 5)
                             {
                                 Console.WriteLine("  AppDomain unloading finished [Client " + ClientInfo + ']');
                             }
-#endif
 
                             // Logging: was Unload successful?
                             if (FAppDomainEntry.FAppDomainStatus == TAppDomainStatus.adsStopped)

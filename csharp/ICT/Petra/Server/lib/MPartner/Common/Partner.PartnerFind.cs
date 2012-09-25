@@ -87,12 +87,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             String WhereClause;
             System.Text.StringBuilder sb;
             DataRow CriteriaRow;
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + ".PerformSearch called.");
-            }
-#endif
+//          TLogging.LogAtLevel(7, "TPartnerFind.PerformSearch called.");
+
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
             FPagedDataSetObject = new TPagedDataSet(new PartnerFindTDSSearchResultTable());
 
@@ -280,13 +276,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         public DataTable GetDataPagedResult(System.Int16 APage, System.Int16 APageSize, out System.Int32 ATotalRecords, out System.Int16 ATotalPages)
         {
             DataTable ReturnValue;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + ".GetDataPagedResult called.");
-            }
-#endif
+//          TLogging.LogAtLevel(7, "TPartnerFind.GetDataPagedResult called.");
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
             ATotalPages = FPagedDataSetObject.TotalPages;
             ATotalRecords = FPagedDataSetObject.TotalRecords;
@@ -631,13 +621,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
             #endregion
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine("CustomWhereCriteria: " + CustomWhereCriteria);
-            }
-#endif
-
+//           TLogging.LogAtLevel(7, "CustomWhereCriteria: " + CustomWhereCriteria);
 
             /* Convert ArrayList to a array of ODBCParameters
              * seem to need to declare a type first
@@ -670,13 +654,10 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             Thread StopQueryThread;
 
             /* Start a separate Thread that should cancel the executing query
-             * (Microsoft recommends doing it this way!) */
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine("TPartnerFindUIConnector.StopSearch: Starting StopQuery thread...");
-            }
-#endif
+             * (Microsoft recommends doing it this way!) 
+             */
+//          TLogging.LogAtLevel(7, "TPartnerFindUIConnector.StopSearch: Starting StopQuery thread...");
+
             ThreadStart ThreadStartDelegate = new ThreadStart(FPagedDataSetObject.StopQuery);
             StopQueryThread = new Thread(ThreadStartDelegate);
             StopQueryThread.Start();
@@ -685,13 +666,10 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
              * but we consider it as done since the application can 'forget' about the
              * result of the cancellation process (but beware of executing another query
              * while the other is stopping - this leads to ADO.NET errors that state that
-             * a ADO.NET command is still executing! */
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine("TPartnerFindUIConnector.StopSearch: Query cancelled!");
-            }
-#endif
+             * a ADO.NET command is still executing! 
+             */
+
+//           TLogging.LogAtLevel(7, "TPartnerFindUIConnector.StopSearch: Query cancelled!");
         }
 
         /// <summary>
@@ -714,13 +692,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             bool NewTransaction;
 
             AVerificationResult = null;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 8)
-            {
-                Console.WriteLine(this.GetType().FullName + ".AddAllFoundPartnersToExtract: requesting Partner data of found Partners");
-            }
-#endif
+//          TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: requesting Partner data of found Partners");
 
             // Request all found Partners from FPagedDataSetObject
             FullFindResultDT = FPagedDataSetObject.GetAllData();
@@ -738,13 +710,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     DataViewRowState.CurrentRows);
 
                 DistinctPartners = new ArrayList();
-
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".AddAllFoundPartnersToExtract: building distinct list of Partners");
-                }
-#endif
+//              TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: building distinct list of Partners");
 
                 for (int DistinctPartnerCounter = 0; DistinctPartnerCounter < SortedFindResultDV.Count;
                      DistinctPartnerCounter++)
@@ -759,12 +725,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     LastPartnerKey = CurrentPartnerKey;
                 }
 
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".AddAllFoundPartnersToExtract: Add all Partners to the desired Extract");
-                }
-#endif
+//              TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Add all Partners to the desired Extract");
 
                 /*
                  * Add all Partners to the desired Extract
@@ -787,26 +748,12 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                         else
                         {
                             // Partner could not get added to the Extract
-#if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                Console.WriteLine(
-                                    this.GetType().FullName + ".AddAllFoundPartnersToExtract: Partner with PartnerKey " +
-                                    ((Int64)DistinctPartners[ExtractAddCounter]).ToString() +
-                                    " did not get added to Extract with ExtractID " + AExtractID.ToString() + ".");
-                            }
-#endif
+//                          TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Partner with PartnerKey " +
+//                              ((Int64)DistinctPartners[ExtractAddCounter]).ToString() + " did not get added to Extract with ExtractID " + AExtractID.ToString() + ".");
                         }
                     }
 
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine(
-                            this.GetType().FullName + ".AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() +
-                            " Partners to the desired Extract!");
-                    }
-#endif
+//                  TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() + " Partners to the desired Extract!");
 
                     if (!TExtractsHandling.UpdateExtractKeyCount(AExtractID, AddedPartners, out AVerificationResult))
                     {
@@ -831,12 +778,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                         if (NewTransaction)
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                Console.WriteLine(this.GetType().FullName + ".AddAllFoundPartnersToExtract: committed own transaction!");
-                            }
-#endif
+//                          TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: committed own transaction!");
                         }
                     }
                     else
@@ -844,12 +786,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                         if (NewTransaction)
                         {
                             DBAccess.GDBAccessObj.RollbackTransaction();
-#if DEBUGMODE
-                            if (TLogging.DL >= 8)
-                            {
-                                Console.WriteLine(this.GetType().FullName + ".AddAllFoundPartnersToExtract: ROLLED BACK own transaction!");
-                            }
-#endif
+//                          TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: ROLLED BACK own transaction!");
                         }
                     }
                 }

@@ -282,14 +282,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FSaveChangedOptions = false;
 
-#if !DEBUGMODE
             // The following Buttons are only for debugging...
             btnShowRightListItems.Visible = false;
             btnShowLeftListItems.Visible = false;
 
             // The rearranging of Find Criteria isn't quite stable yet, so we don't show the Button that enables the rearranging...
             btnMore.Visible = false;
-#endif
 
             // Define default order in which the items in the left and right columns should appear
             // This is used to determine the place where added fields should appear in the columns
