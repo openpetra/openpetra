@@ -53,10 +53,14 @@ namespace ControlTestBench
 
 
         XmlDocument LoadYAMLTestFile()
-        {
+        {            
             String yamlFile = txtYaml.Text.ToString();
-            TYml2Xml parser = new TYml2Xml(yamlFile);
+         
+            new TAppSettingsManager("../../csharp/ICT/Testing/exe/Controls/ControlTestBench/ControlTestBench.exe.config");            
+            TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("YAMLDemodataPath") + '\\' + yamlFile);
+            
             XmlDocument UINavigation = parser.ParseYML2XML();
+            
             return UINavigation;
         }
         

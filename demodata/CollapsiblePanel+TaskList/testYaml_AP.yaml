@@ -1,0 +1,17 @@
+TaskGroup:
+    Task1:
+        Label: "&Setup"
+    Task2: 
+        Label: "&Transactions"
+    Task3:
+        Label: "Reports"
+        Task3a:
+            Label: "Narrowly Avoid being Eaten Alive"
+            Visible: false
+    Task4:
+        Label: "&Period-End"
+        Visible: true
+    Task5:
+        Label: "&Year-End"
+    Task6:
+        Label: "&ICH Processing"
