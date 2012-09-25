@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -75,7 +75,7 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AValue" /> is not null and not <see cref="String.Empty" />,
         /// otherwise a <see cref="TVerificationResult" /> is returned that
         /// contains details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
@@ -115,7 +115,7 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AValue" /> is not null and not <see cref="String.Empty" />,
         /// otherwise a <see cref="TVerificationResult" /> is returned that
         /// contains details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
@@ -157,7 +157,7 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="ATxt1" /> is lesser or equal than
         /// <paramref name="ATxt2" />, otherwise a <see cref="TVerificationResult" /> is returned that
         /// contains details about the problem, with a message that uses <paramref name="AFirstDescription" />
@@ -220,7 +220,7 @@ namespace Ict.Common.Verification
         /// <param name="AEmailAddress">E-mail address that should be verified.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AEmailAddress" /> contains a valid email address,
         /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about
         /// the problem (also in the case where more than one e-mail Address is contained in
@@ -244,7 +244,7 @@ namespace Ict.Common.Verification
         /// comma and semicolon (',' and ';').</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AEmailAddress" /> contains a valid email address,
         /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about
         /// the problem (also in the case where <paramref name="AAllowMoreThanOneEMailAddress" />

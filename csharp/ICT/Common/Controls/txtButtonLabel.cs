@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2042,8 +2042,6 @@ namespace Ict.Common.Controls
     /// <param name="TextBoxStringIn">Current TextBox text</param>
     /// <param name="LabelStringOut">Updated Label text
     /// <param name="TextBoxStringOut">Updated TextBox text</param>
-    /// </param>
-    ///
     public delegate void TDelegateButtonClick(System.String LabelStringIn,
         System.String TextBoxStringIn,
         out System.String LabelStringOut,
@@ -2053,8 +2051,7 @@ namespace Ict.Common.Controls
     /// Here the hosting form has to provide a text for the label
     /// </summary>
     /// <param name="ALookupText">A lookup text goes here</param>
-    /// <param name="ALabelText">Updated Label text
-    /// </param>
+    /// <param name="ALabelText">Updated Label text</param>
     public delegate void TDelegateSetLabel(String ALookupText, ref System.String ALabelText);
 
     /// <summary>
@@ -2062,8 +2059,7 @@ namespace Ict.Common.Controls
     /// </summary>
     /// <param name="ATextBoxText">The text in the textbox</param>
     /// <param name="AErrorMessage">An error message</param>
-    /// <param name="AEvaluationResult">true if there is no error
-    /// </param>
+    /// <param name="AEvaluationResult">true if there is no error</param>
     public delegate void TDelegateEvaluationFault(String ATextBoxText, String AErrorMessage, bool AEvaluationResult);
 
     /// <summary>
@@ -2071,8 +2067,7 @@ namespace Ict.Common.Controls
     /// </summary>
     /// <param name="ATextBoxText">The text in the textbox</param>
     /// <param name="ALabelString">A String the label should display</param>
-    /// <param name="ATextValid">true if the text of the textbox is valid otherwise false.
-    /// </param>
+    /// <param name="ATextValid">true if the text of the textbox is valid otherwise false.</param>
     public delegate void TDelegateEvaluateText(String ATextBoxText, out String ALabelString, out bool ATextValid);
 
     /// <summary>
