@@ -279,7 +279,7 @@ namespace Ict.Common.Controls
         {
             LoadTaskItems(this.InternalMasterXmlNode, 0, "");
         }
-
+        
         /// <summary>
         /// Private method to load taskItems of a masterXmlNode
         /// This method is also used to reload task items when style has been changed or a node has been disabled, etc
@@ -296,7 +296,9 @@ namespace Ict.Common.Controls
             {
                 NumTasks = 0;
                 this.tPnlGradient1.Controls.Clear();
-                this.tPnlGradient1.Padding = new Padding(0, 0, VisualStyle.ContentPaddingRight, VisualStyle.ContentPaddingBottom);
+                
+                // Set the 'Padding'
+                this.tPnlGradient1.AutoScrollMargin = new Size(VisualStyle.ContentPaddingRight, VisualStyle.ContentPaddingBottom);
             }
 
             int CurrentNumbering = 1;

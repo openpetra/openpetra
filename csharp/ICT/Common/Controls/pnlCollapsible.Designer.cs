@@ -161,10 +161,10 @@ namespace Ict.Common.Controls
                                                       System.Windows.Forms.AnchorStyles.Right)));
             this.pnlContent.BackColor = System.Drawing.SystemColors.Info;
             this.pnlContent.Font = new System.Drawing.Font("Verdana", 6.75F);
-            this.pnlContent.Location = new System.Drawing.Point(0, 28);
-            this.pnlContent.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlContent.Location = new System.Drawing.Point(0, 19);
+            this.pnlContent.Padding = new System.Windows.Forms.Padding(0, 9, 0, 0);
             this.pnlContent.Name = "pnlContent";
-            this.pnlContent.Size = new System.Drawing.Size(424, 126);
+            this.pnlContent.Size = new System.Drawing.Size(424, 133);
             this.pnlContent.TabIndex = 2;
             //
             // TPnlCollapsible

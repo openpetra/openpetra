@@ -402,8 +402,8 @@ namespace Ict.Common.Controls
                     InternalTitlePaddingBottom = 3;
                     InternalContentPaddingTop = 8;
                     InternalContentPaddingLeft = 0;
-                    InternalContentPaddingRight = 5;
-                    InternalContentPaddingBottom = 8;
+                    InternalContentPaddingRight = 10;
+                    InternalContentPaddingBottom = 5;
                     
                     //Gradient Variables
                     InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
@@ -423,7 +423,7 @@ namespace Ict.Common.Controls
                     UseContentGradient = true;
                     UseContentBackgroundColours = false;
                     break;
-
+                    
                 case TVisualStylesEnum.vsTaskPanel:
                     //TitleFont Variables
                     InternalTitleFont = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
@@ -431,10 +431,20 @@ namespace Ict.Common.Controls
                     InternalTitleFontColourHover = Color.FromArgb(102, 134, 181);
 
                     //ContentFont Variables
-                    InternalContentFont = new System.Drawing.Font("Verdana", 7);
-                    InternalContentFontColour = Color.FromArgb(62, 117, 225);
+                    InternalContentFont = new System.Drawing.Font("Verdana", 8);
+                    InternalContentFontColour = Color.FromArgb(62, 117, 255);
                     InternalContentHoverFontColour = Color.FromArgb(90, 155, 252);
                     InternalContentActivatedFontColour = InternalContentFontColour;
+
+                    // Padding Variables
+                    InternalTitlePaddingTop = 5;
+                    InternalTitlePaddingLeft = 10;
+                    InternalTitlePaddingRight = 8;
+                    InternalTitlePaddingBottom = 0;
+                    InternalContentPaddingTop = 12;
+                    InternalContentPaddingLeft = 0;
+                    InternalContentPaddingRight = 5;
+                    InternalContentPaddingBottom = 15;
 
                     //BackgroundVariables
                     InternalContentBackgroundColour = Color.FromArgb(212, 221, 249);
@@ -447,7 +457,7 @@ namespace Ict.Common.Controls
 
                     //Layout Variables
                     InternalTaskIndentation = 15;
-                    InternalTaskHeight = 15;
+                    InternalTaskHeight = 18;
                     InternalAutomaticNumbering = false;
 
                     //bool variables
@@ -459,15 +469,25 @@ namespace Ict.Common.Controls
                 case TVisualStylesEnum.vsDashboard:
                     //TitleFont Variables
                     InternalTitleFont = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
-                    InternalTitleFontColour = Color.FromArgb(30, 92, 196);
-                    InternalTitleFontColourHover = Color.FromArgb(102, 134, 181);
+                    InternalTitleFontColour = Color.FromArgb(0, 0, 160);
+                    InternalTitleFontColourHover = Color.FromArgb(50, 94, 222);
 
                     //ContentFont Variables
 
 
+                    // Padding Variables
+                    InternalTitlePaddingTop = 7;
+                    InternalTitlePaddingLeft = 2;
+                    InternalTitlePaddingRight = 8;
+                    InternalTitlePaddingBottom = 0;
+                    InternalContentPaddingTop = 0;
+                    InternalContentPaddingLeft = 0;
+                    InternalContentPaddingRight = 0;
+                    InternalContentPaddingBottom = 0;
+
                     //BackgroundVariables
-                    InternalContentBackgroundColour = Color.FromArgb(212, 221, 249);
-                    InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
+                    InternalContentBackgroundColour = Color.FromArgb(176, 196, 222);
+                    InternalTitleBackgroundColour = Color.FromArgb(176, 196, 222);
 
                     //Gradient Variables
                     InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
@@ -480,7 +500,7 @@ namespace Ict.Common.Controls
                     InternalAutomaticNumbering = false;
 
                     //bool variables
-                    UseTitleGradient = true;
+                    UseTitleGradient = false;
                     UseContentGradient = false;
                     UseContentBackgroundColours = false;
 
@@ -508,7 +528,7 @@ namespace Ict.Common.Controls
                     InternalContentPaddingTop = 15;
                     InternalContentPaddingLeft = 0;
                     InternalContentPaddingRight = 5;
-                    InternalContentPaddingBottom = 8;
+                    InternalContentPaddingBottom = 14;
 
                     //Gradient Variables
                     InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
