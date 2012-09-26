@@ -130,6 +130,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
+            FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}",
+                                                                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                                                                AGiftDetailTable.GetDetailNumberDBName());
+            
             ShowData();
             ShowDetails(GetSelectedDetailRow());
 

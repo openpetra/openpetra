@@ -69,6 +69,7 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             SortOrder: GiftTransactionNumber ASC
             RowFilter: AGiftDetail.BatchNumber
+            SortableHeaders: false
         pnlDetails:
             Dock: Fill
             Scrollbars: true

@@ -181,6 +181,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             StringCollection Columns = TYml2Xml.GetElements(ctrl.xmlNode, "Columns");
 
+            if (ctrl.HasAttribute("SortableHeaders"))
+            {
+            	string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
+                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
+            }
+            
             if (Columns.Count > 0)
             {
                 writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Clear();" + Environment.NewLine);
@@ -328,6 +334,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     writer.Template.AddToCodelet("DETAILTABLEFILTER", FilterString);
                 }
+                
             }
 
             return writer.FTemplate;
