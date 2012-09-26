@@ -609,7 +609,10 @@ namespace Ict.Common.Controls
                     UseContentGradient = true;
                     UseContentBackgroundColours = false;
                     break;
-                    
+            
+                default:
+                    System.Windows.Forms.MessageBox.Show("TVisualStyles Constructor: no support for style '" + style.ToString("G") + "'");
+                    break;
            }
         }
         

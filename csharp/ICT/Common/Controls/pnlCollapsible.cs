@@ -24,6 +24,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Diagnostics;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Data;
@@ -55,7 +56,7 @@ namespace Ict.Common.Controls
     public enum THostedControlKind
     {
         hckUserControl,
-            hckTaskList
+        hckTaskList
     }
 #pragma warning restore 1591
 
@@ -69,7 +70,7 @@ namespace Ict.Common.Controls
         #region Private constants and fields
 
         /// <summary>This will be the expanded size of panel. Where "size" is the dimension which adjusts during expansion</summary>
-        private int FExpandedSize;
+        private int FExpandedSize = 200;
 
         /// <summary>Hard-coded value of the collapsed height</summary>
         private const Int16 COLLAPSEDHEIGHT = 24;
@@ -91,7 +92,7 @@ namespace Ict.Common.Controls
         private readonly static Dictionary<TCollapseDirection, Dictionary<bool, Dictionary<bool, int>>> ArrowGraphicIndecies;
 
         /// <summary>Keeps track of the collapsed/expanded state</summary>
-        private bool FIsCollapsed = true;
+        private bool FIsCollapsed = false;
 
         /// <summary>Caches the translated text for several ToolTips</summary>
         private string FToolTipText;
@@ -114,7 +115,7 @@ namespace Ict.Common.Controls
         public readonly static Dictionary<TCollapseDirection, TVisualStylesEnum> DEFAULT_STYLE;
 
         /// <summary></summary>
-        public Dictionary<TCollapseDirection, TVisualStylesEnum> StoredStyles;
+        public readonly static Dictionary<TCollapseDirection, TVisualStylesEnum> StoredStyles;
 
         /// <summary></summary>
         private THostedControlKind FHostedControlKind;
@@ -138,16 +139,20 @@ namespace Ict.Common.Controls
         private TVisualStylesEnum FVisualStyleEnum;
 
         /// <summary></summary>
-        private TVisualStyles VisualStyle;
+        private TVisualStyles FVisualStyle;
 
         #endregion
 
         #region Events
 
         /// <summary>Event is fired after the panel has collapsed.</summary>
+        [Description("Event is fired after the panel has collapsed.")]
+        [Category("Collapsible Panel")]
         public event System.EventHandler Collapsed;
 
         /// <summary>Event is fired after the panel has expanded.</summary>
+        [Description("Event is fired after the panel has expanded.")]
+        [Category("Collapsible Panel")]
         public event System.EventHandler Expanded;
 
         #endregion
@@ -157,6 +162,9 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Sets the Title and ToolTip Text. (They are always the same).
         /// </summary>
+        [Description("Title and ToolTip Text. (They are always the same).")]
+        [Browsable(true)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public override string Text
         {
             get
@@ -171,6 +179,8 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>True if the panel is collapsed, otherwise false.</summary>
+        [Description("Set to true if the panel is to be shown collapsed, otherwise to false.")]
+        [Category("Collapsible Panel")]
         public bool IsCollapsed
         {
             get
@@ -192,7 +202,10 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// The size (width <em>or</em>height, depending on <see cref="FCollapseDirection" />) the Control expands to when it gets expanded.
         /// </summary>
+        [Description("The size (width *or* height, depending on the the 'CollapseDirection') the Control expands to when it gets expanded.")]
+        [Category("Collapsible Panel")]
         public int ExpandedSize
         {
             get
@@ -202,12 +215,22 @@ namespace Ict.Common.Controls
             set
             {
                 FExpandedSize = value;
+                
+                // Make this change visible in the WinForms Designer
+                if ((this.Site != null)
+                    && (this.Site.DesignMode))
+                {
+                    Toggle();
+                    Toggle();
+                }                
             }
         }
 
         /// <summary>
         /// Sets the Collapse Direction.
         /// </summary>
+        [Description("Direction in which the panel collapses. Note: certain 'VisualStyleEnum' settings only work with certain CollapseDirection settings!")]
+        [Category("Collapsible Panel")]
         public TCollapseDirection CollapseDirection
         {
             get
@@ -217,6 +240,14 @@ namespace Ict.Common.Controls
             set
             {
                 ChangeDirection(value);
+                
+                // Make this change visible in the WinForms Designer
+                if ((this.Site != null)
+                    && (this.Site.DesignMode))
+                {
+                    Toggle();
+                    Toggle();
+                }                                
             }
         }
 
@@ -227,6 +258,8 @@ namespace Ict.Common.Controls
         /// and 2) nothing ever checks if hostedcontrolnamespace and hostedcontrolclass is set. You the
         /// programmer must make sure you set them or else a runtime error will occur!!
         /// </summary>
+        [Description("Defines what kind of Control the panel hosts inside itself.")]
+        [Category("Collapsible Panel")]
         public THostedControlKind HostedControlKind
         {
             get
@@ -236,10 +269,19 @@ namespace Ict.Common.Controls
             set
             {
                 FHostedControlKind = value;
+                
+                // Make this change visible in the WinForms Designer
+                if ((this.Site != null)
+                    && (this.Site.DesignMode))
+                {
+                    Expand();
+                }
             }
         }
 
         /// <summary>There is no real Field called FUserControlString, but this is a convienence for the user.</summary>
+        [Category("Collapsible Panel")]
+        [Description("If 'HostedControlKind' is set to 'hckUserControl': the full namespace + classname of the UserControl that is to be hosted inside the panel.")]
         public string UserControlString
         {
             get
@@ -255,6 +297,8 @@ namespace Ict.Common.Controls
         }
 
         /// <summary></summary>
+        [Category("Collapsible Panel")]
+        [Description("If 'HostedControlKind' is set to 'hckUserControl': the full namespace of the UserControl that is to be hosted inside the panel.")]
         public string UserControlNamespace
         {
             get
@@ -268,6 +312,8 @@ namespace Ict.Common.Controls
         }
 
         /// <summary></summary>
+        [Category("Collapsible Panel")]
+        [Description("If 'HostedControlKind' is set to 'hckUserControl': the classname of the UserControl that is to be hosted inside the panel.")]
         public string UserControlClass
         {
             get
@@ -281,6 +327,8 @@ namespace Ict.Common.Controls
         }
 
         /// <summary></summary>
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public UserControl UserControlInstance
         {
             get
@@ -290,6 +338,8 @@ namespace Ict.Common.Controls
         }
 
         /// <summary></summary>
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public XmlNode TaskListNode
         {
             get
@@ -304,6 +354,8 @@ namespace Ict.Common.Controls
         }
 
         /// <summary></summary>
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public TTaskList TaskListInstance
         {
             get
@@ -317,8 +369,10 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This is not yet implemented.
+        /// Visual Style.
         /// </summary>
+        [Description("The Style in which the panel will be displayed. Note: certain Styles only work with certain 'CollapseDirection' settings!")]
+        [Category("Collapsible Panel")]
         public TVisualStylesEnum VisualStyleEnum
         {
             get
@@ -335,6 +389,21 @@ namespace Ict.Common.Controls
 
         #region Constructors
 
+        /// <summary>
+        /// Constructor (esp. for WinForms Designer!)
+        /// </summary>
+        public TPnlCollapsible()
+        {
+            if (TCommonControlsHelper.IsInDesignMode())
+            {
+                InitializeComponent();
+            }
+            else
+            {
+                SetupControl(new object[] {});
+            }
+        } 
+        
         /// <summary>
         /// static constructors are called once ever during runtime, and it is called the first time that the class
         /// is used in any way whatsoever (when followed after `new` keyword, when called staticly, etc).
@@ -376,7 +445,11 @@ namespace Ict.Common.Controls
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][true].Add(true, 5);
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][true].Add(false, 4);
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][false].Add(true, 3);
-            ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][false].Add(false, 2);
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][false].Add(false, 2);            
+            
+            StoredStyles = new Dictionary<TCollapseDirection, TVisualStylesEnum>();
+            StoredStyles[TCollapseDirection.cdVertical] = DEFAULT_STYLE[TCollapseDirection.cdVertical];
+            StoredStyles[TCollapseDirection.cdHorizontal] = DEFAULT_STYLE[TCollapseDirection.cdHorizontal];            
         }
 
         /// <summary>
@@ -389,8 +462,27 @@ namespace Ict.Common.Controls
         ///     bool || System.Boolean                  = The last parameter of this Type will be set as panel's IsCollapsed property value.
         ///     System.Xml.XmlNode                      = The last parameter of this Type will be set as panel's TaskListNode
         ///     int || System.Int32                     = The last parameter of this Type will be set as panel's ExpandedSize
-        /// </summary>
+        /// </summary>        
         public TPnlCollapsible(params object[] Args)
+        {
+            if (!TCommonControlsHelper.IsInDesignMode())
+            {
+                SetupControl(Args);
+            }
+        }
+
+        /// <summary>
+        /// Allows different initial settings to be passed in in any order.
+        /// Below is the mapping of input Types to which setting it affects:
+        ///     Ict.Common.Controls.THostedControlKind  = The last parameter of this Type will be set as panel's HostedControlKind
+        ///     string || System.String                 = The last parameter of this Type will be set as panel's UserControlString. It should be something like "Some.Namespace.SomeUserControlClass"
+        ///     Ict.Common.Controls.TCollapseDirection  = The last parameter of this Type will be set as panel's CollapseDirection
+        ///     Ict.Common.Controls.TVisualStylesEnum   = The last parameter of this Type will be set as panel's VisualStyleEnum
+        ///     bool || System.Boolean                  = The last parameter of this Type will be set as panel's IsCollapsed property value.
+        ///     System.Xml.XmlNode                      = The last parameter of this Type will be set as panel's TaskListNode
+        ///     int || System.Int32                     = The last parameter of this Type will be set as panel's ExpandedSize
+        /// </summary>                
+        private void SetupControl(params object[] Args)
         {
             bool VisualStyleSpecified = false;
             bool CollapseDirectionSpecified = false;
@@ -401,29 +493,24 @@ namespace Ict.Common.Controls
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-            #region CATALOGI18N
 
-            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblDetailHeading.Text = Catalog.GetString("Collapsible Panel");
-            #endregion
-
+            this.lblDetailHeading.Text = "Collapsible Panel";
 
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             
             #region defaults
+            
             this.Text = "## Developer needs to change this ##";
             this.HostedControlKind = THostedControlKind.hckTaskList;
             this.UserControlNamespace = "";
             this.UserControlClass = "";
-            this.StoredStyles = new Dictionary<TCollapseDirection, TVisualStylesEnum>();
-            this.StoredStyles[TCollapseDirection.cdVertical] = DEFAULT_STYLE[TCollapseDirection.cdVertical];
-            this.StoredStyles[TCollapseDirection.cdHorizontal] = DEFAULT_STYLE[TCollapseDirection.cdHorizontal];
             //this.VisualStyleEnum = new TVisualStyles(this.StoredStyles[CollapseDirection]);
             this.FTaskListNode = TYml2Xml.CreateXmlDocument();
             this.ExpandedSize = 153;
             //this.UserControlInstance -- intentionally left undefined at first
             //this.TaskListInstance -- intentionally left undefined at first
+            
             #endregion
 
 
@@ -641,7 +728,7 @@ namespace Ict.Common.Controls
         /// Causes the panel to expand. The Title Panel and the Content Panel will be visible after that.
         /// </summary>
         public void Expand()
-        {
+        {            
             FIsCollapsed = false;
             btnToggle.ImageIndex = 0;
             TitleShow();
@@ -660,24 +747,34 @@ namespace Ict.Common.Controls
                 case THostedControlKind.hckUserControl:
                     if (FUserControl != null) 
                     {
-                        FUserControl.Visible = true;    
+                        FUserControl.Visible = true;                        
                     }
                     else
                     {
                         InstantiateUserControl();
                     }
                     
+                    if (FTaskListInstance != null) 
+                    {
+                        FTaskListInstance.Visible = false;    
+                    }                    
+                    
                     break;
 
                 case THostedControlKind.hckTaskList:
                     if (FTaskListInstance != null) 
                     {
-                        FTaskListInstance.Visible = true;    
+                        FTaskListInstance.Visible = true;                            
                     }
                     else
                     {
                         InstantiateTaskList();
                     }
+                    
+                    if (FUserControl != null) 
+                    {
+                        FUserControl.Visible = false;    
+                    }                    
                     
                     break;
             }
@@ -699,13 +796,21 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Allow the outside to force the usercontrol to initialize.
+        /// Allow the outside to force the UserControl to initialize.
         /// </summary>
         public UserControl RealiseUserControlNow()
         {
             return RealiseUserControl();
         }
 
+        /// <summary>
+        /// Allow the outside to force the TaskList to initialize.
+        /// </summary>
+        public TTaskList RealiseTaskListNow()        
+        {
+            return InstantiateTaskList();
+        }
+        
         #endregion
 
         #region Helper Methods
@@ -855,20 +960,48 @@ namespace Ict.Common.Controls
         }
 
         /// <summary></summary>
-        private void InstantiateTaskList()
+        private TTaskList InstantiateTaskList()
         {
-            //needs to set correct visual style.
             if (FTaskListNode == null)
             {
-                throw new ENoTaskListNodeSpecifiedException();
+                if ((this.Site == null) 
+                    || (!this.Site.DesignMode))
+                {
+                    throw new ENoTaskListNodeSpecifiedException();    
+                }
+                else
+                {
+                    // Show some hard-coded Tasks in WinForm Designer
+                    FTaskListNode = GetHardCodedXmlNodes_ForDesignerOnly();
+                }
             }
 
             FTaskListInstance = new Ict.Common.Controls.TTaskList(FTaskListNode, FVisualStyleEnum);
             this.pnlContent.Controls.Add(FTaskListInstance);
-            //FTaskListInstance.Anchor = (System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
+            
             FTaskListInstance.Dock = System.Windows.Forms.DockStyle.Fill;
+            
+            return FTaskListInstance;
         }
 
+        /// <summary>
+        /// Used ONLY for showing some sensible data in the Designer if FHostedControlKind == <see cref="THostedControlKind.hckTaskList" />.
+        /// </summary>
+        private XmlNode GetHardCodedXmlNodes_ForDesignerOnly()
+        {
+            string[] lines = new string[7];
+            
+            lines[0] = "TaskGroup:\n";
+            lines[1] = "    Task1:\n";
+            lines[2] = "        Label: First Item";
+            lines[3] = "    Task2:\n";
+            lines[4] = "        Label: Second Item";
+            lines[5] = "    Task3:\n";
+            lines[6] = "        Label: Third Item";
+            
+            return new TYml2Xml(lines).ParseYML2TaskListRoot();
+        }
+        
         /// <summary>
         /// Changes the Visual Style. If the given style is not compatible with the current
         /// direction, then it is simply ignored and the current style is kept and the
@@ -876,26 +1009,23 @@ namespace Ict.Common.Controls
         /// </summary>
         private TVisualStylesEnum ChangeVisualStyle(TVisualStylesEnum AVisualStyle)
         {
-            TVisualStyles style;
-
             //This is to support future support where styles can work in multiple directions.
             foreach (TCollapseDirection dir in DirectionsForStyle(AVisualStyle))
             {
                 StoredStyles[dir] = AVisualStyle;
             }
-            
+ 
             if (! DirStyleMatch(FCollapseDirection, AVisualStyle)  )
             {
                 return FVisualStyleEnum;
             }
 
             FVisualStyleEnum = AVisualStyle;
-            style = new TVisualStyles(AVisualStyle);
-            this.VisualStyle = style;
+            FVisualStyle = new TVisualStyles(AVisualStyle);
 
-            this.pnlTitleText.Padding = new Padding(VisualStyle.TitlePaddingLeft, VisualStyle.TitlePaddingTop, 
-                VisualStyle.TitlePaddingRight, VisualStyle.TitlePaddingBottom);                
-            
+            pnlTitleText.Padding = new Padding(FVisualStyle.TitlePaddingLeft, FVisualStyle.TitlePaddingTop, 
+                FVisualStyle.TitlePaddingRight, FVisualStyle.TitlePaddingBottom);                
+
             if (this.TaskListInstance != null)
             {
                 switch (AVisualStyle)
@@ -915,56 +1045,56 @@ namespace Ict.Common.Controls
                         break;
                 }
             }
+                                   
+            lblDetailHeading.Font = FVisualStyle.TitleFont;
+            lblDetailHeading.Height = FVisualStyle.TitleFont.Height + FVisualStyle.TitleHeightAdjustment;
             
-            this.lblDetailHeading.Font = style.TitleFont;
-            this.lblDetailHeading.Height = style.TitleFont.Height + style.TitleHeightAdjustment;
-            
-            this.lblDetailHeading.ForeColor = style.TitleFontColour;
-            this.tipCollapseExpandHints.ForeColor = style.TitleFontColourHover;
+            lblDetailHeading.ForeColor = FVisualStyle.TitleFontColour;
+            tipCollapseExpandHints.ForeColor = FVisualStyle.TitleFontColourHover;
 
             //TODO: border
 
             //Gradient
-            if (this.VisualStyle.UseTitleGradient)
+            if (FVisualStyle.UseTitleGradient)
             {
-                this.SuspendLayout();
-                this.pnlTitle.GradientColorBottom = style.TitleGradientEnd;
-                this.pnlTitle.GradientColorTop = style.TitleGradientStart;
-                this.pnlTitle.GradientMode = style.TitleGradientMode;
-                this.pnlTitleText.GradientColorBottom = style.TitleGradientEnd;
-                this.pnlTitleText.GradientColorTop = style.TitleGradientStart;
-                this.pnlTitleText.GradientMode = style.TitleGradientMode;
-                this.ResumeLayout();
+                SuspendLayout();
+                pnlTitle.GradientColorBottom = FVisualStyle.TitleGradientEnd;
+                pnlTitle.GradientColorTop = FVisualStyle.TitleGradientStart;
+                pnlTitle.GradientMode = FVisualStyle.TitleGradientMode;
+                pnlTitleText.GradientColorBottom = FVisualStyle.TitleGradientEnd;
+                pnlTitleText.GradientColorTop = FVisualStyle.TitleGradientStart;
+                pnlTitleText.GradientMode = FVisualStyle.TitleGradientMode;
+                ResumeLayout();
             }
             else
             {
-                this.SuspendLayout();
-                this.pnlTitle.GradientColorBottom = style.TitleBackgroundColour;
-                this.pnlTitle.GradientColorTop = style.TitleBackgroundColour;
-                this.pnlTitle.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;
-                this.pnlTitleText.GradientColorBottom = style.TitleBackgroundColour;
-                this.pnlTitleText.GradientColorTop = style.TitleBackgroundColour;
-                this.pnlTitleText.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;                
-                this.ResumeLayout();
+                SuspendLayout();
+                pnlTitle.GradientColorBottom = FVisualStyle.TitleBackgroundColour;
+                pnlTitle.GradientColorTop = FVisualStyle.TitleBackgroundColour;
+                pnlTitle.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;
+                pnlTitleText.GradientColorBottom = FVisualStyle.TitleBackgroundColour;
+                pnlTitleText.GradientColorTop = FVisualStyle.TitleBackgroundColour;
+                pnlTitleText.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;                
+                ResumeLayout();
             }                       
 
-            if (this.VisualStyle.UseContentGradient)
+            if (FVisualStyle.UseContentGradient)
             {
-                this.SuspendLayout();
-                this.pnlContent.GradientColorBottom = style.ContentGradientEnd;
-                this.pnlContent.GradientColorTop = style.ContentGradientEnd;
-                this.pnlContent.GradientMode = style.ContentGradientMode;
-                this.ResumeLayout();
+                SuspendLayout();
+                pnlContent.GradientColorBottom = FVisualStyle.ContentGradientEnd;
+                pnlContent.GradientColorTop = FVisualStyle.ContentGradientEnd;
+                pnlContent.GradientMode = FVisualStyle.ContentGradientMode;
+                ResumeLayout();
             }
             else
             {
-                this.SuspendLayout();
-                this.pnlContent.GradientColorBottom = style.ContentBackgroundColour;
-                this.pnlContent.GradientColorTop = style.ContentBackgroundColour;
-                this.pnlContent.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;
-                this.ResumeLayout();
+                SuspendLayout();
+                pnlContent.GradientColorBottom = FVisualStyle.ContentBackgroundColour;
+                pnlContent.GradientColorTop = FVisualStyle.ContentBackgroundColour;
+                pnlContent.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;
+                ResumeLayout();
             }                       
-            
+
             return AVisualStyle;
         }
 
@@ -1001,7 +1131,7 @@ namespace Ict.Common.Controls
             TLogging.Log("BtnToggleMouseEnter: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
 
             btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][IsCollapsed][true];
-            lblDetailHeading.ForeColor = this.VisualStyle.TitleFontColourHover;
+            lblDetailHeading.ForeColor = FVisualStyle.TitleFontColourHover;
 
             TLogging.Log("BtnToggleMouseEnter END: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
         }
@@ -1016,7 +1146,7 @@ namespace Ict.Common.Controls
             TLogging.Log("BtnToggleMouseLeave: btnTogglePartnerDetails.ImageIndex: " + btnToggle.ImageIndex.ToString());
 
             btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][IsCollapsed][false];
-            lblDetailHeading.ForeColor = this.VisualStyle.TitleFontColour;
+            lblDetailHeading.ForeColor = FVisualStyle.TitleFontColour;
 
             TLogging.Log("BtnToggleMouseLeave END: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
         }
