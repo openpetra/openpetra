@@ -438,20 +438,15 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             }
 
             // 'Issue Date' must not be a future date
-            ValidationColumn = ARow.Table.Columns[PmDocumentTable.ColumnDateOfStartId];
+            ValidationColumn = ARow.Table.Columns[PmDocumentTable.ColumnDateOfIssueId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = null;
 
-                if (!ARow.IsDateOfIssueNull()
-                    && (ARow.DateOfIssue > DateTime.Today))
-                {
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_FUTUREDATE_ERROR,
-                                new string[] { ValidationControlsData.ValidationControlLabel })),
-                        ValidationColumn, ValidationControlsData.ValidationControl);
-                }
+                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.DateOfIssue, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -644,14 +639,8 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             {
                 VerificationResult = null;
 
-                if (!ARow.IsStartDateNull()
-                    && (ARow.StartDate > DateTime.Today))
-                {
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_FUTUREDATE_ERROR,
-                                new string[] { ValidationControlsData.ValidationControlLabel })),
-                        ValidationColumn, ValidationControlsData.ValidationControl);
-                }
+                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.StartDate, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -664,14 +653,8 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             {
                 VerificationResult = null;
 
-                if (!ARow.IsEndDateNull()
-                    && (ARow.EndDate > DateTime.Today))
-                {
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_FUTUREDATE_ERROR,
-                                new string[] { ValidationControlsData.ValidationControlLabel })),
-                        ValidationColumn, ValidationControlsData.ValidationControl);
-                }
+                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.EndDate, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -891,14 +874,8 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             {
                 VerificationResult = null;
 
-                if (!ARow.IsGenAppRecvgFldAcceptNull()
-                    && (ARow.GenAppRecvgFldAccept > DateTime.Today))
-                {
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_FUTUREDATE_ERROR,
-                                new string[] { ValidationControlsData.ValidationControlLabel })),
-                        ValidationColumn, ValidationControlsData.ValidationControl);
-                }
+                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.GenAppRecvgFldAccept, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
