@@ -68,10 +68,10 @@ csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLAttributes-generated.cs:86 (first o
 YOU DO NOT HAVE ENOUGH PERMISSIONS TO ACCESS THE FINANCE MODULE
 --> 2 derivates
 "You do not have enough permissions to access the Finance module"
-csharp\ICT\Petra\Client\app\Core\Cache.cs:268
+csharp\ICT\Petra\Client\app\Core\Cache.cs:287
 -----
 "You do not have enough permissions to access the Finance module:"
-csharp\ICT\Petra\Client\app\Core\Cache.cs:420
+csharp\ICT\Petra\Client\app\Core\Cache.cs:439
 -----
 
 -----------------------
@@ -317,7 +317,7 @@ EXTRACT NAME
 csharp\ICT\Petra\Client\CommonDialogs\CreateExtract.cs:57 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Extract Name"
-csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:909
+csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:913
 -----
 "Extract Name: "
 csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractAddSubscriptionDialog.ManualCode.cs:57 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -330,10 +330,10 @@ DESCRIPTION
 csharp\ICT\Petra\Client\CommonDialogs\CreateExtract.cs:58 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Description"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:1050 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:1054 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "description"
-csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:115 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:124 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -356,7 +356,7 @@ csharp\ICT\Petra\Client\CommonDialogs\LoginDialog.cs:100 (first of several occur
 csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "User Id"
-csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:978
+csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:982
 -----
 
 -----------------------
@@ -422,7 +422,7 @@ COUNTRY CODE
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Country Code"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1311 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1315 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -432,7 +432,7 @@ COUNTRY NAME LOCAL
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Country Name Local"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1321
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1325
 -----
 
 -----------------------
@@ -442,7 +442,7 @@ INT'L ACCESS CODE
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:134 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Int'l Access Code"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1326
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1330
 -----
 
 -----------------------
@@ -452,7 +452,7 @@ INT'L DIALLING CODE
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:135 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Int'l Dialling Code"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1331
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1335
 -----
 
 -----------------------
@@ -462,7 +462,7 @@ INT'L POSTAL TYPE
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:137 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Int'l Postal Type"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1336
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1340
 -----
 
 -----------------------
@@ -472,7 +472,7 @@ TIME ZONE FROM
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:138 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Time Zone From"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1341
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1345
 -----
 
 -----------------------
@@ -482,7 +482,7 @@ TO
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:139 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "To"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1342 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1346 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 " to "
 csharp\ICT\Petra\Client\MPartner\Gui\UC_FamilyMembers.ManualCode.cs:56
@@ -498,7 +498,7 @@ DELETABLE
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:140 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Deletable"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1352 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1356 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -551,7 +551,7 @@ NUMBER OF YEARS
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Number Of Years"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1219
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1223
 -----
 
 -----------------------
@@ -561,7 +561,7 @@ NUMBER OF MONTHS
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:131 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Number Of Months"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1224
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1228
 -----
 
 -----------------------
@@ -571,7 +571,7 @@ NUMBER OF DAYS
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Number Of Days"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1229
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1233
 -----
 
 -----------------------
@@ -581,7 +581,7 @@ NUMBER OF HOURS
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Number Of Hours"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1234
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1238
 -----
 
 -----------------------
@@ -591,7 +591,7 @@ NUMBER OF MINUTES
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:134 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Number Of Minutes"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1239
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1243
 -----
 
 -----------------------
@@ -601,7 +601,7 @@ FREQUENCY CODE
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:135 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Frequency Code"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1209 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1213 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -611,7 +611,7 @@ FREQUENCY DESCRIPTION
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:136 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Frequency Description"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1214
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1218
 -----
 
 -----------------------
@@ -621,7 +621,7 @@ INT POSTAL TYPE CODE
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:142 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Int. Postal Type Code"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:1045
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:1049
 -----
 
 -----------------------
@@ -631,7 +631,7 @@ LANGUAGE CODE
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\LanguageCodeSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Language Code"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\LanguageCodeSetup-generated.cs:1084 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\LanguageCodeSetup-generated.cs:1088 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -641,7 +641,7 @@ LANGUAGE DESCRIPTION
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\LanguageCodeSetup-generated.cs:131 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Language Description"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\LanguageCodeSetup-generated.cs:1089
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\LanguageCodeSetup-generated.cs:1093
 -----
 
 -----------------------
@@ -651,7 +651,7 @@ LABEL
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Label"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1224
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1228
 -----
 
 -----------------------
@@ -661,7 +661,7 @@ GROUP HEADING OPTIONAL
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Group heading (optional)"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1229
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1233
 -----
 
 -----------------------
@@ -671,7 +671,7 @@ DATA TYPE
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:134 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Data type"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1234
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1238
 -----
 
 -----------------------
@@ -681,7 +681,7 @@ MAXIMUM LENGTH
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:135 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Maximum length"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup.ManualCode.cs:826
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup.ManualCode.cs:829
 -----
 
 -----------------------
@@ -691,17 +691,17 @@ HELP DESCRIPTION
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:136 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Help description"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1249
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1253
 -----
 
 -----------------------
 CURRENCY CODE
 --> 4 derivates
 "Currency Code"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1239 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1243 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Currency code"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup.ManualCode.cs:836
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup.ManualCode.cs:839
 -----
 "Currency Code:"
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:141 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -743,7 +743,7 @@ CURRENCY NAME
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:142 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Currency Name"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1083
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1087
 -----
 
 -----------------------
@@ -753,7 +753,7 @@ CURRENCY SYMBOL
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:143 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Currency Symbol"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1088
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1092
 -----
 
 -----------------------
@@ -763,7 +763,7 @@ NUMBER OF DECIMALS
 csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:145 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Number of Decimals"
-csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1098
+csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1102
 -----
 
 -----------------------
@@ -776,7 +776,7 @@ csharp\ICT\Petra\Client\MCommon\Gui\FieldOfService.cs:83 (first of several occur
 csharp\ICT\Petra\Client\MCommon\Gui\FieldOfService.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Partner &Name:"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:338 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:339 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -884,7 +884,7 @@ csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:145 (first of several o
 csharp\ICT\Petra\Client\MPartner\Gui\PartnerImport.ManualCode.cs:506
 -----
 "P&ost Code:"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:342 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:343 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -894,7 +894,7 @@ COUNTY
 csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:153 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Co&unty:"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:344 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:345 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -920,7 +920,7 @@ csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:162 (first of several o
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Summary-generated.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&Email:"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:337 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:338 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -950,7 +950,7 @@ csharp\ICT\Petra\Server\lib\MPersonnel\web\IndividualData.cs:399 (first of sever
 DETAILS
 --> 2 derivates
 "Details: "
-csharp\ICT\Petra\Client\MPartner\logic\PartnerFind.cs:584
+csharp\ICT\Petra\Client\MPartner\logic\PartnerFind.cs:540
 -----
 "Details"
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:97 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -973,7 +973,7 @@ COST TYPE CODE
 csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Cost Type Code"
-csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:1119
+csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:1137
 -----
 
 -----------------------
@@ -983,7 +983,7 @@ UNASSIGNABLE
 csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:134 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Unassignable"
-csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:1129 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:1147 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -993,7 +993,7 @@ UNASSIGNABLE DATE
 csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:135 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Unassignable Date"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\MaritalStatusSetup-generated.cs:1135 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:1152 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -1069,7 +1069,7 @@ CURRENCY
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Currency"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1318 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1322 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&Currency:"
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1088,7 +1088,7 @@ INVOICE NUMBER
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Invoice &Number"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1323
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1327
 -----
 
 -----------------------
@@ -1098,7 +1098,7 @@ TYPE
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "T&ype"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1328
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1332
 -----
 "&Type:"
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APSupplierTransactions-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1107,7 +1107,7 @@ csharp\ICT\Petra\Client\MFinance\Gui\AP\APSupplierTransactions-generated.cs:73 (
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Type"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1006
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1010
 -----
 
 -----------------------
@@ -1117,13 +1117,13 @@ REFERENCE
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:78 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&Reference"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1333 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1337 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Reference:"
 csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport-generated.cs:100 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Reference"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:919
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:923
 -----
 "reference"
 csharp\ICT\Petra\Server\lib\MFinance\Gift\Gift.Importing.cs:210 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1136,7 +1136,7 @@ DATE ISSUED
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:79 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&Date Issued"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1338
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1342
 -----
 
 -----------------------
@@ -1146,7 +1146,7 @@ DATE DUE
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:80 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Date D&ue"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1343
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1347
 -----
 
 -----------------------
@@ -1156,7 +1156,7 @@ DISCOUNT
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:83 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Discount"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1348
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1352
 -----
 
 -----------------------
@@ -1169,16 +1169,16 @@ csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:84 (first of
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:93 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&Amount"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1353
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1357
 -----
 "A&mount"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1373
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1377
 -----
 "Amount:"
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APPayment-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Amount"
-csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:142 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 " Amount:"
 csharp\ICT\Petra\Client\MFinance\logic\SetupAdminGrants.cs:102
@@ -1191,7 +1191,7 @@ EXCHANGE RATE
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "E&xchange Rate"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1358
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1362
 -----
 "Exchange Rate:"
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APPayment-generated.cs:78 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1200,7 +1200,7 @@ csharp\ICT\Petra\Client\MFinance\Gui\AP\APPayment-generated.cs:78 (first of seve
 csharp\ICT\Petra\Client\MFinance\Gui\GL\GLRevaluation.ManualCode.cs:169
 -----
 "exchange rate"
-csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:176
+csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:194
 -----
 
 -----------------------
@@ -1230,16 +1230,16 @@ NARRATIVE
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:91 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Narrati&ve"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1363
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1367
 -----
 "Narrative:"
 csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport-generated.cs:99 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Narrative"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:914
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:918
 -----
 "narrative"
-csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:253
+csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:271
 -----
 
 -----------------------
@@ -1249,7 +1249,7 @@ DETAIL REF
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:92 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Detail &Ref"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1368
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1372
 -----
 
 -----------------------
@@ -1259,16 +1259,16 @@ COST CENTRE
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:94 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "C&ost Centre"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1378
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1382
 -----
 "Cost Centre:"
 csharp\ICT\Petra\Client\MFinance\Gui\Budget\MaintainBudget-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Cost Centre"
-csharp\ICT\Petra\Client\MFinance\Gui\Budget\MaintainBudget-generated.cs:1011 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Budget\MaintainBudget-generated.cs:1015 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "cost centre"
-csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:204
+csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:222
 -----
 
 -----------------------
@@ -1288,13 +1288,13 @@ ACCOUNT
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:96 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Accou&nt"
-csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1383
+csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1387
 -----
 "Account:"
 csharp\ICT\Petra\Client\MFinance\Gui\Budget\MaintainBudget-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Account"
-csharp\ICT\Petra\Client\MFinance\Gui\Budget\MaintainBudget-generated.cs:1016 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Budget\MaintainBudget-generated.cs:1020 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -1460,7 +1460,7 @@ BANK ACCOUNT
 csharp\ICT\Petra\Client\MFinance\Gui\AP\APPayment-generated.cs:80 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Bank Account"
-csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1050 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1054 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -1639,7 +1639,7 @@ KEY MINISTRY
 csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport-generated.cs:98 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Key Ministry"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:929
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:933
 -----
 
 -----------------------
@@ -1656,7 +1656,7 @@ csharp\ICT\Petra\Client\MFinance\Gui\FinanceMain-generated.cs:96 (first of sever
 DATE EFFECTIVE
 --> 2 derivates
 "Date Effective"
-csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:116
+csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:125
 -----
 "Date Effective:"
 csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftFieldAdjustment-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1666,7 +1666,7 @@ csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftFieldAdjustment-generated.cs:73 (f
 COST CENTRE NAME
 --> 2 derivates
 "Cost Centre Name"
-csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:141 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Cost Centre Name:"
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCostCentreHierarchy-generated.cs:74 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1676,7 +1676,7 @@ csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCostCentreHierarchy-generated.cs:74
 NOTHING TO PRINT
 --> 2 derivates
 "nothing to print"
-csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:791
+csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:800
 -----
 "Nothing to print"
 csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftDonorsOfWorkerLetter.ManualCode.cs:70 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1692,10 +1692,10 @@ csharp\ICT\Petra\Client\MFinance\Gui\Common\SelectBankStatement.ManualCode.cs:11
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:145 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "D&ate"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1079 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1083 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "date"
-csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:257
+csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:275
 -----
 
 -----------------------
@@ -1774,7 +1774,7 @@ START DATE
 csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftFieldAdjustment-generated.cs:71 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Start Date"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:949 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:953 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "S&tart Date:"
 csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1790,7 +1790,7 @@ END DATE
 csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftFieldAdjustment-generated.cs:72 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "End Date"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:954
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:958
 -----
 "End date:"
 csharp\ICT\Petra\Client\MReporting\Gui\MFinDev\NewDonorReport-generated.cs:74 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1813,7 +1813,7 @@ PUBLICATION CODE
 csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftNewDonorLetter-generated.cs:70 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Publication Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1096 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1100 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Pub&lication Code:"
 csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1882,7 +1882,7 @@ BATCH DESCRIPTION
 csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:94 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Batch Description"
-csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1040 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1044 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "batch description"
 csharp\ICT\Petra\Server\lib\MFinance\Gift\Gift.Importing.cs:157 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1895,7 +1895,7 @@ GL EFFECTIVE DATE
 csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:97 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "GL Effective Date"
-csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1055
+csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1059
 -----
 
 -----------------------
@@ -1905,7 +1905,7 @@ HASH TOTAL
 csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:98 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Hash Total"
-csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1060 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1064 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "hash total"
 csharp\ICT\Petra\Server\lib\MFinance\Gift\Gift.Importing.cs:159
@@ -1918,13 +1918,13 @@ EXCHANGE RATE TO BASE
 csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:100 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Exchange Rate To Base"
-csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1070
+csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1074
 -----
 "Exchange Rate to Base:"
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:94 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Exchange Rate to Base"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:877
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:881
 -----
 "exchange rate to base"
 csharp\ICT\Petra\Server\lib\MFinance\Gift\Gift.Importing.cs:172
@@ -1937,7 +1937,7 @@ METHOD OF PAYMENT
 csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:101 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Method of Payment"
-csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1075 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1079 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Method of &Payment"
 csharp\ICT\Petra\Client\MFinance\Gui\FinanceMain-generated.cs:120 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -1983,7 +1983,7 @@ METHOD OF GIVING
 csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Method of Giving"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1121 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1125 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Method of &Giving"
 csharp\ICT\Petra\Client\MFinance\Gui\FinanceMain-generated.cs:119 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -2095,7 +2095,7 @@ JOURNAL
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLAttributes-generated.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "journal"
-csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:171 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:189 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2105,10 +2105,10 @@ TRANSACTION
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLAttributes-generated.cs:83 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "transaction"
-csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:204 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:222 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Transaction"
-csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:288 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:306 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2118,7 +2118,7 @@ TYPE CODE
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLAttributes-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Type Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\PartnerTypeSetup-generated.cs:1084 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\PartnerTypeSetup-generated.cs:1088 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2128,7 +2128,7 @@ BATCH HASH TOTAL
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches-generated.cs:91 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Batch Hash Total"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches-generated.cs:905
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches-generated.cs:902
 -----
 
 -----------------------
@@ -2138,13 +2138,13 @@ EFFECTIVE DATE
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches-generated.cs:92 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Effective Date"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches-generated.cs:910 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches-generated.cs:907 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "effective Date"
 csharp\ICT\Petra\Server\lib\MFinance\Gift\Gift.Importing.cs:160
 -----
 "effective date"
-csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:177
+csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:195
 -----
 
 -----------------------
@@ -2184,7 +2184,7 @@ JOURNAL DESCRIPTION
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Journal Description"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:852
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:856
 -----
 
 -----------------------
@@ -2194,7 +2194,7 @@ SUB SYSTEM
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:90 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Sub System"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:857
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:861
 -----
 
 -----------------------
@@ -2204,10 +2204,10 @@ TRANSACTION TYPE
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:91 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Transaction Type"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:862
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:866
 -----
 "transaction type"
-csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:173
+csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:191
 -----
 
 -----------------------
@@ -2227,7 +2227,7 @@ COST CENTRE CODE
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:95 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Cost Centre Code"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:904 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:908 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "cost centre code"
 csharp\ICT\Petra\Server\lib\MFinance\Gift\Gift.Importing.cs:275
@@ -2240,10 +2240,10 @@ ACCOUNT CODE
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:96 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Account Code"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:909 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:913 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "account code"
-csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:229
+csharp\ICT\Petra\Server\lib\MFinance\GL\GL.Importing.cs:247
 -----
 
 -----------------------
@@ -2253,7 +2253,7 @@ TRANSACTION DATE
 csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:99 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Transaction Date"
-csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:924
+csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:928
 -----
 
 -----------------------
@@ -2273,7 +2273,7 @@ SINGULAR AMOUNT
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:152 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Singular amount"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1234
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1238
 -----
 
 -----------------------
@@ -2283,7 +2283,7 @@ PLURAL AMOUNT
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:153 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Plural amount"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1244
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1248
 -----
 
 -----------------------
@@ -2293,7 +2293,7 @@ GENDER
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:154 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Gender"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1254 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1258 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&Gender:"
 csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -2309,7 +2309,7 @@ EMAIL ADDRESSES ONE PER LINE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:134 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Email address(es) (one per line)"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1079
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1083
 -----
 
 -----------------------
@@ -2319,7 +2319,7 @@ FILE CODE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:135 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "File Code"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1064
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1068
 -----
 
 -----------------------
@@ -2329,7 +2329,7 @@ CONDITION VALUE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:136 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Condition value"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1069
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1073
 -----
 
 -----------------------
@@ -2349,7 +2349,7 @@ GROUP
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\GiftMotivationSetup-generated.cs:74 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Group"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\GiftMotivationSetup-generated.cs:1064
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\GiftMotivationSetup-generated.cs:1068
 -----
 
 -----------------------
@@ -2359,10 +2359,10 @@ ACTIVE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\GiftMotivationSetup-generated.cs:79 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Active"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\GiftMotivationSetup-generated.cs:1089 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\GiftMotivationSetup-generated.cs:1093 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Acti&ve"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:331 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:332 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2372,7 +2372,7 @@ ACCOUNT TYPE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Account Type"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:745
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:776
 -----
 
 -----------------------
@@ -2382,7 +2382,7 @@ DESCRIPTION LONG ENGLISH
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Description Long English"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:750
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:781
 -----
 
 -----------------------
@@ -2392,7 +2392,7 @@ DESCRIPTION SHORT ENGLISH
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Description Short English"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:755
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:786
 -----
 
 -----------------------
@@ -2402,7 +2402,7 @@ DESCRIPTION LONG LOCAL
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:78 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Description Long Local"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:760
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:791
 -----
 
 -----------------------
@@ -2412,7 +2412,7 @@ DESCRIPTION SHORT LOCAL
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:79 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Description Short Local"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:765
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:796
 -----
 
 -----------------------
@@ -2422,7 +2422,7 @@ VALID COST CENTRES
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:80 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Valid Cost Centres"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:770
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:801
 -----
 
 -----------------------
@@ -2442,7 +2442,7 @@ COST CENTRE TYPE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCostCentreHierarchy-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Cost Centre Type"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCostCentreHierarchy-generated.cs:610 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCostCentreHierarchy-generated.cs:642 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2472,7 +2472,7 @@ GROUP CODE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:74 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Group Code"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:985 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:989 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2482,7 +2482,7 @@ ASSIGNABLE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Assignable"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:995 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:999 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2492,7 +2492,7 @@ DESCRIPTION LOCAL
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Description (local)"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:1000
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:1004
 -----
 
 -----------------------
@@ -2502,7 +2502,7 @@ FEE CODE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:146 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Fee Code"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1177 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1181 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2512,7 +2512,7 @@ CHARGE OPTION
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:148 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Charge Option"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1187 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1191 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2522,7 +2522,7 @@ CHARGE PERCENTAGE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:149 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Charge Percentage"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1192 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1196 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2532,7 +2532,7 @@ CHARGE AMOUNT
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:150 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Charge Amount"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1197 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1201 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2562,13 +2562,13 @@ ANALYSIS TYPE CODE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAnalysisTypes-generated.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&Analysis Type Code"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAnalysisTypes-generated.cs:982
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAnalysisTypes-generated.cs:986
 -----
 "Analysis Type Code:"
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\UC_AccountAnalysisAttributes-generated.cs:81 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Analysis Type Code"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\UC_AccountAnalysisAttributes-generated.cs:801
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\UC_AccountAnalysisAttributes-generated.cs:805
 -----
 
 -----------------------
@@ -2588,7 +2588,7 @@ FROM CURRENCY CODE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:143 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&From Currency Code"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1069 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1073 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2598,7 +2598,7 @@ TO CURRENCY CODE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:144 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&To Currency Code"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1074 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1078 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2608,7 +2608,7 @@ RATE OF EXCHANGE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:146 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&Rate of exchange"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1084 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1088 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2618,7 +2618,7 @@ USED BY RECURRING GIFTS
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Used by Recurring Gifts"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1131
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1135
 -----
 
 -----------------------
@@ -2628,7 +2628,7 @@ INVOLVES A TAX REBATE
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Involves a Tax Rebate"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1136
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1140
 -----
 
 -----------------------
@@ -2638,7 +2638,7 @@ INVOLVES A TRUST
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:134 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Involves a Trust"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1141
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1145
 -----
 
 -----------------------
@@ -2648,7 +2648,7 @@ SPECIAL METHOD OF PAYMENT
 csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfPayment-generated.cs:133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Special Method of Payment"
-csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfPayment-generated.cs:1084
+csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfPayment-generated.cs:1088
 -----
 
 -----------------------
@@ -2794,7 +2794,7 @@ FROZEN
 csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Frozen"
-csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:919
+csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:923
 -----
 
 -----------------------
@@ -2804,7 +2804,7 @@ BY
 csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:88 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "By"
-csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:929
+csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:933
 -----
 
 -----------------------
@@ -2824,7 +2824,7 @@ ACQUISITION CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\AcquisitionCodeSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Acquisition Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\AcquisitionCodeSetup-generated.cs:1121 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\AcquisitionCodeSetup-generated.cs:1125 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&Acquisition Code:"
 csharp\ICT\Petra\Client\MPartner\Gui\PartnerNewDialog.cs:176 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -2837,7 +2837,7 @@ ACQUISITION DESCRIPTION
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\AcquisitionCodeSetup-generated.cs:131 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Acquisition Description"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\AcquisitionCodeSetup-generated.cs:1126
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\AcquisitionCodeSetup-generated.cs:1130
 -----
 
 -----------------------
@@ -2847,7 +2847,7 @@ ADDRESSEE TYPE CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\AddresseeTypeSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Addressee Type Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\AddresseeTypeSetup-generated.cs:1040
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\AddresseeTypeSetup-generated.cs:1044
 -----
 
 -----------------------
@@ -2857,7 +2857,7 @@ BUSINESS CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\BusinessCodeSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Business Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\BusinessCodeSetup-generated.cs:1040 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\BusinessCodeSetup-generated.cs:1044 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2867,7 +2867,7 @@ BUSINESS DESCRIPTION
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\BusinessCodeSetup-generated.cs:131 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Business Description"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\BusinessCodeSetup-generated.cs:1045
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\BusinessCodeSetup-generated.cs:1049
 -----
 
 -----------------------
@@ -2877,7 +2877,7 @@ ATTRIBUTE CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup-generated.cs:133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Attribute Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup-generated.cs:1069
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup-generated.cs:1073
 -----
 
 -----------------------
@@ -2887,7 +2887,7 @@ METHOD OF CONTACT
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Method Of Contact"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1082
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1086
 -----
 
 -----------------------
@@ -2897,7 +2897,7 @@ CONTACT TYPE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Contact Type"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1092
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1096
 -----
 
 -----------------------
@@ -2907,7 +2907,7 @@ VALID METHOD
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Valid Method"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1097
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1101
 -----
 
 -----------------------
@@ -2917,7 +2917,7 @@ DENOMINATION CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\DenominationCodeSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Denomination Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\DenominationCodeSetup-generated.cs:1063 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\DenominationCodeSetup-generated.cs:1067 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2927,7 +2927,7 @@ DENOMINATION NAME
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\DenominationCodeSetup-generated.cs:131 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Denomination Name"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\DenominationCodeSetup-generated.cs:1068
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\DenominationCodeSetup-generated.cs:1072
 -----
 
 -----------------------
@@ -2937,7 +2937,7 @@ CATEGORY
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestCategorySetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Category"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestCategorySetup-generated.cs:1121 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestCategorySetup-generated.cs:1125 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2947,7 +2947,7 @@ LEVEL DESCRIPTIONS
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestCategorySetup-generated.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Level Descriptions"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestCategorySetup-generated.cs:1131
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestCategorySetup-generated.cs:1135
 -----
 
 -----------------------
@@ -2957,7 +2957,7 @@ INTEREST
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Interest"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestSetup-generated.cs:1035
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestSetup-generated.cs:1039
 -----
 
 -----------------------
@@ -2967,7 +2967,7 @@ LIST NAME
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\LocalDataOptionListNameSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "List Name"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\LocalDataOptionListNameSetup-generated.cs:1017 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\LocalDataOptionListNameSetup-generated.cs:1021 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -2977,7 +2977,7 @@ LOCATION CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\LocationTypeSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Location Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\LocationTypeSetup-generated.cs:1059
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\LocationTypeSetup-generated.cs:1063
 -----
 
 -----------------------
@@ -2987,7 +2987,7 @@ MAILING CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:143 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Mailing Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1119 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1123 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "mailing code"
 csharp\ICT\Petra\Server\lib\MFinance\Gift\Gift.Importing.cs:280
@@ -3000,7 +3000,7 @@ MAILING DATE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:145 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Mailing Date"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1129
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1133
 -----
 
 -----------------------
@@ -3010,7 +3010,7 @@ MAILING COST
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:146 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Mailing Cost"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1134
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1138
 -----
 
 -----------------------
@@ -3020,7 +3020,7 @@ MARITAL STATUS CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\MaritalStatusSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Marital Status Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\MaritalStatusSetup-generated.cs:1120
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\MaritalStatusSetup-generated.cs:1124
 -----
 
 -----------------------
@@ -3030,7 +3030,7 @@ OCCUPATION CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\OccupationCodeSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Occupation Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\OccupationCodeSetup-generated.cs:1076
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\OccupationCodeSetup-generated.cs:1080
 -----
 
 -----------------------
@@ -3040,7 +3040,7 @@ OCCUPATION DESCRIPTION
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\OccupationCodeSetup-generated.cs:131 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Occupation Description"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\OccupationCodeSetup-generated.cs:1081
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\OccupationCodeSetup-generated.cs:1085
 -----
 
 -----------------------
@@ -3050,7 +3050,7 @@ STATUS CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\PartnerStatusSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Status Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\PartnerStatusSetup-generated.cs:1107
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\PartnerStatusSetup-generated.cs:1111
 -----
 
 -----------------------
@@ -3060,7 +3060,7 @@ PUBLICATION COST
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Publication Cost"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1106
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1110
 -----
 
 -----------------------
@@ -3070,7 +3070,7 @@ POSTAGE COST
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Postage Cost"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1111
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1115
 -----
 
 -----------------------
@@ -3080,7 +3080,7 @@ PUBLICATION DESCRIPTION
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationSetup-generated.cs:131 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Publication Description"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationSetup-generated.cs:1179 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationSetup-generated.cs:1183 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -3090,7 +3090,7 @@ PUBLICATION LABEL CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationSetup-generated.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Publication Label Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationSetup-generated.cs:1184
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationSetup-generated.cs:1188
 -----
 
 -----------------------
@@ -3100,7 +3100,7 @@ REASON CANCELLED CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\ReasonSubscriptionCancelledSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Reason Cancelled Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\ReasonSubscriptionCancelledSetup-generated.cs:1017
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\ReasonSubscriptionCancelledSetup-generated.cs:1021
 -----
 
 -----------------------
@@ -3110,7 +3110,7 @@ REASON GIVEN CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\ReasonSubscriptionGivenSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Reason Given Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\ReasonSubscriptionGivenSetup-generated.cs:1017
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\ReasonSubscriptionGivenSetup-generated.cs:1021
 -----
 
 -----------------------
@@ -3120,7 +3120,7 @@ RELATIONSHIP CATEGORY CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationCategorySetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Relationship Category Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationCategorySetup-generated.cs:1140
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationCategorySetup-generated.cs:1144
 -----
 
 -----------------------
@@ -3130,7 +3130,7 @@ RELATIONSHIP
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Relationship"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1114 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1118 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -3140,7 +3140,7 @@ RELATION CATEGORY
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:131 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Relation Category"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1119
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1123
 -----
 
 -----------------------
@@ -3150,7 +3150,7 @@ RECIPROCAL DESCRIPTION
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Reciprocal Description"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1129
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1133
 -----
 
 -----------------------
@@ -3160,7 +3160,7 @@ DETAIL CODE
 csharp\ICT\Petra\Client\MPartner\Gui\Setup\UC_ContactAttributeDetail-generated.cs:133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Detail Code"
-csharp\ICT\Petra\Client\MPartner\Gui\Setup\UC_ContactAttributeDetail-generated.cs:949 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\Setup\UC_ContactAttributeDetail-generated.cs:953 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -3460,12 +3460,15 @@ csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind-generated.cs:121 (first of seve
 
 -----------------------
 WORK WITH LAST PARTNER
---> 2 derivates
+--> 3 derivates
 "&Work with Last Partner..."
 csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Work with &Last Partner..."
 csharp\ICT\Petra\Client\MPartner\Gui\PartnerMain-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+-----
+"Work with Last Partner"
+- This item was created automatically from a designer file
 -----
 
 -----------------------
@@ -3641,7 +3644,7 @@ PASSPORT NAME
 csharp\ICT\Petra\Client\MPartner\Gui\PassportNameSuggestDialog-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Passport Name"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1011
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1015
 -----
 
 -----------------------
@@ -3651,7 +3654,7 @@ RECEIVING FIELD
 csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:83 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Receiving Field"
-csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1112 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1116 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&Receiving Field:"
 csharp\ICT\Petra\Client\MReporting\Gui\MPersonnel\PartnerByCommitmentExtract-generated.cs:81 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -3664,7 +3667,7 @@ START OF COMMITMENT
 csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&Start of Commitment"
-csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1117 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1121 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -3674,7 +3677,7 @@ END OF COMMITMENT
 csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "&End of Commitment"
-csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1122
+csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1126
 -----
 
 -----------------------
@@ -3684,7 +3687,7 @@ HOME OFFICE
 csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:87 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Home Office"
-csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1133
+csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1137
 -----
 
 -----------------------
@@ -3694,7 +3697,7 @@ RECRUITING OFFICE
 csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:88 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Recruiting Office"
-csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1138
+csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1142
 -----
 
 -----------------------
@@ -3704,7 +3707,7 @@ COMMENTS
 csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Comments"
-csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1143 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1147 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -3714,7 +3717,7 @@ JOB TITLE
 csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:90 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Job Title"
-csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1148 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1152 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4014,7 +4017,7 @@ ABILITY
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:81 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Ability"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:868
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:872
 -----
 
 -----------------------
@@ -4024,7 +4027,7 @@ YEARS OF EXPERIENCE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Years Of Experience"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:873 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:877 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4034,7 +4037,7 @@ LEVEL
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Level"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:878 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:882 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4044,7 +4047,7 @@ COMMENT
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Comment"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:883 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:887 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4064,7 +4067,7 @@ COMMITMENT START DATE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Commitment Start Date"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:938 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:942 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4074,7 +4077,7 @@ COMMITMENT END DATE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:86 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Commitment End Date"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:943
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:947
 -----
 
 -----------------------
@@ -4084,7 +4087,7 @@ COMMITMENT STATUS
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:87 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Commitment Status"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:949 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:953 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4094,7 +4097,7 @@ SENDING FIELD
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:88 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Sending Field"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:954 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:958 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Sending &Field:"
 csharp\ICT\Petra\Client\MReporting\Gui\MPersonnel\PartnerByCommitmentExtract-generated.cs:80 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -4107,7 +4110,7 @@ RECRUITING FIELD
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Recruiting Field"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:959
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:963
 -----
 
 -----------------------
@@ -4227,7 +4230,7 @@ ASSIGNMENT TYPE CODE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Assignment Type Code"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:916
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:920
 -----
 
 -----------------------
@@ -4237,7 +4240,7 @@ FROM DATE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:83 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "From Date"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:921 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:925 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "From date:"
 csharp\ICT\Petra\Client\MReporting\Gui\MFinance\AP_PaymentReport-generated.cs:72 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -4250,7 +4253,7 @@ TO DATE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "To Date"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:926
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:930
 -----
 "To date:"
 csharp\ICT\Petra\Client\MReporting\Gui\MFinance\AP_PaymentReport-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -4263,7 +4266,7 @@ UNIT KEY
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Unit Key"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:932 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:936 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4273,7 +4276,7 @@ POSITION/ROLE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:86 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Position/Role"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:937
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:941
 -----
 
 -----------------------
@@ -4283,7 +4286,7 @@ PASSPORT NUMBER
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:81 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Passport Number"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1001
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1005
 -----
 
 -----------------------
@@ -4293,7 +4296,7 @@ PLACE OF BIRTH
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Place of Birth"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1016
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1020
 -----
 
 -----------------------
@@ -4313,7 +4316,7 @@ PASSPORT NATIONALITY
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:86 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Passport Nationality"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1021
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1025
 -----
 
 -----------------------
@@ -4323,7 +4326,7 @@ PLACE OF ISSUE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:87 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Place of Issue"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1026 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1030 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4333,7 +4336,7 @@ DATE OF ISSUE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:88 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Date of Issue"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1031 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1035 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4343,7 +4346,7 @@ DATE OF EXPIRATION
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Date of Expiration"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1036
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:1040
 -----
 
 -----------------------
@@ -4353,7 +4356,7 @@ DOCUMENT TYPE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Document Type"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:984
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:988
 -----
 
 -----------------------
@@ -4363,7 +4366,7 @@ DOCUMENT ID
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:83 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Document ID"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:989
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:993
 -----
 
 -----------------------
@@ -4373,7 +4376,7 @@ ASSOCIATED DOCUMENT ID
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Associated Document ID"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:994
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:998
 -----
 
 -----------------------
@@ -4383,7 +4386,7 @@ LANGUAGE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalLanguages-generated.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Language"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalLanguages-generated.cs:882 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalLanguages-generated.cs:886 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Lang&uage:"
 csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_PersonnelCriteria_CollapsiblePart.cs:66 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -4396,7 +4399,7 @@ SKILL CATEGORY
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:81 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Skill Category"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1099
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1103
 -----
 
 -----------------------
@@ -4406,7 +4409,7 @@ SKILL LEVEL
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Skill Level"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1104 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1108 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4416,7 +4419,7 @@ LOCAL LANGUAGE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Local Language"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1114
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1118
 -----
 
 -----------------------
@@ -4426,7 +4429,7 @@ DESCRIPTION IN LOCAL LANGUAGE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Description in local language"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1119
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1123
 -----
 
 -----------------------
@@ -4436,7 +4439,7 @@ DEGREE LINKED WITH THIS SKILL
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:90 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Degree linked with this skill"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1124
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1128
 -----
 
 -----------------------
@@ -4456,7 +4459,7 @@ LOCATION
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Location"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:939
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:943
 -----
 
 -----------------------
@@ -4466,7 +4469,7 @@ ROLE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Role"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:944 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:948 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4476,7 +4479,7 @@ REPORTER
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Reporter"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:897
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:901
 -----
 
 -----------------------
@@ -4486,7 +4489,7 @@ REPORT DATE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:83 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Report Date"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:902 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:906 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4496,7 +4499,7 @@ NEXT REPORT DATE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Next Report Date"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:907
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:911
 -----
 
 -----------------------
@@ -4506,7 +4509,7 @@ REPORT TYPE
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Report Type"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:913 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:917 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 
 -----------------------
@@ -4516,7 +4519,7 @@ NEXT ACTION
 csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:87 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Next Action"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:923
+csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:927
 -----
 
 -----------------------
@@ -4733,7 +4736,7 @@ csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:993 (fi
 MAILING ADDRESSES ONLY
 --> 3 derivates
 "Mailin&g Addresses Only:"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:346 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:347 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Mailing Addresses only"
 csharp\ICT\Petra\Client\MReporting\Gui\MPersonnel\RelationshipReport-generated.cs:80 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -4749,7 +4752,7 @@ RELATION
 csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerRelationships-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Relation"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerRelationships-generated.cs:851
+csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerRelationships-generated.cs:855
 -----
 
 -----------------------
@@ -4759,7 +4762,7 @@ ANOTHER PARTNER
 csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerRelationships-generated.cs:86 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Another Partner"
-csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerRelationships-generated.cs:856
+csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerRelationships-generated.cs:860
 -----
 
 -----------------------
@@ -4862,7 +4865,7 @@ ABILITY AREA
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\AbilityAreaSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Ability Area"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\AbilityAreaSetup-generated.cs:1134
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\AbilityAreaSetup-generated.cs:1138
 -----
 
 -----------------------
@@ -4872,7 +4875,7 @@ ABILITY LEVEL
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\AbilityLevelSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Ability Level"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\AbilityLevelSetup-generated.cs:1133
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\AbilityLevelSetup-generated.cs:1137
 -----
 
 -----------------------
@@ -4882,7 +4885,7 @@ APPLICANT STATUS
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ApplicantStatusSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Applicant Status"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ApplicantStatusSetup-generated.cs:1140
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ApplicantStatusSetup-generated.cs:1144
 -----
 
 -----------------------
@@ -4892,7 +4895,7 @@ POINT CODE
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ArrivalDeparturePointSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Point Code"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ArrivalDeparturePointSetup-generated.cs:1139
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ArrivalDeparturePointSetup-generated.cs:1143
 -----
 
 -----------------------
@@ -4902,7 +4905,7 @@ LEVEL CODE
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\Country_EventLevelSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Level Code"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\Country_EventLevelSetup-generated.cs:1140
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\Country_EventLevelSetup-generated.cs:1144
 -----
 
 -----------------------
@@ -4912,7 +4915,7 @@ DOCUMENT TYPE CATEGORY
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeCategorySetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Document Type Category"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeCategorySetup-generated.cs:1140
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeCategorySetup-generated.cs:1144
 -----
 
 -----------------------
@@ -4922,7 +4925,7 @@ DOCUMENT CODE
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Document Code"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeSetup-generated.cs:1158
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeSetup-generated.cs:1162
 -----
 
 -----------------------
@@ -4932,7 +4935,7 @@ DOCUMENT CATEGORY
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeSetup-generated.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Document Category"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeSetup-generated.cs:1168
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeSetup-generated.cs:1172
 -----
 
 -----------------------
@@ -4942,7 +4945,7 @@ DRIVER STATUS CODE
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DriverStatusSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Driver Status Code"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DriverStatusSetup-generated.cs:1140
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DriverStatusSetup-generated.cs:1144
 -----
 
 -----------------------
@@ -4952,7 +4955,7 @@ JOB ASSIGNMENT TYPE
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\JobAssignmentTypeSetup-generated.cs:131 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Job Assignment Type"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\JobAssignmentTypeSetup-generated.cs:1132
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\JobAssignmentTypeSetup-generated.cs:1136
 -----
 
 -----------------------
@@ -4962,7 +4965,7 @@ LANGUAGE LEVEL
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LanguageLevelSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Language Level"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LanguageLevelSetup-generated.cs:1158
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LanguageLevelSetup-generated.cs:1162
 -----
 
 -----------------------
@@ -4972,7 +4975,7 @@ LANGUAGE COMMENT
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LanguageLevelSetup-generated.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Language Comment"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LanguageLevelSetup-generated.cs:1168
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LanguageLevelSetup-generated.cs:1172
 -----
 
 -----------------------
@@ -4982,7 +4985,7 @@ LEADERSHIP RATING
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LeadershipRatingSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Leadership Rating"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LeadershipRatingSetup-generated.cs:1139
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LeadershipRatingSetup-generated.cs:1143
 -----
 
 -----------------------
@@ -4992,7 +4995,7 @@ LEAVING CODE
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LeavingCodeSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Leaving Code"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LeavingCodeSetup-generated.cs:1132
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LeavingCodeSetup-generated.cs:1136
 -----
 
 -----------------------
@@ -5002,7 +5005,7 @@ CONTACT NAME
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\OrganisationContactSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Contact Name"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\OrganisationContactSetup-generated.cs:1134
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\OrganisationContactSetup-generated.cs:1138
 -----
 
 -----------------------
@@ -5012,7 +5015,7 @@ PASSPORT TYPE
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\PassportTypeSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Passport Type"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\PassportTypeSetup-generated.cs:1140
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\PassportTypeSetup-generated.cs:1144
 -----
 
 -----------------------
@@ -5022,7 +5025,7 @@ POSITION
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\PositionSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Position"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\PositionSetup-generated.cs:1132
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\PositionSetup-generated.cs:1136
 -----
 
 -----------------------
@@ -5032,7 +5035,7 @@ PROFESSIONAL AREA
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ProfessionalAreaSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Professional Area"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ProfessionalAreaSetup-generated.cs:1132
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ProfessionalAreaSetup-generated.cs:1136
 -----
 
 -----------------------
@@ -5042,7 +5045,7 @@ QUALIFICATION LEVEL
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\QualificationLevelSetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Qualification Level"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\QualificationLevelSetup-generated.cs:1131
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\QualificationLevelSetup-generated.cs:1135
 -----
 
 -----------------------
@@ -5052,7 +5055,7 @@ SKILL CATEGORY CODE
 csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\SkillCategorySetup-generated.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Skill Category Code"
-csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\SkillCategorySetup-generated.cs:1132
+csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\SkillCategorySetup-generated.cs:1136
 -----
 
 -----------------------
@@ -5292,7 +5295,7 @@ NAME OF MONTH 1
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:137 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 1"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1441
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1445
 -----
 
 -----------------------
@@ -5302,7 +5305,7 @@ NAME OF MONTH 7
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:138 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 7"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1451
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1455
 -----
 
 -----------------------
@@ -5312,7 +5315,7 @@ NAME OF MONTH 2
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:139 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 2"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1461
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1465
 -----
 
 -----------------------
@@ -5322,7 +5325,7 @@ NAME OF MONTH 8
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:140 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 8"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1471
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1475
 -----
 
 -----------------------
@@ -5332,7 +5335,7 @@ NAME OF MONTH 3
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:141 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 3"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1481
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1485
 -----
 
 -----------------------
@@ -5342,7 +5345,7 @@ NAME OF MONTH 9
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:142 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 9"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1491
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1495
 -----
 
 -----------------------
@@ -5352,7 +5355,7 @@ NAME OF MONTH 4
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:143 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 4"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1501
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1505
 -----
 
 -----------------------
@@ -5362,7 +5365,7 @@ NAME OF MONTH 10
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:144 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 10"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1511
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1515
 -----
 
 -----------------------
@@ -5372,7 +5375,7 @@ NAME OF MONTH 5
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:145 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 5"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1521
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1525
 -----
 
 -----------------------
@@ -5382,7 +5385,7 @@ NAME OF MONTH 11
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:146 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 11"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1531
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1535
 -----
 
 -----------------------
@@ -5392,7 +5395,7 @@ NAME OF MONTH 6
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:147 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 6"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1541
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1545
 -----
 
 -----------------------
@@ -5402,7 +5405,7 @@ NAME OF MONTH 12
 csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:148 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Name of Month 12"
-csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1551
+csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1555
 -----
 
 -----------------------
@@ -5422,7 +5425,7 @@ FIRST NAME
 csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:78 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "First Name"
-csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:983
+csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:987
 -----
 
 -----------------------
@@ -5432,23 +5435,23 @@ LAST NAME
 csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:79 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 -----
 "Last Name"
-csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:988
+csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:992
 -----
 
 -----------------------
 THERE WAS A PROBLEM SETTING THE PASSWORD FOR USER {0}
 --> 2 derivates
 "There was a problem setting the password for user {0}"
-csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers.ManualCode.cs:252
+csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers.ManualCode.cs:253
 -----
 "There was a problem setting the password for user {0}."
 csharp\ICT\Petra\Client\MSysMan\Gui\SysManMain.cs:149
 -----
 
 The following items appear x times (with different case or additional characters)
-3105 items appear once.
-420 items appear twice.
-54 items appear three times.
+3113 items appear once.
+419 items appear twice.
+55 items appear three times.
 23 items appear four times.
 8 items appear five times.
 0 items appear six times.

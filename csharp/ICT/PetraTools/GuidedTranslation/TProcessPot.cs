@@ -138,9 +138,6 @@ public class TProcessPot
         int counterfirstocurrences_3words = 0;
         int counterfirstocurrences_4words = 0;
         int counterfirstocurrences_5andmorewords = 0;
-        //int counterdoubles = 0;
-        //int counterdoubles2 = 0;
-        //int counterdoubles_casedifferences = 0;
 
         string messageSource = "";
         string line = sr.ReadLine();
@@ -195,13 +192,10 @@ public class TProcessPot
                 AddItemToListWithAllItems(messageId, MessageId_Without, MessageId_Without_Upper, messageSource);
 
 
-                //Boolean isFirstOccurence = false;
-
                 //check if item is already in contained in firstocurrences
                 //if not then add it to firstocurrences and add it to other files according to its number of words
                 if (!firstocurrences.Contains(MessageId_Without))
                 {
-                    //isFirstOccurence = true;
                     counterfirstocurrences_all++;
 
                     firstocurrences.Add(MessageId_Without);
@@ -243,52 +237,6 @@ public class TProcessPot
                         //sw_firstoccurence.WriteLine(s);
                     }
                 }
-
-/*
- *              //check if the item has been found before a second time and if not then add it to doubles
- *              if (!doubles.Contains(MessageId_Without) && !isFirstOccurence)
- *              {
- *                  counterdoubles++;
- *                  counterdoubles2++;
- *
- *                  doubles.Add(MessageId_Without);
- *
- *
- *                  //TODO uncomment here
- *                  //sw_doubles.WriteLine(MessageId_Without + " --- \"" + messageId + "\"");
- *                  foreach (string s in OriginalLines)
- *                  {
- *                      //if (SearchStringInTemplate() != "");
- *                      //sw_doubles.WriteLine(s);
- *                  }
- *
- *              }
- *              else if(!isFirstOccurence)
- *              {
- *                  counterdoubles2++;
- *              }
- *
- *              else if(!doubles_casedifferences.Contains(MessageId_Without_Upper))
- *              {
- *                  doubles_casedifferences.Add(MessageId_Without_Upper);
- *
- *              }
- *
- *
- *              //check if item is contained in doubles_casedifferences but not in doubles
- *              //then it is an item that only differs in case
- *              if(doubles_casedifferences.Contains(MessageId_Without_Upper) && !doubles.Contains(MessageId_Without))
- *              {
- *                  //sw_doubles_casedifferences.WriteLine(MessageId_Without_Upper + " ---- \"" + MessageId_Without + "\"");
- *                  // sw_doubles_casedifferences.WriteLine(MessageId_Without);
- *                  foreach (string s in OriginalLines)
- *                  {
- *                      //sw_doubles_casedifferences.WriteLine(s);
- *                  }
- *                  //sw_doubles_casedifferences.WriteLine("---------------------------");
- *                  counterdoubles_casedifferences++;
- *              }
- */
                 //reset messageSource
                 messageSource = "";
             }
@@ -306,10 +254,7 @@ public class TProcessPot
         sw_firstoccurence3words.WriteLine(counterfirstocurrences_3words + " items have 3 words.");
         sw_firstoccurence4words.WriteLine(counterfirstocurrences_4words + " items have 4 words.");
         sw_firstoccurence5andmorewords.WriteLine(counterfirstocurrences_5andmorewords + " items have 5 or more words.");
-        //sw_firstoccurence5andmorewords.WriteLine("counterfirstocurrences_all= " + counterfirstocurrences_all);
-        //sw_doubles_casedifferences.WriteLine(counterdoubles + " items appeared " + counterdoubles2 + " times double, twice or more often.  ( ignoring all .,:;& )");
-        //sw_doubles_casedifferences.WriteLine("Of these double items " + counterdoubles_casedifferences + " only differ in case");
-
+ 
         int NumberOfItemsWithOneDerivate = 0;
         int NumberOfItemsWithTwoDerivates = 0;
         int NumberOfItemsWithThreeDerivates = 0;
@@ -397,8 +342,6 @@ public class TProcessPot
         sw_summary.WriteLine(NumberOfItemsWithSixDerivates + " items appear six times.");
         sw_summary.WriteLine(NumberOfItemsWithSevenDerivates + " items appear seven times.");
         sw_summary.WriteLine(NumberOfItemsWithMoreThanSevenDerivates + " items appear more than seven times.");
-        //sw_summary.WriteLine(counterdoubles + " items appeared " + counterdoubles2 + " times double, twice or more often. ( ignoring all .,:;&() )");
-        //sw_summary.WriteLine("Of these double items " + counterdoubles_casedifferences + " only differ in case");
 
         sr.Close();
         sw_summary.Close();

@@ -1,16 +1,16 @@
 analyzed file: D:\openpetra\bzr\work-improvetranslations_neu/i18n/template.pot
 
-3679 items contained in template
-429 items have 1 word.
+3687 items contained in template
+428 items have 1 word.
 874 items have 2 words.
-717 items have 3 words.
-380 items have 4 words.
-1279 items have 5 or more words.
+719 items have 3 words.
+379 items have 4 words.
+1287 items have 5 or more words.
 ---------------------------
 The following items appear x times (with different case or additional characters)
-3105 items appear once.
-420 items appear twice.
-54 items appear three times.
+3113 items appear once.
+419 items appear twice.
+55 items appear three times.
 23 items appear four times.
 8 items appear five times.
 0 items appear six times.
