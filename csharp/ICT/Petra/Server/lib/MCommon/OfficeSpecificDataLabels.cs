@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         /// <returns>void</returns>
         public TOfficeSpecificDataLabelsUIConnector(Int64 APartnerKey, TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
-//          TLogging.LogAtLevel(9, this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            TLogging.LogAtLevel(9, "TOfficeSpecificDataLabelsUIConnector created: Instance hash is " + this.GetHashCode().ToString());
             FPartnerKey = APartnerKey;
             FOfficeSpecificDataLabelUse = AOfficeSpecificDataLabelUse;
         }
@@ -110,7 +110,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             TemplateRow = TmpDT.NewRowTyped(false);
             TemplateRow.Use = ALabelUse;
             ReturnValue = PDataLabelUseAccess.CountUsingTemplate(TemplateRow, null, AReadTransaction);
-//          TLogging.LogAtLevel(10, this.GetType().FullName + " CountLabelUse Result: " + ReturnValue.ToString());
+            TLogging.LogAtLevel(10, "TOfficeSpecificDataLabelsUIConnector.CountLabelUse Result: " + ReturnValue.ToString());
             return ReturnValue;
         }
 
@@ -131,7 +131,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             Int64 ARegistrationOffice,
             TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
-//          TLogging.LogAtLevel(9, this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            TLogging.LogAtLevel(9, "TOfficeSpecificDataLabelsUIConnector created: Instance hash is " + this.GetHashCode().ToString());
             FPartnerKey = APartnerKey;
             FOfficeSpecificDataLabelUse = AOfficeSpecificDataLabelUse;
             FApplicationKey = AApplicationKey;
@@ -330,7 +330,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-//              TLogging.LogAtLevel(7, this.GetType().FullName + ".GetData: committed own transaction.");
+                TLogging.LogAtLevel(7, "TOfficeSpecificDataLabelsUIConnector.GetData: committed own transaction.");
             }
 
             return ReturnValue;
@@ -454,7 +454,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             }
             else
             {
-//              TLogging.LogAtLevel(8, "AInspectDS = null!");
+                TLogging.LogAtLevel(8, "AInspectDS = null!");
                 SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
             }
 

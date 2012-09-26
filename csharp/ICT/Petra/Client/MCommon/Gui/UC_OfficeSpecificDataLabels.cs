@@ -1319,7 +1319,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             TtxtAutoPopulatedButtonLabel PartnerKeyEditor;
             PDataLabelRow DataLabelRow;
 
-//          TLogging.LogAtLevel (1, "Data Save Event Fired");
+            TLogging.LogAtLevel (1, "Data Save Event Fired");
 
             if (FGridRowInfo != null)
             {

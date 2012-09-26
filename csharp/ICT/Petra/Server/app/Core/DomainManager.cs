@@ -152,9 +152,9 @@ namespace Ict.Petra.Server.App.Core
         {
             new TLogging(TSrvSetting.ServerLogFile);
 
-//          TLogging.LogAtLevel(9, "  Connecting to Database...");
+            TLogging.LogAtLevel(9, "Connecting to Database...");
             DBAccess.GDBAccessObj = new TDataBasePetra();
-//          TLogging.LogAtLevel(9, "DBAccessObj object created.");
+            TLogging.LogAtLevel(9, "DBAccessObj object created.");
 
             ((TDataBasePetra)DBAccess.GDBAccessObj).AddErrorLogEntryCallback += new TDelegateAddErrorLogEntry(this.AddErrorLogEntry);
             try
@@ -167,7 +167,7 @@ namespace Ict.Petra.Server.App.Core
                     TSrvSetting.DBPassword,
                     "",
                     UserInfo.GUserInfo.UserID);
-                TLogging.LogAtLevel(9, "  Connected to Database.");
+                TLogging.LogAtLevel(9, "Connected to Database.");
                 
             }
             catch (Exception /* exp */)

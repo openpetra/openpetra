@@ -87,7 +87,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             String WhereClause;
             System.Text.StringBuilder sb;
             DataRow CriteriaRow;
-//          TLogging.LogAtLevel(7, "TPartnerFind.PerformSearch called.");
+            TLogging.LogAtLevel(7, "TPartnerFind.PerformSearch called.");
 
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
             FPagedDataSetObject = new TPagedDataSet(new PartnerFindTDSSearchResultTable());
@@ -276,7 +276,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         public DataTable GetDataPagedResult(System.Int16 APage, System.Int16 APageSize, out System.Int32 ATotalRecords, out System.Int16 ATotalPages)
         {
             DataTable ReturnValue;
-//          TLogging.LogAtLevel(7, "TPartnerFind.GetDataPagedResult called.");
+            TLogging.LogAtLevel(7, "TPartnerFind.GetDataPagedResult called.");
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
             ATotalPages = FPagedDataSetObject.TotalPages;
             ATotalRecords = FPagedDataSetObject.TotalRecords;
@@ -656,7 +656,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             /* Start a separate Thread that should cancel the executing query
              * (Microsoft recommends doing it this way!) 
              */
-//          TLogging.LogAtLevel(7, "TPartnerFindUIConnector.StopSearch: Starting StopQuery thread...");
+            TLogging.LogAtLevel(7, "TPartnerFindUIConnector.StopSearch: Starting StopQuery thread...");
 
             ThreadStart ThreadStartDelegate = new ThreadStart(FPagedDataSetObject.StopQuery);
             StopQueryThread = new Thread(ThreadStartDelegate);
@@ -669,7 +669,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
              * a ADO.NET command is still executing! 
              */
 
-//           TLogging.LogAtLevel(7, "TPartnerFindUIConnector.StopSearch: Query cancelled!");
+             TLogging.LogAtLevel(7, "TPartnerFindUIConnector.StopSearch: Query cancelled!");
         }
 
         /// <summary>
@@ -692,7 +692,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             bool NewTransaction;
 
             AVerificationResult = null;
-//          TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: requesting Partner data of found Partners");
+            TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: requesting Partner data of found Partners");
 
             // Request all found Partners from FPagedDataSetObject
             FullFindResultDT = FPagedDataSetObject.GetAllData();
@@ -710,7 +710,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     DataViewRowState.CurrentRows);
 
                 DistinctPartners = new ArrayList();
-//              TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: building distinct list of Partners");
+                TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: building distinct list of Partners");
 
                 for (int DistinctPartnerCounter = 0; DistinctPartnerCounter < SortedFindResultDV.Count;
                      DistinctPartnerCounter++)
@@ -725,7 +725,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     LastPartnerKey = CurrentPartnerKey;
                 }
 
-//              TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Add all Partners to the desired Extract");
+                TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Add all Partners to the desired Extract");
 
                 /*
                  * Add all Partners to the desired Extract
@@ -778,7 +778,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                         if (NewTransaction)
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
-//                          TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: committed own transaction!");
+                            TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: committed own transaction!");
                         }
                     }
                     else
@@ -786,7 +786,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                         if (NewTransaction)
                         {
                             DBAccess.GDBAccessObj.RollbackTransaction();
-//                          TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: ROLLED BACK own transaction!");
+                            TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: ROLLED BACK own transaction!");
                         }
                     }
                 }

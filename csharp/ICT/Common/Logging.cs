@@ -238,13 +238,14 @@ namespace Ict.Common
         /// <summary>
         /// Log if level is this high. Output destination can be selected with the Loggingtype flag.
         /// </summary>
-        /// <param name="Level"></param>
-        /// <param name="Text"></param>
-        public static void LogAtLevel(Int32 Level, string Text, TLoggingType ALoggingType)
+        /// <param name="ALevel"></param>
+        /// <param name="AText"></param>
+        /// <param name="ALoggingType"></param>
+        public static void LogAtLevel(Int32 ALevel, string AText, TLoggingType ALoggingType)
         {
-            if (TLogging.DebugLevel >= Level)
+            if (TLogging.DebugLevel >= ALevel)
             {
-                TLogging.Log(Text, ALoggingType);
+                TLogging.Log(AText, ALoggingType);
             }
         }
 

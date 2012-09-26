@@ -193,7 +193,7 @@ namespace Ict.Petra.Shared.MPartner
             CurrentRow = 0;
             BestRow = 0;
 
-//          TLogging.LogAtLevel (8, "Calculations.DetermineBestAddress: processing " + APartnerLocationsDT.Rows.Count.ToString() + " rows...");
+            TLogging.LogAtLevel (8, "Calculations.DetermineBestAddress: processing " + APartnerLocationsDT.Rows.Count.ToString() + " rows...");
 
             if (APartnerLocationsDT == null)
             {

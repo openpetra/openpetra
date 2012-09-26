@@ -140,7 +140,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
             ThreadStart ThreadStartDelegate = new ThreadStart(SubmitChangesInternal);
             TheThread = new Thread(ThreadStartDelegate);
             TheThread.Start();
-//          TLogging.LogAtLevel(6, "TExtractsAddSubscriptionsUIConnector.SubmitChangesAsync thread started.");
+            TLogging.LogAtLevel(6, "TExtractsAddSubscriptionsUIConnector.SubmitChangesAsync thread started.");
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                         // Calculate how much Partners we have checked. Let all Partners be a maximum of 70%.
                         FAsyncExecProgress.ProgressPercentage =
                             Convert.ToInt16((((double)RowCounter / (double)PartnersInExtract) * 100) * (MAX_PERCENTAGE_CHECKS / 100.0));
-//                      TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: loadbyPrimaryKey");
+                        TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: loadbyPrimaryKey");
 
                         SubscriptionTable = PSubscriptionAccess.LoadByPrimaryKey(
                             FInspectDT[0].PublicationCode,
@@ -229,9 +229,9 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                         // if the Partner does not yet have the subscription, add the subscription to this partner.
                         if (SubscriptionTable.Rows.Count == 0)
                         {
-//                          TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: will add Subscription to Partner with PartnerKey " + ExtractRow.PartnerKey.ToString());
+                            TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: will add Subscription to Partner with PartnerKey " + ExtractRow.PartnerKey.ToString());
                             FInspectDT[0].PartnerKey = ExtractRow.PartnerKey;
-//                          TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: importing Row into FSubmissionDT...");
+                            TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: importing Row into FSubmissionDT...");
                             FSubmissionDT.ImportRow(FInspectDT[0]);
                         }
                         else
@@ -249,7 +249,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                         }
                     }
 
-//                  TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: Finished checking Partner's Subscriptions.");
+                    TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: Finished checking Partner's Subscriptions.");
 
                     if (FSubmissionDT.Rows.Count > 0)
                     {
@@ -263,7 +263,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                         {
                             SubmissionResult = TSubmitChangesResult.scrError;
                             FVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                          TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnectorSubmitChangesInternal returned not ok");
+                            TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnectorSubmitChangesInternal returned not ok");
                         }
                         else
                         {
@@ -272,7 +272,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                     }
                     else
                     {
-//                      TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: no Subscriptions were added to Partners because all the Partners in the Extract already had this Subscription.");
+                        TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: no Subscriptions were added to Partners because all the Partners in the Extract already had this Subscription.");
                         SubmissionResult = TSubmitChangesResult.scrOK;
                     }
 
@@ -288,7 +288,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 catch (Exception Exp)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-//                  TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: Exception occured, Transaction ROLLED BACK. Exception: " + Exp.ToString());
+                    TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: Exception occured, Transaction ROLLED BACK. Exception: " + Exp.ToString());
                     FSubmitException = Exp;
                     FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
                     return;

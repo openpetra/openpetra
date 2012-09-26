@@ -130,7 +130,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 out APartnerShortName,
                 out APartnerClass,
                 out PartnerStatus);
-//          TLogging.LogAtLevel(7, "VerifyPartner: " + Convert.ToInt32(AValidPartnerClasses.Length));
+//          TLogging.LogAtLevel(7, "TPartnerServerLookups.VerifyPartner: " + Convert.ToInt32(AValidPartnerClasses.Length));
 
             if (AValidPartnerClasses.Length != 0)
             {
@@ -208,7 +208,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-//                      TLogging.LogAtLevel(7, "VerifyPartner: committed own transaction.");
+                        TLogging.LogAtLevel(7, "TPartnerServerLookups.VerifyPartner: committed own transaction.");
                     }
                 }
 
@@ -279,7 +279,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-//                      TLogging.LogAtLevel(7, "VerifyPartner: committed own transaction.");
+                        TLogging.LogAtLevel(7, "TPartnerServerLookups.VerifyPartner: committed own transaction.");
                     }
                 }
 
@@ -494,7 +494,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-//                      TLogging.LogAtLevel(7, "MergedPartnerDetails: committed own transaction.");
+                        TLogging.LogAtLevel(7, "TPartnerServerLookups.MergedPartnerDetails: committed own transaction.");
                     }
                 }
             }
@@ -656,7 +656,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             AExtractDescription = "Can not retrieve description";
 
-//          TLogging.LogAtLevel(9, "GetExtractDescription called!");
+            TLogging.LogAtLevel(9, "TPartnerServerLookups.GetExtractDescription called!");
 
             MExtractMasterTable ExtractMasterDT = new MExtractMasterTable();
 
@@ -679,14 +679,14 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(7, "GetExtractDescription: committed own transaction.");
+                    TLogging.LogAtLevel(7, "TPartnerServerLookups.GetExtractDescription: committed own transaction.");
                 }
             }
 
             if (ExtractMasterDT.Rows.Count < 1)
             {
                 ReturnValue = false;
-//              TLogging.LogAtLevel(7, "TPartnerServerLookups.GetExtractDescription: m_extract_master DB Table is empty");
+                TLogging.LogAtLevel(7, "TPartnerServerLookups.TPartnerServerLookups.GetExtractDescription: m_extract_master DB Table is empty");
             }
             else
             {
@@ -721,7 +721,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             AIsFoundation = false;
 
-//          TLogging.LogAtLevel(9, "GetPartnerFoundationStatus called!");
+            TLogging.LogAtLevel(9, "TPartnerServerLookups.GetPartnerFoundationStatus called!");
 
             POrganisationTable OrganisationDT = new POrganisationTable();
 
@@ -739,7 +739,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(7, "GetPartnerFoundationStatus: committed own transaction.");
+                    TLogging.LogAtLevel(7, "TPartnerServerLookups.GetPartnerFoundationStatus: committed own transaction.");
                 }
             }
 
@@ -796,7 +796,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             ARecentlyUsedPartners = new Dictionary <long, string>();
 
-//          TLogging.LogAtLevel(9, "GetRecentlyUsedPartner called!");
+            TLogging.LogAtLevel(9, "TPartnerServerLookups.GetRecentlyUsedPartner called!");
 
             PRecentPartnersTable RecentPartnersDT = new PRecentPartnersTable();
 
@@ -814,7 +814,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(7, "GetRecentUsedPartners: committed own transaction.");
+                    TLogging.LogAtLevel(7, "TPartnerServerLookups.GetRecentUsedPartners: committed own transaction.");
                 }
             }
 
@@ -845,7 +845,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-//                      TLogging.LogAtLevel(7, "GetRecentUsedPartners: committed own transaction.");
+                        TLogging.LogAtLevel(7, "TPartnerServerLookups.GetRecentUsedPartners: committed own transaction.");
                     }
                 }
 

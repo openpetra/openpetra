@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(7, "TCommonDataReader.GetData: committed own transaction.");
+                    TLogging.LogAtLevel(7, "TCommonDataReader.GetData: committed own transaction.");
                 }
             }
 

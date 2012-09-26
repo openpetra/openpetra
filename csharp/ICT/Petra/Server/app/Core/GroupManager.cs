@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(9, "TGroupManager.LoadUserGroups: committed own transaction.");
+                    TLogging.LogAtLevel(9, "TGroupManager.LoadUserGroups: committed own transaction.");
                 }
             }
             return ReturnValue;

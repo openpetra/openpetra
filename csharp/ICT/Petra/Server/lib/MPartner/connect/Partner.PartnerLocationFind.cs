@@ -202,7 +202,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <returns></returns>
         public DataTable GetDataPagedResult(System.Int16 APage, System.Int16 APageSize, out System.Int32 ATotalRecords, out System.Int16 ATotalPages)
         {
-//          TLogging.LogAtLevel(7, "TPartnerLocationFindUIConnector.GetDataPagedResult called.");
+            TLogging.LogAtLevel(7, "TPartnerLocationFindUIConnector.GetDataPagedResult called.");
             DataTable ReturnValue;
 
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);

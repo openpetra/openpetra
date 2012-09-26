@@ -407,7 +407,7 @@ namespace Ict.Petra.Server.App.Core
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-//                      TLogging.LogAtLevel (7, this.GetType().FullName + ".LoadSystemDefaultsTable: commited own transaction.")
+                        TLogging.LogAtLevel(7, "TSystemDefaultsCache.LoadSystemDefaultsTable: commited own transaction.");
                     }
                 }
 

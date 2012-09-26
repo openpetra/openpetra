@@ -244,8 +244,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         // Now delete the changed Location so that it doesn't get saved!
                         // ALocationRow.Delete;
                         // ALocationRow.AcceptChanges;
-                        // Overwrite the Location that should be replaced with the data of the
-                        // new Location
+                        // Overwrite the Location that should be replaced with the data of the new Location
                         ALocationRow.ItemArray = NewLocationRowSaved.ItemArray;
                         PropagateLocationParametersDV2 = new DataView(AAddressAddedPromotionDT,
                             PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetSiteKeyDBName() + " = " +
@@ -321,8 +320,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 //                              ": should simply get updated; therefore the Locations of ALL Partners will be changed...");
                         /*
                          * Don't need to do anything here - the changed Location will be saved
-                         * in the call to SubmitChanges in the main loop of the SubmitData
-                         * function.
+                         * in the call to SubmitChanges in the main loop of the SubmitData function.
                          */
                     }
                 }
@@ -331,8 +329,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             }
             else
             {
-//              TLogging.LogAtLevel(9, "PerformLocationChangeChecks: Location " + ALocationRow.LocationKey.ToString() +
-//                      ": User cancelled the selection - stopping the whole saving process!");
+                TLogging.LogAtLevel(9, "PerformLocationChangeChecks: Location " + ALocationRow.LocationKey.ToString() +
+                        ": User cancelled the selection - stopping the whole saving process!");
 
                 /*
                  * User cancelled the selection - stop the whole saving process!
@@ -639,7 +637,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         }
 
         /// <summary>
-        /// todoComment
         /// </summary>
         /// <param name="APartnerLocationRow"></param>
         /// <param name="APartnerKey"></param>

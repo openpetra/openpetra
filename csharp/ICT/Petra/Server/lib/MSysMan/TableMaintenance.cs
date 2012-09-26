@@ -39,13 +39,12 @@ namespace Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors
     /// </summary>
     public class TSysManTableMaintenanceUIConnector : TConfigurableMBRObject, ISysManUIConnectorsTableMaintenance
     {
-/*
         /// <summary>
         /// Constructor
         /// </summary>
         public TSysManTableMaintenanceUIConnector() : base()
         {
-            TLogging.LogAtLevel(7, this.GetType().FullName + " called.");
+            TLogging.LogAtLevel(7, "TSysManTableMaintenanceUIConnector created.");
         }
 
         /// <summary>
@@ -53,9 +52,8 @@ namespace Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors
         /// </summary>
         ~TSysManTableMaintenanceUIConnector()
         {
-            TLogging.LogAtLevel(7, this.GetType().FullName + ".FINALIZE called!");
+            TLogging.LogAtLevel(7, "TSysManTableMaintenanceUIConnector.FINALIZE called!");
         }
-*/
 
 
         /// <summary>

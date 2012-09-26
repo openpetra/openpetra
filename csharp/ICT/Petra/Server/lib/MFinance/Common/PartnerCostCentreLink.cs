@@ -88,7 +88,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(7, "HasPartnerCostCentreLink: committed own transaction.");
+                    TLogging.LogAtLevel(7, "HasPartnerCostCentreLink: committed own transaction.");
                 }
             }
             return ReturnValue;

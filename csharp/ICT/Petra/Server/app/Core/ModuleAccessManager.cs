@@ -114,7 +114,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(8, "TModuleAccessManager.LoadUserModules: committed own transaction.");
+                    TLogging.LogAtLevel(8, "TModuleAccessManager.LoadUserModules: committed own transaction.");
                 }
             }
             return ReturnValue;

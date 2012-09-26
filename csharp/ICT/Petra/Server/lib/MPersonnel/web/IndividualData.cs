@@ -87,7 +87,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-//              TLogging.LogAtLevel(7, "TIndividualDataWebConnector.GetData: committed own transaction.");
+                TLogging.LogAtLevel(7, "TIndividualDataWebConnector.GetData: committed own transaction.");
             }
 
             return ReturnValue;
@@ -256,7 +256,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(7, "TIndividualDataWebConnector.BuildSummaryData commited own transaction.");
+                    TLogging.LogAtLevel(7, "TIndividualDataWebConnector.BuildSummaryData commited own transaction.");
                 }
             }
 
@@ -703,7 +703,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -725,7 +725,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -747,7 +747,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -769,7 +769,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -791,7 +791,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -813,7 +813,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -835,7 +835,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -857,7 +857,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -879,7 +879,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -901,7 +901,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -969,7 +969,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         {
                             SubmissionResult = TSubmitChangesResult.scrError;
                             AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                          TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                            TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                         }
                     }
 
@@ -985,7 +985,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -1007,7 +1007,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -1029,7 +1029,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -1051,7 +1051,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
-//                      TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
                     }
                 }
 
@@ -1059,7 +1059,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             }
             else
             {
-//              TLogging.LogAtLevel(8, "AInspectDS = nil!");
+                TLogging.LogAtLevel(8, "TIndividualDataWebConnector.SubmitChangesServerSide: AInspectDS = nil!");
                 SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
             }
 

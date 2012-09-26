@@ -40,7 +40,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
     {
         Int32 FNewExtractID = -1;
 
-/*
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         {
             TLogging.LogAtLevel(7, "TPartnerNewExtractUIConnector FINALIZE called!");
         }
-*/
+
 
 
         /// <summary>

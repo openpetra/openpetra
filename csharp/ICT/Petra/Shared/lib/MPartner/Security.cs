@@ -61,17 +61,15 @@ namespace Ict.Petra.Shared.MPartner
             PFoundationRow AFoundationRow)
         {
             if ((APartnerRow.Restricted == PARTNER_RESTRICTED_TO_USER)
-                && !((APartnerRow.UserId == UserInfo.GUserInfo.UserID)
-                     || UserInfo.GUserInfo.IsInModule("SYSMAN")))
+                && !((APartnerRow.UserId == UserInfo.GUserInfo.UserID) || UserInfo.GUserInfo.IsInModule("SYSMAN")))
             {
-//              TLogging.LogAtLevel (6, "CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() + " is restriced to User " + APartnerRow.UserId + "!");
+                TLogging.LogAtLevel (6, "CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() + " is restriced to User " + APartnerRow.UserId + "!");
                 return TPartnerAccessLevelEnum.palRestrictedToUser;
             }
             else if ((APartnerRow.Restricted == PARTNER_RESTRICTED_TO_GROUP)
-                     && !((UserInfo.GUserInfo.IsInGroup(APartnerRow.GroupId))
-                          || UserInfo.GUserInfo.IsInModule("SYSMAN")))
+                     && !((UserInfo.GUserInfo.IsInGroup(APartnerRow.GroupId)) || UserInfo.GUserInfo.IsInModule("SYSMAN")))
             {
-//              TLogging.LogAtLevel (6, "CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() + " is restriced to Group " + APartnerRow.GroupId + "!");
+                TLogging.LogAtLevel (6, "CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() + " is restriced to Group " + APartnerRow.GroupId + "!");
                 return TPartnerAccessLevelEnum.palRestrictedToGroup;
             }
 
@@ -83,7 +81,7 @@ namespace Ict.Petra.Shared.MPartner
                     {
                         if (!CheckFoundationSecurity(AFoundationRow))
                         {
-//                          TLogging.LogAtLevel (6, "CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() + " is restriced by Foundation Ownership!");
+                            TLogging.LogAtLevel (6, "CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() + " is restriced by Foundation Ownership!");
                             return TPartnerAccessLevelEnum.palRestrictedByFoundationOwnership;
                         }
                     }
@@ -94,7 +92,7 @@ namespace Ict.Petra.Shared.MPartner
                 }
             }
 
-//          TLogging.LogAtLevel (6, "CanAccessPartner: Access to Partner " + APartnerRow.PartnerKey.ToString() + " is GRANTED!");
+            TLogging.LogAtLevel (6, "CanAccessPartner: Access to Partner " + APartnerRow.PartnerKey.ToString() + " is GRANTED!");
             return TPartnerAccessLevelEnum.palGranted;
         }
 

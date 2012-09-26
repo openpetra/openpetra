@@ -232,7 +232,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.AllPartnerInfoData: committed own transaction.");
+                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.AllPartnerInfoData: committed own transaction.");
                 }
             }
 
@@ -321,7 +321,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
+                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
                 }
             }
 
@@ -394,7 +394,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
+                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
                 }
             }
 

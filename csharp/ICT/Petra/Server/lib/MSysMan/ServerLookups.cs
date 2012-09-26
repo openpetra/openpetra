@@ -50,7 +50,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
             Boolean NewTransaction;
 
             APetraDBVersion = "Can not retrieve DB version";
-//          TLogging.LogAtLevel(9, "GetDatabaseVersion called!");
+            TLogging.LogAtLevel(9, "TSysManServerLookups.GetDatabaseVersion called!");
 
             SSystemDefaultsTable SystemDefaultsDT = new SSystemDefaultsTable();
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -63,7 +63,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-//              TLogging.LogAtLevel(7, "GetDatabaseVersion: committed own transaction.");
+                TLogging.LogAtLevel(7, "TSysManServerLookups.GetDatabaseVersion: committed own transaction.");
             }
 
             if (SystemDefaultsDT.Rows.Count < 1)
@@ -98,7 +98,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
             APatchLogDT = new SPatchLogTable();
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
-//          TLogging.LogAtLevel(9, "GetInstalledPatches called!");
+            TLogging.LogAtLevel(9, "TSysManServerLookups.GetInstalledPatches called!");
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
@@ -114,7 +114,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel(7, "GetInstalledPatches: committed own transaction.");
+                    TLogging.LogAtLevel(7, "TSysManServerLookups.GetInstalledPatches: committed own transaction.");
                 }
             }
 
@@ -127,7 +127,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
              */
             for (int Counter = 0; Counter < TmpTable.DefaultView.Count; ++Counter)
             {
-//              TLogging.LogAtLevel(7, "Patch: " + TmpTable.DefaultView[Counter][0]);
+                TLogging.LogAtLevel(7, "Patch: " + TmpTable.DefaultView[Counter][0]);
                 APatchLogDT.ImportRow(TmpTable.DefaultView[Counter].Row);
             }
 

@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.MCommon
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-//                      TLogging.LogAtLevel (7, "RetrievePartnerShortName: committed own transaction.");
+                        TLogging.LogAtLevel (7, "RetrievePartnerShortName: committed own transaction.");
                     }
                 }
                 catch (Exception)
@@ -213,7 +213,7 @@ namespace Ict.Petra.Server.MCommon
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-//                      TLogging.LogAtLevel (7, "CheckPartnerExists: committed own transaction.");
+                        TLogging.LogAtLevel (7, "CheckPartnerExists: committed own transaction.");
                     }
                 }
 
@@ -344,7 +344,7 @@ namespace Ict.Petra.Server.MCommon
                 FTmpDataTable = ATypedTable.Clone();
             }
 
-//          TLogging.LogAtLevel (7, this.GetType().FullName + " called.");
+            TLogging.LogAtLevel(7, "TPagedDataSet created.");
         }
 
         /// <summary>
@@ -352,7 +352,7 @@ namespace Ict.Petra.Server.MCommon
         /// </summary>
         ~TPagedDataSet()
         {
-//          TLogging.LogAtLevel (7, this.GetType().FullName + ".FINALIZE called!");
+          TLogging.LogAtLevel (7, "TPagedDataSet.FINALIZE called!");
         }
 
 
@@ -482,13 +482,13 @@ namespace Ict.Petra.Server.MCommon
             // Check if query execution cancellation was requested  necessary only for mono (at least up to 1.1.13.2)
             if (FAsyncExecProgress.FCancelExecution)
             {
-//              TLogging.LogAtLevel (7, "Query got cancelled!");
+                TLogging.LogAtLevel (7, "Query got cancelled!");
                 FAsyncExecProgress.ProgressInformation = "Query cancelled!";
                 FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
                 return;
             }
 
-//          TLogging.LogAtLevel (7, this.GetType().FullName + "  FDataAdapter.Fill finished. FTotalRecords: " + FTotalRecords.ToString());
+            TLogging.LogAtLevel(7, "TPagedDataSet  FDataAdapter.Fill finished. FTotalRecords: " + FTotalRecords.ToString());
             FPageDataTable = FTmpDataTable.Clone();
             FPageDataTable.TableName = "PagedTable";
             FAsyncExecProgress.ProgressInformation = "Query executed.";
@@ -508,7 +508,7 @@ namespace Ict.Petra.Server.MCommon
         /// </returns>
         public DataTable GetData(Int16 APage, Int16 APageSize)
         {
-//          TLogging.LogAtLevel (7, this.GetType().FullName + ".GetData(" + APage.ToString() + ") called.");
+            TLogging.LogAtLevel (7, "TPagedDataSet.GetData(" + APage.ToString() + ") called.");
 
             // wait until the query has been run in the other thread
             while (FTotalRecords == -1)
@@ -642,9 +642,9 @@ namespace Ict.Petra.Server.MCommon
             try
             {
                 // Cancel the executing query.
-//              TLogging.LogAtLevel (7, "TPagedDataSet.StopQuery called...");
+                TLogging.LogAtLevel (7, "TPagedDataSet.StopQuery called...");
                 FDataAdapter.SelectCommand.Cancel();
-//              TLogging.LogAtLevel (7, "TPagedDataSet.StopQuery finished.");
+                TLogging.LogAtLevel (7, "TPagedDataSet.StopQuery finished.");
             }
             catch (Exception exp)
             {
@@ -859,7 +859,7 @@ namespace Ict.Petra.Server.MCommon
         /// <returns>void</returns>
         public void Cancel()
         {
-//          TLogging.LogAtLevel (6, "TAsynchronousExecutionProgress.Cancel called!");
+            TLogging.LogAtLevel (6, "TAsynchronousExecutionProgress.Cancel called!");
             FCancelExecution = true;
             FProgressState = TAsyncExecProgressState.Aeps_Stopping;
 

@@ -79,7 +79,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if (APartnerKey > 0)
             {
-//              TLogging.LogAtLevel(8, "TMailing.GetPartnerLocations: Checking access to Partner.");
+                TLogging.LogAtLevel(8, "TMailing.GetPartnerLocations: Checking access to Partner.");
 
                 if (TSecurity.CanAccessPartnerByKey(APartnerKey, false) ==
                     TPartnerAccessLevelEnum.palGranted)
@@ -176,7 +176,7 @@ namespace Ict.Petra.Server.MPartner.Common
                         if (NewTransaction)
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
-//                          TLogging.LogAtLevel(7, "TMailing.GetPartnerLocations: committed own transaction.");
+                            TLogging.LogAtLevel(7, "TMailing.GetPartnerLocations: committed own transaction.");
                         }
                     }
 
@@ -184,7 +184,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 }
                 else
                 {
-//                  TLogging.LogAtLevel(8, "TMailing.GetPartnerLocations: Access to Partner DENIED!");
+                    TLogging.LogAtLevel(8, "TMailing.GetPartnerLocations: Access to Partner DENIED!");
 
                     // Petra Security prevents us from accessing this Partner -> return false;
                     return false;
@@ -237,7 +237,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     if (TMailing.GetPartnerLocations(APartnerKey, false,
                             true, true, true, out PartnerLocationDT))
                     {
-//                      TLogging.LogAtLevel(8, "TMailing.GetPartnersBestLocationData: processing " + PartnerLocationDT.Rows.Count.ToString() + " Locations...");
+                        TLogging.LogAtLevel(8, "TMailing.GetPartnersBestLocationData: processing " + PartnerLocationDT.Rows.Count.ToString() + " Locations...");
 
                         if (PartnerLocationDT.Rows.Count > 1)
                         {
@@ -281,7 +281,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-//                      TLogging.LogAtLevel(8, "TMailing.GetPartnersBestLocationData: committed own transaction.");
+                        TLogging.LogAtLevel(8, "TMailing.GetPartnersBestLocationData: committed own transaction.");
                     }
                 }
             }

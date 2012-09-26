@@ -124,7 +124,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel (7, "TUserManager.LoadUser: committed own transaction.");
+                    TLogging.LogAtLevel (7, "TUserManager.LoadUser: committed own transaction.");
                 }
 
                 throw;
@@ -146,7 +146,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-//                      TLogging.LogAtLevel (7, "TUserManager.LoadUser: committed own transaction.");
+                        TLogging.LogAtLevel (7, "TUserManager.LoadUser: committed own transaction.");
                     }
 
                     TLogging.LogAtLevel (8, "Exception occured while loading a s_user record: " + Exp.ToString());
@@ -157,7 +157,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-//                  TLogging.LogAtLevel (7, "TUserManager.LoadUser: committed own transaction.");
+                    TLogging.LogAtLevel (7, "TUserManager.LoadUser: committed own transaction.");
                 }
 
                 UserDR = UserDT[0];
@@ -269,8 +269,8 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     if (!SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults))
                     {
-//                      TLogging.LogAtLevel (8, 
-//                          Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ", VerificationResults));
+                        TLogging.LogAtLevel (8, 
+                            Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ", VerificationResults));
                     }
 
                     throw new EAccessDeniedException(StrUserIsRetired);
@@ -292,7 +292,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-//                      TLogging.LogAtLevel (7, "TUserManager.PerformUserAuthentication: committed own transaction.");
+                        TLogging.LogAtLevel (7, "TUserManager.PerformUserAuthentication: committed own transaction.");
                     }
                 }
 
