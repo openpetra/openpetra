@@ -39,7 +39,7 @@ public partial class ShepherdTest : Form
     /// Constructor.
     /// </summary>
     /// <param name="AXmlNode"></param>
-    public ShepherdTest(XmlNode AXmlNode) : this()
+    public ShepherdTest(XmlNode AXmlNode)
     {
         FTestYAMNode = AXmlNode;
         
@@ -48,7 +48,10 @@ public partial class ShepherdTest : Form
         this.tPnlCollapsible1 = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMNode, TCollapseDirection.cdHorizontal, 240, false, TVisualStylesEnum.vsShepherd);
         this.tPnlCollapsible1.BorderStyle = BorderStyle.FixedSingle;
         this.tPnlCollapsible1.Text = "My Shepherd Test";
+        tPnlCollapsible1.Dock = DockStyle.Left;
         this.Controls.Add(this.tPnlCollapsible1);
+        
+        this.Size = new Size(750, 400);
         
 //        tPnlCollapsible1.VisualStyleEnum = TVisualStylesEnum.vsShepherd;
 //        tPnlCollapsible1.TaskListNode = AXmlNode;

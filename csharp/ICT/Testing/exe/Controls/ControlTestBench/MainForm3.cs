@@ -81,5 +81,12 @@ namespace ControlTestBench
             
             new TaskListTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
         }
+        
+        void BtnTestAllClick(object sender, EventArgs e)
+        {
+            XmlDocument UINavigation = LoadYAMLTestFile();
+            
+            new TestAll(UINavigation.FirstChild.NextSibling.FirstChild).Show();
+        }
     }
 }
