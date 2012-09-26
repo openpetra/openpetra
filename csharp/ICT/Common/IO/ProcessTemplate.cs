@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -917,10 +917,13 @@ namespace Ict.Common.IO
 
             if (!ACheckTemplateCompletion || CheckTemplateCompletion(FTemplateCode))
             {
-                if (TFileDiffMerge.Merge2Files(FDestinationFile, FTemplateCode.Replace("\r", "").Split(new char[] { '\n' })))
-                {
-                    Console.WriteLine("Writing " + Path.GetFileName(FDestinationFile));
-                }
+                Console.WriteLine("Writing " + Path.GetFileName(FDestinationFile));
+
+                StreamWriter sw = new StreamWriter(FDestinationFile + ".new", false, System.Text.Encoding.UTF8);
+                sw.Write(FTemplateCode);
+                sw.Close();
+
+                TTextFile.UpdateFile(FDestinationFile, true);
 
                 return true;
             }
