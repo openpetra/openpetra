@@ -405,9 +405,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ClearControls()
         {
-            txtDetailJournalDescription.Clear();
+        	FPetraUtilsObject.DisableDataChangedEvent();
+        	txtDetailJournalDescription.Clear();
             cmbDetailTransactionTypeCode.SelectedIndex = -1;
             cmbDetailTransactionCurrency.SelectedIndex = -1;
+        	FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         private decimal GetActualExchangeRateForeign()

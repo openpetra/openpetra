@@ -75,21 +75,21 @@ namespace Tests.MFinance.Server.Gift
         }
 
         /// <summary>
-        /// This will delete a specified recurring gift batch, and attempt to save it
+        /// This will delete a specified Saved recurring gift batch, and attempt to save the resulting dataset
         /// </summary>
         [Test]
-        public void TestDeleteGiftBatch()
+        public void TestDeleteSavedGiftBatch()
         {
         	Int64 donorKey = 43005001;
         	Int64 recipKey = 43000000;
         	int giftTransNumber = 1;
         	int giftTranDetailNumber = 1;
         	decimal giftAmount = 100.50M;
+        	string motivationGroupCode = "GIFT";
+        	string motivationDetailCode = "SUPPORT";
         	
             TVerificationResultCollection VerficationResults = null;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            
             //Create the recurring gift batch
         	FMainDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(FLedgerNumber);
             
@@ -116,10 +116,15 @@ namespace Tests.MFinance.Server.Gift
             newDetailRow.DetailNumber = giftTranDetailNumber;
             newDetailRow.RecipientKey = recipKey;
             newDetailRow.GiftAmount = giftAmount;
+            newDetailRow.MotivationGroupCode = motivationGroupCode;
+            newDetailRow.MotivationDetailCode = motivationDetailCode;
 
             FMainDS.ARecurringGiftDetail.Rows.Add(newDetailRow);
             
-            DBAccess.GDBAccessObj.RollbackTransaction();
+			//Save changes
+            GiftBatchTDSAccess.SubmitChanges(FMainDS, out VerficationResults);
+            
+            FMainDS.AcceptChanges();
 
             // Delete the associated recurring gift detail rows.
 			DataView viewGiftDetail = new DataView(FMainDS.ARecurringGiftDetail);
@@ -130,6 +135,8 @@ namespace Tests.MFinance.Server.Gift
 				row.Delete();
 			}
             
+			Assert.AreNotEqual(0, FMainDS.ARecurringGiftDetail.Rows.Count, "after deletion the row should still exist");
+			
             // Delete the associated recurring gift rows.
 			DataView viewGift = new DataView(FMainDS.ARecurringGift);
 			viewGift.RowFilter = string.Empty;
@@ -139,12 +146,96 @@ namespace Tests.MFinance.Server.Gift
 				row.Delete();
 			}
 
-			// Delete the recurring batch row.
-			FMainDS.AGiftBatch.Rows[0].Delete();
+			Assert.AreNotEqual(0, FMainDS.ARecurringGiftBatch.Rows.Count, "after deletion the batch row should still exist");
 			
+			// Delete the recurring batch row.
+			FMainDS.ARecurringGiftBatch.Rows[0].Delete();
+			
+			Assert.AreNotEqual(0, FMainDS.ARecurringGiftBatch.Rows.Count, "after deletion the batch row should still exist");
+			
+			//Save changes
 			GiftBatchTDSAccess.SubmitChanges(FMainDS, out VerficationResults);
 
         }
       
+        /// <summary>
+        /// This will delete a specified unsaved recurring gift batch, and attempt to save the resulting dataset
+        /// </summary>
+        [Test]
+        public void TestDeleteUnsavedGiftBatch()
+        {
+        	Int64 donorKey = 43005001;
+        	Int64 recipKey = 43000000;
+        	int giftTransNumber = 1;
+        	int giftTranDetailNumber = 1;
+        	decimal giftAmount = 100.50M;
+        	string motivationGroupCode = "GIFT";
+        	string motivationDetailCode = "SUPPORT";
+        	
+            TVerificationResultCollection VerficationResults = null;
+
+            //Create the recurring gift batch
+        	FMainDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(FLedgerNumber);
+            
+            FRecurringBatchNumberToDelete = FMainDS.ARecurringGiftBatch[0].BatchNumber;
+            
+            //Create the recurring gift batch's single gift header
+            ARecurringGiftRow newRow = FMainDS.ARecurringGift.NewRowTyped(true);
+            
+            newRow.LedgerNumber = FLedgerNumber;
+            newRow.BatchNumber = FRecurringBatchNumberToDelete;
+            newRow.DonorKey = donorKey;
+            newRow.GiftTransactionNumber = giftTransNumber;
+            newRow.LastDetailNumber = giftTransNumber;
+
+            FMainDS.ARecurringGift.Rows.Add(newRow);
+            
+            //Create the recurring gift batch's single gift detail
+            ARecurringGiftDetailRow newDetailRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
+            
+            newDetailRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
+            newDetailRow.LedgerNumber = FLedgerNumber;
+            newDetailRow.BatchNumber = FRecurringBatchNumberToDelete;
+            newDetailRow.GiftTransactionNumber = giftTransNumber;
+            newDetailRow.DetailNumber = giftTranDetailNumber;
+            newDetailRow.RecipientKey = recipKey;
+            newDetailRow.GiftAmount = giftAmount;
+            newDetailRow.MotivationGroupCode = motivationGroupCode;
+            newDetailRow.MotivationDetailCode = motivationDetailCode;
+
+            FMainDS.ARecurringGiftDetail.Rows.Add(newDetailRow);
+            
+            // Delete the associated recurring gift detail rows.
+			DataView viewGiftDetail = new DataView(FMainDS.ARecurringGiftDetail);
+			viewGiftDetail.RowFilter = string.Empty;
+
+			foreach (DataRowView row in viewGiftDetail)
+			{
+				row.Delete();
+			}
+            
+			Assert.AreNotEqual(0, FMainDS.ARecurringGiftDetail.Rows.Count, "after deletion the row should still exist");
+			
+            // Delete the associated recurring gift rows.
+			DataView viewGift = new DataView(FMainDS.ARecurringGift);
+			viewGift.RowFilter = string.Empty;
+
+			foreach (DataRowView row in viewGift)
+			{
+				row.Delete();
+			}
+
+			Assert.AreNotEqual(0, FMainDS.ARecurringGiftBatch.Rows.Count, "after deletion the batch row should still exist");
+			
+			// Delete the recurring batch row.
+			FMainDS.ARecurringGiftBatch.Rows[0].Delete();
+			
+			Assert.AreNotEqual(0, FMainDS.ARecurringGiftBatch.Rows.Count, "after deletion the batch row should still exist");
+			
+			//Now save changes
+			GiftBatchTDSAccess.SubmitChanges(FMainDS, out VerficationResults);
+
+        }
+        
     }
 }

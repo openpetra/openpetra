@@ -241,10 +241,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             
             try
             {
-                ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
+            	ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
                     batchNumber);
 
-                // Delete the associated recurring gift detail rows.
+                
+            	//Load the gift details first before deleting them
+            	FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+				                               ARecurringGiftDetailTable.GetLedgerNumberDBName(),
+				                               FLedgerNumber,
+				                               ARecurringGiftDetailTable.GetBatchNumberDBName(),
+				                               batchNumber);
+
+	            // only load from server if there are no transactions loaded yet for this batch
+	            // otherwise we would overwrite transactions that have already been modified
+	            if (FMainDS.ARecurringGiftDetail.DefaultView.Count == 0)
+	            {
+	                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, batchNumber));
+	            }
+            	
+            	
+            	// Delete the associated recurring gift detail rows.
 				DataView viewGiftDetail = new DataView(FMainDS.ARecurringGiftDetail);
 				viewGiftDetail.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
 				                               ARecurringGiftTable.GetLedgerNumberDBName(),
@@ -273,14 +289,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 				// Delete the recurring batch row.
 				ARowToDelete.Delete();
 
-                FPreviouslySelectedDetailRow = null;
+				FPreviouslySelectedDetailRow = null;
 
                 deletionSuccessful = true;
+				
             }
             catch (Exception ex)
             {
-                FPreviouslySelectedDetailRow = ARowToDelete;
-
                 ACompletionMessage = ex.Message;
                 MessageBox.Show(ex.Message,
                     "Deletion Error",
