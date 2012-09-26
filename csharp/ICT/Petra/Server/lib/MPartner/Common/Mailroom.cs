@@ -82,9 +82,7 @@ namespace Ict.Petra.Server.MPartner.Common
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                Console.WriteLine("GetLastContactDate: committed own transaction.");
-#endif
+				TLogging.LogAtLevel (7, "TMailroom.GetLastContactDate: committed own transaction.");
             }
         }
     }
