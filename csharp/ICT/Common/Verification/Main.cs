@@ -1674,7 +1674,7 @@ namespace Ict.Common.Verification
         /// <param name="AControlName">Name of the Control to which the <see cref="TVerificationResult" />
         /// is related.</param>
         /// <param name="AResetValue">Set this to true to retain the
-        /// <see cref="DataColumnChangeEventArgs.ProposedValue " />.</param>
+        /// <see cref="DataColumnChangeEventArgs.ProposedValue" />.</param>
         public static void SetColumnErrorText(DataColumnChangeEventArgs AEventArgs,
             TVerificationResult AVerificationResultEntry,
             String AControlName,
