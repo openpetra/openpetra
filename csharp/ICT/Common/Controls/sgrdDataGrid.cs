@@ -158,27 +158,6 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// behaviour for invoking focus events
-        /// </summary>
-        public enum TInvokeGridFocusEventEnum
-        {
-            /// <summary>
-            /// no focus events
-            /// </summary>
-            NoFocusEvent,
-
-            /// <summary>
-            /// FocusRowLeaving event
-            /// </summary>
-            FocusRowLeavingEvent,
-
-            /// <summary>
-            /// FocusedRowChanged event
-            /// </summary>0295BC0D-ECC1-4E71-8152-D236FEEA6FB5
-            FocusedRowChangedEvent
-        };
-
-        /// <summary>
         /// Read access to the View for the ColumnHeaders of this Grid (used by
         /// sgrdDataGrid.Columns).
         ///
@@ -1386,52 +1365,11 @@ namespace Ict.Common.Controls
             SelectRowInGrid(ARowNumberInGrid, false);
         }
 
-        /// select a row in the grid, and optionally invoke the event for FocusedRowChanged
-        public void SelectRowInGrid(Int32 ARowNumberInGrid, TInvokeGridFocusEventEnum AInvokeEvent)
+        /// select a row in the grid.  By default generate the event(s) for focus changes.
+        public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit, Boolean ASuppressEvents = false)
         {
-            switch (AInvokeEvent)
-            {
-                case TInvokeGridFocusEventEnum.FocusRowLeavingEvent:  //Invoke FocusRowLeaving event
+            if (Rows.Count <= 1) return;
 
-                    break;
-
-                case TInvokeGridFocusEventEnum.FocusedRowChangedEvent:  //Invoke FocusedRowChanged event
-
-                    SelectRowInGrid(ARowNumberInGrid, false);
-                    break;
-
-                default: //TInvokeGridFocusEventEnum.NoFocusEvent
-
-                    int NumRows = this.Rows.Count;
-
-                    if (NumRows == 1)
-                    {
-                        return;
-                    }
-
-                    if (ARowNumberInGrid < 1)
-                    {
-                        ARowNumberInGrid = 1;
-                    }
-                    else if (ARowNumberInGrid >= NumRows)
-                    {
-                        ARowNumberInGrid = NumRows - 1;
-                    }
-
-                    //Select and show specified row
-                    this.Selection.FocusStyle = FocusStyle.None;
-                    this.Selection.Focus(Position.Empty, true);                         // ensure the current cell is un-highlighted first
-                    this.Selection.SelectRow(ARowNumberInGrid, true);                   // move the row selection
-                    this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);  // select cell in column 0
-                    this.Selection.FocusStyle = FocusStyle.Default;
-
-                    break;
-            }
-        }
-
-        /// select a row in the grid, and invoke the event for FocusedRowChanged
-        public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit)
-        {
             if (ASelectBorderIfOutsideLimit)
             {
                 if (ARowNumberInGrid >= Rows.Count)
@@ -1445,17 +1383,30 @@ namespace Ict.Common.Controls
                 }
             }
 
-            this.Selection.ResetSelection(false);
-            this.Selection.Focus(new SourceGrid.Position(ARowNumberInGrid, 0), true);   // to prevent the Cell into which the user had previously clicked into from staying highlighted (overcome buggy behaviour of SourceGrid)
-            this.Selection.SelectRow(ARowNumberInGrid, true);
+            if (ASuppressEvents)
+            {
+                // This chain of calls does not give rise to any focus events
+                // Use this option carefully.  Normally events are a good thing.  Missed events may give unexpected behaviour at the next event.
+                this.Selection.FocusStyle = FocusStyle.None;
+                this.Selection.Focus(Position.Empty, true);                         // ensure the current cell is un-highlighted first
+                this.Selection.SelectRow(ARowNumberInGrid, true);                   // move the row selection
 
-            // scroll to the row
-            this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
+                // scroll to the row
+                this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
+                
+                // Turn on selection events again
+                this.Selection.FocusStyle = FocusStyle.Default;
+            }
+            else
+            {
+                // This chain of calls will generate rowLeaving events.  Normally it is important that these events get fired.
+                this.Selection.ResetSelection(false);
+                this.Selection.Focus(new SourceGrid.Position(ARowNumberInGrid, 0), true);   // to prevent the Cell into which the user had previously clicked from staying highlighted (overcome buggy behaviour of SourceGrid)
+                this.Selection.SelectRow(ARowNumberInGrid, true);
 
-            // invoke the event for FocusedRowChanged
-            this.Selection.FocusRow(ARowNumberInGrid);
-
-            //FocusRowEntered.Invoke(this, new SourceGrid.RowEventArgs(ARowNumberInGrid));
+                // scroll to the row
+                this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
+            }
         }
 
         /// make sure the grid scrolls to the selected row to have it in the visible area
