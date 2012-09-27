@@ -18,6 +18,12 @@
 
             <!-- Add NAnt.DotNetTasks.dll -->
             <include name="${string::replace(assembly::get-location(task::get-assembly('echo')), 'NAnt.Core', 'NAnt.DotNetTasks')}" />
+
+            <!-- Add NAnt.NUnit.dll -->
+            <include name="${string::replace(assembly::get-location(task::get-assembly('echo')), 'NAnt.Core', 'NAnt.NUnit')}" />
+
+            <!-- Add NAnt.NUnit2Tasks.dll -->
+            <include name="${string::replace(assembly::get-location(task::get-assembly('echo')), 'NAnt.Core', 'NAnt.NUnit2Tasks')}" />
         </references>
     </csc>
 </target>

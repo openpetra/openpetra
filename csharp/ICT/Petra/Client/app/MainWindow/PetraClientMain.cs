@@ -26,7 +26,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
-using System.Runtime.Caching;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Principal;
