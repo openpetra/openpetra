@@ -425,7 +425,8 @@ namespace Ict.Common.Testing
 
             /* console.writeLine(CultureInfo.CurrentCulture.TwoLetterISOLanguageName); */
             Assert.AreEqual("29.03.2004", new TVariant(new DateTime(2004, 03, 29)).ToString(), "Problem A date DE");
-            Assert.AreEqual("29-MÄR", new TVariant(new DateTime(2004, 03, 29)).ToFormattedString("dayofyear").Replace("MRZ", "MÄR"), "Problem A2 day of year DE");
+            Assert.AreEqual("29-MÄR", new TVariant(new DateTime(2004, 03, 29)).ToFormattedString("dayofyear").Replace("MRZ",
+                    "MÄR"), "Problem A2 day of year DE");
             Assert.AreEqual("29.03." + DateTime.Now.Year.ToString(), new TVariant(new DateTime(2004, 03, 29)).ToFormattedString("dayofyear",
                     "CSV"), "Problem A2 day of year CSV DE");
 
