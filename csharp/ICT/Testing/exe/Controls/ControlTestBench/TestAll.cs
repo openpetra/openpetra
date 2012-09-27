@@ -114,6 +114,25 @@ namespace ControlTestBench
             return new TYml2Xml(lines).ParseYML2TaskListRoot();
         }
         
+        private XmlNode GetHardCodedXmlNodes_Shepherd()
+        {
+            string[] lines = new string[11];
+            
+            lines[0] = "TaskGroup:\n";
+            lines[1] = "    Task1:\n";
+            lines[2] = "        Label: &Passport Information";
+            lines[3] = "    Task2:\n";
+            lines[4] = "        Label: &Emergency Contact";
+            lines[5] = "        Task2a:\n";
+            lines[6] = "            Label: Family Name";
+            lines[7] = "        Task2b:\n";
+            lines[8] = "            Label: Personal Information";
+            lines[9] = "    Task3:\n";
+            lines[10] = "        Label: &Home Church";
+            
+            return new TYml2Xml(lines).ParseYML2TaskListRoot();
+        }
+        
         
         private void TestEmptyConstructor(object sender, EventArgs e)
         {
@@ -267,12 +286,21 @@ namespace ControlTestBench
         
         void TestAllLoad(object sender, EventArgs e)
         {
+            cplFolders.TaskListNode = GetHardCodedXmlNodes_AccordionPanel1();
+            cplShepherd.TaskListNode = GetHardCodedXmlNodes_Shepherd();
+            cplPartnerInfo.TaskListNode = GetHardCodedXmlNodes_TaskList2();
             cplTasks1.TaskListNode = GetHardCodedXmlNodes_TaskList1();
             cplTasks2.TaskListNode = GetHardCodedXmlNodes_TaskList2();
             cplTasks3.TaskListNode = GetHardCodedXmlNodes_AccordionPanel1();
             cplTasks4.TaskListNode = GetHardCodedXmlNodes_AccordionPanel2();
             
-            TTaskList tmp = cplTasks1.RealiseTaskListNow();
+            cplFolders.InitUserControl();
+            cplShepherd.InitUserControl();
+            cplPartnerInfo.InitUserControl();
+            cplTasks1.InitUserControl();
+            cplTasks2.InitUserControl();
+            cplTasks3.InitUserControl();
+            cplTasks4.InitUserControl();
        }
     }
 }

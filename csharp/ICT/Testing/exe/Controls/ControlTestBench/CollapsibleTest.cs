@@ -30,8 +30,6 @@ namespace ControlTestBench
         public CollapsibleTest()
         {
             InitializeComponent();
-            FPnl = new TPnlCollapsible();
-            this.Controls.Add(FPnl);
         }
 
         /// <summary>
@@ -50,6 +48,7 @@ namespace ControlTestBench
             this.Controls.Remove(this.FPnl);
 
             this.FPnl = new TPnlCollapsible();
+            this.FPnl.Text = "&With empty constructor";
             this.Controls.Add(this.FPnl);
         }
         private void TestTaskListVerticalConstructor(object sender, EventArgs e)
@@ -57,6 +56,7 @@ namespace ControlTestBench
             this.Controls.Remove(this.FPnl);
 
             this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMLNode, TCollapseDirection.cdVertical, 120, false, FEnumStyle);
+            this.FPnl.Text = "&Tasks";
             this.Controls.Add(this.FPnl);
         }
         private void TestUserControlVerticalConstructor(object sender, EventArgs e)
@@ -64,6 +64,9 @@ namespace ControlTestBench
             this.Controls.Remove(this.FPnl);
 
             this.FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, "Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo", TCollapseDirection.cdVertical, false, FEnumStyle);
+            this.FPnl.Text = "&Partner Info";
+            this.FPnl.InitUserControl();
+            
             this.Controls.Add(this.FPnl);
         }
         private void TestTaskListHorizontalConstructor(object sender, EventArgs e)
@@ -80,6 +83,7 @@ namespace ControlTestBench
             this.Controls.Remove(this.FPnl);
 
             this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TCollapseDirection.cdVertical, false);
+            this.FPnl.Text = "&TaskList Expanded";
             this.Controls.Add(this.FPnl);
         }
         private void TestFullConstructor(object sender, EventArgs e)
@@ -87,8 +91,10 @@ namespace ControlTestBench
             this.Controls.Remove(this.FPnl);
 
             this.FPnl = new TPnlCollapsible(FTestYAMLNode, THostedControlKind.hckUserControl, "Foo.Bar", FEnumStyle, TCollapseDirection.cdHorizontal, true);
+            this.FPnl.Text = "&With full constructor";
             this.Controls.Add(this.FPnl);
         }
+        
         private void TestStacked(object sender, EventArgs e)
         {
             this.Controls.Remove(this.FPnl);

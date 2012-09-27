@@ -320,6 +320,8 @@ namespace ControlTestBench
             // 
             // cplFolders
             // 
+            this.cplFolders.AutoSize = true;
+            this.cplFolders.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cplFolders.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontal;
             this.cplFolders.Dock = System.Windows.Forms.DockStyle.Left;
             this.cplFolders.ExpandedSize = 215;
@@ -328,7 +330,7 @@ namespace ControlTestBench
             this.cplFolders.Location = new System.Drawing.Point(0, 0);
             this.cplFolders.Margin = new System.Windows.Forms.Padding(0);
             this.cplFolders.Name = "cplFolders";
-            this.cplFolders.Size = new System.Drawing.Size(215, 581);
+            this.cplFolders.Size = new System.Drawing.Size(424, 581);
             this.cplFolders.TabIndex = 0;
             this.cplFolders.Text = "Finance";
             this.cplFolders.UserControlClass = "";
@@ -365,12 +367,14 @@ namespace ControlTestBench
             // 
             // cplTasks2
             // 
+            this.cplTasks2.AutoSize = true;
+            this.cplTasks2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cplTasks2.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
             this.cplTasks2.Dock = System.Windows.Forms.DockStyle.Top;
             this.cplTasks2.ExpandedSize = 200;
             this.cplTasks2.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
             this.cplTasks2.IsCollapsed = false;
-            this.cplTasks2.Location = new System.Drawing.Point(0, 200);
+            this.cplTasks2.Location = new System.Drawing.Point(0, 160);
             this.cplTasks2.Margin = new System.Windows.Forms.Padding(0);
             this.cplTasks2.Name = "cplTasks2";
             this.cplTasks2.Padding = new System.Windows.Forms.Padding(5);
@@ -384,6 +388,8 @@ namespace ControlTestBench
             // 
             // cplTasks1
             // 
+            this.cplTasks1.AutoSize = true;
+            this.cplTasks1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cplTasks1.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
             this.cplTasks1.Dock = System.Windows.Forms.DockStyle.Top;
             this.cplTasks1.ExpandedSize = 200;
@@ -393,7 +399,7 @@ namespace ControlTestBench
             this.cplTasks1.Margin = new System.Windows.Forms.Padding(0);
             this.cplTasks1.Name = "cplTasks1";
             this.cplTasks1.Padding = new System.Windows.Forms.Padding(5);
-            this.cplTasks1.Size = new System.Drawing.Size(240, 200);
+            this.cplTasks1.Size = new System.Drawing.Size(240, 160);
             this.cplTasks1.TabIndex = 0;
             this.cplTasks1.Text = "Tasks 1 (XP Task Panel)";
             this.cplTasks1.UserControlClass = "";
@@ -415,6 +421,8 @@ namespace ControlTestBench
             // 
             // cplShepherd
             // 
+            this.cplShepherd.AutoSize = true;
+            this.cplShepherd.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cplShepherd.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontal;
             this.cplShepherd.Dock = System.Windows.Forms.DockStyle.Left;
             this.cplShepherd.ExpandedSize = 200;
@@ -423,7 +431,7 @@ namespace ControlTestBench
             this.cplShepherd.Location = new System.Drawing.Point(0, 0);
             this.cplShepherd.Margin = new System.Windows.Forms.Padding(0);
             this.cplShepherd.Name = "cplShepherd";
-            this.cplShepherd.Size = new System.Drawing.Size(200, 422);
+            this.cplShepherd.Size = new System.Drawing.Size(424, 422);
             this.cplShepherd.TabIndex = 0;
             this.cplShepherd.Text = "Shepherd 1";
             this.cplShepherd.UserControlClass = "";
@@ -445,16 +453,18 @@ namespace ControlTestBench
             // 
             // cplTasks4
             // 
+            this.cplTasks4.AutoSize = true;
+            this.cplTasks4.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cplTasks4.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
             this.cplTasks4.Dock = System.Windows.Forms.DockStyle.Top;
             this.cplTasks4.ExpandedSize = 200;
             this.cplTasks4.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
             this.cplTasks4.IsCollapsed = false;
-            this.cplTasks4.Location = new System.Drawing.Point(0, 200);
+            this.cplTasks4.Location = new System.Drawing.Point(0, 160);
             this.cplTasks4.Margin = new System.Windows.Forms.Padding(0);
             this.cplTasks4.Name = "cplTasks4";
             this.cplTasks4.Padding = new System.Windows.Forms.Padding(5);
-            this.cplTasks4.Size = new System.Drawing.Size(181, 200);
+            this.cplTasks4.Size = new System.Drawing.Size(181, 160);
             this.cplTasks4.TabIndex = 1;
             this.cplTasks4.Text = "Tasks 4 (Accordion)";
             this.cplTasks4.UserControlClass = "";
@@ -464,6 +474,8 @@ namespace ControlTestBench
             // 
             // cplTasks3
             // 
+            this.cplTasks3.AutoSize = true;
+            this.cplTasks3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cplTasks3.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
             this.cplTasks3.Dock = System.Windows.Forms.DockStyle.Top;
             this.cplTasks3.ExpandedSize = 200;
@@ -473,7 +485,7 @@ namespace ControlTestBench
             this.cplTasks3.Margin = new System.Windows.Forms.Padding(0);
             this.cplTasks3.Name = "cplTasks3";
             this.cplTasks3.Padding = new System.Windows.Forms.Padding(5);
-            this.cplTasks3.Size = new System.Drawing.Size(181, 200);
+            this.cplTasks3.Size = new System.Drawing.Size(181, 160);
             this.cplTasks3.TabIndex = 0;
             this.cplTasks3.Text = "Tasks 3 (Accordion)";
             this.cplTasks3.UserControlClass = "";
@@ -483,6 +495,8 @@ namespace ControlTestBench
             // 
             // cplPartnerInfo
             // 
+            this.cplPartnerInfo.AutoSize = true;
+            this.cplPartnerInfo.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cplPartnerInfo.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
             this.cplPartnerInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.cplPartnerInfo.ExpandedSize = 200;
@@ -532,13 +546,18 @@ namespace ControlTestBench
             this.Load += new System.EventHandler(this.TestAllLoad);
             this.pnlContent.ResumeLayout(false);
             this.sptContent.Panel1.ResumeLayout(false);
+            this.sptContent.Panel1.PerformLayout();
             this.sptContent.Panel2.ResumeLayout(false);
+            this.sptContent.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sptContent)).EndInit();
             this.sptContent.ResumeLayout(false);
             this.pnlFiller.ResumeLayout(false);
             this.pnlTasksHoster.ResumeLayout(false);
+            this.pnlTasksHoster.PerformLayout();
             this.pnlShepherdHoster.ResumeLayout(false);
+            this.pnlShepherdHoster.PerformLayout();
             this.pnlTasksHoster2.ResumeLayout(false);
+            this.pnlTasksHoster2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
