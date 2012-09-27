@@ -205,7 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ARowToDelete">the currently selected row to be deleted</param>
         /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
         /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(ref ARecurringGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
+        private bool PreDeleteManual(ARecurringGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
         {
             if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
             {
@@ -233,7 +233,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ref ARecurringGiftBatchRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(ARecurringGiftBatchRow ARowToDelete, out string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 
@@ -313,7 +313,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
         /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        private void PostDeleteManual(ref ARecurringGiftBatchRow ARowToDelete,
+        private void PostDeleteManual(ARecurringGiftBatchRow ARowToDelete,
             bool AAllowDeletion,
             bool ADeletionPerformed,
             string ACompletionMessage)

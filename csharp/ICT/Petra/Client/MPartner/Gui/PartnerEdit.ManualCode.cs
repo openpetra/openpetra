@@ -1695,17 +1695,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
             {
                 PartnerEditForm.SetParameters(TScreenMode.smNew,
-                    FPartnerClass, -1, -1, ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.CountryCode);                
+                    FPartnerClass, -1, -1, ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.CountryCode);
             }
             else
             {
-                PartnerEditForm.SetParameters(TScreenMode.smNew, FPartnerClass, 
-                   -1, -1, String.Empty, String.Empty, false, FPartnerKey, 
-                   ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.LocationKey,
-                   ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.SiteKey
-                  );
+                PartnerEditForm.SetParameters(TScreenMode.smNew, FPartnerClass,
+                    -1, -1, String.Empty, String.Empty, false, FPartnerKey,
+                    ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.LocationKey,
+                    ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.SiteKey
+                    );
             }
-            
+
             PartnerEditForm.Show();
         }
 

@@ -427,6 +427,7 @@
     <target name="createSQLiteDB" depends="init">
         <property name="DBMS.Type.Orig" value="${DBMS.Type}"/>
         <property name="DBMS.Type" value="sqlite"/>
+        <property name="DBMS.Password.Orig" value="${DBMS.Password}"/>
         <property name="DBMS.Password" value="CHANGEME"/>
         <if test="${not platform::is-windows()}" >
                 <!-- Linux version of sqlite does not work with encryption; 
@@ -438,6 +439,7 @@
         <call target="resetDatabase"/>
         <copy file="${SQLitedb.file}" tofile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demo.db" overwrite="true"/>
         <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
+        <property name="DBMS.Password" value="${DBMS.Password.Orig}"/>
     </target>
 
     <target name="createPostgreSQLDB" depends="init">

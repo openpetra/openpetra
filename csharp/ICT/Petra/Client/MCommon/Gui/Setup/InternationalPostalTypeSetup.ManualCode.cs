@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// <param name="ARowToDelete">the currently selected row to be deleted</param>
         /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
         /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(ref PInternationalPostalTypeRow ARowToDelete, ref string ADeletionQuestion)
+        private bool PreDeleteManual(PInternationalPostalTypeRow ARowToDelete, ref string ADeletionQuestion)
         {
             /*Code to execute before the delete can take place*/
             ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Postal Type Code: '{0}'?"),
@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ref PInternationalPostalTypeRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(PInternationalPostalTypeRow ARowToDelete, out string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 
@@ -120,7 +120,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
         /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        private void PostDeleteManual(ref PInternationalPostalTypeRow ARowToDelete,
+        private void PostDeleteManual(PInternationalPostalTypeRow ARowToDelete,
             bool AAllowDeletion,
             bool ADeletionPerformed,
             string ACompletionMessage)

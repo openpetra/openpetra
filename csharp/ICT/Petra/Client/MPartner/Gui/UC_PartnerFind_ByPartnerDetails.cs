@@ -560,7 +560,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if ((AToolStripItem.Name == "mniFileWorkWithLastPartner")
                      || (AToolStripItem.Name == "mniFileWorkWithLastPartner"))
             {
-                TFrmPartnerMain.OpenLastUsedPartnerEditScreen(this.ParentForm);
+                TPartnerMain.OpenLastUsedPartnerEditScreen(this.ParentForm);
             }
             else
             {
@@ -1522,7 +1522,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                              */
                             if ((Int64)FCriteriaData.Rows[0]["PartnerKey"] != 0)
                             {
-                                if (TFrmPartnerMain.MergedPartnerHandling(
+                                if (TPartnerMain.MergedPartnerHandling(
                                         (Int64)FCriteriaData.Rows[0]["PartnerKey"],
                                         out MergedPartnerKey))
                                 {

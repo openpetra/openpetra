@@ -490,7 +490,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     if (barstatus == "|POSTED")
                     {
                         TVerificationResultCollection Verifications;
-                        Int32 DocumentId = (Int32)SelectedGridRow[0]["DocumentId"];
+                        Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["DocumentId"]);
                         List <Int32>ApDocumentIds = new List <Int32>();
                         ApDocumentIds.Add(DocumentId);
 
@@ -589,7 +589,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if ((row["Tagged"].Equals(true)) && (row["Status"].ToString().Length > 0)   // Invoices have status, Payments don't.
                     && ("|POSTED|PARTPAID|PAID".IndexOf("|" + row["Status"].ToString()) < 0))
                 {
-                    Int32 DocumentId = (Int32)row["DocumentId"];
+                    Int32 DocumentId = Convert.ToInt32(row["DocumentId"]);
                     TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, DocumentId));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!
@@ -631,7 +631,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if ((row["Tagged"].Equals(true)) && (!row["InvNum"].Equals("Payment")))
                 {
                     // TODO: only use tagged rows that can be paid
-                    Int32 DocumentId = (Int32)row["DocumentId"];
+                    Int32 DocumentId = Convert.ToInt32(row["DocumentId"]);
                     TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, DocumentId));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!

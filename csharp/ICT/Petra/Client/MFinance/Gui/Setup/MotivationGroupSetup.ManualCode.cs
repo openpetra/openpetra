@@ -33,6 +33,8 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 {
@@ -89,7 +91,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
         private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-            return TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges, out AVerificationResult);
+            TSubmitChangesResult result = TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges, out AVerificationResult);
+
+            if (result == TSubmitChangesResult.scrOK)
+            {
+                TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationGroupList, FLedgerNumber);
+            }
+
+            return result;
         }
     }
 }

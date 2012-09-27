@@ -58,7 +58,7 @@ namespace Ict.Common.Printing
         /// constructor
         /// </summary>
         /// <param name="AHtmlDocument"></param>
-        /// <param name="APath">is required for embedded images</param>
+        /// <param name="APath">Used for embedding images</param>
         /// <param name="APrinter"></param>
         public TPrinterHtml(string AHtmlDocument, string APath, TPrinter APrinter)
         {
@@ -1175,7 +1175,7 @@ namespace Ict.Common.Printing
                     curNode = curNode.NextSibling;
                 }
 
-                if (curNode.Name == "tbody")
+                if ((curNode != null) && (curNode.Name == "tbody"))
                 {
                     curNode = curNode.FirstChild;
                 }

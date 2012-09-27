@@ -135,7 +135,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                                                 AGiftDetailTable.GetDetailNumberDBName());
             
             ShowData();
-            ShowDetails(GetSelectedDetailRow());
+            ShowDetails();
 
             if (AFromTabClick)
             {
@@ -587,7 +587,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         string FFilterAllDetailsOfGift = string.Empty;
         DataView FGiftDetailView = null;
 
-        private bool PreDeleteManual(ref GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
+        private bool PreDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
             bool allowDeletion = true;
 
@@ -641,7 +641,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return allowDeletion;
         }
 
-        private bool DeleteRowManual(ref GiftBatchTDSAGiftDetailRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, out string ACompletionMessage)
         {
             bool deleteSuccessful = false;
 
@@ -709,7 +709,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return deleteSuccessful;
         }
 
-        private void PostDeleteManual(ref GiftBatchTDSAGiftDetailRow ARowToDelete,
+        private void PostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,
             bool AAllowDeletion,
             bool ADeletionPerformed,
             string ACompletionMessage)
@@ -779,18 +779,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
-                int newRowIndex = FMainDS.AGiftDetail.Rows.Count - 1;
+                SelectRowInGrid(FMainDS.AGiftDetail.Rows.Count - 1, true);
+                //int newRowIndex = FMainDS.AGiftDetail.Rows.Count - 1;
 
-                SelectDetailRowByDataTableIndex(newRowIndex);
-                InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+                //SelectDetailRowByDataTableIndex(newRowIndex);
+                //InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
 
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
+                //FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                //ShowDetails(FPreviouslySelectedDetailRow);
 
-                GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
+                //GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
 
-                //Need to redo this just in case the sorting is not on primary key
-                SelectDetailRowByDataTableIndex(newRowIndex);
+                ////Need to redo this just in case the sorting is not on primary key
+                //SelectDetailRowByDataTableIndex(newRowIndex);
             }
         }
 
@@ -886,18 +887,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
-                int newRowIndex = FMainDS.AGiftDetail.Rows.Count - 1;
+                SelectRowInGrid(FMainDS.AGiftDetail.Rows.Count - 1, true);
+                //int newRowIndex = FMainDS.AGiftDetail.Rows.Count - 1;
 
-                SelectDetailRowByDataTableIndex(newRowIndex);
-                InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+                //SelectDetailRowByDataTableIndex(newRowIndex);
+                //InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
 
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
+                //FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                //ShowDetails(FPreviouslySelectedDetailRow);
 
-                GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
+                //GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
 
-                //Need to redo this just in case the sorting is not on primary key
-                SelectDetailRowByDataTableIndex(newRowIndex);
+                ////Need to redo this just in case the sorting is not on primary key
+                //SelectDetailRowByDataTableIndex(newRowIndex);
 
                 RetrieveMotivationDetailAccountCode();
                 txtDetailGiftTransactionAmount.Focus();

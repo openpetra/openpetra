@@ -137,13 +137,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // Having changed the sort order we need to put the correct details in the panel (assuming we have a row to display)
-            if (theView.Count > 0)
-            {
-                grdDetails.Selection.SelectRow(1, true);
-            }
-
-            FPreviouslySelectedDetailRow = GetSelectedDetailRow();          // can be null
-            ShowDetails(FPreviouslySelectedDetailRow);
+            SelectRowInGrid(1, true);
         }
 
         /// <summary>
@@ -447,14 +441,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ADailyExchangeRate.DefaultView);
 
-            SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
-            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-
-            //Must be set after the FocusRowChanged event is called as it sets this flag to false
-            FNewRecordUnsavedInFocus = true;
-
-            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-            ShowDetails(FPreviouslySelectedDetailRow);
+            SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1, true);
 
             Control[] pnl = this.Controls.Find("pnlDetails", true);
 
@@ -731,9 +718,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // Now make sure to select the row that was currently selected when we started the Save operation
-            FCurrentRow = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1;
-            grdDetails.SelectRowInGrid(FCurrentRow);
-            ShowDetails(FPreviouslySelectedDetailRow);      // just in case the row did not change
+            SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1, true);
         }
     }
 }

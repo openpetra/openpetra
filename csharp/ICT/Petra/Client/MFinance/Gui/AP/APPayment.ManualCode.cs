@@ -286,6 +286,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void MakePayment(object sender, EventArgs e)
         {
             FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
+            FSelectedPaymentRow.BankAccount = cmbBankAccount.GetSelectedString();
             AccountsPayableTDSAApPaymentTable AApPayment = FMainDS.AApPayment;
 
             //

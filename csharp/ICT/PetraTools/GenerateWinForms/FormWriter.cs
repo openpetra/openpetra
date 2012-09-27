@@ -969,19 +969,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("PreDeleteManual"))
             {
                 FTemplate.AddToCodelet("PREDELETEMANUAL",
-                    "allowDeletion = PreDeleteManual(ref rowToDelete, ref deletionQuestion);" + Environment.NewLine);
+                    "allowDeletion = PreDeleteManual(FPreviouslySelectedDetailRow, ref deletionQuestion);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("DeleteRowManual"))
             {
                 FTemplate.AddToCodelet("DELETEROWMANUAL",
-                    "deletionPerformed = DeleteRowManual(ref rowToDelete, out completionMessage);" + Environment.NewLine);
+                    "deletionPerformed = DeleteRowManual(FPreviouslySelectedDetailRow, out completionMessage);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("PostDeleteManual"))
             {
                 FTemplate.AddToCodelet("POSTDELETEMANUAL",
-                    "PostDeleteManual(ref rowToDelete, allowDeletion, deletionPerformed, completionMessage);" + Environment.NewLine);
+                    "PostDeleteManual(FPreviouslySelectedDetailRow, allowDeletion, deletionPerformed, completionMessage);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("SelectTabManual"))

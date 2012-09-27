@@ -102,7 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ShowData();
-            ShowDetails(GetSelectedDetailRow());
+            ShowDetails();
 
             txtDetailExchangeRateToBase.Enabled = false;
 
@@ -390,7 +390,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     transaction.Delete();
                 }
 
-                InvokeFocusedRowChanged(currentRowIndex);
+                SelectRowInGrid(currentRowIndex, true);
 
                 ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 FPetraUtilsObject.SetChangedFlag();
