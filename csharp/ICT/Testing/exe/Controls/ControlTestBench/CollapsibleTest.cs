@@ -78,6 +78,17 @@ namespace ControlTestBench
             this.FPnl.Text = "&Finance";
             this.Controls.Add(this.FPnl);
         }
+        
+        void TestTaskListHorizontalRightConstructor(object sender, System.EventArgs e)
+        {
+            this.Controls.Remove(this.FPnl);
+
+            this.FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, "Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo", TCollapseDirection.cdHorizontalRight, 250, false, FEnumStyle);
+            this.FPnl.BorderStyle = BorderStyle.FixedSingle;
+            this.FPnl.Text = "&To-Do Bar";
+            this.Controls.Add(this.FPnl);            
+        }
+        
         private void TestTaskListExpandedConstructor(object sender, EventArgs e)
         {
             this.Controls.Remove(this.FPnl);
@@ -123,8 +134,11 @@ namespace ControlTestBench
                 case "Vertical":
                     this.FPnl.CollapseDirection = TCollapseDirection.cdVertical;
                     break;
-                case "Horizontal":
+                case "Horizontal (left)":
                     this.FPnl.CollapseDirection = TCollapseDirection.cdHorizontal;
+                    break;
+                case "Horizontal (right)":
+                    this.FPnl.CollapseDirection = TCollapseDirection.cdHorizontalRight;
                     break;
             }
         }

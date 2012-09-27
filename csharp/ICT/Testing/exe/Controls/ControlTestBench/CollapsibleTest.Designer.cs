@@ -57,6 +57,7 @@ namespace ControlTestBench
             this.btnTestTaskListExpandedConstructor = new System.Windows.Forms.Button();
             this.btnTestTaskListHorizontalConstructor = new System.Windows.Forms.Button();
             this.btnTestStacked = new System.Windows.Forms.Button();
+            this.btnTestTaskListHorizontalConstructorRight = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnChangeText
@@ -137,7 +138,8 @@ namespace ControlTestBench
             // 
             this.cboChangeCollapseDirection.FormattingEnabled = true;
             this.cboChangeCollapseDirection.Items.AddRange(new object[] {
-                                    "Horizontal",
+                                    "Horizontal (left)",
+                                    "Horizontal (right)",
                                     "Vertical"});
             this.cboChangeCollapseDirection.Location = new System.Drawing.Point(316, 293);
             this.cboChangeCollapseDirection.Name = "cboChangeCollapseDirection";
@@ -196,7 +198,7 @@ namespace ControlTestBench
             // 
             // btnTestEmptyConstructor
             // 
-            this.btnTestEmptyConstructor.Location = new System.Drawing.Point(348, 113);
+            this.btnTestEmptyConstructor.Location = new System.Drawing.Point(348, 83);
             this.btnTestEmptyConstructor.Name = "btnTestEmptyConstructor";
             this.btnTestEmptyConstructor.Size = new System.Drawing.Size(169, 23);
             this.btnTestEmptyConstructor.TabIndex = 20;
@@ -206,7 +208,7 @@ namespace ControlTestBench
             // 
             // btnTestFullConstructor
             // 
-            this.btnTestFullConstructor.Location = new System.Drawing.Point(523, 113);
+            this.btnTestFullConstructor.Location = new System.Drawing.Point(523, 83);
             this.btnTestFullConstructor.Name = "btnTestFullConstructor";
             this.btnTestFullConstructor.Size = new System.Drawing.Size(169, 23);
             this.btnTestFullConstructor.TabIndex = 21;
@@ -226,7 +228,7 @@ namespace ControlTestBench
             // 
             // btnTestTaskListVerticalConstructor
             // 
-            this.btnTestTaskListVerticalConstructor.Location = new System.Drawing.Point(523, 142);
+            this.btnTestTaskListVerticalConstructor.Location = new System.Drawing.Point(523, 112);
             this.btnTestTaskListVerticalConstructor.Name = "btnTestTaskListVerticalConstructor";
             this.btnTestTaskListVerticalConstructor.Size = new System.Drawing.Size(169, 23);
             this.btnTestTaskListVerticalConstructor.TabIndex = 24;
@@ -246,11 +248,11 @@ namespace ControlTestBench
             // 
             // btnTestTaskListHorizontalConstructor
             // 
-            this.btnTestTaskListHorizontalConstructor.Location = new System.Drawing.Point(348, 142);
+            this.btnTestTaskListHorizontalConstructor.Location = new System.Drawing.Point(348, 112);
             this.btnTestTaskListHorizontalConstructor.Name = "btnTestTaskListHorizontalConstructor";
             this.btnTestTaskListHorizontalConstructor.Size = new System.Drawing.Size(169, 23);
             this.btnTestTaskListHorizontalConstructor.TabIndex = 26;
-            this.btnTestTaskListHorizontalConstructor.Text = "TaskList    Horizontal";
+            this.btnTestTaskListHorizontalConstructor.Text = "TaskList    Horizontal (left)";
             this.btnTestTaskListHorizontalConstructor.UseVisualStyleBackColor = true;
             this.btnTestTaskListHorizontalConstructor.Click += new System.EventHandler(this.TestTaskListHorizontalConstructor);
             // 
@@ -264,12 +266,23 @@ namespace ControlTestBench
             this.btnTestStacked.UseVisualStyleBackColor = true;
             this.btnTestStacked.Click += new System.EventHandler(this.TestStacked);
             // 
+            // btnTestTaskListHorizontalConstructorRight
+            // 
+            this.btnTestTaskListHorizontalConstructorRight.Location = new System.Drawing.Point(348, 141);
+            this.btnTestTaskListHorizontalConstructorRight.Name = "btnTestTaskListHorizontalConstructorRight";
+            this.btnTestTaskListHorizontalConstructorRight.Size = new System.Drawing.Size(169, 23);
+            this.btnTestTaskListHorizontalConstructorRight.TabIndex = 26;
+            this.btnTestTaskListHorizontalConstructorRight.Text = "TaskList    Horizontal (right)";
+            this.btnTestTaskListHorizontalConstructorRight.UseVisualStyleBackColor = true;
+            this.btnTestTaskListHorizontalConstructorRight.Click += new System.EventHandler(this.TestTaskListHorizontalRightConstructor);
+            // 
             // CollapsibleTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(763, 525);
             this.Controls.Add(this.btnTestStacked);
+            this.Controls.Add(this.btnTestTaskListHorizontalConstructorRight);
             this.Controls.Add(this.btnTestTaskListHorizontalConstructor);
             this.Controls.Add(this.btnTestTaskListExpandedConstructor);
             this.Controls.Add(this.btnTestTaskListVerticalConstructor);
@@ -295,6 +308,7 @@ namespace ControlTestBench
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+        private System.Windows.Forms.Button btnTestTaskListHorizontalConstructorRight;
         private System.Windows.Forms.Button btnTestStacked;
         private System.Windows.Forms.Button btnTestTaskListExpandedConstructor;
         private System.Windows.Forms.Button btnTestUserControlVerticalConstructor;

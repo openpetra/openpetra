@@ -50,7 +50,8 @@ namespace Ict.Common.Controls
     public enum TCollapseDirection
     {
         cdVertical,
-        cdHorizontal
+        cdHorizontal,
+        cdHorizontalRight
     }
 
     public enum THostedControlKind
@@ -423,13 +424,18 @@ namespace Ict.Common.Controls
             FDirStyleMapping.Add(TCollapseDirection.cdHorizontal, tmp);
 
             List<TVisualStylesEnum> tmp2 =  new List<TVisualStylesEnum>();
-            tmp2.Add(TVisualStylesEnum.vsAccordionPanel);
-            tmp2.Add(TVisualStylesEnum.vsDashboard);
-            tmp2.Add(TVisualStylesEnum.vsTaskPanel);
-            FDirStyleMapping.Add(TCollapseDirection.cdVertical, tmp2);
+            tmp2.Add(TVisualStylesEnum.vsHorizontalCollapse);
+            FDirStyleMapping.Add(TCollapseDirection.cdHorizontalRight, tmp2);
+            
+            List<TVisualStylesEnum> tmp3 =  new List<TVisualStylesEnum>();
+            tmp3.Add(TVisualStylesEnum.vsAccordionPanel);
+            tmp3.Add(TVisualStylesEnum.vsDashboard);
+            tmp3.Add(TVisualStylesEnum.vsTaskPanel);
+            FDirStyleMapping.Add(TCollapseDirection.cdVertical, tmp3);
 
             DEFAULT_STYLE = new Dictionary<TCollapseDirection, TVisualStylesEnum>();
             DEFAULT_STYLE.Add(TCollapseDirection.cdHorizontal, TVisualStylesEnum.vsHorizontalCollapse);
+            DEFAULT_STYLE.Add(TCollapseDirection.cdHorizontalRight, TVisualStylesEnum.vsHorizontalCollapse);
             DEFAULT_STYLE.Add(TCollapseDirection.cdVertical, TVisualStylesEnum.vsAccordionPanel);
 
             ArrowGraphicIndecies = new Dictionary<TCollapseDirection, Dictionary<bool, Dictionary<bool, int>>>();
@@ -439,6 +445,9 @@ namespace Ict.Common.Controls
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal] = new Dictionary<bool, Dictionary<bool, int>>();
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal].Add(true, new Dictionary<bool, int>());
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal].Add(false, new Dictionary<bool, int>());
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight] = new Dictionary<bool, Dictionary<bool, int>>();
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight].Add(true, new Dictionary<bool, int>());
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight].Add(false, new Dictionary<bool, int>());
 
             ArrowGraphicIndecies[TCollapseDirection.cdVertical][true].Add(true, 7);
             ArrowGraphicIndecies[TCollapseDirection.cdVertical][true].Add(false, 6);
@@ -448,10 +457,15 @@ namespace Ict.Common.Controls
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][true].Add(false, 4);
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][false].Add(true, 3);
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][false].Add(false, 2);
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][true].Add(true, 5);
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][true].Add(false, 4);
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][false].Add(true, 3);
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][false].Add(false, 2);
             
             StoredStyles = new Dictionary<TCollapseDirection, TVisualStylesEnum>();
             StoredStyles[TCollapseDirection.cdVertical] = DEFAULT_STYLE[TCollapseDirection.cdVertical];
             StoredStyles[TCollapseDirection.cdHorizontal] = DEFAULT_STYLE[TCollapseDirection.cdHorizontal];
+            StoredStyles[TCollapseDirection.cdHorizontalRight] = DEFAULT_STYLE[TCollapseDirection.cdHorizontalRight];
         }
 
         /// <summary>
@@ -887,6 +901,10 @@ namespace Ict.Common.Controls
             {
                 this.Dock = System.Windows.Forms.DockStyle.Left;
             }
+            else if (FCollapseDirection == TCollapseDirection.cdHorizontalRight)
+            {
+                this.Dock = System.Windows.Forms.DockStyle.Right;
+            }                
             else
             {
                 this.Dock = System.Windows.Forms.DockStyle.Bottom;

@@ -70,6 +70,7 @@ namespace ControlTestBench
             this.cplTasks4 = new Ict.Common.Controls.TPnlCollapsible();
             this.cplTasks3 = new Ict.Common.Controls.TPnlCollapsible();
             this.cplPartnerInfo = new Ict.Common.Controls.TPnlCollapsible();
+            this.cplRightCollapse = new Ict.Common.Controls.TPnlCollapsible();
             this.pnlContent.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sptContent)).BeginInit();
             this.sptContent.Panel1.SuspendLayout();
@@ -288,14 +289,12 @@ namespace ControlTestBench
             // 
             // pnlContent
             // 
-            this.pnlContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-                                    | System.Windows.Forms.AnchorStyles.Left) 
-                                    | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlContent.BackColor = System.Drawing.Color.White;
             this.pnlContent.Controls.Add(this.sptContent);
-            this.pnlContent.Location = new System.Drawing.Point(13, 12);
+            this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.Location = new System.Drawing.Point(0, 0);
             this.pnlContent.Name = "pnlContent";
-            this.pnlContent.Size = new System.Drawing.Size(923, 581);
+            this.pnlContent.Size = new System.Drawing.Size(698, 605);
             this.pnlContent.TabIndex = 28;
             // 
             // sptContent
@@ -313,8 +312,8 @@ namespace ControlTestBench
             this.sptContent.Panel2.BackColor = System.Drawing.SystemColors.WindowFrame;
             this.sptContent.Panel2.Controls.Add(this.pnlFiller);
             this.sptContent.Panel2.Controls.Add(this.cplPartnerInfo);
-            this.sptContent.Size = new System.Drawing.Size(923, 581);
-            this.sptContent.SplitterDistance = 211;
+            this.sptContent.Size = new System.Drawing.Size(698, 605);
+            this.sptContent.SplitterDistance = 158;
             this.sptContent.TabIndex = 0;
             this.sptContent.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SptContentSplitterMoved);
             // 
@@ -330,7 +329,7 @@ namespace ControlTestBench
             this.cplFolders.Location = new System.Drawing.Point(0, 0);
             this.cplFolders.Margin = new System.Windows.Forms.Padding(0);
             this.cplFolders.Name = "cplFolders";
-            this.cplFolders.Size = new System.Drawing.Size(424, 581);
+            this.cplFolders.Size = new System.Drawing.Size(424, 605);
             this.cplFolders.TabIndex = 0;
             this.cplFolders.Text = "Finance";
             this.cplFolders.UserControlClass = "";
@@ -350,7 +349,7 @@ namespace ControlTestBench
             this.pnlFiller.Margin = new System.Windows.Forms.Padding(3, 3, 3, 8);
             this.pnlFiller.Name = "pnlFiller";
             this.pnlFiller.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.pnlFiller.Size = new System.Drawing.Size(708, 431);
+            this.pnlFiller.Size = new System.Drawing.Size(536, 455);
             this.pnlFiller.TabIndex = 4;
             // 
             // pnlTasksHoster
@@ -362,7 +361,7 @@ namespace ControlTestBench
             this.pnlTasksHoster.Controls.Add(this.cplTasks1);
             this.pnlTasksHoster.Location = new System.Drawing.Point(6, 6);
             this.pnlTasksHoster.Name = "pnlTasksHoster";
-            this.pnlTasksHoster.Size = new System.Drawing.Size(240, 422);
+            this.pnlTasksHoster.Size = new System.Drawing.Size(240, 446);
             this.pnlTasksHoster.TabIndex = 0;
             // 
             // cplTasks2
@@ -378,7 +377,7 @@ namespace ControlTestBench
             this.cplTasks2.Margin = new System.Windows.Forms.Padding(0);
             this.cplTasks2.Name = "cplTasks2";
             this.cplTasks2.Padding = new System.Windows.Forms.Padding(5);
-            this.cplTasks2.Size = new System.Drawing.Size(240, 200);
+            this.cplTasks2.Size = new System.Drawing.Size(240, 160);
             this.cplTasks2.TabIndex = 1;
             this.cplTasks2.Text = "Tasks 2 (XP Task Panel)";
             this.cplTasks2.UserControlClass = "";
@@ -416,7 +415,7 @@ namespace ControlTestBench
             this.pnlShepherdHoster.Controls.Add(this.cplShepherd);
             this.pnlShepherdHoster.Location = new System.Drawing.Point(439, 6);
             this.pnlShepherdHoster.Name = "pnlShepherdHoster";
-            this.pnlShepherdHoster.Size = new System.Drawing.Size(266, 422);
+            this.pnlShepherdHoster.Size = new System.Drawing.Size(94, 446);
             this.pnlShepherdHoster.TabIndex = 3;
             // 
             // cplShepherd
@@ -431,7 +430,7 @@ namespace ControlTestBench
             this.cplShepherd.Location = new System.Drawing.Point(0, 0);
             this.cplShepherd.Margin = new System.Windows.Forms.Padding(0);
             this.cplShepherd.Name = "cplShepherd";
-            this.cplShepherd.Size = new System.Drawing.Size(424, 422);
+            this.cplShepherd.Size = new System.Drawing.Size(424, 446);
             this.cplShepherd.TabIndex = 0;
             this.cplShepherd.Text = "Shepherd 1";
             this.cplShepherd.UserControlClass = "";
@@ -448,7 +447,7 @@ namespace ControlTestBench
             this.pnlTasksHoster2.Controls.Add(this.cplTasks3);
             this.pnlTasksHoster2.Location = new System.Drawing.Point(252, 6);
             this.pnlTasksHoster2.Name = "pnlTasksHoster2";
-            this.pnlTasksHoster2.Size = new System.Drawing.Size(181, 422);
+            this.pnlTasksHoster2.Size = new System.Drawing.Size(181, 446);
             this.pnlTasksHoster2.TabIndex = 2;
             // 
             // cplTasks4
@@ -502,16 +501,36 @@ namespace ControlTestBench
             this.cplPartnerInfo.ExpandedSize = 200;
             this.cplPartnerInfo.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckUserControl;
             this.cplPartnerInfo.IsCollapsed = false;
-            this.cplPartnerInfo.Location = new System.Drawing.Point(0, 431);
+            this.cplPartnerInfo.Location = new System.Drawing.Point(0, 455);
             this.cplPartnerInfo.Margin = new System.Windows.Forms.Padding(0);
             this.cplPartnerInfo.Name = "cplPartnerInfo";
-            this.cplPartnerInfo.Size = new System.Drawing.Size(708, 150);
+            this.cplPartnerInfo.Size = new System.Drawing.Size(536, 150);
             this.cplPartnerInfo.TabIndex = 1;
             this.cplPartnerInfo.Text = "Partner Info";
             this.cplPartnerInfo.UserControlClass = "TUC_PartnerInfo";
             this.cplPartnerInfo.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
             this.cplPartnerInfo.UserControlString = "Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo";
             this.cplPartnerInfo.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
+            // 
+            // cplRightCollapse
+            // 
+            this.cplRightCollapse.AutoSize = true;
+            this.cplRightCollapse.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.cplRightCollapse.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontalRight;
+            this.cplRightCollapse.Dock = System.Windows.Forms.DockStyle.Right;
+            this.cplRightCollapse.ExpandedSize = 250;
+            this.cplRightCollapse.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckUserControl;
+            this.cplRightCollapse.IsCollapsed = false;
+            this.cplRightCollapse.Location = new System.Drawing.Point(698, 0);
+            this.cplRightCollapse.Margin = new System.Windows.Forms.Padding(0);
+            this.cplRightCollapse.Name = "cplRightCollapse";
+            this.cplRightCollapse.Size = new System.Drawing.Size(250, 605);
+            this.cplRightCollapse.TabIndex = 29;
+            this.cplRightCollapse.Text = "To-Do Bar";
+            this.cplRightCollapse.UserControlClass = "TUC_PartnerInfo";
+            this.cplRightCollapse.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
+            this.cplRightCollapse.UserControlString = "Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo";
+            this.cplRightCollapse.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
             // 
             // TestAll
             // 
@@ -528,13 +547,14 @@ namespace ControlTestBench
             this.Controls.Add(this.btnTestFullConstructor);
             this.Controls.Add(this.btnTestEmptyConstructor);
             this.Controls.Add(this.txtChangeExpandedSize);
-            this.Controls.Add(this.btnChangeExpandedSize);
             this.Controls.Add(this.rtbChangeTaskListNode);
             this.Controls.Add(this.cboChangeVisualStyle);
             this.Controls.Add(this.cboChangeHostedControlKind);
             this.Controls.Add(this.cboChangeCollapseDirection);
             this.Controls.Add(this.txtChangeUserControlString);
             this.Controls.Add(this.txtChangeText);
+            this.Controls.Add(this.cplRightCollapse);
+            this.Controls.Add(this.btnChangeExpandedSize);
             this.Controls.Add(this.btnChangeVisualStyle);
             this.Controls.Add(this.btnChangeTaskListNode);
             this.Controls.Add(this.btnChangeUserControlString);
@@ -561,6 +581,7 @@ namespace ControlTestBench
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+        private Ict.Common.Controls.TPnlCollapsible cplRightCollapse;
         private System.Windows.Forms.Panel pnlFiller;
         private Ict.Common.Controls.TPnlCollapsible cplTasks3;
         private Ict.Common.Controls.TPnlCollapsible cplTasks4;

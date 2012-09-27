@@ -301,6 +301,7 @@ namespace ControlTestBench
             cplTasks2.InitUserControl();
             cplTasks3.InitUserControl();
             cplTasks4.InitUserControl();
+            cplRightCollapse.InitUserControl();
        }
     }
 }
