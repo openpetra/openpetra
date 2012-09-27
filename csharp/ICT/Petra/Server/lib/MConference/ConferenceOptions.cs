@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,12 +68,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetOutreachOptions called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetOutreachOptions called!");
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -100,12 +96,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetOutreachOptions: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TConferenceOptions.GetOutreachOptions: committed own transaction.");
                 }
             }
             return UnitTable;
@@ -144,12 +135,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 AConferenceName = AConferenceName.Substring(0, AConferenceName.Length - 1);
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetConferences called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetConferences called!");
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
@@ -179,12 +165,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetConferences: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TConferenceOptions.GetConferences: committed own transaction.");
                 }
             }
 
@@ -237,12 +218,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetEarliestAndLatestDates called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetEarliestAndLatestDates called!");
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
@@ -267,12 +243,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetEarliestAndLatestDates: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TConferenceOptions.GetEarliestAndLatestDates: committed own transaction.");
                 }
             }
 
@@ -355,12 +326,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetOutreachOptions called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetOutreachOptions called!");
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -383,12 +349,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetOutreachOptions: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(9, "TConferenceOptions.GetOutreachOptions: committed own transaction.");
                 }
             }
 
@@ -480,12 +441,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                     break;
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetFieldUnits called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetFieldUnits called!");
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
@@ -601,12 +557,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetFieldUnits: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TConferenceOptions.GetFieldUnits: committed own transaction.");
                 }
             }
             return true;
@@ -630,12 +581,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             PcAttendeeTable AttendeeTable = new PcAttendeeTable();
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetSendingFieldsForOneConference called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetSendingFieldsForOneConference called!");
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -689,12 +636,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetSendingFieldsForOneConference: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TConferenceOptions.GetSendingFieldsForOneConference: committed own transaction.");
                 }
             }
             return true;
@@ -708,12 +650,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             PcAttendeeTable AttendeeTable = new PcAttendeeTable();
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetAllSendingFields called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetAllSendingFields called!");
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -767,12 +705,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetAllSendingFields: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TConferenceOptions.GetAllSendingFields: committed own transaction.");
                 }
             }
             return true;
@@ -793,12 +726,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetReceivingFieldsForOneConference called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetReceivingFieldsForOneConference called!");
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -824,12 +753,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetReceivingFieldsForOneConference: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TConferenceOptions.GetReceivingFieldsForOneConference: committed own transaction.");
                 }
             }
             return true;
@@ -840,12 +764,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetReceivingFields called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetAllReceivingFields called!");
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -890,12 +810,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetReceivingFields: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TConferenceOptions.GetReceivingFields: committed own transaction.");
                 }
             }
             return true;
@@ -913,12 +828,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetReceivingFieldFromPartnerTable called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetReceivingFieldFromPartnerTable called!");
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -957,12 +868,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetReceivingFieldFromPartnerTable: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TConferenceOptions.GetReceivingFieldFromPartnerTable: committed own transaction.");
                 }
             }
             return true;
@@ -980,12 +886,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("GetReceivingFieldFromShortTermTable called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetReceivingFieldFromShortTermTable called!");
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -1009,12 +911,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetReceivingFieldFromShortTermTable: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TConferenceOptions.GetReceivingFieldFromShortTermTable: committed own transaction.");
                 }
             }
             return true;
@@ -1079,12 +976,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             String ConferencePrefix = "-----";
             PUnitTable UnitTable;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine("GetOutreachPrefix: called.");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetOutreachPrefix: called.");
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
@@ -1109,12 +1001,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetOutreachPrefix: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TConferenceOptions.GetOutreachPrefix: committed own transaction.");
                 }
             }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -127,12 +127,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     }
 
                     SQLStatement = ASQLStatement.Trim().ToUpper();
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        Console.WriteLine("TDataBasePetra.HasAccess: SQLStatement: " + SQLStatement);
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TDataBasePetra.HasAccess: SQLStatement: " + SQLStatement);
 
                     // get all the access rights to the tables of the user
                     // TODO 2 oChristianK cThread safety : This is currently not threadsave and probably not the most efficient way to use cached data. Change this.
@@ -153,48 +148,28 @@ namespace Ict.Petra.Server.App.Core.Security
                         RequiredAccessPermission = "s_can_inquire_l";
                         RequiredAccessPermission4GLName = "INQUIRE";
                         SQLTablePrecedingKeyword = "FROM";
-#if DEBUGMODE
-                        if (TLogging.DL >= 10)
-                        {
-                            Console.WriteLine("TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
-                        }
-#endif
+                        TLogging.LogAtLevel(10, "TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
                     }
                     else if (SQLStatement.IndexOf("UPDATE") == 0)
                     {
                         RequiredAccessPermission = "s_can_modify_l";
                         RequiredAccessPermission4GLName = "MODIFY";
                         SQLTablePrecedingKeyword = " ";
-#if DEBUGMODE
-                        if (TLogging.DL >= 10)
-                        {
-                            Console.WriteLine("TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
-                        }
-#endif
+                        TLogging.LogAtLevel(10, "TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
                     }
                     else if (SQLStatement.IndexOf("INSERT") == 0)
                     {
                         RequiredAccessPermission = "s_can_create_l";
                         RequiredAccessPermission4GLName = "CREATE";
                         SQLTablePrecedingKeyword = "INTO";
-#if DEBUGMODE
-                        if (TLogging.DL >= 10)
-                        {
-                            Console.WriteLine("TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
-                        }
-#endif
+                        TLogging.LogAtLevel(10, "TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
                     }
                     else if (SQLStatement.IndexOf("DELETE") == 0)
                     {
                         RequiredAccessPermission = "s_can_delete_l";
                         RequiredAccessPermission4GLName = "DELETE";
                         SQLTablePrecedingKeyword = "FROM";
-#if DEBUGMODE
-                        if (TLogging.DL >= 10)
-                        {
-                            Console.WriteLine("TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
-                        }
-#endif
+                        TLogging.LogAtLevel(10, "TDataBasePetra.HasAccess: Access permission: " + RequiredAccessPermission4GLName);
                     }
                     else
                     {
@@ -204,12 +179,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     if (RequiredAccessPermission.Length != 0)
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 10)
-                        {
-                            Console.WriteLine("TDataBasePetra.HasAccess: RequiredAccessPermission.Length <> 0");
-                        }
-#endif
+                        TLogging.LogAtLevel(10, "TDataBasePetra.HasAccess: RequiredAccessPermission.Length <> 0");
 
                         WhiteChar = new char[] {
                             ',', ')', '.', ' '
@@ -241,12 +211,8 @@ namespace Ict.Petra.Server.App.Core.Security
                                 }
 
                                 TableName = SQLStatement.Substring(Counter + 4, EndOfNamePos - Counter - 4).Trim();
-#if DEBUGMODE
-                                if (TLogging.DL >= 10)
-                                {
-                                    Console.WriteLine("TDataBasePetra.HasAccess: Table name: " + TableName);
-                                }
-#endif
+                                TLogging.LogAtLevel(10, "TDataBasePetra.HasAccess: Table name: " + TableName);
+
                                 Counter = Counter + TableName.Length;
 
                                 if (TableName == "S_USER_DEFAULTS")
@@ -271,12 +237,8 @@ namespace Ict.Petra.Server.App.Core.Security
                                                 "You do not have permission to access {0}."), TableName.ToLower());
                                         TLogging.Log(StrAccessDeniedLogPrefix + ErrorMessage);
                                         LogInPetraErrorLog(ErrorMessage);
-#if DEBUGMODE
-                                        if (TLogging.DL >= 10)
-                                        {
-                                            Console.WriteLine("TDataBasePetra.HasAccess: logged access error in DB Log Table.");
-                                        }
-#endif
+                                        TLogging.LogAtLevel(10, "TDataBasePetra.HasAccess: logged access error in DB Log Table.");
+
                                         throw new ESecurityDBTableAccessDeniedException(String.Format(ErrorMessage,
                                                 RequiredAccessPermission4GLName.ToLower(), TableName.ToLower()),
                                             RequiredAccessPermission4GLName.ToLower(), TableName.ToLower());
@@ -290,12 +252,8 @@ namespace Ict.Petra.Server.App.Core.Security
                                             TableName.ToLower());
                                         TLogging.Log(StrAccessDeniedLogPrefix + ErrorMessage);
                                         LogInPetraErrorLog(ErrorMessage);
-#if DEBUGMODE
-                                        if (TLogging.DL >= 10)
-                                        {
-                                            Console.WriteLine("TDataBasePetra.HasAccess: logged access error in DB Log Table.");
-                                        }
-#endif
+                                        TLogging.LogAtLevel(10, "TDataBasePetra.HasAccess: logged access error in DB Log Table.");
+
                                         throw new ESecurityDBTableAccessDeniedException(ErrorMessage,
                                             RequiredAccessPermission4GLName.ToLower(), TableName.ToLower());
                                     }

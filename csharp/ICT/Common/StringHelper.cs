@@ -2040,12 +2040,12 @@ namespace Ict.Common
                 }
             }
 
-//#if DEBUGMODE
-            Console.WriteLine(String.Format(
-                    "FindMatchingEndBracketPos for AInspectString '{0}', AStartPos: {1}; ABracketChar: '{2}':   Closing bracket '{3}' found at position {4}.",
-                    AInspectString, AStartPos, ABracketChar, ClosingBracketChar, ReturnValue));
-
-//#endif
+/*
+ *          Console.WriteLine(String.Format(
+ *                  "FindMatchingEndBracketPos for AInspectString '{0}', AStartPos: {1}; ABracketChar: '{2}':   Closing bracket '{3}' found at position {4}.",
+ *                  AInspectString, AStartPos, ABracketChar, ClosingBracketChar, ReturnValue));
+ *
+ */
             return ReturnValue;
         }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -232,12 +232,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("TServerLookups_PartnerInfo.AllPartnerInfoData: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.AllPartnerInfoData: committed own transaction.");
                 }
             }
 
@@ -326,12 +321,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
                 }
             }
 
@@ -404,12 +394,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
                 }
             }
 

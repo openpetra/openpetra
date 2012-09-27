@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -86,12 +86,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         /// <returns>void</returns>
         public TOfficeSpecificDataLabelsUIConnector(Int64 APartnerKey, TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
+            TLogging.LogAtLevel(9, "TOfficeSpecificDataLabelsUIConnector created: Instance hash is " + this.GetHashCode().ToString());
             FPartnerKey = APartnerKey;
             FOfficeSpecificDataLabelUse = AOfficeSpecificDataLabelUse;
         }
@@ -115,12 +110,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             TemplateRow = TmpDT.NewRowTyped(false);
             TemplateRow.Use = ALabelUse;
             ReturnValue = PDataLabelUseAccess.CountUsingTemplate(TemplateRow, null, AReadTransaction);
-#if DEBUGMODE
-            if (TLogging.DL >= 10)
-            {
-                Console.WriteLine(this.GetType().FullName + " CountLabelUse Result: " + ReturnValue.ToString());
-            }
-#endif
+            TLogging.LogAtLevel(10, "TOfficeSpecificDataLabelsUIConnector.CountLabelUse Result: " + ReturnValue.ToString());
             return ReturnValue;
         }
 
@@ -141,32 +131,12 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             Int64 ARegistrationOffice,
             TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
+            TLogging.LogAtLevel(9, "TOfficeSpecificDataLabelsUIConnector created: Instance hash is " + this.GetHashCode().ToString());
             FPartnerKey = APartnerKey;
             FOfficeSpecificDataLabelUse = AOfficeSpecificDataLabelUse;
             FApplicationKey = AApplicationKey;
             FRegistrationOffice = ARegistrationOffice;
         }
-
-#if DEBUGMODE
-        /// <summary>
-        /// destructor
-        /// </summary>
-        ~TOfficeSpecificDataLabelsUIConnector()
-        {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
-            }
-        }
-#endif
-
-
 
         /// <summary>
         /// Check if a data row is obsolete. It does not need to be saved if there is no
@@ -360,12 +330,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".GetData: committed own transaction.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TOfficeSpecificDataLabelsUIConnector.GetData: committed own transaction.");
             }
 
             return ReturnValue;
@@ -489,12 +454,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             }
             else
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("AInspectDS = null!");
-                }
-#endif
+                TLogging.LogAtLevel(8, "AInspectDS = null!");
                 SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
             }
 

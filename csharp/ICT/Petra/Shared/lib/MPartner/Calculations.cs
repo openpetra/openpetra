@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -193,12 +193,7 @@ namespace Ict.Petra.Shared.MPartner
             CurrentRow = 0;
             BestRow = 0;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 8)
-            {
-                Console.WriteLine("Calculations.DetermineBestAddress: processing " + APartnerLocationsDT.Rows.Count.ToString() + " rows...");
-            }
-#endif
+            TLogging.LogAtLevel(8, "Calculations.DetermineBestAddress: processing " + APartnerLocationsDT.Rows.Count.ToString() + " rows...");
 
             if (APartnerLocationsDT == null)
             {

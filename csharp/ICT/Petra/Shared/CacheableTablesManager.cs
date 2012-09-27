@@ -124,21 +124,11 @@ namespace Ict.Petra.Shared
                 ReturnValue = 0;
                 try
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".get_CacheSize waiting for a ReaderLock...");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.get_CacheSize waiting for a ReaderLock...");
 
                     // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
                     FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".get_CacheSize grabbed a ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.get_CacheSize grabbed a ReaderLock.");
 
                     // Add up all TableSizes
                     for (Counter = 0; Counter <= UDataCacheContentsDT.Rows.Count - 1; Counter += 1)
@@ -150,12 +140,7 @@ namespace Ict.Petra.Shared
                 {
                     // Release read lock
                     FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".get_CacheSize released the ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.get_CacheSize released the ReaderLock.");
                 }
                 return ReturnValue;
             }
@@ -170,21 +155,11 @@ namespace Ict.Petra.Shared
 
                 try
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".get_CachedTablesCount waiting for a ReaderLock...");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.get_CachedTablesCount waiting for a ReaderLock...");
 
                     // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
                     FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".get_CachedTablesCount grabbed a ReaderLock.");
-                    }
-#endif
+//                  TLogging.LogAtLevel(10, this.GetType().FullName + ".get_CachedTablesCount grabbed a ReaderLock.");
 
                     // Return the number of DataTables in UDataCacheDataSet minus 1 (to account
                     // for the Contents Table)
@@ -194,12 +169,7 @@ namespace Ict.Petra.Shared
                 {
                     // Release read lock
                     FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".get_CachedTablesCount released the ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.get_CachedTablesCount released the ReaderLock.");
                 }
                 return ReturnValue;
             }
@@ -248,14 +218,9 @@ namespace Ict.Petra.Shared
         /// <returns>void</returns>
         public TCacheableTablesManager(TDelegateSendClientTask ADelegateSendClientTask)
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                TLogging.Log(
-                    this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString() + ". AppDomain '" +
-                    AppDomain.CurrentDomain.FriendlyName + "'.");
-            }
-#endif
+            TLogging.LogAtLevel(9,
+                "TCacheableTablesManager created: Instance hash is " + this.GetHashCode().ToString() + ". AppDomain '" +
+                AppDomain.CurrentDomain.FriendlyName + "'.");
             FDelegateSendClientTask = ADelegateSendClientTask;
             FReadWriteLock = new System.Threading.ReaderWriterLock();
         }
@@ -323,21 +288,11 @@ namespace Ict.Petra.Shared
             CachedDataTableType = new System.Data.DataTable().GetType();
             try
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".GetCachedDataTable waiting for a ReaderLock...");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTable waiting for a ReaderLock...");
 
                 // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
                 FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".GetCachedDataTable grabbed a ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTable grabbed a ReaderLock.");
 
                 if (!UDataCacheDataSet.Tables.Contains(ACacheableTableName))
                 {
@@ -353,40 +308,20 @@ namespace Ict.Petra.Shared
                     {
                         try
                         {
-#if DEBUGMODE
-                            if (TLogging.DL >= 10)
-                            {
-                                TLogging.Log(this.GetType().FullName + ".GetCachedDataTable waiting for upgrading to a WriterLock...");
-                            }
-#endif
+                            TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTable waiting for upgrading to a WriterLock...");
 
                             // Need to temporarily upgrade to a write lock to prevent other threads from obtaining a read lock on the cache table while we are modifying the Cache Contents table!
                             UpgradeLockCookie = FReadWriteLock.UpgradeToWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                            if (TLogging.DL >= 10)
-                            {
-                                TLogging.Log(this.GetType().FullName + ".GetCachedDataTable upgraded to a WriterLock.");
-                            }
-#endif
+                            TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTable upgraded to a WriterLock.");
                             ContentsEntryDR.LastAccessed = DateTime.Now;
                         }
                         finally
                         {
-#if DEBUGMODE
-                            if (TLogging.DL >= 10)
-                            {
-                                TLogging.Log(this.GetType().FullName + ".GetCachedDataTable waiting for downgrading to a ReaderLock...");
-                            }
-#endif
+                            TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTable waiting for downgrading to a ReaderLock...");
 
                             // Downgrade from a WriterLock to a ReaderLock again!
                             FReadWriteLock.DowngradeFromWriterLock(ref UpgradeLockCookie);
-#if DEBUGMODE
-                            if (TLogging.DL >= 10)
-                            {
-                                TLogging.Log(this.GetType().FullName + ".GetCachedDataTable downgraded to a ReaderLock.");
-                            }
-#endif
+                            TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTable downgraded to a ReaderLock.");
                         }
                     }
                     else
@@ -408,27 +343,16 @@ namespace Ict.Petra.Shared
             {
                 // Release read lock
                 FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".GetCachedDataTable released the ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTable released the ReaderLock.");
             }
 
             if (TmpTable is TTypedDataTable)
             {
-                // $IFDEF DEBUGMODE  if TLogging.DL >= 7 then TLogging.Log('Calling ChangeDataTableToTypedDataTable...'); $ENDIF
                 // The Copy needs to be a typed DataTable, so we need to type it
                 DataUtilities.ChangeDataTableToTypedDataTable(ref TmpTable, CachedDataTableType, "");
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                TLogging.Log(this.GetType().FullName + ".GetCachedDataTable: Returned Type: " + TmpTable.GetType().FullName);
-            }
-#endif
+            TLogging.LogAtLevel(7, "TCacheableTablesManager.GetCachedDataTable: Returned Type: " + TmpTable.GetType().FullName);
             AType = TmpTable.GetType();
             return TmpTable;
         }
@@ -512,26 +436,16 @@ namespace Ict.Petra.Shared
             ReturnValue = new object().GetType(); // just to get rid of Compiler warning...
             try
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".GetCachedDataTableType waiting for a ReaderLock...");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTableType waiting for a ReaderLock...");
 
                 // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
                 FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".GetCachedDataTableType grabbed a ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTableType grabbed a ReaderLock.");
 
                 if (!UDataCacheDataSet.Tables.Contains(ACacheableTableName))
                 {
                     throw new ECacheableTablesMgrException(
-                        this.GetType().FullName + ".GetCachedDataTableType: Cacheable DataTable '" + ACacheableTableName +
+                        "TCacheableTablesManager.GetCachedDataTableType: Cacheable DataTable '" + ACacheableTableName +
                         "' does not exist in Cache");
                 }
 
@@ -541,12 +455,7 @@ namespace Ict.Petra.Shared
             {
                 // Release read lock
                 FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".GetCachedDataTableType released the ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTableType released the ReaderLock.");
             }
             return ReturnValue;
         }
@@ -725,32 +634,14 @@ namespace Ict.Petra.Shared
             {
                 try
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".AddOrMergeCachedTable waiting for a WriterLock...");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.AddOrMergeCachedTable waiting for a WriterLock...");
 
                     // Prevent other threads from obtaining a read lock on the cache table while we are merging the cache table!
                     FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".AddOrMergeCachedTable grabbed a WriterLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.AddOrMergeCachedTable grabbed a WriterLock.");
 
-                    // $IFDEF DEBUGMODE Thread.Sleep(10000); $ENDIF  Enable this ONLY for checking of correctness of multithreading cache access when debugging!!!
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        TLogging.Log(
-                            this.GetType().FullName + ".AddOrMergeCachedTable: merging DataTable " + ACacheableTableName +
-                            ". Rows before merging: " +
-                            UDataCacheDataSet.Tables[ACacheableTableName].Rows.Count.ToString());
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TCacheableTablesManager.AddOrMergeCachedTable: merging DataTable " + ACacheableTableName +
+                        ". Rows before merging: " + UDataCacheDataSet.Tables[ACacheableTableName].Rows.Count.ToString());
                     TmpDT = ACacheableTable.Copy();
                     TmpDT.TableName = ACacheableTableName;
 
@@ -770,25 +661,15 @@ namespace Ict.Petra.Shared
                     DataUtilities.RemoveRowsNotPresentInDT(TmpDT, UDataCacheDataSet.Tables[ACacheableTableName], true);
 
                     ContentsEntryDR.DataUpToDate = true;
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        TLogging.Log(
-                            this.GetType().FullName + ".AddOrMergeCachedTable: merged DataTable " + ACacheableTableName + ". Rows after merging: " +
-                            UDataCacheDataSet.Tables[ACacheableTableName].Rows.Count.ToString());
-                    }
-#endif
+                    TLogging.LogAtLevel(7,
+                        "TCacheableTablesManager.AddOrMergeCachedTable: merged DataTable " + ACacheableTableName + ". Rows after merging: " +
+                        UDataCacheDataSet.Tables[ACacheableTableName].Rows.Count.ToString());
                 }
                 finally
                 {
                     // Other threads are now free to obtain a read lock on the cache table.
                     FReadWriteLock.ReleaseWriterLock();
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".AddOrMergeCachedTable released the WriterLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.AddOrMergeCachedTable released the WriterLock.");
                 }
 
                 // Inform all Clients (except the one that calls this function) that they
@@ -814,14 +695,8 @@ namespace Ict.Petra.Shared
         {
             Boolean ReturnValue;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                TLogging.Log(
-                    this.GetType().FullName + ".IsTableCached: got called in AppDomain '" + AppDomain.CurrentDomain.FriendlyName +
-                    "'. Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
+            TLogging.LogAtLevel(9, "TCacheableTablesManager.IsTableCached: got called in AppDomain '" + AppDomain.CurrentDomain.FriendlyName +
+                "'. Instance hash is " + this.GetHashCode().ToString());
 
             // Thread.GetDomain.FriendlyName
             CacheableTablesTDSContentsRow contentsRow = GetContentsEntry(ACacheableTableName);
@@ -865,21 +740,11 @@ namespace Ict.Petra.Shared
 
             try
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".MarkCachedTableNeedsRefreshing waiting for a ReaderLock...");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.MarkCachedTableNeedsRefreshing waiting for a ReaderLock...");
 
                 // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
                 FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".MarkCachedTableNeedsRefreshing grabbed a ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.MarkCachedTableNeedsRefreshing grabbed a ReaderLock.");
 
                 ContentsEntryDR = GetContentsEntry(ACacheableTableName); // GetContentsEntry reuses the ReaderLock
             }
@@ -887,45 +752,25 @@ namespace Ict.Petra.Shared
             {
                 // Release read lock
                 FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".MarkCachedTableNeedsRefreshing released the ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.MarkCachedTableNeedsRefreshing released the ReaderLock.");
             }
 
             if (ContentsEntryDR != null)
             {
                 try
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".MarkCachedTableNeedsRefreshing waiting for a WriterLock...");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.MarkCachedTableNeedsRefreshing waiting for a WriterLock...");
 
                     // Prevent other threads from obtaining a read lock on the cache table while we are modifying the Contents table!
                     FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".MarkCachedTableNeedsRefreshing grabbed a WriterLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.MarkCachedTableNeedsRefreshing grabbed a WriterLock.");
                     ContentsEntryDR.DataUpToDate = false;
                 }
                 finally
                 {
                     // Other threads are now free to obtain a read lock on the cache table.
                     FReadWriteLock.ReleaseWriterLock();
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".MarkCachedTableNeedsRefreshing released the WriterLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.MarkCachedTableNeedsRefreshing released the WriterLock.");
                 }
             }
         }
@@ -984,46 +829,31 @@ namespace Ict.Petra.Shared
             CacheableTablesTDSContentsRow ContentsEntryDR;
             Boolean WriteLockTakenOut = false;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                TLogging.Log(
-                    "TCacheableTablesManager.AddCachedTableInternal: got called in AppDomain '" + AppDomain.CurrentDomain.FriendlyName +
-                    "'. Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
+            TLogging.LogAtLevel(
+                9,
+                "TCacheableTablesManager.AddCachedTableInternal: got called in AppDomain '" + AppDomain.CurrentDomain.FriendlyName +
+                "'. Instance hash is " + this.GetHashCode().ToString());
 
             // Thread.GetDomain.FriendlyName
             if (ACacheableTable == null)
             {
                 throw new ECacheableTablesMgrException(
-                    "TCacheableTablesManager.AddCachedTableInternal: Cacheable DataTable '" + ACacheableTableName +
-                    "' that is to be added must not be null");
+                    "TCacheableTablesManager.AddCachedTableInternal: Cacheable DataTable '" + ACacheableTableName + "' to be added must not be null");
             }
 
             if ((ACacheableTableName == null) || (ACacheableTableName == ""))
             {
                 throw new ECacheableTablesMgrException(
-                    "TCacheableTablesManager.AddCachedTableInternal: ACacheableTableName argument must not be nil or empty String");
+                    "TCacheableTablesManager.AddCachedTableInternal: ACacheableTableName argument must not be null or empty String");
             }
 
             try
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".AddCachedTableInternal waiting for a ReaderLock...");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.AddCachedTableInternal waiting for a ReaderLock...");
 
                 // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
                 FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".AddCachedTableInternal grabbed a ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.AddCachedTableInternal grabbed a ReaderLock.");
 
                 if (((!AReplaceExistingTable)) && (UDataCacheDataSet.Tables.Contains(ACacheableTableName)))
                 {
@@ -1042,31 +872,16 @@ namespace Ict.Petra.Shared
             {
                 // Release read lock
                 FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".AddCachedTableInternal released the ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.AddCachedTableInternal released the ReaderLock.");
             }
             try
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".AddCachedTableInternal waiting for a WriterLock...");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.AddCachedTableInternal waiting for a WriterLock...");
 
                 // Prevent other threads from obtaining a read lock on the cache table while we are adding the cache table!
                 FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
                 WriteLockTakenOut = true;
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".AddCachedTableInternal grabbed a WriterLock.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.AddCachedTableInternal grabbed a WriterLock.");
 
                 // add the passed in DataTable to the Cache DataSet
                 try
@@ -1104,14 +919,8 @@ namespace Ict.Petra.Shared
                     NewCacheTableRow.HashCode = TableHash;
                     NewCacheTableRow.TableSize = TableSize;
                     UDataCacheContentsDT.Rows.Add(NewCacheTableRow);
-#if DEBUGMODE
-                    if (TLogging.DL >= 9)
-                    {
-                        TLogging.Log(
-                            this.GetType().FullName + ".AddCachedTableInternal: added DataTable '" + NewCacheTableRow.TableName +
-                            "' to the Cache.  HashCode: " + TableHash + "; TableSize: " + TableSize.ToString());
-                    }
-#endif
+                    TLogging.LogAtLevel(9, "TCacheableTablesManager.AddCachedTableInternal: added DataTable '" + NewCacheTableRow.TableName +
+                        "' to the Cache.  HashCode: " + TableHash + "; TableSize: " + TableSize.ToString());
                 }
                 else
                 {
@@ -1119,47 +928,26 @@ namespace Ict.Petra.Shared
                     // acquire a ReaderLock, which won't work with an open WriterLock...
                     FReadWriteLock.ReleaseWriterLock();
                     WriteLockTakenOut = false;
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".AddCachedTableInternal released a WriterLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.AddCachedTableInternal released a WriterLock.");
 
                     // Update entry in the Cache Contents Table
                     ContentsEntryDR = GetContentsEntry(ACacheableTableName);
 
                     if (ContentsEntryDR != null)
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 10)
-                        {
-                            TLogging.Log(this.GetType().FullName + ".AddCachedTableInternal waiting for a WriterLock...");
-                        }
-#endif
+                        TLogging.LogAtLevel(10, "TCacheableTablesManager.AddCachedTableInternal waiting for a WriterLock...");
 
                         // Prevent other threads from obtaining a read lock on the cache table while we are adding the cache table!
                         FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
                         WriteLockTakenOut = true;
-#if DEBUGMODE
-                        if (TLogging.DL >= 10)
-                        {
-                            TLogging.Log(this.GetType().FullName + ".AddCachedTableInternal grabbed a WriterLock.");
-                        }
-#endif
+                        TLogging.LogAtLevel(10, "TCacheableTablesManager.AddCachedTableInternal grabbed a WriterLock.");
                         ContentsEntryDR.DataUpToDate = true;
                         ContentsEntryDR.DataChanged = false;
                         ContentsEntryDR.ChangesSavedExternally = false;
                         ContentsEntryDR.HashCode = TableHash;
                         ContentsEntryDR.TableSize = TableSize;
-#if DEBUGMODE
-                        if (TLogging.DL >= 9)
-                        {
-                            TLogging.Log(
-                                this.GetType().FullName + ".AddCachedTableInternal: DataTable '" + ACacheableTableName +
-                                "' already exists in the Cache --> replaced it with the passed in DataTable.");
-                        }
-#endif
+                        TLogging.LogAtLevel(9, "TCacheableTablesManager.AddCachedTableInternal: DataTable '" + ACacheableTableName +
+                            "' already exists in the Cache --> replaced it with the passed in DataTable.");
                     }
                     else
                     {
@@ -1175,12 +963,7 @@ namespace Ict.Petra.Shared
                 {
                     // Other threads are now free to obtain a read lock on the cache table.
                     FReadWriteLock.ReleaseWriterLock();
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".AddCachedTableInternal released the WriterLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.AddCachedTableInternal released the WriterLock.");
                 }
             }
 
@@ -1265,21 +1048,11 @@ namespace Ict.Petra.Shared
             {
                 if (!FReadWriteLock.IsReaderLockHeld)
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".GetContentsEntry waiting for a ReaderLock...");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.GetContentsEntry waiting for a ReaderLock...");
 
                     // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
                     FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".GetContentsEntry grabbed a ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.GetContentsEntry grabbed a ReaderLock.");
                 }
                 else
                 {
@@ -1294,36 +1067,19 @@ namespace Ict.Petra.Shared
                 {
                     // Release read lock
                     FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".GetContentsEntry released the ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.GetContentsEntry released the ReaderLock.");
                 }
             }
 
             if (ReturnValue != null)
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 9)
-                {
-                    TLogging.Log(
-                        this.GetType().FullName + ".GetContentsEntry: checked for DataTable '" + ACacheableTableName +
-                        "' whether it is in the Cache. Result: is in Cache.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.GetContentsEntry: checked for DataTable '" + ACacheableTableName +
+                    "' whether it is in the Cache. Result: is in Cache.");
             }
             else
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 9)
-                {
-                    TLogging.Log(
-                        this.GetType().FullName + ".GetContentsEntry: checked for DataTable '" + ACacheableTableName +
-                        "' whether it is in the Cache. Result: is NOT in Cache.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.GetContentsEntry: checked for DataTable '" + ACacheableTableName +
+                    "' whether it is in the Cache. Result: is NOT in Cache.");
             }
 
             return ReturnValue;
@@ -1358,21 +1114,11 @@ namespace Ict.Petra.Shared
 
                 if (!FReadWriteLock.IsReaderLockHeld)
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".RemoveCachedTable waiting for a ReaderLock...");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveCachedTable waiting for a ReaderLock...");
 
                     // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
                     FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".RemoveCachedTable grabbed a ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveCachedTable grabbed a ReaderLock.");
                 }
                 else
                 {
@@ -1393,12 +1139,7 @@ namespace Ict.Petra.Shared
                 {
                     // Release read lock
                     FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".RemoveCachedTable released the ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveCachedTable released the ReaderLock.");
                 }
             }
 
@@ -1409,39 +1150,19 @@ namespace Ict.Petra.Shared
                 {
                     if (!ReaderLockWasHeld)
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 10)
-                        {
-                            TLogging.Log(this.GetType().FullName + ".RemoveCachedTable waiting for a WriterLock...");
-                        }
-#endif
+                        TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveCachedTable waiting for a WriterLock...");
 
                         // Prevent other threads from obtaining a read lock on the cache table while we are removing the cache table!
                         FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                        if (TLogging.DL >= 10)
-                        {
-                            TLogging.Log(this.GetType().FullName + ".RemoveCachedTable grabbed a WriterLock.");
-                        }
-#endif
+                        TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveCachedTable grabbed a WriterLock.");
                     }
                     else
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 10)
-                        {
-                            TLogging.Log(this.GetType().FullName + ".RemoveCachedTable waiting for upgrading to a WriterLock...");
-                        }
-#endif
+                        TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveCachedTable waiting for upgrading to a WriterLock...");
 
                         // Need to temporarily upgrade to a write lock to prevent other threads from obtaining a read lock on the cache table while we are (re)loading the cache table!
                         UpgradeLockCookie = FReadWriteLock.UpgradeToWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                        if (TLogging.DL >= 10)
-                        {
-                            TLogging.Log(this.GetType().FullName + ".RemoveCachedTable upgraded to a WriterLock.");
-                        }
-#endif
+                        TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveCachedTable upgraded to a WriterLock.");
                     }
 
                     WriteLockTakenOut = true;
@@ -1461,30 +1182,15 @@ namespace Ict.Petra.Shared
                         {
                             // Other threads are now free to obtain a read lock on the cache table.
                             FReadWriteLock.ReleaseWriterLock();
-#if DEBUGMODE
-                            if (TLogging.DL >= 10)
-                            {
-                                TLogging.Log(this.GetType().FullName + ".RemoveCachedTable released the WriterLock.");
-                            }
-#endif
+                            TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveCachedTable released the WriterLock.");
                         }
                         else
                         {
-#if DEBUGMODE
-                            if (TLogging.DL >= 10)
-                            {
-                                TLogging.Log(this.GetType().FullName + ".RemoveCachedTable waiting for downgrading to a ReaderLock...");
-                            }
-#endif
+                            TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveCachedTable waiting for downgrading to a ReaderLock...");
 
                             // Downgrade from a WriterLock to a ReaderLock again!
                             FReadWriteLock.DowngradeFromWriterLock(ref UpgradeLockCookie);
-#if DEBUGMODE
-                            if (TLogging.DL >= 10)
-                            {
-                                TLogging.Log(this.GetType().FullName + ".RemoveCachedTable downgraded to a ReaderLock.");
-                            }
-#endif
+                            TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveCachedTable downgraded to a ReaderLock.");
                         }
                     }
                 }
@@ -1517,21 +1223,11 @@ namespace Ict.Petra.Shared
 
             try
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".RemoveOldestCachedTables waiting for a ReaderLock...");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveOldestCachedTables waiting for a ReaderLock...");
 
                 // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
                 FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".RemoveOldestCachedTables grabbed a ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveOldestCachedTables grabbed a ReaderLock.");
 
                 for (Counter = 0; Counter <= UDataCacheContentsDT.Rows.Count - 1; Counter += 1)
                 {
@@ -1547,12 +1243,7 @@ namespace Ict.Petra.Shared
             {
                 // Release read lock
                 FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                if (TLogging.DL >= 10)
-                {
-                    TLogging.Log(this.GetType().FullName + ".RemoveOldestCachedTables released the ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(10, "TCacheableTablesManager.RemoveOldestCachedTables released the ReaderLock.");
             }
         }
 
@@ -1578,21 +1269,11 @@ namespace Ict.Petra.Shared
             {
                 try
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".ShrinkCacheToMaxSize waiting for a ReaderLock...");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.ShrinkCacheToMaxSize waiting for a ReaderLock...");
 
                     // Try to get a read lock [We don't specify a timeout because reading the DB tables into the cached table should be fairly quick]
                     FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".ShrinkCacheToMaxSize grabbed a ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.ShrinkCacheToMaxSize grabbed a ReaderLock.");
 
                     // Cache size exceeds the size that is requested > shrink the Cache
                     CacheDTByDateDV = new DataView(UDataCacheContentsDT, "",
@@ -1614,12 +1295,7 @@ namespace Ict.Petra.Shared
                 {
                     // Release read lock
                     FReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                    if (TLogging.DL >= 10)
-                    {
-                        TLogging.Log(this.GetType().FullName + ".ShrinkCacheToMaxSize released the ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(10, "TCacheableTablesManager.ShrinkCacheToMaxSize released the ReaderLock.");
                 }
             }
         }
@@ -1658,7 +1334,6 @@ namespace Ict.Petra.Shared
         {
             if (FDelegateSendClientTask != null)
             {
-                // $IFDEF DEBUGMODE if TLogging.DL >= 7 then TLogging.Log(this.GetType().FullName + '.UpdateUserDefaultsOnClient: calling DomainManager.ClientTaskAdd...'); $ENDIF
                 FDelegateSendClientTask(-1,
                     SharedConstants.CLIENTTASKGROUP_CACHEREFRESH,
                     ACacheableTableName,
@@ -1722,15 +1397,8 @@ namespace Ict.Petra.Shared
             String HashCodeInCacheableTablesManager;
 
             HashCodeInCacheableTablesManager = FCacheableTablesManager.GetCachedDataTableHash(ATableName);
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                TLogging.Log(
-                    this.GetType().FullName + ".ResultingCachedDataTable: passed in HashCode: " + AHashCode +
-                    "; HashCode in CacheableTableManager: " +
-                    HashCodeInCacheableTablesManager);
-            }
-#endif
+            TLogging.LogAtLevel(7, "TCacheableTablesManager.ResultingCachedDataTable: passed in HashCode: " + AHashCode +
+                "; HashCode in CacheableTableManager: " + HashCodeInCacheableTablesManager);
 
             if (HashCodeInCacheableTablesManager != "")
             {
@@ -1740,14 +1408,9 @@ namespace Ict.Petra.Shared
                     // means that the caller doesn't have the identical DataTable (or an
                     // empty one) > return cached DataTable
                     ReturnValue = FCacheableTablesManager.GetCachedDataTable(ATableName, out AType);
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        TLogging.Log(
-                            this.GetType().FullName +
-                            ".ResultingCachedDataTable: Passed in HashCode doesn't match the HashCode in the CacheableTablesManager --> return cached DataTable");
-                    }
-#endif
+                    TLogging.LogAtLevel(
+                        7,
+                        "TCacheableTablesManager.ResultingCachedDataTable: Passed in HashCode doesn't match the HashCode in the CacheableTablesManager --> return cached DataTable");
                 }
                 else
                 {
@@ -1755,36 +1418,20 @@ namespace Ict.Petra.Shared
                     // means that the caller has the identical DataTable > return nil
                     AType = FCacheableTablesManager.GetCachedDataTableType(ATableName);
                     ReturnValue = null;
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        TLogging.Log(
-                            this.GetType().FullName +
-                            ".ResultingCachedDataTable: Passed in HashCode matches the HashCode in the CacheableTablesManager --> return nil");
-                    }
-#endif
+                    TLogging.LogAtLevel(
+                        7,
+                        "TCacheableTablesManager.ResultingCachedDataTable: Passed in HashCode matches the HashCode in the CacheableTablesManager --> return nil");
                 }
             }
             else
             {
                 // HashCode = '' means: Table has no data > return empty cached DataTable!
                 ReturnValue = FCacheableTablesManager.GetCachedDataTable(ATableName, out AType);
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    TLogging.Log(
-                        this.GetType().FullName +
-                        ".ResultingCachedDataTable: HashCode = '' means: Table has no data -> return empty cached DataTable!");
-                }
-#endif
+                TLogging.LogAtLevel(7,
+                    "TCacheableTablesManager.ResultingCachedDataTable: HashCode = '' means: Table has no data -> return empty cached DataTable!");
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                TLogging.Log(this.GetType().FullName + ".ResultingCachedDataTable: DataTable Type: " + AType.FullName);
-            }
-#endif
+            TLogging.LogAtLevel(7, this.GetType().FullName + ".ResultingCachedDataTable: DataTable Type: " + AType.FullName);
             return ReturnValue;
         }
 
@@ -1815,14 +1462,9 @@ namespace Ict.Petra.Shared
 
             if (HashCodeInCacheableTablesManager != AHashCode)
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    TLogging.Log(
-                        this.GetType().FullName + ".ResultingCachedDataTable: passed in HashCode: " + AHashCode +
-                        "; HashCode in CacheableTableManager: " + HashCodeInCacheableTablesManager);
-                }
-#endif
+                TLogging.LogAtLevel(7,
+                    "TCacheableTablesManager.ResultingCachedDataTable: passed in HashCode: " + AHashCode +
+                    "; HashCode in CacheableTableManager: " + HashCodeInCacheableTablesManager);
                 ReturnValue = FCacheableTablesManager.GetCachedDataTable(ATableName, out AType);
             }
             else
@@ -1831,12 +1473,7 @@ namespace Ict.Petra.Shared
                 ReturnValue = null;
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                TLogging.Log(this.GetType().FullName + ".ResultingCachedDataTable: DataTable Type: " + AType.FullName);
-            }
-#endif
+            TLogging.LogAtLevel(7, "TCacheableTablesManager.ResultingCachedDataTable: DataTable Type: " + AType.FullName);
             return ReturnValue;
         }
 

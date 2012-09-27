@@ -1,4 +1,4 @@
-// auto generated with nant generateORM
+// auto generated with nant generateORM from ORM\CacheableServer.cs
 // Do not modify this file manually!
 //
 {#GPLFILEHEADER}
@@ -216,28 +216,17 @@ namespace {#NAMESPACE}
         /// </summary>
         public {#CACHEABLECLASS}() : base()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
+            TLogging.LogAtLevel (9,"{#CACHEABLECLASS} created: Instance hash is " + this.GetHashCode().ToString());
             FStartTime = DateTime.Now;
             FCacheableTablesManager = TCacheableTablesManager.GCacheableTablesManager;
         }
 
-#if DEBUGMODE
         /// destructor
         ~{#CACHEABLECLASS}()
         {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
+            TLogging.LogAtLevel (9,"{#CACHEABLECLASS} Getting collected after " + 
+                (new TimeSpan(DateTime.Now.Ticks - FStartTime.Ticks)).ToString() + " seconds.");
         }
-#endif
 
         /// <summary>
         /// Returns a certain cachable DataTable that contains all columns and all
@@ -277,12 +266,7 @@ namespace {#NAMESPACE}
         {
             String TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + ".GetCacheableTable called for table '" + TableName + "'.");
-            }
-#endif
+            TLogging.LogAtLevel (9, "{#CACHEABLECLASS}.GetCacheableTable '{#SUBMODULE}' called.");
 
             if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName))))
             {
@@ -309,12 +293,7 @@ namespace {#NAMESPACE}
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
-                        }
-#endif
+                        TLogging.LogAtLevel (9, "{#CACHEABLECLASS}.GetCacheableTable: commited own transaction.");
                     }
                 }
             }
@@ -470,18 +449,12 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
     out System.Type AType)
 {
     string TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
-#if DEBUGMODE
+
     if (TLogging.DL >= 7)
     {
-        Console.WriteLine(
-            this.GetType().FullName + ".GetCacheableTable called with ATableName='" + TableName + "' and ALedgerNumber=" +
-            ALedgerNumber.ToString() + '.');
-    }
-#endif
-#if DEBUGMODE
-    if (FCacheableTablesManager.IsTableCached(TableName))
-    {
-        if (TLogging.DL >= 7)
+        TLogging.Log ("{#CACHEABLECLASS}.GetCacheableTable '{#SUBMODULE}' called with ALedgerNumber=" + ALedgerNumber.ToString() + '.');
+
+        if (FCacheableTablesManager.IsTableCached(TableName))
         {
             Console.WriteLine("Cached DataTable has currently " +
                 FCacheableTablesManager.GetCachedDataTable(TableName, out AType).Rows.Count.ToString() + " rows in total.");
@@ -492,7 +465,6 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
                         ALedgerNumber.ToString()).Length) + " rows with ALedgerNumber=" + ALedgerNumber.ToString() + '.');
         }
     }
-#endif
 
     if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName)))
         || ((FCacheableTablesManager.IsTableCached(TableName))
@@ -525,12 +497,7 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".GetCacheableTable: commited own transaction.");
-                }
-#endif
+                TLogging.LogAtLevel (7, "T{#SUBMODULE}CacheableWebConnector.GetCacheableTable: commited own transaction.");
             }
         }
     }

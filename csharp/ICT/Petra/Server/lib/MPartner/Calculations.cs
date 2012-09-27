@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -94,12 +94,7 @@ namespace Ict.Petra.Server.MPartner
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("Ict.Petra.Server.MPartner.Calculations.DetermineBestAddress: commited own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "ServerCalculations.DetermineBestAddress: commited own transaction.");
                 }
             }
 
@@ -173,12 +168,7 @@ namespace Ict.Petra.Server.MPartner
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("Ict.Petra.Server.MPartner.Calculations.DetermineBestAddress: commited own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "ServerCalculations.DetermineBestAddress: commited own transaction.");
                 }
             }
 

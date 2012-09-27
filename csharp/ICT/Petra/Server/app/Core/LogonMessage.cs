@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -114,12 +114,7 @@ namespace Ict.Petra.Server.App.Core
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("TMaintenanceLogonMessage.GetLogonMessage: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(8, "TMaintenanceLogonMessage.GetLogonMessage: committed own transaction.");
                 }
             }
             return ReturnValue;

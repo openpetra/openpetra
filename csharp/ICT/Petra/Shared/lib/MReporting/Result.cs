@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -895,11 +895,12 @@ namespace Ict.Petra.Shared.MReporting
 
             // write headings
             strLine = "";
-#if DEBUGMODE
-            strLine = StringHelper.AddCSV(strLine, "masterRow", separator);
-            strLine = StringHelper.AddCSV(strLine, "childRow", separator);
-            strLine = StringHelper.AddCSV(strLine, "depth", separator);
-#endif
+
+            // for debugging:
+            // strLine = StringHelper.AddCSV(strLine, "masterRow", separator);
+            // strLine = StringHelper.AddCSV(strLine, "childRow", separator);
+            // strLine = StringHelper.AddCSV(strLine, "depth", separator);
+
             strLine = StringHelper.AddCSV(strLine, "id", separator);
 
             if (FormattedParameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT1,
@@ -987,11 +988,12 @@ namespace Ict.Petra.Shared.MReporting
                 if (element.display)
                 {
                     strLine = "";
-#if DEBUGMODE
-                    strLine = StringHelper.AddCSV(strLine, element.masterRow.ToString(), separator);
-                    strLine = StringHelper.AddCSV(strLine, element.childRow.ToString(), separator);
-                    strLine = StringHelper.AddCSV(strLine, element.depth.ToString(), separator);
-#endif
+
+                    // for debugging
+                    // strLine = StringHelper.AddCSV(strLine, element.masterRow.ToString(), separator);
+                    // strLine = StringHelper.AddCSV(strLine, element.childRow.ToString(), separator);
+                    // strLine = StringHelper.AddCSV(strLine, element.depth.ToString(), separator);
+
                     strLine = StringHelper.AddCSV(strLine, element.code, separator);
 
                     if (FormattedParameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT1, -1, eParameterFit.eBestFit))

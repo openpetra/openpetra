@@ -1163,15 +1163,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 EnableDisableUI(false);
                 Application.DoEvents();
 
-                // If ctrl held down, show the dataset
-#if DEBUGMODE
-                if (System.Windows.Forms.Form.ModifierKeys == Keys.Control)
-                {
-                    MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetXml().ToString());
-                    MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetChanges().GetXml().ToString());
-                }
-#endif
-
+/*
+ *              // If ctrl held down, show the dataset
+ *              if (System.Windows.Forms.Form.ModifierKeys == Keys.Control)
+ *              {
+ *                  MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetXml().ToString());
+ *                  MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetChanges().GetXml().ToString());
+ *              }
+ */
                 // Clear result table
                 try
                 {
