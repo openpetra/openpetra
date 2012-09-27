@@ -58,6 +58,7 @@ using Ict.Petra.Client.MFinance.Gui;
 using Ict.Petra.Client.MSysMan.Gui;
 using SplashScreen;
 using PetraClientShutdown;
+using Ict.Common.Remoting.Shared;
 
 namespace Ict.Petra.Client.App.PetraClient
 {
@@ -77,8 +78,6 @@ namespace Ict.Petra.Client.App.PetraClient
 
         /// <summary>tells whether the Login was successful, or not</summary>
         private static Boolean FLoginSuccessful;
-
-        private static Boolean FUseNewNavigation = true;
 
         // <summary>ProcessID (unique) assigned by the PetraServer</summary>
         // TODO private static Int32 FProcessID;
@@ -507,14 +506,7 @@ namespace Ict.Petra.Client.App.PetraClient
                     // This loads the Main Window of Petra
                     Form MainWindow;
 
-                    if (FUseNewNavigation)
-                    {
-                        MainWindow = new TFrmMainWindowNew(null);
-                    }
-                    else
-                    {
-                        MainWindow = new TFrmMainWindow(null);
-                    }
+                    MainWindow = new TFrmMainWindowNew(null);
 
                     // TODO: user defined constructor with more details
                     //                    FProcessID, FWelcomeMessage, FSystemEnabled);
@@ -676,10 +668,14 @@ namespace Ict.Petra.Client.App.PetraClient
             // this is the first place where it is called, and we need to initialize the TAppSettingsManager
             TAppSettingsManager.InitFontI18N();
 
-            // to avoid dependency cycle, we need to add module windows this way
-            TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MPartner.Gui.TFrmPartnerMain));
-            TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MFinance.Gui.TFrmFinanceMain));
-            TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MPersonnel.Gui.TFrmPersonnelMain));
+            /* I don't know if I still need these in "the new scheme"
+             * so I'll miss them out and see what happens!
+             *
+             * // to avoid dependency cycle, we need to add module windows this way
+             * TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MPartner.Gui.TPartnerMain));
+             * TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MFinance.Gui.TFinanceMain));
+             * TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MPersonnel.Gui.TPersonnelMain));
+             */
         }
 
         /// <summary>

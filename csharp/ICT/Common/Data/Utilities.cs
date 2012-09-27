@@ -674,7 +674,7 @@ namespace Ict.Common.Data
                 }
             }
 
-            for (int Counter = 0; Counter < ADestinationDT.Rows.Count; Counter++)
+            for (int Counter = ADestinationDT.Rows.Count - 1; Counter >= 0; Counter--) // Counting backwards so that I can delete rows as I go
             {
                 PrimaryKeyValues = new object[PrimaryKeyArr.Length];
 

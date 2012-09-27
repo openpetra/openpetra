@@ -323,7 +323,7 @@ namespace Ict.Common.Controls
                     {
                         CleanedfromNonNumeralChars = RemoveNonNumeralChars();
 
-                        if (CleanedfromNonNumeralChars != "-")
+                        if ((CleanedfromNonNumeralChars != "-") && (CleanedfromNonNumeralChars != "."))
                         {
                             return Convert.ToDecimal(CleanedfromNonNumeralChars, FCurrentCulture);
                         }

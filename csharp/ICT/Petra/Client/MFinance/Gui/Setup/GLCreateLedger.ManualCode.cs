@@ -30,6 +30,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MFinance;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -100,6 +101,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 // reload permissions for user
                 UserInfo.GUserInfo = TRemote.MSysMan.Security.UserManager.WebConnectors.ReloadCachedUserInfo();
+
+                // reload list of Ledger names
+                TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
 
                 // reload navigation
                 Form MainWindow = FPetraUtilsObject.GetCallerForm();
