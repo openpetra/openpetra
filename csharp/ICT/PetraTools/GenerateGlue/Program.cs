@@ -99,7 +99,7 @@ namespace Ict.Tools.GenerateGlue
             try
             {
                 CreateInterfaces interfaces = new CreateInterfaces();
-                interfaces.CreateFiles(namespaceRoot, OutputDir + "/Shared/lib/Interfaces");
+                interfaces.CreateFiles(namespaceRoot, OutputDir + "/Shared/lib/Interfaces", cmd.GetOptValue("TemplateDir"));
                 CreateInstantiators instantiators = new CreateInstantiators();
                 instantiators.CreateFiles(namespaceRoot, OutputDir + "/Server/lib", cmd.GetOptValue("TemplateDir"));
                 TCreateConnectors connectors = new TCreateConnectors();

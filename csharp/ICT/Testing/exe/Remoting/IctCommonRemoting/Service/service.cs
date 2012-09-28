@@ -165,7 +165,7 @@ namespace Tests.IctCommonRemoting.Instantiator
         /// <summary>Constructor</summary>
         public TMyServiceNamespaceLoader()
         {
-            TLogging.LogAtLevel (9, "TMyServiceNamespaceLoader created in application domain: " + Thread.GetDomain().FriendlyName);
+            TLogging.LogAtLevel(9, "TMyServiceNamespaceLoader created in application domain: " + Thread.GetDomain().FriendlyName);
         }
 
         /// <summary>
