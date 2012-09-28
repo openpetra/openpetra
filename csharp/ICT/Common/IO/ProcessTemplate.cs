@@ -910,8 +910,8 @@ namespace Ict.Common.IO
             // just one line break at the end
             FTemplateCode = FTemplateCode.TrimEnd(new char[] { ' ', '\t', '\r', '\n' });
 
-            AXAMLFilename = AXAMLFilename.Replace("\\", Path.DirectorySeparatorChar);
-            AXAMLFilename = AXAMLFilename.Replace("/", Path.DirectorySeparatorChar);
+            AXAMLFilename = AXAMLFilename.Replace('\\', Path.DirectorySeparatorChar);
+            AXAMLFilename = AXAMLFilename.Replace('/', Path.DirectorySeparatorChar);
 
             FDestinationFile = System.IO.Path.GetDirectoryName(AXAMLFilename) +
                                System.IO.Path.DirectorySeparatorChar +
