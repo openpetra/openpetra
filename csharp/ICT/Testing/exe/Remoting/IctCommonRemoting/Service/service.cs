@@ -100,15 +100,96 @@ namespace Tests.IctCommonRemoting.Service
     }
 
     /// <summary>
+    /// test of UIConnector
+    /// </summary>
+    public class TMyUIConnector : TConfigurableMBRObject, IMyUIConnector
+    {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public TMyUIConnector()
+        {
+        }
+
+        private int FCounter = 0;
+
+        /// <summary>
+        /// test
+        /// </summary>
+        public string HelloWorldUIConnector()
+        {
+            FCounter++;
+            string s = "HelloWorldUIConnector called this many times: " + FCounter.ToString();
+            TLogging.Log(s);
+            return s;
+        }
+    }
+
+    /// <summary>
     /// this object is needed because we need another remoted object for sub namespaces
     /// </summary>
     public class TMySubNamespace : TConfigurableMBRObject, IMySubNamespace
     {
+        /// <summary>Constructor</summary>
+        public TMySubNamespace()
+        {
+        }
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TMySubNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// <summary>
+        /// return the UIConnector object
+        /// </summary>
+        public IMyUIConnector MyUIConnector()
+        {
+            return (IMyUIConnector)TCreateRemotableObject.CreateRemotableObject(
+                typeof(IMyUIConnector),
+                typeof(TMyUIConnectorRemote),
+                new TMyUIConnector());
+        }
+
         /// print hello sub world
         public string HelloSubWorld(string msg)
         {
             TLogging.Log(msg);
             return "HelloSubWorld from the server!!!";
+        }
+
+        /// object that will be serialized to the client.
+        /// it opens a new channel for each new object.
+        /// this is needed for cross domain marshalling.
+        [Serializable]
+        public class TMyUIConnectorRemote : IMyUIConnector
+        {
+            private IMyUIConnector RemoteObject = null;
+            private string FObjectURI;
+            /// constructor
+            public TMyUIConnectorRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IMyUIConnector)
+                               TConnector.TheConnector.GetRemoteObject(FObjectURI,
+                    typeof(IMyUIConnector));
+            }
+
+            /// forward the method call
+            public string HelloWorldUIConnector()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.HelloWorldUIConnector();
+            }
         }
     }
 
@@ -134,6 +215,17 @@ namespace Tests.IctCommonRemoting.Service
         {
             TLogging.Log("InitRemoteObject in appdomain " + Thread.GetDomain().FriendlyName);
             RemoteObject = (IMySubNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMySubNamespace));
+        }
+
+        /// get the UIConnector
+        public IMyUIConnector MyUIConnector()
+        {
+            if (RemoteObject == null)
+            {
+                InitRemoteObject();
+            }
+
+            return RemoteObject.MyUIConnector();
         }
 
         /// print hello sub world

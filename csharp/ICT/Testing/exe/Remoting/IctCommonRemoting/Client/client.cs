@@ -58,6 +58,8 @@ namespace Ict.Testing.IctCommonRemoting.Client
                 string error;
                 ConnectToTestServer("DEMO", "DEMO", out error);
 
+                IMyUIConnector MyUIConnector = TRemote.MyService.SubNamespace.MyUIConnector();
+
                 while (true)
                 {
                     TLogging.Log(TRemote.MyService.HelloWorld("Hello World"));
@@ -65,6 +67,7 @@ namespace Ict.Testing.IctCommonRemoting.Client
                     TLogging.Log("before call function");
                     TLogging.Log(test.GetType().ToString());
                     TLogging.Log(test.HelloSubWorld("Hello SubWorld"));
+                    TLogging.Log(MyUIConnector.HelloWorldUIConnector());
 
                     Console.WriteLine("Press ENTER to say Hello World again... ");
                     Console.WriteLine("Press CTRL-C to exit ...");
