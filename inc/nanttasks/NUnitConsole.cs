@@ -61,40 +61,31 @@ namespace Ict.Tools.NAntTasks
         /// </summary>
         protected override void ExecuteTask()
         {
-            if (!PlatformHelper.IsWindows)
-            {
-                // use the existing NUnit2 task
-                NUnit2Task origTask = new NUnit2Task();
-                this.CopyTo(origTask);
-
-                NUnit2Test test = new NUnit2Test();
-                FormatterElement formatter = new FormatterElement();
-                formatter.Type = FormatterType.Plain;
-                origTask.FormatterElements.Add(formatter);
-                test.AssemblyFile = new FileInfo(FAssemblyName);
-                origTask.Tests.Add(test);
-
-                origTask.Execute();
-
-                return;
-            }
-
             bool Failure = false;
 
             System.Diagnostics.Process process;
             process = new System.Diagnostics.Process();
             process.EnableRaisingEvents = false;
 
-            string exeName = Project.Properties["external.NUnitConsole"];
-
-            if (!exeName.Contains("(x86)"))
+            if (!PlatformHelper.IsWindows)
             {
-                exeName = exeName.Replace("nunit-console-x86.exe", "nunit-console.exe");
+                process.StartInfo.FileName = "mono";
+                process.StartInfo.Arguments = Project.Properties["external.NUnitConsole.linux"] + " \"" + FAssemblyName + "\"";
+            }
+            else
+            {
+                string exeName = Project.Properties["external.NUnitConsole"];
+
+                if (!exeName.Contains("(x86)"))
+                {
+                    exeName = exeName.Replace("nunit-console-x86.exe", "nunit-console.exe");
+                }
+
+                process.StartInfo.FileName = exeName;
+
+                process.StartInfo.Arguments = "\"" + FAssemblyName + "\"";
             }
 
-            process.StartInfo.FileName = exeName;
-
-            process.StartInfo.Arguments = "\"" + FAssemblyName + "\"";
             process.StartInfo.WorkingDirectory = Path.GetDirectoryName(FAssemblyName);
 
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
