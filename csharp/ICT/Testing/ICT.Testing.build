@@ -16,7 +16,7 @@
 </target>
 
 <target name="test-tools">
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.CodeGeneration.dll" />
+    <!-- NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.CodeGeneration.dll" -->
 </target>
 
 <target name="test-server">

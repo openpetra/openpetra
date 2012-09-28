@@ -41,7 +41,7 @@ namespace GenerateSharedCode
 /// <summary>
 /// this class generates the objects that can be serialized to the client
 /// </summary>
-class TCreateClientRemotingClass : AutoGenerationWriter
+class TCreateClientRemotingClass
 {
     static ProcessTemplate ClientRemotingClassTemplate = null;
 
@@ -127,7 +127,7 @@ class TCreateClientRemotingClass : AutoGenerationWriter
             string ParameterDefinition = string.Empty;
             string ActualParameters = string.Empty;
 
-            AutoGenerationWriter.FormatParameters(m.Parameters, out ActualParameters, out ParameterDefinition);
+            AutoGenerationTools.FormatParameters(m.Parameters, out ActualParameters, out ParameterDefinition);
 
             methodSnippet.SetCodelet("PARAMETERDEFINITION", ParameterDefinition);
             methodSnippet.SetCodelet("ACTUALPARAMETERS", ActualParameters);
@@ -149,7 +149,7 @@ class TCreateClientRemotingClass : AutoGenerationWriter
 
             ProcessTemplate methodSnippet = ClientRemotingClassTemplate.GetSnippet("METHOD");
 
-            string returntype = AutoGenerationWriter.TypeToString(m.TypeReference, string.Empty);
+            string returntype = AutoGenerationTools.TypeToString(m.TypeReference, string.Empty);
 
             methodSnippet.SetCodelet("METHODNAME", m.Name);
             methodSnippet.SetCodelet("RETURNTYPE", returntype);
@@ -157,7 +157,7 @@ class TCreateClientRemotingClass : AutoGenerationWriter
             string ParameterDefinition = string.Empty;
             string ActualParameters = string.Empty;
 
-            AutoGenerationWriter.FormatParameters(m.Parameters, out ActualParameters, out ParameterDefinition);
+            AutoGenerationTools.FormatParameters(m.Parameters, out ActualParameters, out ParameterDefinition);
 
             methodSnippet.SetCodelet("PARAMETERDEFINITION", ParameterDefinition);
             methodSnippet.SetCodelet("ACTUALPARAMETERS", ActualParameters);
@@ -185,7 +185,7 @@ class TCreateClientRemotingClass : AutoGenerationWriter
             ProcessTemplate propertySnippet = ClientRemotingClassTemplate.GetSnippet("PROPERTY");
 
             propertySnippet.SetCodelet("NAME", p.Name);
-            propertySnippet.SetCodelet("TYPE", AutoGenerationWriter.TypeToString(p.TypeReference, string.Empty));
+            propertySnippet.SetCodelet("TYPE", AutoGenerationTools.TypeToString(p.TypeReference, string.Empty));
 
             if (p.HasGetRegion)
             {
