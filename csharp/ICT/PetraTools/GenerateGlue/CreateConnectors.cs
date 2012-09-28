@@ -151,7 +151,7 @@ class TCreateConnectors
                 string ParameterDefinition = string.Empty;
                 string ActualParameters = string.Empty;
 
-                AutoGenerationWriter.FormatParameters(m.Parameters, out ActualParameters, out ParameterDefinition);
+                AutoGenerationTools.FormatParameters(m.Parameters, out ActualParameters, out ParameterDefinition);
 
                 snippet.InsertSnippet("CHECKUSERMODULEPERMISSIONS",
                     CreateModuleAccessPermissionCheck(
@@ -159,7 +159,7 @@ class TCreateConnectors
                         connectorClass.Name,
                         m));
 
-                string returntype = CreateInterfaces.TypeToString(m.TypeReference, "");
+                string returntype = AutoGenerationTools.TypeToString(m.TypeReference, "");
 
                 snippet.SetCodelet("RETURN", returntype != "void" ? "return " : string.Empty);
 
@@ -207,7 +207,7 @@ class TCreateConnectors
                 string ParameterDefinition = string.Empty;
                 string ActualParameters = string.Empty;
 
-                AutoGenerationWriter.FormatParameters(m.Parameters, out ActualParameters, out ParameterDefinition);
+                AutoGenerationTools.FormatParameters(m.Parameters, out ActualParameters, out ParameterDefinition);
 
                 string methodname = m.Name.Substring(1);
 
