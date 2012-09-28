@@ -40,35 +40,22 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
     {
         Int32 FNewExtractID = -1;
 
+
         /// <summary>
-        /// Constructor.
+        /// Constructor
         /// </summary>
-        /// <returns>void</returns>
         public TPartnerNewExtractUIConnector() : base()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + " called.");
-            }
-#endif
+            TLogging.LogAtLevel(7, "TPartnerNewExtractUIConnector created.");
         }
 
-#if DEBUGMODE
         /// <summary>
         /// Destructor
         /// </summary>
-        /// <returns>void </returns>
         ~TPartnerNewExtractUIConnector()
         {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
-            }
+            TLogging.LogAtLevel(7, "TPartnerNewExtractUIConnector FINALIZE called!");
         }
-#endif
-
-
 
         /// <summary>
         /// Creates a new extract with the given extract name and extract descriptionin the

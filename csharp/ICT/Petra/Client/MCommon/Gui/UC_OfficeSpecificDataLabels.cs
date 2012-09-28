@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1319,9 +1319,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             TtxtAutoPopulatedButtonLabel PartnerKeyEditor;
             PDataLabelRow DataLabelRow;
 
-#if DEBUGMODE
-            TLogging.Log("Data Save Event Fired");
-#endif
+            TLogging.LogAtLevel(1, "Data Save Event Fired");
 
             if (FGridRowInfo != null)
             {

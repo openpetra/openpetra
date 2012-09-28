@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
             // get the local country code
-            string LocalCountryCode = TAddressTools.GetLocalCountryCode(transaction);
+            string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 

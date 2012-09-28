@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -21,24 +21,17 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-using System;
-using System.Xml;
 using System.Windows.Forms;
-using GNU.Gettext;
-using Ict.Common;
-using Ict.Common.IO;
-using Ict.Common.Verification;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Gui.MPersonnel;
-using Ict.Petra.Client.MPartner.Gui.Extracts;
-using System.Collections.Specialized;
 
 namespace Ict.Petra.Client.MPersonnel.Gui
 {
     /// <summary>
-    /// the manually written part of TFrmPersonnelMain
+    /// Methods of the former TFrmPersonnelMain that don't have a home elsewhere
     /// </summary>
-    public partial class TFrmPersonnelMain
+    public class TPersonnelMain
     {
         /// <summary>
         /// open screen to create "Conference" Extract

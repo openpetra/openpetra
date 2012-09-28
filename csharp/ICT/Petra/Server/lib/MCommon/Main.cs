@@ -86,12 +86,7 @@ namespace Ict.Petra.Server.MCommon
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("RetrievePartnerShortName: committed own transaction.");
-                        }
-#endif
+                        TLogging.LogAtLevel(7, "RetrievePartnerShortName: committed own transaction.");
                     }
                 }
                 catch (Exception)
@@ -162,7 +157,6 @@ namespace Ict.Petra.Server.MCommon
                     APartnerShortName = PartnerTable[0].PartnerShortName;
                     APartnerClass = SharedTypes.PartnerClassStringToEnum(PartnerTable[0].PartnerClass);
 
-                    // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('RetrievePartnerShortName: PartnerClass: ' + PartnerTable.Row[0].PartnerClass + '; APartnerClass: ' + PartnerClassEnumToString(APartnerClass)); $ENDIF
                     APartnerStatus = SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerTable[0].StatusCode);
                     ReturnValue = true;
                 }
@@ -219,12 +213,7 @@ namespace Ict.Petra.Server.MCommon
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("CheckPartnerExists: committed own transaction.");
-                        }
-#endif
+                        TLogging.LogAtLevel(7, "CheckPartnerExists: committed own transaction.");
                     }
                 }
 
@@ -355,28 +344,16 @@ namespace Ict.Petra.Server.MCommon
                 FTmpDataTable = ATypedTable.Clone();
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + " called.");
-            }
-#endif
+            TLogging.LogAtLevel(7, "TPagedDataSet created.");
         }
 
-#if DEBUGMODE
         /// <summary>
         /// destructor for debugging purposes only
         /// </summary>
         ~TPagedDataSet()
         {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
-            }
+            TLogging.LogAtLevel(7, "TPagedDataSet.FINALIZE called!");
         }
-#endif
-
-
 
         /// <summary>
         /// Executes the query. Call this method in a separate Thread to execute the
@@ -443,13 +420,12 @@ namespace Ict.Petra.Server.MCommon
                 FSelectSQL = FFindParameters.FSqlQuery;
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                TDataBase.LogSqlStatement(this.GetType().FullName + ".GetData", FSelectSQL, FFindParameters.FParametersArray);
-            }
-#endif
-
+/*
+ *          if (TLogging.DL >= 9)
+ *          {
+ *              TDataBase.LogSqlStatement(this.GetType().FullName + ".GetData", FSelectSQL, FFindParameters.FParametersArray);
+ *          }
+ */
             // use temp table
             FTmpDataTable.TableName = FFindParameters.FPagedTable + "_for_paging";
             try
@@ -474,12 +450,6 @@ namespace Ict.Petra.Server.MCommon
 //                if (NewTransaction)
 //                {
 //                    DBAccess.GDBAccessObj.CommitTransaction();
-//#if DEBUGMODE
-//                    if (TLogging.DL >= 7)
-//                    {
-//                        Console.WriteLine(this.GetType().FullName + ".ClassName: committed own transaction.");
-//                    }
-//#endif
 //                }
             }
 
@@ -490,7 +460,7 @@ namespace Ict.Petra.Server.MCommon
 
             try
             {
-//                FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
+//              FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
                 FTotalRecords = FTmpDataTable.Rows.Count;
             }
             catch (System.InvalidOperationException)
@@ -511,23 +481,13 @@ namespace Ict.Petra.Server.MCommon
             // Check if query execution cancellation was requested  necessary only for mono (at least up to 1.1.13.2)
             if (FAsyncExecProgress.FCancelExecution)
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine("Query got cancelled!");
-                }
-#endif
+                TLogging.LogAtLevel(7, "Query got cancelled!");
                 FAsyncExecProgress.ProgressInformation = "Query cancelled!";
                 FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
                 return;
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + "  FDataAdapter.Fill finished. FTotalRecords: " + FTotalRecords.ToString());
-            }
-#endif
+            TLogging.LogAtLevel(7, "TPagedDataSet  FDataAdapter.Fill finished. FTotalRecords: " + FTotalRecords.ToString());
             FPageDataTable = FTmpDataTable.Clone();
             FPageDataTable.TableName = "PagedTable";
             FAsyncExecProgress.ProgressInformation = "Query executed.";
@@ -547,12 +507,7 @@ namespace Ict.Petra.Server.MCommon
         /// </returns>
         public DataTable GetData(Int16 APage, Int16 APageSize)
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + ".GetData(" + APage.ToString() + ") called.");
-            }
-#endif
+            TLogging.LogAtLevel(7, "TPagedDataSet.GetData(" + APage.ToString() + ") called.");
 
             // wait until the query has been run in the other thread
             while (FTotalRecords == -1)
@@ -568,10 +523,7 @@ namespace Ict.Petra.Server.MCommon
                 {
                     FTotalPages = Convert.ToInt16(Math.Ceiling(((double)FTotalRecords) / ((double)APageSize)));
 
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("FTotalPages: " + FTotalPages.ToString());
-                    }
+                    TLogging.LogAtLevel(7, "FTotalPages: " + FTotalPages.ToString());
 
                     if (FTotalRecords > 0)
                     {
@@ -605,26 +557,6 @@ namespace Ict.Petra.Server.MCommon
                         throw new EPagedTableNoRecordsException();
                     }
                 }
-
-#if DEBUGMODE
-                if (TLogging.DL >= 9)
-                {
-                    Console.WriteLine("Select done in " + this.GetType().FullName + ".GetData(" + APage.ToString() + "). Result: ");
-
-                    if (FPageDataTable != null)
-                    {
-                        Console.WriteLine("Processing rows...");
-
-                        foreach (DataRow TheRow in FPageDataTable.Rows)
-                        {
-                            if (TheRow.ItemArray.Length > 4)
-                            {
-                                Console.WriteLine(TheRow[0].ToString() + " | " + TheRow[1].ToString() + " | " + TheRow[3].ToString());
-                            }
-                        }
-                    }
-                }
-#endif
             }
             // (APage > FLastRetrievedPage) or (APage = 0)
             else
@@ -665,14 +597,6 @@ namespace Ict.Petra.Server.MCommon
             Int32 RowInPage;
             Int32 MaxRowInPage;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(
-                    "TPagedDataSet.CopyRowsInPage called.  APage: " + APage.ToString() + "; APageSize: " + APageSize.ToString() +
-                    "; FTmpDataTable.Rows.Count: " + FTmpDataTable.Rows.Count.ToString());
-            }
-#endif
             MaxRowInPage = (APageSize * APage) + APageSize;
 
             if (MaxRowInPage > FTotalRecords)
@@ -717,19 +641,9 @@ namespace Ict.Petra.Server.MCommon
             try
             {
                 // Cancel the executing query.
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine("TPagedDataSet.StopQuery called...");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery called...");
                 FDataAdapter.SelectCommand.Cancel();
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine("TPagedDataSet.StopQuery finished.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery finished.");
             }
             catch (Exception exp)
             {
@@ -944,12 +858,7 @@ namespace Ict.Petra.Server.MCommon
         /// <returns>void</returns>
         public void Cancel()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 6)
-            {
-                Console.WriteLine("TAsynchronousExecutionProgress.Cancel called!");
-            }
-#endif
+            TLogging.LogAtLevel(6, "TAsynchronousExecutionProgress.Cancel called!");
             FCancelExecution = true;
             FProgressState = TAsyncExecProgressState.Aeps_Stopping;
 

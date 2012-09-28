@@ -78,10 +78,6 @@ namespace Ict.Petra.Client.App.Core
             if (ErrorText != "")
             {
                 TLogging.Log(ErrorText);
-
-#if DEBUGMODE
-                MessageBox.Show(ErrorText, "Developer Message");
-#endif
             }
         }
 

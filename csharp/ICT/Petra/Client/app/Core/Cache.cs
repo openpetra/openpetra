@@ -359,9 +359,6 @@ namespace Ict.Petra.Client.App.Core
                         break;
 
                     default:
-
-                        // $IFDEF DEBUGMODE MessageBox.Show('GetCacheableFinanceTable: Cache Table ''' + Enum.GetName(typeof(
-                        // TCacheableFinanceTablesEnum), ACacheableTable) + ''' is''t yet implemented with Argument ''ALedgerNumber''!'); $ENDIF
                         break;
                 }
 
@@ -586,7 +583,6 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public static void ReloadCacheTable(String ACacheableTableName)
         {
-            // $IFDEF DEBUGMODE MessageBox.Show('Cache Table ''' + ACacheableTableName + ''' will be reloaded the next time it is accessed.'); $ENDIF
             try
             {
                 UCacheableTablesManager.MarkCachedTableNeedsRefreshing(ACacheableTableName);
@@ -629,17 +625,13 @@ namespace Ict.Petra.Client.App.Core
                     // MFinance Namespace
                     CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
 
-                    // $IFDEF DEBUGMODE MessageBox.Show('Cache Table ''' + ACacheableTableName + ''' gets reloaded with AFilterCriteria=''' + AFilterCriteria.ToString + ''''); $ENDIF
                     TMFinance.GetCacheableFinanceTable(CacheableMFinanceTable, Convert.ToInt32(AFilterCriteria));
 
                     // AFilterCriteria will be the LedgerNumber
-                    // $IFDEF DEBUGMODE MessageBox.Show('Cache Table ''' + ACacheableTableName + ''' got reloaded with AFilterCriteria=''' + AFilterCriteria.ToString + ''''); $ENDIF
                 }
                 else
                 {
                 }
-
-                // $IFDEF DEBUGMODE MessageBox.Show('Cache Table ''' + ACacheableTableName + ''': Reloading of Cached Tables is currently only implemented for Finance Cacheable DataTables.'); $ENDIF
             }
             catch (ECacheableTablesMgrException)
             {
@@ -1111,7 +1103,6 @@ namespace Ict.Petra.Client.App.Core
                      */
                     UCacheableTablesManager.AddOrMergeCachedTable(CacheableDataTableFromServer, -1);
 
-                    // $IFDEF DEBUGMODE TLogging.Log('DataTable Type: ' + UCacheableTablesManager.GetCachedDataTableType(ACacheableTableName).FullName); $ENDIF
                     // Save the DataTable that's now in the Cache to a file
                     SaveCacheableDataTableToFile(UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out TmpType));
                 }

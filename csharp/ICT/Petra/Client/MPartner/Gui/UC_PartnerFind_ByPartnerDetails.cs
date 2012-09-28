@@ -560,7 +560,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if ((AToolStripItem.Name == "mniFileWorkWithLastPartner")
                      || (AToolStripItem.Name == "mniFileWorkWithLastPartner"))
             {
-                TFrmPartnerMain.OpenLastUsedPartnerEditScreen(this.ParentForm);
+                TPartnerMain.OpenLastUsedPartnerEditScreen(this.ParentForm);
             }
             else
             {
@@ -1163,15 +1163,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 EnableDisableUI(false);
                 Application.DoEvents();
 
-                // If ctrl held down, show the dataset
-#if DEBUGMODE
-                if (System.Windows.Forms.Form.ModifierKeys == Keys.Control)
-                {
-                    MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetXml().ToString());
-                    MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetChanges().GetXml().ToString());
-                }
-#endif
-
+/*
+ *              // If ctrl held down, show the dataset
+ *              if (System.Windows.Forms.Form.ModifierKeys == Keys.Control)
+ *              {
+ *                  MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetXml().ToString());
+ *                  MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetChanges().GetXml().ToString());
+ *              }
+ */
                 // Clear result table
                 try
                 {
@@ -1522,7 +1521,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                              */
                             if ((Int64)FCriteriaData.Rows[0]["PartnerKey"] != 0)
                             {
-                                if (TFrmPartnerMain.MergedPartnerHandling(
+                                if (TPartnerMain.MergedPartnerHandling(
                                         (Int64)FCriteriaData.Rows[0]["PartnerKey"],
                                         out MergedPartnerKey))
                                 {

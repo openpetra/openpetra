@@ -379,24 +379,22 @@ namespace {#NAMESPACE}
     private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;
 	
 {#IFDEF SAVEDETAILS}
-    /*****************************************************************************************************************
-    * FocusedRowLeaving can be called multiple times (e.g. 3 or 4) for just one FocusedRowChanged event.
-    * The key is not to cancel the extra events, but to ensure that we only ValidateAllData once.
-    * We ignore any event that is leaving to go to row # -1
-    * We validate on the first of a cascade of events that leave to a real row.
-    * We detect a duplicate event by testing for the elapsed time since the event we validated on...
-    * If the elapsed time is < 2 ms it is a duplicate, because repeat keypresses are separated by 30 ms
-    * and these duplicates come with a gap of fractions of a microsecond, so 2 ms is a very long time!
-    * All we do is store the previous row from/to and the previous UTC time
-    * These three form level variables are totally private to this event call.
-    * **************************************************************************************************************/
-
     /// <summary>
     /// Used for determining the time elapsed between FocusRowLeaving Events.
     /// </summary>
     private DateTime FDtPrevLeaving = DateTime.UtcNow;
     private int FPrevLeavingFrom = -1;
     private int FPrevLeavingTo = -1;
+
+    /// FocusedRowLeaving can be called multiple times (e.g. 3 or 4) for just one FocusedRowChanged event.
+    /// The key is not to cancel the extra events, but to ensure that we only ValidateAllData once.
+    /// We ignore any event that is leaving to go to row # -1
+    /// We validate on the first of a cascade of events that leave to a real row.
+    /// We detect a duplicate event by testing for the elapsed time since the event we validated on...
+    /// If the elapsed time is &lt; 2 ms it is a duplicate, because repeat keypresses are separated by 30 ms
+    /// and these duplicates come with a gap of fractions of a microsecond, so 2 ms is a very long time!
+    /// All we do is store the previous row from/to and the previous UTC time
+    /// These three form level variables are totally private to this event call.
     private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
     {        
         if (!grdDetails.Sorting && e.ProposedRow >= 0)

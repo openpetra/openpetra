@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -353,7 +353,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="AErrorMessageText">Text that should be prepended to the ResultText. (Default: empty string)</param>
         /// <param name="AResultContext">ResultContext (Default: null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null). (Default: null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null). (Default: null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null). (Default: null).</param>
         /// <returns>Null if the Partner exists and its PartnerClass is in the <paramref name="AValidPartnerClasses" />
         /// array. If the Partner exists, but its PartnerClass isn't in the array, a TVerificationResult
         /// with details about the error is returned. This is also the case if the Partner doesn't exist at all
@@ -465,7 +465,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="AErrorMessageText">Text that should be prepended to the ResultText. (Default: empty string)</param>
         /// <param name="AResultContext">ResultContext (optional).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null). (Default: null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null). (Default: null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null). (Default: null).</param>
         /// <returns>Null if the Partner exists and its PartnerClass is UNIT. If the Partner exists,
         /// but its PartnerClass isn't UNIT, a TVerificationResult with details about the error is
         /// returned. This is also the case if the Partner doesn't exist at all or got merged

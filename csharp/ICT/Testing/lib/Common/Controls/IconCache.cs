@@ -26,7 +26,6 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.Data;
 using System.Drawing;
-using System.Runtime.Caching;
 using System.Windows.Forms;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;

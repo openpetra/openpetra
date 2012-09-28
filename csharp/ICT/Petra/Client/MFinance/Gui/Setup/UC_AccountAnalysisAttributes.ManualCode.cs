@@ -50,6 +50,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
+        /// Loads all the currently assigned AnalTypeCodes into the Combo -
+        /// Even where some of these may not be valid DB values...
+        /// </summary>
+        private void LoadCmbAnalType()
+        {
+            cmbDetailAnalTypeCode.Items.Clear();
+
+            foreach (AAnalysisAttributeRow Row in FMainDS.AAnalysisAttribute.Rows)
+            {
+                if (Row.RowState != DataRowState.Deleted)
+                {
+                    if (!cmbDetailAnalTypeCode.Items.Contains(Row.AnalysisTypeCode))
+                    {
+                        cmbDetailAnalTypeCode.Items.Add(Row.AnalysisTypeCode);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// we are editing this account
         /// </summary>
         public string AccountCode
@@ -62,22 +82,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FLedgerNumber,
                     AAnalysisAttributeTable.GetAccountCodeDBName(),
                     FAccountCode);
+
+                LoadCmbAnalType();
             }
         }
 
         private void NewRow(System.Object sender, EventArgs e)
         {
-            // reload analysis types from cache table
-            cmbDetailAnalysisTypeCode.InitialiseUserControl();
-
-            if (cmbDetailAnalysisTypeCode.Count == 0)
+            /*
+             *          // reload analysis types from cache table
+             *          cmbDetailAnalTypeCode.InitialiseUserControl();
+             */
+            if (cmbDetailAnalTypeCode.Items.Count == 0)
             {
                 MessageBox.Show(Catalog.GetString("Please create an analysis type first"), Catalog.GetString("Error"),
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            GetDataFromControls();
+//          GetDataFromControls();
             this.CreateNewAAnalysisAttribute();
             pnlDetails.Enabled = true;
         }
@@ -108,13 +131,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return NewTypeCode;
         }
 
+        private void ShowDetailsManual(AAnalysisAttributeRow ARow)
+        {
+            if (ARow != null)  // How can ARow ever be null!!
+            {
+                LoadCmbAnalType();
+                cmbDetailAnalTypeCode.Text = ARow.AnalysisTypeCode;
+            }
+        }
+
         private void NewRowManual(ref AAnalysisAttributeRow ARow)
         {
             ARow.LedgerNumber = FLedgerNumber;
             ARow.Active = true;
             ARow.AccountCode = FAccountCode;
 
-            cmbDetailAnalysisTypeCode.SelectedIndex = 0;
+            //            cmbDetailAnalTypeCode.SelectedIndex = 0; // I'm not convinced about this...
 
             ARow.AnalysisTypeCode = NewUniqueAnalTypeCode();
         }
@@ -161,44 +193,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void GetDetailDataFromControlsManual(AAnalysisAttributeRow ARow)
         {
-            // I need to check whether this row will break a DB constraint.
-
-            // The row is being edited right now, (It's in a BeginEdit ... EndEdit bracket) so it doesn't show up in the DefaultView.
-            // I need to call EndEdit, but I'll give this row a "safe" value first.
-
-            string TempEdit = ARow.AnalysisTypeCode;
-
-            ARow.AnalysisTypeCode = "temp_edit";
-            ARow.EndEdit();
-
-            string FilterString = String.Format("{0}={3} and {1}='{4}' and {2}='{5}'",
-                AAnalysisAttributeTable.GetLedgerNumberDBName(),
-                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
-                AAnalysisAttributeTable.GetAccountCodeDBName(),
-                FLedgerNumber,
-                TempEdit,
-                FAccountCode);
-            FMainDS.AAnalysisAttribute.DefaultView.RowFilter = FilterString;
-//            TLogging.Log("Check for unique TypeCode (" + TempEdit + ") : " + FMainDS.AAnalysisAttribute.DefaultView.Count + " Matches.");
-            Boolean MustReplaceName = (FMainDS.AAnalysisAttribute.DefaultView.Count > 0);
-
-            FMainDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
-                AAnalysisAttributeTable.GetLedgerNumberDBName(),
-                FLedgerNumber,
-                AAnalysisAttributeTable.GetAccountCodeDBName(),
-                FAccountCode);
-
-            ARow.BeginEdit();
-
-            if (MustReplaceName)
+            if (ARow != null) // Why would it ever be null!
             {
-                ARow.AnalysisTypeCode = NewUniqueAnalTypeCode();
-//                TLogging.Log("Replace name: " + ARow.AnalysisTypeCode);
-            }
-            else
-            {
-                ARow.AnalysisTypeCode = TempEdit;
-//                TLogging.Log("Keep name: " + ARow.AnalysisTypeCode);
+                // I need to check whether this row will break a DB constraint.
+
+                // The row is being edited right now, (It's in a BeginEdit ... EndEdit bracket) so it doesn't show up in the DefaultView.
+                // I need to call EndEdit, but I'll give this row a "safe" value first.
+
+                string TempEdit = cmbDetailAnalTypeCode.Text;
+                string PreviousValue = ARow.AnalysisTypeCode;
+                ARow.AnalysisTypeCode = "temp_edit";
+                ARow.EndEdit();
+
+                string FilterString = String.Format("{0}={3} and {1}='{4}' and {2}='{5}'",
+                    AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                    AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+                    AAnalysisAttributeTable.GetAccountCodeDBName(),
+                    FLedgerNumber,
+                    TempEdit,
+                    FAccountCode);
+                FMainDS.AAnalysisAttribute.DefaultView.RowFilter = FilterString;
+                //            TLogging.Log("Check for unique TypeCode (" + TempEdit + ") : " + FMainDS.AAnalysisAttribute.DefaultView.Count + " Matches.");
+                Boolean MustReplaceName = (FMainDS.AAnalysisAttribute.DefaultView.Count > 0);
+
+                FMainDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    AAnalysisAttributeTable.GetAccountCodeDBName(),
+                    FAccountCode);
+
+                ARow.BeginEdit();
+
+                if (MustReplaceName)
+                {
+                    ARow.AnalysisTypeCode = PreviousValue;
+                    cmbDetailAnalTypeCode.Text = PreviousValue;
+                    //                TLogging.Log("Replace name: " + ARow.AnalysisTypeCode);
+                }
+                else
+                {
+                    ARow.AnalysisTypeCode = TempEdit;
+                    //                TLogging.Log("Keep name: " + ARow.AnalysisTypeCode);
+                }
             }
         }
 

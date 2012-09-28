@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -332,9 +332,7 @@ namespace Ict.Petra.Client.CommonForms
             if (otherCount > 0)
             {
                 // warn the developer
-#if DEBUGMODE
                 MessageBox.Show(otherString, "The following controls are not checked for live changes in PetraEditBaseForm:");
-#endif
             }
         }
 
