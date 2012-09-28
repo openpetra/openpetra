@@ -197,7 +197,7 @@ namespace {#NAMESPACE}
         if (nPrevRowChangedRow == FPrevRowChangedRow)
         {
             // No row change occurred, so we still need to show details, because the data may be different
-            Console.WriteLine("{0}:  SRIG: ShowDetails for {1}", DateTime.Now.Millisecond, ARowIndex);
+            //Console.WriteLine("{0}:  SRIG: ShowDetails for {1}", DateTime.Now.Millisecond, ARowIndex);
             ShowDetails();
         }
     }
@@ -371,12 +371,12 @@ namespace {#NAMESPACE}
             FPrevRowChangedRow = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1;
             if (FPrevRowChangedRow == prevRowChangedRowBeforeValidation)
             {
-                Console.WriteLine("{0}:    Validation: validated row is at {1}. No move required.  ProcessErrors={2}", DateTime.Now.Millisecond, FPrevRowChangedRow, AProcessAnyDataValidationErrors.ToString());
+                //Console.WriteLine("{0}:    Validation: validated row is at {1}. No move required.  ProcessErrors={2}", DateTime.Now.Millisecond, FPrevRowChangedRow, AProcessAnyDataValidationErrors.ToString());
             }
             else
             {
                 grdDetails.SelectRowInGrid(FPrevRowChangedRow, true);
-                Console.WriteLine("{0}:    Validation: validated row is at {1}. Moved 'with events'.  ProcessErrors={2}", DateTime.Now.Millisecond, FPrevRowChangedRow, AProcessAnyDataValidationErrors.ToString());
+                //Console.WriteLine("{0}:    Validation: validated row is at {1}. Moved 'with events'.  ProcessErrors={2}", DateTime.Now.Millisecond, FPrevRowChangedRow, AProcessAnyDataValidationErrors.ToString());
             }
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
 
@@ -480,10 +480,10 @@ namespace {#NAMESPACE}
             bool bIsDuplicate = (e.Row == FPrevLeavingFrom && e.ProposedRow == FPrevLeavingTo && elapsed < 2.0);
             if (!bIsDuplicate)
             {
-                Console.WriteLine("{0}: FocusRowLeaving: from {1} to {2}", DateTime.Now.Millisecond, e.Row, e.ProposedRow);
+                //Console.WriteLine("{0}: FocusRowLeaving: from {1} to {2}", DateTime.Now.Millisecond, e.Row, e.ProposedRow);
                 if (!ValidateAllData(true, true))
                 {
-                    Console.WriteLine("{0}:    --- Cancelled", DateTime.Now.Millisecond);
+                    //Console.WriteLine("{0}:    --- Cancelled", DateTime.Now.Millisecond);
                     e.Cancel = true;
                 }
             }
@@ -502,7 +502,7 @@ namespace {#NAMESPACE}
         // There is no need to call it on duplicate events, so we just remember the previous row number we changed to.
         if (!grdDetails.Sorting && e.Row != FPrevRowChangedRow)
         {
-            Console.WriteLine("{0}:   FRC ShowDetails for {1}", DateTime.Now.Millisecond, e.Row);
+            //Console.WriteLine("{0}:   FRC ShowDetails for {1}", DateTime.Now.Millisecond, e.Row);
             ShowDetails();
         }
         FPrevRowChangedRow = e.Row;
