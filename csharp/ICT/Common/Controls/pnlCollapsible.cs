@@ -104,6 +104,10 @@ namespace Ict.Common.Controls
 
         /// <summary> collapse direction </summary>
         private TCollapseDirection FCollapseDirection = TCollapseDirection.cdVertical;
+        
+        private string FInfoTextCollapseHorizontalLeft = "Navigation Pane";
+        private string FInfoTextCollapseHorizontalLeftShepherd = "Shepherd Pages";
+        private string FInfoTextCollapseHorizontalRight = "To-Do Bar";
 
         /// <summary>
         /// This is the operating definition of which styles are compatible with which directions.
@@ -709,6 +713,8 @@ namespace Ict.Common.Controls
             {
                 TitleHide();
                 this.Width = COLLAPSEDWIDTH;
+                
+                ShowHideCollapsedInfoText(true);
             }
 
             btnToggle.ImageIndex = 1;
@@ -750,6 +756,8 @@ namespace Ict.Common.Controls
             else
             {
                 this.Width = FExpandedSize;
+                            
+                ShowHideCollapsedInfoText(false);   
             }
 
             switch (FHostedControlKind)
@@ -795,6 +803,41 @@ namespace Ict.Common.Controls
             }
         }
 
+        void ShowHideCollapsedInfoText(bool AShow)
+        {
+            pnlCollapsedInfoText.Visible = AShow;
+            
+            if (AShow) 
+            {
+                switch(FCollapseDirection)
+                {
+                    case TCollapseDirection.cdHorizontal:
+                    {
+                        if (FVisualStyleEnum == TVisualStylesEnum.vsShepherd) 
+                        {
+                            otlCollapsedInfoText.Text = FInfoTextCollapseHorizontalLeftShepherd;
+                        }
+                        else
+                        {
+                            otlCollapsedInfoText.Text = FInfoTextCollapseHorizontalLeft;
+                        }
+                        
+                        otlCollapsedInfoText.ForeColor = FVisualStyle.CollapsedInfoTextFontColour;
+                        otlCollapsedInfoText.RotationAngle = 270;
+                        
+                        break;
+                    }
+                    case TCollapseDirection.cdHorizontalRight:
+                    {
+                        otlCollapsedInfoText.Text = FInfoTextCollapseHorizontalRight;
+                        otlCollapsedInfoText.RotationAngle = 90;
+                        
+                        break;
+                    }
+                }
+            }            
+        }
+        
         /// <summary>
         /// Toggles between expanding and collapsing.
         /// </summary>
@@ -1101,7 +1144,7 @@ namespace Ict.Common.Controls
             {
                 SuspendLayout();
                 pnlContent.GradientColorBottom = FVisualStyle.ContentGradientEnd;
-                pnlContent.GradientColorTop = FVisualStyle.ContentGradientEnd;
+                pnlContent.GradientColorTop = FVisualStyle.ContentGradientStart;
                 pnlContent.GradientMode = FVisualStyle.ContentGradientMode;
                 ResumeLayout();
             }
@@ -1114,6 +1157,23 @@ namespace Ict.Common.Controls
                 ResumeLayout();
             }
 
+            if (FVisualStyle.UseCollapsedInfoGradient)
+            {
+                SuspendLayout();
+                pnlCollapsedInfoText.GradientColorBottom = FVisualStyle.CollapsedInfoGradientEnd;
+                pnlCollapsedInfoText.GradientColorTop = FVisualStyle.CollapsedInfoGradientStart;
+                pnlCollapsedInfoText.GradientMode = FVisualStyle.CollapsedInfoGradientMode;
+                ResumeLayout();
+            }
+            else
+            {
+                SuspendLayout();
+                pnlCollapsedInfoText.GradientColorBottom = FVisualStyle.CollapsedInfoBackgroundColour;
+                pnlCollapsedInfoText.GradientColorTop = FVisualStyle.CollapsedInfoBackgroundColour;
+                pnlCollapsedInfoText.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;
+                ResumeLayout();
+            }
+            
             return AVisualStyle;
         }
 
@@ -1170,6 +1230,26 @@ namespace Ict.Common.Controls
             TLogging.Log("BtnToggleMouseLeave END: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
         }
 
+        /// <summary>
+        /// Event is raised when the mouse enters the rotated Collapsed Info Text Label.
+        /// </summary>
+        /// <param name="sender">The Toggle Button.</param>
+        /// <param name="e">Not evaluated.</param>
+        void BtnCollapsedInfoTextMouseEnter(object sender, EventArgs e)
+        {
+            otlCollapsedInfoText.ForeColor = FVisualStyle.CollapsedInfoTextFontColourHover;
+        }
+
+        /// <summary>
+        /// Event is raised if the mouse leaves the rotated Collapsed Info Text Label.
+        /// </summary>
+        /// <param name="sender">The Toggle Button.</param>
+        /// <param name="e">Not evaluated.</param>
+        void BtnCollapsedInfoTextMouseLeave(object sender, EventArgs e)
+        {
+            otlCollapsedInfoText.ForeColor = FVisualStyle.CollapsedInfoTextFontColour;
+        }
+        
         #endregion
     }
 

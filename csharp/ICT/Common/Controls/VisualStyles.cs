@@ -82,6 +82,16 @@ namespace Ict.Common.Controls
             }
         }
 
+        private Font InternalCollapsedInfoTextFont;
+        /// <summary>The CollapsedInfoTextFont property gets the value of InternalCollapsedInfoTextFont</summary>
+        /// <value>The CollapsedInfoTextFont property represents the Font specifications of the Collapsed Info Text  of the user control</value>
+        public Font CollapsedInfoTextFont {
+            get
+            {
+                return InternalCollapsedInfoTextFont;
+            }
+        }
+
         private Color InternalContentFontColour;
         /// <summary>The ContentFontColour property gets the value of the InternalContentFontColour</summary>
         /// <value> The ContentFontColour property represents the Colour specification of the Content text when the mouse is not hovering over the Content text</value>
@@ -102,6 +112,16 @@ namespace Ict.Common.Controls
             }
         }
 
+        private Color InternalCollapsedInfoTextFontColour;
+        /// <summary>The CollapsedInfoTextFontColour property gets the value of the InternalCollapsedInfoTextFontColour</summary>
+        /// <value> The CollapsedInfoTextFontColour property represents the Colour specification of the Collapsed Info Text when the mouse is not hovering over the Collapsed Info Text</value>
+        public Color CollapsedInfoTextFontColour {
+            get
+            {
+                return InternalCollapsedInfoTextFontColour;
+            }
+        }
+        
         private Color InternalContentActivatedFontColour;
         /// <summary>The ContentActivatedFontColour property gets the value of the InternalContentActivatedFontColour</summary>
         /// <value> The ContentActivatedFontColour property represents the colour of activated content text</value>
@@ -222,10 +242,21 @@ namespace Ict.Common.Controls
             }
         }
 
+        
+        private Color InternalCollapsedInfoTextFontColourHover;
+        /// <summary>The CollapsedInfoTextFontColourHover property gets the value of the InternalCollapsedInfoTextFontColourHover</summary>
+        /// <value> The CollapsedInfoTextFontColourHover property represents the colour of the Collapsed Info Text  when the mouse hovers over it</value>
+        public Color CollapsedInfoTextFontColourHover {
+            get
+            {
+                return InternalCollapsedInfoTextFontColourHover;
+            }
+        }
+
         //Background Variables
         private Color InternalContentBackgroundColour;
         /// <summary>The ContentBackgroundColour property gets the value of the InternalContentBackgroundColour </summary>
-        /// <value> The ContentBackgroundColour property represents the content's background color.</value>
+        /// <value> The ContentBackgroundColour property represents the content's background colour.</value>
         public Color ContentBackgroundColour {
             get
             {
@@ -243,6 +274,16 @@ namespace Ict.Common.Controls
             }
         }
 
+        private Color InternalCollapsedInfoBackgroundColour;
+        /// <summary>The CollapsedInfoBackgroundColour property gets the value of the InternalCollapsedInfoBackgroundColour</summary>
+        /// <value> The CollapsedInfoBackgroundColour property represents the Collapsed Info Text's background colour</value>
+        public Color CollapsedInfoBackgroundColour {
+            get
+            {
+                return InternalCollapsedInfoBackgroundColour;
+            }
+        }
+        
         private Color InternalContentHoverBackgroundColour;
         /// <summary>The ContentHoverBackgroundColour property gets the value of the InternalContentHoverBackgroundColour</summary>
         /// <value> The ContentHOoverBackgroundColour property represent the content's background colour when the mouse hovers over it</value>
@@ -255,7 +296,7 @@ namespace Ict.Common.Controls
 
         private Color InternalContentActivatedBackgroundColour;
         /// <summary>The ContentActivatedBackgroundColour property gets the value of the InternalContentAcivatedBackgroundColour </summary>
-        /// <value> The ContentActivatedBackgroundCOlour property representf the content background colour when the content is activated </value>
+        /// <value> The ContentActivatedBackgroundColour property representf the content background colour when the content is activated </value>
         public Color ContentActivatedBackgroundColour {
             get
             {
@@ -324,6 +365,36 @@ namespace Ict.Common.Controls
             }
         }
 
+        private Color InternalCollapsedInfoGradientStart;
+        /// <summary>The CollapsedInfoGradientStart property gets the value of the InternalCollapsedInfoGradientStart</summary>
+        /// <value> The CollapsedInfoGradientStart property represents the beginning colour of the Collapsed Info Panel gradient</value>
+        public Color CollapsedInfoGradientStart {
+            get
+            {
+                return InternalCollapsedInfoGradientStart;
+            }
+        }
+
+        private Color InternalCollapsedInfoGradientEnd;
+        /// <summary>The CollapsedInfoGradientEnd property gets the value of the InternalCollapsedInfoGradientEnd</summary>
+        /// <value> THe CollapsedInfoGradientEnd property represents the end colour of the Collapsed Info Panel gradient</value>
+        public Color CollapsedInfoGradientEnd {
+            get
+            {
+                return InternalCollapsedInfoGradientEnd;
+            }
+        }
+
+        private LinearGradientMode InternalCollapsedInfoGradientMode;
+        /// <summary>The CollapsedInfoGradientMode property gets the value of the InternalCollapsedInfoGradientMode</summary>
+        /// <value> The CollapsedInfoGradientMode property represents the direction of the gradient in the Collapsed Info Panel gradient</value>
+        public LinearGradientMode CollapsedInfoGradientMode {
+            get
+            {
+                return InternalCollapsedInfoGradientMode;
+            }
+        }
+        
         //Layout Variables
         private int InternalTaskIndentation;
         /// <summary> The TaskIndentation property gets the value of the InternalTaskIndentation</summary>
@@ -368,20 +439,25 @@ namespace Ict.Common.Controls
         #region Variables for determining style in TaskList
         
         /// <summary>
-        /// Boolean flag to specify whether the style uses a gradient background in the panel (title element)
+        /// Boolean flag to specify whether the style uses a gradient background in the Title Panel 
         /// </summary>
         public bool UseTitleGradient;
         
         /// <summary>
-        /// Boolean flag to specify whether certain controls will use the background colours
+        /// Boolean flag to specify whether certain Controls will use the background colours of the Content Panel
         /// </summary>
         public bool UseContentBackgroundColours;
         
         /// <summary>
-        /// Boolean flag to specify whether the style uses a gradient background in the content section
+        /// Boolean flag to specify whether the style uses a gradient background in the Content Panel
         /// </summary>
         public bool UseContentGradient;
 
+        /// <summary>
+        /// Boolean flag to specify whether the style uses a gradient background in Collapsed Info Panel
+        /// </summary>
+        public bool UseCollapsedInfoGradient;
+        
         #endregion
         
         #region Constructor
@@ -488,7 +564,6 @@ namespace Ict.Common.Controls
 
                     //ContentFont Variables
 
-
                     // Padding Variables
                     InternalTitlePaddingTop = 6;
                     InternalTitlePaddingLeft = 2;
@@ -534,7 +609,12 @@ namespace Ict.Common.Controls
                     InternalContentActivatedFontColour = Color.FromArgb(255, 255, 255);
                     InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
                     InternalContentActivatedFontUnderline = false;
-                    
+
+                    //CollapsedInfoTextFont Variables
+                    InternalCollapsedInfoTextFont = InternalTitleFont;
+                    InternalCollapsedInfoTextFontColour = InternalTitleFontColour;
+                    InternalCollapsedInfoTextFontColourHover = InternalTitleFontColourHover;                     
+                                        
                     // Padding Variables
                     InternalTitlePaddingTop = 5;
                     InternalTitlePaddingLeft = 5;
@@ -555,7 +635,7 @@ namespace Ict.Common.Controls
                     InternalContentBackgroundColour = Color.FromArgb(255, 255, 255);
                     InternalContentHoverBackgroundColour = Color.FromArgb(255, 255, 255);  
                     InternalContentActivatedBackgroundColour = Color.FromArgb(0, 128, 192);
-
+                    InternalCollapsedInfoBackgroundColour = Color.FromArgb(255, 255, 255);
 
                     //Layout Variables
                     InternalTaskIndentation = 8;
@@ -566,6 +646,7 @@ namespace Ict.Common.Controls
                     //bool variables
                     UseTitleGradient = false;
                     UseContentGradient = false;
+                    UseCollapsedInfoGradient = false;
                     UseContentBackgroundColours = true;
                     break;
 
@@ -574,7 +655,7 @@ namespace Ict.Common.Controls
                     InternalTitleFont = new System.Drawing.Font("Verdana", 13, System.Drawing.FontStyle.Bold);
                     InternalTitleFontColour = Color.FromArgb(21, 66, 139);
                     InternalTitleFontColourHover = Color.FromArgb(32, 101, 215);
-
+                    
                     //ContentFont Variables
                     InternalContentFont = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
                     InternalContentFontColour = Color.FromArgb(21, 66, 139);
@@ -582,6 +663,11 @@ namespace Ict.Common.Controls
                     InternalContentActivatedFontColour = InternalContentHoverFontColour;
                     InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
 
+                    //CollapsedInfoTextFont Variables
+                    InternalCollapsedInfoTextFont = InternalTitleFont;
+                    InternalCollapsedInfoTextFontColour = InternalTitleFontColour;
+                    InternalCollapsedInfoTextFontColourHover = InternalTitleFontColourHover;                     
+                    
                     // Padding Variables
                     InternalTitlePaddingTop = 1;
                     InternalTitlePaddingLeft = 3;
@@ -592,6 +678,9 @@ namespace Ict.Common.Controls
                     InternalContentPaddingRight = 10;
                     InternalContentPaddingBottom = 5;
                     
+                    //BackgroundVariables
+                    InternalCollapsedInfoBackgroundColour = Color.FromArgb(212, 221, 249);
+                    
                     //Gradient Variables
                     InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
                     InternalTitleGradientEnd = Color.FromArgb(183, 202, 226);
@@ -599,7 +688,10 @@ namespace Ict.Common.Controls
                     InternalContentGradientStart = Color.FromArgb(212, 228, 254);
                     InternalContentGradientEnd = Color.FromArgb(205, 218, 254);
                     InternalContentGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
-
+                    InternalCollapsedInfoGradientStart = Color.FromArgb(212, 228, 254);
+                    InternalCollapsedInfoGradientEnd = Color.FromArgb(183, 202, 226);
+                    InternalCollapsedInfoGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
+                        
                     //Layout Variables
                     InternalTaskIndentation = 30;
                     InternalTaskHeight = 18;
@@ -609,6 +701,7 @@ namespace Ict.Common.Controls
                     //bool variables
                     UseTitleGradient = true;
                     UseContentGradient = true;
+                    UseCollapsedInfoGradient = false;
                     UseContentBackgroundColours = false;
                     break;
             
