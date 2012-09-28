@@ -121,7 +121,6 @@ namespace Ict.Common.Remoting.Server
             System.Object ATaskParameter4,
             Int16 ATaskPriority)
         {
-            // $IFDEF DEBUGMODE Console.WriteLine('Invoking Member ''ClientTaskAdd'' in AppDomain: ' + AppDomain.CurrentDomain.ToString); $ENDIF
             return Convert.ToInt32(
                 FRemoteClientDomainManagerClass.InvokeMember("ClientTaskAdd",
                     (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
@@ -130,8 +129,6 @@ namespace Ict.Common.Remoting.Server
                     new Object[] { ATaskGroup, ATaskCode, ATaskParameter1, ATaskParameter2, ATaskParameter3, ATaskParameter4,
                                    (System.Object)ATaskPriority },
                     null));
-
-            // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''ClientTaskAdd'' in Client''s AppDomain! Returned value: ' + Result.ToString); $ENDIF
         }
 
         /// <summary>
@@ -178,21 +175,10 @@ namespace Ict.Common.Remoting.Server
             out ICrossDomainService ARemotedPollClientTasksObject)
         {
             // Console.WriteLine('TRemoteLoader.LoadDomainManagerAssembly in AppDomain: ' + AppDomain.CurrentDomain.ToString);
-
-            // $IFDEF DEBUGMODE Console.WriteLine('Trying to load ' + CLIENTDOMAIN_DLLNAME + '.dll into Client''s AppDomain...'); $ENDIF
             Assembly LoadedAssembly = Assembly.Load(CLIENTDOMAIN_DLLNAME);
 
-            // $IFDEF DEBUGMODE Console.WriteLine('Successfully loaded ' + CLIENTDOMAIN_DLLNAME + '.dll into Client''s AppDomain.'); $ENDIF
             FRemoteClientDomainManagerClass = LoadedAssembly.GetType(CLIENTDOMAIN_CLASSNAME);
 
-            // $IFDEF DEBUGMODE
-            // Console.WriteLine('Loaded Assemblies in AppDomain ' + Thread.GetDomain.FriendlyName + ' (after DLL loading into new AppDomain):');
-            // foreach Assembly tmpAssembly in Thread.GetDomain.GetAssemblies() do
-            // begin
-            // Console.WriteLine(tmpAssembly.FullName);
-            // end;
-            // $ENDIF
-            // $IFDEF DEBUGMODE Console.WriteLine('Creating Instance of ' + CLIENTDOMAIN_CLASSNAME + ' in Client''s AppDomain...'); $ENDIF
             FRemoteClientDomainManagerObject = Activator.CreateInstance(FRemoteClientDomainManagerClass,
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.CreateInstance), null,
                 new Object[] { AClientID.ToString(),
@@ -202,17 +188,13 @@ namespace Ict.Common.Remoting.Server
                                ACacheableTablesManagerRef, AUserInfo },
                 null);
 
-            // $IFDEF DEBUGMODE Console.WriteLine('Successfully created an instance of ' + CLIENTDOMAIN_CLASSNAME + ' in Client''s AppDomain.'); $ENDIF
-            // $IFDEF DEBUGMODE Console.WriteLine('Invoking Member ''InitAppDomain'' in Client''s AppDomain...'); $ENDIF
             FRemoteClientDomainManagerClass.InvokeMember("InitAppDomain",
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
                 null,
                 FRemoteClientDomainManagerObject,
                 new Object[] { AServerSettings });
 
-            // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''InitAppDomain'' in Client''s AppDomain...'); $ENDIF
             // Create and remote the TPollClientTasks Class
-            // $IFDEF DEBUGMODE Console.WriteLine('Invoking Member ''GetPollClientTasksURL'' in Client''s AppDomain...'); $ENDIF
             ARemotingURLPollClientTasks =
                 Convert.ToString(FRemoteClientDomainManagerClass.InvokeMember("GetPollClientTasksURL",
                         (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod), null, FRemoteClientDomainManagerObject, null, null));
@@ -221,14 +203,11 @@ namespace Ict.Common.Remoting.Server
                 (ICrossDomainService)FRemoteClientDomainManagerClass.InvokeMember("GetRemotedPollClientTasksObject",
                     (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod), null, FRemoteClientDomainManagerObject, null, null);
 
-            // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''GetPollClientTasksURL'' in Client''s AppDomain! Returned value: ' + ARemotingURLPollClientTasks); $ENDIF
             // Establish (separate) DataBase connection for the AppDomain
-            // $IFDEF DEBUGMODE Console.WriteLine('Invoking Member ''EstablishDBConnection'' in Client''s AppDomain...'); $ENDIF
             Convert.ToString(FRemoteClientDomainManagerClass.InvokeMember("EstablishDBConnection",
                     (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod), null, FRemoteClientDomainManagerObject, null, null));
 
-            // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''EstablishDBConnection'' in Client''s AppDomain!'); $ENDIF
-            // /    LoadClientDomainManager.ClientTaskAdd('USERMESSAGE','This is just for testing purposes!', 'blabla_1', 'blabla_2', 'blabla_3', 'blabla_4', 1);
+            //  LoadClientDomainManager.ClientTaskAdd('USERMESSAGE','This is just for testing purposes!', 'blabla_1', 'blabla_2', 'blabla_3', 'blabla_4', 1);
         }
 
         /// <summary>
@@ -253,24 +232,9 @@ namespace Ict.Common.Remoting.Server
             // Console.WriteLine('TRemoteLoader.LoadPetraModuleAssembly in AppDomain: ' + AppDomain.CurrentDomain.ToString);
             #region Load Petra Module DLL into AppDomain of Client, create instance of Instantiator Object
 
-//			#if DEBUGMODE
-//			Console.WriteLine("Trying to load " + AssemblyDLLName + ".dll into Client's AppDomain...");
-//			#endif
-
             Assembly LoadedAssembly = Assembly.Load(AAssemblyDLLName);
 
-//			#if DEBUGMODE
-//			Console.WriteLine("Successfully loaded " + AssemblyDLLName + ".dll into Client's AppDomain.");
-//			#endif
             Type RemoteClass = LoadedAssembly.GetType(ARemoteType);
-
-            // $IFDEF DEBUGMODE
-            // Console.WriteLine('Loaded Assemblies in AppDomain ' + Thread.GetDomain.FriendlyName + ' (after DLL loading into Client''s AppDomain):');
-            // for tmpAssembly in Thread.GetDomain.GetAssemblies() do
-            // begin
-            // Console.WriteLine(tmpAssembly.FullName);
-            // end;
-            // $ENDIF
 
             if (RemoteClass == null)
             {
@@ -279,26 +243,15 @@ namespace Ict.Common.Remoting.Server
                 throw new Exception(msg);
             }
 
-//			#if DEBUGMODE
-//			TLogging.Log("Creating Instance of " + RemoteClass.Name + " in Client's AppDomain...");
-//			#endif
-
             object Instantiator = Activator.CreateInstance(RemoteClass,
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
                 null,
                 null,
                 null);
 
-//			#if DEBUGMODE
-//			Console.WriteLine("Successfully created an instance of " + RemoteType + " in Client's  AppDomain.");
-//			#endif
             #endregion
 
             // Remote the Petra Module Instantiator from the AppDomain
-
-//			#if DEBUGMODE
-//			Console.WriteLine("Invoking Member 'GetRemotingURL' in Client's AppDomain...");
-//			#endif
             APetraModuleInstantiatorRemotingURL =
                 Convert.ToString(RemoteClass.InvokeMember("GetRemotingURL", (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
                         null, Instantiator, null, null));
@@ -306,8 +259,6 @@ namespace Ict.Common.Remoting.Server
             ARemoteObject = (ICrossDomainService)
                             RemoteClass.InvokeMember("GetRemotedObject", (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
                 null, Instantiator, null, null);
-
-            // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''GetRemotingURL'' in Client''s AppDomain! Returned value: ' + APetraModuleInstantiatorRemotingURL); $ENDIF
         }
 
         /// <summary>
@@ -330,13 +281,6 @@ namespace Ict.Common.Remoting.Server
 //Console.WriteLine("Successfully loaded " + CALLFORWARDING_DLLNAME + ".dll into Client's AppDomain.");
             CallforwardingClass = LoadedAssembly.GetType(CALLFORWARDING_CLASSNAME);
 
-            // $IFDEF DEBUGMODE
-            // Console.WriteLine('Loaded Assemblies in AppDomain ' + Thread.GetDomain.FriendlyName + ' (after DLL loading into new AppDomain):');
-            // foreach Assembly tmpAssembly in Thread.GetDomain.GetAssemblies() do
-            // begin
-            // Console.WriteLine(tmpAssembly.FullName);
-            // end;
-            // $ENDIF
 //Console.WriteLine("Creating Instance of " + CALLFORWARDING_CLASSNAME + " in Client''s AppDomain...");
             Activator.CreateInstance(CallforwardingClass,
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.CreateInstance), null,
@@ -351,11 +295,8 @@ namespace Ict.Common.Remoting.Server
         public void StopClientAppDomain()
         {
             // Stop Client's AppDomain
-            // $IFDEF DEBUGMODE Console.WriteLine('Invoking Member ''StopClientAppDomain'' in AppDomain: ' + AppDomain.CurrentDomain.ToString); $ENDIF
             FRemoteClientDomainManagerClass.InvokeMember("StopClientAppDomain",
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod), null, FRemoteClientDomainManagerObject, null, null);
-
-            // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''StopClientAppDomain'' in the Client''s AppDomain!'); $ENDIF
         }
 
         /// <summary>
@@ -366,7 +307,6 @@ namespace Ict.Common.Remoting.Server
         public void CloseDBConnection()
         {
             // Close Database connection of the Client's AppDomain
-            // TODO 1 oChristianK cLogging (Console) : Put the following debug messages in a DEBUGMODE conditional compilation directive; these logging statements were inserted to trace problems in on live installations!
             if (TLogging.DL >= 5)
             {
                 TLogging.Log("TRemoteLoader.CloseDBConnection: Invoking Member 'CloseDBConnection' in AppDomain: " + AppDomain.CurrentDomain.ToString());
@@ -649,7 +589,6 @@ namespace Ict.Common.Remoting.Server
         /// <returns>void</returns>
         public void CloseDBConnection()
         {
-            // TODO 1 oChristianK cLogging (Console) : Put the following debug messages in a DEBUGMODE conditional compilation directive and raise the DL to >=9; these logging statements were inserted to trace problems in on live installations!
             if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientAppDomainConnection.CloseDBConnection: before calling FRemoteLoader.CloseDBConnection",

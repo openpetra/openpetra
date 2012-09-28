@@ -300,9 +300,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 	newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber);
                 }
 
-                //SelectDetailRowByDataTableIndex(newRowToSelectAfterFilter);
-                grdDetails.SelectRowInGrid(newRowToSelectAfterFilter, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-                InvokeFocusedRowChanged(newRowToSelectAfterFilter);
+				SelectRowInGrid(newRowToSelectAfterFilter, true);
+                //grdDetails.SelectRowInGrid(newRowToSelectAfterFilter, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+                //InvokeFocusedRowChanged(newRowToSelectAfterFilter);
             }
 
             UpdateChangeableStatus();
@@ -335,8 +335,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         	//remember grid is out of sync with DataView by 1 because of grid header rows
         	return rowPos + 1;
         }
-        
-        
         
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {

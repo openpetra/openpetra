@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -337,20 +337,11 @@ namespace Ict.Petra.Client.MReporting.Gui
                     // EnableDisableToolbar(true);
                 }
             }
-#if DEBUGMODE
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
-                MessageBox.Show(e.Message);
-
+                TLogging.Log("Exception in GenerateReport: " + e.ToString());
                 // EnableDisableToolbar(true);
             }
-#else
-            catch (Exception)
-            {
-                // EnableDisableToolbar(true);
-            }
-#endif
         }
     }
 }

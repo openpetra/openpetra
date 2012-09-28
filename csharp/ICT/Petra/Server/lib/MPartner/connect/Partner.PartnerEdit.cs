@@ -139,19 +139,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             FKeyForSelectingPartnerLocation = new TLocationPK(0, 0);
         }
 
-#if DEBUGMODE
-        /// destructor
-        ~TPartnerEditUIConnector()
-        {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
-            }
-        }
-#endif
-
-
-
         #region BankingDetails
 
         /// <summary>
@@ -174,12 +161,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".GetBankingDetails: committed own transaction.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetBankingDetails: committed own transaction.");
             }
 
             return ReturnValue;
@@ -260,12 +242,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".GetDataAddresses called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TPartnerEditUIConnector.GetDataAddresses called!");
             ReturnValue = new PartnerEditTDS(DATASETNAME);
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -277,12 +254,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".GetDataAddresses: committed own transaction.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataAddresses: committed own transaction.");
             }
 
             // Remove any unused tables from the Typed DataSet
@@ -301,12 +273,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".GetDataFoundation called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TPartnerEditUIConnector.GetDataFoundation called!");
             ReturnValue = new PartnerEditTDS(DATASETNAME);
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -330,12 +297,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".GetDataFoundation: committed own transaction.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataFoundation: committed own transaction.");
             }
 
             // Remove any unused tables from the Typed DataSet
@@ -385,12 +347,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".GetDataLocation: committed own transaction.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataLocation: committed own transaction.");
             }
 
             return ReturnValue;
@@ -419,14 +376,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int64 FoundationOwner2Key = 0;
             bool HasEXWORKERPartnerType = false;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(
-                    this.GetType().FullName + ": LoadData called. ADelayedDataLoading: " + ADelayedDataLoading.ToString() + "; ATabPage: " +
-                    Enum.GetName(typeof(TPartnerEditTabPageEnum), ATabPage));
-            }
-#endif
+//          TLogging.LogAtLevel(7, "TPartnerEditUIConnector.LoadData called. ADelayedDataLoading: " + ADelayedDataLoading.ToString() + "; ATabPage: " +
+//               Enum.GetName(typeof(TPartnerEditTabPageEnum), ATabPage));
 
             // create the FPartnerEditScreenDS DataSet that will later be passed to the Client
             FPartnerEditScreenDS = new PartnerEditTDS(DATASETNAME);
@@ -484,7 +435,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpSubscriptions))
                     {
                         // Only count Subscriptions
-                        // $IFDEF DEBUGMODE if TLogging.DL >= 0 then Console.WriteLine('TPartnerEditUIConnector.LoadData: Before Calculations.CalculateTabCountsAddresses');$ENDIF
                         Calculations.CalculateTabCountsSubscriptions(FPartnerEditScreenDS.PSubscription,
                             out ItemsCountSubscriptions,
                             out ItemsCountSubscriptionsActive);
@@ -507,12 +457,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
 
                     // Locations and PartnerLocations
-#if DEBUGMODE
-                    if (TLogging.DL >= 9)
-                    {
-                        Console.WriteLine("TPartnerEditUIConnector.LoadData: Before TPPartnerAddressAggregate.LoadAll");
-                    }
-#endif
+                    TLogging.LogAtLevel(9, "TPartnerEditUIConnector.LoadData: Before TPPartnerAddressAggregate.LoadAll");
                     TPPartnerAddressAggregate.LoadAll(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
 
                     if (FKeyForSelectingPartnerLocation.LocationKey > 0)
@@ -529,14 +474,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpAddresses))
                     {
                         // Determination of the address list icons and the 'best' address (these calls change certain columns in some rows!)
-                        // $IFDEF DEBUGMODE if TLogging.DL >= 0 then Console.WriteLine('TPartnerEditUIConnector.LoadData: Before Calculations.DeterminePartnerLocationsDateStatus');$ENDIF
                         Calculations.DeterminePartnerLocationsDateStatus((DataSet)FPartnerEditScreenDS);
                         LocationPK = Calculations.DetermineBestAddress((DataSet)FPartnerEditScreenDS);
                     }
                     else
                     {
                         // Only count
-                        // $IFDEF DEBUGMODE if TLogging.DL >= 0 then Console.WriteLine('TPartnerEditUIConnector.LoadData: Before Calculations.CalculateTabCountsAddresses');$ENDIF
                         Calculations.CalculateTabCountsAddresses(FPartnerEditScreenDS.PPartnerLocation,
                             out ItemsCountAddresses,
                             out ItemsCountAddressesActive);
@@ -577,12 +520,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             FPartnerEditScreenDS.DisableConstraint("FKPerson4");
 
                             // points to PUnit
-#if DEBUGMODE
-                            if (TLogging.DL >= 9)
-                            {
-                                Console.WriteLine("Disabled Constraints in Typed DataSet PartnerEditTDS.");
-                            }
-#endif
+                            TLogging.LogAtLevel(9, "Disabled Constraints in Typed DataSet PartnerEditTDS.");
                             PPersonAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
 
                             if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
@@ -762,7 +700,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpPersonnelIndividualData))
                     {
                         FPartnerEditScreenDS.Merge(TIndividualDataWebConnector.GetData(FPartnerKey, TIndividualDataItemEnum.idiSummary));
-//Console.WriteLine("FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count: " + FPartnerEditScreenDS.Tables["SummaryData"].Rows.Count.ToString());
+//                      Console.WriteLine("FPartnerEditScreenDS.PDataLabelValuePartner.Rows.Count: " + FPartnerEditScreenDS.Tables["SummaryData"].Rows.Count.ToString());
                     }
 
                     #endregion
@@ -789,14 +727,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
                     else
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 6)
-                        {
-                            Console.WriteLine(
-                                "Passed in FKeyForSelectingPartnerLocation.SiteKey and FKeyForSelectingPartnerLocation.LocationKey: " +
-                                FKeyForSelectingPartnerLocation.SiteKey.ToString() + "/" + FKeyForSelectingPartnerLocation.LocationKey.ToString());
-                        }
-#endif
+//                      TLogging.LogAtLevel(6, "Passed in FKeyForSelectingPartnerLocation.SiteKey and FKeyForSelectingPartnerLocation.LocationKey: " +
+//                          FKeyForSelectingPartnerLocation.SiteKey.ToString() + "/" + FKeyForSelectingPartnerLocation.LocationKey.ToString());
 
                         MiscellaneousDataDR.SelectedSiteKey = FKeyForSelectingPartnerLocation.SiteKey;
                         MiscellaneousDataDR.SelectedLocationKey = FKeyForSelectingPartnerLocation.LocationKey;
@@ -1056,12 +988,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 PartnerRow.StatusChange = CreationDate;
                 #region Partner Types
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine("GetDataNewPartner: before PartnerClass switch");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before PartnerClass switch");
 
                 switch (APartnerClass)
                 {
@@ -1070,12 +997,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         PersonFamilyDT = PFamilyAccess.LoadByPrimaryKey(AFamilyPartnerKey, ReadTransaction);
 
                         // Create DataRow for PPerson using the default values for all DataColumns
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("GetDataNewPartner: before adding Person DataRow");
-                        }
-#endif
+                        TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding Person DataRow");
+
                         PersonRow = FPartnerEditScreenDS.PPerson.NewRowTyped(true);
                         PersonRow.PartnerKey = FPartnerKey;
                         PersonRow.DateCreated = CreationDate;
@@ -1110,12 +1033,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         break;
 
                     case TPartnerClass.FAMILY:
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("GetDataNewPartner: before adding Family DataRow");
-                        }
-#endif
+                        TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding Family DataRow");
 
                         // Create DataRow for PFamily using the default values for all DataColumns
                         FamilyRow = FPartnerEditScreenDS.PFamily.NewRowTyped(true);
@@ -1262,12 +1180,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 PartnerRow.AddresseeTypeCode = TSharedAddressHandling.GetDefaultAddresseeType(APartnerClass);
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine("GetDataNewPartner: before adding new Partner DataRow");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding new Partner DataRow");
 
                 // Add DataRow for PPartner
                 FPartnerEditScreenDS.PPartner.Rows.Add(PartnerRow);
@@ -1280,14 +1193,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                      * address of the new Person and gets deleted there as soon as copying is
                      * done)
                      */
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(
-                            "Getting Family Address - AFamilyPartnerKey: " + AFamilyPartnerKey.ToString() + "; AFamilyLocationKey: " +
-                            AFamilyLocationKey.ToString());
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "Getting Family Address - AFamilyPartnerKey: " + AFamilyPartnerKey.ToString() + "; AFamilyLocationKey: " + AFamilyLocationKey.ToString());
                     TPPartnerAddressAggregate.LoadByPrimaryKey(FPartnerEditScreenDS,
                         AFamilyPartnerKey,
                         AFamilySiteKey,
@@ -1295,23 +1201,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         ReadTransaction);
 
                     // Copy Special Types from the PERSON'S FAMILY to the PERSON
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("GetDataNewPartner: before loading Special Types from FAMILY");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before loading Special Types from FAMILY");
 
                     GetPartnerTypesForNewPartnerFromFamily(AFamilyPartnerKey, ReadTransaction);
-
-#if DEBUGMODE
-                    if ((TLogging.DL >= 7) && (FPartnerEditScreenDS.PPartnerType.Rows.Count > 0))
-                    {
-                        Console.WriteLine(
-                            "GetDataNewPartner: after loading Special Types from FAMILY. Rows[0].RowState: " +
-                            FPartnerEditScreenDS.PPartnerType.Rows[0].RowState.ToString());
-                    }
-#endif
 
                     /*
                      * Create Relationship between Family and Person
@@ -1445,14 +1337,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
                 else
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(
-                            this.GetType().FullName + ".GetDataPartnerTypesInternal: loading Partner Types for Partner " + FPartnerKey.ToString() +
-                            "...");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataPartnerTypesInternal: loading Partner Types for Partner " + FPartnerKey.ToString() + "...");
                     try
                     {
                         PartnerTypesDT = PPartnerTypeAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
@@ -1469,12 +1354,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(this.GetType().FullName + ".GetDataPartnerTypesInternal: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataPartnerTypesInternal: committed own transaction.");
                 }
             }
             return PartnerTypesDT;
@@ -1601,13 +1481,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 else
                 {
                     // Find all Persons that belong to the Family
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(
-                            this.GetType().FullName + ".GetFamilyMembersInternal: loading Persons for Family " + AFamilyPartnerKey.ToString() + "...");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetFamilyMembersInternal: loading Persons for Family " + AFamilyPartnerKey.ToString() + "...");
+
                     TmpDS = new DataSet();
                     FamilyPersonsDT = new PPersonTable();
                     TmpDS.Tables.Add(FamilyPersonsDT);
@@ -1713,12 +1588,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(this.GetType().FullName + ".GetFamilyMembersInternal: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetFamilyMembersInternal: committed own transaction.");
                 }
             }
             return PartnerTypeFamilyMembersDT;
@@ -1748,13 +1618,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
                 else
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(
-                            this.GetType().FullName + ".GetPartnerInterestsInternal: loading Interests for Partner " + FPartnerKey.ToString() + "...");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetPartnerInterestsInternal: loading Interests for Partner " + FPartnerKey.ToString() + "...");
                     try
                     {
                         InterestDT = PPartnerInterestAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
@@ -1771,12 +1635,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(this.GetType().FullName + ".GetPartnerInterestsInternal: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetPartnerInterestsInternal: committed own transaction.");
                 }
             }
             return InterestDT;
@@ -1809,13 +1668,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 // FPartnerKey, ReadTransaction);
                 else
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(
-                            this.GetType().FullName + ".GetInterestsInternal: loading Interests for Partner " + FPartnerKey.ToString() + "...");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetInterestsInternal: loading Interests for Partner " + FPartnerKey.ToString() + "...");
                     try
                     {
                         InterestDT = PInterestAccess.LoadAll(ReadTransaction);
@@ -1832,12 +1685,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(this.GetType().FullName + ".GetInterestsInternal: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetInterestsInternal: committed own transaction.");
                 }
             }
             return InterestDT;
@@ -1958,47 +1806,26 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 if (AResponseDS != null)
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
-                    }
-#endif
+//                  TLogging.LogAtLevel(8, "AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
 
                     if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
-                                AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
-                                AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
-                        }
-#endif
+//                      TLogging.LogAtLevel(8, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+//                          AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
+//                          AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
                     }
 
                     // AResponseDS is present: make a local copy and set AResponseDS to nil
                     TmpResponseDS = new PartnerAddressAggregateTDS(MPartnerConstants.PARTNERADDRESSAGGREGATERESPONSE_DATASET);
                     TmpResponseDS.Merge(AResponseDS);
                     AResponseDS = null;
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("TmpResponseDS.Tables.Count: " + TmpResponseDS.Tables.Count.ToString());
-                    }
-#endif
+//                  TLogging.LogAtLevel(8, "TmpResponseDS.Tables.Count: " + TmpResponseDS.Tables.Count.ToString());
 
                     if (TmpResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
-                                TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() +
-                                "; Rows.Count: " +
-                                TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
-                        }
-#endif
+//                      TLogging.LogAtLevel(8, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+//                          TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() +
+//                          "; Rows.Count: " + TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
                     }
                 }
 
@@ -2039,26 +1866,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             if (SubmitChangesAddressResult == TSubmitChangesResult.scrInfoNeeded)
                             {
                                 AResponseDS = (DataSet)TmpResponseDS;
-#if DEBUGMODE
-                                if (TLogging.DL >= 8)
-                                {
-                                    Console.WriteLine("AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
-                                }
-#endif
+//                              TLogging.LogAtLevel(8, "AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
 
                                 if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                                 {
-#if DEBUGMODE
+//                                  TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+//                                      AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
                                     if (TLogging.DL >= 8)
                                     {
-                                        Console.WriteLine(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
-                                            AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
-                                    }
-#endif
-#if DEBUGMODE
-                                    if (AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count > 0)
-                                    {
-                                        if (TLogging.DL >= 8)
+                                        if (AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count > 0)
                                         {
                                             Console.WriteLine(
                                                 MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + "[0].AnswerProcessedClientSide: " +
@@ -2067,23 +1883,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                                                                                             ]))[0].AnswerProcessedClientSide.ToString());
                                         }
                                     }
-#endif
                                 }
 
                                 if (AResponseDS.Tables.Contains(MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME))
                                 {
-#if DEBUGMODE
+//                                  TLogging.LogAtLevel(8,  MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " +
+//                                      AResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString());
                                     if (TLogging.DL >= 8)
                                     {
-                                        Console.WriteLine(
-                                            MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " +
-                                            AResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString());
-                                    }
-#endif
-#if DEBUGMODE
-                                    if (AResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count > 0)
-                                    {
-                                        if (TLogging.DL >= 8)
+                                        if (AResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count > 0)
                                         {
                                             Console.WriteLine(
                                                 MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + "[0].AnswerProcessedClientSide: " +
@@ -2094,7 +1902,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                                 ToString());
                                         }
                                     }
-#endif
                                 }
                             }
                         }
@@ -2128,12 +1935,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 6)
-                        {
-                            Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Before check for new Partner for Recent Partner handling...");
-                        }
-#endif
+                        TLogging.LogAtLevel(6, "TPartnerEditUIConnector.SubmitChanges: Before check for new Partner for Recent Partner handling...");
 
                         // Check if this is a new Partner
                         if ((AInspectDS.Tables.Contains(PPartnerTable.GetTableName()))
@@ -2142,12 +1944,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             // Partner is new Partner > add to list of recent partners. (If the
                             // Partner was not new then this was already done in LoadData.)
                             TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true, TLastPartnerUse.lpuMailroomPartner);
-#if DEBUGMODE
-                            if (TLogging.DL >= 6)
-                            {
-                                Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Set Partner as Recent Partner.");
-                            }
-#endif
+                            TLogging.LogAtLevel(6, "TPartnerEditUIConnector.SubmitChanges: Set Partner as Recent Partner.");
                         }
 
                         if (TLogging.DebugLevel >= 4)
@@ -2162,22 +1959,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         /* $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('Location[0] LocationKey: ' + FSubmissionDS.PLocation[0].LocationKey.ToString + '; PartnerLocation[0] LocationKey: ' +
                          *FSubmissionDS.PPartnerLocation[0].LocationKey.ToString);$ENDIF */
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Transaction committed!");
-                        }
-#endif
+                        TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChanges: Transaction committed!");
                     }
                     else
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Transaction ROLLED BACK!");
-                        }
-#endif
+                        TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChanges: Transaction ROLLED BACK!");
                     }
                 }
                 catch (Exception e)
@@ -2192,12 +1979,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
             else
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("AInspectDS = nil!");
-                }
-#endif
+                TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChanges: AInspectDS = nil!");
                 SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
             }
 
@@ -2213,12 +1995,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TSubmitChangesResult SubmissionResult;
 
             AVerificationResult = null;
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + ".SubmitChangesAddresses: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
+//          TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SubmitChangesAddresses: Instance hash is " + this.GetHashCode().ToString());
 
             if (AInspectDS != null)
             {
@@ -2244,13 +2021,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         if (AddedPartnerLocationsDV.Count > 0)
                         {
                             // New PPartnerLocation exists
-#if DEBUGMODE
-                            if (TLogging.DL >= 7)
-                            {
-                                Console.WriteLine(
-                                    this.GetType().FullName + ".SubmitChangesAddresses: New PPartnerLocation or changed PPartnerLocation exists.");
-                            }
-#endif
+                            TLogging.LogAtLevel(7,
+                                "TPartnerEditUIConnector.SubmitChangesAddresses: New PPartnerLocation or changed PPartnerLocation exists.");
 
                             if (AInspectDS.PPartner != null)
                             {
@@ -2261,14 +2033,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     // because the DataStore should do that anyway when the PPartner
                                     // record is saved, but just to be sure it happens...)
                                     AInspectDS.PPartner[0].DateModified = DateTime.Today;
-#if DEBUGMODE
-                                    if (TLogging.DL >= 7)
-                                    {
-                                        Console.WriteLine(
-                                            this.GetType().FullName +
-                                            ".SubmitChangesAddresses: updated PPartner's DateModified to today (PPartner record was present).");
-                                    }
-#endif
+//                                  TLogging.LogAtLevel(7,  "TPartnerEditUIConnector.SubmitChangesAddresses: updated PPartner's DateModified to today (PPartner record was present).");
                                 }
                             }
                             else
@@ -2281,38 +2046,20 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     ASubmitChangesTransaction);
                                 PartnerDT[0].DateModified = DateTime.Today;
                                 AInspectDS.Merge(PartnerDT);
-#if DEBUGMODE
-                                if (TLogging.DL >= 7)
-                                {
-                                    Console.WriteLine(
-                                        this.GetType().FullName +
-                                        ".SubmitChangesAddresses: updated PPartner's DateModified to today (PPartner record wasn't present).");
-                                }
-#endif
+//                              TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SubmitChangesAddresses: updated PPartner's DateModified to today (PPartner record wasn't present).");
                             }
                         }
                     }
                 }
 
-#if DEBUGMODE
-                if (TLogging.DL >= 9)
+                if (SubmissionResult == TSubmitChangesResult.scrError)
                 {
-                    if (SubmissionResult == TSubmitChangesResult.scrError)
-                    {
-                        Console.WriteLine(Messages.BuildMessageFromVerificationResult(
-                                "TPartnerEditUIConnector.SubmitChangesAddresses AVerificationResult: ", AVerificationResult));
-                    }
+//                  TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult("TPartnerEditUIConnector.SubmitChangesAddresses AVerificationResult: ", AVerificationResult));
                 }
-#endif
             }
             else
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("AInspectDS = nil!");
-                }
-#endif
+                TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChangesAddresses:AInspectDS = nil!");
                 SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
             }
 
@@ -2332,31 +2079,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             TSubmitChangesResult ReturnValue;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + ".SubmitChangesContinue: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
-#if DEBUGMODE
-            if (TLogging.DL >= 8)
-            {
-                Console.WriteLine("AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
-            }
-#endif
+//          TLogging.LogAtLevel(7, this.GetType().FullName + ".SubmitChangesContinue: Instance hash is " + this.GetHashCode().ToString());
+//          TLogging.LogAtLevel(8, "AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
 
-            if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
-            {
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
-                        AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
-                        AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
-                }
-#endif
-            }
-
+/*
+ *          if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
+ *          {
+ *              TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+ *                      AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
+ *                      AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
+ *          }
+ */
             ReturnValue = SubmitChanges(ref FSubmissionDS, ref AResponseDS, out AVerificationResult);
 
             if (AResponseDS == null)
@@ -2366,12 +2099,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                  * set by a Sequence) if we don't need any more information from the Client
                  * side (the SubmitChanges process is completed then).
                  */
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("SubmitChangesContinue:  AResponseDS = nil");
-                }
-#endif
+                TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChangesContinue:  AResponseDS = nil");
                 AInspectDS = FSubmissionDS;
             }
             else
@@ -2380,12 +2108,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                  * Don't send AInspectDS back to the Client - we are just requesting more
                  * information which is specified in AResponseDS.
                  */
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("SubmitChangesContinue:  AResponseDS <> nil");
-                }
-#endif
+                TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChangesContinue:  AResponseDS <> nil");
                 AInspectDS = null;
             }
 
@@ -2403,19 +2126,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             AVerificationResult = null;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
+//          TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SubmitChanges: Instance hash is " + this.GetHashCode().ToString());
             bool AllSubmissionsOK = true;
 
             if (AInspectDS != null)
             {
                 AVerificationResult = new TVerificationResultCollection();
 
-                // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('ASubmitChangesTransaction.IsolationLevel: ' + Enum(ASubmitChangesTransaction.IsolationLevel).ToString("G")) $ENDIF;
                 #region Partner
 
                 if (AInspectDS.Tables.Contains(PPartnerTable.GetTableName()))
@@ -2438,12 +2155,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         if (AInspectDS.PPartner.Rows[0].HasVersion(DataRowVersion.Original)
                             && (AInspectDS.PPartner.Rows != AInspectDS.PPartner.Rows[0][PPartnerTable.GetStatusCodeDBName(), DataRowVersion.Current]))
                         {
-#if DEBUGMODE
-                            if (TLogging.DL >= 7)
-                            {
-                                Console.WriteLine(this.GetType().FullName + ".SubmitChanges: StatusCode has changed");
-                            }
-#endif
+//                          TLogging.LogAtLevel(7, this.GetType().FullName + ".SubmitChanges: StatusCode has changed");
 
                             // StatusCode has changed, now perform FamilyMembers promotion
                             // (the FamilyMembersInfoForStatusChange DataTable won't be nil if
@@ -2484,12 +2196,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     if (AInspectDS.Tables.Contains(PartnerEditTDSFamilyMembersTable.GetTableName()))
                     {
                         FamilyMembersTableSubmit = AInspectDS.FamilyMembers;
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("FamilyMembersTableSubmit.Rows.Count: " + FamilyMembersTableSubmit.Rows.Count.ToString());
-                        }
-#endif
+//                      TLogging.LogAtLevel(7, "FamilyMembersTableSubmit.Rows.Count: " + FamilyMembersTableSubmit.Rows.Count.ToString());
 
                         if (!SpecialSubmitProcessingFamilyMembers(FamilyMembersTableSubmit, ASubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
@@ -2533,12 +2240,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                          * in p_foundation_deadline, p_foundation_proposal,
                          * p_foundation_proposal_detail)
                          */
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine(this.GetType().FullName + ".SubmitChanges: performing cascading delete for Foundation!");
-                        }
-#endif
+                        TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SubmitChanges: performing cascading delete for Foundation!");
                         PFoundationCascading.DeleteByPrimaryKey(FPartnerKey, ASubmitChangesTransaction, true);
 
                         // Now delete this DataRow to prevent SubmitChanges from trying to
@@ -2566,25 +2268,16 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 #endregion
 
                 // Note: Locations and PartnerLocations are done sepearately in SubmitChangesAddresses!
-#if DEBUGMODE
-                if (TLogging.DL >= 9)
+                if (AllSubmissionsOK == false)
                 {
-                    if (AllSubmissionsOK == false)
-                    {
-                        Console.WriteLine(Messages.BuildMessageFromVerificationResult("TPartnerEditUIConnector.SubmitChanges AVerificationResult: ",
-                                AVerificationResult));
-                    }
+                    TLogging.LogAtLevel(9,
+                        Messages.BuildMessageFromVerificationResult("TPartnerEditUIConnector.SubmitChanges AVerificationResult: ",
+                            AVerificationResult));
                 }
-#endif
             }
             else
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("AInspectDS = nil!");
-                }
-#endif
+                TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChanges AInspectDS = nil!");
                 AllSubmissionsOK = false;
             }
 
@@ -2606,19 +2299,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             AVerificationResult = null;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + ".SubmitChangesPersonnelData: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
+//          TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SubmitChangesPersonnelData: Instance hash is " + this.GetHashCode().ToString());
             bool AllSubmissionsOK = true;
 
             if (AInspectDS != null)
             {
                 AVerificationResult = new TVerificationResultCollection();
-
-                // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('ASubmitChangesTransaction.IsolationLevel: ' + Enum(ASubmitChangesTransaction.IsolationLevel).ToString("G")) $ENDIF;
 
                 #region Individual Data (Personnel Tab)
 
@@ -2643,26 +2329,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 #endregion
 
                 // Note: Locations and PartnerLocations are done sepearately in SubmitChangesAddresses!
-#if DEBUGMODE
-                if (TLogging.DL >= 9)
+                if (AllSubmissionsOK == false)
                 {
-                    if (AllSubmissionsOK == false)
-                    {
-                        Console.WriteLine(Messages.BuildMessageFromVerificationResult(
-                                "TPartnerEditUIConnector.SubmitChangesPersonnelData AVerificationResult: ",
-                                AVerificationResult));
-                    }
+//                  TLogging.LogAtLevel(9, Messages.BuildMessageFromVerificationResult(
+//                      "TPartnerEditUIConnector.SubmitChangesPersonnelData AVerificationResult: ", AVerificationResult));
                 }
-#endif
             }
             else
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("AInspectDS = nil!");
-                }
-#endif
+                TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChangesPersonnelData AInspectDS = null!");
                 AllSubmissionsOK = false;
             }
 
@@ -2720,14 +2395,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             PPartnerTable PartnerSaveDT = new PPartnerTable();
 
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(
-                    "SpecialSubmitProcessingPartnerStatusChange: processing " + APartnerTypeChangeFamilyMembersDT.Rows.Count.ToString() +
-                    " Partners...");
-            }
-#endif
+//          TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SpecialSubmitProcessingPartnerStatusChange: processing " + APartnerTypeChangeFamilyMembersDT.Rows.Count.ToString() + " Partners...");
 
             // Loop over all Family Members that were presented to the user
             for (Int16 Counter = 0; Counter <= APartnerTypeChangeFamilyMembersDT.Rows.Count - 1; Counter += 1)
@@ -2781,26 +2449,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             if (AInspectDS.Tables.Contains(PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable.GetTableName()))
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine(
-                        "SpecialSubmitProcessingPartnerTypes: " + PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable.GetTableName() +
-                        " passed in.");
-                }
-#endif
+//              TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SpecialSubmitProcessingPartnerTypes: " + PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable.GetTableName() + " passed in.");
                 FamilyChangePromotionTable = AInspectDS.PartnerTypeChangeFamilyMembersPromotion;
 
                 if (FamilyChangePromotionTable.Rows.Count > 0)
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(
-                            "SpecialSubmitProcessingPartnerTypes: " + PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable.GetTableName() +
-                            ".Rows.Count: " + FamilyChangePromotionTable.Rows.Count.ToString());
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "SpecialSubmitProcessingPartnerTypes: " + PartnerEditTDSPartnerTypeChangeFamilyMembersPromotionTable.GetTableName() +
+//                            ".Rows.Count: " + FamilyChangePromotionTable.Rows.Count.ToString());
                     PPartnerTypeSubmitTable = new PPartnerTypeTable();
 
                     for (int Counter = 0; Counter <= FamilyChangePromotionTable.Rows.Count - 1; Counter += 1)
@@ -2808,13 +2463,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         PartnerTypeDBExists =
                             PPartnerTypeAccess.Exists(FamilyChangePromotionTable[Counter].PartnerKey,
                                 FamilyChangePromotionTable[Counter].TypeCode, ASubmitChangesTransaction);
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine(
-                                "SpecialSubmitProcessingPartnerTypes: Row[" + Counter.ToString() + "]: DB Exists: " + PartnerTypeDBExists.ToString());
-                        }
-#endif
+//                      TLogging.LogAtLevel(7,  "SpecialSubmitProcessingPartnerTypes: Row[" + Counter.ToString() + "]: DB Exists: " + PartnerTypeDBExists.ToString());
 
                         if ((!PartnerTypeDBExists
                              && (FamilyChangePromotionTable[Counter].AddTypeCode))
@@ -2843,14 +2492,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                             if (FamilyChangePromotionTable[Counter].RemoveTypeCode)
                             {
-#if DEBUGMODE
-                                if (TLogging.DL >= 7)
-                                {
-                                    Console.WriteLine(
-                                        "SpecialSubmitProcessingPartnerTypes: Row[" + Counter.ToString() +
-                                        "]: Adding to PPartnerTypeSubmitTable - for deletion.");
-                                }
-#endif
+//                              TLogging.LogAtLevel(7, "SpecialSubmitProcessingPartnerTypes: Row[" + Counter.ToString() + "]: Adding to PPartnerTypeSubmitTable - for deletion.");
 
                                 // Mark Type for deletion so that it will be deleted in the DB
                                 PPartnerTypeSubmitRow.AcceptChanges();
@@ -2858,14 +2500,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             }
                             else
                             {
-#if DEBUGMODE
-                                if (TLogging.DL >= 7)
-                                {
-                                    Console.WriteLine(
-                                        "SpecialSubmitProcessingPartnerTypes: Row[" + Counter.ToString() +
-                                        "]: Adding to PPartnerTypeSubmitTable - for addition.");
-                                }
-#endif
+//                              TLogging.LogAtLevel(7, "SpecialSubmitProcessingPartnerTypes: Row[" + Counter.ToString() + "]: Adding to PPartnerTypeSubmitTable - for addition.");
 
                                 // Type is added, so it will be added in the DB
                             }
@@ -2880,7 +2515,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         }
 
         /// <summary>
-        /// todoComment
         /// </summary>
         /// <param name="AFieldPartnerKey"></param>
         /// <returns></returns>
@@ -2928,14 +2562,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
                 else
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(
-                            this.GetType().FullName + ".GetSubscriptionsInternal: loading Subscriptions for Partner " + FPartnerKey.ToString() +
-                            "...");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7,  "TPartnerEditUIConnector.GetSubscriptionsInternal: loading Subscriptions for Partner " + FPartnerKey.ToString() + "...");
                     try
                     {
                         SubscriptionDT = PSubscriptionAccess.LoadViaPPartnerPartnerKey(FPartnerKey, ReadTransaction);
@@ -2952,12 +2579,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(this.GetType().FullName + ".GetSubscriptionsInternal: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetSubscriptionsInternal: committed own transaction.");
                 }
             }
             return SubscriptionDT;
@@ -2990,14 +2612,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
                 else
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(
-                            this.GetType().FullName + ".GetRelationshipsInternal: loading Relationships for Partner " + FPartnerKey.ToString() +
-                            "...");
-                    }
-#endif
+//                  TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetRelationshipsInternal: loading Relationships for Partner " + FPartnerKey.ToString() + "...");
                     try
                     {
                         // load relationships where partner is involved with partner key or reciprocal
@@ -3036,12 +2651,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(this.GetType().FullName + ".GetRelationshipsInternal: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetRelationshipsInternal: committed own transaction.");
                 }
             }
             return RelationshipDT;
@@ -3082,12 +2692,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(this.GetType().FullName + ".GetDataLocalPartnerDataValuesInternal: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataLocalPartnerDataValuesInternal: committed own transaction.");
                 }
             }
 
@@ -3127,12 +2732,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
 
-#if DEBUGMODE
-            if (TLogging.DL >= 6)
-            {
-                TLogging.Log("Called HasPartnerLocationOtherPartnerReferences", TLoggingType.ToLogfile);
-            }
-#endif
+//          TLogging.LogAtLevel(6, "Called HasPartnerLocationOtherPartnerReferences", TLoggingType.ToLogfile);
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -3148,12 +2748,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine(this.GetType().FullName + ".HasPartnerLocationOtherPartnerReferences: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.HasPartnerLocationOtherPartnerReferences: committed own transaction.");
                 }
             }
             return ReturnValue;
@@ -3194,12 +2789,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 PPersonRow ChangePersonRow = (PPersonRow)FamilyPersonsDT.Rows.Find(new Object[] { AFamilyMembersTable[Counter].PartnerKey });
                 ChangePersonRow.FamilyId = DummyCounter;
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine("Person " + ChangePersonRow.PartnerKey.ToString() + ": changed OldFamilyID to Dummy " + DummyCounter.ToString());
-                }
-#endif
+//              TLogging.LogAtLevel(7, "Person " + ChangePersonRow.PartnerKey.ToString() + ": changed OldFamilyID to Dummy " + DummyCounter.ToString());
                 DummyCounter = DummyCounter - 1;
             }
 
@@ -3216,13 +2806,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 PPersonRow ChangePersonRow = (PPersonRow)FamilyPersonsDT.Rows.Find(new Object[] { AFamilyMembersTable[Counter].PartnerKey });
                 ChangePersonRow.FamilyId = AFamilyMembersTable[Counter].FamilyId;
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine(
-                        "Person " + ChangePersonRow.PartnerKey.ToString() + ": changed OldFamilyID to " + ChangePersonRow.FamilyId.ToString());
-                }
-#endif
+//              TLogging.LogAtLevel(7, "Person " + ChangePersonRow.PartnerKey.ToString() + ": changed OldFamilyID to " + ChangePersonRow.FamilyId.ToString());
             }
 
             // Save the changes

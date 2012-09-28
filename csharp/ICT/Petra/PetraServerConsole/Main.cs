@@ -72,14 +72,12 @@ public class TServer
             //
             // Uncomment the following lines to see which DLL's are loaded into the Default AppDomain at application start.
             // It can help in identifying which DLL's are loaded later in addition to those that were loaded at application start.
-            //
-            // $IFDEF DEBUGMODE
+
             // Console.WriteLine('Loaded Assemblies in AppDomain ' + Thread.GetDomain.FriendlyName + ' (at Server start):');
-            // foreach (Assembly tmpAssembly in Thread.GetDomain.GetAssemblies()) do
-            // begin
+            // foreach (Assembly tmpAssembly in Thread.GetDomain.GetAssemblies())
+            // {
             // Console.WriteLine(tmpAssembly.FullName);
-            // end;
-            // $ENDIF
+            // }
 
             new TAppSettingsManager();
 

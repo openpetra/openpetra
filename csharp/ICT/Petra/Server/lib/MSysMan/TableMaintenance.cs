@@ -40,32 +40,20 @@ namespace Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors
     public class TSysManTableMaintenanceUIConnector : TConfigurableMBRObject, ISysManUIConnectorsTableMaintenance
     {
         /// <summary>
-        /// Constructor.
+        /// Constructor
         /// </summary>
         public TSysManTableMaintenanceUIConnector() : base()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + " called.");
-            }
-#endif
+            TLogging.LogAtLevel(7, "TSysManTableMaintenanceUIConnector created.");
         }
 
-#if DEBUGMODE
         /// <summary>
         /// Destructor
         /// </summary>
         ~TSysManTableMaintenanceUIConnector()
         {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
-            }
+            TLogging.LogAtLevel(7, "TSysManTableMaintenanceUIConnector.FINALIZE called!");
         }
-#endif
-
-
 
         /// <summary>
         /// get the datatable from the database

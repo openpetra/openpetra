@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -85,15 +85,11 @@ namespace Ict.Petra.Server.App.Core.Security
             APetraPrincipal = new TPetraPrincipal(PetraIdentity, TGroupManager.LoadUserGroups(
                     AUserID), TTableAccessPermissionManager.LoadTableAccessPermissions(
                     AUserID), TModuleAccessManager.LoadUserModules(AUserID));
-#if DEBUGMODE
-            if (TLogging.DL >= 8)
-            {
-                Console.WriteLine("APetraPrincipal.IsTableAccessOK(tapMODIFY, 'p_person'): " +
-                    APetraPrincipal.IsTableAccessOK(TTableAccessPermission.tapMODIFY, "p_person").ToString());
 
-                // Console.ReadLine();
-            }
-#endif
+/*
+ *          TLogging.LogAtLevel (8, "APetraPrincipal.IsTableAccessOK(tapMODIFY, 'p_person'): " +
+ *                  APetraPrincipal.IsTableAccessOK(TTableAccessPermission.tapMODIFY, "p_person").ToString());
+ */
             return ReturnValue;
         }
 
@@ -129,12 +125,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("TUserManager.LoadUser: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TUserManager.LoadUser: committed own transaction.");
                 }
 
                 throw;
@@ -156,17 +147,10 @@ namespace Ict.Petra.Server.App.Core.Security
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("TUserManager.LoadUser: committed own transaction.");
-                        }
+                        TLogging.LogAtLevel(7, "TUserManager.LoadUser: committed own transaction.");
                     }
 
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("Exception occured while loading a s_user record: " + Exp.ToString());
-                    }
+                    TLogging.LogAtLevel(8, "Exception occured while loading a s_user record: " + Exp.ToString());
 
                     throw;
                 }
@@ -174,12 +158,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TLogging.DL >= 7)
-                    {
-                        Console.WriteLine("TUserManager.LoadUser: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TUserManager.LoadUser: committed own transaction.");
                 }
 
                 UserDR = UserDT[0];
@@ -291,13 +270,8 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     if (!SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults))
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine(Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ",
-                                    VerificationResults));
-                        }
-#endif
+                        TLogging.LogAtLevel(8,
+                            Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ", VerificationResults));
                     }
 
                     throw new EAccessDeniedException(StrUserIsRetired);
@@ -319,12 +293,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("TUserManager.PerformUserAuthentication: committed own transaction.");
-                        }
-#endif
+                        TLogging.LogAtLevel(7, "TUserManager.PerformUserAuthentication: committed own transaction.");
                     }
                 }
 
@@ -338,19 +307,13 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     if (PetraPrincipal.IsInGroup("SYSADMIN"))
                     {
-                        // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('SystemLoginStatus = false; is in SYSADMIN Group');$ENDIF
                         PetraPrincipal.LoginMessage =
                             String.Format(StrSystemDisabled1,
                                 SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine + StrSystemDisabled2Admin;
                     }
                     else
                     {
-                        // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('SystemLoginStatus = false; is NOT in SYSADMIN Group');$ENDIF
-
-                        if (!TLoginLog.AddLoginLogEntry(AUserID, "System disabled", true, out AProcessID, out VerificationResults))
-                        {
-                            // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
-                        }
+                        TLoginLog.AddLoginLogEntry(AUserID, "System disabled", true, out AProcessID, out VerificationResults);
 
                         throw new ESystemDisabledException(String.Format(StrSystemDisabled1,
                                 SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
@@ -413,12 +376,8 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (!SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults))
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine(Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ", VerificationResults));
-                    }
-#endif
+                    TLogging.LogAtLevel(8,
+                        Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ", VerificationResults));
                 }
 
                 PetraPrincipal.PetraIdentity.CurrentLogin = LoginDateTime;
@@ -427,17 +386,11 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (PetraPrincipal.IsInGroup("SYSADMIN"))
                 {
-                    if (!TLoginLog.AddLoginLogEntry(AUserID, "Successful  SYSADMIN", out AProcessID, out VerificationResults))
-                    {
-                        // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
-                    }
+                    TLoginLog.AddLoginLogEntry(AUserID, "Successful  SYSADMIN", out AProcessID, out VerificationResults);
                 }
                 else
                 {
-                    if (!TLoginLog.AddLoginLogEntry(AUserID, "Successful", out AProcessID, out VerificationResults))
-                    {
-                        // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine(BuildMessageFromVerificationResult('Error while trying to add a login entry: ', VerificationResults) );$ENDIF
-                    }
+                    TLoginLog.AddLoginLogEntry(AUserID, "Successful", out AProcessID, out VerificationResults);
                 }
 
                 PetraPrincipal.ProcessID = AProcessID;
@@ -452,9 +405,7 @@ namespace Ict.Petra.Server.App.Core.Security
         }
 
         /// <summary>
-        /// Causes an immediately reload of the UserInfo that is stored in a global
-        /// variable.
-        ///
+        /// Causes an immediately reload of the UserInfo that is stored in a global variable.
         /// </summary>
         /// <returns>void</returns>
         public static Ict.Petra.Shared.Security.TPetraPrincipal ReloadCachedUserInfo()
@@ -475,13 +426,11 @@ namespace Ict.Petra.Server.App.Core.Security
                     {
                         if (FReloadCachedUserInfoRetryCount < RELOADCACHEDUSERINFORETRIES)
                         {
-#if DEBUGMODE
                             {
                                 TLogging.Log(String.Format(
-                                        "ReloadCachedUserInfo: can't access DB Table because of Exclusive-Lock on it; will retry again soon! (Retry count: {0})",
+                                        "ReloadCachedUserInfo: can't access DB Table because of Exclusive-Lock; will retry again soon! (Retry count: {0})",
                                         FReloadCachedUserInfoRetryCount));
                             }
-#endif
 
                             // Wait a bit and then retry again (recursively calling this procedure!)
                             Thread.Sleep(5000);
@@ -507,16 +456,6 @@ namespace Ict.Petra.Server.App.Core.Security
                 TLogging.Log("Exception occured in ReloadCachedUserInfo: " + Exp.ToString());
                 throw;
             }
-
-#if DEBUGMODE
-            {
-                if (FReloadCachedUserInfoRetryCount > 0)
-                {
-                    TLogging.Log(String.Format("ReloadCachedUserInfo: resolved Exclusive-Lock situation after {0} retries!)",
-                            FReloadCachedUserInfoRetryCount));
-                }
-            }
-#endif
 
             // reset retry counter
             FReloadCachedUserInfoRetryCount = 0;

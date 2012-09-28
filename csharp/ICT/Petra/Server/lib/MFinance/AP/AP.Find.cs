@@ -37,8 +37,6 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MCommon;
-
-#region ManualCode
 using Ict.Petra.Shared.MFinance;
 using Ict.Common.Conversion;
 using Ict.Petra.Shared.MFinance.AP.Data;
@@ -47,7 +45,6 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
-#endregion ManualCode
 
 namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 {

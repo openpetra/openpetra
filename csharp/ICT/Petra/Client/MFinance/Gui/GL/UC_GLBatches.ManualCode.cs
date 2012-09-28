@@ -725,7 +725,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         void RefreshFilter(Object sender, EventArgs e)
         {
-            bool senderIsRadioButton = (sender is RadioButton);
+            int batchNumber = 0;
+        	bool senderIsRadioButton = (sender is RadioButton);
 
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
@@ -740,6 +741,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     return;
                 }
+            }
+
+            //Record the current batch
+            if (FPreviouslySelectedDetailRow != null)
+            {
+            	batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
             if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
@@ -854,12 +861,48 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                SelectRowInGrid(1, true);
+                //Select same row after refilter
+                if (batchNumber > 0)
+                {
+                	newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber);
+                }
+
+				SelectRowInGrid(newRowToSelectAfterFilter, true);
+                //grdDetails.SelectRowInGrid(newRowToSelectAfterFilter, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+                //InvokeFocusedRowChanged(newRowToSelectAfterFilter);
+
                 UpdateChangeableStatus(true);
                 ((TFrmGLBatch) this.ParentForm).EnableJournals();
             }
         }
 
+        private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
+        {
+        	int rowPos = 0;
+        	bool batchFound = false;
+        	
+        	foreach (DataRowView rowView in FMainDS.ABatch.DefaultView)
+        	{
+        		ABatchRow row = (ABatchRow)rowView.Row;
+        		
+        		if (row.LedgerNumber == ALedgerNumber && row.BatchNumber == ABatchNumber)
+        		{
+        			batchFound = true;
+        			break;
+        		}
+        		
+        		rowPos++;
+        	}
+        	
+        	if (!batchFound)
+        	{
+        		rowPos = 0;
+        	}
+        	
+        	//remember grid is out of sync with DataView by 1 because of grid header rows
+        	return rowPos + 1;
+        }
+        
         private void ImportFromSpreadSheet(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
