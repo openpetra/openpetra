@@ -378,8 +378,6 @@
   <property name="external.Poedit.msgcat" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgcat.exe')}" overwrite="false"/> 
   <property name="NUnitVersion" value="NUnit 2.6" overwrite="false"/> 
   <property name="external.NUnitConsole" value="${OP::GetFileInProgramDirectory('/' + NUnitVersion + '/bin/nunit-console-x86.exe')}" overwrite="false"/>
-  <property name="external.NUnitConsole.linux" value="/opt/NUnit-2.6.1/bin/nunit-console.exe" overwrite="false"/>
-
 </if>
 <if test="${'win32'!=platform::get-name()}">
   <if test="${'unix'==platform::get-name()}">
@@ -390,6 +388,7 @@
     <property name="external.Poedit.gettext" value="/usr/bin/xgettext" overwrite="false"/>
     <property name="external.Poedit.msgfmt" value="/usr/bin/msgfmt" overwrite="false"/>
     <property name="external.Poedit.msgcat" value="/usr/bin/msgcat" overwrite="false"/>     
+    <property name="external.NUnitConsole" value="/opt/NUnit-2.6.1/bin/nunit-console.exe" overwrite="false"/>
   </if>
   <if test="${'unix'!=platform::get-name()}">
     <echo>Unknown platform!</echo>

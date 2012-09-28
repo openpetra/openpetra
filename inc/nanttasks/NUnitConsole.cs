@@ -70,7 +70,7 @@ namespace Ict.Tools.NAntTasks
             if (!PlatformHelper.IsWindows)
             {
                 process.StartInfo.FileName = "mono";
-                process.StartInfo.Arguments = Project.Properties["external.NUnitConsole.linux"] + " \"" + FAssemblyName + "\"";
+                process.StartInfo.Arguments = Project.Properties["external.NUnitConsole"] + " \"" + FAssemblyName + "\"";
             }
             else
             {
