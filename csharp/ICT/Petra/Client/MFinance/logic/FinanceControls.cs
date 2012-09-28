@@ -722,6 +722,11 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <returns></returns>
         public static string GetLedgerNumberAndName(Int32 ALedgerNumber)
         {
+            if (ALedgerNumber <= 0)
+            {
+                return "None";
+            }
+
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
 
             foreach (DataRow row in Table.Rows)
@@ -732,6 +737,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 }
             }
 
+            TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList); // perhaps the user will fix the problem...
             return "ledger " + ALedgerNumber.ToString();
         }
 

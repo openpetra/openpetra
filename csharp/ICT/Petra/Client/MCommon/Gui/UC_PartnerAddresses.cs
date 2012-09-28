@@ -1230,16 +1230,10 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                 ApplySecurity();
             }
-#if DEBUGMODE
             catch (Exception Exp)
             {
-                MessageBox.Show("Exception occured in ActionNewRecord: " + Exp.ToString());
+                TLogging.Log("Exception occured in ActionNewRecord: " + Exp.ToString());
             }
-#else
-            catch (Exception)
-            {
-            }
-#endif
         }
 
         /// <summary>

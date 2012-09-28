@@ -223,13 +223,38 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// Logs a message. Output destination can be selected with the Loggingtype
-        /// flag.
+        /// Log if level is this high
+        /// </summary>
+        /// <param name="Level"></param>
+        /// <param name="Text"></param>
+        public static void LogAtLevel(Int32 Level, string Text)
+        {
+            if (TLogging.DebugLevel >= Level)
+            {
+                TLogging.Log(Text);
+            }
+        }
+
+        /// <summary>
+        /// Log if level is this high. Output destination can be selected with the Loggingtype flag.
+        /// </summary>
+        /// <param name="ALevel"></param>
+        /// <param name="AText"></param>
+        /// <param name="ALoggingType"></param>
+        public static void LogAtLevel(Int32 ALevel, string AText, TLoggingType ALoggingType)
+        {
+            if (TLogging.DebugLevel >= ALevel)
+            {
+                TLogging.Log(AText, ALoggingType);
+            }
+        }
+
+        /// <summary>
+        /// Logs a message. Output destination can be selected with the Loggingtype flag.
         /// </summary>
         /// <param name="Text">Log message</param>
-        /// <param name="ALoggingType">Determines the output destination. Note: More than one
-        /// output destination can be chosen!</param>
-        /// <returns>void</returns>
+        /// <param name="ALoggingType">Determines the output destination.
+        /// Note: More than one output destination can be chosen!</param>
         public static void Log(string Text, TLoggingType ALoggingType)
         {
             if (((ALoggingType & TLoggingType.ToConsole) != 0)
@@ -274,8 +299,8 @@ namespace Ict.Common
                 }
                 else
                 {
-                    // I found it was better to write the actual logging message, even if the logwriter
-                    // is not setup up correctly
+                    // I found it was better to write the actual logging message,
+                    // even if the logwriter is not setup up correctly
                     new TLogging("temp.log");
                     TLogWriter.Log(Text);
 

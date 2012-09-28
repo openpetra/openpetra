@@ -38,6 +38,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Common.Remoting.Shared;
 
 namespace Ict.Petra.Client.App.PetraClient
 {
@@ -251,19 +252,6 @@ namespace Ict.Petra.Client.App.PetraClient
 
         /// the main navigation form
         public static Form MainForm = null;
-
-        private void SwitchToClassicNavigation(object sender, EventArgs e)
-        {
-            MainForm = this;
-
-            if (TFrmMainWindow.MainForm == null)
-            {
-                TFrmMainWindow.MainForm = new TFrmMainWindow(null);
-            }
-
-            this.Hide();
-            TFrmMainWindow.MainForm.Show();
-        }
 
         private void ViewTasksAsTiles(object sender, EventArgs e)
         {

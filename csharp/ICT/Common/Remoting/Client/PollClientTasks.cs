@@ -121,7 +121,6 @@ namespace Ict.Common.Remoting.Client
                     // and it's AppDomain alive.
                     // The value of the AClientTasksDataTable parameter is always null, except when
                     // the Server has a queued ClientTask that the Client needs to read.
-                    // $IFDEF DEBUGMODE TLogging.Log('Calling PollClientTasks...' , [ToLogFile]); $ENDIF
                     ClientTasksDataTable = FRemotePollClientTasks.PollClientTasks();
 
                     if (ClientTasksDataTable != null)

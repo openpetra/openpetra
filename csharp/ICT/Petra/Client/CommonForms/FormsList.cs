@@ -437,12 +437,10 @@ namespace Ict.Petra.Client.CommonForms
                 // In case where the Form is already disposed by Windows we can't access
                 // its Handle anymore, so just return the Type in this case.
                 ReturnValue = AForm.GetType().ToString();
-#if DEBUGMODE
                 MessageBox.Show(
                     "TFormsList.GetKeyForForm: Form of Type '" + ReturnValue.ToString() + "' is already Disposed!" + "\r\n" +
                     "This is a programmer error - a Form needs to be closed and removed from the FormsList before it may be Disposed!!!" + "\r\n" +
-                    "(Disposing is also only necessary for Forms shown with ShowDialog.)", "DEVELOPER MESSAGE");
-#endif
+                    "(Disposing is only necessary for Forms shown with ShowDialog.)", "DEVELOPER MESSAGE");
             }
             catch (Exception)
             {

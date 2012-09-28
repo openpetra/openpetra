@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -989,7 +989,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
                 {
-                    MessageBox.Show(e.ToString(), "DEBUGMODE: Invalid Selection");
+                    MessageBox.Show(e.ToString(), "DEBUG: Invalid Selection");
 
                     // todo: use the verification tools from Christian
                     MessageBox.Show(e.Message, "Invalid Selection");

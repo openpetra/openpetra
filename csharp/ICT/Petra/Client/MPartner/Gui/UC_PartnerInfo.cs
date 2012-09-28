@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -775,9 +775,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 catch (Exception Exp)
                 {
                     TLogging.Log("Exception in TUC_PartnerInfo.UpdateUI: " + Exp.ToString());
-#if DEBUGMODE
-                    MessageBox.Show("Exception in TUC_PartnerInfo.UpdateUI: " + Exp.ToString());
-#endif
                 }
             }
         }

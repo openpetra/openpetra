@@ -1014,7 +1014,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                         AddressesOrRelationsChanged = true;
                     }
 
-                    // $IFDEF DEBUGMODE if SubmitDS = nil then MessageBox.Show('SubmitDS = nil!'); $ENDIF
 #if DATASETDEBUGGING
                     TLogging.Log("Before submitting data to the Server. Client DataSet: " + SubmitDS.GetXml());
 #endif

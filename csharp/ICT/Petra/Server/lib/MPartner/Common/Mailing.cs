@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,12 +79,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if (APartnerKey > 0)
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("TMailing.GetPartnerLocations: Checking access to Partner.");
-                }
-#endif
+                TLogging.LogAtLevel(8, "TMailing.GetPartnerLocations: Checking access to Partner.");
 
                 if (TSecurity.CanAccessPartnerByKey(APartnerKey, false) ==
                     TPartnerAccessLevelEnum.palGranted)
@@ -158,25 +153,12 @@ namespace Ict.Petra.Server.MPartner.Common
                             PPartnerLocationTable.GetTableDBName(),
                             ReadTransaction,
                             parameters.ToArray());
-
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("TMailing.GetPartnerLocations:  FillDataSet.Tables.Count: " + FillDataSet.Tables.Count.ToString());
-                        }
-#endif
+//                      TLogging.LogAtLevel(7, "TMailing.GetPartnerLocations:  FillDataSet.Tables.Count: " + FillDataSet.Tables.Count.ToString());
                         FillDataSet.Tables.Remove(APartnerLocations);
 
                         if (APartnerLocations.Rows.Count > 0)
                         {
-#if DEBUGMODE
-                            if (TLogging.DL >= 7)
-                            {
-                                Console.WriteLine(
-                                    "TMailing.GetPartnerLocations: Found " + APartnerLocations.Rows.Count.ToString() +
-                                    " PartnerLocations found for Partner " + APartnerKey.ToString() + ".");
-                            }
-#endif
+//                          TLogging.LogAtLevel(7, "TMailing.GetPartnerLocations: Found " + APartnerLocations.Rows.Count.ToString() + " PartnerLocations found for Partner " + APartnerKey.ToString() + ".");
                         }
                         else
                         {
@@ -185,13 +167,7 @@ namespace Ict.Petra.Server.MPartner.Common
                              * That shouldn't happen with existing Partners, but if it does (eg. non-existing
                              * PartnerKey passed in) we return an empty Typed DataTable.
                              */
-#if DEBUGMODE
-                            if (TLogging.DL >= 7)
-                            {
-                                Console.WriteLine(
-                                    "TMailing.GetPartnerLocations: No PartnerLocations found for Partner " + APartnerKey.ToString() + "!");
-                            }
-#endif
+//                          TLogging.LogAtLevel(7, "TMailing.GetPartnerLocations: No PartnerLocations found for Partner " + APartnerKey.ToString() + "!");
                             APartnerLocations = new PPartnerLocationTable();
                         }
                     }
@@ -200,12 +176,7 @@ namespace Ict.Petra.Server.MPartner.Common
                         if (NewTransaction)
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                            if (TLogging.DL >= 7)
-                            {
-                                Console.WriteLine("TMailing.GetPartnerLocations: committed own transaction.");
-                            }
-#endif
+                            TLogging.LogAtLevel(7, "TMailing.GetPartnerLocations: committed own transaction.");
                         }
                     }
 
@@ -213,12 +184,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 }
                 else
                 {
-#if DEBUGMODE
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("TMailing.GetPartnerLocations: Access to Partner DENIED!");
-                    }
-#endif
+                    TLogging.LogAtLevel(8, "TMailing.GetPartnerLocations: Access to Partner DENIED!");
 
                     // Petra Security prevents us from accessing this Partner -> return false;
                     return false;
@@ -271,13 +237,8 @@ namespace Ict.Petra.Server.MPartner.Common
                     if (TMailing.GetPartnerLocations(APartnerKey, false,
                             true, true, true, out PartnerLocationDT))
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine(
-                                "TMailing.GetPartnersBestLocationData: processing " + PartnerLocationDT.Rows.Count.ToString() + " Locations...");
-                        }
-#endif
+                        TLogging.LogAtLevel(8,
+                            "TMailing.GetPartnersBestLocationData: processing " + PartnerLocationDT.Rows.Count.ToString() + " Locations...");
 
                         if (PartnerLocationDT.Rows.Count > 1)
                         {
@@ -293,14 +254,7 @@ namespace Ict.Petra.Server.MPartner.Common
                             return false;
                         }
 
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine(
-                                "TMailing.GetPartnersBestLocationData: BestAddressPK: " + ABestAddressPK.SiteKey.ToString() + ", " +
-                                ABestAddressPK.LocationKey.ToString());
-                        }
-#endif
+//                      TLogging.LogAtLevel(8, "TMailing.GetPartnersBestLocationData: BestAddressPK: " + ABestAddressPK.SiteKey.ToString() + ", " + ABestAddressPK.LocationKey.ToString());
                         APartnerLocationDR = (PPartnerLocationRow)PartnerLocationDT.Rows.Find(
                             new object[] { APartnerKey, ABestAddressPK.SiteKey, ABestAddressPK.LocationKey });
 
@@ -328,12 +282,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("TMailing.GetPartnersBestLocationData: committed own transaction.");
-                        }
-#endif
+                        TLogging.LogAtLevel(8, "TMailing.GetPartnersBestLocationData: committed own transaction.");
                     }
                 }
             }
