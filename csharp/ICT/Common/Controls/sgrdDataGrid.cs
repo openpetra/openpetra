@@ -1368,7 +1368,10 @@ namespace Ict.Common.Controls
         /// select a row in the grid.  By default generate the event(s) for focus changes.
         public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit, Boolean ASuppressEvents = false)
         {
-            if (Rows.Count <= 1) return;
+            if (Rows.Count <= 1)
+            {
+                return;
+            }
 
             if (ASelectBorderIfOutsideLimit)
             {
@@ -1393,7 +1396,7 @@ namespace Ict.Common.Controls
 
                 // scroll to the row
                 this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
-                
+
                 // Turn on selection events again
                 this.Selection.FocusStyle = FocusStyle.Default;
             }

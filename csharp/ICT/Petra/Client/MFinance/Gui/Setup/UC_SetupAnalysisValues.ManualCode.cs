@@ -148,9 +148,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         public int Count
         {
-            get 
+            get
             {
-                return grdDetails.Rows.Count - 1; 
+                return grdDetails.Rows.Count - 1;
             }
         }
     }
