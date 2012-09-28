@@ -137,7 +137,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // Having changed the sort order we need to put the correct details in the panel (assuming we have a row to display)
-            SelectRowInGrid(1, true);
+            SelectRowInGrid(1);
         }
 
         /// <summary>
@@ -441,7 +441,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ADailyExchangeRate.DefaultView);
 
-            SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1, true);
+            SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
 
             Control[] pnl = this.Controls.Find("pnlDetails", true);
 
@@ -718,7 +718,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // Now make sure to select the row that was currently selected when we started the Save operation
-            SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1, true);
+            SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1);
         }
     }
 }

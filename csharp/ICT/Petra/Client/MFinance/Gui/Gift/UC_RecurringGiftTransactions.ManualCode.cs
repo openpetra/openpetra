@@ -731,7 +731,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
 
-                SelectRowInGrid(FMainDS.ARecurringGiftDetail.Rows.Count - 1, true);
+                SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
                 //int newRowIndex = FMainDS.ARecurringGiftDetail.Rows.Count - 1;
 
                 //SelectDetailRowByDataTableIndex(newRowIndex);
@@ -774,7 +774,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
 
-                SelectRowInGrid(FMainDS.ARecurringGiftDetail.Rows.Count - 1, true);
+                SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
                 //int newRowIndex = FMainDS.ARecurringGiftDetail.Rows.Count - 1;
 
                 //SelectDetailRowByDataTableIndex(newRowIndex);
