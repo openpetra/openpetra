@@ -911,7 +911,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private AGiftDetailRow NewGift()
         {
-            GiftBatchTDSAGiftDetailRow newRow = null;
+        	GiftBatchTDSAGiftDetailRow newRow = null;
 
             if (ValidateAllData(true, true))
             {

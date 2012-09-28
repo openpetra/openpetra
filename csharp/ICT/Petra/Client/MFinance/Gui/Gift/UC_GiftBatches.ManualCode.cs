@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
@@ -117,6 +118,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FMainDS.AcceptChanges();
 
+            FMainDS.AGiftBatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
+                                                                AGiftBatchTable.GetLedgerNumberDBName(),
+                                                                AGiftBatchTable.GetBatchNumberDBName()
+                                                               );
+            
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
@@ -158,6 +164,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         void RefreshFilter(Object sender, EventArgs e)
         {
             bool senderIsRadioButton = (sender is RadioButton);
+            int batchNumber = 0;
+            int newRowToSelectAfterFilter = 1;
 
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
@@ -172,6 +180,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     return;
                 }
+            }
+            
+            //Record the current batch
+            if (FPreviouslySelectedDetailRow != null)
+            {
+            	batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
             if (FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).SaveChanges())
@@ -280,12 +294,50 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (FBatchLoaded == true)
             {
-                SelectRowInGrid(1, true);
+                //Select same row after refilter
+                if (batchNumber > 0)
+                {
+                	newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber);
+                }
+
+                //SelectDetailRowByDataTableIndex(newRowToSelectAfterFilter);
+                grdDetails.SelectRowInGrid(newRowToSelectAfterFilter, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+                InvokeFocusedRowChanged(newRowToSelectAfterFilter);
             }
 
             UpdateChangeableStatus();
         }
 
+        
+        private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
+        {
+        	int rowPos = 0;
+        	bool batchFound = false;
+        	
+        	foreach (DataRowView rowView in FMainDS.AGiftBatch.DefaultView)
+        	{
+        		AGiftBatchRow row = (AGiftBatchRow)rowView.Row;
+        		
+        		if (row.LedgerNumber == ALedgerNumber && row.BatchNumber == ABatchNumber)
+        		{
+        			batchFound = true;
+        			break;
+        		}
+        		
+        		rowPos++;
+        	}
+        	
+        	if (!batchFound)
+        	{
+        		rowPos = 0;
+        	}
+        	
+        	//remember grid is out of sync with DataView by 1 because of grid header rows
+        	return rowPos + 1;
+        }
+        
+        
+        
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
@@ -308,6 +360,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+                            if (cmbPeriod.SelectedIndex != 0)
+                            {
+                            	cmbPeriod.SelectedIndex = 0;
+                            }
                         }
                     }
                 }
