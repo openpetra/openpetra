@@ -77,20 +77,29 @@ public class TProcessPot
     /// <summary>
     /// Process the Pot-file for double ocurrences
     /// </summary>
-    /// <param name="ATemplateFile"></param>
-    public static void ProcessPot(string ATemplateFile)
+    public static void ProcessPot(string ATemplateFile, string AAnalizeResultsFolder)
     {
         Console.WriteLine("ATemplateFile= " + ATemplateFile);
-
-        string AAnalizeResultsFolder = Path.GetDirectoryName(ATemplateFile) + "\\analize-results";
 
         Console.WriteLine("AAnalizeResultsFolder= " + AAnalizeResultsFolder);
 
         Directory.CreateDirectory(AAnalizeResultsFolder);
 
-
         StreamReader sr = new StreamReader(ATemplateFile);
         Encoding enc = new UTF8Encoding(false);
+
+        StreamWriter swReadme = new StreamWriter(System.IO.Path.Combine(AAnalizeResultsFolder, "README.txt"), false, enc);
+
+        swReadme.WriteLine("This folder contains the files which are created analyzing the openpetra-template." + Environment.NewLine +
+            Environment.NewLine +
+            "The following files are generated:" + Environment.NewLine +
+            "analysissummary - contains a summary of the different item-types" + Environment.NewLine +
+            Environment.NewLine +
+            "firstoccurence - the first ocurrence of an item" + Environment.NewLine +
+            "firstoccurence_xword - the first ocurrence of all items consisting of only x word(s)" + Environment.NewLine +
+            Environment.NewLine +
+            "doubles - all items with their derivates (same item but with different additional characters.,:;&() or casing)");
+        swReadme.Close();
 
         StreamWriter sw_summary = new StreamWriter(System.IO.Path.Combine(AAnalizeResultsFolder, "analysissummary.txt"), false, enc);
         //contains the first ocurrence of an item
@@ -191,7 +200,6 @@ public class TProcessPot
 
                 AddItemToListWithAllItems(messageId, MessageId_Without, MessageId_Without_Upper, messageSource);
 
-
                 //check if item is already in contained in firstocurrences
                 //if not then add it to firstocurrences and add it to other files according to its number of words
                 if (!firstocurrences.Contains(MessageId_Without))
@@ -237,6 +245,7 @@ public class TProcessPot
                         //sw_firstoccurence.WriteLine(s);
                     }
                 }
+
                 //reset messageSource
                 messageSource = "";
             }
@@ -254,7 +263,7 @@ public class TProcessPot
         sw_firstoccurence3words.WriteLine(counterfirstocurrences_3words + " items have 3 words.");
         sw_firstoccurence4words.WriteLine(counterfirstocurrences_4words + " items have 4 words.");
         sw_firstoccurence5andmorewords.WriteLine(counterfirstocurrences_5andmorewords + " items have 5 or more words.");
- 
+
         int NumberOfItemsWithOneDerivate = 0;
         int NumberOfItemsWithTwoDerivates = 0;
         int NumberOfItemsWithThreeDerivates = 0;

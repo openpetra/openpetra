@@ -39,33 +39,17 @@ namespace Ict.Tools.GuidedTranslation
         {
             new TAppSettingsManager(false);
 
-            //enable execution without nant -> debugging easier
-            bool independentmode = false;
-
-            if (independentmode)
-            {
-                TLogging.Log("started GuidedTranslations in independent mode");
-            }
-
             try
             {
-                //if ((TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "processpot")))
-                if (true)
-                {
-                    string poFilePath;
+                string poFilePath = TAppSettingsManager.GetValue("poFile",
+                    TAppSettingsManager.ApplicationDirectory +
+                    "\\..\\..\\i18n\\template.pot");
+                string outputPath = TAppSettingsManager.GetValue("I18NAnalysisOutputDir",
+                    TAppSettingsManager.ApplicationDirectory +
+                    "\\..\\i18nAnalysis");
 
-                    if (independentmode)
-                    {
-                        poFilePath = "D:\\openpetra\\bzr\\work-improvetranslations\\i18n\\template.pot";
-                    }
-                    else
-                    {
-                        poFilePath = TAppSettingsManager.GetValue("poFile");
-                    }
-
-                    // start analysing all items
-                    TProcessPot.ProcessPot(poFilePath);
-                }
+                // start analysing all items
+                TProcessPot.ProcessPot(poFilePath, outputPath);
             }
             catch (Exception e)
             {

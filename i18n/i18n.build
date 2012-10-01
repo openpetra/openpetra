@@ -163,8 +163,9 @@ ENDLOCAL
 
 <target name="guidedTrans">
   <echo>start guided Translation</echo>
-  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>  
-  <ExecDotNet program="${dir.bin}/Ict.Tools.GuidedTranslation.exe" commandline="-poFile:${template.pot.file}&quot;"/>/>
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+  <mkdir dir="${I18NAnalysis.Output.dir}" failonerror="false"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GuidedTranslation.exe" commandline="-poFile:&quot;${template.pot.file}&quot; -I18NAnalysisOutputDir:&quot;${I18NAnalysis.Output.dir}&quot;"/>
 </target>
 
 
