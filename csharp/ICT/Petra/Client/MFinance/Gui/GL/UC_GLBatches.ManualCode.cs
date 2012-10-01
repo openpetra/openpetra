@@ -91,9 +91,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ShowData();
 
-            //not necessary for posted batches
-//            if (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
-//            {
             TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
                 out StartDateCurrentPeriod,
                 out EndDateLastForwardingPeriod,
@@ -101,11 +98,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
                 StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
-//            }
 
-            //dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
-            //dtpDetailDateEffective.SetMinimalDate(StartDateCurrentPeriod);
-            //txtDetailBatchControlTotal.Enabled = false;
+            //Set sort order
+			FMainDS.ABatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
+                                                ABatchTable.GetLedgerNumberDBName(),
+                                                ABatchTable.GetBatchNumberDBName()
+                                               );
+            
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -726,6 +725,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         void RefreshFilter(Object sender, EventArgs e)
         {
             int batchNumber = 0;
+            int newRowToSelectAfterFilter = 1;
         	bool senderIsRadioButton = (sender is RadioButton);
 
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)

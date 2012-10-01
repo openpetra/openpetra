@@ -36,7 +36,6 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
-using System.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -338,9 +337,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {
-            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+        	TLogging.Log("UpdateBatchPeriod");
+        	if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
             {
-                return;
+        		TLogging.Log("FPetraUtilsObject:" + (FPetraUtilsObject == null).ToString() + " - SuppressChangeDetection:" + (FPetraUtilsObject.SuppressChangeDetection).ToString());
+        		return;
             }
 
             try
@@ -360,8 +361,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
                             if (cmbPeriod.SelectedIndex != 0)
                             {
+                            	TLogging.Log("BatchPeriod has changed");
                             	cmbPeriod.SelectedIndex = 0;
                             }
+                        }
+                        else
+                        {
+							TLogging.Log("BatchPeriod hasn't changed");                        	
                         }
                     }
                 }
