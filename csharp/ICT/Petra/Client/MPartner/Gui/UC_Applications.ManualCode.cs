@@ -181,7 +181,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PmGeneralApplication.DefaultView);
 
-                SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1, true);
+                SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1);
             }
         }
 
@@ -228,7 +228,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PmGeneralApplication.DefaultView);
 
-                SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1, true);
+                SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1);
             }
         }
 
@@ -278,7 +278,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 //ShowDetails(FPreviouslySelectedDetailRow);
 
                 // AlanP Upgrade note... I think the previous, commented lines can be replaced with this...
-                SelectRowInGrid(rowIndex, true);
+                SelectRowInGrid(rowIndex);
 
                 DoRecalculateScreenParts();
 
@@ -506,28 +506,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (e.Row != -1)
             {
                 this.DeleteRow(this, null);
-            }
-        }
-
-        private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
-        {
-            if (grdDetails.Focused)
-            {
-                // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
-                FPetraUtilsObject.VerificationResultCollection.Clear();
-
-                if (!ValidateAllData(true, true))
-                {
-                    e.Cancel = true;
-                }
-            }
-            else
-            {
-                // This is needed because of a strange quirk in the Grid: if the user clicks with the Mouse to a different Row
-                // (not when using the keyboard!), then the Method 'FocusRowLeaving' gets called twice, the second time
-                // grdDetails.Focused is false. We need to Cancel in this case, otherwise the user can leave the Row with a
-                // mouse click on another Row although it contains invalid data!!!
-                e.Cancel = true;
             }
         }
 
