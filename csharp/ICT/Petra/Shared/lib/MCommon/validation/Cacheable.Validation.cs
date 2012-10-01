@@ -77,17 +77,20 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
 
-            // 'International Telephone Code' must be positive
-            ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatTelephoneCodeId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (!ARow.IsInternatTelephoneCodeNull())
             {
-                VerificationResult = TNumericalChecks.IsPositiveInteger(ARow.InternatTelephoneCode,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                // 'International Telephone Code' must be positive
+                ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatTelephoneCodeId];
+        
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    VerificationResult = TNumericalChecks.IsPositiveInteger(ARow.InternatTelephoneCode,
+                        ValidationControlsData.ValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+        
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
             }
 
             if (!ARow.IsTimeZoneMinimumNull()
