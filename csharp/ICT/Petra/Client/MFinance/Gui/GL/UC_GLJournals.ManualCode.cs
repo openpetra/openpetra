@@ -390,7 +390,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     transaction.Delete();
                 }
 
-                SelectRowInGrid(currentRowIndex, true);
+                SelectRowInGrid(currentRowIndex);
 
                 ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 FPetraUtilsObject.SetChangedFlag();
