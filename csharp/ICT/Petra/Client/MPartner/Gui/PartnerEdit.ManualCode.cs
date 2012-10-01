@@ -1014,7 +1014,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                         AddressesOrRelationsChanged = true;
                     }
 
-                    // $IFDEF DEBUGMODE if SubmitDS = nil then MessageBox.Show('SubmitDS = nil!'); $ENDIF
 #if DATASETDEBUGGING
                     TLogging.Log("Before submitting data to the Server. Client DataSet: " + SubmitDS.GetXml());
 #endif
@@ -1692,8 +1691,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit PartnerEditForm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(this);
 
-            PartnerEditForm.SetParameters(TScreenMode.smNew,
-                FPartnerClass, -1, -1, ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.CountryCode);
+            if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
+            {
+                PartnerEditForm.SetParameters(TScreenMode.smNew,
+                    FPartnerClass, -1, -1, ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.CountryCode);
+            }
+            else
+            {
+                PartnerEditForm.SetParameters(TScreenMode.smNew, FPartnerClass,
+                    -1, -1, String.Empty, String.Empty, false, FPartnerKey,
+                    ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.LocationKey,
+                    ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.SiteKey
+                    );
+            }
 
             PartnerEditForm.Show();
         }

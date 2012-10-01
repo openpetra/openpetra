@@ -225,9 +225,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ClearDetailControls()
         {
+            FPetraUtilsObject.DisableDataChangedEvent();
             txtDetailBatchDescription.Text = string.Empty;
             txtDetailBatchControlTotal.NumberValueDecimal = 0;
-            dtpDetailDateEffective.Date = DateTime.Today;
+            dtpDetailDateEffective.Date = FDefaultDate;
+            FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         /// <summary>
@@ -282,13 +284,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-            SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
-            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-
-            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1, true);
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
-
-            //FCurrentRow = FMainDS.ABatch.Rows.Count - 1;
 
             txtDetailBatchDescription.Text = "PLEASE ENTER DESCRIPTION";
             txtDetailBatchDescription.Focus();
@@ -297,6 +294,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //Enable the Journals if not already enabled
             ((TFrmGLBatch)ParentForm).EnableJournals();
+        }
+
+        private void UpdateJournalEffectiveDate()
+        {
+            //Load Journals in the background
+            ((TFrmGLBatch) this.ParentForm).LoadJournals();
+
+            foreach (DataRowView v in FMainDS.AJournal.DefaultView)
+            {
+                AJournalRow r = (AJournalRow)v.Row;
+
+                r.DateEffective = (DateTime)dtpDetailDateEffective.Date;
+            }
         }
 
         private void UpdateBatchPeriod(object sender, EventArgs e)
@@ -313,6 +323,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 DateTime dateValue;
 
                 string aDate = dtpDetailDateEffective.Date.ToString();
+
+                //If the effective date has changed, then update all journals
+                if (FPreviouslySelectedDetailRow.DateEffective != dtpDetailDateEffective.Date)
+                {
+                    FPreviouslySelectedDetailRow.DateEffective = dtpDetailDateEffective.Date.Value;
+                    UpdateJournalEffectiveDate();
+                }
 
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
@@ -407,7 +424,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     //Select and call the event that doesn't occur automatically
-                    InvokeFocusedRowChanged(newCurrentRowPos);
+                    SelectRowInGrid(newCurrentRowPos, true);
 
                     //If some row(s) still exist after deletion
                     if (grdDetails.Rows.Count < 2)
@@ -448,8 +465,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateTotals()
         {
+            //Below not needed as yet
             //txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
-            //FPreviouslySelectedDetailRow.BatchRunningTotal;
         }
 
         private bool SaveBatchForPosting()
@@ -547,8 +564,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     {
                         //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
                         // such that a removal of a row is not detected
-                        FDetailGridRowsCountPrevious++;
-                        InvokeFocusedRowChanged(newCurrentRowPos);
+                        SelectRowInGrid(newCurrentRowPos, true);
                     }
                     else
                     {
@@ -666,6 +682,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="rowIndex"></param>
         public void SelectByIndex(int rowIndex)
         {
+            // TODO: Alan noted on upgrade that this method could be replaced by SelectRowInGrid(rowIndex, true)
+            // This method actually never seems to be called
             if (rowIndex >= grdDetails.Rows.Count)
             {
                 rowIndex = grdDetails.Rows.Count - 1;
@@ -826,8 +844,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ABatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
-            FGridFilterChanged = true;
-
             if (grdDetails.Rows.Count < 2)
             {
                 ClearDetailControls();
@@ -838,8 +854,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-                InvokeFocusedRowChanged(1);
+                SelectRowInGrid(1, true);
                 UpdateChangeableStatus(true);
                 ((TFrmGLBatch) this.ParentForm).EnableJournals();
             }

@@ -36,6 +36,7 @@ using System.Reflection;
 using System.IO;
 using GNU.Gettext;
 using System.Xml;
+using CustomControl.OrientAbleTextControls;
 
 using Ict.Common;
 using Ict.Common.Controls;

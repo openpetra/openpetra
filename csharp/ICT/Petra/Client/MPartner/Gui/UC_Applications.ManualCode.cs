@@ -181,11 +181,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PmGeneralApplication.DefaultView);
 
-                SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1);
-                InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
+                SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1, true);
             }
         }
 
@@ -232,11 +228,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PmGeneralApplication.DefaultView);
 
-                SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1);
-                InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
+                SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1, true);
             }
         }
 
@@ -278,12 +270,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPetraUtilsObject.SetChangedFlag();
 
                 // temporarily reset selected row to avoid interference with validation
-                FPreviouslySelectedDetailRow = null;
-                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                grdDetails.SelectRowInGrid(rowIndex, true);
-                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
+                //FPreviouslySelectedDetailRow = null;
+                //grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+                //grdDetails.SelectRowInGrid(rowIndex, true);
+                //grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+                //FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                //ShowDetails(FPreviouslySelectedDetailRow);
+
+                // AlanP Upgrade note... I think the previous, commented lines can be replaced with this...
+                SelectRowInGrid(rowIndex, true);
 
                 DoRecalculateScreenParts();
 

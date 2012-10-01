@@ -97,7 +97,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
 
             if (grdDetails.Rows.Count <= 1)
             {
@@ -163,11 +162,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// add a new batch
+        /// add a new passport record
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void NewRow(System.Object sender, EventArgs e)
+        private void NewRecord(System.Object sender, EventArgs e)
         {
             this.CreateNewPmPassportDetails();
         }
@@ -192,38 +191,88 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PassportNumber = newName;
         }
 
-        private void DeleteRow(System.Object sender, EventArgs e)
+        private void DeleteRecord(Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            this.DeletePmPassportDetails();
+        }
+
+        /// <summary>
+        /// Performs checks to determine whether a deletion of the current
+        ///  row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(PmPassportDetailsRow ARowToDelete, ref string ADeletionQuestion)
+        {
+// TODO: perform a check if the value is already referenced somewhere (similar to what the commented-out code does)
+// Table referenced from: pm_document_file
+//            int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
+//                FPreviouslySelectedDetailRow.AnalysisTypeCode,
+//                FPreviouslySelectedDetailRow.AnalysisValue);
+//
+//            if (num > 0)
+//            {
+//                MessageBox.Show(Catalog.GetString(
+//                        "This value is already referenced and cannot be deleted."));
+//                return false;
+//            }
+
+            /*Code to execute before the delete can take place*/
+            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Passport record: '{0}'?"),
+                ARowToDelete.PassportNumber);
+            return true;
+        }
+
+        /// <summary>
+        /// Deletes the current row and optionally populates a completion message
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to delete</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        /// <returns>true if row deletion is successful</returns>
+        private bool DeleteRowManual(PmPassportDetailsRow ARowToDelete, out string ACompletionMessage)
+        {
+            bool deletionSuccessful = false;
+
+            // no message to be shown after deletion
+            ACompletionMessage = "";
+
+            try
             {
-                return;
+                ARowToDelete.Delete();
+                deletionSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                ACompletionMessage = ex.Message;
+                MessageBox.Show(ex.Message,
+                    "Deletion Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
 
-            if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this record ({0}).\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.PassportNumber), Catalog.GetString("Confirm Delete"),
-                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            return deletionSuccessful;
+        }
+
+        /// <summary>
+        /// Code to be run after the deletion process
+        /// </summary>
+        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
+        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
+        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        private void PostDeleteManual(PmPassportDetailsRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            DoRecalculateScreenParts();
+
+            if (grdDetails.Rows.Count <= 1)
             {
-                int rowIndex = grdDetails.SelectedRowIndex();
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
-
-                // temporarily reset selected row to avoid interference with validation
-                FPreviouslySelectedDetailRow = null;
-                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                grdDetails.SelectRowInGrid(rowIndex, true);
-                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-
-                DoRecalculateScreenParts();
-
-                if (grdDetails.Rows.Count <= 1)
-                {
-                    // hide details part and disable buttons if no record in grid (first row for headings)
-                    btnDelete.Enabled = false;
-                    pnlDetails.Visible = false;
-                }
+                // hide details part and disable buttons if no record in grid (first row for headings)
+                btnDelete.Enabled = false;
+                pnlDetails.Visible = false;
             }
         }
 
@@ -391,19 +440,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
-            NewRow(this, null);
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            if (e.Row != -1)
-            {
-                this.DeleteRow(this, null);
-            }
+            NewRecord(this, null);
         }
 
         private void ValidateDataDetailsManual(PmPassportDetailsRow ARow)

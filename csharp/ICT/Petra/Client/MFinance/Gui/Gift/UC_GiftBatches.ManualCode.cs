@@ -35,6 +35,8 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
+using System.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -68,6 +70,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
+            if ((FMainDS != null) && (FMainDS.AGiftBatch != null))
+            {
+                FMainDS.AGiftBatch.Rows.Clear();
+            }
+
             FPetraUtilsObject.DisableDataChangedEvent();
             LoadBatches(FLedgerNumber);
             FPetraUtilsObject.EnableDataChangedEvent();
@@ -266,8 +273,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.AGiftBatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
-            FGridFilterChanged = true;
-
             if (grdDetails.Rows.Count < 2)
             {
                 ClearControls();
@@ -275,8 +280,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (FBatchLoaded == true)
             {
-                grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-                InvokeFocusedRowChanged(1);
+                SelectRowInGrid(1, true);
             }
 
             UpdateChangeableStatus();
@@ -484,7 +488,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ARowToDelete">the currently selected row to be deleted</param>
         /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
         /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(ref AGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
+        private bool PreDeleteManual(AGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
         {
             if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
             {
@@ -507,7 +511,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ref AGiftBatchRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(AGiftBatchRow ARowToDelete, out string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 
@@ -553,7 +557,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
         /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        private void PostDeleteManual(ref AGiftBatchRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
+        private void PostDeleteManual(AGiftBatchRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
         {
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
@@ -597,6 +601,67 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
         }
 
+        /// <summary>
+        /// Print a receipt for each gift (ideally each donor) in the batch
+        /// </summary>
+        /// <param name="AGiftTDS"></param>
+        private void PrintGiftBatchReceipts(GiftBatchTDS AGiftTDS)
+        {
+            AGiftBatchRow GiftBatchRow = AGiftTDS.AGiftBatch[0];
+
+            AGiftTDS.AGift.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                AGiftTable.GetLedgerNumberDBName(), GiftBatchRow.LedgerNumber,
+                AGiftTable.GetBatchNumberDBName(), GiftBatchRow.BatchNumber);
+
+            foreach (DataRowView rv in AGiftTDS.AGift.DefaultView)
+            {
+                AGiftRow GiftRow = (AGiftRow)rv.Row;
+                bool ReceiptEachGift;
+                String ReceiptLetterFrequency;
+                bool EmailGiftStatement;
+                bool AnonymousDonor;
+
+                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerReceiptingInfo(
+                    GiftRow.DonorKey,
+                    out ReceiptEachGift,
+                    out ReceiptLetterFrequency,
+                    out EmailGiftStatement,
+                    out AnonymousDonor);
+
+                String DonorShortName;
+                TPartnerClass DonorClass;
+                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(GiftRow.DonorKey, out DonorShortName, out DonorClass);
+
+                if (ReceiptEachGift)
+                {
+                    string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintGiftReceipt(
+                        GiftBatchRow.LedgerNumber,
+                        GiftBatchRow.BatchNumber,
+                        GiftRow.GiftTransactionNumber,
+                        DonorShortName,
+                        GiftRow.DonorKey,
+                        DonorClass,
+                        GiftRow.Reference,
+                        GiftBatchRow.CurrencyCode,
+                        GiftBatchRow.DateCreated.Value);
+                    TFrmReceiptControl.PrintSinglePageLetter(HtmlDoc);
+
+                    if (MessageBox.Show(
+                            String.Format(Catalog.GetString(
+                                    "Please check that the receipt to {0} printed correctly.\r\nThe gift will be marked as receipted."),
+                                DonorShortName),
+                            Catalog.GetString("Receipt Printing"),
+                            MessageBoxButtons.OKCancel) == DialogResult.OK)
+                    {
+                        TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(
+                            GiftBatchRow.LedgerNumber,
+                            GiftBatchRow.BatchNumber,
+                            GiftRow.GiftTransactionNumber);
+                    }
+                }
+            }
+        }
+
         private void PostBatch(System.Object sender, EventArgs e)
         {
             // TODO: show VerificationResult
@@ -615,15 +680,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
+            //Read current rows position ready to reposition after removal of posted row from grid
+            int newCurrentRowPos = grdDetails.SelectedRowIndex();
+
+            if (newCurrentRowPos < 0)
+            {
+                return; // Oops - there's no selected row.
+            }
+
             // ask if the user really wants to post the batch
             if (MessageBox.Show(Catalog.GetString("Do you really want to post this gift batch?"), Catalog.GetString("Confirm posting of Gift Batch"),
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
             {
                 return;
             }
-
-            //Read current rows position ready to reposition after removal of posted row from grid
-            int newCurrentRowPos = grdDetails.SelectedRowIndex();
 
             if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
             {
@@ -640,40 +710,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
 
                 AGiftBatchRow giftBatchRow = (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FSelectedBatchNumber });
-                giftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
-                giftBatchRow.AcceptChanges();
 
-                // make sure that the gift batch is not touched again, by GetDetailsFromControls
-                FSelectedBatchNumber = -1;
-                FPreviouslySelectedDetailRow = null;
+                // print reports on successfully posted batch.
 
-                // make sure that gift transactions and details are cleared as well
-                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-                FMainDS.AGiftDetail.Rows.Clear();
-                FMainDS.AGift.Rows.Clear();
+                // I need to retrieve the Gift Batch Row, which now has modified fields because it's been posted.
+                //
 
-                ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
+                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadGiftBatchData(giftBatchRow.LedgerNumber,
+                    giftBatchRow.BatchNumber);
+                PrintGiftBatchReceipts(PostedGiftTDS);
 
-                //Select unposted batch row in same index position as batch just posted
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
+                // I don't like these lines - I'll re-load the control instead..
 
-                if (grdDetails.Rows.Count > 1)
-                {
-                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
-                    // such that a removal of a row is not detected
-                    FDetailGridRowsCountPrevious++;
-                    InvokeFocusedRowChanged(newCurrentRowPos);
-                }
-                else
-                {
-                    ClearControls();
-                    ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
-                }
+/*
+ *              giftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
+ *              giftBatchRow.AcceptChanges();
+ *
+ *              // make sure that the gift batch is not touched again, by GetDetailsFromControls
+ *              FSelectedBatchNumber = -1;
+ *              FPreviouslySelectedDetailRow = null;
+ *
+ *              // make sure that gift transactions and details are cleared as well
+ *              ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+ *              FMainDS.AGiftDetail.Rows.Clear();
+ *              FMainDS.AGift.Rows.Clear();
+ *
+ *              ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
+ *
+ *              //Select unposted batch row in same index position as batch just posted
+ *              grdDetails.DataSource = null;
+ *              grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
+ *
+ *              if (grdDetails.Rows.Count > 1)
+ *              {
+ *                  // Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+ *                  // such that a removal of a row is not detected
+ *                  SelectRowInGrid(newCurrentRowPos, true);
+ *              }
+ *              else
+ *              {
+ *                  ClearControls();
+ *                  ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
+ *              }
+ */
+                RefreshAll();
             }
         }
 

@@ -115,7 +115,6 @@ namespace Ict.Common.Remoting.Client
                 }
                 finally
                 {
-                    // $IFDEF DEBUGMODE TLogging.Log('TEnsureKeepAlive.Register: Finally Clause.', [ToLogFile]); $ENDIF
                     Monitor.PulseAll(UKeepAliveObjects.SyncRoot);
                     Monitor.Exit(UKeepAliveObjects.SyncRoot);
                 }
@@ -159,7 +158,7 @@ namespace Ict.Common.Remoting.Client
 
             if (ARemotedObject != null)
             {
-                // this is just to not create an Exception when not compiled with DEBUGMODE...
+                // this is just to not create an Exception...
                 try
                 {
                     ObjectHashCode = ARemotedObject.GetHashCode().ToString();
@@ -237,7 +236,6 @@ namespace Ict.Common.Remoting.Client
             {
                 try
                 {
-                    // $IFDEF DEBUGMODE TLogging.Log('KeepAliveThread: Checking objects (' + UKeepAliveObjects.Count.ToString + ' Objects to keep alive in SortedList)', [ToLogFile]); $ENDIF
                     ObjectEnum = UKeepAliveObjects.GetEnumerator();
                     try
                     {

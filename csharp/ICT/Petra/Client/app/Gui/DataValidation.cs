@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,7 +39,7 @@ namespace Ict.Petra.Client.App.Gui
         /// </summary>
         /// <param name="ARecordChangeVerification">Set this to true if this Method is called in the context of a record change
         /// in a Grid, otherwise set it to false.</param>
-        /// <param name="AVerificationResultCollection">A <see cref="TVerificationResultCollection " /> to inspect for
+        /// <param name="AVerificationResultCollection">A <see cref="TVerificationResultCollection" /> to inspect for
         /// data verification errors.</param>
         /// <param name="ATypeWhichRaisesError">Instance of the calling WinForm.</param>
         /// <param name="ARestrictToTypeWhichRaisesError">Restricts the <see cref="TVerificationResult" />s that

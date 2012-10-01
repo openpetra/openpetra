@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -226,9 +226,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
+        /// <param name="AValidateForNewPartner">true if validation is run for a new partner record</param>
+        /// <param name="APartnerKey">main partner key this validation is run for</param>
         /// <returns>void</returns>
         public static void ValidateRelationshipManual(object AContext, PPartnerRelationshipRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            bool AValidateForNewPartner = false, Int64 APartnerKey = 0)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -245,15 +248,22 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
-                    ARow.PartnerKey, new TPartnerClass[] { }, false, "",
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                VerificationResult = null;
 
-                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
-                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
-                // ResultText!
-                AVerificationResultCollection.Remove(ValidationColumn);
-                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                // don't complain if this is done for a new partner record (partner key not yet saved in db)
+                if (!(AValidateForNewPartner
+                      && (APartnerKey == ARow.PartnerKey)))
+                {
+                    VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+                        ARow.PartnerKey, new TPartnerClass[] { }, false, "",
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                    // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                    // ResultText!
+                    AVerificationResultCollection.Remove(ValidationColumn);
+                    AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                }
 
                 // 'Partner Key' and 'Another Partner Key'must not be the same
                 // (Partner Key 0 will be dealt with by other checks)
@@ -278,15 +288,20 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
-                    ARow.RelationKey, new TPartnerClass[] { }, false, "",
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                // don't complain if this is done for a new partner record (partner key not yet saved in db)
+                if (!(AValidateForNewPartner
+                      && (APartnerKey == ARow.RelationKey)))
+                {
+                    VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+                        ARow.RelationKey, new TPartnerClass[] { }, false, "",
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
-                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
-                // ResultText!
-                AVerificationResultCollection.Remove(ValidationColumn);
-                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                    // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                    // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                    // ResultText!
+                    AVerificationResultCollection.Remove(ValidationColumn);
+                    AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                }
             }
 
             // 'Relation' must be valid and have a value
@@ -338,7 +353,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="AErrorMessageText">Text that should be prepended to the ResultText. (Default: empty string)</param>
         /// <param name="AResultContext">ResultContext (Default: null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null). (Default: null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null). (Default: null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null). (Default: null).</param>
         /// <returns>Null if the Partner exists and its PartnerClass is in the <paramref name="AValidPartnerClasses" />
         /// array. If the Partner exists, but its PartnerClass isn't in the array, a TVerificationResult
         /// with details about the error is returned. This is also the case if the Partner doesn't exist at all
@@ -450,7 +465,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="AErrorMessageText">Text that should be prepended to the ResultText. (Default: empty string)</param>
         /// <param name="AResultContext">ResultContext (optional).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null). (Default: null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null). (Default: null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null). (Default: null).</param>
         /// <returns>Null if the Partner exists and its PartnerClass is UNIT. If the Partner exists,
         /// but its PartnerClass isn't UNIT, a TVerificationResult with details about the error is
         /// returned. This is also the case if the Partner doesn't exist at all or got merged

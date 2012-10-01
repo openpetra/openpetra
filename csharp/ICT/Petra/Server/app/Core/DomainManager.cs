@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -152,19 +152,9 @@ namespace Ict.Petra.Server.App.Core
         {
             new TLogging(TSrvSetting.ServerLogFile);
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("  Connecting to Database...");
-            }
-#endif
+            TLogging.LogAtLevel(9, "Connecting to Database...");
             DBAccess.GDBAccessObj = new TDataBasePetra();
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("DBAccessObj object created.");
-            }
-#endif
+            TLogging.LogAtLevel(9, "DBAccessObj object created.");
 
             ((TDataBasePetra)DBAccess.GDBAccessObj).AddErrorLogEntryCallback += new TDelegateAddErrorLogEntry(this.AddErrorLogEntry);
             try
@@ -177,16 +167,9 @@ namespace Ict.Petra.Server.App.Core
                     TSrvSetting.DBPassword,
                     "",
                     UserInfo.GUserInfo.UserID);
-#if DEBUGMODE
-                if (TLogging.DL >= 9)
-                {
-                    Console.WriteLine("  Connected to Database.");
-                }
-#endif
-
-                // $IFDEF DEBUGMODE Console.WriteLine('SystemDefault "CalebEmail": ' + GSystemDefaultsCache.GetSystemDefault('CalebEmail'));$ENDIF
+                TLogging.LogAtLevel(9, "Connected to Database.");
             }
-            catch (Exception)
+            catch (Exception /* exp */)
             {
                 // TLogging.Log('Exception occured while establishing connection to Database Server: ' + exp.ToString);
                 throw;
@@ -196,7 +179,7 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>
         /// Closes the Database connection for this AppDomain.
         ///
-        /// @comment WARNING: If you need to rename this procedure or change its parameters,
+        /// @comment WARNING: If you need to rename this method or change its parameters,
         /// you also need to change the String with its name and the parameters in the
         /// .NET Reflection call in TClientAppDomainConnection!
         ///
@@ -205,12 +188,7 @@ namespace Ict.Petra.Server.App.Core
         public void CloseDBConnection()
         {
             // Console.WriteLine('TClientDomainManager.CloseDBConnection in AppDomain: ' + Thread.GetDomain().FriendlyName);
-            // TODO 1 oChristianK cLogging (Console) : Put the following debug messages in a DEBUGMODE conditional compilation directive and raise the DL to >=9; these logging statements were inserted to trace problems in on live installations!
-            if (TLogging.DL >= 5)
-            {
-                TLogging.Log("TClientDomainManager.CloseDBConnection: before calling GDBAccessObj.CloseDBConnection",
-                    TLoggingType.ToConsole | TLoggingType.ToLogfile);
-            }
+            TLogging.LogAtLevel(9, "TClientDomainManager.CloseDBConnection: before calling GDBAccessObj.CloseDBConnection");
 
             try
             {
@@ -218,23 +196,15 @@ namespace Ict.Petra.Server.App.Core
             }
             catch (EDBConnectionNotAvailableException)
             {
-                // The DB connection was never opened  since this is no problem here, ignore this Exception.
-                if (TLogging.DL >= 5)
-                {
-                    TLogging.Log("TClientDomainManager.CloseDBConnection: Info: DB Connection was never opened, therefore no need to close it.",
-                        TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                }
+                // The DB connection was never opened. Since this is no problem here, ignore this Exception.
+                TLogging.LogAtLevel(9, "TClientDomainManager.CloseDBConnection: Info: DB Connection was never opened, so can't close.");
             }
             catch (Exception)
             {
                 throw;
             }
 
-            if (TLogging.DL >= 5)
-            {
-                TLogging.Log("TClientDomainManager.CloseDBConnection: after calling GDBAccessObj.CloseDBConnection",
-                    TLoggingType.ToConsole | TLoggingType.ToLogfile);
-            }
+            TLogging.LogAtLevel(9, "TClientDomainManager.CloseDBConnection: after calling GDBAccessObj.CloseDBConnection");
         }
 
         /// <summary>

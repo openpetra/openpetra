@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -332,9 +332,7 @@ namespace Ict.Petra.Client.CommonForms
             if (otherCount > 0)
             {
                 // warn the developer
-#if DEBUGMODE
                 MessageBox.Show(otherString, "The following controls are not checked for live changes in PetraEditBaseForm:");
-#endif
             }
         }
 
@@ -573,7 +571,7 @@ namespace Ict.Petra.Client.CommonForms
         public void SetChangedFlag()
         {
             EnableAction("actSave", true);
-            
+
             FHasChanges = true;
         }
 
@@ -589,11 +587,11 @@ namespace Ict.Petra.Client.CommonForms
         /// Disanables the 'Save' ToolBarButton and the 'File->Save' MenuItem and sets the Form in a state where it doesn't contains changes
         /// (<see cref="HasChanges" />).
         /// </summary>
-        /// <remarks>Useful when manual code needs to do these actions (that are normally automatically handled in a Form).</remarks>        
+        /// <remarks>Useful when manual code needs to do these actions (that are normally automatically handled in a Form).</remarks>
         public void DisableSaveButton()
         {
             EnableAction("actSave", false);
-            
+
             FHasChanges = false;
         }
 

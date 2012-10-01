@@ -425,7 +425,8 @@ namespace Ict.Common.Testing
 
             /* console.writeLine(CultureInfo.CurrentCulture.TwoLetterISOLanguageName); */
             Assert.AreEqual("29.03.2004", new TVariant(new DateTime(2004, 03, 29)).ToString(), "Problem A date DE");
-            Assert.AreEqual("29-MRZ", new TVariant(new DateTime(2004, 03, 29)).ToFormattedString("dayofyear"), "Problem A2 day of year DE");
+            Assert.AreEqual("29-MÄR", new TVariant(new DateTime(2004, 03, 29)).ToFormattedString("dayofyear").Replace("MRZ",
+                    "MÄR"), "Problem A2 day of year DE");
             Assert.AreEqual("29.03." + DateTime.Now.Year.ToString(), new TVariant(new DateTime(2004, 03, 29)).ToFormattedString("dayofyear",
                     "CSV"), "Problem A2 day of year CSV DE");
 
@@ -435,9 +436,10 @@ namespace Ict.Common.Testing
 
             /* To make this work, we should use short month names from local array, similar to GetLongMonthName; see the comment in Ict.Common.StringHelper, DateToLocalizedString */
             /* Assert.AreEqual('29M�R2004', DateToLocalizedString(TVariant.Create(DateTime.Create(2004,03,29)).ToDate()),'Problem D date DE'); */
-            Assert.AreEqual("29-MRZ-2004", StringHelper.DateToLocalizedString(new TVariant(new DateTime(2004, 03, 29)).ToDate()), "Problem D date DE");
+            Assert.AreEqual("29-MÄR-2004", StringHelper.DateToLocalizedString(new TVariant(new DateTime(2004, 03,
+                            29)).ToDate()), "Problem D date DE");
             Assert.AreEqual("eDateTime:\"2004-07-31T00:00:00\"", new TVariant("#20040731#").EncodeToString(), "EncodeToString DE");
-            Assert.AreEqual("29-MRZ-2004", StringHelper.DateToLocalizedString(new TVariant("2004-03-29 00:00:00").ToDate()), "sqlite date value");
+            Assert.AreEqual("29-MÄR-2004", StringHelper.DateToLocalizedString(new TVariant("2004-03-29 00:00:00").ToDate()), "sqlite date value");
             Thread.CurrentThread.CurrentCulture = oldCulture;
         }
 

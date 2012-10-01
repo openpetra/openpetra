@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -264,7 +264,6 @@ namespace Ict.Common.Conversion
                         }
                         catch (Exception)
                         {
-                            // $IFDEF DEBUGMODE MessageBox.Show('Exception occured in LongDateStringToDateTime: ' + Exp.ToString); $ENDIF
                             MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
                                 TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
                             return ReturnValue;
@@ -307,16 +306,8 @@ namespace Ict.Common.Conversion
                 AParsedDate = DateTime.Parse(AParseDate).ToString("D");
                 ReturnValue = true;
             }
-#if DEBUGMODE
-            catch (Exception Exp)
-#endif
-#if !DEBUGMODE
             catch (Exception)
-#endif
             {
-#if DEBUGMODE
-                MessageBox.Show("Exception occured in LongDateStringToDateTimeInternal: " + Exp.ToString());
-#endif
                 MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
                     TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
             }

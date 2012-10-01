@@ -44,10 +44,6 @@ namespace {#NAMESPACE}
 {#IFNDEF DATASETTYPE}
     {#INLINETYPEDDATASET}
 {#ENDIFN DATASETTYPE}
-{#IFDEF SHOWDETAILS}
-
-    private int FCurrentRow;
-{#ENDIF SHOWDETAILS}
 
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
@@ -129,10 +125,11 @@ namespace {#NAMESPACE}
 
     }
 
-	private bool FNewRecordUnsavedInFocus = false;
-	
-    /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
-    /// we create the table locally, no dataset
+    /// <summary>
+    /// This automatically generated method creates a new record of {#DETAILTABLE}, highlights it in the grid
+    /// and displays it on the edit screen.  We create the table locally, no dataset
+    /// </summary>
+    /// <returns>True if the existing Details data was validated successfully and the new row was added.</returns>
     public bool CreateNew{#DETAILTABLE}()
     {
         if(ValidateAllData(true, true))
@@ -143,43 +140,32 @@ namespace {#NAMESPACE}
             
             FPetraUtilsObject.SetChangedFlag();
 
-			grdDetails.DataSource = null;
+            grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
 
-            int newRowIndex = FMainDS.{#DETAILTABLE}.Rows.Count - 1;
-			SelectDetailRowByDataTableIndex(newRowIndex);
-            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-
-            //Must be set after the FocusRowChanged event is called as it sets this flag to false
-            FNewRecordUnsavedInFocus = true;
-
-            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-            ShowDetails(FPreviouslySelectedDetailRow);
-			
+            SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1, true);
+            
             Control[] pnl = this.Controls.Find("pnlDetails", true);
             if (pnl.Length > 0)
             {
-	            //Look for Key & Description fields
-	            bool keyFieldFound = false;
-	            foreach (Control detailsCtrl in pnl[0].Controls)
-	            {
-	                if (!keyFieldFound && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
-	                {
-	                    keyFieldFound = true;
-	                    detailsCtrl.Focus();
-	                }
-	
-	                if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
-	                {
-	                    detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
-	                    break;
-	                }
-	            }
+                //Look for Key & Description fields
+                bool keyFieldFound = false;
+                foreach (Control detailsCtrl in pnl[0].Controls)
+                {
+                    if (!keyFieldFound && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
+                    {
+                        keyFieldFound = true;
+                        detailsCtrl.Focus();
+                    }
+    
+                    if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
+                    {
+                        detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
+                        break;
+                    }
+                }
 
-				GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
-
-                //Need to redo this just in case the sorting is not on primary key
-	            SelectDetailRowByDataTableIndex(newRowIndex);
+                ValidateAllData(true, false);
             }
 	
             return true;
@@ -190,7 +176,30 @@ namespace {#NAMESPACE}
         }
     }
 
-    private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
+    /// <summary>
+    /// Selects the specified grid row, optionally showing the details for the row in the details panel
+    /// The call still works even if the grid is empty (in which case no row is highlighted).
+    /// Grid rows holding data are numbered 1..DataRowCount.
+    /// If the specified grid row is less than 1, the first row is highlighted.
+    /// If the specified grid row is greater than DataRowCount, the last row is highlighted.
+    /// If AAndShowDetails is true, the details panel is disabled if the grid is empty or in Detail Protect Mode
+    ///    otherwise the details are shown for the row that has been highlighted.
+    /// </summary>
+    /// <param name="ARowIndex">The row index to select.  Data rows start at 1</param>
+    /// <param name="AAndShowDetails">Optionally shows the details for the selected row</param>
+    private void SelectRowInGrid(int ARowIndex, bool AAndShowDetails = false)
+    {
+        grdDetails.SelectRowInGrid(ARowIndex, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+        if (AAndShowDetails) ShowDetails();
+    }
+
+    /// <summary>
+    /// Selects a grid row based its index in the data table (often the last, newest, row).
+    /// Optionally shows the details for the selected row (by calling ShowDetails).
+    /// </summary>
+    /// <param name="ARowNumberInTable">Table row number</param>
+    /// <param name="AAndShowDetails">When true, additionally shows the details in the details panel</param>
+    private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable, bool AAndShowDetails = false)
     {
         Int32 RowNumberGrid = -1;
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
@@ -212,49 +221,63 @@ namespace {#NAMESPACE}
             }
         }
 
-        grdDetails.SelectRowInGrid(RowNumberGrid, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+        SelectRowInGrid(RowNumberGrid, AAndShowDetails);
     }
 
+    /// <summary>
+    /// Finds the grid row in the data table
+    /// </summary>
+    /// <returns>The data table row index for the data in the current grid row, or -1 if the row was not found</returns>
     private int GetDetailGridRowDataTableIndex()
     {
-    	Int32 RowNumberInData = -1;
-    	
-    	int gridRowIndex = grdDetails.SelectedRowIndex();
-    	
-    	if (gridRowIndex > 0 && FPreviouslySelectedDetailRow != null)
-    	{
-    	    	
-	    	int dataRowIndex = 0;
-	    	
-	    	foreach ({#DETAILTABLETYPE}Row myRow in FMainDS.{#DETAILTABLETYPE}.Rows)
-	        {
-	    		bool found = true;
-	            foreach (DataColumn myColumn in FMainDS.{#DETAILTABLETYPE}.PrimaryKey)
-	            {
-	                string value1 = myRow[myColumn].ToString();
-	                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[gridRowIndex - 1][myColumn.Ordinal].ToString();
-	                if (value1 != value2)
-	                {
-	                    found = false;
-	                }
-	            }
-	            
-	            if (found)
-	            {
-	                RowNumberInData = dataRowIndex;
-	                break;
-	            }
-	            
-	            dataRowIndex++;
-	        }
-    	}
-    	
-    	return RowNumberInData;
+        Int32 RowNumberInData = -1;
+        
+        int gridRowIndex = grdDetails.SelectedRowIndex();
+        
+        if (gridRowIndex > 0 && FPreviouslySelectedDetailRow != null)
+        {
+                
+            int dataRowIndex = 0;
+            
+            foreach ({#DETAILTABLETYPE}Row myRow in FMainDS.{#DETAILTABLETYPE}.Rows)
+            {
+                bool found = true;
+                foreach (DataColumn myColumn in FMainDS.{#DETAILTABLETYPE}.PrimaryKey)
+                {
+                    if (myRow.RowState != DataRowState.Deleted)
+                    {
+                        string value1 = myRow[myColumn].ToString();
+                        string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[gridRowIndex - 1][myColumn.Ordinal].ToString();
+                        if (value1 != value2)
+                        {
+                            found = false;
+                        }
+                    }
+                    else
+                    {
+                        found = false;
+                    }
+                }
+                
+                if (found)
+                {
+                    RowNumberInData = dataRowIndex;
+                    break;
+                }
+                
+                dataRowIndex++;
+            }
+        }
+        
+        return RowNumberInData;
     }
 	
 {#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
-    /// return the selected row
+    /// <summary>
+    /// Gets the highlighted Data Row as a {#DETAILTABLE} record from the grid 
+    /// </summary>
+    /// <returns>The selected row - or null if no row is selected</returns>
     public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
     {
         {#GETSELECTEDDETAILROW}
@@ -295,55 +318,55 @@ namespace {#NAMESPACE}
         // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
         FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
 
-{#IFDEF SHOWDETAILS}
-        if (FPreviouslySelectedDetailRow != null)
-        {
-{#ENDIF SHOWDETAILS}        
 {#IFNDEF SHOWDETAILS}
 {#IFDEF MASTERTABLE}
+// :WMCT:GetDataFromControls
         GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
         ValidateData(FMainDS.{#MASTERTABLE}[0]);
-{#ENDIF MASTERTABLE}        
-{#ENDIFN SHOWDETAILS}
-{#IFDEF SHOWDETAILS}
-        GetDetailsFromControls(FPreviouslySelectedDetailRow);
-        ValidateDataDetails(FPreviouslySelectedDetailRow);
-{#ENDIF SHOWDETAILS}
-
-{#IFDEF VALIDATEDATADETAILSMANUAL}
-{#IFDEF SHOWDETAILS}
-            // Remember the current rowID and perform automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
-            int previousRowNum = FCurrentRow;// grdDetails.DataSourceRowToIndex2(CurrentRow) + 1;
-            ValidateDataDetailsManual(FPreviouslySelectedDetailRow);
-
-            // Validation might have moved the row, so we need to locate it again, updating our FCurrentRow global variable
-            FCurrentRow = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1;
-            if (FCurrentRow != previousRowNum)
-            {
-                // Yes it did move so we need to keep the row selected, without firing off the event that brought us here in the first place!
-                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                grdDetails.SelectRowInGrid(FCurrentRow);
-                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-            }
-{#ENDIF SHOWDETAILS}            
-{#ENDIF VALIDATEDATADETAILSMANUAL}
 {#IFDEF VALIDATEDATAMANUAL}
-{#IFDEF MASTERTABLE}
-            ValidateDataManual(FMainDS.{#MASTERTABLE}[0]);
-{#ENDIF MASTERTABLE}
+// :WMCT:ValidateDataManual
+        ValidateDataManual(FMainDS.{#MASTERTABLE}[0]);
 {#ENDIF VALIDATEDATAMANUAL}
+{#ENDIF MASTERTABLE}
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
 
-            // Perform validation in UserControls, too
-            {#USERCONTROLVALIDATION}
+        // Perform validation in UserControls too
+// :WMCT:ucValidation
+        {#USERCONTROLVALIDATION}
+
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
-        
+
         if (AProcessAnyDataValidationErrors)
         {
             ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
                 this.GetType(), null);
         }
-{#IFDEF SHOWDETAILS}            
+{#ENDIFN SHOWDETAILS}
+{#IFDEF SHOWDETAILS}       
+        if (FPreviouslySelectedDetailRow != null)
+        {
+// :WMCT:GetDetailsFromControls
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            ValidateDataDetails(FPreviouslySelectedDetailRow);
+{#IFDEF VALIDATEDATADETAILSMANUAL}
+// :WMCT:ValidateDataDetailsManual
+            ValidateDataDetailsManual(FPreviouslySelectedDetailRow);
+{#ENDIF VALIDATEDATADETAILSMANUAL}
+
+            // Validation might have moved the row, so we need to locate it again, updating our FCurrentRow global variable
+            SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1);
+{#IFDEF PERFORMUSERCONTROLVALIDATION}
+
+            // Perform validation in UserControls too
+// :WMCT:ucValidation
+            {#USERCONTROLVALIDATION}
+{#ENDIF PERFORMUSERCONTROLVALIDATION}
+
+			if (AProcessAnyDataValidationErrors)
+			{
+				ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+					this.GetType(), null);
+			}
         }
         else
         {
@@ -360,13 +383,24 @@ namespace {#NAMESPACE}
         return ReturnValue;
     }
 
-    private void InvokeFocusedRowChanged(int AGridRowNumber)
+{#IFDEF SHOWDETAILS}
+    /// <summary>
+    /// This overload shows the details for the currently highlighted row.
+    /// The method still works when the grid is empty and no row can be selected.
+    /// The Details panel is disabled when the grid is empty, or when in Detail Protected Mode
+    /// The variable FPreviouslySelectedDetailRow is set by this call.
+    /// </summary>
+    private void ShowDetails()
     {
-		SourceGrid.RowEventArgs rowArgs  = new SourceGrid.RowEventArgs(AGridRowNumber);
-		FocusedRowChanged(grdDetails, rowArgs);
+        ShowDetails(GetSelectedDetailRow());
     }
 
-{#IFDEF SHOWDETAILS}
+    /// <summary>
+    /// This overload shows the details for the specified row, which can be null.
+    /// The Details panel is disabled when the row is Null, or when in Detail Protected Mode
+    /// The variable FPreviouslySelectedDetailRow is set by this call.
+    /// </summary>
+    /// <param name="ARow">The row for which details will be shown</param>
     private void ShowDetails({#DETAILTABLE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
@@ -374,6 +408,7 @@ namespace {#NAMESPACE}
         grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
 {#ENDIF SAVEDETAILS}
 
+        FPreviouslySelectedDetailRow = ARow;
         if (ARow == null)
         {
             pnlDetails.Enabled = false;
@@ -381,7 +416,6 @@ namespace {#NAMESPACE}
         }
         else
         {
-            FPreviouslySelectedDetailRow = ARow;
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             {#SHOWDETAILS}
         }
@@ -392,163 +426,72 @@ namespace {#NAMESPACE}
 {#ENDIF SAVEDETAILS}
     }
 
+    /// <summary>
+    /// A reference to the Typed Data Row object from the grid whose Details are currently displayed.
+    /// It is automatically updated when you call ShowDetails()
+    /// You can use this variable in your manual code to access individual details, but you should take care
+    ///   if you need to assign a different row object to it.  Try, if possible, to use 
+    ///   SelectRowInGrid(N, true)
+    /// or
+    ///   ShowDetails(NewRow)
+    /// so that the reference to the row object is updated automatically.
+    /// </summary>
     private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;   
 	
-    private bool FInitialFocusEventCompleted = false;
-    private bool FNewFocusEvent = false;
-    private bool FGridFilterChanged = false;
-    private bool FRepeatLeaveEventDetected = false;
-    private int FDetailGridRowsCountPrevious = 0;
-    private int FDetailGridRowsCountCurrent = 0;
-    private int FDetailGridRowsChangedState = 0;
-
-    private void FocusPreparation(bool AIsLeaveEvent)
-    {
-    	if (FRepeatLeaveEventDetected)
-    	{
-    		return;
-    	}
-    	
-    	FDetailGridRowsCountCurrent = grdDetails.Rows.Count;
-
-		//first run only
-    	if (!FInitialFocusEventCompleted)
-    	{
-    		FInitialFocusEventCompleted = true;
-    		FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
-    	}
-    	
-    	//Specify if it is a row change, add or delete
-    	if (FDetailGridRowsCountPrevious == FDetailGridRowsCountCurrent)
-    	{
-    		FDetailGridRowsChangedState = 0;
-    	}
-    	else if (FDetailGridRowsCountPrevious > FDetailGridRowsCountCurrent)
-        {
-        	FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
-        	FDetailGridRowsChangedState = -1;
-        }
-    	else if (FDetailGridRowsCountPrevious < FDetailGridRowsCountCurrent)
-    	{
-        	FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
-        	FDetailGridRowsChangedState = 1;
-    	}
-    	
-    }
-    
 {#IFDEF SAVEDETAILS}
+    /// <summary>
+    /// Used for determining the time elapsed between FocusRowLeaving Events.
+    /// </summary>
+    private DateTime FDtPrevLeaving = DateTime.UtcNow;
+    private int FPrevLeavingFrom = -1;
+    private int FPrevLeavingTo = -1;
 
+    /// FocusedRowLeaving can be called multiple times (e.g. 3 or 4) for just one FocusedRowChanged event.
+    /// The key is not to cancel the extra events, but to ensure that we only ValidateAllData once.
+    /// We ignore any event that is leaving to go to row # -1
+    /// We validate on the first of a cascade of events that leave to a real row.
+    /// We detect a duplicate event by testing for the elapsed time since the event we validated on...
+    /// If the elapsed time is &lt; 2 ms it is a duplicate, because repeat keypresses are separated by 30 ms
+    /// and these duplicates come with a gap of fractions of a microsecond, so 2 ms is a very long time!
+    /// All we do is store the previous row from/to and the previous UTC time
+    /// These three form level variables are totally private to this event call.
     private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
     {        
-		//Ignore this event if currently sorting
-    	if (grdDetails.Sorting)
-    	{
-    		FNewFocusEvent = false;
-    		return;
-    	}    	
-    	
-    	if (FNewFocusEvent == false)
-    	{
-    		FNewFocusEvent = true;
-    	}
-
-    	FocusPreparation(true);
-
-    	if (!FRepeatLeaveEventDetected)
+        if (!grdDetails.Sorting && e.ProposedRow >= 0)
         {
-	    	FRepeatLeaveEventDetected = true;
-	    	
-            if (FDetailGridRowsChangedState == -1 || FDetailGridRowsCountCurrent == 2)  //do not run validation if cancelling current row
-																	// OR only 1 row present so no rowleaving event possible
+            double elapsed = (DateTime.UtcNow - FDtPrevLeaving).TotalMilliseconds;
+            bool bIsDuplicate = (e.Row == FPrevLeavingFrom && e.ProposedRow == FPrevLeavingTo && elapsed < 2.0);
+            if (!bIsDuplicate && !ValidateAllData(true, true))
             {
-            	e.Cancel = true;
-            }
-            
-            Console.WriteLine("FocusRowLeaving");
-            
-            if (!ValidateAllData(true, true))
-            {
+                // Programming note: ValidateAllData is NOT called when the event is a duplicate (due to the &&)
                 e.Cancel = true;
             }
-        }
-        else
-        {
-            // Reset flag
-	    	FRepeatLeaveEventDetected = false;
-            e.Cancel = true;
+            FPrevLeavingFrom = e.Row;
+            FPrevLeavingTo = e.ProposedRow;
+            FDtPrevLeaving = DateTime.UtcNow;
         }
     }
 {#ENDIF SAVEDETAILS}
 
+    private int FPrevRowChangedRow = -1;        // Totally private to this method call
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
-        FNewRecordUnsavedInFocus = false;
-    	
-        FRepeatLeaveEventDetected = false;
-
-        if (!grdDetails.Sorting)
+        // The FocusedRowChanged event simply calls ShowDetails for the new 'current' row implied by e.Row
+        // We do get a duplicate event if the user tabs round all the controls multiple times
+        // There is no need to call it on duplicate events, so we just remember the previous row number we changed to.
+        if (!grdDetails.Sorting && e.Row != FPrevRowChangedRow)
         {
-	    	//Sometimes, FocusedRowChanged get called without FocusRowLeaving
-	    	//  so need to handle that
-	    	if (!FNewFocusEvent)
-	    	{
-	    		//This implies start of a new event chain without a previous FocusRowLeaving
-	    		FocusPreparation(false);
-	    	}
-	    	
-	        //Only allow, row change, add or delete, not repeat events from grid changing focus
-            // check also if it is a filter change
-            if((e.Row != FCurrentRow && FDetailGridRowsChangedState == 0)
-              || FGridFilterChanged)
-            {
-                FGridFilterChanged = false;
-	    		// Transfer data from Controls into the DataTable
-	            if (FPreviouslySelectedDetailRow != null)
-	            {
-	                GetDetailsFromControls(FPreviouslySelectedDetailRow);
-	            }
-	
-	            // Display the details of the currently selected Row
-	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-	            pnlDetails.Enabled = true;
-	            ShowDetails(FPreviouslySelectedDetailRow);
-	    	}
-	    	else if (FDetailGridRowsChangedState == 1) //Addition
-	    	{
-	    		
-	    	}
-	    	else if (FDetailGridRowsChangedState == -1) //Deletion
-	    	{
-                if (FDetailGridRowsCountCurrent > 1) //Implies at least one record still left
-                {
-                    int nextRowToSelect = e.Row;
-                    //If last row deleted, subtract row index to select by 1
-                    if (nextRowToSelect == FDetailGridRowsCountCurrent)
-                    {
-                    	nextRowToSelect--;
-                    }
-                	// Select and display the details of the currently selected Row without causing an event
-                    grdDetails.SelectRowInGrid(nextRowToSelect, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                    pnlDetails.Enabled = true;
-                    ShowDetails(FPreviouslySelectedDetailRow);
-                }
-                else
-                {
-                    e.Row = 0;
-                	FPreviouslySelectedDetailRow = null;
-                    pnlDetails.Enabled = false;
-                }
-	    	}
+            ShowDetails();
         }
-        
-    	FCurrentRow = e.Row;
-	    
-	    //Event chain tidy-up
-		FDetailGridRowsChangedState = 0;
-	    FNewFocusEvent = false;
+        FPrevRowChangedRow = e.Row;
 	}
 
+    /// <summary>
+    /// Standard method to delete the Data Row whose Details are currently displayed.
+    /// Optional manual code can be included to take action prior, during or after deletion.
+    /// When the row has been deleted the highlighted row index stays the same unless the deleted row was the last one.
+    /// The Details for the newly highlighted row are automatically displayed - or not, if the grid has now become empty.
+    /// </summary>
     private void Delete{#DETAILTABLE}()
     {
 		bool allowDeletion = true;
@@ -561,19 +504,7 @@ namespace {#NAMESPACE}
 			return;
 		}
 
-		int rowIndexToDelete = grdDetails.SelectedRowIndex();
-
-        if (rowIndexToDelete == -1)
-        {
-        	MessageBox.Show(Catalog.GetString("There is no row currently selected in the grid."),
-        	               Catalog.GetString("Delete Row"));
-        	return;
-        }
-
-		{#DETAILTABLETYPE}Row rowToDelete = GetSelectedDetailRow();
-		
 		{#PREDELETEMANUAL}
-		
 		if(allowDeletion)
 		{
         	if ((MessageBox.Show(deletionQuestion,
@@ -581,19 +512,20 @@ namespace {#NAMESPACE}
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
 			{
+                int nSelectedRow = grdDetails.SelectedRowIndex();
 {#IFDEF DELETEROWMANUAL}
 				{#DELETEROWMANUAL}
 {#ENDIF DELETEROWMANUAL}
 {#IFNDEF DELETEROWMANUAL}				
-				rowToDelete.Delete();
+				FPreviouslySelectedDetailRow.Delete();
 				deletionPerformed = true;
 {#ENDIFN DELETEROWMANUAL}				
 			
 				if (deletionPerformed)
 				{
 					FPetraUtilsObject.SetChangedFlag();
-					//Select and call the event that doesn't occur automatically
-					InvokeFocusedRowChanged(rowIndexToDelete);
+                    // Select and display the details of the currently selected Row without causing an event
+                    SelectRowInGrid(nSelectedRow, true);
 				}
 			}
 		}
@@ -608,23 +540,6 @@ namespace {#NAMESPACE}
 							 Catalog.GetString("Deletion Completed"));
 		}
 {#ENDIFN POSTDELETEMANUAL}
-
-    }
-
-    private void ResetGridFocus(int ADataRowPosition)
-    {
-    	int selectedRowIndex = grdDetails.SelectedRowIndex();
-    	
-    	if (selectedRowIndex > 0 && !grdDetails.Sorting)
-    	{
-    		if (ADataRowPosition != GetDetailGridRowDataTableIndex())
-	        {
-	            grdDetails.DataSource = null;
-	            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
-	        	SelectDetailRowByDataTableIndex(ADataRowPosition);
-	        	InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-	        }
-    	}
 
     }
 {#ENDIF SHOWDETAILS}
@@ -647,6 +562,15 @@ namespace {#NAMESPACE}
     }
 {#ENDIFN MASTERTABLE}    
 {#IFDEF SAVEDETAILS}
+    /// <summary>
+    /// Do not call this method in your manual code.
+    /// This is a method that is private to the generated code and is part of the Validation process.
+    /// If you need to update the controls data into the Data Row object, you must use ValidateAllData and be prepared 
+    ///   to handle the consequences of a failed validation.
+    /// </summary>
+    /// <param name="ARow">Do not use</param>
+    /// <param name="AIsNewRow">Do not use</param>
+    /// <param name="AControl">Do not use</param>
     private void GetDetailsFromControls({#DETAILTABLE}Row ARow, bool AIsNewRow = false, Control AControl=null)
     {
         if (ARow != null && !grdDetails.Sorting)
@@ -722,8 +646,6 @@ namespace {#NAMESPACE}
         bool ReturnValue = false;
 
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
-
-        GetDetailsFromControls(FPreviouslySelectedDetailRow);
 
         // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
         FPetraUtilsObject.VerificationResultCollection.Clear();
@@ -858,13 +780,6 @@ namespace {#NAMESPACE}
                         this.Cursor = Cursors.Default;
                         break;
                 }
-				
-				//The sorting will be affected when a new row is saved, so need to reselect row
-				if (FNewRecordUnsavedInFocus)
-				{
-					SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
-					InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-				}
             }
             else
             {
@@ -903,9 +818,6 @@ namespace {#NAMESPACE}
     
     private void ControlValidatedHandler(object sender, EventArgs e)
     {
-{#IFDEF SHOWDETAILS}
-    	int dataRowIndex = GetDetailGridRowDataTableIndex();
-{#ENDIF SHOWDETAILS}
         TScreenVerificationResult SingleVerificationResult;
         
         ValidateAllData(true, false);
@@ -950,9 +862,6 @@ namespace {#NAMESPACE}
                 }
             }
         }
-{#IFDEF SHOWDETAILS}
-        ResetGridFocus(dataRowIndex);
-{#ENDIF SHOWDETAILS}        
     }
 {#IFDEF MASTERTABLE}
     private void ValidateData({#MASTERTABLE}Row ARow)

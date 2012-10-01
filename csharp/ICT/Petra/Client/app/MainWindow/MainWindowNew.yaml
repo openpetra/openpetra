@@ -35,8 +35,6 @@ RootNode:
             Order: AlwaysFirst
             mniClose: {Order=AlwaysLast}
         mniView:
-            #mniMenuSwitch:
-            #mniSeparator: {Label=-}
             mniViewTasks: {Label=Tasks}
                 mniViewTasksTiles: {Label=Tiles}
                 mniViewTasksList: {Label=List}
@@ -59,5 +57,4 @@ RootNode:
             mniHelpAboutPetra: {Label=&About Petra, ActionId=eAHelpbout}
             mniHelpDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam}    
     Toolbar:
-        #tbbMenuSwitch: {Order=AlwaysLast}
     

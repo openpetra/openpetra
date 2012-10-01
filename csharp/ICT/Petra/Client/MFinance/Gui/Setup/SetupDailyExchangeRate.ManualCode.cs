@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private String baseCurrencyOfLedger;
 
-        private Decimal ModalFormReturnValue;
+        private Decimal ModalFormReturnExchangeRate;
 
         private String strCurrencyToDefault;
         private DateTime dateTimeDefault;
@@ -108,7 +108,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             mniImport.Enabled = true;           // Allow imports
             tbbImport.Enabled = true;
             blnIsInModalMode = false;
-            ModalFormReturnValue = 1.0m;        // Not really used when MODELESS
+            ModalFormReturnExchangeRate = 1.0m;        // Not really used when MODELESS
         }
 
         private void RunOnceOnActivationManual()
@@ -137,13 +137,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // Having changed the sort order we need to put the correct details in the panel (assuming we have a row to display)
-            if (theView.Count > 0)
-            {
-                grdDetails.Selection.SelectRow(1, true);
-            }
-
-            FPreviouslySelectedDetailRow = GetSelectedDetailRow();          // can be null
-            ShowDetails(FPreviouslySelectedDetailRow);
+            SelectRowInGrid(1, true);
         }
 
         /// <summary>
@@ -214,18 +208,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string filter =
                 ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " +
                 ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
-                ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + strDteEnd + "'";
+                ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < #" + strDteEnd + "#";
 
             if (dteStart > DateTime.MinValue)
             {
-                filter += (" and " + ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > '" + strDteStart + "'");
+                filter += (" and " + ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > #" + strDteStart + "#");
             }
 
             DataView myDataView = FMainDS.ADailyExchangeRate.DefaultView;
             myDataView.RowFilter = filter;
             myDataView.Sort = SortByDateDescending;
 
-            ModalFormReturnValue = ExchangeDefault;
+            ModalFormReturnExchangeRate = ExchangeDefault;
             strCurrencyToDefault = strCurrencyTo;
             dateTimeDefault = dteEnd;
 
@@ -311,7 +305,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             get
             {
-                return ModalFormReturnValue;
+                return ModalFormReturnExchangeRate;
             }
         }
 
@@ -329,7 +323,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     if (txtDetailRateOfExchange.NumberValueDecimal.HasValue)
                     {
-                        ModalFormReturnValue = txtDetailRateOfExchange.NumberValueDecimal.Value;
+                        ModalFormReturnExchangeRate = txtDetailRateOfExchange.NumberValueDecimal.Value;
                     }
 
                     blnUseDateTimeDefault = false;
@@ -447,14 +441,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ADailyExchangeRate.DefaultView);
 
-            SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
-            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-
-            //Must be set after the FocusRowChanged event is called as it sets this flag to false
-            FNewRecordUnsavedInFocus = true;
-
-            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-            ShowDetails(FPreviouslySelectedDetailRow);
+            SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1, true);
 
             Control[] pnl = this.Controls.Find("pnlDetails", true);
 
@@ -695,7 +682,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 tInverseItem item = lstInverses[i];
 
                 // Does the item exist already?
-                dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}='{5}' AND {6}={7}",
+                dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=#{5}# AND {6}={7}",
                     ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
                     item.FromCurrencyCode,
                     ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
@@ -731,9 +718,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // Now make sure to select the row that was currently selected when we started the Save operation
-            FCurrentRow = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1;
-            grdDetails.SelectRowInGrid(FCurrentRow);
-            ShowDetails(FPreviouslySelectedDetailRow);      // just in case the row did not change
+            SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1, true);
         }
     }
 }

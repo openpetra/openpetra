@@ -57,12 +57,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ABatchStatus"></param>
         public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
+            DateTime batchDateEffective;
+
+            //Make sure the current effective date for the Batch is correct
+            batchDateEffective = GetBatchRow().DateEffective;
+
+            if (dtpDetailDateEffective.Date.Value != batchDateEffective)
+            {
+                dtpDetailDateEffective.Date = batchDateEffective;
+            }
+
+            //Check if same Journals as previously selected
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
             {
-                //Same as previously selected
-                if ((GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
+                if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                 {
-                    GetDetailsFromControls(GetSelectedDetailRow());
+                    if (grdDetails.SelectedRowIndex() > 0)
+                    {
+                        GetDetailsFromControls(GetSelectedDetailRow());
+                    }
                 }
 
                 return;
@@ -89,7 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ShowData();
-            ShowDetails(GetSelectedDetailRow());
+            ShowDetails();
 
             txtDetailExchangeRateToBase.Enabled = false;
 
@@ -155,6 +168,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     DEFAULT_CURRENCY_EXCHANGE) == DialogResult.Cancel)
             {
                 return;
+            }
+
+            if (FPreviouslySelectedDetailRow.ExchangeRateToBase != setupDailyExchangeRate.CurrencyExchangeRate)
+            {
+                //Enforce save needed condition
+                FPetraUtilsObject.SetChangedFlag();
             }
 
             FPreviouslySelectedDetailRow.ExchangeRateToBase = setupDailyExchangeRate.CurrencyExchangeRate;
@@ -371,7 +390,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     transaction.Delete();
                 }
 
-                InvokeFocusedRowChanged(currentRowIndex);
+                SelectRowInGrid(currentRowIndex, true);
 
                 ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 FPetraUtilsObject.SetChangedFlag();

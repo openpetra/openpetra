@@ -30,6 +30,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -120,6 +121,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Load the journals for the current batch in the background
+        /// </summary>
+        public void LoadJournals()
+        {
+            int batchNumber = ucoBatches.GetSelectedDetailRow().BatchNumber;
+
+            FMainDS.AJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
+                AJournalTable.GetBatchNumberDBName(),
+                batchNumber);
+
+            // only load from server if there are no journals loaded yet for this batch
+            // otherwise we would overwrite journals that have already been modified
+            if (FMainDS.AJournal.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
+            }
+        }
+
+        /// <summary>
         /// Enable the attributes tab if we have active transactions
         /// </summary>
         public void EnableAttributes()
@@ -189,8 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     this.tabGLBatch.SelectedTab = this.tpgJournals;
 
-                    this.ucoJournals.LoadJournals(
-                        FLedgerNumber,
+                    this.ucoJournals.LoadJournals(FLedgerNumber,
                         ucoBatches.GetSelectedDetailRow().BatchNumber,
                         ucoBatches.GetSelectedDetailRow().BatchStatus);
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,29 +61,20 @@ namespace Ict.Petra.Shared.MPartner
             PFoundationRow AFoundationRow)
         {
             if ((APartnerRow.Restricted == PARTNER_RESTRICTED_TO_USER)
-                && !((APartnerRow.UserId == UserInfo.GUserInfo.UserID)
-                     || UserInfo.GUserInfo.IsInModule("SYSMAN")))
+                && !((APartnerRow.UserId == UserInfo.GUserInfo.UserID) || UserInfo.GUserInfo.IsInModule("SYSMAN")))
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 6)
-                {
-                    Console.WriteLine("CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() +
-                        " is restriced to User " + APartnerRow.UserId + "!");
-                }
-#endif
+                TLogging.LogAtLevel(6,
+                    "CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() + " is restriced to User " +
+                    APartnerRow.UserId + "!");
                 return TPartnerAccessLevelEnum.palRestrictedToUser;
             }
             else if ((APartnerRow.Restricted == PARTNER_RESTRICTED_TO_GROUP)
-                     && !((UserInfo.GUserInfo.IsInGroup(APartnerRow.GroupId))
-                          || UserInfo.GUserInfo.IsInModule("SYSMAN")))
+                     && !((UserInfo.GUserInfo.IsInGroup(APartnerRow.GroupId)) || UserInfo.GUserInfo.IsInModule("SYSMAN")))
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 6)
-                {
-                    Console.WriteLine("CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() +
-                        " is restriced to Group " + APartnerRow.GroupId + "!");
-                }
-#endif
+                TLogging.LogAtLevel(6,
+                    "CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() + " is restriced to Group " +
+                    APartnerRow.GroupId +
+                    "!");
                 return TPartnerAccessLevelEnum.palRestrictedToGroup;
             }
 
@@ -95,13 +86,9 @@ namespace Ict.Petra.Shared.MPartner
                     {
                         if (!CheckFoundationSecurity(AFoundationRow))
                         {
-#if DEBUGMODE
-                            if (TLogging.DL >= 6)
-                            {
-                                Console.WriteLine("CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() +
-                                    " is restriced by Foundation Ownership!");
-                            }
-#endif
+                            TLogging.LogAtLevel(6,
+                                "CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() +
+                                " is restriced by Foundation Ownership!");
                             return TPartnerAccessLevelEnum.palRestrictedByFoundationOwnership;
                         }
                     }
@@ -112,13 +99,7 @@ namespace Ict.Petra.Shared.MPartner
                 }
             }
 
-#if DEBUGMODE
-            if (TLogging.DL >= 6)
-            {
-                Console.WriteLine("CanAccessPartner: Access to Partner " + APartnerRow.PartnerKey.ToString() +
-                    " is GRANTED!");
-            }
-#endif
+            TLogging.LogAtLevel(6, "CanAccessPartner: Access to Partner " + APartnerRow.PartnerKey.ToString() + " is GRANTED!");
             return TPartnerAccessLevelEnum.palGranted;
         }
 

@@ -4,53 +4,40 @@
 <include buildfile="../../../inc/nant/OpenPetra.csharp.xml"/> 
 
 <target name="test-client">
-    <nant inheritall="false" target="startPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
-    <nunit2>
-        <formatter type="Plain" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.Common.Controls.dll" />
+    <nant inheritall="false" target="startPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Controls.dll" />
+
 <!-- TODO
         <test assemblyname="${dir.bin}/Ict.Testing.lib.Reporting.dll" />
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GiftForm.dll" />
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" />
 -->
-    </nunit2>
     <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
 </target>
 
 <target name="test-tools">
-    <nunit2>
-        <formatter type="Plain" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.CodeGeneration.dll" />
-    </nunit2>
+    <!-- NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.CodeGeneration.dll" -->
 </target>
 
 <target name="test-server">
-    <nunit2>
-        <formatter type="Plain" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerEdit.dll" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Budget.dll" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GL.dll" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.ICH.dll" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.AP.dll" />
-
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerExports.dll" />
-
-        <!-- 
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" />
-        -->
-    </nunit2>
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerEdit.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Budget.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GL.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.ICH.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.AP.dll" />
+    
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerExports.dll" />
+    
+    <!-- <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" /> -->
 </target>
 
 <target name="test-common">
-    <nunit2>
-        <formatter type="Plain" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.Common.dll" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.Common.IO.dll" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.Common.DB.dll" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.Common.Data.dll" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.Shared.dll" />
-        
-    </nunit2>
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.IO.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.DB.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Data.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Shared.dll" />
+
     <nunit2>
         <formatter type="Plain" />
         <test>
