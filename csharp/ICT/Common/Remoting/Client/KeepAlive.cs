@@ -97,7 +97,7 @@ namespace Ict.Common.Remoting.Client
         /// <param name="ARemotedObject">The Remoted Object as an Interface
         /// </param>
         /// <returns>void</returns>
-        public static void Register(MarshalByRefObject ARemotedObject)
+        public static void Register(IKeepAlive ARemotedObject)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace Ict.Common.Remoting.Client
 
                         // TLogging.Log("TEnsureKeepAlive.Register: Added Object '" + ARemotedObject.ToString() + "' (HashCode: " + ARemotedObject.GetHashCode().ToString() + ")", TLoggingType.ToLogfile);
 
-                        ARemotedObject.GetLifetimeService();
+                        ARemotedObject.KeepAlive();
                     }
                 }
                 finally
@@ -131,13 +131,13 @@ namespace Ict.Common.Remoting.Client
         /// <param name="ARemotedObject"></param>
         public static void Register(IInterface ARemotedObject)
         {
-            if (ARemotedObject is MarshalByRefObject)
+            if (ARemotedObject is IKeepAlive)
             {
-                Register((MarshalByRefObject)ARemotedObject);
+                Register((IKeepAlive)ARemotedObject);
             }
             else
             {
-                TLogging.Log("KeepAlive Register: " + ARemotedObject.GetType().ToString() + " is not a MarshalByRefObject");
+                TLogging.Log("KeepAlive Register: " + ARemotedObject.GetType().ToString() + " does not implement IKeepAlive");
             }
         }
 
@@ -152,7 +152,7 @@ namespace Ict.Common.Remoting.Client
         /// <param name="ARemotedObject">The Remoted Object as an Interface
         /// </param>
         /// <returns>void</returns>
-        public static void UnRegister(MarshalByRefObject ARemotedObject)
+        public static void UnRegister(IKeepAlive ARemotedObject)
         {
             String ObjectHashCode = string.Empty;
 
@@ -205,13 +205,13 @@ namespace Ict.Common.Remoting.Client
         /// <param name="ARemotedObject"></param>
         public static void UnRegister(IInterface ARemotedObject)
         {
-            if (ARemotedObject is MarshalByRefObject)
+            if (ARemotedObject is IKeepAlive)
             {
-                UnRegister((MarshalByRefObject)ARemotedObject);
+                UnRegister((IKeepAlive)ARemotedObject);
             }
             else
             {
-                TLogging.Log("KeepAlive UnRegister: " + ARemotedObject.GetType().ToString() + " is not a MarshalByRefObject");
+                TLogging.Log("KeepAlive UnRegister: " + ARemotedObject.GetType().ToString() + " does not implement IKeepAlive");
             }
         }
 
@@ -246,17 +246,7 @@ namespace Ict.Common.Remoting.Client
                             {
                                 try
                                 {
-                                    // TLogging.Log("KeepAliveThread: Keeping Object " + ObjectEnum.Key.ToString() + " alive", TLoggingType.ToLogfile);
-
-                                    /*
-                                     * The following call is the key to the whole concept of keeping
-                                     * the remoted server-side Objects alive:
-                                     * Calling 'GetLifeTimeService' is sufficient to 'tickle' the
-                                     * server-side Object and for its Lease to be renewed!
-                                     */
-                                    ((MarshalByRefObject)ObjectEnum.Value).GetLifetimeService();
-
-                                    // TLogging.Log("KeepAliveThread: Kept Object " + ObjectEnum.Value.ToString() + " alive", TLoggingType.ToLogfile);
+                                    ((IKeepAlive)ObjectEnum.Value).KeepAlive();
                                 }
                                 catch (Exception)
                                 {
