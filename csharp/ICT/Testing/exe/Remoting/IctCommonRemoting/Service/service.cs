@@ -41,6 +41,12 @@ namespace Tests.IctCommonRemoting.Service
     /// </summary>
     public class TMyService : TConfigurableMBRObject, IMyService
     {
+        /// make sure that the TMyService object exists until this AppDomain is unloaded!
+        public override object InitializeLifetimeService()
+        {
+            return null;
+        }
+
         private TMySubNamespaceRemote FSubNamespace = null;
 
         /// <summary>
@@ -163,7 +169,7 @@ namespace Tests.IctCommonRemoting.Service
         /// it opens a new channel for each new object.
         /// this is needed for cross domain marshalling.
         [Serializable]
-        public class TMyUIConnectorRemote : IMyUIConnector
+        public class TMyUIConnectorRemote : IMyUIConnector, IKeepAlive
         {
             private IMyUIConnector RemoteObject = null;
             private string FObjectURI;
@@ -178,6 +184,28 @@ namespace Tests.IctCommonRemoting.Service
                 RemoteObject = (IMyUIConnector)
                                TConnector.TheConnector.GetRemoteObject(FObjectURI,
                     typeof(IMyUIConnector));
+            }
+
+            /// keep the object alive on the server
+            public void KeepAlive()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                // The following call is the key to the whole concept of keeping
+                // the remoted server-side Objects alive:
+                // Calling 'GetLifeTimeService' is sufficient to 'tickle' the
+                // server-side Object and for its Lease to be renewed!
+                try
+                {
+                    ((MarshalByRefObject)RemoteObject).InitializeLifetimeService();
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.ToString());
+                }
             }
 
             /// forward the method call
