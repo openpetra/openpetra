@@ -280,7 +280,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (FBatchLoaded == true)
             {
-                SelectRowInGrid(1, true);
+                SelectRowInGrid(1);
             }
 
             UpdateChangeableStatus();

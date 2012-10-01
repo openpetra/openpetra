@@ -166,7 +166,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ACorporateExchangeRate.DefaultView);
 
-            SelectDetailRowByDataTableIndex(FMainDS.ACorporateExchangeRate.Rows.Count - 1, true);
+            SelectDetailRowByDataTableIndex(FMainDS.ACorporateExchangeRate.Rows.Count - 1);
 
             ShowDetails();
 

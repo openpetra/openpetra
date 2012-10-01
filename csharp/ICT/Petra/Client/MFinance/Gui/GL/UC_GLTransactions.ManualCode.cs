@@ -476,7 +476,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPetraUtilsObject.SetChangedFlag();
 
-                SelectRowInGrid(rowIndex, true);
+                SelectRowInGrid(rowIndex);
 
                 if (grdDetails.Rows.Count < 2)
                 {

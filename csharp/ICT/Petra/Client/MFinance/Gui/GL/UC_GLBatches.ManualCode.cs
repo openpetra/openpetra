@@ -284,7 +284,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-            SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1, true);
+            SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
             txtDetailBatchDescription.Text = "PLEASE ENTER DESCRIPTION";
@@ -424,7 +424,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     //Select and call the event that doesn't occur automatically
-                    SelectRowInGrid(newCurrentRowPos, true);
+                    SelectRowInGrid(newCurrentRowPos);
 
                     //If some row(s) still exist after deletion
                     if (grdDetails.Rows.Count < 2)
@@ -564,7 +564,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     {
                         //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
                         // such that a removal of a row is not detected
-                        SelectRowInGrid(newCurrentRowPos, true);
+                        SelectRowInGrid(newCurrentRowPos);
                     }
                     else
                     {
@@ -854,7 +854,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                SelectRowInGrid(1, true);
+                SelectRowInGrid(1);
                 UpdateChangeableStatus(true);
                 ((TFrmGLBatch) this.ParentForm).EnableJournals();
             }
