@@ -74,6 +74,7 @@ namespace ControlTestBench
             this.btnTestTaskListHorizontalConstructor = new System.Windows.Forms.Button();
             this.btnTestStacked = new System.Windows.Forms.Button();
             this.btnTestTaskListHorizontalConstructorRight = new System.Windows.Forms.Button();
+            this.btnTaskListHeight = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnChangeText
@@ -292,11 +293,22 @@ namespace ControlTestBench
             this.btnTestTaskListHorizontalConstructorRight.UseVisualStyleBackColor = true;
             this.btnTestTaskListHorizontalConstructorRight.Click += new System.EventHandler(this.TestTaskListHorizontalRightConstructor);
             // 
+            // btnTaskListHeight
+            // 
+            this.btnTaskListHeight.Location = new System.Drawing.Point(538, 468);
+            this.btnTaskListHeight.Name = "btnTaskListHeight";
+            this.btnTaskListHeight.Size = new System.Drawing.Size(169, 23);
+            this.btnTaskListHeight.TabIndex = 28;
+            this.btnTaskListHeight.Text = "Show TaskList &Height";
+            this.btnTaskListHeight.UseVisualStyleBackColor = true;
+            this.btnTaskListHeight.Click += new System.EventHandler(this.BtnTaskListHeightClick);
+            // 
             // CollapsibleTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(763, 525);
+            this.Controls.Add(this.btnTaskListHeight);
             this.Controls.Add(this.btnTestStacked);
             this.Controls.Add(this.btnTestTaskListHorizontalConstructorRight);
             this.Controls.Add(this.btnTestTaskListHorizontalConstructor);
@@ -324,6 +336,7 @@ namespace ControlTestBench
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+        private System.Windows.Forms.Button btnTaskListHeight;
         private System.Windows.Forms.Button btnTestTaskListHorizontalConstructorRight;
         private System.Windows.Forms.Button btnTestStacked;
         private System.Windows.Forms.Button btnTestTaskListExpandedConstructor;

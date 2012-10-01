@@ -101,6 +101,8 @@ namespace Ict.Common.Controls
 
         private XmlNode FActiveTaskItem = null;
         
+        private int FTaskListMaxHeight = 0;
+        
         #endregion
 
         #region Events (and related methods)
@@ -190,6 +192,14 @@ namespace Ict.Common.Controls
             {
                 InternalVisualStyle = value;
                 ChangeVisualStyle();
+            }
+        }
+        
+        public int TaskListMaxHeight
+        {
+            get
+            {
+                return FTaskListMaxHeight;
             }
         }
 
@@ -301,6 +311,7 @@ namespace Ict.Common.Controls
                 this.tPnlGradient1.AutoScrollMargin = new Size(VisualStyle.ContentPaddingRight, VisualStyle.ContentPaddingBottom);
             }
 
+            this.tPnlGradient1.Resize += new EventHandler(TTaskList_Resize);
             int CurrentNumbering = 1;
             NumberingLevel++;
 
@@ -368,8 +379,17 @@ namespace Ict.Common.Controls
 
                 TaskNode = TaskNode.NextSibling;
             }
+
             
             this.ResumeLayout();
+        }
+
+        void TTaskList_Resize(object sender, EventArgs e)
+        {
+            if (FTaskListMaxHeight < this.tPnlGradient1.Height) 
+            {
+                FTaskListMaxHeight = this.tPnlGradient1.Height;
+            }
         }
         
         void SetCommonActivatedLinkAppearance(LinkLabel ALinkLabel)

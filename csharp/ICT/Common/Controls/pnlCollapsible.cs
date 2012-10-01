@@ -1043,6 +1043,8 @@ namespace Ict.Common.Controls
             this.pnlContent.Controls.Add(FTaskListInstance);
             
             FTaskListInstance.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ExpandedSize = FTaskListInstance.TaskListMaxHeight + pnlTitleText.Height + FVisualStyle.TitlePaddingTop;
+            this.Height = ExpandedSize;
             
             return FTaskListInstance;
         }

@@ -97,5 +97,14 @@ namespace ControlTestBench
             
             new TestAll(UINavigation.FirstChild.NextSibling.FirstChild).Show();
         }
+        
+        void BtnCollapsibleHosterTestClick(object sender, EventArgs e)
+        {
+            XmlDocument UINavigation = LoadYAMLTestFile();
+            
+            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
+            
+            new CollapsiblePanelHosterTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();            
+        }
     }
 }

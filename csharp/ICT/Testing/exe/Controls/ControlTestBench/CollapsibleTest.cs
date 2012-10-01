@@ -71,7 +71,7 @@ namespace ControlTestBench
         {
             this.Controls.Remove(this.FPnl);
 
-            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMLNode, TCollapseDirection.cdVertical, 120, false, FEnumStyle);
+            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMLNode, TCollapseDirection.cdVertical, 10, false, FEnumStyle);
             this.FPnl.Text = "&Tasks";
             this.Controls.Add(this.FPnl);
         }
@@ -208,5 +208,10 @@ namespace ControlTestBench
             }
         }
         
+        
+        void BtnTaskListHeightClick(object sender, EventArgs e)
+        {
+            MessageBox.Show(((TPnlCollapsible)this.Controls[this.Controls.Count - 1]).TaskListInstance.Height.ToString());
+        }
     }
 }

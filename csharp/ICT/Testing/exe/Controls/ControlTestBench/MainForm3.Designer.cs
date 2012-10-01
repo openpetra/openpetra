@@ -60,19 +60,20 @@ namespace ControlTestBench
             this.btnCollapsibleTest = new System.Windows.Forms.Button();
             this.btnTaskListTest = new System.Windows.Forms.Button();
             this.btnTestAll = new System.Windows.Forms.Button();
+            this.btnCollapsibleHosterTest = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtYaml
             // 
-            this.txtYaml.Location = new System.Drawing.Point(169, 171);
+            this.txtYaml.Location = new System.Drawing.Point(169, 183);
             this.txtYaml.Name = "txtYaml";
             this.txtYaml.Size = new System.Drawing.Size(100, 20);
             this.txtYaml.TabIndex = 2;
-            this.txtYaml.Text = "testYaml_Shepherd.yaml";
+            this.txtYaml.Text = "testYaml_LedgerNew.yaml";
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(27, 171);
+            this.label1.Location = new System.Drawing.Point(27, 183);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(136, 23);
             this.label1.TabIndex = 3;
@@ -87,14 +88,14 @@ namespace ControlTestBench
                                     "Dashboard",
                                     "Shepherd",
                                     "HorizontalCollapse"});
-            this.cmbVisualStyle.Location = new System.Drawing.Point(169, 198);
+            this.cmbVisualStyle.Location = new System.Drawing.Point(169, 210);
             this.cmbVisualStyle.Name = "cmbVisualStyle";
             this.cmbVisualStyle.Size = new System.Drawing.Size(121, 21);
             this.cmbVisualStyle.TabIndex = 4;
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(27, 198);
+            this.label2.Location = new System.Drawing.Point(27, 210);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(136, 44);
             this.label2.TabIndex = 5;
@@ -131,7 +132,7 @@ namespace ControlTestBench
             // 
             // btnTestAll
             // 
-            this.btnTestAll.Location = new System.Drawing.Point(73, 130);
+            this.btnTestAll.Location = new System.Drawing.Point(73, 148);
             this.btnTestAll.Name = "btnTestAll";
             this.btnTestAll.Size = new System.Drawing.Size(182, 23);
             this.btnTestAll.TabIndex = 8;
@@ -139,12 +140,23 @@ namespace ControlTestBench
             this.btnTestAll.UseVisualStyleBackColor = true;
             this.btnTestAll.Click += new System.EventHandler(this.BtnTestAllClick);
             // 
+            // btnCollapsibleHosterTest
+            // 
+            this.btnCollapsibleHosterTest.Location = new System.Drawing.Point(73, 113);
+            this.btnCollapsibleHosterTest.Name = "btnCollapsibleHosterTest";
+            this.btnCollapsibleHosterTest.Size = new System.Drawing.Size(182, 23);
+            this.btnCollapsibleHosterTest.TabIndex = 9;
+            this.btnCollapsibleHosterTest.Text = "CollapsiblePanelHoster Test";
+            this.btnCollapsibleHosterTest.UseVisualStyleBackColor = true;
+            this.btnCollapsibleHosterTest.Click += new System.EventHandler(this.BtnCollapsibleHosterTestClick);
+            // 
             // MainForm3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(345, 268);
+            this.Controls.Add(this.btnCollapsibleHosterTest);
             this.Controls.Add(this.btnCollapsibleTest);
             this.Controls.Add(this.btnTestAll);
             this.Controls.Add(this.btnShepherdTest);
@@ -159,6 +171,7 @@ namespace ControlTestBench
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+        private System.Windows.Forms.Button btnCollapsibleHosterTest;
         private System.Windows.Forms.Button btnTestAll;
         private System.Windows.Forms.Button btnShepherdTest;
         private System.Windows.Forms.Button btnCollapsibleTest;

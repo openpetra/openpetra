@@ -1,0 +1,33 @@
+TaskGroup:
+    Task0:
+        Label: "&Ledger"
+        
+        Task1:
+            Label: "&Gift Processing"
+        Task2: 
+            Label: "&Accounts Payable"
+        Task3:
+            Label: "&Budgets"
+            Task3a:
+                Label: "Narrowly Avoid being Eaten Alive"
+                Visible: false
+        Task4:
+            Label: "General &Ledger"
+            Visible: true
+        Task5:
+            Label: "&Setup"
+    Task6:
+        Label: "S&witch Ledger"
+        Task7:
+            Label: "Ledger 49 - Germany"
+        Task8: 
+            Label: "Ledger 43 - Austria"
+        Task9:
+            Label: "Ledger 49 - Germany"
+#        Task10: 
+ #           Label: "Ledger 43 - Austria"        
+  #      Task11:
+   #         Label: "Ledger 49 - Germany"
+    #    Task12: 
+     #       Label: "Ledger 43 - Austria"            
+        

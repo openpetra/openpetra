@@ -169,7 +169,7 @@ namespace ControlTestBench
                 this.Controls.Remove(ExistingTaskListCtrl);
             }
 
-            AControl.Dock = DockStyle.Left;
+//            AControl.Dock = DockStyle.Left;
             
             this.Controls.Add(AControl);
         }
