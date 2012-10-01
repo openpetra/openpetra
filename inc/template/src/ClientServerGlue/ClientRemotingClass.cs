@@ -18,7 +18,7 @@ namespace Ict.Petra.Server.M{#TOPLEVELMODULE}.Instantiator
 /// it opens a new channel for each new object. 
 /// this is needed for cross domain marshalling.
 [Serializable]
-public class {#CLASSNAME}: {#INTERFACE}
+public class {#CLASSNAME}: {#INTERFACE}, IKeepAlive
 {
     private {#INTERFACE} RemoteObject = null;
     private string FObjectURI;
@@ -32,6 +32,27 @@ public class {#CLASSNAME}: {#INTERFACE}
         RemoteObject = ({#INTERFACE})
             TConnector.TheConnector.GetRemoteObject(FObjectURI,
             typeof({#INTERFACE}));
+    }
+    /// keep the object alive on the server
+    public void KeepAlive()
+    {
+        if (RemoteObject == null)
+        {
+            InitRemoteObject();
+        }
+
+        // The following call is the key to the whole concept of keeping
+        // the remoted server-side Objects alive:
+        // Calling 'GetLifeTimeService' is sufficient to 'tickle' the
+        // server-side Object and for its Lease to be renewed!
+        try
+        {
+            ((MarshalByRefObject)RemoteObject).InitializeLifetimeService();
+        }
+        catch (Exception e)
+        {
+            TLogging.Log(e.ToString());
+        }
     }
     {#METHODSANDPROPERTIES}
 }
