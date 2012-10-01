@@ -98,7 +98,6 @@ namespace {#NAMESPACE}
     {
         if(ValidateAllData(true, true))
         {    
-            int nPrevRowChangedRow = FPrevRowChangedRow;
             {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
             {#INITNEWROWMANUAL}
             FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);

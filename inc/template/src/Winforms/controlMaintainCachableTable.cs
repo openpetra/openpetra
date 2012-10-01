@@ -129,7 +129,6 @@ namespace {#NAMESPACE}
     {
         if(ValidateAllData(true, true, false))
         {
-            int nPrevRowChangedRow = FPrevRowChangedRow;
 {#IFNDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
             // we create the table locally, no dataset
             {#DETAILTABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);

@@ -121,7 +121,6 @@ namespace {#NAMESPACE}
     {
         if(ValidateAllData(true, true))
         {    
-            int nPrevRowChangedRow = FPrevRowChangedRow;
             FMainDS.Merge({#WEBCONNECTORDETAIL}.Create{#DETAILTABLE}({#CREATEDETAIL_ACTUALPARAMETERS}));
             FMainDS.InitVars();
             FMainDS.{#DETAILTABLE}.InitVars();
