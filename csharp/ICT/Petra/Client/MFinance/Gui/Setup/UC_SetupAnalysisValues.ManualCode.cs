@@ -60,20 +60,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FTypeCode = value;
                 //save the position of the actual row
-                int rowIndex = CurrentRowIndex();
+                int rowIndex = grdDetails.SelectedRowIndex();
                 FMainDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                     AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                     FTypeCode);
-                SelectByIndex(rowIndex);
+                SelectRowInGrid(rowIndex);
             }
         }
         private void NewRow(System.Object sender, EventArgs e)
         {
-            GetDataFromControls();
-            TypeCode = ((TFrmSetupAnalysisTypes)ParentForm).FreezeTypeCode();
+            ((TFrmSetupAnalysisTypes)ParentForm).FreezeTypeCode();
             this.CreateNewAFreeformAnalysis();
-            pnlDetails.Enabled = true;
-            txtDetailAnalysisValue.Focus();
         }
 
         private void NewRowManual(ref AFreeformAnalysisRow ARow)
@@ -120,10 +117,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             FPreviouslySelectedDetailRow.AnalysisValue), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
-                int rowIndex = CurrentRowIndex();
+                int rowIndex = grdDetails.SelectedRowIndex();
                 FPreviouslySelectedDetailRow.Delete();
                 FPetraUtilsObject.SetChangedFlag();
-                SelectByIndex(rowIndex);
+                SelectRowInGrid(rowIndex);
             }
         }
 
@@ -146,45 +143,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //FMainDS.AFreeformAnalysis.Merge(TRemote.MFinance.Setup.WebConnectors.LoadValues(FLedgerNumber).AFreeformAnalysis);
         }
 
-        private int CurrentRowIndex()
+        /// <summary>
+        /// The number of values in the grid for the current Type
+        /// </summary>
+        public int Count
         {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            get
             {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            int RowCount = grdDetails.Rows.Count;
-
-            if (rowIndex >= RowCount)
-            {
-                rowIndex = RowCount - 1;
-            }
-
-            if ((rowIndex < 1) && (RowCount > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (RowCount > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-                txtDetailAnalysisValue.ResetText();
-                chkDetailActive.Checked = false;
+                return grdDetails.Rows.Count - 1;
             }
         }
     }

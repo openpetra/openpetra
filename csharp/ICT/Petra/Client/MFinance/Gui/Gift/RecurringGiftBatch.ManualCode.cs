@@ -85,10 +85,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
         public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, bool AFromTabClick = true)
         {
-            //this.tpgTransactions.Enabled = true;
-            FPetraUtilsObject.DisableDataChangedEvent();
-            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, AFromTabClick);
-            FPetraUtilsObject.EnableDataChangedEvent();
+			try
+			{
+	        	//this.tpgTransactions.Enabled = true;
+	            FPetraUtilsObject.DisableDataChangedEvent();
+	            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, AFromTabClick);
+			}
+			finally
+			{
+	            FPetraUtilsObject.EnableDataChangedEvent();
+			}
+
         }
 
         /// <summary>

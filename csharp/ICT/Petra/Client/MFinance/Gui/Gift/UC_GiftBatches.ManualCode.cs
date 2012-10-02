@@ -75,9 +75,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.AGiftBatch.Rows.Clear();
             }
 
-            FPetraUtilsObject.DisableDataChangedEvent();
-            LoadBatches(FLedgerNumber);
-            FPetraUtilsObject.EnableDataChangedEvent();
+            try
+            {
+	            FPetraUtilsObject.DisableDataChangedEvent();
+	            LoadBatches(FLedgerNumber);
+            }
+            finally
+            {
+	            FPetraUtilsObject.EnableDataChangedEvent();
+            }
         }
 
         /// <summary>
@@ -100,9 +106,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYear, FLedgerNumber);
-                FPetraUtilsObject.EnableDataChangedEvent();
+                try
+                {
+	            	FPetraUtilsObject.DisableDataChangedEvent();
+	                TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYear, FLedgerNumber);
+                }
+                finally
+                {
+	                FPetraUtilsObject.EnableDataChangedEvent();
+                }
 
                 // only refresh once, seems we are doing too many loads from the db otherwise
                 RefreshFilter(null, null);
@@ -152,6 +164,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FBatchLoaded = true;
 
             ShowDetails(GetCurrentBatchRow());
+
+            TLogging.Log("Suppress: " + FPetraUtilsObject.SuppressChangeDetection);
+            FPetraUtilsObject.EnableDataChangedEvent();
+            TLogging.Log("Suppress: " + FPetraUtilsObject.SuppressChangeDetection);
+            
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -214,10 +231,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     //Reset the combos
-                    FPetraUtilsObject.DisableDataChangedEvent();
-                    cmbYear.SetSelectedInt32(FSelectedYear);
-                    cmbPeriod.SetSelectedInt32(FSelectedPeriod);
-                    FPetraUtilsObject.EnableDataChangedEvent();
+                    try
+                    {
+                    	FPetraUtilsObject.DisableDataChangedEvent();
+	                    cmbYear.SetSelectedInt32(FSelectedYear);
+	                    cmbPeriod.SetSelectedInt32(FSelectedPeriod);
+                    }
+                    finally
+                    {
+	                    FPetraUtilsObject.EnableDataChangedEvent();
+                    }
                 }
 
                 return;
@@ -299,9 +322,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 	newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber);
                 }
 
-				SelectRowInGrid(newRowToSelectAfterFilter, true);
-                //grdDetails.SelectRowInGrid(newRowToSelectAfterFilter, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-                //InvokeFocusedRowChanged(newRowToSelectAfterFilter);
+				SelectRowInGrid(newRowToSelectAfterFilter);
             }
 
             UpdateChangeableStatus();
@@ -653,14 +674,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ClearControls()
         {
-        	FPetraUtilsObject.DisableDataChangedEvent();
-        	txtDetailBatchDescription.Clear();
-            txtDetailHashTotal.NumberValueDecimal = 0;
-            dtpDetailGlEffectiveDate.Clear();
-            cmbDetailBankCostCentre.SelectedIndex = -1;
-            cmbDetailBankAccountCode.SelectedIndex = -1;
-            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-        	FPetraUtilsObject.EnableDataChangedEvent();
+        	try
+        	{
+	        	FPetraUtilsObject.DisableDataChangedEvent();
+	        	txtDetailBatchDescription.Clear();
+	            txtDetailHashTotal.NumberValueDecimal = 0;
+	            dtpDetailGlEffectiveDate.Date = FDefaultDate;
+	            cmbDetailBankCostCentre.SelectedIndex = -1;
+	            cmbDetailBankAccountCode.SelectedIndex = -1;
+	            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+        	}
+        	finally
+        	{
+	        	FPetraUtilsObject.EnableDataChangedEvent();
+        	}
         }
 
         /// <summary>

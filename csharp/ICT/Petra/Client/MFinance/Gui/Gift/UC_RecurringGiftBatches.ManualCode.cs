@@ -122,9 +122,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
-            FPetraUtilsObject.DisableDataChangedEvent();
-            LoadBatches(FLedgerNumber);
-            FPetraUtilsObject.EnableDataChangedEvent();
+			try
+			{
+	        	FPetraUtilsObject.DisableDataChangedEvent();
+	            LoadBatches(FLedgerNumber);
+			}
+			finally
+			{
+	            FPetraUtilsObject.EnableDataChangedEvent();
+			}
+
         }
 
         /// reset the control
@@ -352,13 +359,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ClearControls()
         {
-        	FPetraUtilsObject.DisableDataChangedEvent();
-        	txtDetailBatchDescription.Clear();
-            txtDetailHashTotal.NumberValueDecimal = 0;
-            cmbDetailBankCostCentre.SelectedIndex = -1;
-            cmbDetailBankAccountCode.SelectedIndex = -1;
-            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-        	FPetraUtilsObject.EnableDataChangedEvent();
+			try
+			{
+	        	FPetraUtilsObject.DisableDataChangedEvent();
+	        	txtDetailBatchDescription.Clear();
+	            txtDetailHashTotal.NumberValueDecimal = 0;
+	            cmbDetailBankCostCentre.SelectedIndex = -1;
+	            cmbDetailBankAccountCode.SelectedIndex = -1;
+	            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+			}
+			finally
+			{
+	        	FPetraUtilsObject.EnableDataChangedEvent();
+			}
+
         }
 
         private void Submit(System.Object sender, System.EventArgs e)

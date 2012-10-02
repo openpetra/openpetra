@@ -61,11 +61,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             this.CreateNewAAnalysisType();
 
-            pnlDetails.Enabled = true;
             ucoValues.Enabled = true;
             txtDetailAnalysisTypeCode.Enabled = true;
-
-            ShowDetails(GetSelectedDetailRow());
         }
 
         private void NewRowManual(ref AAnalysisTypeRow ARow)
@@ -126,10 +123,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             FPreviouslySelectedDetailRow.AnalysisTypeCode), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
-                int rowIndex = CurrentRowIndex();
+                int rowIndex = grdDetails.SelectedRowIndex();
                 FPreviouslySelectedDetailRow.Delete();
                 FPetraUtilsObject.SetChangedFlag();
-                SelectByIndex(rowIndex);
+                SelectRowInGrid(rowIndex);
             }
         }
 
@@ -155,52 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 pnlDetails.Enabled = true;
                 ucoValues.Enabled = true;
                 ucoValues.TypeCode = ARow.AnalysisTypeCode;
-            }
-        }
-
-        private int CurrentRowIndex()
-        {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            int RowCount = grdDetails.Rows.Count;
-
-            if (RowCount == 1) // There's no Items left in the grid (I just deleted the last one?)
-            {
-                txtDetailAnalysisTypeCode.ResetText();
-                txtDetailAnalysisTypeDescription.ResetText();
-            }
-
-            if (rowIndex >= RowCount)
-            {
-                rowIndex = RowCount - 1;
-            }
-
-            if ((rowIndex < 1) && (RowCount > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (RowCount > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
+                txtDetailAnalysisTypeCode.Enabled = ucoValues.Count == 0;
             }
         }
 

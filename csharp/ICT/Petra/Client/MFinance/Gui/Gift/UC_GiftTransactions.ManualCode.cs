@@ -160,7 +160,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FinRecipientKeyChanging = true;
-            FPetraUtilsObject.SuppressChangeDetection = true;
 
             GiftBatchTDSAGiftDetailRow giftDetailRow = GetGiftDetailRow(FPreviouslySelectedDetailRow.GiftTransactionNumber,
                 FPreviouslySelectedDetailRow.DetailNumber);
@@ -169,7 +168,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+	            FPetraUtilsObject.SuppressChangeDetection = true;
+
+	            strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
                 strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
                 if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
@@ -750,13 +751,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailMethodOfGivingCode.SelectedIndex = -1;
                 cmbMinistry.SelectedIndex = -1;
                 txtDetailCostCentreCode.Text = string.Empty;
-
-                FPetraUtilsObject.SuppressChangeDetection = false;
             }
-            catch (Exception)
+            finally
             {
                 FPetraUtilsObject.SuppressChangeDetection = false;
-                throw;
             }
         }
 
@@ -779,7 +777,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
-                SelectRowInGrid(FMainDS.AGiftDetail.Rows.Count - 1, true);
+                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
                 //int newRowIndex = FMainDS.AGiftDetail.Rows.Count - 1;
 
                 //SelectDetailRowByDataTableIndex(newRowIndex);
@@ -887,7 +885,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
-                SelectRowInGrid(FMainDS.AGiftDetail.Rows.Count - 1, true);
+                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
                 //int newRowIndex = FMainDS.AGiftDetail.Rows.Count - 1;
 
                 //SelectDetailRowByDataTableIndex(newRowIndex);
