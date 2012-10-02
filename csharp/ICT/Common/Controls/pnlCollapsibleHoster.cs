@@ -71,12 +71,8 @@ namespace Ict.Common.Controls
             InitializeComponent();
 
             FVisualStyle = Style;
-            TVisualStyles VisualStyle = new TVisualStyles(FVisualStyle);
             
-            if (VisualStyle.CollapsiblePanelDistance != -1) 
-            {
-                FDistanceBetweenCollapsiblePanels = VisualStyle.CollapsiblePanelDistance;    
-            }
+            ChangeVisualStyle(FVisualStyle);
             
             MasterXmlNode = MasterNode;
         }
@@ -100,6 +96,25 @@ namespace Ict.Common.Controls
                 FDistanceBetweenCollapsiblePanels = value;
             }
         }
+
+        /// <summary>
+        /// Visual Style.
+        /// </summary>
+        [Description("The Style in which the panel will be displayed. Note: certain Styles only work with certain 'CollapseDirection' settings!")]
+        [Category("Collapsible Panel Hoster")]
+        public TVisualStylesEnum VisualStyleEnum
+        {
+            get
+            {
+                return FVisualStyle;
+            }
+            set
+            {
+                FVisualStyle = value;
+                
+                ChangeVisualStyle(value);
+            }
+        }
         
         /// <summary></summary>
         [Browsable(false)]
@@ -116,7 +131,7 @@ namespace Ict.Common.Controls
                 FMasterXmlNode = value;
             }
         }    
-
+        
         #endregion
         
         #region Public Methods
@@ -256,6 +271,19 @@ namespace Ict.Common.Controls
             this.ResumeLayout();
         }
 
+        /// <summary>
+        /// Changes the Visual Style. 
+        /// </summary>
+        private void ChangeVisualStyle(TVisualStylesEnum AVisualStyle)
+        {
+            TVisualStyles VisualStyle = new TVisualStyles(FVisualStyle);
+            
+            if (VisualStyle.CollapsiblePanelDistance != -1) 
+            {
+                FDistanceBetweenCollapsiblePanels = VisualStyle.CollapsiblePanelDistance;    
+            }
+        }
+        
         #endregion
     }
 }

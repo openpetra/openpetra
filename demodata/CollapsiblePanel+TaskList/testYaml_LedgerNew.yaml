@@ -22,8 +22,6 @@ TaskGroup:
             Label: "Ledger 49 - Germany"
         Task8: 
             Label: "Ledger 43 - Austria"
-        Task9:
-            Label: "Ledger 49 - Germany"
 #        Task10: 
  #           Label: "Ledger 43 - Austria"        
   #      Task11:

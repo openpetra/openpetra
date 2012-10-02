@@ -63,21 +63,6 @@ namespace ControlTestBench
 //            this.sptContent.Panel1.Controls.Add(this.tPnlCollapsible1);
         }
 
-        private XmlNode GetHardCodedXmlNodes_TaskList1()
-        {
-            string[] lines = new string[7];
-            
-            lines[0] = "TaskGroup:\n";
-            lines[1] = "    Task1:\n";
-            lines[2] = "        Label: First Item";
-            lines[3] = "    Task2:\n";
-            lines[4] = "        Label: Second Item";
-            lines[5] = "    Task3:\n";
-            lines[6] = "        Label: Third Item";
-            
-            return new TYml2Xml(lines).ParseYML2TaskListRoot();
-        }
-
         private XmlNode GetHardCodedXmlNodes_TaskList2()
         {
             string[] lines = new string[9];
@@ -125,6 +110,35 @@ namespace ControlTestBench
             lines[4] = "        Label: Second Item";
             lines[5] = "    Task3:\n";
             lines[6] = "        Label: Third Item";
+            
+            return new TYml2Xml(lines).ParseYML2TaskListRoot();
+        }
+
+        private XmlNode GetHardCodedXmlNodes_AccordionPanel3()
+        {
+            string[] lines = new string[21];
+            
+            lines[0] = "TaskGroup:\n";
+            lines[1] = "    Task0:\n";
+            lines[2] = "        Label: &Ledger";
+            lines[3] = "        Task1:\n";
+            lines[4] = "            Label: &Gift Processing";
+            lines[5] = "        Task2:\n";
+            lines[6] = "            Label: &Accounts Payable";
+            lines[7] = "        Task3:\n";
+            lines[8] = "            Label: &Budgets";
+            lines[9] = "        Task4:\n";
+            lines[10] = "            Label: General &Ledger";
+            lines[11] = "        Task5:\n";
+            lines[12] = "            Label: &Setup";
+            lines[13] = "    Task6:\n";
+            lines[14] = "        Label: S&witch Ledger";
+            lines[15] = "        Task7:\n";
+            lines[16] = "            Label: Ledger 49 - Germany";
+            lines[17] = "        Task8:\n";
+            lines[18] = "            Label: Ledger 43 - Austria";
+            lines[19] = "        Task9:\n";
+            lines[20] = "            Label: Ledger 1 - ICT";
             
             return new TYml2Xml(lines).ParseYML2TaskListRoot();
         }
@@ -304,19 +318,18 @@ namespace ControlTestBench
             cplFolders.TaskListNode = GetHardCodedXmlNodes_AccordionPanel1();
             cplShepherd.TaskListNode = GetHardCodedXmlNodes_Shepherd();
             cplPartnerInfo.TaskListNode = GetHardCodedXmlNodes_TaskList2();
-            cplTasks1.TaskListNode = GetHardCodedXmlNodes_TaskList1();
-            cplTasks2.TaskListNode = GetHardCodedXmlNodes_TaskList2();
             cplTasks3.TaskListNode = GetHardCodedXmlNodes_AccordionPanel1();
             cplTasks4.TaskListNode = GetHardCodedXmlNodes_AccordionPanel2();
             
             cplFolders.InitUserControl();
             cplShepherd.InitUserControl();
             cplPartnerInfo.InitUserControl();
-            cplTasks1.InitUserControl();
-            cplTasks2.InitUserControl();
             cplTasks3.InitUserControl();
             cplTasks4.InitUserControl();
             cplRightCollapse.InitUserControl();
+            
+            pchTasks1.MasterXmlNode = GetHardCodedXmlNodes_AccordionPanel3();
+            pchTasks1.RealiseCollapsiblePanelsNow();
        }
     }
 }

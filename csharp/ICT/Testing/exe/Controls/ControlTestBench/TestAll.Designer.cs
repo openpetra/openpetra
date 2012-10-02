@@ -77,8 +77,7 @@ namespace ControlTestBench
             this.cplFolders = new Ict.Common.Controls.TPnlCollapsible();
             this.pnlFiller = new System.Windows.Forms.Panel();
             this.pnlTasksHoster = new System.Windows.Forms.Panel();
-            this.cplTasks2 = new Ict.Common.Controls.TPnlCollapsible();
-            this.cplTasks1 = new Ict.Common.Controls.TPnlCollapsible();
+            this.pchTasks1 = new Ict.Common.Controls.TPnlCollapsibleHoster();
             this.pnlShepherdHoster = new System.Windows.Forms.Panel();
             this.cplShepherd = new Ict.Common.Controls.TPnlCollapsible();
             this.pnlTasksHoster2 = new System.Windows.Forms.Panel();
@@ -309,7 +308,7 @@ namespace ControlTestBench
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlContent.Location = new System.Drawing.Point(0, 0);
             this.pnlContent.Name = "pnlContent";
-            this.pnlContent.Size = new System.Drawing.Size(698, 605);
+            this.pnlContent.Size = new System.Drawing.Size(524, 605);
             this.pnlContent.TabIndex = 28;
             // 
             // sptContent
@@ -327,8 +326,8 @@ namespace ControlTestBench
             this.sptContent.Panel2.BackColor = System.Drawing.SystemColors.WindowFrame;
             this.sptContent.Panel2.Controls.Add(this.pnlFiller);
             this.sptContent.Panel2.Controls.Add(this.cplPartnerInfo);
-            this.sptContent.Size = new System.Drawing.Size(698, 605);
-            this.sptContent.SplitterDistance = 158;
+            this.sptContent.Size = new System.Drawing.Size(524, 605);
+            this.sptContent.SplitterDistance = 118;
             this.sptContent.TabIndex = 0;
             this.sptContent.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SptContentSplitterMoved);
             // 
@@ -338,7 +337,7 @@ namespace ControlTestBench
             this.cplFolders.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cplFolders.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontal;
             this.cplFolders.Dock = System.Windows.Forms.DockStyle.Left;
-            this.cplFolders.ExpandedSize = 215;
+            this.cplFolders.ExpandedSize = 181;
             this.cplFolders.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
             this.cplFolders.IsCollapsed = false;
             this.cplFolders.Location = new System.Drawing.Point(0, 0);
@@ -364,7 +363,7 @@ namespace ControlTestBench
             this.pnlFiller.Margin = new System.Windows.Forms.Padding(3, 3, 3, 8);
             this.pnlFiller.Name = "pnlFiller";
             this.pnlFiller.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.pnlFiller.Size = new System.Drawing.Size(536, 455);
+            this.pnlFiller.Size = new System.Drawing.Size(402, 429);
             this.pnlFiller.TabIndex = 4;
             // 
             // pnlTasksHoster
@@ -372,54 +371,24 @@ namespace ControlTestBench
             this.pnlTasksHoster.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
                                     | System.Windows.Forms.AnchorStyles.Left)));
             this.pnlTasksHoster.BackColor = System.Drawing.Color.Wheat;
-            this.pnlTasksHoster.Controls.Add(this.cplTasks2);
-            this.pnlTasksHoster.Controls.Add(this.cplTasks1);
+            this.pnlTasksHoster.Controls.Add(this.pchTasks1);
             this.pnlTasksHoster.Location = new System.Drawing.Point(6, 6);
             this.pnlTasksHoster.Name = "pnlTasksHoster";
             this.pnlTasksHoster.Size = new System.Drawing.Size(240, 446);
             this.pnlTasksHoster.TabIndex = 0;
             // 
-            // cplTasks2
+            // pchTasks1
             // 
-            this.cplTasks2.AutoSize = true;
-            this.cplTasks2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.cplTasks2.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
-            this.cplTasks2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.cplTasks2.ExpandedSize = 200;
-            this.cplTasks2.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
-            this.cplTasks2.IsCollapsed = false;
-            this.cplTasks2.Location = new System.Drawing.Point(0, 160);
-            this.cplTasks2.Margin = new System.Windows.Forms.Padding(0);
-            this.cplTasks2.Name = "cplTasks2";
-            this.cplTasks2.Padding = new System.Windows.Forms.Padding(5);
-            this.cplTasks2.Size = new System.Drawing.Size(240, 160);
-            this.cplTasks2.TabIndex = 1;
-            this.cplTasks2.Text = "Tasks 2 (XP Task Panel)";
-            this.cplTasks2.UserControlClass = "";
-            this.cplTasks2.UserControlNamespace = "";
-            this.cplTasks2.UserControlString = ".";
-            this.cplTasks2.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
-            // 
-            // cplTasks1
-            // 
-            this.cplTasks1.AutoSize = true;
-            this.cplTasks1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.cplTasks1.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
-            this.cplTasks1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.cplTasks1.ExpandedSize = 200;
-            this.cplTasks1.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
-            this.cplTasks1.IsCollapsed = false;
-            this.cplTasks1.Location = new System.Drawing.Point(0, 0);
-            this.cplTasks1.Margin = new System.Windows.Forms.Padding(0);
-            this.cplTasks1.Name = "cplTasks1";
-            this.cplTasks1.Padding = new System.Windows.Forms.Padding(5);
-            this.cplTasks1.Size = new System.Drawing.Size(240, 160);
-            this.cplTasks1.TabIndex = 0;
-            this.cplTasks1.Text = "Tasks 1 (XP Task Panel)";
-            this.cplTasks1.UserControlClass = "";
-            this.cplTasks1.UserControlNamespace = "";
-            this.cplTasks1.UserControlString = ".";
-            this.cplTasks1.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
+            this.pchTasks1.AutoSize = true;
+            this.pchTasks1.BackColor = System.Drawing.Color.Transparent;
+            this.pchTasks1.DistanceBetweenCollapsiblePanels = 9;
+            this.pchTasks1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pchTasks1.Location = new System.Drawing.Point(0, 0);
+            this.pchTasks1.Margin = new System.Windows.Forms.Padding(0);
+            this.pchTasks1.Name = "pchTasks1";
+            this.pchTasks1.Size = new System.Drawing.Size(240, 446);
+            this.pchTasks1.TabIndex = 0;
+            this.pchTasks1.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
             // 
             // pnlShepherdHoster
             // 
@@ -430,7 +399,7 @@ namespace ControlTestBench
             this.pnlShepherdHoster.Controls.Add(this.cplShepherd);
             this.pnlShepherdHoster.Location = new System.Drawing.Point(439, 6);
             this.pnlShepherdHoster.Name = "pnlShepherdHoster";
-            this.pnlShepherdHoster.Size = new System.Drawing.Size(94, 446);
+            this.pnlShepherdHoster.Size = new System.Drawing.Size(0, 446);
             this.pnlShepherdHoster.TabIndex = 3;
             // 
             // cplShepherd
@@ -439,7 +408,7 @@ namespace ControlTestBench
             this.cplShepherd.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cplShepherd.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontal;
             this.cplShepherd.Dock = System.Windows.Forms.DockStyle.Left;
-            this.cplShepherd.ExpandedSize = 200;
+            this.cplShepherd.ExpandedSize = 181;
             this.cplShepherd.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
             this.cplShepherd.IsCollapsed = false;
             this.cplShepherd.Location = new System.Drawing.Point(0, 0);
@@ -471,20 +440,20 @@ namespace ControlTestBench
             this.cplTasks4.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cplTasks4.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
             this.cplTasks4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.cplTasks4.ExpandedSize = 200;
+            this.cplTasks4.ExpandedSize = 179;
             this.cplTasks4.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
             this.cplTasks4.IsCollapsed = false;
-            this.cplTasks4.Location = new System.Drawing.Point(0, 160);
+            this.cplTasks4.Location = new System.Drawing.Point(0, 186);
             this.cplTasks4.Margin = new System.Windows.Forms.Padding(0);
             this.cplTasks4.Name = "cplTasks4";
             this.cplTasks4.Padding = new System.Windows.Forms.Padding(5);
-            this.cplTasks4.Size = new System.Drawing.Size(181, 160);
+            this.cplTasks4.Size = new System.Drawing.Size(181, 186);
             this.cplTasks4.TabIndex = 1;
             this.cplTasks4.Text = "Tasks 4 (Accordion)";
             this.cplTasks4.UserControlClass = "";
             this.cplTasks4.UserControlNamespace = "";
             this.cplTasks4.UserControlString = ".";
-            this.cplTasks4.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
+            this.cplTasks4.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
             // 
             // cplTasks3
             // 
@@ -492,20 +461,20 @@ namespace ControlTestBench
             this.cplTasks3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cplTasks3.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
             this.cplTasks3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.cplTasks3.ExpandedSize = 200;
+            this.cplTasks3.ExpandedSize = 183;
             this.cplTasks3.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
             this.cplTasks3.IsCollapsed = false;
             this.cplTasks3.Location = new System.Drawing.Point(0, 0);
             this.cplTasks3.Margin = new System.Windows.Forms.Padding(0);
             this.cplTasks3.Name = "cplTasks3";
             this.cplTasks3.Padding = new System.Windows.Forms.Padding(5);
-            this.cplTasks3.Size = new System.Drawing.Size(181, 160);
+            this.cplTasks3.Size = new System.Drawing.Size(181, 186);
             this.cplTasks3.TabIndex = 0;
             this.cplTasks3.Text = "Tasks 3 (Accordion)";
             this.cplTasks3.UserControlClass = "";
             this.cplTasks3.UserControlNamespace = "";
             this.cplTasks3.UserControlString = ".";
-            this.cplTasks3.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
+            this.cplTasks3.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
             // 
             // cplPartnerInfo
             // 
@@ -516,10 +485,10 @@ namespace ControlTestBench
             this.cplPartnerInfo.ExpandedSize = 200;
             this.cplPartnerInfo.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckUserControl;
             this.cplPartnerInfo.IsCollapsed = false;
-            this.cplPartnerInfo.Location = new System.Drawing.Point(0, 455);
+            this.cplPartnerInfo.Location = new System.Drawing.Point(0, 429);
             this.cplPartnerInfo.Margin = new System.Windows.Forms.Padding(0);
             this.cplPartnerInfo.Name = "cplPartnerInfo";
-            this.cplPartnerInfo.Size = new System.Drawing.Size(536, 150);
+            this.cplPartnerInfo.Size = new System.Drawing.Size(402, 176);
             this.cplPartnerInfo.TabIndex = 1;
             this.cplPartnerInfo.Text = "Partner Info";
             this.cplPartnerInfo.UserControlClass = "TUC_PartnerInfo";
@@ -536,10 +505,10 @@ namespace ControlTestBench
             this.cplRightCollapse.ExpandedSize = 250;
             this.cplRightCollapse.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckUserControl;
             this.cplRightCollapse.IsCollapsed = false;
-            this.cplRightCollapse.Location = new System.Drawing.Point(698, 0);
+            this.cplRightCollapse.Location = new System.Drawing.Point(524, 0);
             this.cplRightCollapse.Margin = new System.Windows.Forms.Padding(0);
             this.cplRightCollapse.Name = "cplRightCollapse";
-            this.cplRightCollapse.Size = new System.Drawing.Size(250, 605);
+            this.cplRightCollapse.Size = new System.Drawing.Size(424, 605);
             this.cplRightCollapse.TabIndex = 29;
             this.cplRightCollapse.Text = "To-Do Bar";
             this.cplRightCollapse.UserControlClass = "TUC_PartnerInfo";
@@ -596,6 +565,7 @@ namespace ControlTestBench
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+        private Ict.Common.Controls.TPnlCollapsibleHoster pchTasks1;
         private Ict.Common.Controls.TPnlCollapsible cplRightCollapse;
         private System.Windows.Forms.Panel pnlFiller;
         private Ict.Common.Controls.TPnlCollapsible cplTasks3;
@@ -604,8 +574,6 @@ namespace ControlTestBench
         private Ict.Common.Controls.TPnlCollapsible cplShepherd;
         private System.Windows.Forms.Panel pnlShepherdHoster;
         private Ict.Common.Controls.TPnlCollapsible cplPartnerInfo;
-        private Ict.Common.Controls.TPnlCollapsible cplTasks1;
-        private Ict.Common.Controls.TPnlCollapsible cplTasks2;
         private System.Windows.Forms.Panel pnlTasksHoster;
         private Ict.Common.Controls.TPnlCollapsible cplFolders;
         private System.Windows.Forms.SplitContainer sptContent;
