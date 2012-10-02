@@ -68,15 +68,15 @@ namespace Ict.Petra.Client.App.Gui
         private static readonly string StrInvalidDataNeedsCorrecting = Catalog.GetString(
             "The operation cannot be performed because the form contains invalid data:");
 
-        /// <summary>Shown when a record contains warnings at the poing of changing to a different record.</summary>
+        /// <summary>Shown when a record contains warnings at the point of changing to a different record.</summary>
         private static readonly string StrRecordChangeInvalidDataWarning = Catalog.GetString(
             "There are warning messages associated with the data in the currently edited record\r\n(you can move away from that record, though):");
 
-        /// <summary>Shown when a record contains invalid data at the poing of changing to a different record.</summary>
+        /// <summary>Shown when a record contains invalid data at the point of changing to a different record.</summary>
         private static readonly string StrRecordChangeInvalidDataNeedsCorrecting = Catalog.GetString(
             "The currently edited record contains invalid data:");
 
-        /// <summary>Shown when the Form contains invalid data at the poing of saving data.</summary>
+        /// <summary>Shown when the Form contains invalid data at the point of saving data.</summary>
         private static readonly string StrRecordChangeInvalidDataNeedsCorrectingTitle = Catalog.GetString("Record Contains Invalid Data!");
 
         #endregion

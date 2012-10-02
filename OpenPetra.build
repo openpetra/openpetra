@@ -53,6 +53,7 @@ compat:
   compilePetra: build all Petra C# code
   translation: download new language files, and create the dlls required to be delivered with a new release
   buildTranslationTemplate: extracts string in winforms, creates and updates the .po files
+  generateGuidedTranslations: Simplifies the translation of the .po files
 
 releases:
   buildWindowsStandalone: will build the standalone installer for Windows. Only works on Windows with InnoSetup.
@@ -93,6 +94,12 @@ useful parameters
 <target name="buildTranslationTemplate" description="extracts string in winforms, creates and updates the .po files" >
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="extractMsgs" 
+        buildfile="i18n/i18n.build" />
+</target>
+
+<target name="generateGuidedTranslations" description="simplifies the translation of the .po files" >
+  <property name="target" value="compile" overwrite="false" />
+  <nant inheritall="false" target="guidedTrans" 
         buildfile="i18n/i18n.build" />
 </target>
 
