@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -495,7 +495,12 @@ namespace Ict.Common.Controls
                 }
                 catch (System.Reflection.TargetInvocationException E)
                 {
-                    MessageBox.Show("Exception: " + E.InnerException.Message);
+                    String msg = E.Message;
+                    if (E.InnerException != null)
+                    {
+                        msg = E.InnerException.Message;
+                    }
+                    return msg;
                 }
 
                 // check for properties and according attributes; this works for the LedgerNumber at the moment
