@@ -58,7 +58,8 @@ namespace Ict.Common.Controls
     public enum THostedControlKind
     {
         hckUserControl,
-        hckTaskList
+        hckTaskList,
+        hckCollapsiblePanelHoster
     }
     #pragma warning restore 1591
 
@@ -144,6 +145,9 @@ namespace Ict.Common.Controls
 
         /// <summary></summary>
         private TTaskList FTaskListInstance = null;
+
+        /// <summary></summary>
+        private TPnlCollapsibleHoster FPnlCollapsibleHoster = null;
 
         /// <summary></summary>
         private TVisualStylesEnum FVisualStyleEnum;
@@ -610,7 +614,8 @@ namespace Ict.Common.Controls
         /// </summary>
         public bool HckDataMatch()
         {
-            if(FHostedControlKind == THostedControlKind.hckTaskList)
+            if((FHostedControlKind == THostedControlKind.hckTaskList)
+               || (FHostedControlKind == THostedControlKind.hckCollapsiblePanelHoster))
             {
                 if (FTaskListNode == null)
                 {
@@ -731,6 +736,14 @@ namespace Ict.Common.Controls
                     
                     break;
 
+                case THostedControlKind.hckCollapsiblePanelHoster:
+                    if (FUserControl != null)
+                    {
+                        FPnlCollapsibleHoster.Visible = false;
+                    }
+                    
+                    break;
+                    
                 case THostedControlKind.hckTaskList:
                     if (FTaskListInstance != null)
                     {
@@ -777,9 +790,41 @@ namespace Ict.Common.Controls
                     {
                         FTaskListInstance.Visible = false;
                     }
+
+                    if (FPnlCollapsibleHoster != null)
+                    {
+                        FPnlCollapsibleHoster.Visible = false;
+                    }
                     
                     break;
 
+                case THostedControlKind.hckCollapsiblePanelHoster:
+                    if (FUserControl != null)
+                    {
+                        FPnlCollapsibleHoster.Visible = true;
+                    }
+                    else
+                    {
+                        if((FControlProperlyInitialised)
+                           || ((this.Site != null) 
+                               && (this.Site.DesignMode)))
+                        {                        
+                            InstantiateCollapsiblePanelHoster();
+                        }
+                    }
+                    
+                    if (FTaskListInstance != null)
+                    {
+                        FTaskListInstance.Visible = false;
+                    }
+
+                    if (FUserControl != null)
+                    {
+                        FUserControl.Visible = false;
+                    }
+                                        
+                    break;                
+                    
                 case THostedControlKind.hckTaskList:
                     if (FTaskListInstance != null)
                     {
@@ -798,6 +843,11 @@ namespace Ict.Common.Controls
                     if (FUserControl != null)
                     {
                         FUserControl.Visible = false;
+                    }
+
+                    if (FPnlCollapsibleHoster != null)
+                    {
+                        FPnlCollapsibleHoster.Visible = false;
                     }
                     
                     break;
@@ -1043,12 +1093,53 @@ namespace Ict.Common.Controls
             this.pnlContent.Controls.Add(FTaskListInstance);
             
             FTaskListInstance.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ExpandedSize = FTaskListInstance.TaskListMaxHeight + pnlTitleText.Height + FVisualStyle.TitlePaddingTop;
+            this.ExpandedSize = FTaskListInstance.TaskListMaxHeight + pnlTitleText.Height - 4;
             this.Height = ExpandedSize;
             
             return FTaskListInstance;
         }
 
+        /// <summary></summary>
+        private TPnlCollapsibleHoster InstantiateCollapsiblePanelHoster()
+        {
+            TVisualStylesEnum PnlCollapsibleVisualStyleEnum;
+            
+            if (FTaskListNode == null)
+            {
+                if ((this.Site == null)
+                    || (!this.Site.DesignMode))
+                {
+                    throw new ENoTaskListNodeSpecifiedException();
+                }
+                else
+                {
+                    // Show some hard-coded Tasks in WinForm Designer
+                    FTaskListNode = GetHardCodedXmlNodes_ForDesignerOnly();
+                }
+            }
+
+            if (FVisualStyleEnum == TVisualStylesEnum.vsHorizontalCollapse) 
+            {
+                PnlCollapsibleVisualStyleEnum = TVisualStylesEnum.vsAccordionPanel;    
+            }
+            else
+            {
+                PnlCollapsibleVisualStyleEnum = FVisualStyleEnum;
+            }
+            
+            FPnlCollapsibleHoster = new Ict.Common.Controls.TPnlCollapsibleHoster(FTaskListNode, PnlCollapsibleVisualStyleEnum);
+            FPnlCollapsibleHoster.Dock = System.Windows.Forms.DockStyle.Fill;
+
+            TVisualStyles VisualStyle = new TVisualStyles(FVisualStyleEnum);
+            this.pnlContent.Padding = new Padding(0, VisualStyle.ContentPaddingTop, 0, 0);
+            
+            this.pnlContent.Controls.Add(FPnlCollapsibleHoster);           
+
+            FPnlCollapsibleHoster.RealiseCollapsiblePanelsNow();
+            
+            return FPnlCollapsibleHoster;
+        }        
+        
         /// <summary>
         /// Used ONLY for showing some sensible data in the Designer if FHostedControlKind == <see cref="THostedControlKind.hckTaskList" />.
         /// </summary>
@@ -1110,6 +1201,8 @@ namespace Ict.Common.Controls
                         break;
                 }
             }
+            
+            this.BackColor = FVisualStyle.CollapsiblePanelBackgroundColour;
             
             lblDetailHeading.Font = FVisualStyle.TitleFont;
             lblDetailHeading.Height = FVisualStyle.TitleFont.Height + FVisualStyle.TitleHeightAdjustment;

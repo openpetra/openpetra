@@ -209,8 +209,9 @@ namespace Ict.Common.Controls
         private void InstantiateCollapsiblePanels()
         {
             int CollPanelCount = 0;
-            this.SuspendLayout();
-
+            
+            this.SuspendLayout();         
+            
             if (FMasterXmlNode == null) 
             {
                 throw new Exception("MasterXmlNode Property not set to an instance of XmlNode");
@@ -282,6 +283,8 @@ namespace Ict.Common.Controls
             {
                 FDistanceBetweenCollapsiblePanels = VisualStyle.CollapsiblePanelDistance;    
             }
+            
+            this.Padding = new Padding(VisualStyle.CollapsiblePanelPadding);
         }
         
         #endregion

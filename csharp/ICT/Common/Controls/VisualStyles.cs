@@ -286,11 +286,21 @@ namespace Ict.Common.Controls
         
         private Color InternalContentHoverBackgroundColour;
         /// <summary>The ContentHoverBackgroundColour property gets the value of the InternalContentHoverBackgroundColour</summary>
-        /// <value> The ContentHOoverBackgroundColour property represent the content's background colour when the mouse hovers over it</value>
+        /// <value> The ContentHoverBackgroundColour property represent the content's background colour when the mouse hovers over it</value>
         public Color ContentHoverBackgroundColour {
             get
             {
                 return InternalContentHoverBackgroundColour;
+            }
+        }
+
+        private Color InternalCollapsiblePanelBackgroundColour;
+        /// <summary>The CollapsiblePanelBackgroundColour property gets the value of the InternalCollapsiblePanelBackgroundColour</summary>
+        /// <value> The CollapsiblePanelBackgroundColour property represents the content's background colour of the Collapsible Panel (only 1 pixel wide).</value>
+        public Color CollapsiblePanelBackgroundColour {
+            get
+            {
+                return InternalCollapsiblePanelBackgroundColour;
             }
         }
 
@@ -437,6 +447,17 @@ namespace Ict.Common.Controls
             }
         }              
         
+        private int InternalCollapsiblePanelPadding = 0;
+        /// <summary> The CollapsiblePanelPadding property gets the value of the InternalCollapsiblePanelPadding</summary>
+        /// <value> The CollapsiblePanelPadding property allows adjustment of the distance between the Collapsible Panels 
+        /// and the edges of the pnlCollapsiblePanelHoster Control</value>
+        public int CollapsiblePanelPadding {
+            get
+            {
+                return InternalCollapsiblePanelPadding;
+            }
+        }              
+        
         private bool InternalAutomaticNumbering;
         /// <summary>The AutomaticNumbering property gets the value of the InternalAutomaticNumbering</summary>
         /// <value> The AutomaticNumbering property determines if automatic numbering is on</value>
@@ -498,14 +519,17 @@ namespace Ict.Common.Controls
                     InternalTitlePaddingTop = 4;
                     InternalTitlePaddingLeft = 4;
                     InternalTitlePaddingRight = 8;
-                    InternalTitlePaddingBottom = 0;
+                    InternalTitlePaddingBottom = 1;
                     InternalContentPaddingTop = 8;
                     InternalContentPaddingLeft = 0;
                     InternalContentPaddingRight = 10;
                     InternalContentPaddingBottom = 5;
                     
+                    //BackgroundVariables
+                    InternalCollapsiblePanelBackgroundColour = Color.FromArgb(150, 184, 228);
+                    
                     //Gradient Variables
-                    InternalTitleGradientStart = Color.FromArgb(205, 221, 242);
+                    InternalTitleGradientStart = Color.FromArgb(224, 233, 247);
                     InternalTitleGradientEnd = Color.FromArgb(183, 202, 226);
                     InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
                     InternalContentGradientStart = Color.FromArgb(212, 228, 254);
@@ -515,7 +539,7 @@ namespace Ict.Common.Controls
                     //Layout Variables
                     InternalTaskIndentation = 20;
                     InternalTaskHeight = 18;
-                    InternalTitleHeightAdjustment = 0;
+                    InternalTitleHeightAdjustment = 1;
                     InternalAutomaticNumbering = false;
 
                     //bool variables
@@ -524,7 +548,9 @@ namespace Ict.Common.Controls
                     UseContentBackgroundColours = false;
                     
                     // CollapsiblePanelHoster variables
-                    InternalCollapsiblePanelDistance = 3;
+                    InternalCollapsiblePanelDistance = 5;
+                    InternalCollapsiblePanelPadding = 1;
+                    
                     break;
                     
                 case TVisualStylesEnum.vsTaskPanel:
@@ -552,6 +578,7 @@ namespace Ict.Common.Controls
                     //BackgroundVariables
                     InternalContentBackgroundColour = Color.FromArgb(212, 221, 249);
                     InternalTitleBackgroundColour = Color.FromArgb(212, 221, 249);
+                    InternalCollapsiblePanelBackgroundColour = Color.Transparent;
 
                     //Gradient Variables
                     InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
@@ -571,6 +598,7 @@ namespace Ict.Common.Controls
                     
                     // CollapsiblePanelHoster variables
                     InternalCollapsiblePanelDistance = 9;
+                    
                     break;
 
                 case TVisualStylesEnum.vsDashboard:
@@ -690,13 +718,15 @@ namespace Ict.Common.Controls
                     InternalTitlePaddingLeft = 3;
                     InternalTitlePaddingRight = 8;
                     InternalTitlePaddingBottom = 0;
-                    InternalContentPaddingTop = 8;
+                    InternalContentPaddingTop = 14;
                     InternalContentPaddingLeft = 0;
                     InternalContentPaddingRight = 10;
                     InternalContentPaddingBottom = 5;
                     
                     //BackgroundVariables
+                    InternalContentBackgroundColour = Color.FromArgb(227, 239, 255);
                     InternalCollapsedInfoBackgroundColour = Color.FromArgb(212, 221, 249);
+                    InternalCollapsiblePanelBackgroundColour = Color.FromArgb(105, 105, 105);                    
                     
                     //Gradient Variables
                     InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
@@ -717,7 +747,7 @@ namespace Ict.Common.Controls
 
                     //bool variables
                     UseTitleGradient = true;
-                    UseContentGradient = true;
+                    UseContentGradient = false;
                     UseCollapsedInfoGradient = false;
                     UseContentBackgroundColours = false;
                     break;

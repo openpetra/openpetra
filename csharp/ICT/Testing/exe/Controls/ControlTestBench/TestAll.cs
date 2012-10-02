@@ -315,7 +315,7 @@ namespace ControlTestBench
         
         void TestAllLoad(object sender, EventArgs e)
         {
-            cplFolders.TaskListNode = GetHardCodedXmlNodes_AccordionPanel1();
+            cplFolders.TaskListNode = GetHardCodedXmlNodes_AccordionPanel3();
             cplShepherd.TaskListNode = GetHardCodedXmlNodes_Shepherd();
             cplPartnerInfo.TaskListNode = GetHardCodedXmlNodes_TaskList2();
             cplTasks3.TaskListNode = GetHardCodedXmlNodes_AccordionPanel1();

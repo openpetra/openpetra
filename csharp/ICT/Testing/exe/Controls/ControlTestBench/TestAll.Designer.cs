@@ -327,7 +327,7 @@ namespace ControlTestBench
             this.sptContent.Panel2.Controls.Add(this.pnlFiller);
             this.sptContent.Panel2.Controls.Add(this.cplPartnerInfo);
             this.sptContent.Size = new System.Drawing.Size(524, 605);
-            this.sptContent.SplitterDistance = 118;
+            this.sptContent.SplitterDistance = 125;
             this.sptContent.TabIndex = 0;
             this.sptContent.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SptContentSplitterMoved);
             // 
@@ -338,7 +338,7 @@ namespace ControlTestBench
             this.cplFolders.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontal;
             this.cplFolders.Dock = System.Windows.Forms.DockStyle.Left;
             this.cplFolders.ExpandedSize = 181;
-            this.cplFolders.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
+            this.cplFolders.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckCollapsiblePanelHoster;
             this.cplFolders.IsCollapsed = false;
             this.cplFolders.Location = new System.Drawing.Point(0, 0);
             this.cplFolders.Margin = new System.Windows.Forms.Padding(0);
@@ -381,7 +381,7 @@ namespace ControlTestBench
             // 
             this.pchTasks1.AutoSize = true;
             this.pchTasks1.BackColor = System.Drawing.Color.Transparent;
-            this.pchTasks1.DistanceBetweenCollapsiblePanels = 9;
+            this.pchTasks1.DistanceBetweenCollapsiblePanels = 30;
             this.pchTasks1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pchTasks1.Location = new System.Drawing.Point(0, 0);
             this.pchTasks1.Margin = new System.Windows.Forms.Padding(0);

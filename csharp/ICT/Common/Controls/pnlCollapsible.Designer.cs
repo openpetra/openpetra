@@ -129,7 +129,7 @@ namespace Ict.Common.Controls
             this.pnlContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
                                     | System.Windows.Forms.AnchorStyles.Left) 
                                     | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlContent.BackColor = System.Drawing.SystemColors.Info;
+            this.pnlContent.BackColor = System.Drawing.Color.Transparent;
             this.pnlContent.DontDrawBottomLine = false;
             this.pnlContent.Font = new System.Drawing.Font("Verdana", 6.75F);
             this.pnlContent.GradientColorBottom = System.Drawing.Color.FromArgb(((int)(((byte)(181)))), ((int)(((byte)(203)))), ((int)(((byte)(231)))));
@@ -221,7 +221,8 @@ namespace Ict.Common.Controls
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.pnlTitle);
-            this.Margin = new System.Windows.Forms.Padding(0);
+            this.BackColor = System.Drawing.Color.FromArgb(150, 184, 228);
+            this.Margin = new System.Windows.Forms.Padding(1);
             this.Name = "TPnlCollapsible";
             this.Size = new System.Drawing.Size(424, 176);
             this.pnlTitle.ResumeLayout(false);

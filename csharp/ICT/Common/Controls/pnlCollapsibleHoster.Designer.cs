@@ -63,7 +63,7 @@ namespace Ict.Common.Controls
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.Transparent;
-            this.Margin = new System.Windows.Forms.Padding(0);
+            this.Padding = new System.Windows.Forms.Padding(1);
             this.Name = "TPnlCollapsibleHoster";
             this.Size = new System.Drawing.Size(250, 372);
             this.ResumeLayout(false);

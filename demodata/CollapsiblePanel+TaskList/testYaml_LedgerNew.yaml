@@ -14,16 +14,23 @@ TaskGroup:
         Task4:
             Label: "General &Ledger"
             Visible: true
-        Task5:
+#        Task5:
+#            Label: "&Setup"
+        Task5a:
             Label: "&Setup"
+            Task5b:
+                Label: "bla bla"
+            Task5c: 
+                Label: "mehr"
+
     Task6:
         Label: "S&witch Ledger"
         Task7:
             Label: "Ledger 49 - Germany"
         Task8: 
             Label: "Ledger 43 - Austria"
-#        Task10: 
- #           Label: "Ledger 43 - Austria"        
+        Task10: 
+            Label: "Ledger 1 - ICT"        
   #      Task11:
    #         Label: "Ledger 49 - Germany"
     #    Task12: 
