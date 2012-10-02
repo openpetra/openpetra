@@ -48,7 +48,7 @@ list of available commands:
   <!-- Generate single webform -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
   <property name="generateWebformsParameters" value="-TemplateDir:${dir.incdir.template.src}/ExtJs -petraxml:${PetraXML.file} -deliveryPath:${dir.webforms.delivery} -logPath:${dir.log}" />
-  <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.GenerateExtJsForms.exe" commandline="-ymlfile:${dir.webforms.source}/${file} -ymlroot:${dir.webforms.source} ${generateWebformsParameters}"/>
+  <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateExtJsForms.exe" commandline="-ymlfile:${dir.webforms.source}/${file} -ymlroot:${dir.webforms.source} ${generateWebformsParameters}"/>
 </target>
 
 <target name="prepareWebServer" description="create a directory in delivery with all files required for the webserver">

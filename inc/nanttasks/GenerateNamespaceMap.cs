@@ -215,7 +215,7 @@ namespace Ict.Tools.NAntTasks
                 DllName = "Ict." + DllName.Substring("ICT.".Length);
             }
 
-            DllName = DllName.Replace("Ict.PetraTools.", "Ict.Tools.");
+            DllName = DllName.Replace("Ict.BuildTools.", "Ict.Tools.");
 
             return DllName;
         }

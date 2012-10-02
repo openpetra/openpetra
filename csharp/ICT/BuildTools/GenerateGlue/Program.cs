@@ -38,7 +38,7 @@ namespace Ict.Tools.GenerateGlue
     class Program
     {
         private static String sampleCall =
-            "GenerateSharedCode -outputdir:..\\..\\..\\Petra\\ -TemplateDir:..\\..\\..\\PetraTools\\Templates\\ClientServerGlue\\";
+            "GenerateSharedCode -outputdir:..\\..\\..\\Petra\\ -TemplateDir:..\\..\\..\\inc\\template\\src\\ClientServerGlue\\";
 
         public static void Main(string[] args)
         {
