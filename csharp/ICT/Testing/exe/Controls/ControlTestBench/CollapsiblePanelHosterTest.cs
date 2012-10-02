@@ -37,6 +37,7 @@ public partial class CollapsiblePanelHosterTest : Form
 {
     XmlNode FTestYAMLNode = null;
     TVisualStylesEnum FEnumStyle = TVisualStylesEnum.vsTaskPanel;
+    TPnlCollapsibleHoster FCollPanelHoster;
     
     /// <summary>
     /// Constructor.
@@ -58,14 +59,38 @@ public partial class CollapsiblePanelHosterTest : Form
     {
         FTestYAMLNode = ATestYAMLNode;
         FEnumStyle = AEnumStyle;
-        TPnlCollapsibleHoster CollPanelHoster;
         
-        CollPanelHoster = new TPnlCollapsibleHoster(FTestYAMLNode, FEnumStyle);
-        CollPanelHoster.DistanceBetweenCollapsiblePanels = 25;
-        CollPanelHoster.Dock = DockStyle.Fill;
-        pnlCollapsiblePanelHostTest.Controls.Add(CollPanelHoster);
         
-        CollPanelHoster.RealiseCollapsiblePanelsNow();
+        FCollPanelHoster = new TPnlCollapsibleHoster(FTestYAMLNode, FEnumStyle);
+        FCollPanelHoster.DistanceBetweenCollapsiblePanels = 5;
+        FCollPanelHoster.Dock = DockStyle.Fill;
+        pnlCollapsiblePanelHostTest.Controls.Add(FCollPanelHoster);
+        
+        FCollPanelHoster.RealiseCollapsiblePanelsNow();
     }       
+    
+    void BtnGetTaskList1Click(object sender, System.EventArgs e)
+    {
+        MessageBox.Show(String.Format("Task List #1's MasterXmlNode has got {0} Child Nodes", 
+                                      FCollPanelHoster.GetTaskListInstance(0).MasterXmlNode.ChildNodes.Count));
+    }
+    
+    void BtnGetTaskList2Click(object sender, System.EventArgs e)
+    {
+        MessageBox.Show(String.Format("Task List #2's MasterXmlNode has got {0} Child Nodes", 
+                                      FCollPanelHoster.GetTaskListInstance(1).MasterXmlNode.ChildNodes.Count));        
+    }
+    
+    void BtnGetCollPanel1Click(object sender, System.EventArgs e)
+    {
+        MessageBox.Show(String.Format("Collapsible Panel #1's ExpandedSize is {0} pixels", 
+                                      FCollPanelHoster.GetCollapsiblePanelInstance(0).ExpandedSize));        
+    }
+    
+    void BtnGetCollPanel2Click(object sender, System.EventArgs e)
+    {
+        MessageBox.Show(String.Format("Collapsible Panel #2's ExpandedSize is {0} pixels", 
+                                      FCollPanelHoster.GetCollapsiblePanelInstance(1).ExpandedSize));                
+    }    
 }
 }

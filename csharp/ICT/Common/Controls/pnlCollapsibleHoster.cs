@@ -117,22 +117,69 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Allow the outside to force the Collapsible Panels Hoster to initialise.
         /// </summary>
+        /// <remarks><em><see cref="MasterXmlNode" /> must be set to an instance of XmlNode before calling this Method!</em></remarks>
         public void RealiseCollapsiblePanelsNow()
         {
             InstantiateCollapsiblePanels();
         }
 
-        
-        public TPnlCollapsible GetCollapsiblePanelInstance(int Number)
+        /// <summary>
+        /// Returns the Collapsible Panel for a TaskList Instance.
+        /// </summary>
+        /// <param name="ANumber">Corresponds with the order of the Collapsible Panels that represent XmlNodes (Range 0..n, 
+        /// 0 being the Collapsible Panel that represents the first XmlNode).</param>
+        /// <returns>Collapsible Panel that corresponds with <paramref name="ANumber" />.</returns>        
+        public TPnlCollapsible GetCollapsiblePanelInstance(int ANumber)
         {
-            return (TPnlCollapsible)this.Controls[0];
+            XmlNode ChildNode = FMasterXmlNode.ChildNodes[ANumber];
+            
+            return GetCollapsiblePanelInstance(ChildNode);
+        }
+
+        /// <summary>
+        /// Returns the Collapsible Panel for a TaskList Instance.
+        /// </summary>
+        /// <param name="AChildNode">The XmlNode that the Collapsible Panel represents.</param>
+        /// <returns>Collapsible Panel that corresponds with <paramref name="AChildNode" />.</returns>        
+        public TPnlCollapsible GetCollapsiblePanelInstance(XmlNode AChildNode)
+        {
+            TPnlCollapsible ReturnValue = null;
+           
+            foreach (Control WrapperPanel in this.Controls)
+            {
+                if (WrapperPanel.Tag == AChildNode) 
+                {
+                    ReturnValue = (TPnlCollapsible)WrapperPanel.Controls[0];
+                    break;
+                }    
+            }
+            
+            return ReturnValue;
         }
                 
-        public TTaskList GetTaskListInstance(int Number)
+        /// <summary>
+        /// Returns a TaskList Instance.
+        /// </summary>
+        /// <param name="ANumber">Corresponds with the order of the Collapsible Panels that represent 
+        /// XmlNodes which host the corresponding Task List instance (Range 0..n, 0 being the Collapsible Panel 
+        /// that matches the first XmlNode).</param>
+        /// <returns>TaskList Instance that corresponds with <paramref name="ANumber" />.</returns>
+        public TTaskList GetTaskListInstance(int ANumber)
         {
-            return ((TPnlCollapsible)this.Controls[0]).TaskListInstance;
+            return GetCollapsiblePanelInstance(ANumber).TaskListInstance;
         }
-        
+
+                        
+        /// <summary>
+        /// Returns a TaskList Instance.
+        /// </summary>
+        /// <param name="AChildNode">The XmlNode that represents the Collapsible Panel which hosts the corresponding Task List instance.</param>
+        /// <returns>TaskList Instance that corresponds with <paramref name="AChildNode" />.</returns>
+        public TTaskList GetTaskListInstance(XmlNode AChildNode)
+        {
+            return GetCollapsiblePanelInstance(AChildNode).TaskListInstance;
+        }
+
         #endregion
         
         #region Private Methods
@@ -141,19 +188,35 @@ namespace Ict.Common.Controls
         {
             int CollPanelCount = 0;
             this.SuspendLayout();
+
+            if (FMasterXmlNode == null) 
+            {
+                throw new Exception("MasterXmlNode Property not set to an instance of XmlNode");
+            }
             
             XmlNode TaskNode = FMasterXmlNode.FirstChild;
 
             //Iterate through all children nodes of the node
             while (TaskNode != null)
             {
+                // Create a wrapper Panel. This is only needed to be able to set a distance between Collapsible Panels.
+                Panel WrapperPanel = new Panel();
+                WrapperPanel.AutoSize = true;
+                WrapperPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+                WrapperPanel.BackColor = Color.Transparent;
+                WrapperPanel.Dock = DockStyle.Top;
+                WrapperPanel.Padding = new Padding (0, 0, 0, FDistanceBetweenCollapsiblePanels);
+                WrapperPanel.TabIndex = CollPanelCount;
+                WrapperPanel.Tag = TaskNode;
+                WrapperPanel.Name = TaskNode.Name;
+                
+                // Create a Collapsible Panel
                 TPnlCollapsible CollPanel = new TPnlCollapsible(THostedControlKind.hckTaskList, TaskNode, TCollapseDirection.cdVertical, 10, false, FVisualStyle);
-                CollPanel.Tag = TaskNode;
+                CollPanel.Tag = WrapperPanel;
                 CollPanel.Name = TaskNode.Name;
                 CollPanel.Text = TLstFolderNavigation.GetLabel(TaskNode);
                 CollPanel.Dock = DockStyle.Top;
-                CollPanel.Padding = new System.Windows.Forms.Padding(0, 0, 5, FDistanceBetweenCollapsiblePanels);
-                CollPanel.TabIndex = CollPanelCount;
+                CollPanel.TabIndex = 0;                
 
                 if((TaskNode.Attributes["Visible"] != null)
                    && (TaskNode.Attributes["Visible"].Value.ToLower() == "false"))
@@ -167,23 +230,25 @@ namespace Ict.Common.Controls
                     CollPanel.Enabled = false;
                 }
                                       
+                // Make the Collapsible Panel create and display its Task List
+                CollPanel.RealiseTaskListNow();      
                 
-                this.Controls.Add(CollPanel);
-                
-                // Make sure Collapsible Panels are shown in correct order and not in reverse order.
-                // (This is needed because we 'stack them up' with 'CollPanel.Dock = DockStyle.Top')
-                CollPanel.BringToFront();
+                WrapperPanel.Height = CollPanel.ExpandedSize + FDistanceBetweenCollapsiblePanels;
+                WrapperPanel.Controls.Add(CollPanel);
+                this.Controls.Add(WrapperPanel);
 
-                
-                CollPanel.RealiseTaskListNow();                
+                // Make sure the Collapsible Panels' Wrapper Panels are shown in correct order and not in reverse order.
+                // (This is needed because we 'stack them up' with '.Controls.Dock = DockStyle.Top')
+                WrapperPanel.BringToFront();
                 
                 TaskNode = TaskNode.NextSibling;
+                
                 CollPanelCount++;                
             }            
             
             this.ResumeLayout();
         }
-        
+
         #endregion
     }
 }

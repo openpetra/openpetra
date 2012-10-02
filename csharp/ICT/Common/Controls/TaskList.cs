@@ -195,6 +195,10 @@ namespace Ict.Common.Controls
             }
         }
         
+        /// <summary>
+        /// Maximum Height that the TaskList needs to be displayed fully. Available only after 
+        /// <see cref="MasterXmlNode" /> has been set.
+        /// </summary>
         public int TaskListMaxHeight
         {
             get
@@ -380,7 +384,6 @@ namespace Ict.Common.Controls
                 TaskNode = TaskNode.NextSibling;
             }
 
-            
             this.ResumeLayout();
         }
 
