@@ -426,6 +426,17 @@ namespace Ict.Common.Controls
             }
         }        
         
+        private int InternalCollapsiblePanelDistance = -1;
+        /// <summary> The CollapsiblePanelDistance property gets the value of the InternalCollapsiblePanelDistance</summary>
+        /// <value> The CollapsiblePanelDistance property allows adjustment of the distance between adjacent Collapsible Panels 
+        /// in a pnlCollapsiblePanelHoster Control</value>
+        public int CollapsiblePanelDistance {
+            get
+            {
+                return InternalCollapsiblePanelDistance;
+            }
+        }              
+        
         private bool InternalAutomaticNumbering;
         /// <summary>The AutomaticNumbering property gets the value of the InternalAutomaticNumbering</summary>
         /// <value> The AutomaticNumbering property determines if automatic numbering is on</value>
@@ -511,6 +522,9 @@ namespace Ict.Common.Controls
                     UseTitleGradient = true;
                     UseContentGradient = true;
                     UseContentBackgroundColours = false;
+                    
+                    // CollapsiblePanelHoster variables
+                    InternalCollapsiblePanelDistance = 3;
                     break;
                     
                 case TVisualStylesEnum.vsTaskPanel:
@@ -554,6 +568,9 @@ namespace Ict.Common.Controls
                     UseTitleGradient = true;
                     UseContentGradient = false;
                     UseContentBackgroundColours = false;
+                    
+                    // CollapsiblePanelHoster variables
+                    InternalCollapsiblePanelDistance = 9;
                     break;
 
                 case TVisualStylesEnum.vsDashboard:

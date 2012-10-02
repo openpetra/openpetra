@@ -62,7 +62,6 @@ public partial class CollapsiblePanelHosterTest : Form
         
         
         FCollPanelHoster = new TPnlCollapsibleHoster(FTestYAMLNode, FEnumStyle);
-        FCollPanelHoster.DistanceBetweenCollapsiblePanels = 5;
         FCollPanelHoster.Dock = DockStyle.Fill;
         pnlCollapsiblePanelHostTest.Controls.Add(FCollPanelHoster);
         

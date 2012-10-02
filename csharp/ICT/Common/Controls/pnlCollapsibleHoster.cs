@@ -71,6 +71,13 @@ namespace Ict.Common.Controls
             InitializeComponent();
 
             FVisualStyle = Style;
+            TVisualStyles VisualStyle = new TVisualStyles(FVisualStyle);
+            
+            if (VisualStyle.CollapsiblePanelDistance != -1) 
+            {
+                FDistanceBetweenCollapsiblePanels = VisualStyle.CollapsiblePanelDistance;    
+            }
+            
             MasterXmlNode = MasterNode;
         }
 
