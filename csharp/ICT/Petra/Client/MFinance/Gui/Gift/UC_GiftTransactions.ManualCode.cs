@@ -775,7 +775,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
-                SelectRowInGrid(FMainDS.AGiftDetail.Rows.Count - 1, true);
+                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
                 //int newRowIndex = FMainDS.AGiftDetail.Rows.Count - 1;
 
                 //SelectDetailRowByDataTableIndex(newRowIndex);
@@ -883,7 +883,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
-                SelectRowInGrid(FMainDS.AGiftDetail.Rows.Count - 1, true);
+                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
                 //int newRowIndex = FMainDS.AGiftDetail.Rows.Count - 1;
 
                 //SelectDetailRowByDataTableIndex(newRowIndex);

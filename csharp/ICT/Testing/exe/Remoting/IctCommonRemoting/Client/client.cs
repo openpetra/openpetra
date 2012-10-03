@@ -58,13 +58,38 @@ namespace Ict.Testing.IctCommonRemoting.Client
                 string error;
                 ConnectToTestServer("DEMO", "DEMO", out error);
 
+                IMyUIConnector MyUIConnector = TRemote.MyService.SubNamespace.MyUIConnector();
+                TEnsureKeepAlive.Register(MyUIConnector);
+                IMySubNamespace test = TRemote.MyService.SubNamespace;
+
                 while (true)
                 {
-                    TLogging.Log(TRemote.MyService.HelloWorld("Hello World"));
-                    IMySubNamespace test = TRemote.MyService.SubNamespace;
-                    TLogging.Log("before call function");
-                    TLogging.Log(test.GetType().ToString());
-                    TLogging.Log(test.HelloSubWorld("Hello SubWorld"));
+                    try
+                    {
+                        TLogging.Log(TRemote.MyService.HelloWorld("Hello World"));
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("problem with MyService HelloWorld: " + Environment.NewLine + e.ToString());
+                    }
+
+                    try
+                    {
+                        TLogging.Log(test.HelloSubWorld("Hello SubWorld"));
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("problem with sub namespace HelloSubWorld: " + Environment.NewLine + e.ToString());
+                    }
+
+                    try
+                    {
+                        TLogging.Log(MyUIConnector.HelloWorldUIConnector());
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("problem with HelloWorldUIConnector: " + Environment.NewLine + e.ToString());
+                    }
 
                     Console.WriteLine("Press ENTER to say Hello World again... ");
                     Console.WriteLine("Press CTRL-C to exit ...");

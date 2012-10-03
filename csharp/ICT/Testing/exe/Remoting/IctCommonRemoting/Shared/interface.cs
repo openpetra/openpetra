@@ -53,11 +53,21 @@ namespace Tests.IctCommonRemoting.Interface
         }
     }
 
+    /// simple test of UIConnectors
+    public interface IMyUIConnector : IInterface
+    {
+        /// test
+        string HelloWorldUIConnector();
+    }
+
     /// <summary>
     /// sub namespace
     /// </summary>
     public interface IMySubNamespace : IInterface
     {
+        /// get the UIConnector
+        IMyUIConnector MyUIConnector();
+
         /// print hello sub world
         string HelloSubWorld(string msg);
     }
