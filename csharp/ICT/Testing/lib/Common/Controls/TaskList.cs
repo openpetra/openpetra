@@ -4,7 +4,7 @@
 // @Authors:
 //       Seth Bird (sethb)
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,8 +52,10 @@ namespace Tests.Common.Controls
         }
 
         /// <summary>
+        /// Returns a hard-coded XmlNode for testing purposes.
         /// </summary>
-        public XmlNode GetTestXmlNode()
+        /// <returns>Hard-coded XmlNode.</returns>
+        public static XmlNode GetTestXmlNode()
         {
             string[] lines = new string[3];
             lines[0] = "TaskGroup:\n";

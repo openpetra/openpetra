@@ -382,6 +382,17 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary></summary>
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public UserControl CollapsiblePanelHosterInstance
+        {
+            get
+            {
+                return FPnlCollapsibleHoster;
+            }
+        }
+        
         /// <summary>
         /// Visual Style.
         /// </summary>
@@ -737,7 +748,7 @@ namespace Ict.Common.Controls
                     break;
 
                 case THostedControlKind.hckCollapsiblePanelHoster:
-                    if (FUserControl != null)
+                    if (FPnlCollapsibleHoster != null)
                     {
                         FPnlCollapsibleHoster.Visible = false;
                     }
@@ -799,7 +810,7 @@ namespace Ict.Common.Controls
                     break;
 
                 case THostedControlKind.hckCollapsiblePanelHoster:
-                    if (FUserControl != null)
+                    if (FPnlCollapsibleHoster != null)
                     {
                         FPnlCollapsibleHoster.Visible = true;
                     }
