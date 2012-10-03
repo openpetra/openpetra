@@ -91,9 +91,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ShowData();
 
-            //not necessary for posted batches
-//            if (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
-//            {
             TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
                 out StartDateCurrentPeriod,
                 out EndDateLastForwardingPeriod,
@@ -101,11 +98,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
                 StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
-//            }
 
-            //dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
-            //dtpDetailDateEffective.SetMinimalDate(StartDateCurrentPeriod);
-            //txtDetailBatchControlTotal.Enabled = false;
+            //Set sort order
+            FMainDS.ABatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
+                ABatchTable.GetLedgerNumberDBName(),
+                ABatchTable.GetBatchNumberDBName()
+                );
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -338,6 +336,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+
+                            if (cmbPeriodFilter.SelectedIndex != 0)
+                            {
+                                cmbPeriodFilter.SelectedIndex = 0;
+                            }
                         }
                     }
                 }
@@ -725,6 +728,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         void RefreshFilter(Object sender, EventArgs e)
         {
+            int batchNumber = 0;
+            int newRowToSelectAfterFilter = 1;
             bool senderIsRadioButton = (sender is RadioButton);
 
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
@@ -740,6 +745,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     return;
                 }
+            }
+
+            //Record the current batch
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
             if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
@@ -854,10 +865,44 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                SelectRowInGrid(1);
+                //Select same row after refilter
+                if (batchNumber > 0)
+                {
+                    newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber);
+                }
+
+                SelectRowInGrid(newRowToSelectAfterFilter);
+
                 UpdateChangeableStatus(true);
                 ((TFrmGLBatch) this.ParentForm).EnableJournals();
             }
+        }
+
+        private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
+        {
+            int rowPos = 0;
+            bool batchFound = false;
+
+            foreach (DataRowView rowView in FMainDS.ABatch.DefaultView)
+            {
+                ABatchRow row = (ABatchRow)rowView.Row;
+
+                if ((row.LedgerNumber == ALedgerNumber) && (row.BatchNumber == ABatchNumber))
+                {
+                    batchFound = true;
+                    break;
+                }
+
+                rowPos++;
+            }
+
+            if (!batchFound)
+            {
+                rowPos = 0;
+            }
+
+            //remember grid is out of sync with DataView by 1 because of grid header rows
+            return rowPos + 1;
         }
 
         private void ImportFromSpreadSheet(object sender, EventArgs e)

@@ -163,6 +163,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// Checks whether a specified column in a table does contain the word detail
+        /// </summary>
+        /// <param name="ATableName"></param>
+        /// <param name="AFieldName"></param>
+        /// <returns></returns>
+        private bool IsLegitimateDetailFieldName(string ATableName, string AFieldName)
+        {
+            List <string>TableFields = new List <string>();
+
+            //A list of table columns that should contain the word Detail (separated by a |)
+            //  Just add accordingly
+            TableFields.Add("AGiftDetail|DetailNumber");
+
+            return TableFields.Contains(ATableName + "|" + AFieldName);
+        }
+
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
@@ -180,6 +197,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             StringCollection Columns = TYml2Xml.GetElements(ctrl.xmlNode, "Columns");
+
+            if (ctrl.HasAttribute("SortableHeaders"))
+            {
+                string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
+                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
+            }
 
             if (Columns.Count > 0)
             {
@@ -206,7 +229,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         TableFieldTable = FCodeStorage.GetAttribute("DetailTable");
 
-                        if (ColumnFieldName.StartsWith("Detail"))
+                        if (ColumnFieldName.StartsWith("Detail") && !IsLegitimateDetailFieldName(TableFieldTable, ColumnFieldName))
                         {
                             ColumnFieldNameResolved = ColumnFieldName.Substring(6);     // Drop 'Details' out of 'Details...'
                         }

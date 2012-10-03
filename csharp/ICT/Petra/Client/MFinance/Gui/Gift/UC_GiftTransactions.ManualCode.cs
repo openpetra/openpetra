@@ -130,6 +130,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
+            FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}",
+                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                AGiftDetailTable.GetDetailNumberDBName());
+
             ShowData();
             ShowDetails();
 
@@ -156,7 +160,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FinRecipientKeyChanging = true;
-            FPetraUtilsObject.SuppressChangeDetection = true;
 
             GiftBatchTDSAGiftDetailRow giftDetailRow = GetGiftDetailRow(FPreviouslySelectedDetailRow.GiftTransactionNumber,
                 FPreviouslySelectedDetailRow.DetailNumber);
@@ -165,6 +168,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+                FPetraUtilsObject.SuppressChangeDetection = true;
+
                 strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
                 strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
@@ -746,13 +751,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailMethodOfGivingCode.SelectedIndex = -1;
                 cmbMinistry.SelectedIndex = -1;
                 txtDetailCostCentreCode.Text = string.Empty;
-
-                FPetraUtilsObject.SuppressChangeDetection = false;
             }
-            catch (Exception)
+            finally
             {
                 FPetraUtilsObject.SuppressChangeDetection = false;
-                throw;
             }
         }
 
