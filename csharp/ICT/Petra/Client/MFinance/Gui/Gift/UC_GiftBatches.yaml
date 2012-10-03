@@ -25,11 +25,11 @@ RootNode:
         rgrShowBatches: 
             Label: Show batches
             ControlsOrientation: horizontal
-            SuppressChangeDetection: true
             OptionalValues: [Posting, =Editing, All]
+            SuppressChangeDetection: true
             OnChange: RefreshFilter
-        cmbYear: {List: UserDefinedList, OnChange:RefreshPeriods, SuppressChangeDetection: true, Width=100}
-        cmbPeriod: {List: UserDefinedList, OnChange:RefreshFilter, SuppressChangeDetection: true, Width=250}
+        cmbYear: {List=UserDefinedList, OnChange=RefreshPeriods, SuppressChangeDetection=true, Width=100}
+        cmbPeriod: {List=UserDefinedList, OnChange=RefreshFilter, SuppressChangeDetection=true, Width=250}
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
@@ -63,7 +63,7 @@ RootNode:
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
         cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
         cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
-        dtpDetailGlEffectiveDate: {Label=GL Effective Date, OnChange=UpdateBatchPeriod, Validation = true}
+        dtpDetailGlEffectiveDate: {Label=GL Effective Date, OnChange=UpdateBatchPeriod, Validation=true}
         lblValidDateRange:
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
