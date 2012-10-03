@@ -116,7 +116,7 @@ namespace ControlTestBench
 
         private XmlNode GetHardCodedXmlNodes_AccordionPanel3()
         {
-            string[] lines = new string[21];
+            string[] lines = new string[23];
             
             lines[0] = "TaskGroup:\n";
             lines[1] = "    Task0:\n";
@@ -131,14 +131,16 @@ namespace ControlTestBench
             lines[10] = "            Label: General &Ledger";
             lines[11] = "        Task5:\n";
             lines[12] = "            Label: &Setup";
-            lines[13] = "    Task6:\n";
-            lines[14] = "        Label: S&witch Ledger";
-            lines[15] = "        Task7:\n";
-            lines[16] = "            Label: Ledger 49 - Germany";
-            lines[17] = "        Task8:\n";
-            lines[18] = "            Label: Ledger 43 - Austria";
-            lines[19] = "        Task9:\n";
-            lines[20] = "            Label: Ledger 1 - ICT";
+            lines[13] = "            Task5a:\n";
+            lines[14] = "                 Label: Gift Receipting";
+            lines[15] = "    Task6:\n";
+            lines[16] = "        Label: S&witch Ledger";
+            lines[17] = "        Task7:\n";
+            lines[18] = "            Label: Ledger 49 - Germany";
+            lines[19] = "        Task8:\n";
+            lines[20] = "            Label: Ledger 43 - Austria";
+            lines[21] = "        Task9:\n";
+            lines[22] = "            Label: Ledger 1 - ICT";
             
             return new TYml2Xml(lines).ParseYML2TaskListRoot();
         }

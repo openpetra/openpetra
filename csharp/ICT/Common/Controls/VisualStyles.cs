@@ -740,7 +740,7 @@ namespace Ict.Common.Controls
                     InternalCollapsedInfoGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
                         
                     //Layout Variables
-                    InternalTaskIndentation = 30;
+                    InternalTaskIndentation = 15;
                     InternalTaskHeight = 18;
                     InternalTitleHeightAdjustment = 5;
                     InternalAutomaticNumbering = false;
