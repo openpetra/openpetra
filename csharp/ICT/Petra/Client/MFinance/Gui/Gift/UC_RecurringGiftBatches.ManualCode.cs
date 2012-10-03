@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-            	ClearControls();
+                ClearControls();
                 ((TFrmRecurringGiftBatch) this.ParentForm).DisableTransactionsTab();
             }
 
@@ -122,16 +122,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
-			try
-			{
-	        	FPetraUtilsObject.DisableDataChangedEvent();
-	            LoadBatches(FLedgerNumber);
-			}
-			finally
-			{
-	            FPetraUtilsObject.EnableDataChangedEvent();
-			}
-
+            try
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                LoadBatches(FLedgerNumber);
+            }
+            finally
+            {
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
         }
 
         /// reset the control
@@ -245,61 +244,59 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool deletionSuccessful = false;
 
             int batchNumber = ARowToDelete.BatchNumber;
-            
+
             try
             {
-            	ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
+                ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
                     batchNumber);
 
-                
-            	//Load the gift details first before deleting them
-            	FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-				                               ARecurringGiftDetailTable.GetLedgerNumberDBName(),
-				                               FLedgerNumber,
-				                               ARecurringGiftDetailTable.GetBatchNumberDBName(),
-				                               batchNumber);
 
-	            // only load from server if there are no transactions loaded yet for this batch
-	            // otherwise we would overwrite transactions that have already been modified
-	            if (FMainDS.ARecurringGiftDetail.DefaultView.Count == 0)
-	            {
-	                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, batchNumber));
-	            }
-            	
-            	
-            	// Delete the associated recurring gift detail rows.
-				DataView viewGiftDetail = new DataView(FMainDS.ARecurringGiftDetail);
-				viewGiftDetail.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-				                               ARecurringGiftTable.GetLedgerNumberDBName(),
-				                               FLedgerNumber,
-				                               ARecurringGiftTable.GetBatchNumberDBName(),
-				                               batchNumber);
+                //Load the gift details first before deleting them
+                FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                    ARecurringGiftDetailTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    ARecurringGiftDetailTable.GetBatchNumberDBName(),
+                    batchNumber);
 
-				foreach (DataRowView row in viewGiftDetail)
-				{
-					row.Delete();
-				}
-                
+                // only load from server if there are no transactions loaded yet for this batch
+                // otherwise we would overwrite transactions that have already been modified
+                if (FMainDS.ARecurringGiftDetail.DefaultView.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, batchNumber));
+                }
+
+                // Delete the associated recurring gift detail rows.
+                DataView viewGiftDetail = new DataView(FMainDS.ARecurringGiftDetail);
+                viewGiftDetail.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                    ARecurringGiftTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    ARecurringGiftTable.GetBatchNumberDBName(),
+                    batchNumber);
+
+                foreach (DataRowView row in viewGiftDetail)
+                {
+                    row.Delete();
+                }
+
                 // Delete the associated recurring gift rows.
-				DataView viewGift = new DataView(FMainDS.ARecurringGift);
-				viewGift.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-				                               ARecurringGiftTable.GetLedgerNumberDBName(),
-				                               FLedgerNumber,
-				                               ARecurringGiftTable.GetBatchNumberDBName(),
-				                               batchNumber);
+                DataView viewGift = new DataView(FMainDS.ARecurringGift);
+                viewGift.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                    ARecurringGiftTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    ARecurringGiftTable.GetBatchNumberDBName(),
+                    batchNumber);
 
-				foreach (DataRowView row in viewGift)
-				{
-					row.Delete();
-				}
+                foreach (DataRowView row in viewGift)
+                {
+                    row.Delete();
+                }
 
-				// Delete the recurring batch row.
-				ARowToDelete.Delete();
+                // Delete the recurring batch row.
+                ARowToDelete.Delete();
 
-				FPreviouslySelectedDetailRow = null;
+                FPreviouslySelectedDetailRow = null;
 
                 deletionSuccessful = true;
-				
             }
             catch (Exception ex)
             {
@@ -359,20 +356,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ClearControls()
         {
-			try
-			{
-	        	FPetraUtilsObject.DisableDataChangedEvent();
-	        	txtDetailBatchDescription.Clear();
-	            txtDetailHashTotal.NumberValueDecimal = 0;
-	            cmbDetailBankCostCentre.SelectedIndex = -1;
-	            cmbDetailBankAccountCode.SelectedIndex = -1;
-	            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-			}
-			finally
-			{
-	        	FPetraUtilsObject.EnableDataChangedEvent();
-			}
-
+            try
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                txtDetailBatchDescription.Clear();
+                txtDetailHashTotal.NumberValueDecimal = 0;
+                cmbDetailBankCostCentre.SelectedIndex = -1;
+                cmbDetailBankAccountCode.SelectedIndex = -1;
+                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+            }
+            finally
+            {
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
         }
 
         private void Submit(System.Object sender, System.EventArgs e)

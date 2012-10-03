@@ -77,12 +77,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-	            FPetraUtilsObject.DisableDataChangedEvent();
-	            LoadBatches(FLedgerNumber);
+                FPetraUtilsObject.DisableDataChangedEvent();
+                LoadBatches(FLedgerNumber);
             }
             finally
             {
-	            FPetraUtilsObject.EnableDataChangedEvent();
+                FPetraUtilsObject.EnableDataChangedEvent();
             }
         }
 
@@ -108,12 +108,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 try
                 {
-	            	FPetraUtilsObject.DisableDataChangedEvent();
-	                TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYear, FLedgerNumber);
+                    FPetraUtilsObject.DisableDataChangedEvent();
+                    TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYear, FLedgerNumber);
                 }
                 finally
                 {
-	                FPetraUtilsObject.EnableDataChangedEvent();
+                    FPetraUtilsObject.EnableDataChangedEvent();
                 }
 
                 // only refresh once, seems we are doing too many loads from the db otherwise
@@ -130,10 +130,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.AcceptChanges();
 
             FMainDS.AGiftBatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
-                                                                AGiftBatchTable.GetLedgerNumberDBName(),
-                                                                AGiftBatchTable.GetBatchNumberDBName()
-                                                               );
-            
+                AGiftBatchTable.GetLedgerNumberDBName(),
+                AGiftBatchTable.GetBatchNumberDBName()
+                );
+
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
@@ -164,7 +164,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FBatchLoaded = true;
 
             ShowDetails(GetCurrentBatchRow());
-            
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -193,11 +192,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
             }
-            
+
             //Record the current batch
             if (FPreviouslySelectedDetailRow != null)
             {
-            	batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+                batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
             if (FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).SaveChanges())
@@ -229,13 +228,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     //Reset the combos
                     try
                     {
-                    	FPetraUtilsObject.DisableDataChangedEvent();
-	                    cmbYear.SetSelectedInt32(FSelectedYear);
-	                    cmbPeriod.SetSelectedInt32(FSelectedPeriod);
+                        FPetraUtilsObject.DisableDataChangedEvent();
+                        cmbYear.SetSelectedInt32(FSelectedYear);
+                        cmbPeriod.SetSelectedInt32(FSelectedPeriod);
                     }
                     finally
                     {
-	                    FPetraUtilsObject.EnableDataChangedEvent();
+                        FPetraUtilsObject.EnableDataChangedEvent();
                     }
                 }
 
@@ -315,50 +314,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Select same row after refilter
                 if (batchNumber > 0)
                 {
-                	newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber);
+                    newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber);
                 }
 
-				SelectRowInGrid(newRowToSelectAfterFilter);
+                SelectRowInGrid(newRowToSelectAfterFilter);
             }
 
             UpdateChangeableStatus();
         }
 
-        
         private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
         {
-        	int rowPos = 0;
-        	bool batchFound = false;
-        	
-        	foreach (DataRowView rowView in FMainDS.AGiftBatch.DefaultView)
-        	{
-        		AGiftBatchRow row = (AGiftBatchRow)rowView.Row;
-        		
-        		if (row.LedgerNumber == ALedgerNumber && row.BatchNumber == ABatchNumber)
-        		{
-        			batchFound = true;
-        			break;
-        		}
-        		
-        		rowPos++;
-        	}
-        	
-        	if (!batchFound)
-        	{
-        		rowPos = 0;
-        	}
-        	
-        	//remember grid is out of sync with DataView by 1 because of grid header rows
-        	return rowPos + 1;
+            int rowPos = 0;
+            bool batchFound = false;
+
+            foreach (DataRowView rowView in FMainDS.AGiftBatch.DefaultView)
+            {
+                AGiftBatchRow row = (AGiftBatchRow)rowView.Row;
+
+                if ((row.LedgerNumber == ALedgerNumber) && (row.BatchNumber == ABatchNumber))
+                {
+                    batchFound = true;
+                    break;
+                }
+
+                rowPos++;
+            }
+
+            if (!batchFound)
+            {
+                rowPos = 0;
+            }
+
+            //remember grid is out of sync with DataView by 1 because of grid header rows
+            return rowPos + 1;
         }
-        
+
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {
-        	TLogging.Log("UpdateBatchPeriod");
-        	if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
             {
-        		TLogging.Log("FPetraUtilsObject:" + (FPetraUtilsObject == null).ToString() + " - SuppressChangeDetection:" + (FPetraUtilsObject.SuppressChangeDetection).ToString());
-        		return;
+                return;
             }
 
             try
@@ -376,15 +372,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+
                             if (cmbPeriod.SelectedIndex != 0)
                             {
-                            	TLogging.Log("BatchPeriod has changed");
-                            	cmbPeriod.SelectedIndex = 0;
+                                cmbPeriod.SelectedIndex = 0;
                             }
-                        }
-                        else
-                        {
-							TLogging.Log("BatchPeriod hasn't changed");                        	
                         }
                     }
                 }
@@ -670,20 +662,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ClearControls()
         {
-        	try
-        	{
-	        	FPetraUtilsObject.DisableDataChangedEvent();
-	        	txtDetailBatchDescription.Clear();
-	            txtDetailHashTotal.NumberValueDecimal = 0;
-	            dtpDetailGlEffectiveDate.Date = FDefaultDate;
-	            cmbDetailBankCostCentre.SelectedIndex = -1;
-	            cmbDetailBankAccountCode.SelectedIndex = -1;
-	            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-        	}
-        	finally
-        	{
-	        	FPetraUtilsObject.EnableDataChangedEvent();
-        	}
+            try
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                txtDetailBatchDescription.Clear();
+                txtDetailHashTotal.NumberValueDecimal = 0;
+                dtpDetailGlEffectiveDate.Date = FDefaultDate;
+                cmbDetailBankCostCentre.SelectedIndex = -1;
+                cmbDetailBankAccountCode.SelectedIndex = -1;
+                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+            }
+            finally
+            {
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
         }
 
         /// <summary>

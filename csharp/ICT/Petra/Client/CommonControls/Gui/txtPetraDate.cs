@@ -55,6 +55,7 @@ namespace Ict.Petra.Client.CommonControls
     public class TtxtPetraDate : System.Windows.Forms.TextBox
     {
         private DateTime? FDate;
+        private DateTime? FDateBeforeUserEdit;
         private Boolean FSuppressTextChangeEvent;
         private Boolean FAllowEmpty;             // default is true
         private Boolean FAllowFutureDate;
@@ -83,6 +84,19 @@ namespace Ict.Petra.Client.CommonControls
             set
             {
                 // MessageBox.Show('Entering TtxtPetraDate.Set_Text...');
+                // If this seems to be a change, I may need to raise DateChanged
+                // (but I'll not do so unless it really is required...)
+                if (value != this.Text)
+                {
+                    DateTime? HoldThis = FDate;
+                    bool DateIsOk = VerifyDate(true);
+
+                    if (FDate != HoldThis)
+                    {
+                        OnDateChanged(new TPetraDateChangedEventArgs(FDate, DateIsOk));
+                    }
+                }
+
                 base.Text = value;
             }
         }
@@ -112,7 +126,7 @@ namespace Ict.Petra.Client.CommonControls
                 // MessageBox.Show('Entering TtxtPetraDate.Set_Date...');
                 if (value.HasValue)
                 {
-                    this.Text = DataBinding.DateTimeToLongDateString2(value.Value);
+                    base.Text = DataBinding.DateTimeToLongDateString2(value.Value);
                 }
 
                 // MessageBox.Show('this.Text: ' + this.Text);
@@ -120,13 +134,12 @@ namespace Ict.Petra.Client.CommonControls
                 {
                     if (this.Text != "")
                     {
-                        // Now update the TextBox's Text with the newly formatted date
-                        // VerifyDate;
+                        // Now update the TextBox's Text with the correctly formatted date
                         if (!FSuppressTextChangeEvent)
                         {
                             // MessageBox.Show('set_Date: calling VerifyDate...');
                             // Verify the Date. If it is OK, the Text will correspond to the 'Petra Date' format.
-                            if (VerifyDate())
+                            if (VerifyDate(true))
                             {
                                 DateChangeArgs = new TPetraDateChangedEventArgs(FDate, true);
                             }
@@ -288,8 +301,10 @@ namespace Ict.Petra.Client.CommonControls
             this.Font = new System.Drawing.Font("Verdana", 8.25f, FontStyle.Bold);
 
             // MessageBox.Show('TtxtPetraDate.Create: after assigning ''Width'' Property');
-            this.Validating += new CancelEventHandler(this.Date_Validating);
+//          this.Validating += new CancelEventHandler(this.Date_Validating);
             this.DoubleClick += new EventHandler(TtxtPetraDate_DoubleClick);
+            this.GotFocus += new EventHandler(TtxtPetraDate_GotFocus);
+            this.LostFocus += new EventHandler(TtxtPetraDate_LostFocus);
 
             // MessageBox.Show('TtxtPetraDate.Create: after hooking up ''Validating'' Event');
             // Include(this.TextChanged, this.Date_TextChanged);
@@ -300,6 +315,11 @@ namespace Ict.Petra.Client.CommonControls
             LeavingOnFailedValidationOK = true;
         }
 
+        void TtxtPetraDate_GotFocus(object sender, EventArgs e)
+        {
+            FDateBeforeUserEdit = FDate;
+        }
+
         /// <summary>
         /// Selects all text in the TextBox on mouse double-click.
         /// </summary>
@@ -308,6 +328,16 @@ namespace Ict.Petra.Client.CommonControls
         void TtxtPetraDate_DoubleClick(object sender, EventArgs e)
         {
             this.SelectAll();
+        }
+
+        private void TtxtPetraDate_LostFocus(object sender, EventArgs e)
+        {
+            bool DateIsOk = VerifyDate(true);
+
+            if (FDate != FDateBeforeUserEdit)
+            {
+                OnDateChanged(new TPetraDateChangedEventArgs(FDate, DateIsOk));
+            }
         }
 
         /// <summary>
@@ -326,16 +356,12 @@ namespace Ict.Petra.Client.CommonControls
         #region Event Handlers
 
         /// <summary>
-        /// procedure TtxtPetraDate.Date_TextChanged(sender: System.Object; e: System.EventArgs);var  DateChangeArgs: TPetraDateChangedEventArgs;begin/  if DesignMode then/  begin/    return;/  end;/  if not FSuppressTextChangeEvent then
-        /// beginMessageBox.Show('Entering TtxtPetraDate.Date_TextChanged...');     Verify the Date. If it is OK, the Text will be changed to correspond to the     'Petra Date' format.    if VerifyDate then    begin      DateChangeArgs := new
-        /// TPetraDateChangedEventArgs.Create(FDate, true);    end    else    begin      DateChangeArgs := TPetraDateChangedEventArgs(DateTime.MinValue, false);    end;/     Raise On DateChanged Event  whether the Date was valid or not!
-        /// OnDateChanged(DateChangeArgs);  end;end;
         /// </summary>
         /// <returns>void</returns>
         private void Date_Validating(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
             // MessageBox.Show('Entering TtxtPetraDate.Date_Validating...');
-            if (VerifyDate())
+            if (VerifyDate(true))
             {
                 e.Cancel = false;
             }
@@ -380,8 +406,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         /// <param name="AShowVerificationError">Set to true to show errors if verification
         /// failed, or to false to suppress error messages</param>
-        /// <returns>true if the Control is not empty and has a valid date, otherwise false
-        /// </returns>
+        /// <returns>true if the Control has a valid date</returns>
         private Boolean VerifyDate(Boolean AShowVerificationError)
         {
             if (!FAllowVerification)
@@ -490,11 +515,19 @@ namespace Ict.Petra.Client.CommonControls
                         TMessages.DateValueMessageMaxOverrun(maximalDateValue);
                     }
 
-                    this.Text = DataBinding.DateTimeToLongDateString2(FDate.Value);
+                    String NewText = DataBinding.DateTimeToLongDateString2(FDate.Value);
+
+                    if (this.Text != NewText) // Don't set anything that's unchaged
+                    {
+                        base.Text = NewText; // I'm not calling my own Text Property, because I don't want to end up back here...
+                    }
                 }
                 else
                 {
-                    this.Text = "";
+                    if (this.Text != "")  // Don't set anything that's unchaged
+                    {
+                        base.Text = "";  // I'm not calling my own Text Property, because I don't want to end up back here...
+                    }
                 }
 
                 // reset tag to original state

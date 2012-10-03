@@ -667,15 +667,6 @@ namespace Ict.Petra.Client.App.PetraClient
             // I18N: assign proper font which helps to read asian characters
             // this is the first place where it is called, and we need to initialize the TAppSettingsManager
             TAppSettingsManager.InitFontI18N();
-
-            /* I don't know if I still need these in "the new scheme"
-             * so I'll miss them out and see what happens!
-             *
-             * // to avoid dependency cycle, we need to add module windows this way
-             * TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MPartner.Gui.TPartnerMain));
-             * TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MFinance.Gui.TFinanceMain));
-             * TFrmPetraModuleUtils.AddModuleWindow(typeof(Ict.Petra.Client.MPersonnel.Gui.TPersonnelMain));
-             */
         }
 
         /// <summary>

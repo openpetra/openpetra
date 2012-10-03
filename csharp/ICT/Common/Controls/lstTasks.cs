@@ -62,6 +62,10 @@ namespace Ict.Common.Controls
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            #endregion
         }
 
         /// <summary>
@@ -484,7 +488,22 @@ namespace Ict.Common.Controls
                 // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
                 // delegate as a static function that is available from everywhere?
 
-                System.Object screen = Activator.CreateInstance(classType, new object[] { AParentWindow });
+                System.Object screen = null;
+                try
+                {
+                    screen = Activator.CreateInstance(classType, new object[] { AParentWindow });
+                }
+                catch (System.Reflection.TargetInvocationException E)
+                {
+                    String msg = E.Message;
+
+                    if (E.InnerException != null)
+                    {
+                        msg = E.InnerException.Message;
+                    }
+
+                    return msg;
+                }
 
                 // check for properties and according attributes; this works for the LedgerNumber at the moment
                 foreach (PropertyInfo prop in classType.GetProperties())

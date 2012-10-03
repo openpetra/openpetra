@@ -163,24 +163,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
-		/// <summary>
-		/// Checks whether a specified column in a table does contain the word detail
-		/// </summary>
-		/// <param name="ATableName"></param>
-		/// <param name="AFieldName"></param>
-		/// <returns></returns>
+        /// <summary>
+        /// Checks whether a specified column in a table does contain the word detail
+        /// </summary>
+        /// <param name="ATableName"></param>
+        /// <param name="AFieldName"></param>
+        /// <returns></returns>
         private bool IsLegitimateDetailFieldName(string ATableName, string AFieldName)
         {
-        	List<string> TableFields = new List<string>();
+            List <string>TableFields = new List <string>();
 
-	        //A list of table columns that should contain the word Detail (separated by a |)
-	        //  Just add accordingly
-        	TableFields.Add("AGiftDetail|DetailNumber");
-        	
-	        return TableFields.Contains(ATableName + "|" + AFieldName);
-        		
+            //A list of table columns that should contain the word Detail (separated by a |)
+            //  Just add accordingly
+            TableFields.Add("AGiftDetail|DetailNumber");
+
+            return TableFields.Contains(ATableName + "|" + AFieldName);
         }
-        
+
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
@@ -201,10 +200,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.HasAttribute("SortableHeaders"))
             {
-            	string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
+                string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
                 writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
             }
-            
+
             if (Columns.Count > 0)
             {
                 writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Clear();" + Environment.NewLine);
@@ -352,7 +351,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     writer.Template.AddToCodelet("DETAILTABLEFILTER", FilterString);
                 }
-                
             }
 
             return writer.FTemplate;

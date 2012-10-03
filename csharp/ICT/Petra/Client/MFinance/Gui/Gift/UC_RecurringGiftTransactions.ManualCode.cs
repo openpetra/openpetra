@@ -148,9 +148,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-	            FinRecipientKeyChanging = true;
-	            FPetraUtilsObject.SuppressChangeDetection = true;
-	            
+                FinRecipientKeyChanging = true;
+                FPetraUtilsObject.SuppressChangeDetection = true;
+
                 strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
                 strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 

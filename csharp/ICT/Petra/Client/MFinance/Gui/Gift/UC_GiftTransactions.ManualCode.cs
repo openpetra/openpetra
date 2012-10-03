@@ -131,9 +131,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}",
-                                                                AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                                                                AGiftDetailTable.GetDetailNumberDBName());
-            
+                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                AGiftDetailTable.GetDetailNumberDBName());
+
             ShowData();
             ShowDetails();
 
@@ -168,9 +168,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-	            FPetraUtilsObject.SuppressChangeDetection = true;
+                FPetraUtilsObject.SuppressChangeDetection = true;
 
-	            strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+                strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
                 strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
                 if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
@@ -909,7 +909,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private AGiftDetailRow NewGift()
         {
-        	GiftBatchTDSAGiftDetailRow newRow = null;
+            GiftBatchTDSAGiftDetailRow newRow = null;
 
             if (ValidateAllData(true, true))
             {

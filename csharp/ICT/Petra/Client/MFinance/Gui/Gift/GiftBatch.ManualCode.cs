@@ -120,15 +120,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             try
             {
-	        	//this.tpgTransactions.Enabled = true;
-	            FPetraUtilsObject.DisableDataChangedEvent();
-	            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
+                //this.tpgTransactions.Enabled = true;
+                FPetraUtilsObject.DisableDataChangedEvent();
+                this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
             }
             finally
             {
-	            FPetraUtilsObject.EnableDataChangedEvent();
+                FPetraUtilsObject.EnableDataChangedEvent();
             }
-            
         }
 
         /// <summary>
