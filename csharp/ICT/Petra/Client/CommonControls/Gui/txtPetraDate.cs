@@ -90,13 +90,14 @@ namespace Ict.Petra.Client.CommonControls
                 {
                     DateTime? HoldThis = FDate;
                     bool DateIsOk = VerifyDate(true);
+
                     if (FDate != HoldThis)
                     {
                         OnDateChanged(new TPetraDateChangedEventArgs(FDate, DateIsOk));
                     }
                 }
+
                 base.Text = value;
-                
             }
         }
 
@@ -319,7 +320,6 @@ namespace Ict.Petra.Client.CommonControls
             FDateBeforeUserEdit = FDate;
         }
 
-
         /// <summary>
         /// Selects all text in the TextBox on mouse double-click.
         /// </summary>
@@ -333,6 +333,7 @@ namespace Ict.Petra.Client.CommonControls
         private void TtxtPetraDate_LostFocus(object sender, EventArgs e)
         {
             bool DateIsOk = VerifyDate(true);
+
             if (FDate != FDateBeforeUserEdit)
             {
                 OnDateChanged(new TPetraDateChangedEventArgs(FDate, DateIsOk));
@@ -515,6 +516,7 @@ namespace Ict.Petra.Client.CommonControls
                     }
 
                     String NewText = DataBinding.DateTimeToLongDateString2(FDate.Value);
+
                     if (this.Text != NewText) // Don't set anything that's unchaged
                     {
                         base.Text = NewText; // I'm not calling my own Text Property, because I don't want to end up back here...

@@ -496,10 +496,12 @@ namespace Ict.Common.Controls
                 catch (System.Reflection.TargetInvocationException E)
                 {
                     String msg = E.Message;
+
                     if (E.InnerException != null)
                     {
                         msg = E.InnerException.Message;
                     }
+
                     return msg;
                 }
 
