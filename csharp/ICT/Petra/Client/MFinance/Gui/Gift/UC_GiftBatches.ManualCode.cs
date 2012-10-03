@@ -164,10 +164,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FBatchLoaded = true;
 
             ShowDetails(GetCurrentBatchRow());
-
-            TLogging.Log("Suppress: " + FPetraUtilsObject.SuppressChangeDetection);
-            FPetraUtilsObject.EnableDataChangedEvent();
-            TLogging.Log("Suppress: " + FPetraUtilsObject.SuppressChangeDetection);
             
         }
 
