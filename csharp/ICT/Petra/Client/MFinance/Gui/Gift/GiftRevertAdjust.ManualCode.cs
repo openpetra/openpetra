@@ -195,10 +195,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitializeManualCode()
         {
-            FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                AGiftBatchTable.GetBatchStatusDBName(),
-                MFinanceConstants.BATCH_UNPOSTED);
+        	//FLedger is still zero at this point
+        	FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+        	                                                         AGiftBatchTable.GetBatchStatusDBName(), 
+        	                                                         MFinanceConstants.BATCH_UNPOSTED
+        	                                                        );
             FMainDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName() + " DESC";
+            
             SelectBatchChanged(null, null);
         }
 
@@ -209,6 +212,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             dtpEffectiveDate.Visible = !chkSelect.Checked;
             lblEffectiveDate.Visible = !chkSelect.Checked;
             lblValidDateRange.Visible = !chkSelect.Checked;
+            
+			//First pass FLedgerNumber = 0 so need to add Ledger to the filter when the user first checks the checkbox
+			if (chkSelect.Checked && FLedgerNumber != 0 && !FMainDS.AGiftBatch.DefaultView.RowFilter.Contains(AGiftBatchTable.GetLedgerNumberDBName()))
+			{
+				FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = {1} AND {2} = '{3}'",
+                                                         AGiftBatchTable.GetLedgerNumberDBName(),
+                                                         FLedgerNumber,
+                                                         AGiftBatchTable.GetBatchStatusDBName(), 
+                                                         MFinanceConstants.BATCH_UNPOSTED
+                                                        );
+			}
+            
         }
 
         private void BtnCloseClick(object sender, EventArgs e)
