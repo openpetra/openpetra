@@ -339,7 +339,6 @@ namespace ControlTestBench
             this.cplFolders.Dock = System.Windows.Forms.DockStyle.Left;
             this.cplFolders.ExpandedSize = 181;
             this.cplFolders.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckCollapsiblePanelHoster;
-            this.cplFolders.IsCollapsed = false;
             this.cplFolders.Location = new System.Drawing.Point(0, 0);
             this.cplFolders.Margin = new System.Windows.Forms.Padding(0);
             this.cplFolders.Name = "cplFolders";
@@ -410,7 +409,6 @@ namespace ControlTestBench
             this.cplShepherd.Dock = System.Windows.Forms.DockStyle.Left;
             this.cplShepherd.ExpandedSize = 181;
             this.cplShepherd.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
-            this.cplShepherd.IsCollapsed = false;
             this.cplShepherd.Location = new System.Drawing.Point(0, 0);
             this.cplShepherd.Margin = new System.Windows.Forms.Padding(0);
             this.cplShepherd.Name = "cplShepherd";
@@ -442,7 +440,6 @@ namespace ControlTestBench
             this.cplTasks4.Dock = System.Windows.Forms.DockStyle.Top;
             this.cplTasks4.ExpandedSize = 179;
             this.cplTasks4.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
-            this.cplTasks4.IsCollapsed = false;
             this.cplTasks4.Location = new System.Drawing.Point(0, 186);
             this.cplTasks4.Margin = new System.Windows.Forms.Padding(0);
             this.cplTasks4.Name = "cplTasks4";
@@ -463,7 +460,6 @@ namespace ControlTestBench
             this.cplTasks3.Dock = System.Windows.Forms.DockStyle.Top;
             this.cplTasks3.ExpandedSize = 183;
             this.cplTasks3.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
-            this.cplTasks3.IsCollapsed = false;
             this.cplTasks3.Location = new System.Drawing.Point(0, 0);
             this.cplTasks3.Margin = new System.Windows.Forms.Padding(0);
             this.cplTasks3.Name = "cplTasks3";
@@ -484,7 +480,6 @@ namespace ControlTestBench
             this.cplPartnerInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.cplPartnerInfo.ExpandedSize = 200;
             this.cplPartnerInfo.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckUserControl;
-            this.cplPartnerInfo.IsCollapsed = false;
             this.cplPartnerInfo.Location = new System.Drawing.Point(0, 429);
             this.cplPartnerInfo.Margin = new System.Windows.Forms.Padding(0);
             this.cplPartnerInfo.Name = "cplPartnerInfo";
@@ -504,7 +499,6 @@ namespace ControlTestBench
             this.cplRightCollapse.Dock = System.Windows.Forms.DockStyle.Right;
             this.cplRightCollapse.ExpandedSize = 250;
             this.cplRightCollapse.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckUserControl;
-            this.cplRightCollapse.IsCollapsed = false;
             this.cplRightCollapse.Location = new System.Drawing.Point(524, 0);
             this.cplRightCollapse.Margin = new System.Windows.Forms.Padding(0);
             this.cplRightCollapse.Name = "cplRightCollapse";

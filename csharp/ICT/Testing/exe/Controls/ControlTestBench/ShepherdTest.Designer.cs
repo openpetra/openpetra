@@ -65,7 +65,6 @@ partial class ShepherdTest
         this.tPnlCollapsible1.Dock = System.Windows.Forms.DockStyle.Left;
         this.tPnlCollapsible1.ExpandedSize = 200;
         this.tPnlCollapsible1.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
-        this.tPnlCollapsible1.IsCollapsed = false;
         this.tPnlCollapsible1.Location = new System.Drawing.Point(0, 0);
         this.tPnlCollapsible1.Margin = new System.Windows.Forms.Padding(0);
         this.tPnlCollapsible1.Name = "tPnlCollapsible1";

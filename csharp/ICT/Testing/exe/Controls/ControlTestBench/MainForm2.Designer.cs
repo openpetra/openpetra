@@ -90,7 +90,6 @@ partial class MainForm2
         this.tPnlCollapsible1.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontal;
         this.tPnlCollapsible1.Dock = System.Windows.Forms.DockStyle.Left;
         this.tPnlCollapsible1.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
-        this.tPnlCollapsible1.IsCollapsed = false;
         this.tPnlCollapsible1.Location = new System.Drawing.Point(0, 291);
         this.tPnlCollapsible1.Margin = new System.Windows.Forms.Padding(0);
         this.tPnlCollapsible1.Name = "tPnlCollapsible1";
@@ -109,7 +108,6 @@ partial class MainForm2
         this.tPnlCollapsible2.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
         this.tPnlCollapsible2.Dock = System.Windows.Forms.DockStyle.Top;
         this.tPnlCollapsible2.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckUserControl;
-        this.tPnlCollapsible2.IsCollapsed = false;
         this.tPnlCollapsible2.Location = new System.Drawing.Point(0, 151);
         this.tPnlCollapsible2.Margin = new System.Windows.Forms.Padding(0);
         this.tPnlCollapsible2.Name = "tPnlCollapsible2";
@@ -128,7 +126,6 @@ partial class MainForm2
         this.tPnlCollapsible3.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
         this.tPnlCollapsible3.Dock = System.Windows.Forms.DockStyle.Top;
         this.tPnlCollapsible3.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
-        this.tPnlCollapsible3.IsCollapsed = false;
         this.tPnlCollapsible3.Location = new System.Drawing.Point(0, 0);
         this.tPnlCollapsible3.Margin = new System.Windows.Forms.Padding(0);
         this.tPnlCollapsible3.Name = "tPnlCollapsible3";

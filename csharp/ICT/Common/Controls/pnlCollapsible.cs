@@ -196,8 +196,9 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>True if the panel is collapsed, otherwise false.</summary>
-        [Description("Set to true if the panel is to be shown collapsed, otherwise to false.")]
+        [Description("Set to true if the panel is to be shown collapsed, otherwise to false. NOTE: This is not persisted in the desginer-gernerated code on purpose as it could lead to Exceptions when the Form is run!")]
         [Category("Collapsible Panel")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsCollapsed
         {
             get
@@ -615,7 +616,9 @@ namespace Ict.Common.Controls
             {
                 this.VisualStyleEnum = DEFAULT_STYLE[this.CollapseDirection];
             }
-
+            
+            AssertDirStyleMatch();
+            
             if (!CollapseSpecified)
             {
                 this.IsCollapsed = true;
@@ -677,7 +680,7 @@ namespace Ict.Common.Controls
         {
             if (!HckDataMatch())
             {
-                throw new EIncompatibleHostedControlKindException();
+                throw new EInsufficientDataSetForHostedControlKindException();
             }
             return true;
         }
@@ -692,8 +695,14 @@ namespace Ict.Common.Controls
             return FDirStyleMapping[ADirection].Contains(AStyle);
         }
 
+        /// <summary/>
+        public bool AssertDirStyleMatch()
+        {
+            return AssertDirStyleMatch(this.FCollapseDirection, this.FVisualStyleEnum);
+        }
+
         /// <summary>
-        /// same as `DirStyleMatch`, but will throw an error.
+        /// Same as `AssertDirStyleMatch`, but direction and Style can be specified.
         /// </summary>
         public bool AssertDirStyleMatch(TCollapseDirection ADirection, TVisualStylesEnum AStyle)
         {
@@ -702,12 +711,6 @@ namespace Ict.Common.Controls
                 throw new EVisualStyleAndDirectionMismatchException();
             }
             return true;
-        }
-
-        /// <summary/>
-        public bool AssertDirStyleMatch()
-        {
-            return AssertDirStyleMatch(this.FCollapseDirection, this.FVisualStyleEnum);
         }
 
         /// <summary>
@@ -1076,7 +1079,7 @@ namespace Ict.Common.Controls
         /// </summary>
         private UserControl RealiseUserControl()
         {
-            Assembly asm;
+            Assembly asm = null;
             string dllName = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + FUserControlNamespace + ".dll";
 
             try
@@ -1085,15 +1088,22 @@ namespace Ict.Common.Controls
             }
             catch (Exception)
             {
-                TLogging.Log("TPnlCollapsible.RealiseUserControl: cannot load file " + dllName);
-                return null;
+                if ((this.Site == null)
+                    || (!this.Site.DesignMode))
+                {
+                    throw new EUserControlInvalidNamespaceSpecifiedException("Assembly '" + dllName + "' cannot be loaded.");
+                }
             }
 
             System.Type classType = asm.GetType(this.UserControlString);
 
             if (classType == null)
             {
-                MessageBox.Show("Apologies, but an error occured.     Details: TPnlCollapsible.RealiseUserControl: Cannot find class " + FUserControlNamespace + "." + FUserControlClass);
+                if ((this.Site == null)
+                    || (!this.Site.DesignMode))
+                {                
+                    throw new EUserControlCantInstantiateClassException("Cannot find class '" + FUserControlNamespace + "." + FUserControlClass + " in DLL '" + dllName + "'");
+                }
             }
 
             FUserControl = (UserControl)Activator.CreateInstance(classType);
@@ -1405,29 +1415,194 @@ namespace Ict.Common.Controls
     /// a non-TaskList function is used. Or when the hosted content is a custom
     /// UserControl and a non-UserControl funciton is used.
     /// </summary>
-    public class EIncompatibleHostedControlKindException : ApplicationException
+    public class EInsufficientDataSetForHostedControlKindException : Exception
     {
+        /// <summary>
+        /// Constructor with no Arguments
+        /// </summary>
+        public EInsufficientDataSetForHostedControlKindException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Constructor with inner Exception
+        /// </summary>
+        /// <param name="innerException"></param>
+        /// <param name="message"></param>
+        public EInsufficientDataSetForHostedControlKindException(Exception innerException, string message)
+            : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Constructor without inner Exception
+        /// </summary>
+        /// <param name="message"></param>
+        public EInsufficientDataSetForHostedControlKindException(string message)
+            : base(message)
+        {
+        }        
     }
 
     /// <summary>
     /// Thrown when instantiating HostedControlKind is hckUserControl, but UserControlString property not set.
     /// </summary>
-    public class ENoUserControlSpecifiedException : ApplicationException
+    public class ENoUserControlSpecifiedException : Exception
     {
+        /// <summary>
+        /// Constructor with no Arguments
+        /// </summary>
+        public ENoUserControlSpecifiedException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Constructor with inner Exception
+        /// </summary>
+        /// <param name="innerException"></param>
+        /// <param name="message"></param>
+        public ENoUserControlSpecifiedException(Exception innerException, string message)
+            : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Constructor without inner Exception
+        /// </summary>
+        /// <param name="message"></param>
+        public ENoUserControlSpecifiedException(string message)
+            : base(message)
+        {
+        }        
     }
 
     /// <summary>
     /// Thrown when instantiating a tasklist, but tasklistnode property not set.
     /// </summary>
-    public class ENoTaskListNodeSpecifiedException : ApplicationException
+    public class ENoTaskListNodeSpecifiedException : Exception
     {
+        /// <summary>
+        /// Constructor with no Arguments
+        /// </summary>
+        public ENoTaskListNodeSpecifiedException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Constructor with inner Exception
+        /// </summary>
+        /// <param name="innerException"></param>
+        /// <param name="message"></param>
+        public ENoTaskListNodeSpecifiedException(Exception innerException, string message)
+            : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Constructor without inner Exception
+        /// </summary>
+        /// <param name="message"></param>
+        public ENoTaskListNodeSpecifiedException(string message)
+            : base(message)
+        {
+        }        
+    }
+    
+    /// <summary>
+    /// Thrown when an Assembly that contains the specified Namespace cannot be loaded.
+    /// </summary>
+    public class EUserControlInvalidNamespaceSpecifiedException : Exception
+    {        
+        /// <summary>
+        /// Constructor with no Arguments
+        /// </summary>
+        public EUserControlInvalidNamespaceSpecifiedException() : base()
+        {
+        }
+
+
+        /// <summary>
+        /// Constructor with inner Exception
+        /// </summary>
+        /// <param name="innerException"></param>
+        /// <param name="message"></param>
+        public EUserControlInvalidNamespaceSpecifiedException(Exception innerException, string message)
+            : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Constructor without inner Exception
+        /// </summary>
+        /// <param name="message"></param>
+        public EUserControlInvalidNamespaceSpecifiedException(string message)
+            : base(message)
+        {
+        }        
     }
 
     /// <summary>
+    /// Thrown when an Instance of the specified Class cannot be found in the Assembly of the specified Namespace.
+    /// </summary>
+    public class EUserControlCantInstantiateClassException : Exception
+    {        
+        /// <summary>
+        /// Constructor with no Arguments
+        /// </summary>
+        public EUserControlCantInstantiateClassException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Constructor with inner Exception
+        /// </summary>
+        /// <param name="innerException"></param>
+        /// <param name="message"></param>
+        public EUserControlCantInstantiateClassException(Exception innerException, string message)
+            : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Constructor without inner Exception
+        /// </summary>
+        /// <param name="message"></param>
+        public EUserControlCantInstantiateClassException(string message)
+            : base(message)
+        {
+        }        
+    }
+    
+    /// <summary>
     /// there is a mismatch of the visual style and the direction
     /// </summary>
-    public class EVisualStyleAndDirectionMismatchException : ApplicationException
+    public class EVisualStyleAndDirectionMismatchException : Exception
     {
+        /// <summary>
+        /// Constructor with no Arguments
+        /// </summary>
+        public EVisualStyleAndDirectionMismatchException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Constructor with inner Exception
+        /// </summary>
+        /// <param name="innerException"></param>
+        /// <param name="message"></param>
+        public EVisualStyleAndDirectionMismatchException(Exception innerException, string message)
+            : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Constructor without inner Exception
+        /// </summary>
+        /// <param name="message"></param>
+        public EVisualStyleAndDirectionMismatchException(string message)
+            : base(message)
+        {
+        }        
     }
 
     #endregion
