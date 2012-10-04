@@ -901,8 +901,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
 
-            btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
-            
+            if ((FMainDS.ALedger != null) && (FMainDS.ALedger.Rows.Count > 0)) // If I don't have a Ledger Row, should I get one right now?
+            {
+                btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
+            }
         }
 
         private void SetExchangeRateValue(Object sender, EventArgs e)

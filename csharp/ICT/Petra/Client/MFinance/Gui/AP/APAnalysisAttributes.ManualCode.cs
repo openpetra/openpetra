@@ -43,6 +43,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     {
         private AccountsPayableTDS FMainDS;
         private AApAnalAttribRow PrevSelectedRow = null;
+        /// <summary>True if it seems the assignments have changed</summary>
         public bool DetailsChanged = false;
 
         private void InitializeManualCode()

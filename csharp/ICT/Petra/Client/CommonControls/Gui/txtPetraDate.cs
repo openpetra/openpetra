@@ -113,7 +113,6 @@ namespace Ict.Petra.Client.CommonControls
                 if (!ValidDate(false))
                 {
                     FDate = null;
-                    this.Clear();
                 }
 
                 return FDate;
@@ -127,6 +126,10 @@ namespace Ict.Petra.Client.CommonControls
                 if (value.HasValue)
                 {
                     base.Text = DataBinding.DateTimeToLongDateString2(value.Value);
+                }
+                else
+                {
+                    this.Clear();
                 }
 
                 // MessageBox.Show('this.Text: ' + this.Text);
@@ -282,7 +285,7 @@ namespace Ict.Petra.Client.CommonControls
         public TtxtPetraDate() : base()
         {
             // MessageBox.Show('Entering TtxtPetraDate.Create');
-            FDate = DateTime.Today;
+            FDate = null;
             FDateDescription = "Date";
             FLeavingOnFailedValidationOK = true;
             FAllowFutureDate = true;
