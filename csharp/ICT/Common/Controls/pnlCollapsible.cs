@@ -129,6 +129,9 @@ namespace Ict.Common.Controls
         public readonly static Dictionary<TCollapseDirection, TVisualStylesEnum> StoredStyles;
 
         /// <summary></summary>
+        public readonly static Dictionary<THostedControlKind, TCollapseDirection> DEFAULT_COLLAPSEDIRECTION;
+        
+        /// <summary></summary>
         private THostedControlKind FHostedControlKind;
 
         /// <summary></summary>
@@ -379,17 +382,25 @@ namespace Ict.Common.Controls
             set
             {
                 FTaskListInstance = value;
+                
+                UpdateTaskList();
             }
         }
 
         /// <summary></summary>
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public UserControl CollapsiblePanelHosterInstance
+        public TPnlCollapsibleHoster CollapsiblePanelHosterInstance
         {
             get
             {
                 return FPnlCollapsibleHoster;
+            }
+            set
+            {
+                FPnlCollapsibleHoster = value;
+                
+                UpdateCollapsiblePanelHoster();
             }
         }
         
@@ -458,6 +469,11 @@ namespace Ict.Common.Controls
             DEFAULT_STYLE.Add(TCollapseDirection.cdHorizontalRight, TVisualStylesEnum.vsHorizontalCollapse);
             DEFAULT_STYLE.Add(TCollapseDirection.cdVertical, TVisualStylesEnum.vsAccordionPanel);
 
+            DEFAULT_COLLAPSEDIRECTION = new Dictionary<THostedControlKind, TCollapseDirection>();
+            DEFAULT_COLLAPSEDIRECTION.Add(THostedControlKind.hckUserControl, TCollapseDirection.cdVertical);
+            DEFAULT_COLLAPSEDIRECTION.Add(THostedControlKind.hckTaskList, TCollapseDirection.cdVertical);
+            DEFAULT_COLLAPSEDIRECTION.Add(THostedControlKind.hckCollapsiblePanelHoster, TCollapseDirection.cdVertical);
+            
             ArrowGraphicIndecies = new Dictionary<TCollapseDirection, Dictionary<bool, Dictionary<bool, int>>>();
             ArrowGraphicIndecies[TCollapseDirection.cdVertical] = new Dictionary<bool, Dictionary<bool, int>>();
             ArrowGraphicIndecies[TCollapseDirection.cdVertical].Add(true, new Dictionary<bool, int>());
@@ -509,7 +525,7 @@ namespace Ict.Common.Controls
                     
                     FInitializeComponentRan = true;
                 }
-    
+                
                 SetupControl(Args);
             }
         }
@@ -531,6 +547,7 @@ namespace Ict.Common.Controls
             bool CollapseDirectionSpecified = false;
             bool CollapseSpecified = false;
             bool ExpandedSizeSpecified = false;
+            bool HostedControlKindSpecified = false;
             
             FControlProperlyInitialised = true;
 
@@ -539,6 +556,8 @@ namespace Ict.Common.Controls
                 if (arg is Ict.Common.Controls.THostedControlKind)
                 {
                     this.HostedControlKind = (THostedControlKind) arg;
+                    
+                    HostedControlKindSpecified = true;
                 }
                 else if(arg is string)
                 {
@@ -580,16 +599,23 @@ namespace Ict.Common.Controls
                 }
             }
 
+            if (!CollapseDirectionSpecified)
+            {
+                if (HostedControlKindSpecified) 
+                {
+                    this.CollapseDirection = DEFAULT_COLLAPSEDIRECTION[HostedControlKind];    
+                }
+                else
+                {
+                    this.CollapseDirection = TCollapseDirection.cdVertical;
+                }
+            }
+            
             if (!VisualStyleSpecified)
             {
                 this.VisualStyleEnum = DEFAULT_STYLE[this.CollapseDirection];
             }
 
-            if (!CollapseDirectionSpecified)
-            {
-                this.CollapseDirection = TCollapseDirection.cdVertical;
-            }
-            
             if (!CollapseSpecified)
             {
                 this.IsCollapsed = true;
@@ -619,7 +645,7 @@ namespace Ict.Common.Controls
             
             this.IsCollapsed = FIsCollapsed;
         }
-                
+        
         /// <summary>
         /// checks that hosted control kind is set to something and that the appropriate data (like UsercontrolClass) is there.
         /// </summary>
@@ -781,8 +807,8 @@ namespace Ict.Common.Controls
             else
             {
                 this.Width = FExpandedSize;
-                            
-                ShowHideCollapsedInfoText(false);   
+                
+                ShowHideCollapsedInfoText(false);
             }
 
             switch (FHostedControlKind)
@@ -817,9 +843,9 @@ namespace Ict.Common.Controls
                     else
                     {
                         if((FControlProperlyInitialised)
-                           || ((this.Site != null) 
+                           || ((this.Site != null)
                                && (this.Site.DesignMode)))
-                        {                        
+                        {
                             InstantiateCollapsiblePanelHoster();
                         }
                     }
@@ -833,8 +859,8 @@ namespace Ict.Common.Controls
                     {
                         FUserControl.Visible = false;
                     }
-                                        
-                    break;                
+                    
+                    break;
                     
                 case THostedControlKind.hckTaskList:
                     if (FTaskListInstance != null)
@@ -844,7 +870,7 @@ namespace Ict.Common.Controls
                     else
                     {
                         if((FControlProperlyInitialised)
-                           || ((this.Site != null) 
+                           || ((this.Site != null)
                                && (this.Site.DesignMode)))
                         {
                             InstantiateTaskList();
@@ -869,35 +895,35 @@ namespace Ict.Common.Controls
         {
             pnlCollapsedInfoText.Visible = AShow;
             
-            if (AShow) 
+            if (AShow)
             {
                 switch(FCollapseDirection)
                 {
                     case TCollapseDirection.cdHorizontal:
-                    {
-                        if (FVisualStyleEnum == TVisualStylesEnum.vsShepherd) 
                         {
-                            otlCollapsedInfoText.Text = FInfoTextCollapseHorizontalLeftShepherd;
+                            if (FVisualStyleEnum == TVisualStylesEnum.vsShepherd)
+                            {
+                                otlCollapsedInfoText.Text = FInfoTextCollapseHorizontalLeftShepherd;
+                            }
+                            else
+                            {
+                                otlCollapsedInfoText.Text = FInfoTextCollapseHorizontalLeft;
+                            }
+                            
+                            otlCollapsedInfoText.ForeColor = FVisualStyle.CollapsedInfoTextFontColour;
+                            otlCollapsedInfoText.RotationAngle = 270;
+                            
+                            break;
                         }
-                        else
-                        {
-                            otlCollapsedInfoText.Text = FInfoTextCollapseHorizontalLeft;
-                        }
-                        
-                        otlCollapsedInfoText.ForeColor = FVisualStyle.CollapsedInfoTextFontColour;
-                        otlCollapsedInfoText.RotationAngle = 270;
-                        
-                        break;
-                    }
                     case TCollapseDirection.cdHorizontalRight:
-                    {
-                        otlCollapsedInfoText.Text = FInfoTextCollapseHorizontalRight;
-                        otlCollapsedInfoText.RotationAngle = 90;
-                        
-                        break;
-                    }
+                        {
+                            otlCollapsedInfoText.Text = FInfoTextCollapseHorizontalRight;
+                            otlCollapsedInfoText.RotationAngle = 90;
+                            
+                            break;
+                        }
                 }
-            }            
+            }
         }
         
         /// <summary>
@@ -929,6 +955,14 @@ namespace Ict.Common.Controls
         public TTaskList RealiseTaskListNow()
         {
             return InstantiateTaskList();
+        }
+
+        /// <summary>
+        /// Allow the outside to force the CollapsiblePanelHoster to initialize.
+        /// </summary>
+        public TPnlCollapsibleHoster RealiseCollapsiblePanelHoster()
+        {
+            return InstantiateCollapsiblePanelHoster();
         }
         
         #endregion
@@ -1009,7 +1043,7 @@ namespace Ict.Common.Controls
             else if (FCollapseDirection == TCollapseDirection.cdHorizontalRight)
             {
                 this.Dock = System.Windows.Forms.DockStyle.Right;
-            }                
+            }
             else
             {
                 this.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -1042,13 +1076,6 @@ namespace Ict.Common.Controls
         /// </summary>
         private UserControl RealiseUserControl()
         {
-            if (pnlContent.Controls.Count == 1)
-            {
-                // reuse the existing control, otherwise we will overload more and more user controls
-                // and only the first user control will be visible
-                return (UserControl)pnlContent.Controls[0];
-            }
-
             Assembly asm;
             string dllName = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + FUserControlNamespace + ".dll";
 
@@ -1101,13 +1128,31 @@ namespace Ict.Common.Controls
             }
 
             FTaskListInstance = new Ict.Common.Controls.TTaskList(FTaskListNode, FVisualStyleEnum);
-            this.pnlContent.Controls.Add(FTaskListInstance);
+
+            UpdateTaskList();
             
+            return FTaskListInstance;
+        }
+
+        void UpdateTaskList()
+        {
+            this.pnlContent.Controls.Add(FTaskListInstance);
+
             FTaskListInstance.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ExpandedSize = FTaskListInstance.TaskListMaxHeight + pnlTitleText.Height - 4;
             this.Height = ExpandedSize;
+        }
+
+        void UpdateCollapsiblePanelHoster()
+        {
+            FPnlCollapsibleHoster.Dock = System.Windows.Forms.DockStyle.Fill;
+
+            TVisualStyles VisualStyle = new TVisualStyles(FVisualStyleEnum);
+            this.pnlContent.Padding = new Padding(0, VisualStyle.ContentPaddingTop, 0, 0);
             
-            return FTaskListInstance;
+            this.pnlContent.Controls.Add(FPnlCollapsibleHoster);
+
+            FPnlCollapsibleHoster.RealiseCollapsiblePanelsNow();
         }
 
         /// <summary></summary>
@@ -1128,10 +1173,10 @@ namespace Ict.Common.Controls
                     FTaskListNode = GetHardCodedXmlNodes_ForDesignerOnly();
                 }
             }
-
-            if (FVisualStyleEnum == TVisualStylesEnum.vsHorizontalCollapse) 
+            
+            if (FVisualStyleEnum == TVisualStylesEnum.vsHorizontalCollapse)
             {
-                PnlCollapsibleVisualStyleEnum = TVisualStylesEnum.vsAccordionPanel;    
+                PnlCollapsibleVisualStyleEnum = TVisualStylesEnum.vsAccordionPanel;
             }
             else
             {
@@ -1139,17 +1184,11 @@ namespace Ict.Common.Controls
             }
             
             FPnlCollapsibleHoster = new Ict.Common.Controls.TPnlCollapsibleHoster(FTaskListNode, PnlCollapsibleVisualStyleEnum);
-            FPnlCollapsibleHoster.Dock = System.Windows.Forms.DockStyle.Fill;
-
-            TVisualStyles VisualStyle = new TVisualStyles(FVisualStyleEnum);
-            this.pnlContent.Padding = new Padding(0, VisualStyle.ContentPaddingTop, 0, 0);
             
-            this.pnlContent.Controls.Add(FPnlCollapsibleHoster);           
-
-            FPnlCollapsibleHoster.RealiseCollapsiblePanelsNow();
+            UpdateCollapsiblePanelHoster();
             
             return FPnlCollapsibleHoster;
-        }        
+        }
         
         /// <summary>
         /// Used ONLY for showing some sensible data in the Designer if FHostedControlKind == <see cref="THostedControlKind.hckTaskList" />.
@@ -1176,7 +1215,6 @@ namespace Ict.Common.Controls
         /// </summary>
         private TVisualStylesEnum ChangeVisualStyle(TVisualStylesEnum AVisualStyle)
         {
-            //This is to support future support where styles can work in multiple directions.
             foreach (TCollapseDirection dir in DirectionsForStyle(AVisualStyle))
             {
                 StoredStyles[dir] = AVisualStyle;

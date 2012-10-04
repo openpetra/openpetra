@@ -58,13 +58,33 @@ namespace Tests.Common.Controls
         public static XmlNode GetTestXmlNode()
         {
             string[] lines = new string[3];
+            
             lines[0] = "TaskGroup:\n";
             lines[1] = "    Task1:\n";
-            lines[2] = "        Label: Testing";
-            XmlNode xmlnode = (new TYml2Xml(lines)).ParseYML2TaskListRoot();
-            return xmlnode;
+            lines[2] = "        Label: Testing";            
+            
+            return new TYml2Xml(lines).ParseYML2TaskListRoot();;
         }
 
+        /// <summary>
+        /// Returns a hard-coded XmlNode for testing purposes.
+        /// </summary>
+        /// <returns>Hard-coded XmlNode.</returns>
+        public static XmlNode GetTestXmlNode2()
+        {
+            string[] lines = new string[7];
+            
+            lines[0] = "TaskGroup:\n";
+            lines[1] = "    Task1:\n";
+            lines[2] = "        Label: First Item";
+            lines[3] = "    Task2:\n";
+            lines[4] = "        Label: Second Item";
+            lines[5] = "    Task3:\n";
+            lines[6] = "        Label: Third Item";
+            
+            return new TYml2Xml(lines).ParseYML2TaskListRoot();
+        }
+        
         /// <summary>
         /// </summary>
         public void ExampleCallback()
