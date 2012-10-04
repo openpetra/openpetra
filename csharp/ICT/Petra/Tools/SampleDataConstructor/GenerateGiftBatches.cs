@@ -38,7 +38,7 @@ using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 
-namespace Ict.Testing.SampleDataConstructor
+namespace Ict.Petra.Tools.SampleDataConstructor
 {
     /// <summary>
     /// tools for generating and posting gift batches with sample data

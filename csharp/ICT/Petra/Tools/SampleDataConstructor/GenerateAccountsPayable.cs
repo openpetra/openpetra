@@ -41,7 +41,7 @@ using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MCommon.WebConnectors;
 using Ict.Petra.Server.MFinance.AP.WebConnectors;
 
-namespace Ict.Testing.SampleDataConstructor
+namespace Ict.Petra.Tools.SampleDataConstructor
 {
     /// <summary>
     /// tools for generating and posting and paying invoices

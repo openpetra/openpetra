@@ -39,7 +39,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core;
 
-namespace Ict.Testing.SampleDataConstructor
+namespace Ict.Petra.Tools.SampleDataConstructor
 {
     /// <summary>
     /// tools for generating people with FAMILY and PERSON partner records, and commitment data
