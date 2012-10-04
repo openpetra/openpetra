@@ -43,6 +43,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     {
         private AccountsPayableTDS FMainDS;
         private AApAnalAttribRow PrevSelectedRow = null;
+        public bool DetailsChanged = false;
 
         private void InitializeManualCode()
         {
@@ -120,6 +121,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 if ((SelectedValue != null) && (SelectedValue.Length > 0))
                 {
+                    DetailsChanged |= (PrevSelectedRow.AnalysisAttributeValue != SelectedValue);
                     PrevSelectedRow.AnalysisAttributeValue = SelectedValue;
                 }
 
