@@ -94,7 +94,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             
             // only export accounts that are actually used with these cost centres
             string sql = 
-                String.Format("SELECT {0}, {1} from PUB_{2} AS A WHERE {3} = {4} AND " + 
+                String.Format("SELECT {0}, {1}, {8} from PUB_{2} AS A WHERE {3} = {4} AND " + 
                               " {8}=true AND " +
                               "EXISTS (SELECT * FROM PUB_{5} AS GLM WHERE GLM.{0} = A.{0} AND GLM.{6} IN ({7})) ORDER BY {0}",
                               AAccountTable.GetAccountCodeDBName(),
@@ -105,7 +105,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                               AGeneralLedgerMasterTable.GetTableDBName(),
                               AGeneralLedgerMasterTable.GetCostCentreCodeDBName(),
                               "'" + ACostCentres.Replace(",", "','") + "'",
-                              AAccountTable.GetPostingStatusDBName());
+                              AAccountTable.GetPostingStatusDBName(),
+                              AAccountTable.GetDebitCreditIndicatorDBName());
             
             DataTable accounts = DBAccess.GDBAccessObj.SelectDT(sql, "accounts", Transaction);
             
@@ -113,7 +114,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             foreach (DataRow row in accounts.Rows)
             {
-                sb.Append(StringHelper.StrMerge(new string[]{row[0].ToString(), row[1].ToString()}, ACSVSeparator));
+                sb.Append(StringHelper.StrMerge(new string[]{row[0].ToString(), row[1].ToString(),
+                                                    Convert.ToBoolean(row[2])?"Debit":"Credit"}, ACSVSeparator));
                 sb.Append(ANewLine);
             }
 

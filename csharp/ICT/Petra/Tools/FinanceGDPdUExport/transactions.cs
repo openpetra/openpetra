@@ -56,7 +56,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             
             string sql = 
-                String.Format("SELECT T.{13}, T.{17}, T.{0}, T.{1}, T.{2}, T.{3}, B.{4}, T.{5}, T.{6} from PUB_{8} AS B, PUB_{7} AS T " +
+                String.Format("SELECT T.{13}, T.{17}, T.{0}, T.{1}, T.{2}, T.{3}, B.{4}, T.{5}, T.{6}, T.{18} "
+                              + "FROM PUB_{8} AS B, PUB_{7} AS T " +
                               "WHERE B.{9} = {10} AND B.{15} = {16} AND B.{11}='{12}' " +
                               "AND T.{9} = B.{9} AND T.{0} = B.{0} " +
                               "AND T.{13} IN ({14}) ORDER BY {0}, {1}, {2}",
@@ -77,7 +78,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                               "'" + ACostCentres.Replace(",", "','") + "'",
                               ABatchTable.GetBatchYearDBName(),
                               AFinancialYear,
-                              ATransactionTable.GetAccountCodeDBName());
+                              ATransactionTable.GetAccountCodeDBName(),
+                              ATransactionTable.GetDebitCreditIndicatorDBName());
             
             DataTable transactions = DBAccess.GDBAccessObj.SelectDT(sql, "transactions", Transaction);
 
@@ -126,18 +128,19 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     // also export attribRow.AnalysisTypeCode?
                     attributes.Append(attribRow.AnalysisAttributeValue);
                 }
-                
+
                 sb.Append(StringHelper.StrMerge(
                     new string[]{
                         row[0].ToString(),
                         row[1].ToString(),
                         "B" + row[2].ToString() + "_J" + row[3].ToString() + "_T" + row[4].ToString(),
                         String.Format("{0:N}", Convert.ToDecimal(row[5])),
+                        Convert.ToBoolean(row[9])?"Debit":"Credit",
                         Convert.ToDateTime(row[6]).ToString("yyyyMMdd"),
                         row[7].ToString(),
                         row[8].ToString(),
                         attributes.ToString()}, ACSVSeparator));
-                
+
                 sb.Append(ANewLine);
             }
 
