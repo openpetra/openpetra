@@ -35,6 +35,7 @@ RootNode:
             CustomColumns:
                 DetailRateOfExchange: {Label=Rate of Exchange, Type=Currency(10)}
             ActionFocusRow: FocusedRowChanged
+            ActionDoubleClick: AcceptExchangeRate
         pnlDetails:
             Dock: Bottom
             Controls:

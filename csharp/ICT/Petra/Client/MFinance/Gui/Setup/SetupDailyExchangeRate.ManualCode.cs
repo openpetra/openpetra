@@ -95,7 +95,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void InitializeManualCode()
         {
-            // This code runs just before the auto-generated code binds the data to the grid
+            
+        	// This code runs just before the auto-generated code binds the data to the grid
             // We need to set the RowFilter to something that returns no rows because we will return the rows we actually want
             // in RunOnceOnActivation.  By returning no rows now we reduce some horrible flicker on the screen (and save time!)
             FMainDS.ADailyExchangeRate.DefaultView.RowFilter = FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom + " = '" +
@@ -334,6 +335,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        /// <summary>
+        /// If the dialog is used modal it shall be closed by this routine ...
+        /// This is also called from double click of the grid
+        /// </summary>
+        /// <param name="sender">not used</param>
+        /// <param name="e">not used</param>
+        private void AcceptExchangeRate(object sender, EventArgs e)
+        {
+            //If not model return
+        	if (!btnClose.Visible)
+            {
+            	return;
+            }
+            
+        	if (FPetraUtilsObject.CloseFormCheck())
+            {
+                if (CanClose())
+                {
+                    if (txtDetailRateOfExchange.NumberValueDecimal.HasValue)
+                    {
+                        ModalFormReturnExchangeRate = txtDetailRateOfExchange.NumberValueDecimal.Value;
+                    }
+
+                    blnUseDateTimeDefault = false;
+                    SaveChanges();
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+            }
+        }
+        
+        
         /// <summary>
         /// If the dialog is used modal then it can be canceled ...
         /// </summary>

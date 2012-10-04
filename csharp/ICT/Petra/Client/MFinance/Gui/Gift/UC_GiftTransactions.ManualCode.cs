@@ -484,8 +484,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //If all details have been deleted
                 if ((FLedgerNumber != -1) && (grdDetails.Rows.Count == 1))
                 {
-//	                AGiftBatchRow batch = GetBatchRow();
-//		            batch.BatchTotal = 0;
                     FBatchRow.BatchTotal = 0;
                 }
 
