@@ -337,7 +337,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
 
-                            if (cmbPeriodFilter.SelectedIndex != 0)
+                            if (cmbYearFilter.SelectedIndex != 0)
+                            {
+                            	cmbYearFilter.SelectedIndex = 0;
+                            }
+                            else if (cmbPeriodFilter.SelectedIndex != 0)
                             {
                                 cmbPeriodFilter.SelectedIndex = 0;
                             }

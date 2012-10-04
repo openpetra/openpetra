@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
@@ -31,6 +32,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -65,7 +67,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>//
         public string FSelectedBatchMethodOfPayment = String.Empty;
 
-        /// <summary>
+		private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
+		
+		/// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// </summary>
         public void RefreshAll()
@@ -164,6 +168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FBatchLoaded = true;
 
             ShowDetails(GetCurrentBatchRow());
+            
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -373,7 +378,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
 
-                            if (cmbPeriod.SelectedIndex != 0)
+                            if (cmbYear.SelectedIndex != 0)
+                            {
+                            	cmbYear.SelectedIndex = 0;
+                            }
+                            else if (cmbPeriod.SelectedIndex != 0)
                             {
                                 cmbPeriod.SelectedIndex = 0;
                             }
@@ -467,6 +476,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateBatchPeriod(null, null);
 
             UpdateChangeableStatus();
+            
+            RefreshCurrencyAndExchangeRate();
 
 //            FPetraUtilsObject.DetailProtectedMode =
 //                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
@@ -800,39 +811,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     giftBatchRow.BatchNumber);
                 PrintGiftBatchReceipts(PostedGiftTDS);
 
-                // I don't like these lines - I'll re-load the control instead..
-
-/*
- *              giftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
- *              giftBatchRow.AcceptChanges();
- *
- *              // make sure that the gift batch is not touched again, by GetDetailsFromControls
- *              FSelectedBatchNumber = -1;
- *              FPreviouslySelectedDetailRow = null;
- *
- *              // make sure that gift transactions and details are cleared as well
- *              ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
- *              FMainDS.AGiftDetail.Rows.Clear();
- *              FMainDS.AGift.Rows.Clear();
- *
- *              ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
- *
- *              //Select unposted batch row in same index position as batch just posted
- *              grdDetails.DataSource = null;
- *              grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
- *
- *              if (grdDetails.Rows.Count > 1)
- *              {
- *                  // Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
- *                  // such that a removal of a row is not detected
- *                  SelectRowInGrid(newCurrentRowPos, true);
- *              }
- *              else
- *              {
- *                  ClearControls();
- *                  ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
- *              }
- */
                 RefreshAll();
             }
         }
@@ -902,6 +880,52 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             txtDetailHashTotal.CurrencySymbol = ACurrencyCode;
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
+
+            if (!FPetraUtilsObject.SuppressChangeDetection && (FPreviouslySelectedDetailRow != null)
+                && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            {
+                FPreviouslySelectedDetailRow.CurrencyCode = ACurrencyCode;
+
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
+                    FMainDS.ALedger[0].BaseCurrency,
+                    FPreviouslySelectedDetailRow.CurrencyCode,
+                    FPreviouslySelectedDetailRow.GlEffectiveDate);
+
+                RefreshCurrencyAndExchangeRate();
+            }
+        }
+
+        private void RefreshCurrencyAndExchangeRate()
+        {
+        	txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
+            txtDetailExchangeRateToBase.BackColor =
+                (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
+
+            btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
+            
+        }
+
+        private void SetExchangeRateValue(Object sender, EventArgs e)
+        {
+            TFrmSetupDailyExchangeRate setupDailyExchangeRate =
+                new TFrmSetupDailyExchangeRate(FPetraUtilsObject.GetForm());
+
+            if (setupDailyExchangeRate.ShowDialog(FLedgerNumber, dtpDetailGlEffectiveDate.Date.Value,
+                    cmbDetailCurrencyCode.GetSelectedString(),
+                    DEFAULT_CURRENCY_EXCHANGE) == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            if (FPreviouslySelectedDetailRow.ExchangeRateToBase != setupDailyExchangeRate.CurrencyExchangeRate)
+            {
+                //Enforce save needed condition
+                FPetraUtilsObject.SetChangedFlag();
+            }
+
+            FPreviouslySelectedDetailRow.ExchangeRateToBase = setupDailyExchangeRate.CurrencyExchangeRate;
+            
+            RefreshCurrencyAndExchangeRate();
         }
 
         private void HashTotalChanged(object sender, EventArgs e)
