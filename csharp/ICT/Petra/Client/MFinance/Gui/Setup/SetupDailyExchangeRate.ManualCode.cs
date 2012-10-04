@@ -337,12 +337,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         /// <summary>
         /// If the dialog is used modal it shall be closed by this routine ...
+        /// This is also called from double click of the grid
         /// </summary>
         /// <param name="sender">not used</param>
         /// <param name="e">not used</param>
         private void AcceptExchangeRate(object sender, EventArgs e)
         {
-            if (FPetraUtilsObject.CloseFormCheck())
+            //If not model return
+        	if (!btnClose.Visible)
+            {
+            	return;
+            }
+            
+        	if (FPetraUtilsObject.CloseFormCheck())
             {
                 if (CanClose())
                 {
