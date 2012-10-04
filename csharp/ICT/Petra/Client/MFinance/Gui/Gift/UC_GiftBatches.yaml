@@ -14,6 +14,7 @@ RootNode:
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
         actReverseGiftBatch: {Label=&Reverse Gift Batch, ActionClick=ReverseGiftBatch}
+        actSetExchangeRate:{Label=Get/Set Exchange Rate, ActionClick=SetExchangeRateValue}
     Controls:
         pnlContent:
             Dock: Fill
@@ -57,7 +58,7 @@ RootNode:
                 Row2: [cmbDetailBankAccountCode]
                 Row3: [dtpDetailGlEffectiveDate, lblValidDateRange]
                 Row4: [txtDetailHashTotal, cmbDetailCurrencyCode]
-                Row5: [txtDetailExchangeRateToBase]
+                Row5: [txtDetailExchangeRateToBase, btnGetSetExchangeRate]
                 Row6: [cmbDetailMethodOfPaymentCode]
                 Row7: [rgrDetailGiftType]
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
@@ -67,8 +68,9 @@ RootNode:
         lblValidDateRange:
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
-        txtDetailExchangeRateToBase: {Validation=true, Format=Decimal}
+        txtDetailExchangeRateToBase: {ReadOnly=true, Validation=true, Format=Decimal}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList,OnChange=MethodOfPaymentChanged}
+        btnGetSetExchangeRate: {Action=actSetExchangeRate}
         rgrDetailGiftType:
             OptionalValues: [=Gift,Gift In Kind,Other]
             ControlsOrientation: Horizontal
