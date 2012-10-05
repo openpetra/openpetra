@@ -395,6 +395,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
                     Row.DiscountMsg = "None";
                     Row.Selected = false;
+
                     if (Row.IsDiscountPercentageNull())
                     {
                         Row.DiscountPercentage = 0;

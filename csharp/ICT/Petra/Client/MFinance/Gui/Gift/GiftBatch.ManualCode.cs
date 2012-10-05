@@ -264,6 +264,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         SelectedRow = FMainDS.AGiftBatch[0];
                     }
+
                     if (SelectedRow != null)
                     {
                         LoadTransactions(SelectedRow.LedgerNumber,

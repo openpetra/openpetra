@@ -196,8 +196,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     TFrmGiftBatch gb = new TFrmGiftBatch(this);
                     gb.ViewMode = true;
                     gb.ViewModeTDS = FMainDS;
-                     // When I call Gift Batch, it will want one row in a LedgerTable!
-                    gb.ViewModeTDS.ALedger.Merge(TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber)); 
+                    // When I call Gift Batch, it will want one row in a LedgerTable!
+                    gb.ViewModeTDS.ALedger.Merge(TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber));
                     gb.ShowDetailsOfOneBatch(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber);
                 }
                 finally

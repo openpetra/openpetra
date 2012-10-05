@@ -159,12 +159,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     foreach (DataRowView rv2 in Atds.AApAnalAttrib.DefaultView)
                     {
                         AApAnalAttribRow AttribValueRow = (AApAnalAttribRow)rv2.Row;
+
                         if (AttribValueRow.AnalysisAttributeValue == "")
                         {
                             IhaveAllMyAttributes = false;
                             break;
                         }
                     }
+
                     if (IhaveAllMyAttributes == false)  // because of the test above..
                     {
                         break;
@@ -198,13 +200,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="sender"></param>
         /// <param name="e"></param>
 
-        private void CheckAccountRequiredAttr(Object sender, EventArgs e) 
+        private void CheckAccountRequiredAttr(Object sender, EventArgs e)
         {
             // I'm not doing this if this document was already posted.
             if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0)
             {
                 return;
             }
+
             string AccountCode = cmbDetailAccountCode.GetSelectedString();
 
             if (AccountCode.Length == 0)
@@ -363,6 +366,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             AnalAttrForm.Initialise(ref FMainDS, FPreviouslySelectedDetailRow);
             AnalAttrForm.ShowDialog();
             ShowData(FMainDS.AApDocument[0]);
+
 //          CheckAccountRequiredAttr(null, null);
             if (AnalAttrForm.DetailsChanged)
             {
@@ -526,9 +530,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     if ((Row.AccountCode == "") || (Row.CostCentreCode == ""))
                     {
-                        MessageBox.Show(Catalog.GetString("Account and Cost Centre must be specified."), Catalog.GetString("Post Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        MessageBox.Show(
+                            Catalog.GetString("Account and Cost Centre must be specified."), 
+                            Catalog.GetString("Post Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                         return false;
                     }
+
                     String AccountCostCentre = Row.AccountCode + "|" + Row.CostCentreCode;
 
                     if (!AccountCodesCostCentres.Contains(AccountCostCentre))
@@ -667,9 +674,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             if (FPetraUtilsObject.HasChanges)
             {
-                MessageBox.Show(Catalog.GetString("Document should be saved before posting."), Catalog.GetString("Post Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show(Catalog.GetString("Document should be saved before posting."), Catalog.GetString(
+                        "Post Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
+
             GetDataFromControls(FMainDS.AApDocument[0]);
 
             // TODO: make sure that there are uptodate exchange rates
@@ -709,9 +718,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             if (FPetraUtilsObject.HasChanges)
             {
-                MessageBox.Show(Catalog.GetString("Document should be saved before paying."), Catalog.GetString("Pay Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show(Catalog.GetString("Document should be saved before paying."), Catalog.GetString(
+                        "Pay Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
+
             TFrmAPPayment PaymentScreen = new TFrmAPPayment(this);
 
             List <int>PayTheseDocs = new List <int>();

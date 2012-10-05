@@ -279,7 +279,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-
             AVerificationResult = null;
 
             if (AInspectDS == null)
@@ -319,11 +318,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         }
                     }
                 } // foreach (document)
+
             } // if {there's actually a document}
 
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrOK;
             bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out IsMyOwnTransaction);
+            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                out IsMyOwnTransaction);
             try
             {
                 foreach (AccountsPayableTDSAApDocumentRow NewDocRow in AInspectDS.AApDocument.Rows)
@@ -355,6 +356,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         DetailsaveOK = AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
                             out AVerificationResult);
                     }
+
                     if (!DetailsaveOK)
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
