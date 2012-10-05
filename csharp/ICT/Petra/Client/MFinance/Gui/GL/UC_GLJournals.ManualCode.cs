@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 AJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
             
-            FMainDS.AJournal.DefaultView.Sort = String.Format("{0} DESC",
+            FMainDS.AJournal.DefaultView.Sort = String.Format("{0} ASC",
                                                               AJournalTable.GetJournalNumberDBName()
                                                              );
 

@@ -50,6 +50,7 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
             SortOrder: BatchNumber DESC
+            SortableHeaders: false
         pnlDetails:
             Dock: Bottom
             Controls:

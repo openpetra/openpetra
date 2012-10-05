@@ -136,7 +136,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
-            FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}",
+            FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} ASC, {1} ASC",
                 AGiftDetailTable.GetGiftTransactionNumberDBName(),
                 AGiftDetailTable.GetDetailNumberDBName());
 
@@ -1219,6 +1219,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 ledgerNumber;
             Int32 batchNumber;
 
+            if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+            	return;
+            }
+            
             if (AUpdateCurrentRowOnly)
             {
             	//This happens when the gift amount is updated
