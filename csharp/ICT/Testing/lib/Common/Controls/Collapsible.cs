@@ -54,7 +54,7 @@ namespace Tests.Common.Controls
     public class TTestCollapsible
     {
         const string HOSTEDUSERCONTROL = "Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo";
-        
+
         TPnlCollapsible FPnl;
 
         #region helperfunctions/setup/teardown
@@ -67,12 +67,12 @@ namespace Tests.Common.Controls
         void assertIsStable(TPnlCollapsible APnl, bool ACheckHckDataMatch = true)
         {
             APnl.AssertDirStyleMatch();
-            
-            if (ACheckHckDataMatch) 
+
+            if (ACheckHckDataMatch)
             {
-                APnl.AssertHckDataMatch();    
+                APnl.AssertHckDataMatch();
             }
-            
+
             Assert.AreEqual(null, APnl.TaskListNode); //required because expand() may be called at any moment, and it will throw an error if TaskListNode is null. So we require it's existance at all times.
         }
 
@@ -84,11 +84,11 @@ namespace Tests.Common.Controls
         void assertIsStable2(TPnlCollapsible APnl)
         {
             APnl.AssertDirStyleMatch();
-            APnl.AssertHckDataMatch();    
-            
+            APnl.AssertHckDataMatch();
+
             Assert.AreNotEqual(null, APnl.TaskListNode); //required because expand() may be called at any moment, and it will throw an error if TaskListNode is null. So we require it's existance at all times.
         }
-                      
+
         ///<summary>
         /// This function defines what a "stable" state is -- meaning that if the pnlCollapsible is
         /// stable, then there should not be any chance of a runtime error (except for the case of the usercontrolnamespace
@@ -97,19 +97,19 @@ namespace Tests.Common.Controls
         void assertIsStable3(TPnlCollapsible APnl)
         {
             APnl.AssertDirStyleMatch();
-            APnl.AssertHckDataMatch();    
-            
+            APnl.AssertHckDataMatch();
+
             Assert.AreNotEqual(null, APnl.TaskListNode); //required because expand() may be called at any moment, and it will throw an error if TaskListNode is null. So we require it's existance at all times.
         }
-                      
+
 
         ///<summary/>
         [SetUp]
         public void Setup()
         {
             new TLogging("TestCommonControls.log");
-            
-            this.FPnl = new TPnlCollapsible(new object[] {THostedControlKind.hckUserControl, HOSTEDUSERCONTROL});
+
+            this.FPnl = new TPnlCollapsible(new object[] { THostedControlKind.hckUserControl, HOSTEDUSERCONTROL });
             assertIsStable(FPnl);
         }
 
@@ -146,15 +146,15 @@ namespace Tests.Common.Controls
         [Test]
         public void TestConstructorDefault()
         {
-            FPnl = new TPnlCollapsible(new object[] {});
+            FPnl = new TPnlCollapsible(new object[] { });
 
             assertIsStable(FPnl, false);
-            
-            FPnl = new TPnlCollapsible(new object[] {});
+
+            FPnl = new TPnlCollapsible(new object[] { });
             FPnl.UserControlNamespace = HOSTEDUSERCONTROL;
-            
+
             assertIsStable(FPnl);
-            
+
             // To ensure Unit Test code coverage only - nothing to assert here...
             FPnl.InitUserControl();
         }
@@ -174,7 +174,7 @@ namespace Tests.Common.Controls
             {
                 Assert.AreEqual(typeof(EInsufficientDataSetForHostedControlKindException), e.GetType());
             }
-       }
+        }
 
         /// <summary/>
         [Test]
@@ -228,7 +228,7 @@ namespace Tests.Common.Controls
                 Assert.AreEqual(typeof(EInsufficientDataSetForHostedControlKindException), e.GetType());
             }
         }
-        
+
         /// <summary/>
         [Test]
         public void TestConstructorDirection()
@@ -242,7 +242,7 @@ namespace Tests.Common.Controls
 
             assertIsStable(FPnl, false);
         }
-        
+
         /// <summary/>
         [Test]
         public void TestConstructorVisualStyle()
@@ -252,7 +252,7 @@ namespace Tests.Common.Controls
 
             assertIsStable(FPnl, false);
         }
-        
+
         /// <summary/>
         [Test]
         public void TestConstructorVisualStyleBad()
@@ -265,7 +265,7 @@ namespace Tests.Common.Controls
 
             assertIsStable(FPnl, false);
         }
-        
+
         /// <summary/>
         [Test]
         public void TestConstructorStyleDirection()
@@ -276,7 +276,7 @@ namespace Tests.Common.Controls
 
             assertIsStable(FPnl, false);
         }
-        
+
         /// <summary/>
         [Test]
         public void TestConstructorDirectionStyle()
@@ -287,7 +287,7 @@ namespace Tests.Common.Controls
 
             assertIsStable(FPnl, false);
         }
-        
+
         /// <summary/>
         [Test]
         public void TestConstructorBool()
@@ -297,13 +297,13 @@ namespace Tests.Common.Controls
 
             assertIsStable(FPnl, false);
         }
-        
+
         /// <summary/>
         [Test]
         public void TestConstructorXmlNode()
         {
             XmlNode TestXmlNode = TTestTaskList.GetTestXmlNode();
-            
+
             FPnl = new TPnlCollapsible(TestXmlNode, THostedControlKind.hckTaskList);
             Assert.AreEqual(TestXmlNode, FPnl.TaskListNode);
             assertIsStable2(FPnl);
@@ -318,7 +318,7 @@ namespace Tests.Common.Controls
         public void TestConstructorTaskListWithoutXmlNode()
         {
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList);
-            
+
             try
             {
                 assertIsStable2(FPnl);
@@ -326,7 +326,7 @@ namespace Tests.Common.Controls
             catch (Exception e)
             {
                 Assert.AreEqual(typeof(EInsufficientDataSetForHostedControlKindException), e.GetType());
-            }           
+            }
 
             //Now we want to check that we can't realise the task list without it throwing an exception.
             try
@@ -345,7 +345,7 @@ namespace Tests.Common.Controls
         public void TestConstructorUserControlWithoutUserControlString()
         {
             FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl);
-            
+
             try
             {
                 assertIsStable(FPnl);
@@ -353,7 +353,7 @@ namespace Tests.Common.Controls
             catch (Exception e)
             {
                 Assert.AreEqual(typeof(EInsufficientDataSetForHostedControlKindException), e.GetType());
-            }           
+            }
 
             //Now we want to check that we can't realise the task list without it throwing an exception.
             try
@@ -363,15 +363,15 @@ namespace Tests.Common.Controls
             catch (Exception e)
             {
                 Assert.AreEqual(typeof(EUserControlInvalidNamespaceSpecifiedException), e.GetType());
-            }            
+            }
         }
-        
+
         /// <summary/>
         [Test]
         public void TestConstructorUserControlWithInvalidClass()
         {
             FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, HOSTEDUSERCONTROL + "WRONG");
-            
+
             assertIsStable(FPnl);
 
             //Now we want to check that we can't realise the task list without it throwing an exception.
@@ -382,9 +382,9 @@ namespace Tests.Common.Controls
             catch (Exception e)
             {
                 Assert.AreEqual(typeof(EUserControlCantInstantiateClassException), e.GetType());
-            }            
+            }
         }
-        
+
         /// <summary/>
         [Test]
         public void TestConstructorMultipleSameArguments()
@@ -404,12 +404,12 @@ namespace Tests.Common.Controls
         {
             // To ensure Unit Test code coverage only - nothing to assert here...
             FPnl = new TPnlCollapsible();
-        }        
-        
+        }
+
         #endregion
 
         #region test Property Setters
-        
+
         // don't need to test each property setter function since that's implicitly tested by the cunstructor tests which call the setters.
         // Except for the following Setters, which the constructor does not support/use.
 
@@ -431,38 +431,38 @@ namespace Tests.Common.Controls
         {
             FPnl = new TPnlCollapsible(THostedControlKind.hckCollapsiblePanelHoster, TTestTaskList.GetTestXmlNode());
             FPnl.RealiseCollapsiblePanelHoster();
-            
+
             TPnlCollapsibleHoster CpH1 = FPnl.CollapsiblePanelHosterInstance;
-            
+
             TPnlCollapsibleHoster CpH2 = new TPnlCollapsibleHoster(TTestTaskList.GetTestXmlNode2(), TVisualStylesEnum.vsTaskPanel);
-            
+
             FPnl.CollapsiblePanelHosterInstance = CpH2;
-            
+
             Assert.AreNotEqual(CpH1, FPnl.CollapsiblePanelHosterInstance);
-            
-            assertIsStable2(FPnl);            
+
+            assertIsStable2(FPnl);
         }
-        
+
         ///<summary/>
         [Test]
         public void TestSetter_TaskListInstance()
         {
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TTestTaskList.GetTestXmlNode());
             FPnl.RealiseTaskListNow();
-            
+
             TTaskList TLst1 = FPnl.TaskListInstance;
             int ExpandedSize = FPnl.ExpandedSize;
-            
+
             TTaskList TLst2 = new TTaskList(TTestTaskList.GetTestXmlNode2());
-            
+
             FPnl.TaskListInstance = TLst2;
-            
+
             Assert.AreNotEqual(TLst1, FPnl.TaskListInstance);
             Assert.AreNotEqual(ExpandedSize, FPnl.ExpandedSize);
-            
-            assertIsStable2(FPnl);            
+
+            assertIsStable2(FPnl);
         }
-        
+
         ///<summary/>
         [Test]
         public void TestSetter_UserControlClass_UserControlNamespace_UserControlString()
@@ -470,142 +470,142 @@ namespace Tests.Common.Controls
             // Changing of UserControl after realising a first UserControl specified through Constructor
             FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, HOSTEDUSERCONTROL);
             FPnl.RealiseUserControlNow();
-            
+
             UserControl UC1 = FPnl.UserControlInstance;
-                
-            FPnl.UserControlClass = "TUC_Subscription";
-            FPnl.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
-            FPnl.RealiseUserControlNow();
-            
-            Assert.AreNotEqual(UC1, FPnl.UserControlInstance);
-            Assert.IsInstanceOf<Ict.Petra.Client.MPartner.Gui.TUC_Subscription> (FPnl.UserControlInstance);
-            
-            // Assigning of UserControl with UserControlClass and UserControlNamespace Properties
-            FPnl = new TPnlCollapsible(new object[] {});
+
             FPnl.UserControlClass = "TUC_Subscription";
             FPnl.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
             FPnl.RealiseUserControlNow();
 
-            Assert.IsInstanceOf<Ict.Petra.Client.MPartner.Gui.TUC_Subscription> (FPnl.UserControlInstance);            
-            
-            
+            Assert.AreNotEqual(UC1, FPnl.UserControlInstance);
+            Assert.IsInstanceOf <Ict.Petra.Client.MPartner.Gui.TUC_Subscription>(FPnl.UserControlInstance);
+
+            // Assigning of UserControl with UserControlClass and UserControlNamespace Properties
+            FPnl = new TPnlCollapsible(new object[] { });
+            FPnl.UserControlClass = "TUC_Subscription";
+            FPnl.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
+            FPnl.RealiseUserControlNow();
+
+            Assert.IsInstanceOf <Ict.Petra.Client.MPartner.Gui.TUC_Subscription>(FPnl.UserControlInstance);
+
+
             // Assigning of UserControl with UserControlString Property
-            FPnl = new TPnlCollapsible(new object[] {});
+            FPnl = new TPnlCollapsible(new object[] { });
             FPnl.UserControlString = "Ict.Petra.Client.MPartner.Gui.TUC_Subscription";
-            
+
             // Calling Expand() has the side effect of instantiating the UserControl
             FPnl.Expand();
 
             UserControl UC2 = FPnl.UserControlInstance;
-            Assert.IsInstanceOf<Ict.Petra.Client.MPartner.Gui.TUC_Subscription> (UC2);                        
-            
+            Assert.IsInstanceOf <Ict.Petra.Client.MPartner.Gui.TUC_Subscription>(UC2);
+
             // Assures that a further call only makes a previously instantiated UserControl visible again
             FPnl.Expand();
             Assert.AreEqual(UC2, FPnl.UserControlInstance);
         }
-            
+
         
         ///<summary/>
         [Test]
         public void TestSetter_VisualStyleEnum()
         {
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TTestTaskList.GetTestXmlNode());
-            
+
             Assert.AreEqual(TVisualStylesEnum.vsAccordionPanel, FPnl.VisualStyleEnum);
-            
+
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsTaskPanel;
             Assert.AreEqual(TVisualStylesEnum.vsTaskPanel, FPnl.VisualStyleEnum);
-            
+
             FPnl.RealiseTaskListNow();  // To ensure Unit Test code coverage only - nothing to assert here...
-            
+
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsAccordionPanel;
             Assert.AreEqual(TVisualStylesEnum.vsAccordionPanel, FPnl.VisualStyleEnum);
-            
+
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsDashboard;
             Assert.AreEqual(TVisualStylesEnum.vsDashboard, FPnl.VisualStyleEnum);
 
-            // The following Tests should work with 'Assert.AreNotEqual' because the Visual Style we try to assign is only valid 
+            // The following Tests should work with 'Assert.AreNotEqual' because the Visual Style we try to assign is only valid
             // for a different CollapseDirection: cdHorizontal or cdHorizontalRight
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse;
             Assert.AreNotEqual(TVisualStylesEnum.vsHorizontalCollapse, FPnl.VisualStyleEnum);
-            
+
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsShepherd;
             Assert.AreNotEqual(TVisualStylesEnum.vsShepherd, FPnl.VisualStyleEnum);
-            
-            
+
+
             // Specifiying 'TVisualStylesEnum.vsHorizontalCollapse' in the next statement, which is invalid and...
             FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, HOSTEDUSERCONTROL, TVisualStylesEnum.vsHorizontalCollapse);
-            
+
             // ...gets automatically corrected to TVisualStylesEnum.vsDashboard by the Control!
             Assert.AreEqual(TVisualStylesEnum.vsDashboard, FPnl.VisualStyleEnum);
-            
-            FPnl.VisualStyleEnum = TVisualStylesEnum.vsAccordionPanel;            
-            Assert.AreEqual(TVisualStylesEnum.vsAccordionPanel, FPnl.VisualStyleEnum);            
 
-            FPnl.VisualStyleEnum = TVisualStylesEnum.vsTaskPanel;
-            Assert.AreEqual(TVisualStylesEnum.vsTaskPanel, FPnl.VisualStyleEnum);
-            
-            FPnl.VisualStyleEnum = TVisualStylesEnum.vsDashboard;
-            Assert.AreEqual(TVisualStylesEnum.vsDashboard, FPnl.VisualStyleEnum);
-
-            // The following Tests should work with 'Assert.AreNotEqual' because the Visual Style we try to assign is only valid 
-            // for a different CollapseDirection: cdHorizontal or cdHorizontalRight           
-            FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse;
-            Assert.AreNotEqual(TVisualStylesEnum.vsHorizontalCollapse, FPnl.VisualStyleEnum);            
-
-            FPnl.VisualStyleEnum = TVisualStylesEnum.vsShepherd;
-            Assert.AreNotEqual(TVisualStylesEnum.vsShepherd, FPnl.VisualStyleEnum);            
-            
-            
-            FPnl = new TPnlCollapsible(THostedControlKind.hckCollapsiblePanelHoster, TTestTaskList.GetTestXmlNode());
-            
-            Assert.AreEqual(TVisualStylesEnum.vsAccordionPanel, FPnl.VisualStyleEnum);
-            
-            FPnl.VisualStyleEnum = TVisualStylesEnum.vsTaskPanel;
-            Assert.AreEqual(TVisualStylesEnum.vsTaskPanel, FPnl.VisualStyleEnum);
-            
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsAccordionPanel;
             Assert.AreEqual(TVisualStylesEnum.vsAccordionPanel, FPnl.VisualStyleEnum);
-            
+
+            FPnl.VisualStyleEnum = TVisualStylesEnum.vsTaskPanel;
+            Assert.AreEqual(TVisualStylesEnum.vsTaskPanel, FPnl.VisualStyleEnum);
+
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsDashboard;
             Assert.AreEqual(TVisualStylesEnum.vsDashboard, FPnl.VisualStyleEnum);
 
-            // The following Tests should work with 'Assert.AreNotEqual' because the Visual Style we try to assign is only valid 
+            // The following Tests should work with 'Assert.AreNotEqual' because the Visual Style we try to assign is only valid
             // for a different CollapseDirection: cdHorizontal or cdHorizontalRight
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse;
             Assert.AreNotEqual(TVisualStylesEnum.vsHorizontalCollapse, FPnl.VisualStyleEnum);
-            
+
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsShepherd;
             Assert.AreNotEqual(TVisualStylesEnum.vsShepherd, FPnl.VisualStyleEnum);
-            
-            
+
+
+            FPnl = new TPnlCollapsible(THostedControlKind.hckCollapsiblePanelHoster, TTestTaskList.GetTestXmlNode());
+
+            Assert.AreEqual(TVisualStylesEnum.vsAccordionPanel, FPnl.VisualStyleEnum);
+
+            FPnl.VisualStyleEnum = TVisualStylesEnum.vsTaskPanel;
+            Assert.AreEqual(TVisualStylesEnum.vsTaskPanel, FPnl.VisualStyleEnum);
+
+            FPnl.VisualStyleEnum = TVisualStylesEnum.vsAccordionPanel;
+            Assert.AreEqual(TVisualStylesEnum.vsAccordionPanel, FPnl.VisualStyleEnum);
+
+            FPnl.VisualStyleEnum = TVisualStylesEnum.vsDashboard;
+            Assert.AreEqual(TVisualStylesEnum.vsDashboard, FPnl.VisualStyleEnum);
+
+            // The following Tests should work with 'Assert.AreNotEqual' because the Visual Style we try to assign is only valid
+            // for a different CollapseDirection: cdHorizontal or cdHorizontalRight
+            FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse;
+            Assert.AreNotEqual(TVisualStylesEnum.vsHorizontalCollapse, FPnl.VisualStyleEnum);
+
+            FPnl.VisualStyleEnum = TVisualStylesEnum.vsShepherd;
+            Assert.AreNotEqual(TVisualStylesEnum.vsShepherd, FPnl.VisualStyleEnum);
+
+
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TTestTaskList.GetTestXmlNode(), TVisualStylesEnum.vsShepherd, TCollapseDirection.cdHorizontal);
-            
+
             Assert.AreEqual(TVisualStylesEnum.vsShepherd, FPnl.VisualStyleEnum);
-            
+
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse;
             Assert.AreEqual(TVisualStylesEnum.vsHorizontalCollapse, FPnl.VisualStyleEnum);
 
-            
+
             // To ensure Unit Test code coverage only - nothing to assert here...
             FPnl.RealiseTaskListNow();
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsShepherd;
-            
-            
+
+
             // To ensure Unit Test code coverage only - nothing to assert here...
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TTestTaskList.GetTestXmlNode(), TVisualStylesEnum.vsHorizontalCollapse, TCollapseDirection.cdHorizontal);
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse_InfoPanelWithGradient;
         }
-        
+
         #endregion
-        
+
         ///<summary />
         [Test]
         public void TestCollapsiblePanelHosterOtherTests()
         {
             // Ensure ENoTaskListNodeSpecifiedException is thrown if no TaskListNode got specified
             FPnl = new TPnlCollapsible(THostedControlKind.hckCollapsiblePanelHoster);
-            
+
             try
             {
                 FPnl.RealiseCollapsiblePanelHoster();
@@ -618,13 +618,13 @@ namespace Tests.Common.Controls
             // To ensure Unit Test code coverage only - nothing to assert here...
             FPnl = new TPnlCollapsible(THostedControlKind.hckCollapsiblePanelHoster, TTestTaskList.GetTestXmlNode(), TCollapseDirection.cdHorizontalRight);
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse;
-            
-            FPnl.RealiseCollapsiblePanelHoster();            
-            
+
+            FPnl.RealiseCollapsiblePanelHoster();
+
             // To ensure Unit Test code coverage only - nothing to assert here...
             FPnl.Expand();
         }
-        
+
         ///<summary>
         /// This makes sure that the content of panel undergoes lazy evaluation.
         /// ie, TaskListInstance and/or UserControlInstance are not defined before expand().
@@ -640,12 +640,12 @@ namespace Tests.Common.Controls
             Assert.AreEqual(null, FPnl.CollapsiblePanelHosterInstance);
 
             assertIsStable(FPnl);
-            
+
             FPnl.Expand();
             Assert.AreNotEqual(null, FPnl.UserControlInstance); // Now initialised as Expand() got called
             Assert.AreEqual(null, FPnl.TaskListInstance);
             Assert.AreEqual(null, FPnl.CollapsiblePanelHosterInstance);
-            
+
             assertIsStable(FPnl);
             FPnl.Collapse();
             assertIsStable(FPnl);
@@ -655,33 +655,33 @@ namespace Tests.Common.Controls
             Assert.AreEqual(null, FPnl.TaskListInstance);  // Lazy initialisation!
 
             assertIsStable2(FPnl);
-            
+
             FPnl.Expand();
             Assert.AreNotEqual(null, FPnl.TaskListInstance);     // Now initialised as Expand() got called
-            Assert.AreEqual(null, FPnl.UserControlInstance); 
+            Assert.AreEqual(null, FPnl.UserControlInstance);
             Assert.AreEqual(null, FPnl.CollapsiblePanelHosterInstance);
-            
+
             assertIsStable2(FPnl);
             FPnl.Collapse();
             assertIsStable2(FPnl);
-            
+
             // CollapsiblePanelHoster
             FPnl = new TPnlCollapsible(THostedControlKind.hckCollapsiblePanelHoster, TTestTaskList.GetTestXmlNode());
             Assert.AreEqual(null, FPnl.CollapsiblePanelHosterInstance);  // Lazy initialisation!
 
             assertIsStable2(FPnl);
-            
+
             FPnl.Expand();
             Assert.AreNotEqual(null, FPnl.CollapsiblePanelHosterInstance); // Now initialised as Expand() got called
             Assert.AreEqual(null, FPnl.UserControlInstance);
             Assert.AreEqual(null, FPnl.TaskListInstance);
-            
-            
+
+
             assertIsStable2(FPnl);
             FPnl.Collapse();
-            assertIsStable2(FPnl);            
+            assertIsStable2(FPnl);
         }
-        
+
         ///<summary>
         /// This makes sure that the content of panel undergoes lazy evaluation.
         /// ie, TaskListInstance and/or UserControlInstance are not defined before expand().
@@ -698,12 +698,12 @@ namespace Tests.Common.Controls
             Assert.AreEqual(null, FPnl.CollapsiblePanelHosterInstance);
 
             assertIsStable(FPnl);
-            
+
             FPnl.Expand();
             Assert.AreNotEqual(null, FPnl.UserControlInstance); // Now initialised as Expand() got called
             Assert.AreEqual(null, FPnl.TaskListInstance);
             Assert.AreEqual(null, FPnl.CollapsiblePanelHosterInstance);
-            
+
             FPnl.TaskListNode = TTestTaskList.GetTestXmlNode();
             Assert.AreEqual(null, FPnl.TaskListInstance);  // Lazy initialisation!
 
@@ -714,24 +714,24 @@ namespace Tests.Common.Controls
             Assert.AreNotEqual(null, FPnl.TaskListInstance);     // Now initialised as Expand() got called
             Assert.AreNotEqual(null, FPnl.UserControlInstance);  // This still exists from previous operation!
             Assert.AreEqual(null, FPnl.CollapsiblePanelHosterInstance);
-            
+
             assertIsStable2(FPnl);
-            
+
             // CollapsiblePanelHoster
             FPnl.HostedControlKind = THostedControlKind.hckCollapsiblePanelHoster;
             Assert.AreEqual(null, FPnl.CollapsiblePanelHosterInstance); // Lazy initialisation!
             Assert.AreNotEqual(null, FPnl.TaskListInstance);  // This still exists from previous operation!
             Assert.AreNotEqual(null, FPnl.UserControlInstance);  // This still exists from previous operation!
-            
+
             FPnl.Toggle(); // same as FPnl.Collapse(); above
             FPnl.Toggle(); // same as FPnl.Expand(); above
             Assert.AreNotEqual(null, FPnl.CollapsiblePanelHosterInstance);  // Now initialised as Expand() got called (trough Toggle())
             Assert.AreNotEqual(null, FPnl.TaskListInstance);  // This still exists from previous operation!
             Assert.AreNotEqual(null, FPnl.UserControlInstance);  // This still exists from previous operation!
 
-            assertIsStable2(FPnl);            
-        }        
-        
+            assertIsStable2(FPnl);
+        }
+
         ///<summary>
         /// This makes sure that the Unit Test covers all code in the Expand() Method.
         /// </summary>
@@ -741,22 +741,22 @@ namespace Tests.Common.Controls
             // UserControl
             FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, HOSTEDUSERCONTROL);
             FPnl.Expand();
-                 
-            FPnl.HostedControlKind = THostedControlKind.hckTaskList;            
+
+            FPnl.HostedControlKind = THostedControlKind.hckTaskList;
             FPnl.TaskListNode = TTestTaskList.GetTestXmlNode();
-            
+
             FPnl.Expand();
 
             FPnl.HostedControlKind = THostedControlKind.hckCollapsiblePanelHoster;
             FPnl.Expand();
 
-            FPnl.HostedControlKind = THostedControlKind.hckTaskList;            
+            FPnl.HostedControlKind = THostedControlKind.hckTaskList;
             FPnl.Expand();
-            
+
             FPnl.HostedControlKind = THostedControlKind.hckUserControl;
             FPnl.Expand();
-        }        
-        
+        }
+
         /// <summary>
         /// Checks that the IsCollapsed Property is always giving the correct information.
         /// </summary>
@@ -764,32 +764,32 @@ namespace Tests.Common.Controls
         public void TestIsCollapsed()
         {
             FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, HOSTEDUSERCONTROL);
-            
+
             Assert.IsTrue(FPnl.IsCollapsed);
-            
+
             FPnl.Toggle();
             Assert.IsFalse(FPnl.IsCollapsed);
             FPnl.Toggle();
             Assert.IsTrue(FPnl.IsCollapsed);
             FPnl.Collapse();
-            Assert.IsTrue(FPnl.IsCollapsed);           
+            Assert.IsTrue(FPnl.IsCollapsed);
             FPnl.Expand();
             Assert.IsFalse(FPnl.IsCollapsed);
 
             FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, HOSTEDUSERCONTROL, false);
             Assert.IsFalse(FPnl.IsCollapsed);
-            
+
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, true);
             Assert.IsTrue(FPnl.IsCollapsed);
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, false);
             Assert.IsFalse(FPnl.IsCollapsed);
-            
+
             FPnl = new TPnlCollapsible(THostedControlKind.hckCollapsiblePanelHoster, true);
-            Assert.IsTrue(FPnl.IsCollapsed);            
+            Assert.IsTrue(FPnl.IsCollapsed);
             FPnl = new TPnlCollapsible(THostedControlKind.hckCollapsiblePanelHoster, false);
-            Assert.IsFalse(FPnl.IsCollapsed);            
+            Assert.IsFalse(FPnl.IsCollapsed);
         }
-        
+
         /// <summary>
         /// Checks for DirStyleMismatch to be detected
         /// </summary>
@@ -797,7 +797,7 @@ namespace Tests.Common.Controls
         public void TestDirStyleMismatch()
         {
             FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, HOSTEDUSERCONTROL);
-            
+
             try
             {
                 FPnl.AssertDirStyleMatch(TCollapseDirection.cdHorizontal, TVisualStylesEnum.vsTaskPanel);
@@ -805,9 +805,9 @@ namespace Tests.Common.Controls
             catch (Exception e)
             {
                 Assert.AreEqual(typeof(EVisualStyleAndDirectionMismatchException), e.GetType());
-            }            
+            }
         }
-        
+
         /// <summary>
         /// Checks for DirStyleMismatch to be detected
         /// </summary>
@@ -815,7 +815,7 @@ namespace Tests.Common.Controls
         public void TestHckDataMismatch()
         {
             FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl);
-            
+
             try
             {
                 FPnl.AssertHckDataMatch();
@@ -823,17 +823,17 @@ namespace Tests.Common.Controls
             catch (Exception e)
             {
                 Assert.AreEqual(typeof(EInsufficientDataSetForHostedControlKindException), e.GetType());
-            }            
-        }        
-        
+            }
+        }
+
         /// <summary>
         /// Tests the static StylesForDirection Method.
         /// </summary>
         [Test]
         public void TestStylesForDirection()
         {
-            List<TVisualStylesEnum> AvailableStyles;
-            
+            List <TVisualStylesEnum>AvailableStyles;
+
             AvailableStyles = TPnlCollapsible.StylesForDirection(TCollapseDirection.cdVertical);
             Assert.AreNotEqual(0, AvailableStyles.Count);
 
@@ -843,7 +843,7 @@ namespace Tests.Common.Controls
             AvailableStyles = TPnlCollapsible.StylesForDirection(TCollapseDirection.cdHorizontalRight);
             Assert.AreNotEqual(0, AvailableStyles.Count);
         }
-        
+
         /// <summary>
         /// Checks that the ToggleDirection() Method works.
         /// </summary>
@@ -852,16 +852,16 @@ namespace Tests.Common.Controls
         {
             FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, HOSTEDUSERCONTROL, TCollapseDirection.cdVertical);
             Assert.AreEqual(TCollapseDirection.cdVertical, FPnl.CollapseDirection);
-            
+
             FPnl.ToggleDirection();
-            
+
             Assert.AreEqual(TCollapseDirection.cdHorizontal, FPnl.CollapseDirection);
 
             FPnl.ToggleDirection();
-            
+
             Assert.AreEqual(TCollapseDirection.cdVertical, FPnl.CollapseDirection);
         }
-        
+
         /// <summary>
         /// Checks that the TestGetHardCodedXmlNodes_ForDesignerOnly() Method works.
         /// </summary>
@@ -871,13 +871,13 @@ namespace Tests.Common.Controls
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TTestTaskList.GetTestXmlNode());
 
             // Need to resort to .NET Reflection as GetHardCodedXmlNodes_ForDesignerOnly() is a Private Method...
-            MethodInfo InvokedPrivateMethod = FPnl.GetType().GetMethod("GetHardCodedXmlNodes_ForDesignerOnly", 
+            MethodInfo InvokedPrivateMethod = FPnl.GetType().GetMethod("GetHardCodedXmlNodes_ForDesignerOnly",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-            
-            XmlNode Nodes = (XmlNode)InvokedPrivateMethod.Invoke(FPnl, new object[] {});
+
+            XmlNode Nodes = (XmlNode)InvokedPrivateMethod.Invoke(FPnl, new object[] { });
             Assert.IsNotNull(Nodes);
         }
-        
+
         /// <summary>
         /// Checks that the Events that are exposed by the Control are fired correctly.
         /// </summary>
@@ -886,40 +886,40 @@ namespace Tests.Common.Controls
         {
             // Not just test that Events are fired, but that the RIGHT Events are fired under
             // the RIGHT circumstances, and that no wrong Event is fired under wrong circumstances!
-            // (Uses EventHandlerCapture Class for that as NUnit doesn't provide Asserts for 
+            // (Uses EventHandlerCapture Class for that as NUnit doesn't provide Asserts for
             // something nifty like that!)
             FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, HOSTEDUSERCONTROL);
-            var EhcExpanded = new EventHandlerCapture<System.EventArgs>();
-            var EhcCollapsed = new EventHandlerCapture<System.EventArgs>();
-            
+            var EhcExpanded = new TNUnitEventHandlerCheck <System.EventArgs>();
+            var EhcCollapsed = new TNUnitEventHandlerCheck <System.EventArgs>();
+
             FPnl.Expanded += EhcExpanded.Handler;
             FPnl.Collapsed += EhcCollapsed.Handler;
-            
+
             // Assert that the Expanded Event is fired when the Control is Expanded (and that the Collapsed Event isn't)
-            Event.Assert(EhcExpanded, Event.IsRaised<System.EventArgs>(), () => FPnl.Expand());
-            Event.Assert(EhcCollapsed, Event.IsNotRaised<System.EventArgs>(), () => FPnl.Expand());
-            
+            TNUnitEventAsserter.Assert(EhcExpanded, TNUnitEventAsserter.GotRaised <System.EventArgs>(), () => FPnl.Expand());
+            TNUnitEventAsserter.Assert(EhcCollapsed, TNUnitEventAsserter.DidNotGetRaised <System.EventArgs>(), () => FPnl.Expand());
+
             // Assert that the Collapsed Event is fired when the Control is Expanded (and that the Expanded Event isn't)
-            Event.Assert(EhcCollapsed, Event.IsRaised<System.EventArgs>(), () => FPnl.Collapse());
-            Event.Assert(EhcExpanded, Event.IsNotRaised<System.EventArgs>(), () => FPnl.Collapse());   
+            TNUnitEventAsserter.Assert(EhcCollapsed, TNUnitEventAsserter.GotRaised <System.EventArgs>(), () => FPnl.Collapse());
+            TNUnitEventAsserter.Assert(EhcExpanded, TNUnitEventAsserter.DidNotGetRaised <System.EventArgs>(), () => FPnl.Collapse());
 
             FPnl.Expanded -= EhcExpanded.Handler;
             FPnl.Collapsed -= EhcCollapsed.Handler;
 
             // Assert that the Expanded/Collapsed Events are fired when the Control's Toggle Button is clicked
             // Need to resort to .NET Reflection as BtnToggleClick() is a Private Method...
-            MethodInfo InvokedPrivateMethod = FPnl.GetType().GetMethod("BtnToggleClick", 
+            MethodInfo InvokedPrivateMethod = FPnl.GetType().GetMethod("BtnToggleClick",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-                        
+
             // It might look a bit weird to check Assert AreNotSame, but only this way we find out that the
             // .Invoke calls below do in fact do something!
             FPnl.Expanded += delegate(object sender, EventArgs e) { Assert.AreNotSame(FPnl, null); };
-            FPnl.Expanded += delegate(object sender, EventArgs e) { Assert.AreSame(FPnl, sender); };            
+            FPnl.Expanded += delegate(object sender, EventArgs e) { Assert.AreSame(FPnl, sender); };
             FPnl.Collapsed += delegate(object sender, EventArgs e) { Assert.AreNotSame(FPnl, null); };
             FPnl.Collapsed += delegate(object sender, EventArgs e) { Assert.AreSame(FPnl, sender); };
-            
-            InvokedPrivateMethod.Invoke(FPnl, new object[] {FPnl, null});
-            InvokedPrivateMethod.Invoke(FPnl, new object[] {FPnl, null});
+
+            InvokedPrivateMethod.Invoke(FPnl, new object[] { FPnl, null });
+            InvokedPrivateMethod.Invoke(FPnl, new object[] { FPnl, null });
         }
     }
 }
