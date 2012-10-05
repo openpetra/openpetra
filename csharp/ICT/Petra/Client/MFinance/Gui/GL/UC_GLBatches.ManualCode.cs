@@ -339,7 +339,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                             if (cmbYearFilter.SelectedIndex != 0)
                             {
-                            	cmbYearFilter.SelectedIndex = 0;
+                                cmbYearFilter.SelectedIndex = 0;
                             }
                             else if (cmbPeriodFilter.SelectedIndex != 0)
                             {
