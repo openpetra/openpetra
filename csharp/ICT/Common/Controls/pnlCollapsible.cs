@@ -1383,6 +1383,17 @@ namespace Ict.Common.Controls
                         GraphicIndex += 4;
                     }
                 }
+                else if (FVisualStyleEnum == TVisualStylesEnum.vsDashboard) 
+                {
+                    if (FIsCollapsed) 
+                    {
+                        GraphicIndex += 6;    
+                    }
+                    else
+                    {
+                        GraphicIndex -= 6;
+                    }
+                }
             }
 
             return GraphicIndex;
