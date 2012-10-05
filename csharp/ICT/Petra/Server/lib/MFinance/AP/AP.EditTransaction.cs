@@ -545,7 +545,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             {
                 AApDocumentDetailRow DetailRow = (AApDocumentDetailRow)rv.Row;
                 AMainDS.AAnalysisAttribute.DefaultView.RowFilter =
-                    String.Format("{0}={1}", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);     // Do I need Cost Centre in here too?
+                    String.Format("{0}='{1}'", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);     // Do I need Cost Centre in here too?
 
                 if (AMainDS.AAnalysisAttribute.DefaultView.Count > 0)
                 {
