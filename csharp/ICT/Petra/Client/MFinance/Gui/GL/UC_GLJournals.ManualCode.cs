@@ -93,6 +93,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.AJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
                 AJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
+            
+            FMainDS.AJournal.DefaultView.Sort = String.Format("{0} DESC",
+                                                              AJournalTable.GetJournalNumberDBName()
+                                                             );
 
             // only load from server if there are no journals loaded yet for this batch
             // otherwise we would overwrite journals that have already been modified

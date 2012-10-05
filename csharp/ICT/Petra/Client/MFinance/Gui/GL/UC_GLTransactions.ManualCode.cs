@@ -97,6 +97,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ATransactionTable.GetJournalNumberDBName(),
                 FJournalNumber);
 
+            FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} DESC",
+                                                                  ATransactionTable.GetTransactionNumberDBName()
+                                                                 );
+            
             if (FMainDS.ATransaction.DefaultView.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
