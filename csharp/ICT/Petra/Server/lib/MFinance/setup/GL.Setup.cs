@@ -38,6 +38,8 @@ using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Shared.MFinance.AR.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
@@ -915,23 +917,45 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 MainDS.PUnit.Rows.Add(unitRow);
             }
 
-            PLocationRow locationRow = MainDS.PLocation.NewRowTyped();
-            locationRow.SiteKey = PartnerKey;
-            locationRow.LocationKey = 0;
-            locationRow.StreetName = Catalog.GetString("No valid address on file");
-            locationRow.CountryCode = ACountryCode;
-            MainDS.PLocation.Rows.Add(locationRow);
+            if (!PLocationAccess.Exists(PartnerKey, 0, null))
+            {
+                PLocationRow locationRow = MainDS.PLocation.NewRowTyped();
+                locationRow.SiteKey = PartnerKey;
+                locationRow.LocationKey = 0;
+                locationRow.StreetName = Catalog.GetString("No valid address on file");
+                locationRow.CountryCode = ACountryCode;
+                MainDS.PLocation.Rows.Add(locationRow);
 
-            PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
-            partnerLocationRow.SiteKey = PartnerKey;
-            partnerLocationRow.PartnerKey = PartnerKey;
-            partnerLocationRow.LocationKey = 0;
-            MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
+                PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
+                partnerLocationRow.SiteKey = PartnerKey;
+                partnerLocationRow.PartnerKey = PartnerKey;
+                partnerLocationRow.LocationKey = 0;
+                MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
+            }
 
-            PPartnerLedgerRow partnerLedgerRow = MainDS.PPartnerLedger.NewRowTyped();
-            partnerLedgerRow.PartnerKey = PartnerKey;
-            partnerLedgerRow.LastPartnerId = 5000;
-            MainDS.PPartnerLedger.Rows.Add(partnerLedgerRow);
+            if (!PPartnerLedgerAccess.Exists(PartnerKey, null))
+            {
+                PPartnerLedgerRow partnerLedgerRow = MainDS.PPartnerLedger.NewRowTyped();
+                partnerLedgerRow.PartnerKey = PartnerKey;
+
+                // calculate last partner id, from older uses of this ledger number
+                object MaxExistingPartnerKeyObj = DBAccess.GDBAccessObj.ExecuteScalar(
+                    String.Format("SELECT MAX(p_partner_key_n) FROM PUB_p_partner " +
+                        "WHERE p_partner_key_n > {0} AND p_partner_key_n < {1}",
+                        PartnerKey,
+                        PartnerKey + 500000), IsolationLevel.ReadCommitted);
+
+                if (MaxExistingPartnerKeyObj.GetType() != typeof(DBNull))
+                {
+                    partnerLedgerRow.LastPartnerId = Convert.ToInt32(Convert.ToInt64(MaxExistingPartnerKeyObj) - PartnerKey);
+                }
+                else
+                {
+                    partnerLedgerRow.LastPartnerId = 5000;
+                }
+
+                MainDS.PPartnerLedger.Rows.Add(partnerLedgerRow);
+            }
 
             String ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
 
@@ -1105,7 +1129,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             motivationDetailRow.MotivationDetailCode = "FIELD";
             motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Gifts for Field");
             motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
-            motivationDetailRow.AccountCode = "1200";
+            motivationDetailRow.AccountCode = "0200";
+            motivationDetailRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
+            MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
+
+            motivationDetailRow = MainDS.AMotivationDetail.NewRowTyped();
+            motivationDetailRow.LedgerNumber = ANewLedgerNumber;
+            motivationDetailRow.MotivationGroupCode = "GIFT";
+            motivationDetailRow.MotivationDetailCode = "KEYMIN";
+            motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Key Ministry Gift");
+            motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
+            motivationDetailRow.AccountCode = "0400";
             motivationDetailRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
             MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
 
@@ -1146,6 +1180,146 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             return result == TSubmitChangesResult.scrOK;
+        }
+
+        /// <summary>
+        /// deletes the complete ledger, with all finance data. useful for testing purposes
+        /// </summary>
+        [RequireModulePermission("FINANCE-3")]
+        public static bool DeleteLedger(Int32 ALedgerNumber, out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = null;
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Deleting ledger"),
+                100);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Deleting ledger"),
+                20);
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            try
+            {
+                OdbcParameter[] ledgerparameter = new OdbcParameter[] {
+                    new OdbcParameter("ledgernumber", OdbcType.Int)
+                };
+                ledgerparameter[0].Value = ALedgerNumber;
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
+                        SUserModuleAccessPermissionTable.GetTableDBName(),
+                        SUserModuleAccessPermissionTable.GetModuleIdDBName(),
+                        ALedgerNumber),
+                    Transaction);
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    String.Format(
+                        "DELETE FROM PUB_{0} AS GLMP WHERE EXISTS (SELECT * FROM PUB_{1} AS GLM WHERE GLM.a_glm_sequence_i = GLMP.a_glm_sequence_i AND GLM.a_ledger_number_i = ?)",
+                        AGeneralLedgerMasterPeriodTable.GetTableDBName(),
+                        AGeneralLedgerMasterTable.GetTableDBName()),
+                    Transaction, ledgerparameter);
+
+                string[] tablenames = new string[] {
+                    AValidLedgerNumberTable.GetTableDBName(),
+                         AProcessedFeeTable.GetTableDBName(),
+                         AGeneralLedgerMasterTable.GetTableDBName(),
+                         AMotivationDetailFeeTable.GetTableDBName(),
+
+                         ARecurringGiftDetailTable.GetTableDBName(),
+                         ARecurringGiftTable.GetTableDBName(),
+                         ARecurringGiftBatchTable.GetTableDBName(),
+
+                         AGiftDetailTable.GetTableDBName(),
+                         AGiftTable.GetTableDBName(),
+                         AGiftBatchTable.GetTableDBName(),
+
+                         ATransAnalAttribTable.GetTableDBName(),
+                         ATransactionTable.GetTableDBName(),
+                         AJournalTable.GetTableDBName(),
+                         ABatchTable.GetTableDBName(),
+
+                         ARecurringTransAnalAttribTable.GetTableDBName(),
+                         ARecurringTransactionTable.GetTableDBName(),
+                         ARecurringJournalTable.GetTableDBName(),
+                         ARecurringBatchTable.GetTableDBName(),
+
+                         AFreeformAnalysisTable.GetTableDBName(),
+
+                         AEpDocumentPaymentTable.GetTableDBName(),
+                         AEpPaymentTable.GetTableDBName(),
+
+                         AApAnalAttribTable.GetTableDBName(),
+                         AApDocumentPaymentTable.GetTableDBName(),
+                         AApPaymentTable.GetTableDBName(),
+                         AApDocumentDetailTable.GetTableDBName(),
+                         AApDocumentTable.GetTableDBName(),
+
+                         AMotivationDetailTable.GetTableDBName(),
+                         AMotivationGroupTable.GetTableDBName(),
+                         ACostCentreTable.GetTableDBName(),
+                         ATransactionTypeTable.GetTableDBName(),
+                         AAccountPropertyTable.GetTableDBName(),
+                         AAccountHierarchyDetailTable.GetTableDBName(),
+                         AAccountHierarchyTable.GetTableDBName(),
+                         AAccountTable.GetTableDBName(),
+                         ASystemInterfaceTable.GetTableDBName(),
+                         AAccountingSystemParameterTable.GetTableDBName(),
+                         ACostCentreTypesTable.GetTableDBName(),
+
+                         ALedgerInitFlagTable.GetTableDBName(),
+                         ATaxTableTable.GetTableDBName(),
+                         AEpAccountTable.GetTableDBName(),
+
+                         AAccountingPeriodTable.GetTableDBName(),
+
+                         SGroupLedgerTable.GetTableDBName()
+                };
+
+                foreach (string table in tablenames)
+                {
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(
+                        String.Format("DELETE FROM PUB_{0} WHERE a_ledger_number_i = ?", table),
+                        Transaction, ledgerparameter);
+                }
+
+                ALedgerAccess.DeleteByPrimaryKey(ALedgerNumber, Transaction);
+
+                // remove from the list of sites when creating new partners
+                DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    String.Format("DELETE FROM PUB_{0} WHERE p_partner_key_n = {1}",
+                        PPartnerLedgerTable.GetTableDBName(),
+                        Convert.ToInt64(ALedgerNumber) * 1000000),
+                    Transaction);
+
+                if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                {
+                    throw new Exception("Deletion of Ledger was cancelled by the user");
+                }
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+
+                AVerificationResult = new TVerificationResultCollection();
+                AVerificationResult.Add(new TVerificationResult(
+                        "Problems deleting ledger " + ALedgerNumber.ToString(),
+                        e.Message,
+                        "Cannot delete ledger",
+                        string.Empty,
+                        TResultSeverity.Resv_Critical,
+                        Guid.Empty));
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                TProgressTracker.CancelJob(DomainManager.GClientID.ToString());
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

@@ -156,3 +156,4 @@ INSERT INTO p_partner_banking_details(p_partner_key_n, p_banking_details_key_i) 
 -- increase sequence
 SELECT nextval('seq_bank_details');
 SELECT nextval('seq_bank_details');
+SELECT nextval('seq_location_number');
