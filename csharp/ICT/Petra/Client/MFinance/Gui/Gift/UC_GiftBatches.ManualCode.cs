@@ -67,9 +67,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>//
         public string FSelectedBatchMethodOfPayment = String.Empty;
 
-		private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
-		
-		/// <summary>
+        private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
+
+        /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// </summary>
         public void RefreshAll()
@@ -202,7 +202,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FBatchLoaded = true;
 
             ShowDetails(GetCurrentBatchRow());
-            
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -420,7 +419,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                             if (cmbYear.SelectedIndex != 0)
                             {
-                            	cmbYear.SelectedIndex = 0;
+                                cmbYear.SelectedIndex = 0;
                             }
                             else if (cmbPeriod.SelectedIndex != 0)
                             {
@@ -516,7 +515,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateBatchPeriod(null, null);
 
             UpdateChangeableStatus();
-            
+
             RefreshCurrencyAndExchangeRate();
 
 //            FPetraUtilsObject.DetailProtectedMode =
@@ -937,14 +936,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RefreshCurrencyAndExchangeRate()
         {
-        	txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
+            txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
 
-            if ((FMainDS.ALedger != null) && (FMainDS.ALedger.Rows.Count > 0)) // If I don't have a Ledger Row, should I get one right now?
-            {
-                btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
-            }
+            btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
         }
 
         private void SetExchangeRateValue(Object sender, EventArgs e)
@@ -966,7 +962,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FPreviouslySelectedDetailRow.ExchangeRateToBase = setupDailyExchangeRate.CurrencyExchangeRate;
-            
+
             RefreshCurrencyAndExchangeRate();
         }
 

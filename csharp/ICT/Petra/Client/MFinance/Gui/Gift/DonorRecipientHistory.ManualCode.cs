@@ -198,15 +198,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     gb.ViewModeTDS = FMainDS;
                      // When I call Gift Batch, it will want one row in a LedgerTable!
                     gb.ViewModeTDS.ALedger.Merge(TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber)); 
-
                     gb.ShowDetailsOfOneBatch(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber);
-
-//                    gb.LoadTransactions(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber, MFinanceConstants.BATCH_POSTED);
-
-                    // To call this I need to set FBatchRow, and this will require FBatchNumber to be set.
-//                    gb.FindGiftDetail(FPreviouslySelectedDetailRow);
-//                    gb.EnableTransactions();
-                    gb.Show();
                 }
                 finally
                 {

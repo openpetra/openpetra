@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FLedgerNumber = ALedgerNumber;
             ucoBatches.LoadOneBatch(ALedgerNumber, ABatchNumber);
+            Show();
         }
 
         /// <summary>
