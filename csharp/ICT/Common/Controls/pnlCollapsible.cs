@@ -167,6 +167,9 @@ namespace Ict.Common.Controls
         /// <summary></summary>
         private TVisualStyles FVisualStyle = new TVisualStyles(TVisualStylesEnum.vsAccordionPanel);
 
+        /// <summary></summary>
+        private bool FMouseHoveringOverCollapseToggle = false;
+        
         #endregion
 
         #region Events
@@ -486,6 +489,8 @@ namespace Ict.Common.Controls
             DEFAULT_COLLAPSEDIRECTION.Add(THostedControlKind.hckTaskList, TCollapseDirection.cdVertical);
             DEFAULT_COLLAPSEDIRECTION.Add(THostedControlKind.hckCollapsiblePanelHoster, TCollapseDirection.cdVertical);
             
+            // Setup up Arrow Icons
+            // Dictionary Elements: 1) TCollapseDirection: direction, 2) bool: indicating if panel is collapsed or not, 3) bool: indicating whether or not the mouse is hovering
             ArrowGraphicIndecies = new Dictionary<TCollapseDirection, Dictionary<bool, Dictionary<bool, int>>>();
             ArrowGraphicIndecies[TCollapseDirection.cdVertical] = new Dictionary<bool, Dictionary<bool, int>>();
             ArrowGraphicIndecies[TCollapseDirection.cdVertical].Add(true, new Dictionary<bool, int>());
@@ -497,10 +502,10 @@ namespace Ict.Common.Controls
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight].Add(true, new Dictionary<bool, int>());
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight].Add(false, new Dictionary<bool, int>());
 
-            ArrowGraphicIndecies[TCollapseDirection.cdVertical][true].Add(true, 7);
-            ArrowGraphicIndecies[TCollapseDirection.cdVertical][true].Add(false, 6);
-            ArrowGraphicIndecies[TCollapseDirection.cdVertical][false].Add(true, 1);
-            ArrowGraphicIndecies[TCollapseDirection.cdVertical][false].Add(false, 0);
+            ArrowGraphicIndecies[TCollapseDirection.cdVertical][true].Add(true, 1);
+            ArrowGraphicIndecies[TCollapseDirection.cdVertical][true].Add(false, 0);
+            ArrowGraphicIndecies[TCollapseDirection.cdVertical][false].Add(true, 7);
+            ArrowGraphicIndecies[TCollapseDirection.cdVertical][false].Add(false,6);
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][true].Add(true, 5);
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][true].Add(false, 4);
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][false].Add(true, 3);
@@ -509,6 +514,7 @@ namespace Ict.Common.Controls
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][true].Add(false, 4);
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][false].Add(true, 3);
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][false].Add(false, 2);
+            
             
             StoredStyles = new Dictionary<TCollapseDirection, TVisualStylesEnum>();
             StoredStyles[TCollapseDirection.cdVertical] = DEFAULT_STYLE[TCollapseDirection.cdVertical];
@@ -774,7 +780,7 @@ namespace Ict.Common.Controls
                 ShowHideCollapsedInfoText(true);
             }
 
-            btnToggle.ImageIndex = 1;
+            btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][true][FMouseHoveringOverCollapseToggle];
             FIsCollapsed = true;
             
             switch (FHostedControlKind)
@@ -813,7 +819,7 @@ namespace Ict.Common.Controls
         public void Expand()
         {
             FIsCollapsed = false;
-            btnToggle.ImageIndex = 0;
+            btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][false][FMouseHoveringOverCollapseToggle];
             TitleShow();
 
             if (FCollapseDirection == TCollapseDirection.cdVertical)
@@ -1380,7 +1386,8 @@ namespace Ict.Common.Controls
 
             btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][IsCollapsed][true];
             lblDetailHeading.ForeColor = FVisualStyle.TitleFontColourHover;
-
+            FMouseHoveringOverCollapseToggle = true;
+            
             TLogging.Log("BtnToggleMouseEnter END: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
         }
 
@@ -1395,7 +1402,8 @@ namespace Ict.Common.Controls
 
             btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][IsCollapsed][false];
             lblDetailHeading.ForeColor = FVisualStyle.TitleFontColour;
-
+            FMouseHoveringOverCollapseToggle = true;
+            
             TLogging.Log("BtnToggleMouseLeave END: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
         }
 
@@ -1407,6 +1415,7 @@ namespace Ict.Common.Controls
         void BtnCollapsedInfoTextMouseEnter(object sender, EventArgs e)
         {
             otlCollapsedInfoText.ForeColor = FVisualStyle.CollapsedInfoTextFontColourHover;
+            BtnToggleMouseEnter(this, null);
         }
 
         /// <summary>
@@ -1417,6 +1426,18 @@ namespace Ict.Common.Controls
         void BtnCollapsedInfoTextMouseLeave(object sender, EventArgs e)
         {
             otlCollapsedInfoText.ForeColor = FVisualStyle.CollapsedInfoTextFontColour;
+            BtnToggleMouseLeave(this, null);
+        }
+        
+        /// <summary>
+        /// Event is raised when the user clicks the rotated text in the Collapsed Info Panel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void CollapsedInfoTextClick(object sender, EventArgs e)
+        {
+            BtnToggleClick(this, null);
+            BtnToggleMouseLeave(this, null);
         }
         
         #endregion

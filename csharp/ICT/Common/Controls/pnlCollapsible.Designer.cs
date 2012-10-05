@@ -120,7 +120,7 @@ namespace Ict.Common.Controls
             this.otlCollapsedInfoText.TextDirection = CustomControl.OrientAbleTextControls.Direction.Clockwise;
             this.otlCollapsedInfoText.TextOrientation = CustomControl.OrientAbleTextControls.Orientation.Rotate;
             this.tipCollapseExpandHints.SetToolTip(this.otlCollapsedInfoText, "Click here to expand the panel");
-            this.otlCollapsedInfoText.Click += new System.EventHandler(this.BtnToggleClick);
+            this.otlCollapsedInfoText.Click += new System.EventHandler(CollapsedInfoTextClick);
             this.otlCollapsedInfoText.MouseEnter += new System.EventHandler(this.BtnCollapsedInfoTextMouseEnter);
             this.otlCollapsedInfoText.MouseLeave += new System.EventHandler(this.BtnCollapsedInfoTextMouseLeave);            
             // 
@@ -232,6 +232,7 @@ namespace Ict.Common.Controls
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private Ict.Common.Controls.TPnlGradient pnlCollapsedInfoText;
         private CustomControl.OrientAbleTextControls.OrientedTextLabel otlCollapsedInfoText;
         

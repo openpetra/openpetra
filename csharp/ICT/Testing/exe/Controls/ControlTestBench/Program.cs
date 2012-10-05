@@ -23,6 +23,8 @@
 //
 using System;
 using System.Windows.Forms;
+
+using Ict.Common;
 using ControlTestBench;
 
 namespace Ict.Testing.ControlTestBench
@@ -38,6 +40,8 @@ namespace Ict.Testing.ControlTestBench
         [STAThread]
         private static void Main(string[] args)
         {
+            new TLogging("ControlTestBench.log");
+            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm3());
