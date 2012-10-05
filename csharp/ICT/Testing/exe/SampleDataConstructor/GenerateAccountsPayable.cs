@@ -48,7 +48,8 @@ namespace Ict.Testing.SampleDataConstructor
     /// </summary>
     public class SampleDataAccountsPayable
     {
-        static int FLedgerNumber = 43;
+        /// LedgerNumber to be set from outside
+        public static int FLedgerNumber = 43;
 
         /// <summary>
         /// generate the invoices from a text file that was generated with Benerator

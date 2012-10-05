@@ -45,7 +45,8 @@ namespace Ict.Testing.SampleDataConstructor
     /// </summary>
     public class SampleDataGiftBatches
     {
-        static int FLedgerNumber = 43;
+        /// LedgerNumber to be set from outside
+        public static int FLedgerNumber = 43;
 
         /// <summary>
         /// generate the gift batches from a text file that was generated with Benerator
@@ -180,7 +181,10 @@ namespace Ict.Testing.SampleDataConstructor
                 DataTable WorkerKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetWorkerPartnerKeys, "keys", ReadTransaction);
 
                 // get a list of fields (all class UNIT, with unit type F)
-                string sqlGetFieldPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_unit WHERE u_unit_type_code_c = 'F'";
+                string sqlGetFieldPartnerKeys =
+                    String.Format(
+                        "SELECT U.p_partner_key_n FROM PUB_p_unit U WHERE u_unit_type_code_c = 'F' AND EXISTS (SELECT * FROM PUB_a_valid_ledger_number V WHERE V.a_ledger_number_i = {0} AND V.p_partner_key_n = U.p_partner_key_n)",
+                        FLedgerNumber);
                 DataTable FieldKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFieldPartnerKeys, "keys", ReadTransaction);
 
                 // get a list of key ministries (all class UNIT, with unit type KEY-MIN), and their field ledger number and cost centre code
@@ -189,7 +193,8 @@ namespace Ict.Testing.SampleDataConstructor
                     "FROM PUB_p_unit u, PUB_um_unit_structure us, PUB_a_valid_ledger_number vl " +
                     "WHERE u.u_unit_type_code_c = 'KEY-MIN' " +
                     "AND us.um_child_unit_key_n = u.p_partner_key_n " +
-                    "AND vl.p_partner_key_n = us.um_parent_unit_key_n";
+                    "AND vl.p_partner_key_n = us.um_parent_unit_key_n " +
+                    "AND vl.a_ledger_number_i = " + FLedgerNumber.ToString();
                 DataTable KeyMinistries = DBAccess.GDBAccessObj.SelectDT(sqlGetKeyMinPartnerKeys, "keys", ReadTransaction);
 
                 LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, ReadTransaction);

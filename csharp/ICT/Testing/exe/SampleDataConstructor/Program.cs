@@ -40,6 +40,7 @@ using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
 using Ict.Common;
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 
 namespace Ict.Testing.SampleDataConstructor
 {
@@ -193,6 +194,63 @@ namespace Ict.Testing.SampleDataConstructor
                 else
                 {
                     TLogging.Log("Please explicitely run nant importDemodata -D:operation=conferenceApplications");
+                }
+
+                if (operation == "secondLedger")
+                {
+                    TLogging.Log("creating a second ledger");
+
+                    int SecondLedger = 44;
+                    TVerificationResultCollection VerificationResult;
+
+                    if (!TGLSetupWebConnector.DeleteLedger(SecondLedger, out VerificationResult))
+                    {
+                        throw new Exception("could not delete ledger");
+                    }
+
+                    TGLSetupWebConnector.CreateNewLedger(SecondLedger, "SecondLedger", "GB", "GBP", "USD", new DateTime(DateTime.Now.Year,
+                            4,
+                            1), 12, 1, 8, out VerificationResult);
+
+                    SampleDataUnitPartners.FLedgerNumber = SecondLedger;
+                    SampleDataUnitPartners.GenerateFieldsFinanceOnly(
+                        Path.Combine(datadirectory, "fields.csv"));
+                    SampleDataGiftBatches.FLedgerNumber = SecondLedger;
+                    SampleDataGiftBatches.GenerateBatches(Path.Combine(datadirectory, "donations.csv"));
+                    SampleDataAccountsPayable.FLedgerNumber = SecondLedger;
+                    SampleDataAccountsPayable.GenerateInvoices(Path.Combine(datadirectory, "invoices.csv"));
+
+                    for (int periodCounter = 1; periodCounter < 6; periodCounter++)
+                    {
+                        TLogging.Log("posting gift batches of period " + periodCounter.ToString());
+
+                        if (!SampleDataGiftBatches.PostBatches(0, periodCounter))
+                        {
+                            throw new Exception("failed to post gift batch");
+                        }
+                    }
+
+                    TLogging.Log("posting gift batches of period 6");
+
+                    if (!SampleDataGiftBatches.PostBatches(0, 6, 1))
+                    {
+                        throw new Exception("failed to post gift batch");
+                    }
+
+                    SampleDataAccountsPayable.FLedgerNumber = SecondLedger;
+
+                    for (int periodCounter = 1; periodCounter < 6; periodCounter++)
+                    {
+                        TLogging.Log("posting invoices of period " + periodCounter.ToString());
+                        SampleDataAccountsPayable.PostAndPayInvoices(0, periodCounter);
+                    }
+
+                    TLogging.Log("posting invoices of period 6");
+                    SampleDataAccountsPayable.PostAndPayInvoices(0, 6, 1);
+                }
+                else
+                {
+                    TLogging.Log("Please explicitely run nant importDemodata -D:operation=secondLedger");
                 }
 
                 TLogging.Log("Completed.");
