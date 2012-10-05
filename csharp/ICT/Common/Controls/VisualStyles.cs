@@ -42,8 +42,10 @@ namespace Ict.Common.Controls
         vsDashboard,
         /// <summary>Shepherd/Assistant</summary>
         vsShepherd,
-        /// <summary>Horizontal Collapse</summary>
-        vsHorizontalCollapse
+        /// <summary>Horizontal Collapse (Collapsed Info Panel rendered without Gradient)</summary>
+        vsHorizontalCollapse,
+        /// <summary>Horizontal Collapse (Collapsed Info Panel rendered with Gradient)</summary>
+        vsHorizontalCollapse_InfoPanelWithGradient
     }
 
     /// <summary>
@@ -749,6 +751,63 @@ namespace Ict.Common.Controls
                     UseTitleGradient = true;
                     UseContentGradient = false;
                     UseCollapsedInfoGradient = false;
+                    UseContentBackgroundColours = false;
+                    break;
+            
+                case TVisualStylesEnum.vsHorizontalCollapse_InfoPanelWithGradient:
+                     //TitleFont Variables
+                    InternalTitleFont = new System.Drawing.Font("Verdana", 13, System.Drawing.FontStyle.Bold);
+                    InternalTitleFontColour = Color.FromArgb(21, 66, 139);
+                    InternalTitleFontColourHover = Color.FromArgb(32, 101, 215);
+                    
+                    //ContentFont Variables
+                    InternalContentFont = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
+                    InternalContentFontColour = Color.FromArgb(21, 66, 139);
+                    InternalContentHoverFontColour = Color.FromArgb(32, 101, 215);
+                    InternalContentActivatedFontColour = InternalContentHoverFontColour;
+                    InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
+
+                    //CollapsedInfoTextFont Variables
+                    InternalCollapsedInfoTextFont = InternalTitleFont;
+                    InternalCollapsedInfoTextFontColour = InternalTitleFontColour;
+                    InternalCollapsedInfoTextFontColourHover = InternalTitleFontColourHover;                     
+                    
+                    // Padding Variables
+                    InternalTitlePaddingTop = 1;
+                    InternalTitlePaddingLeft = 3;
+                    InternalTitlePaddingRight = 8;
+                    InternalTitlePaddingBottom = 0;
+                    InternalContentPaddingTop = 14;
+                    InternalContentPaddingLeft = 0;
+                    InternalContentPaddingRight = 10;
+                    InternalContentPaddingBottom = 5;
+                    
+                    //BackgroundVariables
+                    InternalContentBackgroundColour = Color.FromArgb(227, 239, 255);
+                    InternalCollapsedInfoBackgroundColour = Color.FromArgb(212, 221, 249);
+                    InternalCollapsiblePanelBackgroundColour = Color.FromArgb(105, 105, 105);                    
+                    
+                    //Gradient Variables
+                    InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
+                    InternalTitleGradientEnd = Color.FromArgb(183, 202, 226);
+                    InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+                    InternalContentGradientStart = Color.FromArgb(212, 228, 254);
+                    InternalContentGradientEnd = Color.FromArgb(205, 218, 254);
+                    InternalContentGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
+                    InternalCollapsedInfoGradientStart = Color.FromArgb(212, 228, 254);
+                    InternalCollapsedInfoGradientEnd = Color.FromArgb(183, 202, 226);
+                    InternalCollapsedInfoGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
+                        
+                    //Layout Variables
+                    InternalTaskIndentation = 15;
+                    InternalTaskHeight = 18;
+                    InternalTitleHeightAdjustment = 5;
+                    InternalAutomaticNumbering = false;
+
+                    //bool variables
+                    UseTitleGradient = true;
+                    UseContentGradient = false;
+                    UseCollapsedInfoGradient = true;
                     UseContentBackgroundColours = false;
                     break;
             

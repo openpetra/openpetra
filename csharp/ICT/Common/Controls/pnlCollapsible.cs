@@ -24,18 +24,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Diagnostics;
-using System.ComponentModel;
 using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
-using System.Threading;
+using System.ComponentModel;
+using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Reflection;
-using System.IO;
-using GNU.Gettext;
 using System.Xml;
+using GNU.Gettext;
 using CustomControl.OrientAbleTextControls;
 
 using Ict.Common;
@@ -46,22 +42,35 @@ namespace Ict.Common.Controls
 {
     #region public data types
 
-    //this pragma warning disables XML comment warnings
-    #pragma warning disable 1591
+    /// <summary>
+    /// Direction in which the Collapsible Panel collapses
+    /// </summary>
     public enum TCollapseDirection
     {
+        /// <summary>Vertical direction</summary>
         cdVertical,
+        
+        /// <summary>Horizontal direction (collapses to the left, i.e. Dock=<see cref="DockStyle.Left" />)</summary>
         cdHorizontal,
+        
+        /// <summary>Horizontal direction (collapses to the right, i.e. Dock=<see cref="DockStyle.Right" />)</summary>
         cdHorizontalRight
     }
 
+    /// <summary>
+    /// Kind of Control that is hosted inside the Collapsible Panel
+    /// </summary>
     public enum THostedControlKind
     {
+        /// <summary>UserControl (generic)</summary>
         hckUserControl,
+        
+        /// <summary>TaskList Control (<see cref="TTaskList" /></summary>
         hckTaskList,
+        
+        /// <summary>Collapsible Panel Hoster Control (<see cref="TPnlCollapsibleHoster" /></summary>
         hckCollapsiblePanelHoster
     }
-    #pragma warning restore 1591
 
     #endregion
 
@@ -452,11 +461,13 @@ namespace Ict.Common.Controls
             List<TVisualStylesEnum> tmp =  new List<TVisualStylesEnum>();
             tmp.Add(TVisualStylesEnum.vsAccordionPanel);
             tmp.Add(TVisualStylesEnum.vsHorizontalCollapse);
+            tmp.Add(TVisualStylesEnum.vsHorizontalCollapse_InfoPanelWithGradient);
             tmp.Add(TVisualStylesEnum.vsShepherd);
             FDirStyleMapping.Add(TCollapseDirection.cdHorizontal, tmp);
 
             List<TVisualStylesEnum> tmp2 =  new List<TVisualStylesEnum>();
             tmp2.Add(TVisualStylesEnum.vsHorizontalCollapse);
+            tmp.Add(TVisualStylesEnum.vsHorizontalCollapse_InfoPanelWithGradient);
             FDirStyleMapping.Add(TCollapseDirection.cdHorizontalRight, tmp2);
             
             List<TVisualStylesEnum> tmp3 =  new List<TVisualStylesEnum>();
@@ -580,14 +591,13 @@ namespace Ict.Common.Controls
                 }
                 else if(arg is bool)
                 {
-                    //We cannot have it Expand(), and thereby realise content before we're sure that the content is
-                    // correctly defined and in place. And we do not guarantee order of parameters. see end of
-                    // constructor for setting isCollapse properly.
+                    // We cannot have it Expand(), and thereby realise content before we're sure that the content is
+                    // correctly defined and in place. And we do not guarantee order of parameters. See end of
+                    // constructor for setting IsCollapsed Property properly.
                     this.FIsCollapsed = (bool) arg;
                     
                     CollapseSpecified = true;
                 }
-                //else if(arg.GetType().ToString().Equals("System.Integer"))
                 else if(arg is int)
                 {
                     this.ExpandedSize = (int) arg;
@@ -626,12 +636,12 @@ namespace Ict.Common.Controls
             
             if (ExpandedSizeSpecified)
             {
-                // this is to make sure that panel is using updated width/height
+                // This is to make sure that the Panel is using updated width/height
                 // since ExpandedSize may have been changed by another parameter
                 this.IsCollapsed = this.FIsCollapsed;
             }
 
-            //start the image assuming that it is not being hovered.
+            // Start the image assuming that it is not being hovered.
             btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][IsCollapsed][false];
         }
 
@@ -716,14 +726,15 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Returns the styles available for a give direction
         /// </summary>
-        public List<TVisualStylesEnum> StylesForDirection(TCollapseDirection ADirection)
+        public static List<TVisualStylesEnum> StylesForDirection(TCollapseDirection ADirection)
         {
             return FDirStyleMapping[ADirection];
         }
 
         /// <summary>
-        /// Returns the directions available for a give style
+        /// Returns the Collapse Directions available for the given Visual Style.
         /// </summary>
+        /// <returns>Collapse Directions available for the Visual Style specified in Argument <paramref name="AStyle" />.</returns>
         public List<TCollapseDirection> DirectionsForStyle(TVisualStylesEnum AStyle)
         {
             List<TCollapseDirection> returnDirections = new List<TCollapseDirection>();
@@ -746,7 +757,7 @@ namespace Ict.Common.Controls
         #endregion
 
         /// <summary>
-        /// Causes the panel to collapse. Only the Title Panel will be visible after that.
+        /// Causes the Collapsible Panel to collapse. Only the Title Panel will be visible after that.
         /// </summary>
         public void Collapse()
         {
@@ -792,10 +803,12 @@ namespace Ict.Common.Controls
                     
                     break;
             }
+            
+            OnCollapsed();
         }
 
         /// <summary>
-        /// Causes the panel to expand. The Title Panel and the Content Panel will be visible after that.
+        /// Causes the Collapsible Panel to expand. The Title Panel and the Content Panel will be visible after that.
         /// </summary>
         public void Expand()
         {
@@ -892,6 +905,8 @@ namespace Ict.Common.Controls
                     
                     break;
             }
+            
+            OnExpanded();
         }
 
         void ShowHideCollapsedInfoText(bool AShow)
@@ -1062,7 +1077,10 @@ namespace Ict.Common.Controls
             }
         }
         
-        private void ToggleDirection()
+        /// <summary>
+        /// Toggles the Collapse Direction of the Collapsible Panel.
+        /// </summary>
+        public void ToggleDirection()
         {
             if(FCollapseDirection == TCollapseDirection.cdVertical)
             {
@@ -1269,8 +1287,6 @@ namespace Ict.Common.Controls
             lblDetailHeading.ForeColor = FVisualStyle.TitleFontColour;
             tipCollapseExpandHints.ForeColor = FVisualStyle.TitleFontColourHover;
 
-            //TODO: border
-
             //Gradient
             if (FVisualStyle.UseTitleGradient)
             {
@@ -1346,12 +1362,10 @@ namespace Ict.Common.Controls
             if (FIsCollapsed)
             {
                 Expand();
-                OnExpanded();
             }
             else
             {
                 Collapse();
-                OnCollapsed();
             }
         }
 
@@ -1439,38 +1453,6 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="message"></param>
         public EInsufficientDataSetForHostedControlKindException(string message)
-            : base(message)
-        {
-        }        
-    }
-
-    /// <summary>
-    /// Thrown when instantiating HostedControlKind is hckUserControl, but UserControlString property not set.
-    /// </summary>
-    public class ENoUserControlSpecifiedException : Exception
-    {
-        /// <summary>
-        /// Constructor with no Arguments
-        /// </summary>
-        public ENoUserControlSpecifiedException() : base()
-        {
-        }
-
-        /// <summary>
-        /// Constructor with inner Exception
-        /// </summary>
-        /// <param name="innerException"></param>
-        /// <param name="message"></param>
-        public ENoUserControlSpecifiedException(Exception innerException, string message)
-            : base(message, innerException)
-        {
-        }
-
-        /// <summary>
-        /// Constructor without inner Exception
-        /// </summary>
-        /// <param name="message"></param>
-        public ENoUserControlSpecifiedException(string message)
             : base(message)
         {
         }        
