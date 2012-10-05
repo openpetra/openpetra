@@ -211,6 +211,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoPartnerInfo.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
             this.ucoPartnerInfo.Size = new System.Drawing.Size(515, 110);
             this.ucoPartnerInfo.TabIndex = 0;
+            this.ucoPartnerInfo.VisualStyleEnum = TVisualStylesEnum.vsDashboard;
             this.ucoPartnerInfo.Collapsed += new System.EventHandler(this.UcoPartnerInfo_Collapsed);
             this.ucoPartnerInfo.Expanded += new System.EventHandler(this.UcoPartnerInfo_Expanded);
 
