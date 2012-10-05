@@ -512,10 +512,12 @@ namespace Tests.Common.Controls
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TTestTaskList.GetTestXmlNode());
 
             Assert.AreEqual(TVisualStylesEnum.vsAccordionPanel, FPnl.VisualStyleEnum);
-
+            
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsTaskPanel;
             Assert.AreEqual(TVisualStylesEnum.vsTaskPanel, FPnl.VisualStyleEnum);
 
+            FPnl.Collapse();  // To ensure Unit Test code coverage only - nothing to assert here...
+            FPnl.Expand();  // To ensure Unit Test code coverage only - nothing to assert here...
             FPnl.RealiseTaskListNow();  // To ensure Unit Test code coverage only - nothing to assert here...
 
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsAccordionPanel;

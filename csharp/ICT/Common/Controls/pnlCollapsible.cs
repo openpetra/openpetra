@@ -502,6 +502,9 @@ namespace Ict.Common.Controls
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight].Add(true, new Dictionary<bool, int>());
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight].Add(false, new Dictionary<bool, int>());
 
+            // Note: Though the Icon Indexes are hard-coded here, they can get modified according to VisualStyleEnum when
+            //       read through Method 'GetArrowGraphicIndex' (and they should only be read through that Method for 
+            //       that reason!)
             ArrowGraphicIndecies[TCollapseDirection.cdVertical][true].Add(true, 1);
             ArrowGraphicIndecies[TCollapseDirection.cdVertical][true].Add(false, 0);
             ArrowGraphicIndecies[TCollapseDirection.cdVertical][false].Add(true, 7);
@@ -510,11 +513,10 @@ namespace Ict.Common.Controls
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][true].Add(false, 4);
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][false].Add(true, 3);
             ArrowGraphicIndecies[TCollapseDirection.cdHorizontal][false].Add(false, 2);
-            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][true].Add(true, 5);
-            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][true].Add(false, 4);
-            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][false].Add(true, 3);
-            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][false].Add(false, 2);
-            
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][true].Add(true, 3);
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][true].Add(false, 2);
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][false].Add(true, 5);
+            ArrowGraphicIndecies[TCollapseDirection.cdHorizontalRight][false].Add(false, 4);
             
             StoredStyles = new Dictionary<TCollapseDirection, TVisualStylesEnum>();
             StoredStyles[TCollapseDirection.cdVertical] = DEFAULT_STYLE[TCollapseDirection.cdVertical];
@@ -648,7 +650,7 @@ namespace Ict.Common.Controls
             }
 
             // Start the image assuming that it is not being hovered.
-            btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][IsCollapsed][false];
+            btnToggle.ImageIndex = GetArrowGraphicIndex(false);
         }
 
         #endregion
@@ -779,9 +781,9 @@ namespace Ict.Common.Controls
                 
                 ShowHideCollapsedInfoText(true);
             }
-
-            btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][true][FMouseHoveringOverCollapseToggle];
+            
             FIsCollapsed = true;
+            btnToggle.ImageIndex = GetArrowGraphicIndex(FMouseHoveringOverCollapseToggle);
             
             switch (FHostedControlKind)
             {
@@ -819,7 +821,7 @@ namespace Ict.Common.Controls
         public void Expand()
         {
             FIsCollapsed = false;
-            btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][false][FMouseHoveringOverCollapseToggle];
+            btnToggle.ImageIndex = GetArrowGraphicIndex(FMouseHoveringOverCollapseToggle);
             TitleShow();
 
             if (FCollapseDirection == TCollapseDirection.cdVertical)
@@ -1354,6 +1356,38 @@ namespace Ict.Common.Controls
             return AVisualStyle;
         }
 
+        /// <summary>
+        /// Returns the Index of the Arrow Graphic that should be shown on the Toggle Button according to:
+        /// * value of <see cref="FCollapseDirection" />;
+        /// * value of <see cref="FIsCollapsed" />;
+        /// * value of <see cref="FVisualStyleEnum" />;
+        /// * value of <paramref name="AIsMouseHoveringOverToggleButton" />.
+        /// /// </summary>
+        /// <param name="AIsMouseHoveringOverToggleButton">Set to true if the mouse is hovering over 
+        /// the Toggle Button, otherwise to false.</param>
+        /// <returns>Index of the Arrow Graphic that should be shown on the Toggle Button.</returns>
+        private int GetArrowGraphicIndex(bool AIsMouseHoveringOverToggleButton)
+        {
+            int GraphicIndex = ArrowGraphicIndecies[FCollapseDirection][FIsCollapsed][AIsMouseHoveringOverToggleButton];
+            
+            if (FCollapseDirection == TCollapseDirection.cdVertical) 
+            {
+                if (FVisualStyleEnum == TVisualStylesEnum.vsTaskPanel) 
+                {
+                    if (FIsCollapsed) 
+                    {
+                        GraphicIndex += 8;    
+                    }
+                    else
+                    {
+                        GraphicIndex += 4;
+                    }
+                }
+            }
+
+            return GraphicIndex;
+        }
+        
         #endregion
 
         #region Event Handlers
@@ -1382,13 +1416,13 @@ namespace Ict.Common.Controls
         /// <param name="e">Not evaluated.</param>
         void BtnToggleMouseEnter(object sender, EventArgs e)
         {
-            TLogging.Log("BtnToggleMouseEnter: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
+//            TLogging.Log("BtnToggleMouseEnter: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
 
-            btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][IsCollapsed][true];
+            btnToggle.ImageIndex = GetArrowGraphicIndex(true);
             lblDetailHeading.ForeColor = FVisualStyle.TitleFontColourHover;
             FMouseHoveringOverCollapseToggle = true;
             
-            TLogging.Log("BtnToggleMouseEnter END: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
+//            TLogging.Log("BtnToggleMouseEnter END: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
         }
 
         /// <summary>
@@ -1398,13 +1432,13 @@ namespace Ict.Common.Controls
         /// <param name="e">Not evaluated.</param>
         void BtnToggleMouseLeave(object sender, EventArgs e)
         {
-            TLogging.Log("BtnToggleMouseLeave: btnTogglePartnerDetails.ImageIndex: " + btnToggle.ImageIndex.ToString());
+//            TLogging.Log("BtnToggleMouseLeave: btnTogglePartnerDetails.ImageIndex: " + btnToggle.ImageIndex.ToString());
 
-            btnToggle.ImageIndex = ArrowGraphicIndecies[FCollapseDirection][IsCollapsed][false];
+            btnToggle.ImageIndex = GetArrowGraphicIndex(false);
             lblDetailHeading.ForeColor = FVisualStyle.TitleFontColour;
             FMouseHoveringOverCollapseToggle = true;
             
-            TLogging.Log("BtnToggleMouseLeave END: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
+//            TLogging.Log("BtnToggleMouseLeave END: btnToggle.ImageIndex: " + btnToggle.ImageIndex.ToString());
         }
 
         /// <summary>
