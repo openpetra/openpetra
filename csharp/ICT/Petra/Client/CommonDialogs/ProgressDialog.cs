@@ -42,7 +42,7 @@ using Ict.Petra.Shared.Interfaces.MCommon;
 namespace Ict.Petra.Client.CommonDialogs
 {
     /// <summary>
-    /// Login Form for the authentication of an OpenPetra user
+    /// dialog for watching the progress of a webconnector method, with the option to cancel the job
     /// </summary>
     public partial class TProgressDialog : System.Windows.Forms.Form
     {
