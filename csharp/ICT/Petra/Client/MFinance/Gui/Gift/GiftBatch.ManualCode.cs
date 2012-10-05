@@ -79,6 +79,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// Set up the screen to show only this batch
+        /// </summary>
+        /// <param name="LedgerNumber"></param>
+        /// <param name="BatchNumber"></param>
+        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            FLedgerNumber = ALedgerNumber;
+            ucoBatches.LoadOneBatch(ALedgerNumber, ABatchNumber);
+            Show();
+        }
+
+        /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
         public void RefreshAll()
@@ -243,9 +255,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (this.tpgTransactions.Enabled)
                 {
-                    LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
-                        ucoBatches.GetSelectedDetailRow().BatchNumber,
-                        ucoBatches.GetSelectedDetailRow().BatchStatus, AFromTabClick);
+                    AGiftBatchRow SelectedRow = ucoBatches.GetSelectedDetailRow();
+
+                    //
+                    // If there's only one GiftBatch row, I'll not require that the user has selected it!
+
+                    if (FMainDS.AGiftBatch.Rows.Count == 1)
+                    {
+                        SelectedRow = FMainDS.AGiftBatch[0];
+                    }
+
+                    if (SelectedRow != null)
+                    {
+                        LoadTransactions(SelectedRow.LedgerNumber,
+                            SelectedRow.BatchNumber,
+                            SelectedRow.BatchStatus, AFromTabClick);
+                    }
 
                     //If from grid double click then invoke tab changed event
                     if (!AFromTabClick)

@@ -203,6 +203,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 if (!Supplier.IsDefaultDiscountDaysNull())
                 {
                     NewDocumentRow.DiscountDays = Supplier.DefaultDiscountDays;
+                    NewDocumentRow.DiscountPercentage = 0;
                 }
 
                 if (!Supplier.IsDefaultDiscountPercentageNull())
@@ -278,15 +279,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction SubmitChangesTransaction;
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-            bool DetailsaveOK = false;
-
             AVerificationResult = null;
 
-            if ((AInspectDS != null) && (AInspectDS.AApDocument != null) && (AInspectDS.AApDocument.Rows.Count > 0))
+            if (AInspectDS == null)
+            {
+                return TSubmitChangesResult.scrNothingToBeSaved;
+            }
+
+            if ((AInspectDS.AApDocument != null) && (AInspectDS.AApDocument.Rows.Count > 0))
             {
                 AVerificationResult = new TVerificationResultCollection();
 
@@ -297,7 +297,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 {
                     if (NewDocRow.DocumentCode.Length == 0)
                     {
-                        AVerificationResult.Add(new TVerificationResult("Save AP Document", "The Document has empty Document Reference.",
+                        AVerificationResult.Add(new TVerificationResult("Save AP Document", "The Document has empty Document number.",
                                 TResultSeverity.Resv_Noncritical));
                         return TSubmitChangesResult.scrInfoNeeded;
                     }
@@ -312,96 +312,93 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         if (MatchingRecords.Rows.Count > 0)
                         {
-                            AVerificationResult.Add(new TVerificationResult("Save AP Document", "A Document with this Reference already exists.",
+                            AVerificationResult.Add(new TVerificationResult("Save AP Document", "A Document with this number already exists.",
                                     TResultSeverity.Resv_Noncritical));
                             return TSubmitChangesResult.scrInfoNeeded;
                         }
                     }
+                } // foreach (document)
+
+            } // if {there's actually a document}
+
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrOK;
+            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
+            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                out IsMyOwnTransaction);
+            try
+            {
+                foreach (AccountsPayableTDSAApDocumentRow NewDocRow in AInspectDS.AApDocument.Rows)
+                {
+                    // Set AP Number if it has not been set yet.
+                    if (NewDocRow.ApNumber < 0)
+                    {
+                        NewDocRow.ApNumber = NextApDocumentNumber(NewDocRow.LedgerNumber, SubmitChangesTransaction, out AVerificationResult);
+                    }
+
+                    SetOutstandingAmount(NewDocRow, NewDocRow.LedgerNumber, AInspectDS.AApDocumentPayment);
                 }
 
-                bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-                SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out IsMyOwnTransaction);
-                try
+                if (!AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction, out AVerificationResult))
                 {
-                    foreach (AccountsPayableTDSAApDocumentRow NewDocRow in AInspectDS.AApDocument.Rows)
-                    {
-                        // Set AP Number if it has not been set yet.
-                        if (NewDocRow.ApNumber < 0)
-                        {
-                            NewDocRow.ApNumber = NextApDocumentNumber(NewDocRow.LedgerNumber, SubmitChangesTransaction, out AVerificationResult);
-                        }
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
 
-                        SetOutstandingAmount(NewDocRow, NewDocRow.LedgerNumber, AInspectDS.AApDocumentPayment);
+                if ((SubmissionResult == TSubmitChangesResult.scrOK) && (AInspectDS.AApDocumentDetail != null)) // Document detail lines
+                {
+                    bool DetailsaveOK = false;
+                    TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+
+                    ValidateApDocumentDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
+                    ValidateApDocumentDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
+
+                    if (!AVerificationResult.HasCriticalErrors)
+                    {
+                        DetailsaveOK = AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
+                            out AVerificationResult);
                     }
 
-                    if ((AInspectDS.AApDocument != null) && AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        if (AInspectDS.AApDocumentDetail != null) // Document detail lines
-                        {
-                            ValidateApDocumentDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
-                            ValidateApDocumentDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
-
-                            if (!AVerificationResult.HasCriticalErrors)
-                            {
-                                DetailsaveOK = AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
-                                    out AVerificationResult);
-                            }
-                        }
-
-                        if ((AInspectDS.AApDocumentDetail == null) // Document detail lines
-                            || DetailsaveOK)
-                        {
-                            if ((AInspectDS.AApAnalAttrib == null)  // Analysis attributes
-                                || AApAnalAttribAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction,
-                                    out AVerificationResult))
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
-                            }
-                            else
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrError;
-                            }
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
-                    }
-                    else
+                    if (!DetailsaveOK)
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
                     }
+                }
 
-                    if (IsMyOwnTransaction)
+                if ((SubmissionResult == TSubmitChangesResult.scrOK) && (AInspectDS.AApAnalAttrib != null)) // Analysis attributes
+                {
+                    if (!AApAnalAttribAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction, out AVerificationResult))
                     {
-                        if (SubmissionResult == TSubmitChangesResult.scrOK)
-                        {
-                            DBAccess.GDBAccessObj.CommitTransaction();
-                        }
-                        else
-                        {
-                            DBAccess.GDBAccessObj.RollbackTransaction();
-                        }
+                        SubmissionResult = TSubmitChangesResult.scrError;
                     }
                 }
-                catch (Exception e)
-                {
-                    TLogging.Log("after submitchanges: exception " + e.Message);
-                    TLogging.Log(e.StackTrace);
 
-                    if (IsMyOwnTransaction)
+                if (IsMyOwnTransaction)
+                {
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
-
-                    AVerificationResult.Add(new TVerificationResult("Save AP Document", e.Message,
-                            TResultSeverity.Resv_Critical));
-                    throw new Exception(e.ToString() + " " + e.Message);
                 }
             }
+            catch (Exception e)
+            {
+                TLogging.Log("after submitchanges: exception " + e.Message);
+                TLogging.Log(e.StackTrace);
 
-            if (AVerificationResult.Count > 0)
+                if (IsMyOwnTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                AVerificationResult.Add(new TVerificationResult("Save AP Document", e.Message,
+                        TResultSeverity.Resv_Critical));
+                throw new Exception(e.ToString() + " " + e.Message);
+            }
+
+            if ((AVerificationResult != null) && (AVerificationResult.Count > 0))
             {
                 // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
                 // Serialisation (needed for .NET Remoting).
@@ -545,7 +542,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             {
                 AApDocumentDetailRow DetailRow = (AApDocumentDetailRow)rv.Row;
                 AMainDS.AAnalysisAttribute.DefaultView.RowFilter =
-                    String.Format("{0}={1}", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);     // Do I need Cost Centre in here too?
+                    String.Format("{0}='{1}'", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);
 
                 if (AMainDS.AAnalysisAttribute.DefaultView.Count > 0)
                 {
@@ -554,7 +551,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)aa_rv.Row;
 
                         AMainDS.AApAnalAttrib.DefaultView.RowFilter =
-                            String.Format("{0}={1} AND {2}={3}",
+                            String.Format("{0}={1} AND {2}='{3}'",
                                 AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
                                 AApAnalAttribTable.GetAccountCodeDBName(), AttrRow.AccountCode);
 

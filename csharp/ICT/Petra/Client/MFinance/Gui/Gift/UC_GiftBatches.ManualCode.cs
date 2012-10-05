@@ -91,6 +91,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        public void LoadOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            FLedgerNumber = ALedgerNumber;
+            FMainDS.Merge(ViewModeTDS);
+            FPetraUtilsObject.SuppressChangeDetection = true;
+            rbtPosting.Checked = false;
+            rbtEditing.Checked = false;
+            rbtAll.Checked = false;
+            cmbYear.Enabled = false;
+            cmbPeriod.Enabled = false;
+            FMainDS.AGiftBatch.DefaultView.RowFilter =
+                String.Format("{0}={1}", AGiftBatchTable.GetBatchNumberDBName(), ABatchNumber);
+            Int32 RowToSelect = GetDataTableRowIndexByPrimaryKeys(ALedgerNumber, ABatchNumber);
+
+            // if this form is readonly, then we need all codes, because old codes might have been used
+            bool ActiveOnly = this.Enabled;
+
+            TFinanceControls.InitialiseAccountList(ref cmbDetailBankAccountCode, FLedgerNumber, true, false, ActiveOnly, true);
+            TFinanceControls.InitialiseCostCentreList(ref cmbDetailBankCostCentre, FLedgerNumber, true, false, ActiveOnly, true);
+            cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
+            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
+
+            SelectRowInGrid(RowToSelect);
+
+            UpdateChangeableStatus();
+            FPetraUtilsObject.HasChanges = false;
+            FPetraUtilsObject.SuppressChangeDetection = false;
+        }
+
+        /// <summary>
         /// load the batches into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -250,24 +284,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FSelectedYear = cmbYear.GetSelectedInt32();
             FSelectedPeriod = cmbPeriod.GetSelectedInt32();
 
-            FPeriodFilter = String.Format(
-                "{0} = {1} AND ",
-                AGiftBatchTable.GetBatchYearDBName(), FSelectedYear);
-
-            if (FSelectedPeriod == 0)
+            if ((FSelectedYear == -1) || (FSelectedPeriod == -1))
             {
-                ALedgerRow Ledger =
-                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
-
-                FPeriodFilter += String.Format(
-                    "{0} >= {1}",
-                    AGiftBatchTable.GetBatchPeriodDBName(), Ledger.CurrentPeriod);
+                FPeriodFilter = "1 = 1";
             }
             else
             {
-                FPeriodFilter += String.Format(
-                    "{0} = {1}",
-                    AGiftBatchTable.GetBatchPeriodDBName(), FSelectedPeriod);
+                FPeriodFilter = String.Format(
+                    "{0} = {1} AND ",
+                    AGiftBatchTable.GetBatchYearDBName(), FSelectedYear);
+
+                if (FSelectedPeriod == 0)
+                {
+                    ALedgerRow Ledger =
+                        ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+                    FPeriodFilter += String.Format(
+                        "{0} >= {1}",
+                        AGiftBatchTable.GetBatchPeriodDBName(), Ledger.CurrentPeriod);
+                }
+                else
+                {
+                    FPeriodFilter += String.Format(
+                        "{0} = {1}",
+                        AGiftBatchTable.GetBatchPeriodDBName(), FSelectedPeriod);
+                }
             }
 
             if (rbtEditing.Checked)

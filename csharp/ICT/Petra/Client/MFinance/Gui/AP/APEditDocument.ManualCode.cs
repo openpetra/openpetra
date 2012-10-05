@@ -88,8 +88,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void EnableControls()
         {
+            btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
+
             // I need to make everything read-only if this document was already posted.
-            if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) > 0)
+            if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0)
             {
                 tbbPostDocument.Enabled = false;
 
@@ -99,8 +101,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 cmbDocumentType.Enabled = false;
                 txtReference.Enabled = false;
                 dtpDateIssued.Enabled = false;
-                dtpDateDue.Enabled = false;
-                nudCreditTerms.Enabled = false;
                 nudDiscountDays.Enabled = false;
                 txtDiscountPercentage.Enabled = false;
                 txtTotalAmount.Enabled = false;
@@ -108,8 +108,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 btnAddDetail.Enabled = false;
                 btnRemoveDetail.Enabled = false;
-                btnAnalysisAttributes.Enabled = false;
                 btnLookupExchangeRate.Enabled = false;
+                btnAnalysisAttributes.Enabled = false;
 
                 txtDetailNarrative.Enabled = false;
                 txtDetailItemRef.Enabled = false;
@@ -119,10 +119,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 txtDetailBaseAmount.Enabled = false;
                 cmbDetailAccountCode.Enabled = false;
             }
-            else
-            {
-                btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
-            }
 
             tbbPostDocument.Enabled = ("|POSTED|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
             tbbPayDocument.Enabled = ("|POSTED|PARTPAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0);
@@ -131,7 +127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private static bool DetailLineAttributesRequired(ref bool AllPresent, AccountsPayableTDS Atds, AApDocumentDetailRow DetailRow)
         {
             Atds.AAnalysisAttribute.DefaultView.RowFilter =
-                String.Format("{0}={1}", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);         // Do I need Cost Centre in here too?
+                String.Format("{0}='{1}'", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);         // Do I need Cost Centre in here too?
 
             if (Atds.AAnalysisAttribute.DefaultView.Count > 0)
             {
@@ -150,13 +146,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)rv.Row;
 
                     Atds.AApAnalAttrib.DefaultView.RowFilter =
-                        String.Format("{0}={1} AND {2}={3}",
+                        String.Format("{0}={1} AND {2}='{3}'",
                             AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
                             AApAnalAttribTable.GetAccountCodeDBName(), AttrRow.AccountCode);
 
                     if (Atds.AApAnalAttrib.DefaultView.Count == 0)
                     {
                         IhaveAllMyAttributes = false;
+                        break;
+                    }
+
+                    foreach (DataRowView rv2 in Atds.AApAnalAttrib.DefaultView)
+                    {
+                        AApAnalAttribRow AttribValueRow = (AApAnalAttribRow)rv2.Row;
+
+                        if (AttribValueRow.AnalysisAttributeValue == "")
+                        {
+                            IhaveAllMyAttributes = false;
+                            break;
+                        }
+                    }
+
+                    if (IhaveAllMyAttributes == false)  // because of the test above..
+                    {
                         break;
                     }
                 }
@@ -180,6 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
+        /// Called from cmbDetailAccountCode.SelectedValueChanged
         /// When an account is selected for a detail line,
         /// I need to determine whether analysis attributes are required for this account
         /// and if they are, whether I already have all the attributes required.
@@ -189,6 +202,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void CheckAccountRequiredAttr(Object sender, EventArgs e)
         {
+            // I'm not doing this if this document was already posted.
+            if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0)
+            {
+                return;
+            }
+
             string AccountCode = cmbDetailAccountCode.GetSelectedString();
 
             if (AccountCode.Length == 0)
@@ -347,8 +366,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             AnalAttrForm.Initialise(ref FMainDS, FPreviouslySelectedDetailRow);
             AnalAttrForm.ShowDialog();
             ShowData(FMainDS.AApDocument[0]);
+
 //          CheckAccountRequiredAttr(null, null);
-            FPetraUtilsObject.SetChangedFlag();
+            if (AnalAttrForm.DetailsChanged)
+            {
+                FPetraUtilsObject.SetChangedFlag();
+            }
         }
 
         private void UseTaxAccount(Object sender, EventArgs e)
@@ -505,6 +528,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (Row.ApDocumentId == AApDocument.ApDocumentId)  // NOTE: When called from elsewhere, the TDS could contain data for several documents.
                 {
+                    if ((Row.AccountCode == "") || (Row.CostCentreCode == ""))
+                    {
+                        MessageBox.Show(
+                            Catalog.GetString("Account and Cost Centre must be specified."), 
+                            Catalog.GetString("Post Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        return false;
+                    }
+
                     String AccountCostCentre = Row.AccountCode + "|" + Row.CostCentreCode;
 
                     if (!AccountCodesCostCentres.Contains(AccountCostCentre))
@@ -567,24 +598,23 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         public static bool ApDocumentCanPost(AccountsPayableTDS Atds, AApDocumentRow Adocument)
         {
             // If the batch will not balance, or required attributes are missing, I'll stop right here..
-            bool CanPost = true;
 
             if (!BatchBalancesOK(Atds, Adocument))
             {
-                CanPost = false;
-            }
-
-            if (!AllLinesHaveAttributes(Atds, Adocument))
-            {
-                CanPost = false;
+                return false;
             }
 
             if (!AllLinesAccountsOK(Atds, Adocument))
             {
-                CanPost = false;
+                return false;
             }
 
-            return CanPost;
+            if (!AllLinesHaveAttributes(Atds, Adocument))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -642,6 +672,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         private void PostDocument(object sender, EventArgs e)
         {
+            if (FPetraUtilsObject.HasChanges)
+            {
+                MessageBox.Show(Catalog.GetString("Document should be saved before posting."), Catalog.GetString(
+                        "Post Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
             GetDataFromControls(FMainDS.AApDocument[0]);
 
             // TODO: make sure that there are uptodate exchange rates
@@ -660,9 +697,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The AP document has been posted successfully!"));
 
-                // TODO: show posting register of GL Batch?
+                //
+                // Refresh by re-loading the document from the server
+                Int32 DocumentId = FMainDS.AApDocument[0].ApDocumentId;
+                FMainDS.Clear();
+                LoadAApDocument(FLedgerNumber, DocumentId);
 
-                EnableControls();
+                //
+                // Also refresh the opener?
                 Form Opener = FPetraUtilsObject.GetCallerForm();
 
                 if (Opener.GetType() == typeof(TFrmAPSupplierTransactions))
@@ -674,6 +716,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void PayDocument(object sender, EventArgs e)
         {
+            if (FPetraUtilsObject.HasChanges)
+            {
+                MessageBox.Show(Catalog.GetString("Document should be saved before paying."), Catalog.GetString(
+                        "Pay Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
             TFrmAPPayment PaymentScreen = new TFrmAPPayment(this);
 
             List <int>PayTheseDocs = new List <int>();

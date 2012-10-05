@@ -195,8 +195,11 @@ namespace {#NAMESPACE}
 
 {#IFNDEF SHOWDETAILS}
 {#IFDEF MASTERTABLE}
-        GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
-        ValidateData(FMainDS.{#MASTERTABLE}[0]);
+        if (FMainDS.{#MASTERTABLE}.Rows.Count > 0)
+        {
+          GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
+          ValidateData(FMainDS.{#MASTERTABLE}[0]);
+        }
 {#ENDIF MASTERTABLE}        
 {#ENDIFN SHOWDETAILS}
 {#IFDEF SHOWDETAILS}
@@ -211,7 +214,10 @@ namespace {#NAMESPACE}
 {#ENDIF VALIDATEDATADETAILSMANUAL}
 {#IFDEF VALIDATEDATAMANUAL}
 {#IFDEF MASTERTABLE}
+        if (FMainDS.{#MASTERTABLE}.Rows.Count > 0)
+        {
             ValidateDataManual(FMainDS.{#MASTERTABLE}[0]);
+        }
 {#ENDIF MASTERTABLE}
 {#ENDIF VALIDATEDATAMANUAL}
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
