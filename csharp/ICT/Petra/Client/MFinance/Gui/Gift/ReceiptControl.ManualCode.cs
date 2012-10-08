@@ -109,13 +109,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AHtmlText"></param>
         public static void PrintSinglePageLetter(String AHtmlText)
         {
-            System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
-            TGfxPrinter GfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
-            TPrinterHtml htmlPrinter = new TPrinterHtml(AHtmlText,
-                TAppSettingsManager.GetValue("Formletters.Path"),
-                GfxPrinter);
-            GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
-            GfxPrinter.Document.Print();
+            try
+            {
+                System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
+                TGfxPrinter GfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+                TPrinterHtml htmlPrinter = new TPrinterHtml(AHtmlText,
+                    TAppSettingsManager.GetValue("Formletters.Path"),
+                    GfxPrinter);
+                GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+                GfxPrinter.Document.Print();
+            }
+            catch (System.Drawing.Printing.InvalidPrinterException e)
+            {
+                TLogging.Log(e.ToString());
+                MessageBox.Show(Catalog.GetString("Gift receipts cannot be printed, since no Printer or PDFCreator is installed."),
+                    Catalog.GetString("Printing of gift receipts failed"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private void OnBtnPrint(Object sender, EventArgs e)
@@ -162,7 +173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void OnBtnRemove(Object sender, EventArgs e)
         {
-            bool CommitRes = TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(FGiftTbl);
+            TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(FGiftTbl);
 
             LoadUnreceiptedGifts();
         }

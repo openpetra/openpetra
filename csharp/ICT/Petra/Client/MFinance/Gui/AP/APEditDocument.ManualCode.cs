@@ -531,7 +531,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     if ((Row.AccountCode == "") || (Row.CostCentreCode == ""))
                     {
                         MessageBox.Show(
-                            Catalog.GetString("Account and Cost Centre must be specified."), 
+                            Catalog.GetString("Account and Cost Centre must be specified."),
                             Catalog.GetString("Post Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                         return false;
                     }

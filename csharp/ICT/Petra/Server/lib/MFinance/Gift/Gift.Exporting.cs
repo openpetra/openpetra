@@ -268,7 +268,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 // Get Partner ShortName
                 PPartnerTable pt = PPartnerAccess.LoadByPrimaryKey(partnerKey,
-                    StringHelper.InitStrArr(new String[] { PPartnerTable.GetPartnerShortNameDBName() }), FTransaction, null, 0, 0);
+                    StringHelper.InitStrArr(new String[] { PPartnerTable.GetPartnerShortNameDBName() }), null, null, 0, 0);
 
                 if (pt.Rows.Count == 1)
                 {
