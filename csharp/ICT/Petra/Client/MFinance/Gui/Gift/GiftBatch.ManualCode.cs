@@ -81,8 +81,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Set up the screen to show only this batch
         /// </summary>
-        /// <param name="LedgerNumber"></param>
-        /// <param name="BatchNumber"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
         public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             FLedgerNumber = ALedgerNumber;
