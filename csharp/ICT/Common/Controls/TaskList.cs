@@ -104,7 +104,7 @@ namespace Ict.Common.Controls
         
         private int FTaskListMaxHeight = 0;
         
-        private Dictionary<string, LinkLabel> FXmlNodeToLinkLabelMapping;
+        private Dictionary<XmlNode, LinkLabel> FXmlNodeToLinkLabelMapping;
         
         #endregion
 
@@ -337,7 +337,7 @@ namespace Ict.Common.Controls
 
             if (ARebuildXmlNodeToLinkLabelMapping) 
             {
-                FXmlNodeToLinkLabelMapping = new Dictionary<string, LinkLabel>();
+                FXmlNodeToLinkLabelMapping = new Dictionary<XmlNode, LinkLabel>();
             }
                         
             //If this is the base case, reset number of Tasks and clear previously painted Task Items
@@ -407,7 +407,7 @@ namespace Ict.Common.Controls
 
                         this.tPnlGradient1.Controls.Add(lblTaskItem);
                         
-                        FXmlNodeToLinkLabelMapping[TaskNode.Name] = lblTaskItem;
+                        FXmlNodeToLinkLabelMapping[TaskNode] = lblTaskItem;
                         
                         NumTasks++;
 
@@ -640,7 +640,7 @@ namespace Ict.Common.Controls
             
             if (FXmlNodeToLinkLabelMapping != null) 
             {
-                if (FXmlNodeToLinkLabelMapping.TryGetValue(AXmlNode.Name, out FoundLinkLabel)) 
+                if (FXmlNodeToLinkLabelMapping.TryGetValue(AXmlNode, out FoundLinkLabel)) 
                 {
                     ReturnValue = FoundLinkLabel;
                 }
