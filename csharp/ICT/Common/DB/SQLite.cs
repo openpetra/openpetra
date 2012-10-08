@@ -154,9 +154,15 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("= true", "= 1");
             ReturnValue = ReturnValue.Replace("=false", "=0");
             ReturnValue = ReturnValue.Replace("=true", "=1");
+            ReturnValue = ReturnValue.Replace("=FALSE", "=0");
+            ReturnValue = ReturnValue.Replace("=TRUE", "=1");
+            ReturnValue = ReturnValue.Replace("= FALSE", "= 0");
+            ReturnValue = ReturnValue.Replace("= TRUE", "= 1");
             ReturnValue = ReturnValue.Replace(" as ", " AS ");
             ReturnValue = ReturnValue.Replace("true AS ", "1 AS ");
             ReturnValue = ReturnValue.Replace("false AS ", "0 AS ");
+            ReturnValue = ReturnValue.Replace("TRUE AS ", "1 AS ");
+            ReturnValue = ReturnValue.Replace("FALSE AS ", "0 AS ");
 
             // INSERT INTO table () VALUES
             ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");
