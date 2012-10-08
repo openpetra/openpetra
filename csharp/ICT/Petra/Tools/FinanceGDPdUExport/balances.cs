@@ -80,8 +80,6 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             foreach (DataRow row in balances.Rows)
             {
-                StringBuilder attributes = new StringBuilder();
-
                 sb.Append(StringHelper.StrMerge(
                         new string[] {
                             row[0].ToString(),
