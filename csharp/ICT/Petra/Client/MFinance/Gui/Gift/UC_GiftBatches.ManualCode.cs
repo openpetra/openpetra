@@ -938,6 +938,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             txtDetailHashTotal.CurrencySymbol = ACurrencyCode;
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
 
             if (!FPetraUtilsObject.SuppressChangeDetection && (FPreviouslySelectedDetailRow != null)
                 && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
