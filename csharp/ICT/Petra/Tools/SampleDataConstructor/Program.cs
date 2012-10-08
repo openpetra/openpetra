@@ -42,7 +42,7 @@ using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 
-namespace Ict.Testing.SampleDataConstructor
+namespace Ict.Petra.Tools.SampleDataConstructor
 {
     /// <summary>
     /// This class creates sample data (partners, organisations, gifts) and imports them into OpenPetra.

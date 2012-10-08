@@ -19,7 +19,7 @@
           </filterchain>
         </copy>
 
-         <ExecDotNet program="${PetraToolsExe.dir}/Ict.Tools.PatchTool.exe" 
+         <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.PatchTool.exe" 
             commandline="-action:patchDatabase -C:${ServerConfigFile} -DBPatches.Path:${OpenPetraRoot.dir}/db/patches -Server.LogFile:${Tmp.dir}/dbpatch.log -OpenPetra.PathTemp:${Tmp.dir}"
             failonerror="true"/>
     </target>

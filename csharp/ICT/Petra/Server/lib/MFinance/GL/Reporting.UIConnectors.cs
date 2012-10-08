@@ -143,19 +143,24 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             string result = string.Empty;
 
-            DataRowView[] ReportingCostCentres = ACostCentres.DefaultView.FindRows(ASummaryCostCentreCode);
+            string[] CostCentres = ASummaryCostCentreCode.Split(new char[] { ',' });
 
-            foreach (DataRowView rv in ReportingCostCentres)
+            foreach (string costcentre in CostCentres)
             {
-                ACostCentreRow row = (ACostCentreRow)rv.Row;
+                DataRowView[] ReportingCostCentres = ACostCentres.DefaultView.FindRows(costcentre);
 
-                if (row.PostingCostCentreFlag)
+                foreach (DataRowView rv in ReportingCostCentres)
                 {
-                    result = StringHelper.AddCSV(result, row.CostCentreCode);
-                }
-                else
-                {
-                    result = StringHelper.ConcatCSV(result, GetReportingCostCentres(ACostCentres, row.CostCentreCode));
+                    ACostCentreRow row = (ACostCentreRow)rv.Row;
+
+                    if (row.PostingCostCentreFlag)
+                    {
+                        result = StringHelper.AddCSV(result, row.CostCentreCode);
+                    }
+                    else
+                    {
+                        result = StringHelper.ConcatCSV(result, GetReportingCostCentres(ACostCentres, row.CostCentreCode));
+                    }
                 }
             }
 
