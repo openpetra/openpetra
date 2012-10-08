@@ -213,5 +213,37 @@ namespace ControlTestBench
         {
             MessageBox.Show(((TPnlCollapsible)this.Controls[this.Controls.Count - 1]).TaskListInstance.Height.ToString());
         }
+        
+        void BtnGetActiveTaskClick(object sender, EventArgs e)
+        {
+            XmlNode ActiveTask = this.FPnl.ActiveTaskItem;
+            
+            if (ActiveTask != null)
+            {
+                MessageBox.Show("Active Task: " + ActiveTask.Name);
+            }
+            else
+            {
+                MessageBox.Show("There is no active Task!");
+            }            
+        }
+        
+        void BtnSetActiveTaskClick(object sender, EventArgs e)
+        {
+            XmlNode FoundNode = null;
+            
+            Control ExistingTaskListCtrl = this.FPnl;
+            
+            if (ExistingTaskListCtrl != null)
+            {
+                FoundNode = TaskListTest.FindTaskNodeByName(txtTaskName.Text, ((TTaskList)FPnl.TaskListInstance).MasterXmlNode);
+                
+                ((TTaskList)FPnl.TaskListInstance).ActiveTaskItem = FoundNode;
+            }
+            else
+            {
+                MessageBox.Show("There is no TaskList Instance!");
+            }
+        }
     }
 }

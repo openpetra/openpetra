@@ -91,5 +91,24 @@ public partial class CollapsiblePanelHosterTest : Form
         MessageBox.Show(String.Format("Collapsible Panel #2's ExpandedSize is {0} pixels", 
                                       FCollPanelHoster.GetCollapsiblePanelInstance(1).ExpandedSize));                
     }    
+    
+    void BtnGetActiveTaskClick(object sender, EventArgs e)
+    {
+        XmlNode ActiveTask = FCollPanelHoster.ActiveTaskItem;
+        
+        if (ActiveTask != null)
+        {
+            MessageBox.Show("Active Task: " + ActiveTask.Name);
+        }
+        else
+        {
+            MessageBox.Show("There is no active Task!");
+        }                    
+    }
+    
+    void BtnSetActiveTaskClick(object sender, EventArgs e)
+    {
+        FCollPanelHoster.ActiveTaskItem = TaskListTest.FindTaskNodeByName(txtTaskName.Text, FCollPanelHoster.MasterXmlNode);
+    }
 }
 }

@@ -62,6 +62,12 @@ partial class CollapsiblePanelHosterTest
         this.btnGetTaskList2 = new System.Windows.Forms.Button();
         this.btnGetCollPanel1 = new System.Windows.Forms.Button();
         this.btnGetCollPanel2 = new System.Windows.Forms.Button();
+        this.groupBox1 = new System.Windows.Forms.GroupBox();
+        this.label1 = new System.Windows.Forms.Label();
+        this.txtTaskName = new System.Windows.Forms.TextBox();
+        this.btnSetActiveTask = new System.Windows.Forms.Button();
+        this.btnGetActiveTask = new System.Windows.Forms.Button();
+        this.groupBox1.SuspendLayout();
         this.SuspendLayout();
         // 
         // pnlCollapsiblePanelHostTest
@@ -113,11 +119,60 @@ partial class CollapsiblePanelHosterTest
         this.btnGetCollPanel2.UseVisualStyleBackColor = true;
         this.btnGetCollPanel2.Click += new System.EventHandler(this.BtnGetCollPanel2Click);
         // 
+        // groupBox1
+        // 
+        this.groupBox1.Controls.Add(this.label1);
+        this.groupBox1.Controls.Add(this.txtTaskName);
+        this.groupBox1.Controls.Add(this.btnSetActiveTask);
+        this.groupBox1.Location = new System.Drawing.Point(377, 259);
+        this.groupBox1.Name = "groupBox1";
+        this.groupBox1.Size = new System.Drawing.Size(200, 89);
+        this.groupBox1.TabIndex = 32;
+        this.groupBox1.TabStop = false;
+        this.groupBox1.Text = "Activate Task";
+        // 
+        // label1
+        // 
+        this.label1.Location = new System.Drawing.Point(6, 25);
+        this.label1.Name = "label1";
+        this.label1.Size = new System.Drawing.Size(68, 23);
+        this.label1.TabIndex = 8;
+        this.label1.Text = "Task Name:";
+        // 
+        // txtTaskName
+        // 
+        this.txtTaskName.Location = new System.Drawing.Point(80, 25);
+        this.txtTaskName.Name = "txtTaskName";
+        this.txtTaskName.Size = new System.Drawing.Size(114, 20);
+        this.txtTaskName.TabIndex = 7;
+        // 
+        // btnSetActiveTask
+        // 
+        this.btnSetActiveTask.Location = new System.Drawing.Point(23, 56);
+        this.btnSetActiveTask.Name = "btnSetActiveTask";
+        this.btnSetActiveTask.Size = new System.Drawing.Size(161, 23);
+        this.btnSetActiveTask.TabIndex = 6;
+        this.btnSetActiveTask.Text = "Activate Task by This Name";
+        this.btnSetActiveTask.UseVisualStyleBackColor = true;
+        this.btnSetActiveTask.Click += new System.EventHandler(this.BtnSetActiveTaskClick);
+        // 
+        // btnGetActiveTask
+        // 
+        this.btnGetActiveTask.Location = new System.Drawing.Point(400, 230);
+        this.btnGetActiveTask.Name = "btnGetActiveTask";
+        this.btnGetActiveTask.Size = new System.Drawing.Size(147, 23);
+        this.btnGetActiveTask.TabIndex = 31;
+        this.btnGetActiveTask.Text = "Get Active Task";
+        this.btnGetActiveTask.UseVisualStyleBackColor = true;
+        this.btnGetActiveTask.Click += new System.EventHandler(this.BtnGetActiveTaskClick);
+        // 
         // CollapsiblePanelHosterTest
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(750, 359);
+        this.Controls.Add(this.groupBox1);
+        this.Controls.Add(this.btnGetActiveTask);
         this.Controls.Add(this.btnGetCollPanel2);
         this.Controls.Add(this.btnGetTaskList2);
         this.Controls.Add(this.btnGetCollPanel1);
@@ -125,8 +180,15 @@ partial class CollapsiblePanelHosterTest
         this.Controls.Add(this.pnlCollapsiblePanelHostTest);
         this.Name = "CollapsiblePanelHosterTest";
         this.Text = "CollapsiblePanelHosterTest";
+        this.groupBox1.ResumeLayout(false);
+        this.groupBox1.PerformLayout();
         this.ResumeLayout(false);
     }
+    private System.Windows.Forms.Button btnGetActiveTask;
+    private System.Windows.Forms.Button btnSetActiveTask;
+    private System.Windows.Forms.TextBox txtTaskName;
+    private System.Windows.Forms.Label label1;
+    private System.Windows.Forms.GroupBox groupBox1;
     private System.Windows.Forms.Button btnGetCollPanel2;
     private System.Windows.Forms.Button btnGetCollPanel1;
     private System.Windows.Forms.Button btnGetTaskList2;

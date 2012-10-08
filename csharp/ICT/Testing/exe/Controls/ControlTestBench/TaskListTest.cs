@@ -196,7 +196,7 @@ namespace ControlTestBench
             ATaskList.ItemActivation += new TTaskList.TaskLinkClicked(ATaskList_ItemActivation);
         }
 
-        void ATaskList_ItemActivation(XmlNode ATaskListNode, LinkLabel AItemClicked)
+        void ATaskList_ItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
         {
             MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
         }
@@ -230,7 +230,7 @@ namespace ControlTestBench
             if (ExistingTaskListCtrl != null)
             {
 
-                FoundNode = FindTaskNodeByName(((TTaskList)ExistingTaskListCtrl).MasterXmlNode, ref ExistingTaskListCtrl);
+                FoundNode = FindTaskNodeByName(txtTaskName.Text, ((TTaskList)ExistingTaskListCtrl).MasterXmlNode);
                 
                 if (FoundNode != null)
                 {
@@ -243,22 +243,28 @@ namespace ControlTestBench
             }
         }
 
-        private XmlNode FindTaskNodeByName(XmlNode ASearchNode, ref Control ExistingTaskListCtrl)
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="AName"></param>
+        /// <param name="ASearchNode"></param>
+        /// <returns></returns>
+        public static XmlNode FindTaskNodeByName(string AName, XmlNode ASearchNode)
         {
             XmlNode FoundNode = null;
             
             foreach (XmlNode TaskNode in ASearchNode) 
             {
-                if (TaskNode.Name == txtTaskName.Text) 
-                {
+                if (TaskNode.Name == AName) 
+                {                    
                     FoundNode = TaskNode;
-                    break;
+                    break;                            
                 }
                 
                 //If the TaskNode has Children, do subtasks
                 if (TaskNode.HasChildNodes)
                 {
-                    FoundNode = FindTaskNodeByName(TaskNode, ref ExistingTaskListCtrl);
+                    FoundNode = FindTaskNodeByName(AName, TaskNode);
                     
                     if (FoundNode != null) 
                     {

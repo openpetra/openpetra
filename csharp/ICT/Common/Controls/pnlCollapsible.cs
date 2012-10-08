@@ -184,6 +184,11 @@ namespace Ict.Common.Controls
         [Category("Collapsible Panel")]
         public event System.EventHandler Expanded;
 
+        /// <summary>Fired when a TaskLink got activated (by clicking on it or programmatically).</summary>
+        [Description("Event is fired when a TaskLink got activated (by clicking on it or programmatically).")]
+        [Category("Collapsible Panel")]
+        public event TTaskList.TaskLinkClicked ItemActivation;
+
         #endregion
 
         #region Properties
@@ -434,6 +439,36 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Active Task Item.
+        /// </summary>
+        /// <remarks>Setting this Property to null has the effect that any ActiveTaskItem
+        /// will be un-set, i.e. there will be no ActiveTaskItem.</remarks>
+        public XmlNode ActiveTaskItem
+        {
+            get
+            {
+                if ((FTaskListInstance != null) 
+                    && (TaskListNode != null))
+                {                
+                    return FTaskListInstance.ActiveTaskItem;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            
+            set
+            {
+                if ((FTaskListInstance != null) 
+                    && (TaskListNode != null))
+                {
+                    FTaskListInstance.ActiveTaskItem = value;
+                }
+            }
+        }
+        
         #endregion
 
         #region Constructors
@@ -1166,6 +1201,9 @@ namespace Ict.Common.Controls
             FTaskListInstance = new Ict.Common.Controls.TTaskList(FTaskListNode, FVisualStyleEnum);
 
             UpdateTaskList();
+        
+            FTaskListInstance.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked) 
+                { OnItemActivation(ATaskList, ATaskListNode, AItemClicked); };
             
             return FTaskListInstance;
         }
@@ -1399,6 +1437,15 @@ namespace Ict.Common.Controls
             return GraphicIndex;
         }
         
+        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+        {
+            // Re-fire Event
+            if(ItemActivation != null)
+            {
+                ItemActivation(ATaskList, ATaskListNode, AItemClicked);
+            }
+        }
+                
         #endregion
 
         #region Event Handlers

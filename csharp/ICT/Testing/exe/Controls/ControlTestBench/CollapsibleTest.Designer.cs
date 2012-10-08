@@ -75,6 +75,12 @@ namespace ControlTestBench
             this.btnTestStacked = new System.Windows.Forms.Button();
             this.btnTestTaskListHorizontalConstructorRight = new System.Windows.Forms.Button();
             this.btnTaskListHeight = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtTaskName = new System.Windows.Forms.TextBox();
+            this.btnSetActiveTask = new System.Windows.Forms.Button();
+            this.btnGetActiveTask = new System.Windows.Forms.Button();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnChangeText
@@ -303,11 +309,60 @@ namespace ControlTestBench
             this.btnTaskListHeight.UseVisualStyleBackColor = true;
             this.btnTaskListHeight.Click += new System.EventHandler(this.BtnTaskListHeightClick);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.txtTaskName);
+            this.groupBox1.Controls.Add(this.btnSetActiveTask);
+            this.groupBox1.Location = new System.Drawing.Point(728, 402);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(200, 89);
+            this.groupBox1.TabIndex = 30;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Activate Task";
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(6, 25);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(68, 23);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "Task Name:";
+            // 
+            // txtTaskName
+            // 
+            this.txtTaskName.Location = new System.Drawing.Point(80, 25);
+            this.txtTaskName.Name = "txtTaskName";
+            this.txtTaskName.Size = new System.Drawing.Size(114, 20);
+            this.txtTaskName.TabIndex = 7;
+            // 
+            // btnSetActiveTask
+            // 
+            this.btnSetActiveTask.Location = new System.Drawing.Point(23, 56);
+            this.btnSetActiveTask.Name = "btnSetActiveTask";
+            this.btnSetActiveTask.Size = new System.Drawing.Size(161, 23);
+            this.btnSetActiveTask.TabIndex = 6;
+            this.btnSetActiveTask.Text = "Activate Task by This Name";
+            this.btnSetActiveTask.UseVisualStyleBackColor = true;
+            this.btnSetActiveTask.Click += new System.EventHandler(this.BtnSetActiveTaskClick);
+            // 
+            // btnGetActiveTask
+            // 
+            this.btnGetActiveTask.Location = new System.Drawing.Point(751, 373);
+            this.btnGetActiveTask.Name = "btnGetActiveTask";
+            this.btnGetActiveTask.Size = new System.Drawing.Size(147, 23);
+            this.btnGetActiveTask.TabIndex = 29;
+            this.btnGetActiveTask.Text = "Get Active Task";
+            this.btnGetActiveTask.UseVisualStyleBackColor = true;
+            this.btnGetActiveTask.Click += new System.EventHandler(this.BtnGetActiveTaskClick);
+            // 
             // CollapsibleTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(763, 525);
+            this.ClientSize = new System.Drawing.Size(946, 525);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.btnGetActiveTask);
             this.Controls.Add(this.btnTaskListHeight);
             this.Controls.Add(this.btnTestStacked);
             this.Controls.Add(this.btnTestTaskListHorizontalConstructorRight);
@@ -333,9 +388,16 @@ namespace ControlTestBench
             this.Controls.Add(this.btnChangeText);
             this.Name = "CollapsibleTest";
             this.Text = "collapsibleTest";
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+        private System.Windows.Forms.Button btnGetActiveTask;
+        private System.Windows.Forms.Button btnSetActiveTask;
+        private System.Windows.Forms.TextBox txtTaskName;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button btnTaskListHeight;
         private System.Windows.Forms.Button btnTestTaskListHorizontalConstructorRight;
         private System.Windows.Forms.Button btnTestStacked;

@@ -72,20 +72,17 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Regex that is used to check if strings are set to true (regardless of case)
         /// </summary>
-        //@HACK: This works for now, but if the language changes in the YAML file this could break everything
         private System.Text.RegularExpressions.Regex TrueRegex = new Regex(".*[Tt][Rr][Uu][Ee].*");
 
         /// <summary>
         /// Regex that is used to check if strings are set to false (regardless of case)
         /// </summary>
-        //@HACK: This works for now, but if the language changes in the YAML file this could break everything
         private System.Text.RegularExpressions.Regex FalseRegex = new Regex(".*[Ff][Aa][Ll][Ss][Ee].*");
         
         /// <summary>
         /// Regex that checks if XmlNodes are actual tasks
         /// Must be the word "Task" followed immediately by at least 1 number. Anything after is arbitrary
         /// </summary>
-        //@HACK: This works for now, but if the language changes in the YAML file this could break things
         //Other possible solutions:
         //	1.) Find a better way to compare the names that doesn't break when language is changed
         //	2.) Make the user of the YAML file place an Attribute on each task such as "NodeType" that identifies a node as a TaskNode
@@ -130,17 +127,16 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Contains data about a Link that got clicked by the user.
         /// </summary>
-        public delegate void TaskLinkClicked(XmlNode ATaskListNode, LinkLabel AItemClicked);
+        public delegate void TaskLinkClicked(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked);
         
-        /// TODO: document the EventArgs passed.
-        /// <summary></summary>
+        /// <summary>Fired when a TaskLink got activated (by clicking on it or programmatically).</summary>
         public event TaskLinkClicked ItemActivation;
 
-        private void OnItemActivation(XmlNode ATaskListNode, LinkLabel AItemClicked)
+        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
         {
             if(ItemActivation != null)
             {
-                ItemActivation(ATaskListNode, AItemClicked);
+                ItemActivation(ATaskList, ATaskListNode, AItemClicked);
             }
         }
 
@@ -213,6 +209,8 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Active Task Item.
         /// </summary>
+        /// <remarks>Setting this Property to null has the effect that any ActiveTaskItem
+        /// will be un-set, i.e. there will be no ActiveTaskItem.</remarks>
         public XmlNode ActiveTaskItem
         {
             get
@@ -222,14 +220,23 @@ namespace Ict.Common.Controls
             
             set
             {
-                if (!IsDisabled(value)) 
+                if (value != null) 
                 {
-                    LinkLabel MatchingLabel = GetLinkLabelForXmlNode(value);
-                    
-                    if (MatchingLabel != null) 
+                    if (!IsDisabled(value)) 
                     {
-                        lblTaskItem_LinkClicked(MatchingLabel, new LinkLabelLinkClickedEventArgs(MatchingLabel.Links[0]));
-                    }                
+                        LinkLabel MatchingLabel = GetLinkLabelForXmlNode(value);
+                        
+                        if (MatchingLabel != null) 
+                        {
+                            lblTaskItem_LinkClicked(MatchingLabel, new LinkLabelLinkClickedEventArgs(MatchingLabel.Links[0]));
+                        }                
+                    }
+                }
+                else
+                {
+                    FActiveTaskItem = null;
+
+                    RemoveActivatedLinkAppearenceFromNonActivated();
                 }
             }
         }
@@ -484,7 +491,7 @@ namespace Ict.Common.Controls
             SetCommonActivatedLinkAppearance(ClickedLabel);
 
             // Fire ItemActivation Event
-            OnItemActivation((XmlNode)e.Link.LinkData, (LinkLabel)sender);
+            OnItemActivation(this, (XmlNode)e.Link.LinkData, (LinkLabel)sender);
             
             // Repaint all Tasks to reflect their Activated/non-Activated state
             // Note: This re-sets the Link appearance set above to 'Activated' appearance

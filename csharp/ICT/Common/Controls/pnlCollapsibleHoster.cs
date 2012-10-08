@@ -50,6 +50,19 @@ namespace Ict.Common.Controls
         /// <summary></summary>
         private int FDistanceBetweenCollapsiblePanels = 5;
         
+        private int FCollPanelCount = 0;
+        
+        #region Events
+        
+        /// <summary>Fired when a TaskLink got activated (by clicking on it or programmatically).</summary>
+        [Description("Event is fired when a TaskLink got activated (by clicking on it or programmatically).")]
+        [Category("Collapsible Panel")]
+        public event TTaskList.TaskLinkClicked ItemActivation;
+        
+        #endregion
+        
+        #region Constructors
+        
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -77,6 +90,7 @@ namespace Ict.Common.Controls
             MasterXmlNode = MasterNode;
         }
 
+        #endregion
         
         #region Properties
         
@@ -131,6 +145,79 @@ namespace Ict.Common.Controls
                 FMasterXmlNode = value;
             }
         }    
+        
+        /// <summary>
+        /// Active Task Item.
+        /// </summary>
+        /// <remarks>Setting this Property to null has the effect that any ActiveTaskItem
+        /// of all hosted CollapsiblePanel instances will be un-set, i.e. there will be no ActiveTaskItem
+        /// in any of the hosted CollapsiblePanel instances.</remarks>
+        public XmlNode ActiveTaskItem
+        {
+            get
+            {
+                XmlNode FoundTaskItem = null;
+                
+                if (FCollPanelCount != 0) 
+                {                
+                    for (int Counter = 0; Counter < FCollPanelCount; Counter++) 
+                    {
+                        FoundTaskItem = GetCollapsiblePanelInstance(Counter).ActiveTaskItem;
+                        
+                        if (FoundTaskItem != null) 
+                        {
+                            return FoundTaskItem;
+                        }
+                    }
+                    
+                    return null;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            
+            set
+            {
+                if (value != null) 
+                {
+                    TPnlCollapsible CollPanel;
+                    
+                    if (FCollPanelCount != 0) 
+                    {
+                        for (int Counter1 = 0; Counter1 < FCollPanelCount; Counter1++) 
+                        {
+                            CollPanel = GetCollapsiblePanelInstance(Counter1);
+                            CollPanel.ActiveTaskItem = value;
+                            
+                            // Check if that Collapsible Panel has indeed set the ActiveTaskItem to what we asked it for -
+                            // it doesn't do that if it doesn't host it. In that case we want to remove the ActiveTaskItem
+                            // for all other CollapsiblePanels' TaskLists as we want only *one* ActiveTaskItem in *any* of
+                            // the CollapsiblePanels!
+                            if (CollPanel.ActiveTaskItem == value) 
+                            {
+                                for (int InnerCounter = 0; InnerCounter < FCollPanelCount; InnerCounter++) 
+                                {                            
+                                    if (InnerCounter != Counter1) 
+                                    {
+                                        GetCollapsiblePanelInstance(InnerCounter).ActiveTaskItem = null;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for (int Counter2 = 0; Counter2 < FCollPanelCount; Counter2++) 
+                    {
+                        GetCollapsiblePanelInstance(Counter2).ActiveTaskItem = null;
+                    }
+                }
+            }
+        }
+        
         
         #endregion
         
@@ -207,10 +294,11 @@ namespace Ict.Common.Controls
         #region Private Methods
         
         private void InstantiateCollapsiblePanels()
-        {
-            int CollPanelCount = 0;
-            
+        {          
             this.SuspendLayout();         
+            
+            this.Controls.Clear();
+            FCollPanelCount = 0;
             
             if (FMasterXmlNode == null) 
             {
@@ -229,7 +317,7 @@ namespace Ict.Common.Controls
                 WrapperPanel.BackColor = Color.Transparent;
                 WrapperPanel.Dock = DockStyle.Top;
                 WrapperPanel.Padding = new Padding (0, 0, 0, FDistanceBetweenCollapsiblePanels);
-                WrapperPanel.TabIndex = CollPanelCount;
+                WrapperPanel.TabIndex = FCollPanelCount;
                 WrapperPanel.Tag = TaskNode;
                 WrapperPanel.Name = TaskNode.Name;
                 
@@ -252,10 +340,12 @@ namespace Ict.Common.Controls
                 {
                     CollPanel.Enabled = false;
                 }
-                                      
-                // Make the Collapsible Panel create and display its Task List
-                CollPanel.RealiseTaskListNow();      
-                
+                else
+                {
+                    CollPanel.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked) 
+                        { OnItemActivation(ATaskList, ATaskListNode, AItemClicked); };
+                }
+                                                     
                 WrapperPanel.Height = CollPanel.ExpandedSize + FDistanceBetweenCollapsiblePanels;
                 WrapperPanel.Controls.Add(CollPanel);
                 this.Controls.Add(WrapperPanel);
@@ -266,7 +356,7 @@ namespace Ict.Common.Controls
                 
                 TaskNode = TaskNode.NextSibling;
                 
-                CollPanelCount++;                
+                FCollPanelCount++;                
             }            
             
             this.ResumeLayout();
@@ -287,6 +377,32 @@ namespace Ict.Common.Controls
             this.Padding = new Padding(VisualStyle.CollapsiblePanelPadding);
         }
         
+        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+        {
+            TTaskList FoundTaskList;
+            TPnlCollapsible CollPanel;
+
+            // Remove the Active Task Item from any Collapsible Panel's TaskList that
+            // isn't the sending instance (that is passed in in ATaskList) as we only
+            // want one Active Task Item in one hosted Collapsible Panel!
+            for (int Counter = 0; Counter < FCollPanelCount; Counter++) 
+            {                         
+                CollPanel = GetCollapsiblePanelInstance(Counter);                
+                FoundTaskList = CollPanel.TaskListInstance;
+                
+                if (FoundTaskList != ATaskList) 
+                {
+                    FoundTaskList.ActiveTaskItem = null;
+                }
+            }
+            
+            // Re-fire Event
+            if(ItemActivation != null)
+            {       
+                ItemActivation(ATaskList, ATaskListNode, AItemClicked);
+            }
+        }
+                        
         #endregion
     }
 }
