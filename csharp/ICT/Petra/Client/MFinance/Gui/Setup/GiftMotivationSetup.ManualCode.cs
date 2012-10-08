@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 // to get an empty AMotivationDetailFee table, instead of null reference
                 FMainDS.Merge(new GiftBatchTDS());
-
+                
                 TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, false);
 
                 TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
@@ -71,6 +71,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
                 myDataView.AllowNew = false;
+                myDataView.Sort = String.Format("{0} ASC, {1} ASC",
+                                                AMotivationDetailFeeTable.GetMotivationGroupCodeDBName(),
+                                                AMotivationDetailFeeTable.GetMotivationDetailCodeDBName()
+                                               );
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
                 grdDetails.AutoSizeCells();
 
