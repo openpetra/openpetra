@@ -45,16 +45,16 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
         public static void Main(string[] args)
         {
             TPetraServerConnector.Connect("../../etc/TestServer.config");
-            
+
             try
             {
                 string OutputPath = TAppSettingsManager.GetValue("OutputPath", "../../delivery/GDPdU/data");
-                
+
                 if (!Directory.Exists(OutputPath))
                 {
                     Directory.CreateDirectory(OutputPath);
                 }
-                
+
                 string SummaryCostCentres = TAppSettingsManager.GetValue("SummaryCostCentres", "4300S");
                 int FinancialYear = TAppSettingsManager.GetInt32("FinancialYearNumber", 0);
                 int FirstFinancialYear = TAppSettingsManager.GetInt32("FirstFinancialYear", DateTime.Now.Year);
@@ -63,46 +63,50 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 string NewLine = "\r\n";
                 string culture = TAppSettingsManager.GetValue("culture", "de-DE");
                 string operation = TAppSettingsManager.GetValue("operation", "all");
-                
-                string ReportingCostCentres = 
+
+                string ReportingCostCentres =
                     TFinanceReportingWebConnector.GetReportingCostCentres(LedgerNumber, SummaryCostCentres);
-                
+
                 // set decimal separator, and thousands separator
                 Ict.Common.Catalog.SetCulture(culture);
-            
+
                 string OutputPathForYear = Path.Combine(OutputPath, (FirstFinancialYear + FinancialYear).ToString());
-                
+
                 if (!Directory.Exists(OutputPathForYear))
                 {
                     Directory.CreateDirectory(OutputPathForYear);
                 }
-                
-                if (operation == "all" || operation == "costcentre")
+
+                if ((operation == "all") || (operation == "costcentre"))
                 {
                     TGDPdUExportAccountsAndCostCentres.ExportCostCentres(OutputPath, CSVSeparator, NewLine, LedgerNumber, ReportingCostCentres);
                 }
-                
-                if (operation == "all" || operation == "account")
+
+                if ((operation == "all") || (operation == "account"))
                 {
                     TGDPdUExportAccountsAndCostCentres.ExportAccounts(OutputPath, CSVSeparator, NewLine, LedgerNumber, ReportingCostCentres);
                 }
-                
-                if (operation == "all" || operation == "transaction")
+
+                if ((operation == "all") || (operation == "transaction"))
                 {
-                    TGDPdUExportTransactions.ExportGLTransactions(OutputPathForYear, CSVSeparator, NewLine, LedgerNumber, FinancialYear, ReportingCostCentres);
+                    TGDPdUExportTransactions.ExportGLTransactions(OutputPathForYear,
+                        CSVSeparator,
+                        NewLine,
+                        LedgerNumber,
+                        FinancialYear,
+                        ReportingCostCentres);
                 }
-                
-                if (operation == "all" || operation == "balance")
+
+                if ((operation == "all") || (operation == "balance"))
                 {
                     TGDPdUExportBalances.ExportGLBalances(OutputPathForYear, CSVSeparator, NewLine, LedgerNumber, FinancialYear, ReportingCostCentres);
                 }
-                
             }
             catch (Exception e)
             {
                 TLogging.Log(e.ToString());
             }
-            
+
             if (TAppSettingsManager.GetValue("interactive", "true") == "true")
             {
                 Console.WriteLine("Please press Enter to continue...");

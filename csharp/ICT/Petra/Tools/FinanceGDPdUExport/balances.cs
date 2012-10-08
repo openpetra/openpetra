@@ -41,40 +41,41 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
         /// export all GL Balances in the given year, towards the specified cost centres
         /// </summary>
         public static void ExportGLBalances(string AOutputPath,
-                                          char ACSVSeparator,
-                                          string ANewLine,
-                                          Int32 ALedgerNumber,
-                                          Int32 AFinancialYear,
-                                          string ACostCentres)
+            char ACSVSeparator,
+            string ANewLine,
+            Int32 ALedgerNumber,
+            Int32 AFinancialYear,
+            string ACostCentres)
         {
             string filename = Path.GetFullPath(Path.Combine(AOutputPath, "balance.csv"));
+
             Console.WriteLine("Writing file: " + filename);
 
             StringBuilder sb = new StringBuilder();
-            
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            
-            string sql = 
+
+            string sql =
                 String.Format("SELECT {1}, GLM.{0}, {2}, {3} FROM PUB_{4} AS GLM, PUB_{10} AS A " +
-                              "WHERE GLM.{5} = {6} AND {7} = {8} AND GLM.{1} IN ({9}) " +
-                              "AND A.{5} = GLM.{5} AND A.{0} = GLM.{0} AND " +
-                              "A.{11}=true " + 
-                              "ORDER BY {1}, {0}",
-                              AGeneralLedgerMasterTable.GetAccountCodeDBName(),
-                              AGeneralLedgerMasterTable.GetCostCentreCodeDBName(),
-                              AGeneralLedgerMasterTable.GetYtdActualBaseDBName(),
-                              AGeneralLedgerMasterTable.GetStartBalanceBaseDBName(),
-                              AGeneralLedgerMasterTable.GetTableDBName(),
-                              AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
-                              ALedgerNumber,
-                              AGeneralLedgerMasterTable.GetYearDBName(),
-                              AFinancialYear,
-                              "'" + ACostCentres.Replace(",", "','") + "'",
-                              AAccountTable.GetTableDBName(),
-                              AAccountTable.GetPostingStatusDBName());
-            
+                    "WHERE GLM.{5} = {6} AND {7} = {8} AND GLM.{1} IN ({9}) " +
+                    "AND A.{5} = GLM.{5} AND A.{0} = GLM.{0} AND " +
+                    "A.{11}=true " +
+                    "ORDER BY {1}, {0}",
+                    AGeneralLedgerMasterTable.GetAccountCodeDBName(),
+                    AGeneralLedgerMasterTable.GetCostCentreCodeDBName(),
+                    AGeneralLedgerMasterTable.GetYtdActualBaseDBName(),
+                    AGeneralLedgerMasterTable.GetStartBalanceBaseDBName(),
+                    AGeneralLedgerMasterTable.GetTableDBName(),
+                    AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
+                    ALedgerNumber,
+                    AGeneralLedgerMasterTable.GetYearDBName(),
+                    AFinancialYear,
+                    "'" + ACostCentres.Replace(",", "','") + "'",
+                    AAccountTable.GetTableDBName(),
+                    AAccountTable.GetPostingStatusDBName());
+
             DataTable balances = DBAccess.GDBAccessObj.SelectDT(sql, "balances", Transaction);
-            
+
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             foreach (DataRow row in balances.Rows)
@@ -82,12 +83,13 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 StringBuilder attributes = new StringBuilder();
 
                 sb.Append(StringHelper.StrMerge(
-                    new string[]{
-                        row[0].ToString(),
-                        row[1].ToString(),
-                        String.Format("{0:N}", Convert.ToDecimal(row[2])),
-                        String.Format("{0:N}", Convert.ToDecimal(row[3]))}, ACSVSeparator));
-                
+                        new string[] {
+                            row[0].ToString(),
+                            row[1].ToString(),
+                            String.Format("{0:N}", Convert.ToDecimal(row[2])),
+                            String.Format("{0:N}", Convert.ToDecimal(row[3]))
+                        }, ACSVSeparator));
+
                 sb.Append(ANewLine);
             }
 
