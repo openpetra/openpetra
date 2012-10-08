@@ -1219,7 +1219,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 ledgerNumber;
             Int32 batchNumber;
 
-            if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            if (FLedgerNumber == -1 || GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
             {
             	return;
             }
