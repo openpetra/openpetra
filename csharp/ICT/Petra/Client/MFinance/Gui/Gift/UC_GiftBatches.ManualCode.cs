@@ -25,10 +25,12 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MFinance.Logic;
@@ -790,10 +792,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// executed by progress dialog thread
+        /// </summary>
+        /// <param name="AVerifications"></param>
+        private void PostGiftBatch(out TVerificationResultCollection AVerifications)
+        {
+            TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out AVerifications);
+        }
+
         private void PostBatch(System.Object sender, EventArgs e)
         {
-            // TODO: show VerificationResult
-            // TODO: display progress of posting
             TVerificationResultCollection Verifications;
 
             if (FPetraUtilsObject.HasChanges)
@@ -823,7 +832,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
+            Verifications = new TVerificationResultCollection();
+
+            Thread t = new Thread(() => PostGiftBatch(out Verifications));
+            t.Start();
+
+            TProgressDialog dialog = new TProgressDialog();
+
+            dialog.ShowDialog();
+
+            if ((Verifications != null) && Verifications.HasCriticalErrors)
             {
                 string ErrorMessages = String.Empty;
 
