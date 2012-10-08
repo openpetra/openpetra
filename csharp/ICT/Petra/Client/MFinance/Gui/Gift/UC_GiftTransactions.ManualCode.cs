@@ -941,13 +941,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.DetailNumber = 1;
                 newRow.DateEntered = giftRow.DateEntered;
                 newRow.DonorKey = 0;
-                newRow.MotivationGroupCode = "GIFT";
-                newRow.MotivationDetailCode = "SUPPORT";
+                cmbDetailMotivationGroupCode.SelectedIndex = 0;
+                newRow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
+                newRow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
                 FMainDS.AGiftDetail.Rows.Add(newRow);
-
-                newRow.CommentOneType = "Both";
-                newRow.CommentTwoType = "Both";
-                newRow.CommentThreeType = "Both";
             }
 
             return newRow;
@@ -982,13 +979,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.DonorKey = ACurrentRow.DonorKey;
                 newRow.DonorName = ACurrentRow.DonorName;
                 newRow.DateEntered = ACurrentRow.DateEntered;
-                newRow.MotivationGroupCode = "GIFT";
-                newRow.MotivationDetailCode = "SUPPORT";
+                cmbDetailMotivationGroupCode.SelectedIndex = 0;
+                newRow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
+                newRow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
                 FMainDS.AGiftDetail.Rows.Add(newRow);
-
-                newRow.CommentOneType = "Both";
-                newRow.CommentTwoType = "Both";
-                newRow.CommentThreeType = "Both";
             }
 
             return newRow;
