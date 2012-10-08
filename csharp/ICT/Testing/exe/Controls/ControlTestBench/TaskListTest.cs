@@ -69,7 +69,7 @@ namespace ControlTestBench
             TaskList1.Size = new System.Drawing.Size(300,200);
             TaskList1.Name = TASKLISTCONTROLNAME;
             
-            AddControlToForm(TaskList1);        
+            AddControlToForm(TaskList1);
             HookupTaskListEvents(TaskList1);
         }
 
@@ -79,13 +79,13 @@ namespace ControlTestBench
         {
             System.Xml.XmlNode xmlnode = GetTestXMLNode();
 
-            TaskList1 = new Ict.Common.Controls.TTaskList(xmlnode, FEnumStyle);    
+            TaskList1 = new Ict.Common.Controls.TTaskList(xmlnode, FEnumStyle);
             
             TaskList1.Location = new System.Drawing.Point(10,10);
             TaskList1.Size = new System.Drawing.Size(300,200);
             TaskList1.Name = TASKLISTCONTROLNAME;
             
-            AddControlToForm(TaskList1);        
+            AddControlToForm(TaskList1);
             HookupTaskListEvents(TaskList1);
         }
         
@@ -131,7 +131,7 @@ namespace ControlTestBench
             }
             //temp = TaskList.GetTaskByNumber("3");
             //if(temp != null){
-                //TaskList.ShowTaskItem(temp);
+            //TaskList.ShowTaskItem(temp);
             //}
         }
 
@@ -164,12 +164,12 @@ namespace ControlTestBench
         {
             Control ExistingTaskListCtrl = this.Controls[TASKLISTCONTROLNAME];
             
-            if (ExistingTaskListCtrl != null) 
+            if (ExistingTaskListCtrl != null)
             {
                 this.Controls.Remove(ExistingTaskListCtrl);
             }
 
-//            AControl.Dock = DockStyle.Left;
+            //            AControl.Dock = DockStyle.Left;
             
             this.Controls.Add(AControl);
         }
@@ -179,10 +179,10 @@ namespace ControlTestBench
         {
             XmlNode xmlnode;
             
-            if (FTestYAMNode == null) 
+            if (FTestYAMNode == null)
             {
                 xmlnode = GetHardCodedXmlNodes();
-            } 
+            }
             else
             {
                 xmlnode = FTestYAMNode;
@@ -199,6 +199,75 @@ namespace ControlTestBench
         void ATaskList_ItemActivation(XmlNode ATaskListNode, LinkLabel AItemClicked)
         {
             MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
-        }        
+        }
+        
+        void BtnGetActiveTaskClick(object sender, EventArgs e)
+        {
+            XmlNode ActiveTask = null;
+            Control ExistingTaskListCtrl = this.Controls[TASKLISTCONTROLNAME];
+            
+            if (ExistingTaskListCtrl != null)
+            {
+                ActiveTask = ((TTaskList)ExistingTaskListCtrl).ActiveTaskItem;
+            }
+            
+            if (ActiveTask != null)
+            {
+                MessageBox.Show("Active Task: " + ActiveTask.Name);
+            }
+            else
+            {
+                MessageBox.Show("There is no active Task!");
+            }
+        }
+        
+        void BtnSetActiveTaskClick(object sender, EventArgs e)
+        {
+            XmlNode FoundNode = null;
+            
+            Control ExistingTaskListCtrl = this.Controls[TASKLISTCONTROLNAME];
+            
+            if (ExistingTaskListCtrl != null)
+            {
+
+                FoundNode = FindTaskNodeByName(((TTaskList)ExistingTaskListCtrl).MasterXmlNode, ref ExistingTaskListCtrl);
+                
+                if (FoundNode != null)
+                {
+                    ((TTaskList)ExistingTaskListCtrl).ActiveTaskItem = FoundNode;
+                }
+            }
+            else
+            {
+                MessageBox.Show("There is no TaskList Instance!");
+            }
+        }
+
+        private XmlNode FindTaskNodeByName(XmlNode ASearchNode, ref Control ExistingTaskListCtrl)
+        {
+            XmlNode FoundNode = null;
+            
+            foreach (XmlNode TaskNode in ASearchNode) 
+            {
+                if (TaskNode.Name == txtTaskName.Text) 
+                {
+                    FoundNode = TaskNode;
+                    break;
+                }
+                
+                //If the TaskNode has Children, do subtasks
+                if (TaskNode.HasChildNodes)
+                {
+                    FoundNode = FindTaskNodeByName(TaskNode, ref ExistingTaskListCtrl);
+                    
+                    if (FoundNode != null) 
+                    {
+                        break;    
+                    }
+                }
+            }
+            
+            return FoundNode;
+        }
     }
 }

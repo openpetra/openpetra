@@ -25,6 +25,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -103,6 +104,8 @@ namespace Ict.Common.Controls
         
         private int FTaskListMaxHeight = 0;
         
+        private Dictionary<string, LinkLabel> FXmlNodeToLinkLabelMapping;
+        
         #endregion
 
         #region Events (and related methods)
@@ -157,7 +160,7 @@ namespace Ict.Common.Controls
             set
             {
                 InternalMasterXmlNode = value;
-                LoadTaskItems();
+                LoadTaskItems(true);
             }
         }
 
@@ -207,6 +210,30 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Active Task Item.
+        /// </summary>
+        public XmlNode ActiveTaskItem
+        {
+            get
+            {
+                return FActiveTaskItem;
+            }
+            
+            set
+            {
+                if (!IsDisabled(value)) 
+                {
+                    LinkLabel MatchingLabel = GetLinkLabelForXmlNode(value);
+                    
+                    if (MatchingLabel != null) 
+                    {
+                        lblTaskItem_LinkClicked(MatchingLabel, new LinkLabelLinkClickedEventArgs(MatchingLabel.Links[0]));
+                    }                
+                }
+            }
+        }
+        
         /// <summary>
         /// Method that is called from the setter for the VisualStyle property
         /// </summary>
@@ -289,9 +316,10 @@ namespace Ict.Common.Controls
         /// Default method to load task items
         /// Loads Task Items from the already specified MasterXmlNode for the task list
         /// </summary>
-        private void LoadTaskItems()
+        /// <param name="ARebuildXmlNodeToLinkLabelMapping"/>
+        private void LoadTaskItems(bool ARebuildXmlNodeToLinkLabelMapping = false)
         {
-            LoadTaskItems(this.InternalMasterXmlNode, 0, "");
+            LoadTaskItems(this.InternalMasterXmlNode, 0, "", ARebuildXmlNodeToLinkLabelMapping);
         }
         
         /// <summary>
@@ -301,10 +329,17 @@ namespace Ict.Common.Controls
         /// <param name="Node"></param>
         /// <param name="NumberingLevel"></param>
         /// <param name="ParentNumberText"></param>
-        private void LoadTaskItems(XmlNode Node, int NumberingLevel, String ParentNumberText)
+        /// <param name="ARebuildXmlNodeToLinkLabelMapping"/>
+        private void LoadTaskItems(XmlNode Node, int NumberingLevel, String ParentNumberText, 
+            bool ARebuildXmlNodeToLinkLabelMapping = false)
         {
             this.SuspendLayout();
-            
+
+            if (ARebuildXmlNodeToLinkLabelMapping) 
+            {
+                FXmlNodeToLinkLabelMapping = new Dictionary<string, LinkLabel>();
+            }
+                        
             //If this is the base case, reset number of Tasks and clear previously painted Task Items
             if (NumberingLevel == 0)
             {
@@ -371,12 +406,15 @@ namespace Ict.Common.Controls
                         }
 
                         this.tPnlGradient1.Controls.Add(lblTaskItem);
+                        
+                        FXmlNodeToLinkLabelMapping[TaskNode.Name] = lblTaskItem;
+                        
                         NumTasks++;
 
                         //If the TaskNode has Children, do subtasks
                         if (TaskNode.HasChildNodes)
                         {
-                            LoadTaskItems(TaskNode, NumberingLevel, NumberText);
+                            LoadTaskItems(TaskNode, NumberingLevel, NumberText, false);
                         }
                     }
                 }
@@ -595,6 +633,22 @@ namespace Ict.Common.Controls
 
         #endregion
     
+        private LinkLabel GetLinkLabelForXmlNode(XmlNode AXmlNode)
+        {
+            LinkLabel ReturnValue = null;
+            LinkLabel FoundLinkLabel;
+            
+            if (FXmlNodeToLinkLabelMapping != null) 
+            {
+                if (FXmlNodeToLinkLabelMapping.TryGetValue(AXmlNode.Name, out FoundLinkLabel)) 
+                {
+                    ReturnValue = FoundLinkLabel;
+                }
+            }
+            
+            return ReturnValue;
+        }
+        
         #region get/set Attributes of task items
 
         /// <summary>

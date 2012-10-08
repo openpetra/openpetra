@@ -27,6 +27,7 @@ TaskGroup:
         Label: "S&witch Ledger"
         Task7:
             Label: "Ledger 49 - Germany"
+            Enabled: false
         Task8: 
             Label: "Ledger 43 - Austria"
         Task10: 
