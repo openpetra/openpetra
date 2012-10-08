@@ -48,7 +48,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
     /// </summary>
     public class SampleDataUnitPartners
     {
-        static int FLedgerNumber = 43;
+        /// LedgerNumber to be set from outside
+        public static int FLedgerNumber = 43;
 
         /// <summary>
         /// generate the units
@@ -128,6 +129,57 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             {
                 throw new Exception(VerificationResult.BuildVerificationResultString());
             }
+
+            GLSetupTDSAccess.SubmitChanges(GLSetupDS, out VerificationResult);
+
+            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            {
+                throw new Exception(VerificationResult.BuildVerificationResultString());
+            }
+        }
+
+        /// <summary>
+        /// link the fields in the current ledger
+        /// </summary>
+        /// <param name="AFieldCSVFile"></param>
+        public static void GenerateFieldsFinanceOnly(string AFieldCSVFile)
+        {
+            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AFieldCSVFile, ",");
+
+            XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
+
+            GLSetupTDS GLSetupDS = new GLSetupTDS();
+
+            PCountryTable countryTable = PCountryAccess.LoadAll(null);
+
+            while (RecordNode != null)
+            {
+                long id = 100 + Convert.ToInt64(TXMLParser.GetAttribute(RecordNode, "id"));
+                string CountryCode = TXMLParser.GetAttribute(RecordNode, "Name");
+                string UnitName = ((PCountryRow)countryTable.Rows.Find(CountryCode)).CountryName;
+                Int64 PartnerKey = id * 1000000;
+
+                // create cost centre
+                ACostCentreRow CostCentreRow = GLSetupDS.ACostCentre.NewRowTyped();
+                CostCentreRow.LedgerNumber = FLedgerNumber;
+                CostCentreRow.CostCentreCode = (id * 100).ToString("0000");
+                CostCentreRow.CostCentreName = UnitName;
+                CostCentreRow.CostCentreToReportTo = MFinanceConstants.INTER_LEDGER_HEADING;
+                CostCentreRow.CostCentreType = MFinanceConstants.FOREIGN_CC_TYPE;
+                GLSetupDS.ACostCentre.Rows.Add(CostCentreRow);
+
+                // create foreign ledger, cost centre link validledgernumber
+                AValidLedgerNumberRow ValidLedgerNumber = GLSetupDS.AValidLedgerNumber.NewRowTyped();
+                ValidLedgerNumber.LedgerNumber = FLedgerNumber;
+                ValidLedgerNumber.PartnerKey = PartnerKey;
+                ValidLedgerNumber.CostCentreCode = CostCentreRow.CostCentreCode;
+                ValidLedgerNumber.IltProcessingCentre = Convert.ToInt64(MFinanceConstants.ICH_COST_CENTRE) * 10000;
+                GLSetupDS.AValidLedgerNumber.Rows.Add(ValidLedgerNumber);
+
+                RecordNode = RecordNode.NextSibling;
+            }
+
+            TVerificationResultCollection VerificationResult;
 
             GLSetupTDSAccess.SubmitChanges(GLSetupDS, out VerificationResult);
 

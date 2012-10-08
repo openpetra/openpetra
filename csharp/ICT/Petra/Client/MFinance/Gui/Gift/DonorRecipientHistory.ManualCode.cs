@@ -31,6 +31,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -40,6 +41,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TFrmDonorRecipientHistory
     {
         private DataView FFilteredDataView = null;
+        private Int32 FLedgerNumber;
 
         /// the Donor
         public long Donor
@@ -59,10 +61,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            set
+            {
+                FLedgerNumber = value;
+                txtLedger.Text = Convert.ToString(FLedgerNumber);
+            }
+        }
 
         private void InitializeManualCode()
         {
-            txtLedger.Text = "" + Ict.Petra.Client.MFinance.Logic.TLedgerSelection.DetermineDefaultLedger();
+//            txtLedger.Text = "" + Ict.Petra.Client.MFinance.Logic.TLedgerSelection.DetermineDefaultLedger();
             btnView.Enabled = false;
         }
 
@@ -184,9 +196,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     TFrmGiftBatch gb = new TFrmGiftBatch(this);
                     gb.ViewMode = true;
                     gb.ViewModeTDS = FMainDS;
-                    gb.LedgerNumber = Convert.ToInt32(txtLedger.Text);
-                    gb.FindGiftDetail(FPreviouslySelectedDetailRow);
-                    gb.Show();
+                    // When I call Gift Batch, it will want one row in a LedgerTable!
+                    gb.ViewModeTDS.ALedger.Merge(TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber));
+                    gb.ShowDetailsOfOneBatch(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber);
                 }
                 finally
                 {

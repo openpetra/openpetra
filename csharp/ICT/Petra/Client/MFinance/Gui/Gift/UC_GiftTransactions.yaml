@@ -54,14 +54,17 @@ RootNode:
             #TODO: support split gifts, and deal with gift details properly
             Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, ConfidentialGiftFlag, GiftTransactionAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, ReceiptPrinted, MethodOfGivingCode, MethodOfPaymentCode, MailingCode, GiftAmount]
             CustomColumns:
+                GiftTransactionNumber: {Label=Gift No., Type=Int32}
+                DetailNumber: {Label=Split No., Type=Int32}
                 Confidential: {Label=C, Type=Boolean}
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 DonorKey: {Label=Donor Key, Type=PartnerKey}
                 DonorName: {Label=Donor Name, Type=String}
                 DonorClass: {Label=Class, Type=String}
+                GiftTransactionAmount: {Label=Amount, Type=Decimal}
                 RecipientDescription: {Label=Recipient, Type=String}
-                RecipientField: {Label=Field, type=Int64}
-                GiftAmount: {Label=Gift Amount (Base), Type=Decimal}
+                RecipientField: {Label=Field, Type=Int64}
+                GiftAmount: {Label=Amount (Base), Type=Decimal}
                 MethodOfGivingCode: {Label=Method of Giving, Type=String}
                 MethodOfPaymentCode: {Label=Method of Payment, Type=String}
                 ReceiptNumber: {Label=Receipt, Type=Int32}
@@ -69,6 +72,7 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             SortOrder: GiftTransactionNumber ASC
             RowFilter: AGiftDetail.BatchNumber
+            SortableHeaders: false
         pnlDetails:
             Dock: Fill
             Scrollbars: true

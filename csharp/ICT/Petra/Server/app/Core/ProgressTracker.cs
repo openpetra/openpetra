@@ -93,6 +93,12 @@ namespace Ict.Petra.Server.App.Core
         {
             if (FProgressStates.ContainsKey(AClientID))
             {
+                if (FProgressStates[AClientID].PercentageDone > 100)
+                {
+                    TLogging.Log("invalid percentage: " + FProgressStates[AClientID].PercentageDone.ToString());
+                    FProgressStates[AClientID].PercentageDone = 99;
+                }
+
                 return FProgressStates[AClientID];
             }
 

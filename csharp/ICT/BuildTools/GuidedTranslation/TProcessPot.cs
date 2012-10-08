@@ -138,9 +138,6 @@ public class TProcessPot
         //sw_doubles.WriteLine("---------------------------");
 
         StringCollection firstocurrences = new StringCollection();
-        StringCollection firstocurrences_ALLUPPER = new StringCollection();
-        StringCollection doubles = new StringCollection();
-        StringCollection doubles_casedifferences = new StringCollection();
         int counterfirstocurrences_all = 0;
         int counterfirstocurrences_1word = 0;
         int counterfirstocurrences_2words = 0;

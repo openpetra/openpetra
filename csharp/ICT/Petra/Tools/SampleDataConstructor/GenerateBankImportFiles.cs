@@ -49,7 +49,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
     /// </summary>
     public class SampleDataBankImportFiles
     {
-        static int FLedgerNumber = 43;
+        /// LedgerNumber to be set from outside
+        public static int FLedgerNumber = 43;
 
         /// <summary>
         /// export a number of gift batches to a file

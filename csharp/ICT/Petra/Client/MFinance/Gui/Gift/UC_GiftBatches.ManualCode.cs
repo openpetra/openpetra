@@ -22,20 +22,24 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
+using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
-using System.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -65,6 +69,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>//
         public string FSelectedBatchMethodOfPayment = String.Empty;
 
+        private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
+
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// </summary>
@@ -75,9 +81,49 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.AGiftBatch.Rows.Clear();
             }
 
-            FPetraUtilsObject.DisableDataChangedEvent();
-            LoadBatches(FLedgerNumber);
-            FPetraUtilsObject.EnableDataChangedEvent();
+            try
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                LoadBatches(FLedgerNumber);
+            }
+            finally
+            {
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        public void LoadOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            FLedgerNumber = ALedgerNumber;
+            FMainDS.Merge(ViewModeTDS);
+            FPetraUtilsObject.SuppressChangeDetection = true;
+            rbtPosting.Checked = false;
+            rbtEditing.Checked = false;
+            rbtAll.Checked = false;
+            cmbYear.Enabled = false;
+            cmbPeriod.Enabled = false;
+            FMainDS.AGiftBatch.DefaultView.RowFilter =
+                String.Format("{0}={1}", AGiftBatchTable.GetBatchNumberDBName(), ABatchNumber);
+            Int32 RowToSelect = GetDataTableRowIndexByPrimaryKeys(ALedgerNumber, ABatchNumber);
+
+            // if this form is readonly, then we need all codes, because old codes might have been used
+            bool ActiveOnly = this.Enabled;
+
+            TFinanceControls.InitialiseAccountList(ref cmbDetailBankAccountCode, FLedgerNumber, true, false, ActiveOnly, true);
+            TFinanceControls.InitialiseCostCentreList(ref cmbDetailBankCostCentre, FLedgerNumber, true, false, ActiveOnly, true);
+            cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
+            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
+
+            SelectRowInGrid(RowToSelect);
+
+            UpdateChangeableStatus();
+            FPetraUtilsObject.HasChanges = false;
+            FPetraUtilsObject.SuppressChangeDetection = false;
         }
 
         /// <summary>
@@ -100,9 +146,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYear, FLedgerNumber);
-                FPetraUtilsObject.EnableDataChangedEvent();
+                try
+                {
+                    FPetraUtilsObject.DisableDataChangedEvent();
+                    TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYear, FLedgerNumber);
+                }
+                finally
+                {
+                    FPetraUtilsObject.EnableDataChangedEvent();
+                }
 
                 // only refresh once, seems we are doing too many loads from the db otherwise
                 RefreshFilter(null, null);
@@ -116,6 +168,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.Merge(motivationDetail);
 
             FMainDS.AcceptChanges();
+
+            FMainDS.AGiftBatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
+                AGiftBatchTable.GetLedgerNumberDBName(),
+                AGiftBatchTable.GetBatchNumberDBName()
+                );
 
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
@@ -158,6 +215,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         void RefreshFilter(Object sender, EventArgs e)
         {
             bool senderIsRadioButton = (sender is RadioButton);
+            int batchNumber = 0;
+            int newRowToSelectAfterFilter = 1;
 
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
@@ -172,6 +231,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     return;
                 }
+            }
+
+            //Record the current batch
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
             if (FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).SaveChanges())
@@ -201,10 +266,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     //Reset the combos
-                    FPetraUtilsObject.DisableDataChangedEvent();
-                    cmbYear.SetSelectedInt32(FSelectedYear);
-                    cmbPeriod.SetSelectedInt32(FSelectedPeriod);
-                    FPetraUtilsObject.EnableDataChangedEvent();
+                    try
+                    {
+                        FPetraUtilsObject.DisableDataChangedEvent();
+                        cmbYear.SetSelectedInt32(FSelectedYear);
+                        cmbPeriod.SetSelectedInt32(FSelectedPeriod);
+                    }
+                    finally
+                    {
+                        FPetraUtilsObject.EnableDataChangedEvent();
+                    }
                 }
 
                 return;
@@ -215,24 +286,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FSelectedYear = cmbYear.GetSelectedInt32();
             FSelectedPeriod = cmbPeriod.GetSelectedInt32();
 
-            FPeriodFilter = String.Format(
-                "{0} = {1} AND ",
-                AGiftBatchTable.GetBatchYearDBName(), FSelectedYear);
-
-            if (FSelectedPeriod == 0)
+            if ((FSelectedYear == -1) || (FSelectedPeriod == -1))
             {
-                ALedgerRow Ledger =
-                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
-
-                FPeriodFilter += String.Format(
-                    "{0} >= {1}",
-                    AGiftBatchTable.GetBatchPeriodDBName(), Ledger.CurrentPeriod);
+                FPeriodFilter = "1 = 1";
             }
             else
             {
-                FPeriodFilter += String.Format(
-                    "{0} = {1}",
-                    AGiftBatchTable.GetBatchPeriodDBName(), FSelectedPeriod);
+                FPeriodFilter = String.Format(
+                    "{0} = {1} AND ",
+                    AGiftBatchTable.GetBatchYearDBName(), FSelectedYear);
+
+                if (FSelectedPeriod == 0)
+                {
+                    ALedgerRow Ledger =
+                        ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+                    FPeriodFilter += String.Format(
+                        "{0} >= {1}",
+                        AGiftBatchTable.GetBatchPeriodDBName(), Ledger.CurrentPeriod);
+                }
+                else
+                {
+                    FPeriodFilter += String.Format(
+                        "{0} = {1}",
+                        AGiftBatchTable.GetBatchPeriodDBName(), FSelectedPeriod);
+                }
             }
 
             if (rbtEditing.Checked)
@@ -280,10 +358,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (FBatchLoaded == true)
             {
-                SelectRowInGrid(1);
+                //Select same row after refilter
+                if (batchNumber > 0)
+                {
+                    newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber);
+                }
+
+                SelectRowInGrid(newRowToSelectAfterFilter);
             }
 
             UpdateChangeableStatus();
+        }
+
+        private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
+        {
+            int rowPos = 0;
+            bool batchFound = false;
+
+            foreach (DataRowView rowView in FMainDS.AGiftBatch.DefaultView)
+            {
+                AGiftBatchRow row = (AGiftBatchRow)rowView.Row;
+
+                if ((row.LedgerNumber == ALedgerNumber) && (row.BatchNumber == ABatchNumber))
+                {
+                    batchFound = true;
+                    break;
+                }
+
+                rowPos++;
+            }
+
+            if (!batchFound)
+            {
+                rowPos = 0;
+            }
+
+            //remember grid is out of sync with DataView by 1 because of grid header rows
+            return rowPos + 1;
         }
 
         private void UpdateBatchPeriod(object sender, EventArgs e)
@@ -308,6 +419,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+
+                            if (cmbYear.SelectedIndex != 0)
+                            {
+                                cmbYear.SelectedIndex = 0;
+                            }
+                            else if (cmbPeriod.SelectedIndex != 0)
+                            {
+                                cmbPeriod.SelectedIndex = 0;
+                            }
                         }
                     }
                 }
@@ -398,6 +518,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateBatchPeriod(null, null);
 
             UpdateChangeableStatus();
+
+            RefreshCurrencyAndExchangeRate();
 
 //            FPetraUtilsObject.DetailProtectedMode =
 //                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
@@ -593,12 +715,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ClearControls()
         {
-            txtDetailBatchDescription.Clear();
-            txtDetailHashTotal.NumberValueDecimal = 0;
-            dtpDetailGlEffectiveDate.Clear();
-            cmbDetailBankCostCentre.SelectedIndex = -1;
-            cmbDetailBankAccountCode.SelectedIndex = -1;
-            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+            try
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                txtDetailBatchDescription.Clear();
+                txtDetailHashTotal.NumberValueDecimal = 0;
+                dtpDetailGlEffectiveDate.Date = FDefaultDate;
+                cmbDetailBankCostCentre.SelectedIndex = -1;
+                cmbDetailBankAccountCode.SelectedIndex = -1;
+                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+            }
+            finally
+            {
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
         }
 
         /// <summary>
@@ -662,10 +792,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// executed by progress dialog thread
+        /// </summary>
+        /// <param name="AVerifications"></param>
+        private void PostGiftBatch(out TVerificationResultCollection AVerifications)
+        {
+            TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out AVerifications);
+        }
+
         private void PostBatch(System.Object sender, EventArgs e)
         {
-            // TODO: show VerificationResult
-            // TODO: display progress of posting
             TVerificationResultCollection Verifications;
 
             if (FPetraUtilsObject.HasChanges)
@@ -695,7 +832,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
+            Verifications = new TVerificationResultCollection();
+
+            Thread t = new Thread(() => PostGiftBatch(out Verifications));
+            t.Start();
+
+            TProgressDialog dialog = new TProgressDialog();
+
+            dialog.ShowDialog();
+
+            if ((Verifications != null) && Verifications.HasCriticalErrors)
             {
                 string ErrorMessages = String.Empty;
 
@@ -723,39 +869,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     giftBatchRow.BatchNumber);
                 PrintGiftBatchReceipts(PostedGiftTDS);
 
-                // I don't like these lines - I'll re-load the control instead..
-
-/*
- *              giftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
- *              giftBatchRow.AcceptChanges();
- *
- *              // make sure that the gift batch is not touched again, by GetDetailsFromControls
- *              FSelectedBatchNumber = -1;
- *              FPreviouslySelectedDetailRow = null;
- *
- *              // make sure that gift transactions and details are cleared as well
- *              ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
- *              FMainDS.AGiftDetail.Rows.Clear();
- *              FMainDS.AGift.Rows.Clear();
- *
- *              ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
- *
- *              //Select unposted batch row in same index position as batch just posted
- *              grdDetails.DataSource = null;
- *              grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
- *
- *              if (grdDetails.Rows.Count > 1)
- *              {
- *                  // Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
- *                  // such that a removal of a row is not detected
- *                  SelectRowInGrid(newCurrentRowPos, true);
- *              }
- *              else
- *              {
- *                  ClearControls();
- *                  ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
- *              }
- */
                 RefreshAll();
             }
         }
@@ -825,6 +938,52 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             txtDetailHashTotal.CurrencySymbol = ACurrencyCode;
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
+
+            if (!FPetraUtilsObject.SuppressChangeDetection && (FPreviouslySelectedDetailRow != null)
+                && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            {
+                FPreviouslySelectedDetailRow.CurrencyCode = ACurrencyCode;
+
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
+                    FMainDS.ALedger[0].BaseCurrency,
+                    FPreviouslySelectedDetailRow.CurrencyCode,
+                    FPreviouslySelectedDetailRow.GlEffectiveDate);
+
+                RefreshCurrencyAndExchangeRate();
+            }
+        }
+
+        private void RefreshCurrencyAndExchangeRate()
+        {
+            txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
+            txtDetailExchangeRateToBase.BackColor =
+                (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
+
+            btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
+        }
+
+        private void SetExchangeRateValue(Object sender, EventArgs e)
+        {
+            TFrmSetupDailyExchangeRate setupDailyExchangeRate =
+                new TFrmSetupDailyExchangeRate(FPetraUtilsObject.GetForm());
+
+            if (setupDailyExchangeRate.ShowDialog(FLedgerNumber, dtpDetailGlEffectiveDate.Date.Value,
+                    cmbDetailCurrencyCode.GetSelectedString(),
+                    DEFAULT_CURRENCY_EXCHANGE) == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            if (FPreviouslySelectedDetailRow.ExchangeRateToBase != setupDailyExchangeRate.CurrencyExchangeRate)
+            {
+                //Enforce save needed condition
+                FPetraUtilsObject.SetChangedFlag();
+            }
+
+            FPreviouslySelectedDetailRow.ExchangeRateToBase = setupDailyExchangeRate.CurrencyExchangeRate;
+
+            RefreshCurrencyAndExchangeRate();
         }
 
         private void HashTotalChanged(object sender, EventArgs e)

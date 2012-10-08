@@ -171,6 +171,19 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             if (AInspectDS != null)
             {
                 AVerificationResult = new TVerificationResultCollection();
+
+                // I won't allow any null fields related to discount:
+
+                if (AInspectDS.AApSupplier[0].IsDefaultDiscountDaysNull())
+                {
+                    AInspectDS.AApSupplier[0].DefaultDiscountDays = 0;
+                }
+
+                if (AInspectDS.AApSupplier[0].IsDefaultDiscountPercentageNull())
+                {
+                    AInspectDS.AApSupplier[0].DefaultDiscountPercentage = 0;
+                }
+
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {

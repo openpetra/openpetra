@@ -94,6 +94,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 AJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
 
+            FMainDS.AJournal.DefaultView.Sort = String.Format("{0} ASC",
+                AJournalTable.GetJournalNumberDBName()
+                );
+
             // only load from server if there are no journals loaded yet for this batch
             // otherwise we would overwrite journals that have already been modified
             if (FMainDS.AJournal.DefaultView.Count == 0)
@@ -405,9 +409,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ClearControls()
         {
+            FPetraUtilsObject.DisableDataChangedEvent();
             txtDetailJournalDescription.Clear();
             cmbDetailTransactionTypeCode.SelectedIndex = -1;
             cmbDetailTransactionCurrency.SelectedIndex = -1;
+            FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         private decimal GetActualExchangeRateForeign()

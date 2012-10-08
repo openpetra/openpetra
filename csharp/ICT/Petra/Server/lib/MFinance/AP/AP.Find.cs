@@ -367,8 +367,18 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 {
                     // calculate DateDue and DateDiscountUntil
                     // add creditTerms to dateIssued to get DateDue
-                    Row.DateDue = Row.DateIssued.AddDays(Row.CreditTerms);
-                    Row.DateDiscountUntil = Row.DateIssued.AddDays(Row.DiscountDays);
+                    Row.DateDue = Row.DateIssued;
+                    Row.DateDiscountUntil = Row.DateIssued;
+
+                    if (!Row.IsCreditTermsNull())
+                    {
+                        Row.DateDue = Row.DateIssued.AddDays(Row.CreditTerms);
+                    }
+
+                    if (!Row.IsDiscountDaysNull())
+                    {
+                        Row.DateDiscountUntil = Row.DateIssued.AddDays(Row.DiscountDays);
+                    }
 
                     // If any of the invoices are part-paid, I want to retrieve the outstanding amount.
                     Row.OutstandingAmount = Row.TotalAmount;
@@ -385,6 +395,11 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
                     Row.DiscountMsg = "None";
                     Row.Selected = false;
+
+                    if (Row.IsDiscountPercentageNull())
+                    {
+                        Row.DiscountPercentage = 0;
+                    }
 
                     if (Row.DateDiscountUntil > DateTime.Now)
                     {
