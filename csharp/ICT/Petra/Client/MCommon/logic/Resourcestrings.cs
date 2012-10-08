@@ -60,13 +60,13 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>todoComment</summary>
         public static readonly string StrFormHasUnsavedChangesQuestion = Catalog.GetString("Save changes before closing?");
 
-        //_ <summary>Shown while data is being saved.</summary>
+        /// <summary>Shown while data is being saved.</summary>
         public static readonly string StrSavingDataInProgress = Catalog.GetString("Saving data...");
 
-        //_ <summary>Shown when data was saved successfully.</summary>
+        /// <summary>Shown when data was saved successfully.</summary>
         public static readonly string StrSavingDataSuccessful = Catalog.GetString("Data successfully saved.");
 
-        //_ <summary>Shown when saving of data failed.</summary>
+        /// <summary>Shown when saving of data failed.</summary>
         public static readonly string StrSavingDataException = Catalog.GetString("Data could not be saved because an unexpected error occured!");
 
         /// <summary>todoComment</summary>
@@ -75,17 +75,17 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>todoComment</summary>
         public static readonly string StrSavingDataCancelled = Catalog.GetString("Saving of data cancelled by user!");
 
-        //_ <summary>Shown when no data needs saving.</summary>
+        /// <summary>Shown when no data needs saving.</summary>
         public static readonly string StrSavingDataNothingToSave = Catalog.GetString("There was nothing to be saved.");
 
-        //_ <summary>todoComment</summary>
+        /// <summary>todoComment</summary>
         public static readonly string StrPetraServerTooBusy = Catalog.GetString("The OpenPetra Server is currently too busy to {0}.\r\n\r\n" +
             "Please wait a few seconds and press 'Retry' then to retry, or 'Cancel' to abort.");
 
-        //_ <summary>todoComment</summary>
+        /// <summary>todoComment</summary>
         public static readonly string StrPetraServerTooBusyTitle = Catalog.GetString("OpenPetra Server Too Busy");
 
-        //_ <summary>todoComment</summary>
+        /// <summary>todoComment</summary>
         public static readonly string StrOpeningCancelledByUser = Catalog.GetString("Opening of {0} screen got cancelled by user.");
 
         /// <summary>todoComment</summary>
