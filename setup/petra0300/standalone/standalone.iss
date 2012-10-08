@@ -25,6 +25,7 @@ Name: {app}/db30
 Name: {app}/reports30
 Name: {app}/resources30
 Name: {app}/sql30
+Name: {app}/formletters30
 Name: {app}/demo30
 
 [Files]
@@ -54,6 +55,8 @@ Source: ..\..\..\XmlReports\reports.dtd; DestDir: {app}/reports30
 Source: ..\..\..\XmlReports\*.xml; DestDir: {app}/reports30; Flags: recursesubdirs createallsubdirs
 Source: ..\..\..\csharp\ICT\Petra\Server\sql\*.sql; DestDir: {app}/sql30
 Source: ..\..\..\csharp\ICT\Petra\Server\sql\*.yml; DestDir: {app}/sql30
+Source: ..\..\..\demodata\formletters\*.html; DestDir: {app}/formletters30
+Source: ..\..\..\demodata\formletters\*.png; DestDir: {app}/formletters30
 Source: PetraServerAdminConsole.config; DestDir: {app}; DestName: PetraServerAdminConsole-3.0.config
 Source: PetraClient.config; DestDir: {app}; DestName: PetraClient-3.0.config
 Source: PetraServerConsole-Sqlite.config; DestDir: {app}; DestName: PetraServerConsole-3.0.config
