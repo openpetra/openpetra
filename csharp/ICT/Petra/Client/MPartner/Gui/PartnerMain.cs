@@ -215,6 +215,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             // because it's done in the mnuFile_Popup function.
             // If we don't have a valid partner key, this code can't be called from the file menu.
 
+            // now that this function is called from the main menu, we need to check for LastPartnerKey != 0
+            if (LastPartnerKey == 0)
+            {
+                MessageBox.Show(Catalog.GetString("You have not edited a partner yet"),
+                    Catalog.GetString("No last partner"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
             if (MergedPartnerHandling(LastPartnerKey, out MergedPartnerKey))
             {
                 // work with the merged partner

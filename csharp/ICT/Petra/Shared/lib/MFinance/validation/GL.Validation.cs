@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
@@ -58,7 +59,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             int VerifResultCollAddedCount = 0;
 
             // Don't validate deleted DataRows
-            if (ARow.RowState == DataRowState.Deleted)
+            if ((ARow.RowState == DataRowState.Deleted) || (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
                 return true;
             }

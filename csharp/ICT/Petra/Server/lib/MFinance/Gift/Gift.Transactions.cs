@@ -33,6 +33,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
@@ -1489,6 +1490,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Posting gift batches"),
+                ABatchNumbers.Count * 3 + 1);
+
             List <Int32>GLBatchNumbers = new List <int>();
 
             try
@@ -1496,12 +1501,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // first prepare all the gift batches, mark them as posted, and create the GL batches
                 foreach (Int32 BatchNumber in ABatchNumbers)
                 {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Posting gift batches"),
+                        ABatchNumbers.IndexOf(BatchNumber) * 3);
+
                     GiftBatchTDS MainDS = PrepareGiftBatchForPosting(ALedgerNumber, BatchNumber, out AVerifications);
 
                     if (MainDS == null)
                     {
                         return false;
                     }
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Posting gift batches"),
+                        ABatchNumbers.IndexOf(BatchNumber) * 3 + 1);
 
                     // create GL batch
                     GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPostingGifts(ALedgerNumber, ref MainDS);
@@ -1542,6 +1555,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 }
 
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Posting gift batches"),
+                    ABatchNumbers.Count * 3 - 1);
+
                 // now post the GL batches
                 if (!TGLPosting.PostGLBatches(ALedgerNumber, GLBatchNumbers,
                         out AVerifications))
@@ -1568,6 +1585,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             finally
             {
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();

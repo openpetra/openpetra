@@ -31,7 +31,7 @@ OpenPetra:
                         #ChangeAddress:
                         #MergePartners:
                         FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners}
-                        WorkWithLastPartner: {Label=Work with Last Partner, Description=Open last Partner worked with, ActionClick=PartnerMain.OpenLastUsedPartnerEditScreen}
+                        WorkWithLastPartner: {Label=Work with Last Partner, Description=Open last Partner worked with, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
                     CreatePartner:
                         AddNewFamily: {ActionClick=TPartnerMain.NewPartner, Description=Create a new Partner of Class FAMILY}
                         AddNewPerson: {ActionClick=TPartnerMain.NewPerson, Description=Create a new Partner of Class PERSON}
@@ -222,6 +222,7 @@ OpenPetra:
                         ManageCostCentres: {Description:Maintain Cost Centres and modify their hierarchy, ActionOpenScreen=TFrmGLCostCentreHierarchy}
                         SetupCostCentreTypes: {Description=Maintain types of Cost Centres, ActionOpenScreen=TFrmSetupCostCentreTypes}
                         SetupAnalysisTypes: {Description=Maintain Analysis Types, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
+                        DeleteLedger: {Description="Careful: Delete the ledger with all finance data", ActionClick=TDeleteLedger.DeleteLedger}
                         #Accounts:
                         #AddPostingAccount:
                         #AddForeignCurrencyAccount:

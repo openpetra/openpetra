@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="Ict.Petra.Tools-Build">
+
+<target name="custclean"> 
+</target>
+
+<target name="custdepend">
+</target>
+
+<include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
+ 
+</project>

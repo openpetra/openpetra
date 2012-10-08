@@ -45,7 +45,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// <summary>
         /// get the details of the given ledger
         /// </summary>
-        [RequireModulePermission("FINANE-1")]
+        [RequireModulePermission("FINANCE-1")]
         public static void GetLedgerPeriodDetails(
             int ALedgerNumber,
             out int ANumberAccountingPeriods,
@@ -84,7 +84,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         ///
         /// </summary>
         /// <returns>DataTable</returns>
-        [RequireModulePermission("FINANE-1")]
+        [RequireModulePermission("FINANCE-1")]
         public static DataTable GetAvailableFinancialYears(int ALedgerNumber,
             System.Int32 ADiffPeriod,
             out String ADisplayMember,
@@ -102,7 +102,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Load all the receiving fields
         /// </summary>
         /// <returns>Table with the field keys and the field names</returns>
-        [RequireModulePermission("FINANE-1")]
+        [RequireModulePermission("FINANCE-1")]
         public static DataTable GetReceivingFields(int ALedgerNumber, out String ADisplayMember, out String AValueMember)
         {
             DataTable ReturnTable = new DataTable();
@@ -143,19 +143,24 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             string result = string.Empty;
 
-            DataRowView[] ReportingCostCentres = ACostCentres.DefaultView.FindRows(ASummaryCostCentreCode);
+            string[] CostCentres = ASummaryCostCentreCode.Split(new char[] { ',' });
 
-            foreach (DataRowView rv in ReportingCostCentres)
+            foreach (string costcentre in CostCentres)
             {
-                ACostCentreRow row = (ACostCentreRow)rv.Row;
+                DataRowView[] ReportingCostCentres = ACostCentres.DefaultView.FindRows(costcentre);
 
-                if (row.PostingCostCentreFlag)
+                foreach (DataRowView rv in ReportingCostCentres)
                 {
-                    result = StringHelper.AddCSV(result, row.CostCentreCode);
-                }
-                else
-                {
-                    result = StringHelper.ConcatCSV(result, GetReportingCostCentres(ACostCentres, row.CostCentreCode));
+                    ACostCentreRow row = (ACostCentreRow)rv.Row;
+
+                    if (row.PostingCostCentreFlag)
+                    {
+                        result = StringHelper.AddCSV(result, row.CostCentreCode);
+                    }
+                    else
+                    {
+                        result = StringHelper.ConcatCSV(result, GetReportingCostCentres(ACostCentres, row.CostCentreCode));
+                    }
                 }
             }
 
@@ -166,7 +171,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Get all cost centres that report into the given summary cost centre
         /// </summary>
         /// <returns>a CSV list of the reporting cost centres</returns>
-        [RequireModulePermission("FINANE-1")]
+        [RequireModulePermission("FINANCE-1")]
         public static string GetReportingCostCentres(int ALedgerNumber, String ASummaryCostCentreCode)
         {
             System.Type typeofTable = null;

@@ -146,11 +146,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FinRecipientKeyChanging = true;
-            FPetraUtilsObject.SuppressChangeDetection = true;
-
             try
             {
+                FinRecipientKeyChanging = true;
+                FPetraUtilsObject.SuppressChangeDetection = true;
+
                 strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
                 strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
@@ -702,13 +702,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
                 cmbMinistry.SelectedIndex = -1;
                 txtDetailCostCentreCode.Text = string.Empty;
-
-                FPetraUtilsObject.SuppressChangeDetection = false;
             }
-            catch (Exception)
+            finally
             {
                 FPetraUtilsObject.SuppressChangeDetection = false;
-                throw;
             }
         }
 

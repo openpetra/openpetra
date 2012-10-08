@@ -1,6 +1,5 @@
 RootNode:
-    BaseYaml: ../../CommonForms/PetraModuleForm.yaml
-    UtilObjectClass: TFrmPetraModuleUtils
+    BaseYaml: ../../CommonForms/PetraForm.yaml
     FormType: navigation
     Template: windowFind
     FormTitle: Partner Find OpenPetra.org

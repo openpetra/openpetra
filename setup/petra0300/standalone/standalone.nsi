@@ -142,7 +142,9 @@ Section "Main Section" SecInstallFiles
   SetOutPath "$INSTDIR\sql30"
   File ..\..\..\csharp\ICT\Petra\Server\sql\*.sql
   File ..\..\..\csharp\ICT\Petra\Server\sql\*.yml
-
+  SetOutPath "$INSTDIR\formletters30"
+  File ..\..\..\demodata\formletters\*.html
+  File ..\..\..\demodata\formletters\*.png
 
   ;Store installation folder
   WriteRegStr HKCU "Software\OpenPetra" "" $INSTDIR

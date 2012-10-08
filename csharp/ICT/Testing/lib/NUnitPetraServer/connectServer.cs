@@ -67,7 +67,15 @@ namespace Ict.Testing.NUnitPetraServer
         /// <param name="AConfigName">just provide the server config file, plus AutoLogin and AutoLoginPasswd</param>
         public static TServerManager Connect(string AConfigName)
         {
-            new TAppSettingsManager(AConfigName);
+            if (File.Exists(AConfigName))
+            {
+                new TAppSettingsManager(AConfigName);
+            }
+            else
+            {
+                new TAppSettingsManager();
+            }
+
             new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
 
             CommonNUnitFunctions.InitRootPath();
