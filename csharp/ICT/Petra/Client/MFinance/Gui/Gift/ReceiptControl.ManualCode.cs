@@ -162,7 +162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void OnBtnRemove(Object sender, EventArgs e)
         {
-            bool CommitRes = TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(FGiftTbl);
+            TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(FGiftTbl);
 
             LoadUnreceiptedGifts();
         }
