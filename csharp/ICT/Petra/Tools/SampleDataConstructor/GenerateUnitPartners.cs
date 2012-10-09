@@ -41,7 +41,7 @@ using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core;
 
-namespace Ict.Testing.SampleDataConstructor
+namespace Ict.Petra.Tools.SampleDataConstructor
 {
     /// <summary>
     /// tools for generating unit partners (fields and key ministries)

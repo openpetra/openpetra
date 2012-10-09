@@ -37,7 +37,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core;
 
-namespace Ict.Testing.SampleDataConstructor
+namespace Ict.Petra.Tools.SampleDataConstructor
 {
     /// <summary>
     /// tools for generating partners with FAMILY records
@@ -65,6 +65,7 @@ namespace Ict.Testing.SampleDataConstructor
                 string familySituation = TXMLParser.GetAttribute(RecordNode, "familySituation");
 
                 PFamilyRow familyRecord = null;
+                PPartnerRow FamilyPartnerRow = null;
 
                 if (familySituation == "singleMan")
                 {
@@ -86,10 +87,14 @@ namespace Ict.Testing.SampleDataConstructor
 
                     if (NumberOfChildren > 0)
                     {
-                        PPartnerRow FamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(familyRecord.PartnerKey);
+                        FamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(familyRecord.PartnerKey);
                         FamilyPartnerRow.AddresseeTypeCode = MPartnerConstants.ADDRESSEETYPE_FAMILY;
                     }
                 }
+
+                FamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(familyRecord.PartnerKey);
+                FamilyPartnerRow.ReceiptEachGift = false;
+                FamilyPartnerRow.ReceiptLetterFrequency = "Annual";
 
                 SampleDataWorkers.GenerateAddressForFamily(RecordNode, familyRecord, MainDS);
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,7 @@ using System.Security.Cryptography;
 namespace Ict.Common.IO
 {
     /// contains functions to deal with encryption and decryption;
-    /// see also PetraTools/GenerateEncryptionKey, and Petra/Shared/RemotingSinks
+    /// see also BuildTools/GenerateEncryptionKey, and Petra/Shared/RemotingSinks
     public class EncryptionRijndael
     {
         /// <summary>

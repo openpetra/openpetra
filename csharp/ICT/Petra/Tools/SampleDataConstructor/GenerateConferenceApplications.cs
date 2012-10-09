@@ -45,7 +45,7 @@ using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Import;
 
-namespace Ict.Testing.SampleDataConstructor
+namespace Ict.Petra.Tools.SampleDataConstructor
 {
     /// <summary>
     /// tools for generating applications for a conference

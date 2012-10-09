@@ -536,6 +536,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Create Partner By Event Role Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreatePartnerByEventRoleExtract(System.Object sender, EventArgs e)
+        {
+            TFrmPartnerByEventRole frm = new TFrmPartnerByEventRole(FindForm());
+
+            frm.CalledFromExtracts = true;
+            frm.CalledForConferences = true;
+            frm.Show();
+        }
+
+        /// <summary>
         /// Create Partner By Commitment Extract
         /// </summary>
         /// <param name="sender"></param>

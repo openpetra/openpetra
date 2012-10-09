@@ -33,10 +33,10 @@ namespace Ict.Common.IO
     public delegate void ProcessFileType(string filename);
 
     /// Some useful functions for dealing with text files;
-    /// only used for PetraTools at the moment
+    /// only used for BuildTools at the moment
     public class TTextFile
     {
-        /// todo: exclude directory names, e.g. CSV, see PetraTools\ProgressConverter\AnalyseProgressFiles.cs
+        /// todo: exclude directory names, e.g. CSV, see BuildTools\ProgressConverter\AnalyseProgressFiles.cs
         public static void RecurseFilesAndDirectories(string APath, string AExt, ProcessFileType func)
         {
             string[] listOfDirectories = System.IO.Directory.GetDirectories(APath);

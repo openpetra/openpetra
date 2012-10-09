@@ -23,7 +23,9 @@
 //
 using System;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.Odbc;
 using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
@@ -49,24 +51,164 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// return unit table which contains conferences that match a given search string
         /// Only returns key, name and outreach code fields at the moment.
         /// </summary>
-        /// <param name="AConferenceName">match string for conference name search</param>
+        /// <param name="AIncludeConferenceUnits">true if conference units are to be retrieved</param>
+        /// <param name="AIncludeOutreachUnits">true if outreach units are to be retrieved</param>
+        /// <param name="AEventName">match string for event name search</param>
+        /// <param name="AIncludeLocationData">true if location columns need to be returned</param>
+        /// <param name="ACurrentAndFutureEventsOnly">indicate if only current or future events are to be returned</param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PUnitTable GetConferenceUnits(string AConferenceName)
+        public static DataTable GetEventUnits(bool AIncludeConferenceUnits, bool AIncludeOutreachUnits,
+            string AEventName, bool AIncludeLocationData, bool ACurrentAndFutureEventsOnly)
         {
-            return GetConferenceOrOutreachUnits(true, AConferenceName);
-        }
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
 
-        /// <summary>
-        /// return unit table which contains outreaches that match a given search string
-        /// Only returns key, name and outreach code fields at the moment.
-        /// </summary>
-        /// <param name="AOutreachName">match string for outreach name search</param>
-        /// <returns></returns>
-        [RequireModulePermission("PTNRUSER")]
-        public static PUnitTable GetOutreachUnits(string AOutreachName)
-        {
-            return GetConferenceOrOutreachUnits(false, AOutreachName);
+            List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
+            DataColumn[] Key = new DataColumn[1];
+            DataTable Events = new DataTable();
+
+            if (AEventName == "*")
+            {
+                AEventName = "";
+            }
+            else if (AEventName.EndsWith("*"))
+            {
+                AEventName = AEventName.Substring(0, AEventName.Length - 1);
+            }
+
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine("GetEventUnits called!");
+            }
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                string SqlStmt =
+                    "SELECT DISTINCT " +
+                    PPartnerTable.GetPartnerShortNameDBName() +
+                    ", " + PPartnerTable.GetPartnerClassDBName() +
+                    ", " + PUnitTable.GetOutreachCodeDBName();
+
+                if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
+                {
+                    SqlStmt = SqlStmt +
+                              ", " + PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryNameDBName() +
+                              ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateEffectiveDBName() +
+                              ", " + PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetDateGoodUntilDBName();
+                }
+
+                SqlStmt = SqlStmt +
+                          ", " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
+                          ", " + PUnitTable.GetUnitTypeCodeDBName() +
+
+                          " FROM pub_" + PPartnerTable.GetTableDBName() +
+                          ", pub_" + PUnitTable.GetTableDBName();
+
+                if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
+                {
+                    SqlStmt = SqlStmt +
+                              ", pub_" + PLocationTable.GetTableDBName() +
+                              ", pub_" + PPartnerLocationTable.GetTableDBName() +
+                              ", pub_" + PCountryTable.GetTableDBName();
+                }
+
+                SqlStmt = SqlStmt +
+                          " WHERE " +
+                          PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
+                          PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() + " AND ";
+
+                if (AIncludeLocationData || ACurrentAndFutureEventsOnly)
+                {
+                    SqlStmt = SqlStmt +
+                              PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() + " = " +
+                              PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetPartnerKeyDBName() + " AND " +
+                              PLocationTable.GetTableDBName() + "." + PLocationTable.GetSiteKeyDBName() + " = " +
+                              PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetSiteKeyDBName() + " AND " +
+                              PLocationTable.GetTableDBName() + "." + PLocationTable.GetLocationKeyDBName() + " = " +
+                              PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetLocationKeyDBName() + " AND " +
+                              PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryCodeDBName() + " = " +
+                              PLocationTable.GetTableDBName() + "." + PLocationTable.GetCountryCodeDBName() + " AND ";
+                }
+
+                SqlStmt = SqlStmt +
+                          PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE' " + " AND " +
+                          PPartnerTable.GetPartnerClassDBName() + " = 'UNIT' ";
+
+                // add criteria for conference and/or outreach
+                String ConferenceWhereClause = "(" +
+                                               PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONF%' OR " +
+                                               PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONG%')";
+
+                String OutreachWhereClause = PUnitTable.GetOutreachCodeDBName() + " IS NOT NULL AND " +
+                                             PUnitTable.GetOutreachCodeDBName() + " <> '' AND (" +
+                                             PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONF%' AND " +
+                                             PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONG%')";
+
+                if (AIncludeConferenceUnits
+                    && AIncludeOutreachUnits)
+                {
+                    SqlStmt = SqlStmt + " AND ((" + ConferenceWhereClause + ") OR (" + OutreachWhereClause + "))";
+                }
+                else if (AIncludeConferenceUnits)
+                {
+                    SqlStmt = SqlStmt + " AND (" + ConferenceWhereClause + ")";
+                }
+                else if (AIncludeOutreachUnits)
+                {
+                    SqlStmt = SqlStmt + " AND (" + OutreachWhereClause + ")";
+                }
+
+                // add criteria for event name filter
+                if (AEventName.Length > 0)
+                {
+                    // in case there is a filter set for the event name
+                    AEventName = AEventName.Replace('*', '%') + "%";
+                    SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
+                              " LIKE '" + AEventName + "'";
+                }
+
+                if (ACurrentAndFutureEventsOnly)
+                {
+                    SqlStmt = SqlStmt + " AND " + PPartnerLocationTable.GetDateGoodUntilDBName() + " >= ?";
+
+                    SqlParameterList.Add(new OdbcParameter("param_date", OdbcType.Date)
+                        {
+                            Value = DateTime.Today.Date
+                        });
+                }
+
+                // sort rows according to name
+                SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
+
+                Events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "events",
+                    ReadTransaction, SqlParameterList.ToArray());
+
+                Key[0] = Events.Columns[PPartnerTable.GetPartnerKeyDBName()];
+                Events.PrimaryKey = Key;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+
+                    if (TLogging.DL >= 7)
+                    {
+                        Console.WriteLine("GetEventUnits: committed own transaction.");
+                    }
+                }
+            }
+
+            return Events;
         }
 
         /// <summary>
@@ -144,95 +286,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
                     TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetActiveFieldUnits: committed own transaction.");
-                }
-            }
-
-            return UnitTable;
-        }
-
-        /// <summary>
-        /// return unit table records for conference or outreach
-        /// </summary>
-        /// <param name="AConference"></param>
-        /// <param name="AEventName"></param>
-        /// <returns></returns>
-        private static PUnitTable GetConferenceOrOutreachUnits(bool AConference, string AEventName)
-        {
-            PUnitTable UnitTable = new PUnitTable();
-            PUnitRow UnitRow;
-
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
-
-            if (AEventName == "*")
-            {
-                AEventName = "";
-            }
-            else if (AEventName.EndsWith("*"))
-            {
-                AEventName = AEventName.Substring(0, AEventName.Length - 1);
-            }
-
-            TLogging.LogAtLevel(9, "TPartnerDataReaderWebConnector.GetConferenceOrOutreachUnits called!");
-
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            try
-            {
-                // Load data
-                string SqlStmt = "SELECT pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
-                                 ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetUnitNameDBName() +
-                                 ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetOutreachCodeDBName() +
-                                 " FROM " + PUnitTable.GetTableDBName();
-
-                if (AConference)
-                {
-                    // for conferences the unit type needs to contain 'CON' (for CONF or CONG)
-                    SqlStmt = SqlStmt + " WHERE " + PUnitTable.GetUnitTypeCodeDBName() +
-                              " LIKE '%CON%'";
-                }
-                else
-                {
-                    // for outreaches the outreach code is set
-                    SqlStmt = SqlStmt + " WHERE " + PUnitTable.GetOutreachCodeDBName() +
-                              " IS NOT NULL AND " + PUnitTable.GetOutreachCodeDBName() +
-                              " <> ''";
-                }
-
-                if (AEventName.Length > 0)
-                {
-                    // in case there is a filter set for the event name
-                    AEventName = AEventName.Replace('*', '%') + "%";
-                    SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
-                              " LIKE '" + AEventName + "'";
-                }
-
-                // sort rows according to name
-                SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
-
-                DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "events", ReadTransaction);
-
-                foreach (DataRow eventRow in events.Rows)
-                {
-                    UnitRow = (PUnitRow)UnitTable.NewRow();
-                    UnitRow.PartnerKey = Convert.ToInt64(eventRow[0]);
-                    UnitRow.UnitName = Convert.ToString(eventRow[1]);
-                    UnitRow.OutreachCode = Convert.ToString(eventRow[2]);
-                    UnitTable.Rows.Add(UnitRow);
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetConferenceOrOutreachUnits: committed own transaction.");
                 }
             }
 

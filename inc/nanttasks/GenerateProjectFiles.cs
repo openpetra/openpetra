@@ -236,7 +236,7 @@ namespace Ict.Tools.NAntTasks
                 {
                     string srcPath = FCodeRootDir + Path.DirectorySeparatorChar +
                                      projectName.
-                                     Replace("Ict.Tools.", "ICT.PetraTools.").
+                                     Replace("Ict.Tools.", "ICT.BuildTools.").
                                      Replace("Ict.", "ICT.").
                                      Replace('.', Path.DirectorySeparatorChar);
 
