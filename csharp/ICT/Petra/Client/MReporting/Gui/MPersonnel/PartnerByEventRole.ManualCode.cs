@@ -73,7 +73,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         {
             LoadEventListData();
         }
-        
+
         private void InitializeManualCode()
         {
         }
@@ -102,10 +102,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             // set controls in filter to default values
             ucoFilter.InitialiseUserControl();
-            
+
             // Hook up EventFilterChanged Event to be able to react to changed filter
             ucoFilter.EventFilterChanged += new TEventHandlerEventFilterChanged(this.EventFilterChanged);
-            
+
             // populate list with data to be loaded
             this.LoadEventListData();
 
@@ -122,7 +122,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             // populate list with data to be loaded
             this.LoadEventRoleListData();
-            
+
             FPetraUtilsObject.LoadDefaultSettings();
         }
 
@@ -135,11 +135,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             DataTable Table;
 
             Table = TRemote.MPartner.Partner.WebConnectors.GetEventUnits
-                (ucoFilter.IncludeConferenceUnits, ucoFilter.IncludeOutreachUnits,
-                 ucoFilter.NameFilter, false, ucoFilter.CurrentAndFutureEventsOnly);
+                        (ucoFilter.IncludeConferenceUnits, ucoFilter.IncludeOutreachUnits,
+                        ucoFilter.NameFilter, false, ucoFilter.CurrentAndFutureEventsOnly);
 
             DataView view = new DataView(Table);
-            
+
             DataTable NewTable = view.ToTable(true, new string[] { DisplayMember, ValueMember, EventCodeMember });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
@@ -184,7 +184,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             //TODO: only temporarily until settings file exists
             clbEventRole.SetCheckedStringList("");
         }
-        
+
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbEvent.GetCheckedStringList().Length == 0)

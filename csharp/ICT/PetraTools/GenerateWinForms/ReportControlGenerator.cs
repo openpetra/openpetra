@@ -90,12 +90,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 return;
             }
-            
+
             if (ctrl.GetAttribute("NoParameter") == "true")
             {
                 return;
             }
-            
+
             string paramName = ReportControls.GetParameterName(curNode);
 
             if (paramName == null)
@@ -396,12 +396,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("READCONTROLS",
                     controlName + ".ReadControls(ACalc, AReportAction);" +
                     Environment.NewLine);
-    
+
                 writer.Template.AddToCodelet("SETCONTROLS",
                     controlName + ".SetControls(AParameters);" +
                     Environment.NewLine);
             }
-            
+
             writer.Template.AddToCodelet("SETAVAILABLEFUNCTIONS",
                 controlName + ".SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());" +
                 Environment.NewLine);

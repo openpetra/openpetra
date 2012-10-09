@@ -83,14 +83,14 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             if (AParameters.Exists("param_event_roles"))
             {
-                param_event_roles = new List<String>(AParameters.Get("param_event_roles").ToString().Split(','));
+                param_event_roles = new List <String>(AParameters.Get("param_event_roles").ToString().Split(','));
             }
 
             if (param_event_roles.Count == 0)
             {
                 throw new NoNullAllowedException("At least one event role must be checked.");
             }
-            
+
             // now add parameters to sql parameter list
             ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("events", OdbcType.BigInt, param_events));
             ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("event_roles", OdbcType.VarChar, param_event_roles));

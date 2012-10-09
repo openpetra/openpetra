@@ -111,8 +111,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             string EventCodeMember = PUnitTable.GetOutreachCodeDBName();
             DataTable Table;
 
-            Table = TRemote.MPartner.Partner.WebConnectors.GetEventUnits(FCalledForConferences, !FCalledForConferences, 
-                                                                         AFilter, false, false);
+            Table = TRemote.MPartner.Partner.WebConnectors.GetEventUnits(FCalledForConferences, !FCalledForConferences,
+                AFilter, false, false);
 
             DataView view = new DataView(Table);
 

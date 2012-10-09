@@ -38,16 +38,16 @@ namespace Ict.Petra.Client.MCommon.Gui
 {
     /// <summary>handle event of filter change</summary>
     public delegate void TEventHandlerEventFilterChanged(System.Object sender, System.EventArgs e);
-    
+
     public partial class TUC_EventFilter
     {
         private bool FDuringInitialization = true;
-        
+
         #region Events
 
         /// <summary>todoComment</summary>
         public event TEventHandlerEventFilterChanged EventFilterChanged;
-        
+
         #endregion
 
         #region Properties
@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             get
             {
-                return (rbtAll.Checked || rbtConference.Checked);
+                return rbtAll.Checked || rbtConference.Checked;
             }
         }
 
@@ -66,10 +66,10 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             get
             {
-                return (rbtAll.Checked || rbtOutreach.Checked);
+                return rbtAll.Checked || rbtOutreach.Checked;
             }
         }
-        
+
         /// <summary>Filter Criteria: only show current or future events</summary>
         public bool CurrentAndFutureEventsOnly
         {
@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 return chkCurrentFutureOnly.Checked;
             }
         }
-        
+
         /// <summary>Rowfilter initialized according to filter criteria</summary>
         public String NameFilter
         {
@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 return txtEventName.Text;
             }
         }
-        
+
         #endregion
 
 
@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             // not really needed at the moment. Just needed as dummy code for use in code generation.
         }
-        
+
         /// <summary>
         /// Sets the available functions (fields) that can be used for a report.
         /// </summary>
@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             // this is just a dummy implementation to compiling works for use in reporting
         }
-        
+
         /// <summary>
         /// Retrieves data that is in the Controls and puts it into the Tables in FMainDS
         /// </summary>
@@ -136,7 +136,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             {
                 return;
             }
-            
+
             RadioButton RadioBtn = (RadioButton)sender;
 
             if (RadioBtn.Checked)
@@ -154,7 +154,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             this.EventFilterChanged(sender, e);
         }
-        
+
         private void FilterEvents(System.Object sender, EventArgs e)
         {
             if (FDuringInitialization)
@@ -175,13 +175,11 @@ namespace Ict.Petra.Client.MCommon.Gui
             txtEventName.Text = "";
             this.EventFilterChanged(sender, e);
         }
-        
-        
+
         #endregion
 
 
         #region Event handlers
-
 
 
         #endregion
