@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -131,19 +132,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     dtpEffectiveDate.Date = StartDateCurrentPeriod;
                     MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
+                    dtpEffectiveDate.Focus();
                     return;
                 }
-
-                if (dtpEffectiveDate.Date > EndDateLastForwardingPeriod)
+                else if (dtpEffectiveDate.Date > EndDateLastForwardingPeriod)
                 {
                     dtpEffectiveDate.Date = EndDateLastForwardingPeriod;
                     MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
+                    dtpEffectiveDate.Focus();
                     return;
                 }
 
                 AddParam("GlEffectiveDate", dtpEffectiveDate.Date);
             }
 
+            if ((txtReversalCommentOne.Text.Trim().Length == 0 && cmbReversalCommentOneType.SelectedIndex != -1)
+                || (txtReversalCommentOne.Text.Trim().Length > 0 && cmbReversalCommentOneType.SelectedIndex == -1)
+               )
+            {
+            	MessageBox.Show(Catalog.GetString("Comment 1 and Comment Type 1 must both be empty or both contain a value!"));
+            	txtReversalCommentOne.Focus();
+            	return;
+            }
+            
+            if ((txtReversalCommentTwo.Text.Trim().Length == 0 && cmbReversalCommentTwoType.SelectedIndex != -1)
+                || (txtReversalCommentTwo.Text.Trim().Length > 0 && cmbReversalCommentTwoType.SelectedIndex == -1)
+               )
+            {
+            	MessageBox.Show(Catalog.GetString("Comment 2 and Comment Type 2 must both be empty or both contain a value!"));
+            	txtReversalCommentTwo.Focus();
+            	return;
+            }
+            
+            if ((txtReversalCommentThree.Text.Trim().Length == 0 && cmbReversalCommentThreeType.SelectedIndex != -1)
+                || (txtReversalCommentThree.Text.Trim().Length > 0 && cmbReversalCommentThreeType.SelectedIndex == -1)
+               )
+            {
+            	MessageBox.Show(Catalog.GetString("Comment 3 and Comment Type 3 must both be empty or both contain a value!"));
+            	txtReversalCommentThree.Focus();
+            	return;
+            }
+            
             AddParam("BatchNumber", giftDetailRow.BatchNumber);
             AddParam("GiftNumber", giftDetailRow.GiftTransactionNumber);
             AddParam("GiftDetailNumber", giftDetailRow.DetailNumber);
@@ -195,7 +224,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitializeManualCode()
         {
-            //FLedger is still zero at this point
+            grdDetails.Visible = false;
+        	//FLedger is still zero at this point
             FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                 AGiftBatchTable.GetBatchStatusDBName(),
                 MFinanceConstants.BATCH_UNPOSTED
@@ -203,15 +233,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.AGiftBatch.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName() + " DESC";
 
             SelectBatchChanged(null, null);
+            
+            this.btnOK.Enter += new System.EventHandler(this.OKFocussed);
         }
 
-        private void SelectBatchChanged(System.Object sender, EventArgs e)
+		private void OKFocussed(System.Object sender, EventArgs e)
         {
-            grdDetails.Enabled = chkSelect.Checked;
-            grdDetails.Visible = chkSelect.Checked;
-            dtpEffectiveDate.Visible = !chkSelect.Checked;
-            lblEffectiveDate.Visible = !chkSelect.Checked;
-            lblValidDateRange.Visible = !chkSelect.Checked;
+			grdDetails.DataSource = null;
+			grdDetails.Visible = true;
+			dtpEffectiveDate.Focus();
+            this.btnOK.Enter -= new System.EventHandler(this.OKFocussed);
+		}
+        
+		private void SelectBatchChanged(System.Object sender, EventArgs e)
+        {
+            bool isChecked = chkSelect.Checked;
+            
+            if (isChecked)
+            {
+            	DataView myDataView = FMainDS.AGiftBatch.DefaultView;
+			    myDataView.AllowNew = false;
+      			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+      			if (grdDetails.Rows.Count > 1)
+      			{
+      				grdDetails.SelectRowInGrid(1);
+      				txtReversalCommentOne.Focus();
+      			}
+            }
+            else
+            {
+            	grdDetails.DataSource = null;
+            }
+
+            grdDetails.Enabled = isChecked;
+            dtpEffectiveDate.Enabled = !isChecked;
+            lblEffectiveDate.Enabled = !isChecked;
+            lblValidDateRange.Enabled = !isChecked;
 
             //First pass FLedgerNumber = 0 so need to add Ledger to the filter when the user first checks the checkbox
             if (chkSelect.Checked && (FLedgerNumber != 0) && !FMainDS.AGiftBatch.DefaultView.RowFilter.Contains(AGiftBatchTable.GetLedgerNumberDBName()))
