@@ -7,13 +7,13 @@ RootNode:
     FormType: browse
     Template: windowSingleTable
     WindowWidth: 660
-    WindowHeight: 800
+    WindowHeight: 660
     Actions:
         actOK: {Label=&OK, ActionClick=RevertAdjust}
         actClose:  {Label=Close, ActionClick=BtnCloseClick}
     Controls:
         pnlContent:
-            Controls: [pnlSelect, pnlGrid, pnlDetails, pnlButtons]
+            Controls: [pnlSelect, pnlDetails, pnlGrid, pnlButtons]
             Dock: Fill
         pnlSelect:
             Dock: Top
