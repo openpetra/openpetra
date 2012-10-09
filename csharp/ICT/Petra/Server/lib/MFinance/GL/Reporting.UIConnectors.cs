@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Collections.Generic;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
@@ -30,10 +31,12 @@ using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -184,6 +187,64 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 out typeofTable);
 
             return GetReportingCostCentres(CachedDataTable, ASummaryCostCentreCode);
+        }
+
+        private static void GetReportingAccounts(AAccountHierarchyDetailTable AAccountHierarchyDetail,
+            ref List <string>AResult,
+            string ASummaryAccountCodes,
+            string AAccountHierarchy)
+        {
+            string[] Accounts = ASummaryAccountCodes.Split(new char[] { ',' });
+
+            foreach (string account in Accounts)
+            {
+                DataRowView[] ReportingAccounts = AAccountHierarchyDetail.DefaultView.FindRows(new object[] { AAccountHierarchy, account });
+
+                if (ReportingAccounts.Length == 0)
+                {
+                    AResult.Add(account);
+                }
+                else
+                {
+                    foreach (DataRowView rv in ReportingAccounts)
+                    {
+                        AAccountHierarchyDetailRow row = (AAccountHierarchyDetailRow)rv.Row;
+
+                        GetReportingAccounts(AAccountHierarchyDetail, ref AResult, row.ReportingAccountCode, AAccountHierarchy);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get all accounts that report into the given summary account
+        /// </summary>
+        /// <returns>a CSV list of the reporting accounts</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static string GetReportingAccounts(int ALedgerNumber, string ASummaryAccountCodes, string ARemoveAccountsFromList)
+        {
+            GLSetupTDS MainDS = TGLSetupWebConnector.LoadAccountHierarchies(ALedgerNumber);
+
+            List <string>accountcodes = new List <string>();
+
+            MainDS.AAccountHierarchyDetail.DefaultView.Sort =
+                AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + "," +
+                AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName();
+
+
+            GetReportingAccounts(MainDS.AAccountHierarchyDetail, ref accountcodes, ASummaryAccountCodes, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD);
+
+            string[] RemoveAccountsFromList = ARemoveAccountsFromList.Split(new char[] { ',' });
+
+            foreach (string s in RemoveAccountsFromList)
+            {
+                if (accountcodes.Contains(s))
+                {
+                    accountcodes.Remove(s);
+                }
+            }
+
+            return StringHelper.StrMerge(accountcodes.ToArray(), ',');
         }
     }
 }

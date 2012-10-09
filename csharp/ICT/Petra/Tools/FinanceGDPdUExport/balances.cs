@@ -45,7 +45,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             string ANewLine,
             Int32 ALedgerNumber,
             Int32 AFinancialYear,
-            string ACostCentres)
+            string ACostCentres,
+            string AIgnoreAccounts)
         {
             string filename = Path.GetFullPath(Path.Combine(AOutputPath, "balance.csv"));
 
@@ -59,7 +60,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 String.Format("SELECT {1}, GLM.{0}, {2}, {3} FROM PUB_{4} AS GLM, PUB_{10} AS A " +
                     "WHERE GLM.{5} = {6} AND {7} = {8} AND GLM.{1} IN ({9}) " +
                     "AND A.{5} = GLM.{5} AND A.{0} = GLM.{0} AND " +
-                    "A.{11}=true " +
+                    "A.{11}=true AND NOT GLM.{0} IN ({12})" +
                     "ORDER BY {1}, {0}",
                     AGeneralLedgerMasterTable.GetAccountCodeDBName(),
                     AGeneralLedgerMasterTable.GetCostCentreCodeDBName(),
@@ -72,7 +73,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     AFinancialYear,
                     "'" + ACostCentres.Replace(",", "','") + "'",
                     AAccountTable.GetTableDBName(),
-                    AAccountTable.GetPostingStatusDBName());
+                    AAccountTable.GetPostingStatusDBName(),
+                    "'" + AIgnoreAccounts.Replace(",", "','") + "'");
 
             DataTable balances = DBAccess.GDBAccessObj.SelectDT(sql, "balances", Transaction);
 

@@ -56,7 +56,9 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 }
 
                 string SummaryCostCentres = TAppSettingsManager.GetValue("SummaryCostCentres", "4300S");
-                int FinancialYear = TAppSettingsManager.GetInt32("FinancialYearNumber", 0);
+                string IgnoreAccounts = TAppSettingsManager.GetValue("IgnoreAccounts", "4300S,GIFT");
+                string IncludeAccounts = TAppSettingsManager.GetValue("IncludeAccounts", "4310");
+                string FinancialYears = TAppSettingsManager.GetValue("FinancialYearNumber", "0");
                 int FirstFinancialYear = TAppSettingsManager.GetInt32("FirstFinancialYear", DateTime.Now.Year);
                 int LedgerNumber = TAppSettingsManager.GetInt32("LedgerNumber", 43);
                 char CSVSeparator = TAppSettingsManager.GetValue("CSVSeparator", ";")[0];
@@ -67,40 +69,46 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 string ReportingCostCentres =
                     TFinanceReportingWebConnector.GetReportingCostCentres(LedgerNumber, SummaryCostCentres);
 
+                IgnoreAccounts =
+                    TFinanceReportingWebConnector.GetReportingAccounts(LedgerNumber, IgnoreAccounts, IncludeAccounts);
+
                 // set decimal separator, and thousands separator
                 Ict.Common.Catalog.SetCulture(culture);
 
-                string OutputPathForYear = Path.Combine(OutputPath, (FirstFinancialYear + FinancialYear).ToString());
+                List <string>CostCentresInvolved = new List <string>();
+                List <string>AccountsInvolved = new List <string>();
 
-                if (!Directory.Exists(OutputPathForYear))
+                foreach (string FinancialYearString in FinancialYears.Split(new char[] { ',' }))
                 {
-                    Directory.CreateDirectory(OutputPathForYear);
-                }
+                    Int32 FinancialYear = Convert.ToInt32(FinancialYearString);
 
-                if ((operation == "all") || (operation == "costcentre"))
-                {
-                    TGDPdUExportAccountsAndCostCentres.ExportCostCentres(OutputPath, CSVSeparator, NewLine, LedgerNumber, ReportingCostCentres);
-                }
+                    string OutputPathForYear = Path.Combine(OutputPath, (FirstFinancialYear + FinancialYear).ToString());
 
-                if ((operation == "all") || (operation == "account"))
-                {
-                    TGDPdUExportAccountsAndCostCentres.ExportAccounts(OutputPath, CSVSeparator, NewLine, LedgerNumber, ReportingCostCentres);
-                }
+                    if (!Directory.Exists(OutputPathForYear))
+                    {
+                        Directory.CreateDirectory(OutputPathForYear);
+                    }
 
-                if ((operation == "all") || (operation == "transaction"))
-                {
                     TGDPdUExportTransactions.ExportGLTransactions(OutputPathForYear,
                         CSVSeparator,
                         NewLine,
                         LedgerNumber,
                         FinancialYear,
-                        ReportingCostCentres);
+                        ReportingCostCentres,
+                        IgnoreAccounts,
+                        ref CostCentresInvolved,
+                        ref AccountsInvolved);
+
+                    TGDPdUExportBalances.ExportGLBalances(OutputPathForYear, CSVSeparator, NewLine, LedgerNumber,
+                        FinancialYear, ReportingCostCentres,
+                        IgnoreAccounts);
                 }
 
-                if ((operation == "all") || (operation == "balance"))
-                {
-                    TGDPdUExportBalances.ExportGLBalances(OutputPathForYear, CSVSeparator, NewLine, LedgerNumber, FinancialYear, ReportingCostCentres);
-                }
+                TGDPdUExportAccountsAndCostCentres.ExportCostCentres(OutputPath, CSVSeparator, NewLine, LedgerNumber,
+                    CostCentresInvolved);
+
+                TGDPdUExportAccountsAndCostCentres.ExportAccounts(OutputPath, CSVSeparator, NewLine, LedgerNumber,
+                    AccountsInvolved);
             }
             catch (Exception e)
             {

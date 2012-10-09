@@ -94,7 +94,10 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             string ANewLine,
             Int32 ALedgerNumber,
             Int32 AFinancialYear,
-            string ACostCentres)
+            string ACostCentres,
+            string AIgnoreAccounts,
+            ref List <string>ACostCentresInvolved,
+            ref List <string>AAccountsInvolved)
         {
             string filename = Path.GetFullPath(Path.Combine(AOutputPath, "transaction.csv"));
 
@@ -109,7 +112,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     "FROM PUB_{8} AS B, PUB_{7} AS T " +
                     "WHERE B.{9} = {10} AND B.{15} = {16} AND B.{11}='{12}' " +
                     "AND T.{9} = B.{9} AND T.{0} = B.{0} " +
-                    "AND T.{13} IN ({14}) ORDER BY {0}, {1}, {2}",
+                    "AND T.{13} IN ({14}) AND NOT T.{17} IN ({19}) ORDER BY {0}, {1}, {2}",
                     ATransactionTable.GetBatchNumberDBName(),
                     ATransactionTable.GetJournalNumberDBName(),
                     ATransactionTable.GetTransactionNumberDBName(),
@@ -128,7 +131,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     ABatchTable.GetBatchYearDBName(),
                     AFinancialYear,
                     ATransactionTable.GetAccountCodeDBName(),
-                    ATransactionTable.GetDebitCreditIndicatorDBName());
+                    ATransactionTable.GetDebitCreditIndicatorDBName(),
+                    "'" + AIgnoreAccounts.Replace(",", "','") + "'");
 
             ATransactionTable transactions = new ATransactionTable();
             transactions = (ATransactionTable)DBAccess.GDBAccessObj.SelectDT(transactions, sql, Transaction, null, 0, 0);
@@ -224,6 +228,16 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 {
                     OtherCostCentres = StringHelper.AddCSV(OtherCostCentres, r.CostCentreCode);
                     OtherAccountCodes = StringHelper.AddCSV(OtherAccountCodes, r.AccountCode);
+                }
+
+                if (!ACostCentresInvolved.Contains(row.CostCentreCode))
+                {
+                    ACostCentresInvolved.Add(row.CostCentreCode);
+                }
+
+                if (!AAccountsInvolved.Contains(row.AccountCode))
+                {
+                    AAccountsInvolved.Add(row.AccountCode);
                 }
 
                 sb.Append(StringHelper.StrMerge(

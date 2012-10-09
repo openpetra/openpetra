@@ -25,6 +25,8 @@ using System;
 using System.Data;
 using System.Configuration;
 using System.IO;
+using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using Ict.Common;
 using Ict.Common.DB;
@@ -43,7 +45,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             char ACSVSeparator,
             string ANewLine,
             Int32 ALedgerNumber,
-            string ACostCentres)
+            List <string>ACostCentres)
         {
             string filename = Path.GetFullPath(Path.Combine(AOutputPath, "costcentre.csv"));
 
@@ -54,11 +56,10 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             string sql =
-                String.Format("SELECT {0}, {1} from PUB_{2} WHERE {4} = {5} AND {0} IN ({3}) ORDER BY {0}",
+                String.Format("SELECT {0}, {1} from PUB_{2} WHERE {3} = {4} ORDER BY {0}",
                     ACostCentreTable.GetCostCentreCodeDBName(),
                     ACostCentreTable.GetCostCentreNameDBName(),
                     ACostCentreTable.GetTableDBName(),
-                    "'" + ACostCentres.Replace(",", "','") + "'",
                     ACostCentreTable.GetLedgerNumberDBName(),
                     ALedgerNumber);
 
@@ -68,8 +69,11 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             foreach (DataRow row in costcentres.Rows)
             {
-                sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString() }, ACSVSeparator));
-                sb.Append(ANewLine);
+                if (ACostCentres.Contains(row[0].ToString()))
+                {
+                    sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString() }, ACSVSeparator));
+                    sb.Append(ANewLine);
+                }
             }
 
             StreamWriter sw = new StreamWriter(filename, false, Encoding.GetEncoding(1252));
@@ -84,7 +88,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             char ACSVSeparator,
             string ANewLine,
             Int32 ALedgerNumber,
-            string ACostCentres)
+            List <string>AAccounts)
         {
             string filename = Path.GetFullPath(Path.Combine(AOutputPath, "account.csv"));
 
@@ -96,19 +100,15 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             // only export accounts that are actually used with these cost centres
             string sql =
-                String.Format("SELECT {0}, {1}, {8} from PUB_{2} AS A WHERE {3} = {4} AND " +
-                    " {8}=true AND " +
-                    "EXISTS (SELECT * FROM PUB_{5} AS GLM WHERE GLM.{0} = A.{0} AND GLM.{6} IN ({7})) ORDER BY {0}",
+                String.Format("SELECT {0}, {1}, {2} from PUB_{3} WHERE {4} = {5} AND " +
+                    " {6}=true ORDER BY {0}",
                     AAccountTable.GetAccountCodeDBName(),
                     AAccountTable.GetAccountCodeLongDescDBName(),
+                    AAccountTable.GetDebitCreditIndicatorDBName(),
                     AAccountTable.GetTableDBName(),
                     AAccountTable.GetLedgerNumberDBName(),
                     ALedgerNumber,
-                    AGeneralLedgerMasterTable.GetTableDBName(),
-                    AGeneralLedgerMasterTable.GetCostCentreCodeDBName(),
-                    "'" + ACostCentres.Replace(",", "','") + "'",
-                    AAccountTable.GetPostingStatusDBName(),
-                    AAccountTable.GetDebitCreditIndicatorDBName());
+                    AAccountTable.GetPostingStatusDBName());
 
             DataTable accounts = DBAccess.GDBAccessObj.SelectDT(sql, "accounts", Transaction);
 
@@ -116,9 +116,12 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             foreach (DataRow row in accounts.Rows)
             {
-                sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString(),
-                                                               Convert.ToBoolean(row[2]) ? "Debit" : "Credit" }, ACSVSeparator));
-                sb.Append(ANewLine);
+                if (AAccounts.Contains(row[0].ToString()))
+                {
+                    sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString(),
+                                                                   Convert.ToBoolean(row[2]) ? "Debit" : "Credit" }, ACSVSeparator));
+                    sb.Append(ANewLine);
+                }
             }
 
             StreamWriter sw = new StreamWriter(filename, false, Encoding.GetEncoding(1252));
