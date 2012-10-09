@@ -86,6 +86,7 @@ namespace Ict.Common.Controls
             this.Size = new System.Drawing.Size(184, 28);
             this.Controls.Add(lblCaption);
             this.Controls.Add(pbxIcon);
+            this.DoubleBuffered = true;
             this.Name = "TRbtNavigationButton";
 
             this.ResumeLayout(false);

@@ -85,9 +85,6 @@ namespace Ict.Common.Controls
                 MessageBox.Show("cannot find file " + ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2leftarrow.png");
             }
 #endif
-
-            pnlNavigationCaption.GradientColorTop = System.Drawing.Color.FromArgb(0xF7, 0xFB, 0xFF);
-            pnlNavigationCaption.GradientColorBottom = System.Drawing.Color.FromArgb(0xAD, 0xBE, 0xE7);
         }
 
         #region Delegates
@@ -201,7 +198,7 @@ namespace Ict.Common.Controls
 
         #region Private Methods
 
-        private TPnlAccordion GetOrCreatePanel(XmlNode AFolderNode)
+        private TPnlModuleNavigation GetOrCreatePanel(XmlNode AFolderNode)
         {
             string pnlName = "pnl" + AFolderNode.Name;
 
@@ -212,16 +209,24 @@ namespace Ict.Common.Controls
 
             if (this.sptNavigation.Panel1.Controls.ContainsKey(pnlName))
             {
-                return (TPnlAccordion) this.sptNavigation.Panel1.Controls[pnlName];
+                return (TPnlModuleNavigation) this.sptNavigation.Panel1.Controls[pnlName];
             }
             else
             {
-                TPnlAccordion pnlAccordion = new TPnlAccordion(AFolderNode, FDashboard, pnlName);
+                TPnlModuleNavigation CollPanelHoster = new TPnlModuleNavigation(AFolderNode, FDashboard, this.Width);
+                CollPanelHoster.Name = pnlName;
+                CollPanelHoster.Statusbar = FStatusbar;
+                CollPanelHoster.Dock = DockStyle.Left;
+                CollPanelHoster.Collapsed += delegate(object sender, EventArgs e) 
+                    { CollapsibleNavigationCollapsed(sender, e); };
+                CollPanelHoster.Expanded += delegate(object sender, EventArgs e)  
+                    { CollapsibleNavigationExpanded(sender, e); };
+                CollPanelHoster.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked) 
+                { OnItemActivation(ATaskList, ATaskListNode, AItemClicked); };
+                
+                this.sptNavigation.Panel1.Controls.Add(CollPanelHoster);
 
-                pnlAccordion.Statusbar = FStatusbar;
-                this.sptNavigation.Panel1.Controls.Add(pnlAccordion);
-
-                return pnlAccordion;
+                return CollPanelHoster;
             }
         }
 
@@ -232,20 +237,20 @@ namespace Ict.Common.Controls
         private void FolderCheckedChanged(object sender, EventArgs e)
         {
             TRbtNavigationButton rbtFolder = (TRbtNavigationButton)sender;
-            TPnlAccordion pnlAccordion = GetOrCreatePanel((XmlNode)rbtFolder.Tag);
+            TPnlModuleNavigation CollPanelHoster = GetOrCreatePanel((XmlNode)rbtFolder.Tag);
 
             if (rbtFolder.Checked)
             {
-                lblNavigationCaption.Text = rbtFolder.Text;
-                pnlAccordion.Show();
-                pnlAccordion.SelectFirstLink();
+                CollPanelHoster.Text = rbtFolder.Text;
+                CollPanelHoster.Show();
+                CollPanelHoster.SelectFirstLink();
             }
             else
             {
-                pnlAccordion.Hide();
+                CollPanelHoster.Hide();
             }
         }
-
+        
         private void SptNavigationSplitterMoved(object sender, EventArgs e)
         {
             // TODO: hide lowest folder radio button, add it to panel pnlMoreButtons
@@ -263,6 +268,26 @@ namespace Ict.Common.Controls
             // TODO: hide lowest folder radio button, add it to panel pnlMoreButtons
         }
 
+          
+        void CollapsibleNavigationCollapsed(object sender, EventArgs e)
+        {
+            this.Width = ((TPnlModuleNavigation)sender).Width;
+//            FFolderCollapsing = true;
+//            sptContent.SplitterDistance = cplFolders.Width;
+//            FFolderCollapsing = false;
+        }
+        
+        void CollapsibleNavigationExpanded(object sender, EventArgs e)
+        {
+            this.Width = ((TPnlModuleNavigation)sender).Width;
+//            sptContent.SplitterDistance = cplFolders.Width;
+        }        
+        
+       private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+       {
+           // TODO
+       }
+         
         #endregion
     }
 }

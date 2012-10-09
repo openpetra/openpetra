@@ -95,7 +95,7 @@ namespace Ict.Common.Controls
         private const Int16 EXPANDEDHEIGHT = 153;
 
         /// <summary>Hard-coded value of the collapsed width</summary>
-        private const Int16 COLLAPSEDWIDTH = 33;
+        private const Int16 COLLAPSEDWIDTH = 20;
 
         /// <summary>Hard-coded value of the expanded width</summary>
         private const Int16 EXPANDEDWIDTH = 300;
@@ -804,19 +804,6 @@ namespace Ict.Common.Controls
         /// </summary>
         public void Collapse()
         {
-            if (FCollapseDirection == TCollapseDirection.cdVertical)
-            {
-                TitleShow();
-                this.Height = COLLAPSEDHEIGHT;
-            }
-            else
-            {
-                TitleHide();
-                this.Width = COLLAPSEDWIDTH;
-                
-                ShowHideCollapsedInfoText(true);
-            }
-            
             FIsCollapsed = true;
             btnToggle.ImageIndex = GetArrowGraphicIndex(FMouseHoveringOverCollapseToggle);
             
@@ -847,6 +834,19 @@ namespace Ict.Common.Controls
                     break;
             }
             
+            if (FCollapseDirection == TCollapseDirection.cdVertical)
+            {
+                TitleShow();
+                this.Height = COLLAPSEDHEIGHT;
+            }
+            else
+            {
+                TitleHide();
+                this.Width = COLLAPSEDWIDTH;
+                
+                ShowHideCollapsedInfoText(true);
+            }
+                        
             OnCollapsed();
         }
 
@@ -858,17 +858,6 @@ namespace Ict.Common.Controls
             FIsCollapsed = false;
             btnToggle.ImageIndex = GetArrowGraphicIndex(FMouseHoveringOverCollapseToggle);
             TitleShow();
-
-            if (FCollapseDirection == TCollapseDirection.cdVertical)
-            {
-                this.Height = FExpandedSize;
-            }
-            else
-            {
-                this.Width = FExpandedSize;
-                
-                ShowHideCollapsedInfoText(false);
-            }
 
             switch (FHostedControlKind)
             {
@@ -949,6 +938,17 @@ namespace Ict.Common.Controls
                     break;
             }
             
+            if (FCollapseDirection == TCollapseDirection.cdVertical)
+            {
+                this.Height = FExpandedSize;
+            }
+            else
+            {
+                this.Width = FExpandedSize;
+                
+                ShowHideCollapsedInfoText(false);
+            }
+           
             OnExpanded();
         }
 

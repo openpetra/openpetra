@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.App.PetraClient
         private void InitializeManualCode()
         {
             LoadNavigationUI();
-
+            
             Version version = new Version(TClientInfo.ClientAssemblyVersion);
 
             if (version.Revision > 20)
@@ -123,16 +123,16 @@ namespace Ict.Petra.Client.App.PetraClient
                 }
             }
 
-            if (TXMLParser.GetAttribute(ANode, "DependsOnLedger").ToLower() == "true")
-            {
-                // check if the user has permissions for this ledger
-                Int32 LedgerNumber = TXMLParser.GetIntAttribute(ANode, "LedgerNumber");
-
-                if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumber.ToString("0000")))
-                {
-                    return false;
-                }
-            }
+//            if (TXMLParser.GetAttribute(ANode, "DependsOnLedger").ToLower() == "true")
+//            {
+//                // check if the user has permissions for this ledger
+//                Int32 LedgerNumber = TXMLParser.GetIntAttribute(ANode, "LedgerNumber");
+//
+//                if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumber.ToString("0000")))
+//                {
+//                    return false;
+//                }
+//            }
 
             return true;
         }
@@ -186,18 +186,18 @@ namespace Ict.Petra.Client.App.PetraClient
             TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
 
-            ALedgerTable AvailableLedgers = new ALedgerTable();
-
-            if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
-            {
-                AvailableLedgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
-            }
+//            ALedgerTable AvailableLedgers = new ALedgerTable();
+//
+//            if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
+//            {
+//                AvailableLedgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
+//            }
 
             XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
 
-            AddNavigationForEachLedger(MainMenuNode, AvailableLedgers);
+//            AddNavigationForEachLedger(MainMenuNode, AvailableLedgers);
 
             return MainMenuNode;
         }
