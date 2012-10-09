@@ -111,7 +111,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((giftDetailRow != null) && giftDetailRow.ModifiedDetail)
             {
-                MessageBox.Show(Catalog.GetString("A Gift can only be reverted once!"));
+                MessageBox.Show(Catalog.GetString("A Gift can only be reversed once!"));
                 return;
             }
 
@@ -128,22 +128,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 //check the gift batch date to use
-                if (dtpEffectiveDate.Date < StartDateCurrentPeriod)
+                if (dtpEffectiveDate.Date < StartDateCurrentPeriod
+                   || dtpEffectiveDate.Date > EndDateLastForwardingPeriod
+                  )
                 {
-                    dtpEffectiveDate.Date = StartDateCurrentPeriod;
+                    //dtpEffectiveDate.Date = StartDateCurrentPeriod;
                     MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
                     dtpEffectiveDate.Focus();
+                    dtpEffectiveDate.SelectAll();
                     return;
                 }
-                else if (dtpEffectiveDate.Date > EndDateLastForwardingPeriod)
+                else
                 {
-                    dtpEffectiveDate.Date = EndDateLastForwardingPeriod;
-                    MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
-                    dtpEffectiveDate.Focus();
-                    return;
+                	AddParam("GlEffectiveDate", dtpEffectiveDate.Date);
                 }
-
-                AddParam("GlEffectiveDate", dtpEffectiveDate.Date);
             }
 
             if ((txtReversalCommentOne.Text.Trim().Length == 0 && cmbReversalCommentOneType.SelectedIndex != -1)
@@ -193,15 +191,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 switch (function)
                 {
                     case "ReverseGiftBatch":
-                        MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reverted"));
+                        MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reversed"));
                         break;
 
                     case "ReverseGiftDetail":
-                        MessageBox.Show(Catalog.GetString("Your gift detail has been sucessfully reverted"));
+                        MessageBox.Show(Catalog.GetString("Your gift detail has been sucessfully reversed"));
                         break;
 
                     case "ReverseGift":
-                        MessageBox.Show(Catalog.GetString("Your gift has been sucessfully reverted"));
+                        MessageBox.Show(Catalog.GetString("Your gift has been sucessfully reversed"));
                         break;
 
                     case "AdjustGift":
@@ -225,6 +223,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void InitializeManualCode()
         {
             grdDetails.Visible = false;
+            
         	//FLedger is still zero at this point
             FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                 AGiftBatchTable.GetBatchStatusDBName(),
@@ -234,6 +233,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             SelectBatchChanged(null, null);
             
+            //add the focused event temporarily to allow execution of more manual code right at the 
+            //  end of the initialisation process.
             this.btnOK.Enter += new System.EventHandler(this.OKFocussed);
         }
 
@@ -251,35 +252,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             
             if (isChecked)
             {
+	            //First pass FLedgerNumber = 0 so need to add Ledger to the filter when the user first checks the checkbox
+	            if (FLedgerNumber != 0 && !FMainDS.AGiftBatch.DefaultView.RowFilter.Contains(AGiftBatchTable.GetLedgerNumberDBName()))
+	            {
+	                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = {1} AND {2} = '{3}'",
+	                    AGiftBatchTable.GetLedgerNumberDBName(),
+	                    FLedgerNumber,
+	                    AGiftBatchTable.GetBatchStatusDBName(),
+	                    MFinanceConstants.BATCH_UNPOSTED
+	                    );
+	            }
+	            
             	DataView myDataView = FMainDS.AGiftBatch.DefaultView;
 			    myDataView.AllowNew = false;
       			grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
       			if (grdDetails.Rows.Count > 1)
       			{
       				grdDetails.SelectRowInGrid(1);
-      				txtReversalCommentOne.Focus();
       			}
+      			txtReversalCommentOne.SelectAll();
+      			txtReversalCommentOne.Focus();
+            	dtpEffectiveDate.Enabled = false;
             }
             else
             {
             	grdDetails.DataSource = null;
+            	//bring enablement of the date textbox here to ensure enabled before setting focus
+            	dtpEffectiveDate.Enabled = true;
+            	dtpEffectiveDate.Focus();
+            	dtpEffectiveDate.SelectAll();
             }
 
             grdDetails.Enabled = isChecked;
-            dtpEffectiveDate.Enabled = !isChecked;
             lblEffectiveDate.Enabled = !isChecked;
             lblValidDateRange.Enabled = !isChecked;
 
-            //First pass FLedgerNumber = 0 so need to add Ledger to the filter when the user first checks the checkbox
-            if (chkSelect.Checked && (FLedgerNumber != 0) && !FMainDS.AGiftBatch.DefaultView.RowFilter.Contains(AGiftBatchTable.GetLedgerNumberDBName()))
-            {
-                FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = {1} AND {2} = '{3}'",
-                    AGiftBatchTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    AGiftBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED
-                    );
-            }
         }
 
         private void BtnCloseClick(object sender, EventArgs e)
