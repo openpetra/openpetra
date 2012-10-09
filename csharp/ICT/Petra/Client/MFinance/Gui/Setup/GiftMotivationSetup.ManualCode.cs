@@ -71,6 +71,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
                 myDataView.AllowNew = false;
+                myDataView.Sort = String.Format("{0} ASC, {1} ASC",
+                    AMotivationDetailFeeTable.GetMotivationGroupCodeDBName(),
+                    AMotivationDetailFeeTable.GetMotivationDetailCodeDBName()
+                    );
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
                 grdDetails.AutoSizeCells();
 

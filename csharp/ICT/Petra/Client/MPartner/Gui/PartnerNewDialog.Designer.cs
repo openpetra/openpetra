@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -215,11 +215,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerKey.Name = "txtPartnerKey";
             this.txtPartnerKey.PartnerKey = ((long)(0));
             this.txtPartnerKey.ReadOnly = false;
-            this.txtPartnerKey.ShowLabel = true;
-            this.txtPartnerKey.Size = new System.Drawing.Size(77, 22);
+            this.txtPartnerKey.ShowLabel = false;
+            this.txtPartnerKey.Size = new System.Drawing.Size(90, 22);
             this.txtPartnerKey.TabIndex = 3;
             this.txtPartnerKey.TextBoxReadOnly = false;
-            this.txtPartnerKey.TextBoxWidth = 64;
+            this.txtPartnerKey.TextBoxWidth = 80;
             //
             // txtFamilyPartnerBox
             //

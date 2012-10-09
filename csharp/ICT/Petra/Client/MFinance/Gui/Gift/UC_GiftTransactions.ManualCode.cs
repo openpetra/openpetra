@@ -52,6 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private string FBatchStatus = string.Empty;
         private string FBatchMethodOfPayment = string.Empty;
+        private decimal FExchangeRateToBase = 1.0m;
         private Int64 FLastDonor = -1;
         private bool FActiveOnly = true;
         private AGiftBatchRow FBatchRow = null;
@@ -90,6 +91,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 UpdateControlsProtection();
+
+                if (FExchangeRateToBase != GetBatchRow().ExchangeRateToBase)
+                {
+                    UpdateBaseAmount(false);
+                }
 
                 return;
             }
@@ -130,7 +136,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
-            FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}",
+            FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} ASC, {1} ASC",
                 AGiftDetailTable.GetGiftTransactionNumberDBName(),
                 AGiftDetailTable.GetDetailNumberDBName());
 
@@ -468,6 +474,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
         {
+            if ((FPreviouslySelectedDetailRow != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            {
+                UpdateBaseAmount(true);
+            }
+
             UpdateTotals();
         }
 
@@ -929,13 +940,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.DetailNumber = 1;
                 newRow.DateEntered = giftRow.DateEntered;
                 newRow.DonorKey = 0;
-                newRow.MotivationGroupCode = "GIFT";
-                newRow.MotivationDetailCode = "SUPPORT";
+                cmbDetailMotivationGroupCode.SelectedIndex = 0;
+                newRow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
+                newRow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
                 FMainDS.AGiftDetail.Rows.Add(newRow);
-
-                newRow.CommentOneType = "Both";
-                newRow.CommentTwoType = "Both";
-                newRow.CommentThreeType = "Both";
             }
 
             return newRow;
@@ -970,13 +978,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.DonorKey = ACurrentRow.DonorKey;
                 newRow.DonorName = ACurrentRow.DonorName;
                 newRow.DateEntered = ACurrentRow.DateEntered;
-                newRow.MotivationGroupCode = "GIFT";
-                newRow.MotivationDetailCode = "SUPPORT";
+                cmbDetailMotivationGroupCode.SelectedIndex = 0;
+                newRow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
+                newRow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
                 FMainDS.AGiftDetail.Rows.Add(newRow);
-
-                newRow.CommentOneType = "Both";
-                newRow.CommentTwoType = "Both";
-                newRow.CommentThreeType = "Both";
             }
 
             return newRow;
@@ -1197,6 +1202,75 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void UpdateControlsProtection()
         {
             UpdateControlsProtection(FPreviouslySelectedDetailRow);
+        }
+
+        /// <summary>
+        /// update the transaction base amount calculation from outside
+        /// </summary>
+        public void UpdateBaseAmount(bool AUpdateCurrentRowOnly)
+        {
+            Int32 ledgerNumber;
+            Int32 batchNumber;
+
+            if ((FLedgerNumber == -1) || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+
+            if (AUpdateCurrentRowOnly)
+            {
+                //This happens when the gift amount is updated
+                if (FExchangeRateToBase != GetBatchRow().ExchangeRateToBase)
+                {
+                    FExchangeRateToBase = GetBatchRow().ExchangeRateToBase;
+                }
+
+                FPreviouslySelectedDetailRow.GiftAmount = FPreviouslySelectedDetailRow.GiftTransactionAmount * FExchangeRateToBase;
+                return;
+            }
+
+            if (!((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
+            {
+                return;
+            }
+
+            FBatchRow = GetBatchRow();
+
+            if (FBatchRow == null)
+            {
+                FBatchRow = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().GetSelectedDetailRow();
+            }
+
+            if (FExchangeRateToBase != FBatchRow.ExchangeRateToBase)
+            {
+                FExchangeRateToBase = FBatchRow.ExchangeRateToBase;
+            }
+            else
+            {
+                return;
+            }
+
+            ledgerNumber = FBatchRow.LedgerNumber;
+            batchNumber = FBatchRow.BatchNumber;
+
+            if (FMainDS.AGift.Rows.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
+            }
+            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
+            {
+                //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    FPreviouslySelectedDetailRow.GiftAmount = FPreviouslySelectedDetailRow.GiftTransactionAmount * FExchangeRateToBase;
+                }
+            }
+
+            //Update all transactions
+            foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
+            {
+                gdr.GiftAmount = gdr.GiftTransactionAmount * FExchangeRateToBase;
+            }
         }
 
         private void UpdateControlsProtection(AGiftDetailRow ARow)

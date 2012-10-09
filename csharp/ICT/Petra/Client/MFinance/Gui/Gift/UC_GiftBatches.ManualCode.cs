@@ -41,6 +41,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -742,6 +743,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AGiftTDS.AGift.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
                 AGiftTable.GetLedgerNumberDBName(), GiftBatchRow.LedgerNumber,
                 AGiftTable.GetBatchNumberDBName(), GiftBatchRow.BatchNumber);
+            String ReceiptedDonorsList = "";
+            List<Int32> ReceiptedGiftTransactions = new List<Int32>();
 
             foreach (DataRowView rv in AGiftTDS.AGift.DefaultView)
             {
@@ -774,19 +777,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         GiftRow.Reference,
                         GiftBatchRow.CurrencyCode,
                         GiftBatchRow.DateCreated.Value);
-                    TFrmReceiptControl.PrintSinglePageLetter(HtmlDoc);
 
-                    if (MessageBox.Show(
-                            String.Format(Catalog.GetString(
-                                    "Please check that the receipt to {0} printed correctly.\r\nThe gift will be marked as receipted."),
-                                DonorShortName),
-                            Catalog.GetString("Receipt Printing"),
-                            MessageBoxButtons.OKCancel) == DialogResult.OK)
+                    TFrmReceiptControl.PrintSinglePageLetter(HtmlDoc);
+                    ReceiptedDonorsList += (DonorShortName + "\r\n");
+                    ReceiptedGiftTransactions.Add(GiftRow.GiftTransactionNumber);
+                    
+                }  // if receipt required
+            } // foreach gift
+
+            if (ReceiptedGiftTransactions.Count > 0)
+            {
+                if (MessageBox.Show(
+                        Catalog.GetString(
+                                "Please check that receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") 
+                                + ReceiptedDonorsList,
+                            
+                        Catalog.GetString("Receipt Printing"),
+                        MessageBoxButtons.OKCancel) == DialogResult.OK)
+                {
+                    foreach (Int32 Trans in ReceiptedGiftTransactions)
                     {
                         TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(
                             GiftBatchRow.LedgerNumber,
                             GiftBatchRow.BatchNumber,
-                            GiftRow.GiftTransactionNumber);
+                            Trans);
                     }
                 }
             }
@@ -938,6 +952,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             txtDetailHashTotal.CurrencySymbol = ACurrencyCode;
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
 
             if (!FPetraUtilsObject.SuppressChangeDetection && (FPreviouslySelectedDetailRow != null)
                 && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))

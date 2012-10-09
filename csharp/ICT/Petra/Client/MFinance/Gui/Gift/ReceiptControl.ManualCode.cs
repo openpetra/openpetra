@@ -145,6 +145,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintReceipts(FGiftTbl);
             string[] HtmlPages = HtmlDoc.Split(new string[] { "|PageBreak|" }, StringSplitOptions.None);
 
+            String ReceiptedDonorsList = "";
+            foreach (DataRow Row in FGiftTbl.Rows)
+            {
+                if (Row["Selected"].Equals(true))
+                {
+                    ReceiptedDonorsList += (Row["Donor"].ToString() + "\r\n");
+                }
+            }
+
             try
             {
                 foreach (string HtmlPage in HtmlPages)
@@ -153,7 +162,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 if (MessageBox.Show(
-                        Catalog.GetString("Please check that the receipts printed correctly.\r\nThe selected gifts will now be marked as receipted."),
+                        Catalog.GetString("Please check that receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n")
+                        + ReceiptedDonorsList,
                         Catalog.GetString("Receipt Printing"),
                         MessageBoxButtons.OKCancel) == DialogResult.Cancel)
                 {

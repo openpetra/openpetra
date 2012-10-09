@@ -198,12 +198,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             StringCollection Columns = TYml2Xml.GetElements(ctrl.xmlNode, "Columns");
 
-            if (ctrl.HasAttribute("SortableHeaders"))
-            {
-                string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
-                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
-            }
-
             if (Columns.Count > 0)
             {
                 writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Clear();" + Environment.NewLine);
@@ -284,6 +278,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 AssignEventHandlerToControl(writer, ctrl, "Selection.FocusRowEntered", "SourceGrid.RowEventHandler",
                     ctrl.GetAttribute("ActionFocusRow"));
+            }
+
+            if (ctrl.HasAttribute("SortableHeaders"))
+            {
+                string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
+                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
             }
 
             if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable")
