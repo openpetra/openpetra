@@ -1,8 +1,8 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       wolfgangb
 //
 // Copyright 2004-2012 by OM International
 //
@@ -28,18 +28,23 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Client;
+using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MCommon.Gui;
 
 
 namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
-    public partial class TFrmPartnerByEvent
+    public partial class TFrmPartnerByEventRole
     {
         private bool FCalledForConferences;
 
@@ -57,6 +62,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             }
         }
 
+        /// <summary>
+        /// This Procedure will get called when the event filter criteria are changed
+        /// </summary>
+        /// <param name="sender">The Object that throws this Event</param>
+        /// <param name="e">Event Arguments.
+        /// </param>
+        /// <returns>void</returns>
+        private void EventFilterChanged(System.Object sender, System.EventArgs e)
+        {
+            LoadEventListData();
+        }
+        
         private void InitializeManualCode()
         {
         }
@@ -72,20 +89,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 tabReportSettings.Controls.Remove(tpgColumns);
             }
 
-            ucoChkFilter.ShowFamiliesOnly(false);
-
-            // Prepare the window title and settings directory (will be used later by TFrmPetraReportingUtils).
-            // Normally the settings directory is set earlier but since this is one form that covers two extracts
-            // we need to initialize it a second time here with the correct directory.
-            if (FCalledForConferences)
-            {
-                FPetraUtilsObject.WindowCaption = Catalog.GetString("Partner by Conference");
-            }
-            else
-            {
-                FPetraUtilsObject.WindowCaption = Catalog.GetString("Partner by Outreach");
-            }
-
             // enable autofind in list for first character (so the user can press character to find list entry)
             this.clbEvent.AutoFindColumn = ((Int16)(1));
             this.clbEvent.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
@@ -97,13 +100,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                                                  SourceGrid.GridSpecialKeys.Escape) |
                                                 SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
 
+            // set controls in filter to default values
+            ucoFilter.InitialiseUserControl();
+            
+            // Hook up EventFilterChanged Event to be able to react to changed filter
+            ucoFilter.EventFilterChanged += new TEventHandlerEventFilterChanged(this.EventFilterChanged);
+            
             // populate list with data to be loaded
-            this.LoadListData("");
+            this.LoadEventListData();
 
+            // enable autofind in list for first character (so the user can press character to find list entry)
+            this.clbEventRole.AutoFindColumn = ((Int16)(1));
+            this.clbEventRole.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+
+            clbEventRole.SpecialKeys =
+                ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |
+                                                   SourceGrid.GridSpecialKeys.PageDownUp) |
+                                                  SourceGrid.GridSpecialKeys.Enter) |
+                                                 SourceGrid.GridSpecialKeys.Escape) |
+                                                SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
+
+            // populate list with data to be loaded
+            this.LoadEventRoleListData();
+            
             FPetraUtilsObject.LoadDefaultSettings();
         }
 
-        private void LoadListData(string AFilter)
+        private void LoadEventListData()
         {
             string CheckedMember = "CHECKED";
             string ValueMember = PPartnerTable.GetPartnerKeyDBName();
@@ -111,11 +134,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             string EventCodeMember = PUnitTable.GetOutreachCodeDBName();
             DataTable Table;
 
-            Table = TRemote.MPartner.Partner.WebConnectors.GetEventUnits(FCalledForConferences, !FCalledForConferences, 
-                                                                         AFilter, false, false);
+            Table = TRemote.MPartner.Partner.WebConnectors.GetEventUnits
+                (ucoFilter.IncludeConferenceUnits, ucoFilter.IncludeOutreachUnits,
+                 ucoFilter.NameFilter, false, ucoFilter.CurrentAndFutureEventsOnly);
 
             DataView view = new DataView(Table);
-
+            
             DataTable NewTable = view.ToTable(true, new string[] { DisplayMember, ValueMember, EventCodeMember });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
@@ -136,11 +160,31 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             clbEvent.SetCheckedStringList("");
         }
 
-        private void FilterList(System.Object sender, EventArgs e)
+        private void LoadEventRoleListData()
         {
-            LoadListData(txtFilter.Text);
-        }
+            string CheckedMember = "CHECKED";
+            string ValueMember = PtCongressCodeTable.GetCodeDBName();
+            string DisplayMember = PtCongressCodeTable.GetDescriptionDBName();
+            PtCongressCodeTable Table;
 
+            Table = (PtCongressCodeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.EventRoleList);
+
+            DataView view = new DataView(Table);
+
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            clbEventRole.Columns.Clear();
+            clbEventRole.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
+            clbEventRole.AddTextColumn(Catalog.GetString("Event Role"), NewTable.Columns[ValueMember], 100);
+            clbEventRole.AddTextColumn(Catalog.GetString("Description"), NewTable.Columns[DisplayMember], 240);
+
+            clbEventRole.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+
+            //TODO: only temporarily until settings file exists
+            clbEventRole.SetCheckedStringList("");
+        }
+        
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbEvent.GetCheckedStringList().Length == 0)

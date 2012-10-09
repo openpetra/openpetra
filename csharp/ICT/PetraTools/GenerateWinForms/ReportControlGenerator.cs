@@ -90,7 +90,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 return;
             }
-
+            
+            if (ctrl.GetAttribute("NoParameter") == "true")
+            {
+                return;
+            }
+            
             string paramName = ReportControls.GetParameterName(curNode);
 
             if (paramName == null)
@@ -386,14 +391,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 controlName + ".InitialiseData(FPetraUtilsObject);" +
                 Environment.NewLine);
 
-            writer.Template.AddToCodelet("READCONTROLS",
-                controlName + ".ReadControls(ACalc, AReportAction);" +
-                Environment.NewLine);
-
-            writer.Template.AddToCodelet("SETCONTROLS",
-                controlName + ".SetControls(AParameters);" +
-                Environment.NewLine);
-
+            if (!(TYml2Xml.HasAttribute(curNode, "NoParameter") && (TYml2Xml.GetAttribute(curNode, "NoParameter").ToLower() == "true")))
+            {
+                writer.Template.AddToCodelet("READCONTROLS",
+                    controlName + ".ReadControls(ACalc, AReportAction);" +
+                    Environment.NewLine);
+    
+                writer.Template.AddToCodelet("SETCONTROLS",
+                    controlName + ".SetControls(AParameters);" +
+                    Environment.NewLine);
+            }
+            
             writer.Template.AddToCodelet("SETAVAILABLEFUNCTIONS",
                 controlName + ".SetAvailableFunctions(FPetraUtilsObject.GetAvailableFunctions());" +
                 Environment.NewLine);

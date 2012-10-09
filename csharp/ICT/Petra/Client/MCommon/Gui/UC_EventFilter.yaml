@@ -1,24 +1,21 @@
 RootNode:
-    BaseYaml: ../../CommonForms/PetraForm.yaml
-    FormTitle: Select Event
+    BaseClass: System.Windows.Forms.UserControl
     Namespace: Ict.Petra.Client.MCommon.Gui
-    FormType: browse
-    Template: window
-    WindowWidth: 600
-    WindowHeight: 600
-    TemplateParameters:
-        INITUSERCONTROLS: InitUserControlsManually();
+    FormType: edit
+    Template: usercontrolUnbound
+#    WindowWidth: 600
+#    WindowHeight: 600
+#    TemplateParameters:
+#        INITUSERCONTROLS: InitUserControlsManually();
     Actions:
         actActivateFilter: {ActionClick=FilterEvents}     
         actClearFilter: {ActionClick=ClearFilterEvents}     
-        actAccept: {ActionClick=AcceptSelection}
-        actCancel: {ActionClick=CancelClick}
         
     Controls:
         pnlContent:
             Dock: Fill
             Stretch: horizontally
-            Controls: [pnlFilter, grdEvent, pnlBottom]
+            Controls: [pnlFilter]
         pnlFilter:
             Stretch: horizontally
             Controls: [grpFilterEventType, grpFilterEventName]
@@ -31,15 +28,19 @@ RootNode:
         rbtOutreach:
             Label: Outreaches Only
             OnChange: EventTypeChanged
+            NoParameter: true
         rbtConference:
             Label: Conferences Only
             OnChange: EventTypeChanged
+            NoParameter: true
         rbtAll:
             Label: All
             OnChange: EventTypeChanged
+            NoParameter: true
         chkCurrentFutureOnly:
             Label: Current / Future Events Only
             OnChange: EventDateChanged
+            NoParameter: true
         
         grpFilterEventName:
             Label: Filter by Event Name
@@ -49,6 +50,7 @@ RootNode:
         txtEventName:
             Label: Event Name
             Width: 300
+            NoParameter: true
         btnFilter:
             Label: Filter
             Action: actActivateFilter
@@ -56,16 +58,3 @@ RootNode:
             Label: Clear Filter
             Action: actClearFilter
                     
-        grdEvent:
-            Stretch: horizontally
-            Height: 350
-            ActionDoubleClick: grdEventDoubleClick
-        pnlBottom:
-            Controls:
-                Row1: [btnAccept, btnCancel]
-        btnAccept:
-            Label: Accept
-            Action: actAccept
-        btnCancel:
-            Label: Cancel
-            Action: actCancel

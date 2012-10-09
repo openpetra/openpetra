@@ -64,6 +64,18 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             frm.Show();
         }
 
+        /// <summary>
+        /// open screen to create "Event Role" Extract
+        /// </summary>
+        public static void PartnerByEventRoleExtract(Form AParentForm)
+        {
+            TFrmPartnerByEventRole frm = new TFrmPartnerByEventRole(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.CalledForConferences = true;
+            frm.Show();
+        }
+
         /// Open screen for creating "Partner by Commitment" Extract
         public static void PartnerByCommitmentExtract(Form AParentForm)
         {
