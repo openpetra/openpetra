@@ -38,7 +38,8 @@ namespace Ict.Common.Controls
         private TDashboard FDashboard;
         private TExtStatusBarHelp FStatusbar = null;
         private bool FMovingSplitter = false;       // avoid recursion of events on Mono
-
+        private bool FMultiLedgerSite = false;
+        
         #region Public Static
 
         /// <summary>
@@ -117,6 +118,22 @@ namespace Ict.Common.Controls
             set
             {
                 FStatusbar = value;
+            }
+        }
+
+        /// <summary>
+        /// True if the Site that OpenPetra is running on uses multiple Ledgers, otherwise false.
+        /// </summary>
+        public bool MultiLedgerSite
+        {
+            get
+            {
+                return FMultiLedgerSite;
+            }
+            
+            set
+            {
+                FMultiLedgerSite = value;
             }
         }
 
@@ -213,7 +230,7 @@ namespace Ict.Common.Controls
             }
             else
             {
-                TPnlModuleNavigation CollPanelHoster = new TPnlModuleNavigation(AFolderNode, FDashboard, this.Width);
+                TPnlModuleNavigation CollPanelHoster = new TPnlModuleNavigation(AFolderNode, FDashboard, this.Width, FMultiLedgerSite);
                 CollPanelHoster.Name = pnlName;
                 CollPanelHoster.Statusbar = FStatusbar;
                 CollPanelHoster.Dock = DockStyle.Left;

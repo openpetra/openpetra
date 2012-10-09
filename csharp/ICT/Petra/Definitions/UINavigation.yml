@@ -23,7 +23,7 @@ OpenPetra:
         # Department
         Partner: {Label=Pa&rtner, Icon=partner.ico, PermissionsRequired=PTNRUSER}
             # Module
-            Main:
+            Main: {SkipThisLevel=true}
                 # Sub Module
                 Partners: {Namespace=Ict.Petra.Client.MPartner.Gui}
                     SearchBoxes: [Partner]
@@ -127,7 +127,7 @@ OpenPetra:
             #MoreFunctions:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
-        Finance: {Icon=accounts.ico, Label=Ledger, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui, PermissionsRequired=FINANCE-1}
+        Finance: {Icon=accounts.ico, Label=Finance, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui, PermissionsRequired=FINANCE-1}
             Finance:
                 GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift}
                     SearchBoxes: [Donor, Recipient]
@@ -247,8 +247,8 @@ OpenPetra:
                         SetupAdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
                         SetupAdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
         CrossLedgerSetup: {Icon=finance_setup.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
-            CrossLedgerSetup: {Label="Finance Setup"}
-                General:
+            CrossLedgerSetup: {SkipThisLevel=true}
+                General: 
                     Ledger:
                         CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedger, PermissionsRequired="FINANCE-3"}
                     Setup: {Label="Finance Setup (Cross-Ledger)"}
@@ -262,7 +262,7 @@ OpenPetra:
                         SetupDailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
         Personnel: {Icon=personel.ico, PermissionsRequired=PERSONNEL}
             # Module
-            Main:
+            Main: {SkipThisLevel=true}
                 # Sub Module
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
                     Administration:
@@ -330,7 +330,7 @@ OpenPetra:
                         LocalDataFieldOrderPersonnel: {Label=Setup Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}
                         
         ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE}
-            Main:
+            Main: {SkipThisLevel=true}
                 Find: {Namespace=Ict.Petra.Client.MConference.Gui}
                     FindConference: {ActionOpenScreen=TFrmConferenceFindForm}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference}  # Icon=Print.ico
@@ -361,7 +361,7 @@ OpenPetra:
                 Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup}
                     General:
                         ConferenceCostType: {Label= Setup Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
-        FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev, DependsOnLedger=true, PermissionsRequired=DEVUSER}
+        FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Fin. Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}
             Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}  # Icon=Print.ico
                 GeneralReports:
                     IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
@@ -378,7 +378,7 @@ OpenPetra:
                     NewDonorReport: {ActionOpenScreen=TFrmNewDonorReport}
                         TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
         Settings: {Icon=settings.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
-            Main:
+            Main: {SkipThisLevel=true}
                 Main:
                     Safety:
                         SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
@@ -387,7 +387,7 @@ OpenPetra:
                     Export:
                         ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExport}
 
-        SystemManager: {Icon=sysman.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
+        SystemManager: {Icon=sysman.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN, ShowAsCollapsiblePanels=true}
             Security:
                 Users:
                     Maintenance:

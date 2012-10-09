@@ -363,66 +363,69 @@ namespace Ict.Common.Controls
 
             XmlNode TaskNode = Node.FirstChild;
 
+               
             //Iterate through all children nodes of the node
             while (TaskNode != null)
             {
-                //If the node is a task node...
-                if (TaskRegex.IsMatch(TaskNode.Name))
+                if (SkipThisLevel(TaskNode))
                 {
-                    LinkLabel lblTaskItem = new LinkLabel();
-                    lblTaskItem.Tag = TaskNode;
+                    TaskNode = TaskNode.FirstChild;
+                }                
+                
+                LinkLabel lblTaskItem = new LinkLabel();
+                lblTaskItem.Tag = TaskNode;
 
-                    if (TaskNode != FActiveTaskItem) 
+                if (TaskNode != FActiveTaskItem) 
+                {
+                    SetCommonNonActivatedLinkAppearance(lblTaskItem);
+                }
+                else
+                {
+                    SetCommonActivatedLinkAppearance(lblTaskItem);
+                }
+                
+                lblTaskItem.Name = TaskNode.Name;
+                lblTaskItem.AutoSize = true;
+                lblTaskItem.Font = VisualStyle.ContentFont;                  
+
+                //@TODO: This line specifies the indentation by setting the location, however each level is indented the same amount
+                // Should allow the first level to be indented a different amount than the rest of the levels
+                lblTaskItem.Location = new System.Drawing.Point(VisualStyle.ContentPaddingLeft + (NumberingLevel * this.TaskIndentation), VisualStyle.ContentPaddingTop + (NumTasks * TaskHeight));
+
+                lblTaskItem.LinkClicked += new LinkLabelLinkClickedEventHandler(lblTaskItem_LinkClicked);
+                lblTaskItem.Links[0].LinkData = TaskNode;
+
+                lblTaskItem.MouseEnter += new System.EventHandler(this.LinkLabelMouseEnter);
+                lblTaskItem.MouseLeave += new System.EventHandler(this.LinkLabelMouseLeave);
+                
+                lblTaskItem.Enabled = !IsDisabled(TaskNode);
+
+                if (this.IsVisible(TaskNode))
+                {
+                    //Automatic Numbering
+                    String NumberText = ParentNumberText + (CurrentNumbering).ToString() + ".";
+
+                    if (!this.InternalAutomaticNumbering)
                     {
-                        SetCommonNonActivatedLinkAppearance(lblTaskItem);
+                        lblTaskItem.Text = TLstFolderNavigation.GetLabel(TaskNode);
                     }
                     else
                     {
-                        SetCommonActivatedLinkAppearance(lblTaskItem);
+                        lblTaskItem.Text = NumberText + " " + TLstFolderNavigation.GetLabel(TaskNode);
+                        CurrentNumbering++;
                     }
+
+                    this.tPnlGradient1.Controls.Add(lblTaskItem);
                     
-                    lblTaskItem.Name = TaskNode.Name;
-                    lblTaskItem.AutoSize = true;
-                    lblTaskItem.Font = VisualStyle.ContentFont;                  
-
-                    //@TODO: This line specifies the indentation by setting the location, however each level is indented the same amount
-                    // Should allow the first level to be indented a different amount than the rest of the levels
-                    lblTaskItem.Location = new System.Drawing.Point(VisualStyle.ContentPaddingLeft + (NumberingLevel * this.TaskIndentation), VisualStyle.ContentPaddingTop + (NumTasks * TaskHeight));
-
-                    lblTaskItem.LinkClicked += new LinkLabelLinkClickedEventHandler(lblTaskItem_LinkClicked);
-                    lblTaskItem.Links[0].LinkData = TaskNode;
-
-                    lblTaskItem.MouseEnter += new System.EventHandler(this.LinkLabelMouseEnter);
-                    lblTaskItem.MouseLeave += new System.EventHandler(this.LinkLabelMouseLeave);
+                    FXmlNodeToLinkLabelMapping[TaskNode] = lblTaskItem;
                     
-                    lblTaskItem.Enabled = !IsDisabled(TaskNode);
+                    NumTasks++;
 
-                    if (this.IsVisible(TaskNode))
+                    //If the TaskNode has Children, do subtasks
+                    if ((TaskNode.HasChildNodes)
+                        && (!DontShowNestedTasksAsLinks(TaskNode)))
                     {
-                        //Automatic Numbering
-                        String NumberText = ParentNumberText + (CurrentNumbering).ToString() + ".";
-
-                        if (!this.InternalAutomaticNumbering)
-                        {
-                            lblTaskItem.Text = TLstFolderNavigation.GetLabel(TaskNode);
-                        }
-                        else
-                        {
-                            lblTaskItem.Text = NumberText + " " + TLstFolderNavigation.GetLabel(TaskNode);
-                            CurrentNumbering++;
-                        }
-
-                        this.tPnlGradient1.Controls.Add(lblTaskItem);
-                        
-                        FXmlNodeToLinkLabelMapping[TaskNode] = lblTaskItem;
-                        
-                        NumTasks++;
-
-                        //If the TaskNode has Children, do subtasks
-                        if (TaskNode.HasChildNodes)
-                        {
-                            LoadTaskItems(TaskNode, NumberingLevel, NumberText, false);
-                        }
+                        LoadTaskItems(TaskNode, NumberingLevel, NumberText, false);
                     }
                 }
 
@@ -678,14 +681,22 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="node"></param>
         /// <param name="attr"></param>
+        /// <param name="TrueByDefault"></param>
         /// <returns>Boolean whether given Xml Node has the passed attribute set to true</returns>
-        public bool AttributeTrue(XmlNode node, string attr)
+        public bool AttributeTrue(XmlNode node, string attr, bool TrueByDefault = true)
         {
             XmlAttributeCollection tmp = node.Attributes;
             
             if (node.Attributes[attr] == null) 
             {
-                return true;    
+                if (TrueByDefault) 
+                {                
+                   return true;    
+                }
+                else
+                {
+                    return false;
+                }
             }
             
             return TrueRegex.IsMatch(node.Attributes[attr].Value);
@@ -730,6 +741,26 @@ namespace Ict.Common.Controls
             return AttributeFalse(node, "Enabled");
         }
 
+        /// <summary>
+        /// Returns whether given Xml Node has the attribute DontShowNestedTasksAsLinks set to true
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>True if the DontShowNestedTasksAsLinks attribute is set to true or if it isn't set, otherwise false.</returns>
+        public bool DontShowNestedTasksAsLinks(XmlNode node)
+        {
+            return AttributeTrue(node, "DontShowNestedTasksAsLinks");
+        }
+
+        /// <summary>
+        /// Returns whether given Xml Node has the attribute SkipThisLevel set to true
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>True if the SkipThisLevel attribute is set to true or if it isn't set, otherwise false.</returns>
+        public bool SkipThisLevel(XmlNode node)
+        {
+            return AttributeTrue(node, "SkipThisLevel", false);
+        }
+        
         /// <summary>
         /// Clears all attributes of a certain type for all descendents of the specified node
         /// </summary>

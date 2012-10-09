@@ -47,6 +47,8 @@ namespace Ict.Petra.Client.App.PetraClient
         private const string VIEWTASKS_TILES = "Tiles";
         private const string VIEWTASKS_LIST = "List";
 
+        private static bool FMultiLedgerSite = false;
+        
         private void InitializeManualCode()
         {
             LoadNavigationUI();
@@ -145,30 +147,52 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 if (TXMLParser.GetAttribute(childNode, "DependsOnLedger").ToLower() == "true")
                 {
-                    string label = TXMLParser.GetAttribute(childNode, "Label");
-
-                    foreach (ALedgerRow ledger in AAvailableLedgers.Rows)
-                    {
-                        XmlNode NewNode = childNode.Clone();
-                        childNode.ParentNode.InsertBefore(NewNode, childNode);
-                        XmlAttribute ledgerNumberAttribute = childNode.OwnerDocument.CreateAttribute("LedgerNumber");
-                        ledgerNumberAttribute.Value = ledger.LedgerNumber.ToString();
-                        NewNode.Attributes.Append(ledgerNumberAttribute);
-
-                        if (AAvailableLedgers.Rows.Count > 1)
+                    // If there is more than one Ledger in the system, show a 'Select Legdger' Collapsible Panel with a Task (=LinkLabel) 
+                    // for each Ledger.
+                    if (AAvailableLedgers.Rows.Count > 1)
+                    {    
+                        FMultiLedgerSite = true;
+                        
+                        string label = TXMLParser.GetAttribute(childNode, "Label");
+    
+                        // Create 'Select Legdger' Node
+                        XmlAttribute LabelAttributeLedger = childNode.OwnerDocument.CreateAttribute("Label");
+                        XmlElement SelLedgerElmnt = childNode.OwnerDocument.CreateElement("SelectLedger");
+                        XmlNode SelectLedgerNode = childNode.AppendChild(SelLedgerElmnt);
+                        SelectLedgerNode.Attributes.Append(LabelAttributeLedger);
+                        SelectLedgerNode.Attributes["Label"].Value = Catalog.GetString("Select Ledger");  
+    
+                        // Create 1..n 'Ledger xyz' Nodes
+                        foreach (ALedgerRow ledger in AAvailableLedgers.Rows)
                         {
-                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), ledger.LedgerName, ledger.LedgerNumber);
-                        }
-                        else
-                        {
-                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), "", "");
+                            XmlElement SpecificLedgerElmnt = childNode.OwnerDocument.CreateElement("Ledger" + ledger.LedgerNumber);
+                            XmlNode SpecificLedgerNode = SelectLedgerNode.AppendChild(SpecificLedgerElmnt);
+                            XmlAttribute LabelAttributeSpecificLedger = childNode.OwnerDocument.CreateAttribute("Label");
+                            SpecificLedgerNode.Attributes.Append(LabelAttributeSpecificLedger);
+                            XmlAttribute ledgerNumberAttribute = childNode.OwnerDocument.CreateAttribute("LedgerNumber");
+                            ledgerNumberAttribute.Value = ledger.LedgerNumber.ToString();
+                            SpecificLedgerNode.Attributes.Append(ledgerNumberAttribute);
+                                                        
+                            if (ledger.LedgerName != String.Empty) 
+                            {
+                                SpecificLedgerNode.Attributes["Label"].Value = String.Format(Catalog.GetString("Ledger {0} (#{1})"), ledger.LedgerName, ledger.LedgerNumber);    
+                            }
+                            else
+                            {
+                                SpecificLedgerNode.Attributes["Label"].Value = String.Format(Catalog.GetString("Ledger #{0}"), ledger.LedgerNumber);
+                            }                            
                         }
                     }
-
-                    // remove the node that has the place holder for the ledger
-                    XmlNode toRemove = childNode;
+                    else
+                    {
+                        // Dynamically add Attribute 'SkipThisLevel' to the next child, which would be the child for the Collapsible Panel, 
+                        // which we don't need/want for a 'Single Ledger' Site!                        
+                        XmlAttribute LabelSkipCollapsibleLevel = childNode.OwnerDocument.CreateAttribute("SkipThisLevel");
+                        childNode.ChildNodes[0].Attributes.Append(LabelSkipCollapsibleLevel);
+                        childNode.ChildNodes[0].Attributes["SkipThisLevel"].Value = "true";
+                    }
+                        
                     childNode = childNode.NextSibling;
-                    AMenuNode.RemoveChild(toRemove);
                 }
                 else
                 {
@@ -186,18 +210,18 @@ namespace Ict.Petra.Client.App.PetraClient
             TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
 
-//            ALedgerTable AvailableLedgers = new ALedgerTable();
-//
-//            if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
-//            {
-//                AvailableLedgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
-//            }
+            ALedgerTable AvailableLedgers = new ALedgerTable();
+
+            if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
+            {
+                AvailableLedgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
+            }
 
             XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
 
-//            AddNavigationForEachLedger(MainMenuNode, AvailableLedgers);
+            AddNavigationForEachLedger(MainMenuNode, AvailableLedgers);
 
             return MainMenuNode;
         }
@@ -210,6 +234,8 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode MainMenuNode = BuildNavigationXml();
             XmlNode DepartmentNode = MainMenuNode.FirstChild;
 
+            lstFolders.MultiLedgerSite = FMultiLedgerSite;
+            
             lstFolders.ClearFolders();
 
             TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission);

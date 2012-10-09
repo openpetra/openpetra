@@ -25,6 +25,8 @@ using System;
 using System.Xml;
 using System.Windows.Forms;
 
+using Ict.Common.IO;
+
 namespace Ict.Common.Controls
 {
     /// <summary>
@@ -74,30 +76,39 @@ namespace Ict.Common.Controls
         /// <param name="AFolderNode"></param>
         /// <param name="ADashboard"></param>
         /// <param name="AExpandedWidth"></param>
-        public TPnlModuleNavigation(XmlNode AFolderNode, TDashboard ADashboard, int AExpandedWidth)
+        /// <param name="AMultiLedgerSite"></param>
+        public TPnlModuleNavigation(XmlNode AFolderNode, TDashboard ADashboard, int AExpandedWidth, bool AMultiLedgerSite)
         {
             this.FDashboard = ADashboard;
             this.Dock = DockStyle.Top;
-//            this.Height = 0;
 
             FCollapsibleNavigation.AutoSize = true;
             FCollapsibleNavigation.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             FCollapsibleNavigation.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontal;
             FCollapsibleNavigation.Dock = System.Windows.Forms.DockStyle.Left;
             FCollapsibleNavigation.ExpandedSize = AExpandedWidth;
-            FCollapsibleNavigation.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckCollapsiblePanelHoster;
             FCollapsibleNavigation.Location = new System.Drawing.Point(0, 0);
             FCollapsibleNavigation.Margin = new System.Windows.Forms.Padding(0);
-//            FCollapsibleNavigation.Name = "cplFolders";
-//            FCollapsibleNavigation.Size = new System.Drawing.Size(424, 605);
             FCollapsibleNavigation.TabIndex = 0;
-            FCollapsibleNavigation.Text = "Finance";
             FCollapsibleNavigation.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
             FCollapsibleNavigation.Collapsed += delegate(object sender, EventArgs e) { OnCollapsed(); };
             FCollapsibleNavigation.Expanded += delegate(object sender, EventArgs e) { OnExpanded(); };
             FCollapsibleNavigation.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked) 
                 { OnItemActivation(ATaskList, ATaskListNode, AItemClicked); };
+
+            if (((AMultiLedgerSite && 
+                  (TXMLParser.GetAttribute(AFolderNode, "DependsOnLedger").ToLower() == "true"))
+                  || (TXMLParser.GetAttribute(AFolderNode, "ShowAsCollapsiblePanels").ToLower() == "true")))
+            {
+                FCollapsibleNavigation.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckCollapsiblePanelHoster;    
+            }
+            else
+            {
+                FCollapsibleNavigation.HostedControlKind = THostedControlKind.hckTaskList;
+            }
+           
             FCollapsibleNavigation.TaskListNode = AFolderNode;
+            
             FCollapsibleNavigation.InitUserControl();
             
             this.Controls.Add(FCollapsibleNavigation);

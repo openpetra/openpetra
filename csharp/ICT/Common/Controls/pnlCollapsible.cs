@@ -859,6 +859,17 @@ namespace Ict.Common.Controls
             btnToggle.ImageIndex = GetArrowGraphicIndex(FMouseHoveringOverCollapseToggle);
             TitleShow();
 
+            if (FCollapseDirection == TCollapseDirection.cdVertical)
+            {
+                this.Height = FExpandedSize;
+            }
+            else
+            {
+                this.Width = FExpandedSize;
+                
+                ShowHideCollapsedInfoText(false);
+            }
+            
             switch (FHostedControlKind)
             {
                 case THostedControlKind.hckUserControl:
@@ -937,18 +948,7 @@ namespace Ict.Common.Controls
                     
                     break;
             }
-            
-            if (FCollapseDirection == TCollapseDirection.cdVertical)
-            {
-                this.Height = FExpandedSize;
-            }
-            else
-            {
-                this.Width = FExpandedSize;
-                
-                ShowHideCollapsedInfoText(false);
-            }
-           
+                       
             OnExpanded();
         }
 
