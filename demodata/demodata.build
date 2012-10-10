@@ -34,7 +34,7 @@
 <target name="importDemodata" depends="init, initConfigFiles">
     <!-- requires a server to be started that we can connect to and upload our data -->
     <property name="operation" value="all" overwrite="false"/>
-    <ExecDotNet program="${dir.bin}/Ict.Testing.SampleDataConstructor.exe" 
+    <ExecDotNet program="${dir.bin}/Ict.Petra.Tools.SampleDataConstructor.exe" 
         commandline="-C:&quot;${dir.etc}/TestServer.config&quot; -dir.data.generated:&quot;${dir.root}/demodata/generated&quot; -operation:${operation}"
         failonerror="true"/>
 </target>
