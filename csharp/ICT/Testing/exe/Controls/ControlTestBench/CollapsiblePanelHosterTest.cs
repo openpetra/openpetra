@@ -66,6 +66,8 @@ public partial class CollapsiblePanelHosterTest : Form
         pnlCollapsiblePanelHostTest.Controls.Add(FCollPanelHoster);
         
         FCollPanelHoster.RealiseCollapsiblePanelsNow();
+        
+        HookupItemActivationEvent();
     }       
     
     void BtnGetTaskList1Click(object sender, System.EventArgs e)
@@ -110,5 +112,15 @@ public partial class CollapsiblePanelHosterTest : Form
     {
         FCollPanelHoster.ActiveTaskItem = TaskListTest.FindTaskNodeByName(txtTaskName.Text, FCollPanelHoster.MasterXmlNode);
     }
+    
+    private void HookupItemActivationEvent()
+    {
+        this.FCollPanelHoster.ItemActivation += new TTaskList.TaskLinkClicked(CollPanelHoster_ItemActivation);
+    }
+
+    void CollPanelHoster_ItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+    {
+        MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
+    }            
 }
 }

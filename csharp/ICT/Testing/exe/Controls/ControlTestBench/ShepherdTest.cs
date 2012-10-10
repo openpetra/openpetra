@@ -66,11 +66,22 @@ public partial class ShepherdTest : Form
         this.Controls.Add(this.tPnlCollapsible1);
         
         this.Size = new Size(750, 400);
-        
+ 
+        HookupItemActivationEvent();
 //        tPnlCollapsible1.VisualStyleEnum = TVisualStylesEnum.vsShepherd;
 //        tPnlCollapsible1.TaskListNode = AXmlNode;
 //        tPnlCollapsible1.Collapse();
 //        tPnlCollapsible1.Expand();                
     }
+    
+   private void HookupItemActivationEvent()
+    {
+       ((TPnlCollapsible)this.Controls[0]).ItemActivation += new TTaskList.TaskLinkClicked(CollPanel_ItemActivation);
+    }
+
+    void CollPanel_ItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+    {
+        MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
+    }                
 }
 }

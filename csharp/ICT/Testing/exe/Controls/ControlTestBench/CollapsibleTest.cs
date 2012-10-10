@@ -74,6 +74,8 @@ namespace ControlTestBench
             this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, FTestYAMLNode, TCollapseDirection.cdVertical, 10, false, FEnumStyle);
             this.FPnl.Text = "&Tasks";
             this.Controls.Add(this.FPnl);
+            
+            HookupItemActivationEvent();
         }
         private void TestUserControlVerticalConstructor(object sender, EventArgs e)
         {
@@ -93,6 +95,8 @@ namespace ControlTestBench
             this.FPnl.BorderStyle = BorderStyle.FixedSingle;
             this.FPnl.Text = "&Finance";
             this.Controls.Add(this.FPnl);
+            
+            HookupItemActivationEvent();
         }
         
         void TestTaskListHorizontalRightConstructor(object sender, System.EventArgs e)
@@ -112,6 +116,8 @@ namespace ControlTestBench
             this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TCollapseDirection.cdVertical, false);
             this.FPnl.Text = "&TaskList Expanded";
             this.Controls.Add(this.FPnl);
+            
+            HookupItemActivationEvent();
         }
         private void TestFullConstructor(object sender, EventArgs e)
         {
@@ -245,5 +251,15 @@ namespace ControlTestBench
                 MessageBox.Show("There is no TaskList Instance!");
             }
         }
+        
+        private void HookupItemActivationEvent()
+        {
+            this.FPnl.ItemActivation += new TTaskList.TaskLinkClicked(CollPanel_ItemActivation);
+        }
+
+        void CollPanel_ItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+        {
+            MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
+        }        
     }
 }

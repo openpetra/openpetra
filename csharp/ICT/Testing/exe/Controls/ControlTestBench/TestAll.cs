@@ -332,6 +332,28 @@ namespace ControlTestBench
             
             pchTasks1.MasterXmlNode = GetHardCodedXmlNodes_AccordionPanel3();
             pchTasks1.RealiseCollapsiblePanelsNow();
+            
+            HookupItemActivationEvent_CollPanel(cplFolders);
+            HookupItemActivationEvent_CollPanel(cplShepherd);
+            HookupItemActivationEvent_CollPanel(cplTasks3);
+            HookupItemActivationEvent_CollPanel(cplTasks4);
+            HookupItemActivationEvent_CollPanelHoster(pchTasks1);
+            
        }
+        
+       private void HookupItemActivationEvent_CollPanel(TPnlCollapsible ACollPanel)
+       {
+          ACollPanel.ItemActivation += new TTaskList.TaskLinkClicked(ItemActivationHandler);
+       }
+
+       private void HookupItemActivationEvent_CollPanelHoster(TPnlCollapsibleHoster ACollPanelHoster)
+       {
+          ACollPanelHoster.ItemActivation += new TTaskList.TaskLinkClicked(ItemActivationHandler);
+       }
+    
+       void ItemActivationHandler(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+       {
+           MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
+       }        
     }
 }
