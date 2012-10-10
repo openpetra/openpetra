@@ -43,6 +43,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using DevAge.ComponentModel;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Client.MFinance.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -57,7 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FLedgerNumber = value;
-                txtLedger.Text = FLedgerNumber.ToString();
+                txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             }
         }
 

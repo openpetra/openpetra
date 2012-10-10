@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using System.Collections.Generic;
+using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -764,6 +765,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 String DonorShortName;
                 TPartnerClass DonorClass;
                 TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(GiftRow.DonorKey, out DonorShortName, out DonorClass);
+                DonorShortName = Calculations.FormatShortName(DonorShortName,eShortNameFormat.eReverseShortname);
 
                 if (ReceiptEachGift)
                 {
