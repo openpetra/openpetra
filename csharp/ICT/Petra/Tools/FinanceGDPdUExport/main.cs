@@ -79,6 +79,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 List <string>CostCentresInvolved = new List <string>();
                 List <string>AccountsInvolved = new List <string>();
 
+                SortedList<string, string> TaxAnalysisAttributes = TGDPdUExportTransactions.GetTaxAnalysisAttributes();
+                
                 foreach (string FinancialYearString in FinancialYears.Split(new char[] { ',' }))
                 {
                     Int32 FinancialYear = Convert.ToInt32(FinancialYearString);
@@ -98,6 +100,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                         ReportingCostCentres,
                         IgnoreAccounts,
                         IgnoreTransactionsByReference,
+                        TaxAnalysisAttributes,
                         ref CostCentresInvolved,
                         ref AccountsInvolved);
 
@@ -111,6 +114,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
                 TGDPdUExportAccountsAndCostCentres.ExportAccounts(OutputPath, CSVSeparator, NewLine, LedgerNumber,
                     AccountsInvolved);
+                
+                TGDPdUExportTransactions.ExportTaxAnalysisAttributes(OutputPath, CSVSeparator, NewLine, TaxAnalysisAttributes);
             }
             catch (Exception e)
             {

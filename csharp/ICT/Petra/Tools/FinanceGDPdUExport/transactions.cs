@@ -97,6 +97,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             string ACostCentres,
             string AIgnoreAccounts,
             string AIgnoreReferences,
+            SortedList<string, string>ATaxAnalysisAttributes,
             ref List <string>ACostCentresInvolved,
             ref List <string>AAccountsInvolved)
         {
@@ -215,12 +216,40 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
                 DataRowView[] attribs = TransAnalAttrib.DefaultView.FindRows(new object[] { row.BatchNumber, row.JournalNumber, row.TransactionNumber });
 
+                decimal TaxOnIncome = 0.0m;
+                decimal TaxOnExpense = 0.0m;
+                    
                 foreach (DataRowView rv in attribs)
                 {
                     ATransAnalAttribRow attribRow = (ATransAnalAttribRow)rv.Row;
 
                     // also export attribRow.AnalysisTypeCode?
                     attributes.Append(attribRow.AnalysisAttributeValue);
+                    
+                    if (attribRow.AnalysisAttributeValue == "v19")
+                    {
+                        TaxOnExpense = row.TransactionAmount * 0.19m;
+                    }
+                    else if (attribRow.AnalysisAttributeValue == "v7")
+                    {
+                        TaxOnExpense = row.TransactionAmount * 0.07m;
+                    }
+                    else if (attribRow.AnalysisAttributeValue == "70v7")
+                    {
+                        TaxOnExpense = row.TransactionAmount * 0.7m * 0.07m;
+                    }
+                    else if (attribRow.AnalysisAttributeValue == "70v19")
+                    {
+                        TaxOnExpense = row.TransactionAmount * 0.7m * 0.19m;
+                    }
+                    else if (attribRow.AnalysisAttributeValue == "m19")
+                    {
+                        TaxOnIncome = row.TransactionAmount * 0.19m;
+                    }
+                    else if (attribRow.AnalysisAttributeValue == "m7")
+                    {
+                        TaxOnIncome = row.TransactionAmount * 0.07m;
+                    }
                 }
 
                 DataRowView[] RelatedTransactions = allTransactionsInJournal.DefaultView.FindRows(new object[] { row.BatchNumber, row.JournalNumber });
@@ -245,7 +274,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 {
                     AAccountsInvolved.Add(row.AccountCode);
                 }
-
+                
                 sb.Append(StringHelper.StrMerge(
                         new string[] {
                             row.CostCentreCode,
@@ -258,7 +287,9 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                             OtherAccountCodes,
                             row.Narrative,
                             row.Reference,
-                            attributes.ToString()
+                            attributes.ToString(),
+                            TaxOnIncome.ToString(),
+                            TaxOnExpense.ToString()
                         }, ACSVSeparator));
 
                 sb.Append(ANewLine);
@@ -275,5 +306,55 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             sw.Write(sb.ToString());
             sw.Close();
         }
+        
+        /// <summary>
+        /// get the tax keys and their description used for references in transactions
+        /// </summary>
+        /// <returns></returns>
+        public static SortedList<string, string> GetTaxAnalysisAttributes()
+        {
+            SortedList<string, string> TaxAnalysisAttributes = new SortedList<string, string>();
+            TaxAnalysisAttributes.Add("70v19", "70 % von 19 % Vorsteuer");
+            TaxAnalysisAttributes.Add("70v7", "70 % von 7 % Vorsteuer");
+            TaxAnalysisAttributes.Add("m0", "Umsatzsteuer 0 %");
+            TaxAnalysisAttributes.Add("m7", "Umsatzsteuer 7 %");
+            TaxAnalysisAttributes.Add("m19", "Umsatzsteuer 19 %");
+            TaxAnalysisAttributes.Add("mi0", "Umsatzsteuer Innenumsatz");
+            TaxAnalysisAttributes.Add("meu", "Umsatzsteuer Innergemeinschaftliche Lieferung");
+            TaxAnalysisAttributes.Add("md0", "Umsatzsteuer Drittland");
+            TaxAnalysisAttributes.Add("USt/VSt", "Ust und VSt Schlüssel fürs Konto 9130 (VB/FO USt / Zahllast)");
+            TaxAnalysisAttributes.Add("v0", "Vorsteuer 0 %");
+            TaxAnalysisAttributes.Add("v7", "Vorsteuer 7 %");
+            TaxAnalysisAttributes.Add("v19", "Vorsteuer 19 %");
+            TaxAnalysisAttributes.Add("vi0", "Vorsteuer Innenumsatz");
+            TaxAnalysisAttributes.Add("veu", "Vorsteuer Innergemeinschaftliche Lieferung");
+            return TaxAnalysisAttributes;            
+        }
+        
+        /// <summary>
+        /// export the references that are used to mark transactions for taxes
+        /// </summary>
+        public static void ExportTaxAnalysisAttributes(string AOutputPath,
+            char ACSVSeparator,
+            string ANewLine,
+            SortedList<string, string> ATaxAnalysisAttributes)
+        {
+             string filename = Path.GetFullPath(Path.Combine(AOutputPath, "steuerschluessel.csv"));
+
+            Console.WriteLine("Writing file: " + filename);
+            
+            StringBuilder sb = new StringBuilder();
+            
+            foreach (string key in ATaxAnalysisAttributes.Keys)
+            {
+                sb.Append(StringHelper.StrMerge(new string[]{key, ATaxAnalysisAttributes[key]}, ';'));
+                sb.Append(ANewLine);
+            }
+            
+            StreamWriter sw = new StreamWriter(filename, false, Encoding.GetEncoding(1252));
+            sw.Write(sb.ToString());
+            sw.Close();
+        }
+        
     }
 }
