@@ -617,14 +617,30 @@ namespace Ict.Common.Controls
             
             if (InspectNode != null) 
             {
-                if (InspectNode.Attributes["DependsOnLedger"] != null) 
+                if (InspectNode.Attributes.Count > 0) 
                 {
-                    return InspectNode.Attributes["DependsOnLedger"].Value == "true"; 
+                    if (InspectNode.Attributes["DependsOnLedger"] != null) 
+                    {
+                        return InspectNode.Attributes["DependsOnLedger"].Value == "true"; 
+                    }
+                    else
+                    {
+                        return SomeParentDependsOnLedger(InspectNode);
+                    }
                 }
                 else
                 {
-                    return SomeParentDependsOnLedger(InspectNode);
-                }
+                    if (InspectNode.Name != TYml2Xml.ROOTNODEINTERNAL) 
+                    {
+                        return SomeParentDependsOnLedger(InspectNode);    
+                    }
+                    else
+                    {
+                        // We have reached the top of the 'sensible' ParentNodes and haven't found the 'DependsOnLedger' Attribute 
+                        // to be true on any of the lower-level ParentNodes
+                        return false;
+                    }
+                }                    
             }
             else
             {
