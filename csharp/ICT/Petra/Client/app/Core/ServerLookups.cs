@@ -326,6 +326,31 @@ namespace Ict.Petra.Client.App.Core
                     out AStartDateCurrentPeriod,
                     out AEndDateLastForwardingPeriod);
             }
+
+            /// <summary>
+            /// Get the start and end dates for the specified period
+            /// </summary>
+            /// <param name="ALedgerNumber"></param>
+            /// <param name="AYearNumber"></param>
+            /// <param name="ADiffPeriod"></param>
+            /// <param name="APeriodNumber"></param>
+            /// <param name="AStartDatePeriod"></param>
+            /// <param name="AEndDatePeriod"></param>
+            /// <returns></returns>
+            public static Boolean GetCurrentPeriodDates(Int32 ALedgerNumber,
+                Int32 AYearNumber,
+                Int32 ADiffPeriod,
+                Int32 APeriodNumber,
+                out DateTime AStartDatePeriod,
+                out DateTime AEndDatePeriod)
+            {
+                return TRemote.MFinance.GL.WebConnectors.GetPeriodDates(ALedgerNumber,
+                    AYearNumber,
+                    ADiffPeriod,
+                    APeriodNumber,
+                    out AStartDatePeriod,
+                    out AEndDatePeriod);
+            }
         }
 
         /// <summary>

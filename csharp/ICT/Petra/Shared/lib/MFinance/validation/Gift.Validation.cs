@@ -229,6 +229,62 @@ namespace Ict.Petra.Shared.MFinance.Validation
         }
 
         /// <summary>
+        /// Validation for Gift table
+        /// </summary>
+        /// <param name="AContext"></param>
+        /// <param name="ARow"></param>
+        /// <param name="AYear"></param>
+        /// <param name="APeriod"></param>
+        /// <param name="AControl">Need to pass the validation control because it is not a bound control</param>
+        /// <param name="AVerificationResultCollection"></param>
+        /// <param name="AValidationControlsDict"></param>
+        /// <returns></returns>
+        public static bool ValidateGiftManual(object AContext, AGiftRow ARow, Int32 AYear, Int32 APeriod, Control AControl,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            //TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+            object ValidationContext;
+            int VerifResultCollAddedCount = 0;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return true;
+            }
+
+            // 'Entered From Date' must be valid
+            ValidationColumn = ARow.Table.Columns[AGiftTable.ColumnDateEnteredId];
+            ValidationContext = String.Format("Gift No.: {0}", ARow.GiftTransactionNumber);
+
+            DateTime StartDatePeriod;
+            DateTime EndDatePeriod;
+            TSharedFinanceValidationHelper.GetValidPeriodDates(ARow.LedgerNumber, AYear, 0, APeriod,
+                out StartDatePeriod,
+                out EndDatePeriod);
+
+            VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.DateEntered,
+                StartDatePeriod,
+                EndDatePeriod,
+                "Gift Date for " + ValidationContext.ToString(),
+                TDateBetweenDatesCheckType.dbdctUnspecific,
+                TDateBetweenDatesCheckType.dbdctUnspecific,
+                AContext,
+                ValidationColumn,
+                AControl);
+            //ValidationControlsData.ValidationControl);
+
+            // Handle addition/removal to/from TVerificationResultCollection
+            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+            {
+                VerifResultCollAddedCount++;
+            }
+
+            return VerifResultCollAddedCount == 0;
+        }
+
+        /// <summary>
         /// Validates the Recurring Gift Batch data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>

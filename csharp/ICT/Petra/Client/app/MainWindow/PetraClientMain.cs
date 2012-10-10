@@ -647,6 +647,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TServerLookup.TMPartner.VerifyPartner;
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TServerLookup.TMFinance.GetCurrentPostingRangeDates;
+            TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TServerLookup.TMFinance.GetCurrentPeriodDates;
 
             // Set up Delegates for retrieval of cacheable tables when called from Shared directories on client side
             TSharedDataCache.TMCommon.GetCacheableCommonTableDelegate = @TDataCache.TMCommon.GetCacheableCommonTable;
