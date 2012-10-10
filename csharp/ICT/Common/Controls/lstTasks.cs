@@ -42,6 +42,8 @@ namespace Ict.Common.Controls
     {
         private static string FUserId;
         private static CheckAccessPermissionDelegate FHasAccessPermission;
+        private static int FCurrentLedger = -1;
+        
         private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
         private TaskAppearance FTaskAppearance;
         private bool FSingleClickExecution = false;
@@ -335,6 +337,22 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// The currently selected Ledger
+        /// </summary>
+        public int CurrentLedger
+        {
+            get
+            {
+                return FCurrentLedger;
+            }
+            
+            set
+            {
+                FCurrentLedger = value;
+            }
+        }
+        
         #endregion
 
         #region Events
@@ -465,6 +483,11 @@ namespace Ict.Common.Controls
                         }
                     }
 
+                    if (SomeParentDependsOnLedger(node))
+                    {
+                        parameters.Add((object)FCurrentLedger);
+                    }
+                    
                     method.Invoke(null, parameters.ToArray());
                 }
                 else
@@ -543,6 +566,14 @@ namespace Ict.Common.Controls
                             prop.SetValue(screen, obj, null);
                         }
                     }
+
+                    if (prop.Name == "LedgerNumber") 
+                    {
+                        if (SomeParentDependsOnLedger(node))
+                        {
+                             prop.SetValue(screen, (object)FCurrentLedger, null);
+                        }                        
+                    }
                 }
 
                 MethodInfo method = classType.GetMethod("Show", BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Any,
@@ -574,6 +605,33 @@ namespace Ict.Common.Controls
 
         #region Private Methods
 
+        /// <summary>
+        /// Recursively check all Node's ParentNodes for the 'DependsOnLedger' Attribute to be true.
+        /// </summary>
+        /// <param name="ANode">Node whose ParentNodes are to be checked.</param>
+        /// <returns>True if any of <paramref name="ANode" />' ParentNodes has got the 'DependsOnLedger' Attribute
+        /// set to true, otherwise false.</returns>
+        private static bool SomeParentDependsOnLedger(XmlNode ANode)
+        {
+            XmlNode InspectNode = ANode.ParentNode;
+            
+            if (InspectNode != null) 
+            {
+                if (InspectNode.Attributes["DependsOnLedger"] != null) 
+                {
+                    return InspectNode.Attributes["DependsOnLedger"].Value == "true"; 
+                }
+                else
+                {
+                    return SomeParentDependsOnLedger(InspectNode);
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
         void ListResize(object sender, EventArgs e)
         {
             foreach (var Group in Groups)

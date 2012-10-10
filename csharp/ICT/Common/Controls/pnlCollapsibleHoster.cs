@@ -52,6 +52,10 @@ namespace Ict.Common.Controls
         
         private int FCollPanelCount = 0;
         
+        private bool FOnlyOneActiveTaskOnAllCollapsiblePanelsTaskLists = true;
+        
+        private TPnlCollapsible FCollPanelWhereLastItemActivationHappened = null;
+        
         #region Events
         
         /// <summary>Fired when a TaskLink got activated (by clicking on it or programmatically).</summary>
@@ -191,17 +195,20 @@ namespace Ict.Common.Controls
                             CollPanel = GetCollapsiblePanelInstance(Counter1);
                             CollPanel.ActiveTaskItem = value;
                             
-                            // Check if that Collapsible Panel has indeed set the ActiveTaskItem to what we asked it for -
-                            // it doesn't do that if it doesn't host it. In that case we want to remove the ActiveTaskItem
-                            // for all other CollapsiblePanels' TaskLists as we want only *one* ActiveTaskItem in *any* of
-                            // the CollapsiblePanels!
-                            if (CollPanel.ActiveTaskItem == value) 
-                            {
-                                for (int InnerCounter = 0; InnerCounter < FCollPanelCount; InnerCounter++) 
-                                {                            
-                                    if (InnerCounter != Counter1) 
-                                    {
-                                        GetCollapsiblePanelInstance(InnerCounter).ActiveTaskItem = null;
+                            if (FOnlyOneActiveTaskOnAllCollapsiblePanelsTaskLists) 
+                            {                                            
+                                // Check if that Collapsible Panel has indeed set the ActiveTaskItem to what we asked it for -
+                                // it doesn't do that if it doesn't host it. In that case we want to remove the ActiveTaskItem
+                                // for all other CollapsiblePanels' TaskLists as we want only *one* ActiveTaskItem in *any* of
+                                // the CollapsiblePanels!
+                                if (CollPanel.ActiveTaskItem == value) 
+                                {
+                                    for (int InnerCounter = 0; InnerCounter < FCollPanelCount; InnerCounter++) 
+                                    {                            
+                                        if (InnerCounter != Counter1) 
+                                        {
+                                            GetCollapsiblePanelInstance(InnerCounter).ActiveTaskItem = null;
+                                        }
                                     }
                                 }
                             }
@@ -218,6 +225,22 @@ namespace Ict.Common.Controls
             }
         }
         
+        /// <summary>
+        /// Whether the Collapsible Panel Hoster only allows one Active Task on all its
+        /// CollapsiblePanel's TaskLists (default=true).
+        /// </summary>
+        public bool OnlyOneActiveTaskOnAllCollapsiblePanelsTaskLists
+        {
+            get
+            {
+                return FOnlyOneActiveTaskOnAllCollapsiblePanelsTaskLists;
+            }
+            
+            set
+            {
+                FOnlyOneActiveTaskOnAllCollapsiblePanelsTaskLists = value;
+            }
+        }
         
         #endregion
         
@@ -278,6 +301,23 @@ namespace Ict.Common.Controls
             return GetCollapsiblePanelInstance(ANumber).TaskListInstance;
         }
 
+        /// <summary>
+        /// Returns the TaskList Instance where the last ItemActivation happened.
+        /// </summary>
+        /// <returns>TaskList Instance where the last ItemActivation happened, null if no TaskList Instance 
+        /// fired an ItemActivation yet.</returns>
+        public TTaskList GetTaskListInstanceWhereLastItemActivationHappened()
+        {
+            if (FCollPanelWhereLastItemActivationHappened != null) 
+            {
+                return FCollPanelWhereLastItemActivationHappened.TaskListInstance;    
+            }
+            else
+            {
+                return null;
+            }
+        }
+        
                         
         /// <summary>
         /// Returns a TaskList Instance.
@@ -382,19 +422,24 @@ namespace Ict.Common.Controls
             TTaskList FoundTaskList;
             TPnlCollapsible CollPanel;
 
-            // Remove the Active Task Item from any Collapsible Panel's TaskList that
-            // isn't the sending instance (that is passed in in ATaskList) as we only
-            // want one Active Task Item in one hosted Collapsible Panel!
-            for (int Counter = 0; Counter < FCollPanelCount; Counter++) 
-            {                         
-                CollPanel = GetCollapsiblePanelInstance(Counter);                
-                FoundTaskList = CollPanel.TaskListInstance;
-                
-                if (FoundTaskList != ATaskList) 
-                {
-                    FoundTaskList.ActiveTaskItem = null;
+            if (FOnlyOneActiveTaskOnAllCollapsiblePanelsTaskLists) 
+            {                
+                // Remove the Active Task Item from any Collapsible Panel's TaskList that
+                // isn't the sending instance (that is passed in in ATaskList) as we only
+                // want *one* Active Task Item in one hosted Collapsible Panel!
+                for (int Counter = 0; Counter < FCollPanelCount; Counter++) 
+                {                         
+                    CollPanel = GetCollapsiblePanelInstance(Counter);                
+                    FoundTaskList = CollPanel.TaskListInstance;
+                    
+                    if (FoundTaskList != ATaskList) 
+                    {
+                        FoundTaskList.ActiveTaskItem = null;
+                    }
                 }
             }
+
+            FCollPanelWhereLastItemActivationHappened = GetCollapsiblePanelInstance(ATaskListNode.ParentNode);
             
             // Re-fire Event
             if(ItemActivation != null)

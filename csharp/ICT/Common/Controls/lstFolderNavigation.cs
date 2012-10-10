@@ -39,6 +39,7 @@ namespace Ict.Common.Controls
         private TExtStatusBarHelp FStatusbar = null;
         private bool FMovingSplitter = false;       // avoid recursion of events on Mono
         private bool FMultiLedgerSite = false;
+        private int FCurrentLedger = -1;
         
         #region Public Static
 
@@ -137,6 +138,22 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// The currently selected Ledger
+        /// </summary>
+        public int CurrentLedger
+        {
+            get
+            {
+                return FCurrentLedger;
+            }
+            
+            set
+            {
+                FCurrentLedger = value;
+            }
+        }
+        
         #endregion
 
         #region Public Methods
@@ -215,8 +232,9 @@ namespace Ict.Common.Controls
 
         #region Private Methods
 
-        private TPnlModuleNavigation GetOrCreatePanel(XmlNode AFolderNode)
+        private TPnlModuleNavigation GetOrCreatePanel(XmlNode AFolderNode, out bool APanelCreated)
         {
+            TPnlModuleNavigation CollPanelHoster;
             string pnlName = "pnl" + AFolderNode.Name;
 
             if (AFolderNode.Attributes["Label"] != null)
@@ -226,20 +244,30 @@ namespace Ict.Common.Controls
 
             if (this.sptNavigation.Panel1.Controls.ContainsKey(pnlName))
             {
-                return (TPnlModuleNavigation) this.sptNavigation.Panel1.Controls[pnlName];
+                APanelCreated = false;
+                
+                CollPanelHoster = (TPnlModuleNavigation) this.sptNavigation.Panel1.Controls[pnlName];
+                CollPanelHoster.CurrentLedger = FCurrentLedger;
+                
+                return CollPanelHoster;
             }
             else
             {
-                TPnlModuleNavigation CollPanelHoster = new TPnlModuleNavigation(AFolderNode, FDashboard, this.Width, FMultiLedgerSite);
+                APanelCreated = true;
+                
+                CollPanelHoster = new TPnlModuleNavigation(AFolderNode, FDashboard, this.Width, FMultiLedgerSite);
                 CollPanelHoster.Name = pnlName;
                 CollPanelHoster.Statusbar = FStatusbar;
                 CollPanelHoster.Dock = DockStyle.Left;
+                CollPanelHoster.CurrentLedger = FCurrentLedger;
                 CollPanelHoster.Collapsed += delegate(object sender, EventArgs e) 
                     { CollapsibleNavigationCollapsed(sender, e); };
                 CollPanelHoster.Expanded += delegate(object sender, EventArgs e)  
                     { CollapsibleNavigationExpanded(sender, e); };
                 CollPanelHoster.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked) 
-                { OnItemActivation(ATaskList, ATaskListNode, AItemClicked); };
+                    { OnItemActivation(ATaskList, ATaskListNode, AItemClicked); };
+                CollPanelHoster.LedgerChanged += delegate(int ALedgerNr, string ALedgerName) 
+                    { OnLedgerChanged(ALedgerNr, ALedgerName); };
                 
                 this.sptNavigation.Panel1.Controls.Add(CollPanelHoster);
 
@@ -253,14 +281,23 @@ namespace Ict.Common.Controls
 
         private void FolderCheckedChanged(object sender, EventArgs e)
         {
+            bool PanelCreated;
             TRbtNavigationButton rbtFolder = (TRbtNavigationButton)sender;
-            TPnlModuleNavigation CollPanelHoster = GetOrCreatePanel((XmlNode)rbtFolder.Tag);
+            TPnlModuleNavigation CollPanelHoster = GetOrCreatePanel((XmlNode)rbtFolder.Tag, out PanelCreated);
 
             if (rbtFolder.Checked)
             {
                 CollPanelHoster.Text = rbtFolder.Text;
                 CollPanelHoster.Show();
-                CollPanelHoster.SelectFirstLink();
+                
+                if (PanelCreated) 
+                {
+                    CollPanelHoster.SelectFirstLink();    
+                }
+                else
+                {
+                    CollPanelHoster.FireSelectedLinkEvent();
+                }
             }
             else
             {
@@ -304,7 +341,25 @@ namespace Ict.Common.Controls
        {
            // TODO
        }
-         
-        #endregion
+ 
+       private void OnLedgerChanged(int ALedgerNr, string ALedgerName)
+       {
+           string LedgerChangeTitle = Catalog.GetString("Ledger Change");
+           
+           FCurrentLedger = ALedgerNr;
+            
+           if (ALedgerName != String.Empty) 
+           {
+               MessageBox.Show(String.Format("You have changed the Ledger to\r\n\r\n    Ledger {0} (#{1}).", ALedgerName, ALedgerNr), LedgerChangeTitle,
+                  MessageBoxButtons.OK, MessageBoxIcon.Information);
+           }
+           else
+           {
+               MessageBox.Show(String.Format("You have changed the Ledger to\r\n\r\n    Ledger #{0}.", ALedgerNr), LedgerChangeTitle,
+                  MessageBoxButtons.OK, MessageBoxIcon.Information);
+           }                            
+       }       
+        
+       #endregion
     }
 }

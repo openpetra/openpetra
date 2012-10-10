@@ -38,6 +38,9 @@ namespace Ict.Common.Controls
     public partial class TPnlModuleNavigation : System.Windows.Forms.Panel
     {
         private Ict.Common.Controls.TPnlCollapsible FCollapsibleNavigation = new TPnlCollapsible();
+        private int FCurrentLedger = -1;
+        private bool FIsLedgerBasedModule = false;
+        private bool FSuppressLedgerChangedEvent = false;
         
         /// constructor
         public TPnlModuleNavigation()
@@ -57,6 +60,20 @@ namespace Ict.Common.Controls
         private int FMaxTaskWidth;
         private TExtStatusBarHelp FStatusbar = null;
 
+        #region Events
+        
+        /// <summary>
+        /// Contains data about a Ledger that got selected by the user.
+        /// </summary>
+        public delegate void LedgerSelected(int ALedgerNr, string ALedgerName);
+        
+        /// <summary>Fired when a Ledger got selected by the user (by clicking on it's LinkLabel).</summary>
+        public event LedgerSelected LedgerChanged;
+
+        #endregion
+        
+        #region Properties
+        
         /// <summary>Name of the Module</summary>
         public new string Text
         {
@@ -70,6 +87,35 @@ namespace Ict.Common.Controls
             }
             
         }
+                
+        #endregion
+
+        /// <summary>
+        /// The currently selected Ledger
+        /// </summary>
+        public int CurrentLedger
+        {
+            get
+            {
+                return FCurrentLedger;
+            }
+            
+            set
+            {
+                if (FIsLedgerBasedModule
+                    && (FCurrentLedger != value))
+                {
+                    FCurrentLedger = value;
+                    
+                    SelectCurrentLedgerLink();
+                }
+                else
+                {
+                    FCurrentLedger = value;
+                }
+            }
+        }
+        
         /// <summary>
         /// todoComment
         /// </summary>
@@ -96,11 +142,16 @@ namespace Ict.Common.Controls
             FCollapsibleNavigation.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked) 
                 { OnItemActivation(ATaskList, ATaskListNode, AItemClicked); };
 
-            if (((AMultiLedgerSite && 
-                  (TXMLParser.GetAttribute(AFolderNode, "DependsOnLedger").ToLower() == "true"))
-                  || (TXMLParser.GetAttribute(AFolderNode, "ShowAsCollapsiblePanels").ToLower() == "true")))
+            if (AMultiLedgerSite 
+                 && (TXMLParser.GetAttribute(AFolderNode, "DependsOnLedger").ToLower() == "true"))
             {
-                FCollapsibleNavigation.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckCollapsiblePanelHoster;    
+                FIsLedgerBasedModule = true;          
+            }
+            
+            if (FIsLedgerBasedModule 
+                || (TXMLParser.GetAttribute(AFolderNode, "ShowAsCollapsiblePanels").ToLower() == "true"))
+            {
+                FCollapsibleNavigation.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckCollapsiblePanelHoster;   
             }
             else
             {
@@ -110,6 +161,13 @@ namespace Ict.Common.Controls
             FCollapsibleNavigation.TaskListNode = AFolderNode;
             
             FCollapsibleNavigation.InitUserControl();
+
+            if (FIsLedgerBasedModule) 
+            {
+                // We want Ledgers to be Selected (if there are multiple Ledgers in the Site) *AND* at the same time Sub-Modules 
+                // in the top Collapsible Panel
+                FCollapsibleNavigation.CollapsiblePanelHosterInstance.OnlyOneActiveTaskOnAllCollapsiblePanelsTaskLists = false;
+            }            
             
             this.Controls.Add(FCollapsibleNavigation);
         }
@@ -171,31 +229,58 @@ namespace Ict.Common.Controls
         /// </summary>
         public void SelectFirstLink()
         {
-//            bool validContent = false;
-//
-//            if (this.Controls.Count > 0)
-//            {
-//                Panel pnlModule = (Panel) this.Controls[this.Controls.Count - 1];
-//
-//                if (pnlModule.Controls.Count > 1)
-//                {
-//                    // first child is module caption
-//                    LinkLabel lbl = (LinkLabel)pnlModule.Controls[1];
-//                    LinkClicked(lbl, null);
-//                    validContent = true;
-//                }
-//            }
-//
-//            if (!validContent)
-//            {
-//                FDashboard.ShowTaskList(null);
-//            }
-//        }
+            if (FCollapsibleNavigation.HostedControlKind == THostedControlKind.hckCollapsiblePanelHoster) 
+            {
+                FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0).SelectFirstTaskItem();
+            }
+            else
+            {
+                FCollapsibleNavigation.TaskListInstance.SelectFirstTaskItem();
+            }
         }
+
+        /// <summary>
+        /// Fires the LinkClicked Event (which results in the ItemActivation Event) for the currently ActiveTaskItem.
+        /// </summary>
+        public void FireSelectedLinkEvent()
+        {
+            if (FCollapsibleNavigation.HostedControlKind == THostedControlKind.hckCollapsiblePanelHoster) 
+            {
+                if (FIsLedgerBasedModule) 
+                {
+                    FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0).FireLinkClickedEventForActiveTaskItem();
+                }
+                else
+                {
+                    FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstanceWhereLastItemActivationHappened().FireLinkClickedEventForActiveTaskItem();    
+                }
+            }
+            else
+            {
+                FCollapsibleNavigation.TaskListInstance.FireLinkClickedEventForActiveTaskItem();
+            }
+        }
+        
         #endregion
 
         #region Private Methods
 
+        private void SelectCurrentLedgerLink()
+        {
+            XmlNode CurrentLedgerNode;
+            
+            if (FIsLedgerBasedModule)
+            {
+                CurrentLedgerNode = FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(1).GetTaskByName("Ledger" + FCurrentLedger.ToString());
+
+                FSuppressLedgerChangedEvent = true;
+                                
+                FCollapsibleNavigation.CollapsiblePanelHosterInstance.ActiveTaskItem = CurrentLedgerNode;
+                
+                FSuppressLedgerChangedEvent = false;
+            }
+        }
+        
           private void LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
             Object tag = ((Control)sender).Tag;
@@ -214,7 +299,8 @@ namespace Ict.Common.Controls
 
             FCurrentTaskList.Statusbar = FStatusbar;
             FCurrentTaskList.Dock = DockStyle.Fill;
-
+            FCurrentTaskList.CurrentLedger = FCurrentLedger;
+            
             FDashboard.ShowTaskList(FCurrentTaskList);
 //            Invalidate();
         }
@@ -247,10 +333,37 @@ namespace Ict.Common.Controls
  
         private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
         {
+            if (ATaskListNode.Attributes["LedgerNumber"] == null) 
+            {
+                LinkClicked(AItemClicked, null);    
+            }
+            else
+            {
+                if (!FSuppressLedgerChangedEvent) 
+                {
+                    OnLedgerChanged(Convert.ToInt32(ATaskListNode.Attributes["LedgerNumber"].Value), ATaskListNode.Attributes["LedgerName"].Value);    
+                }                
+            }
+            
             // Re-fire Event
             if(ItemActivation != null)
             {
                 ItemActivation(ATaskList, ATaskListNode, AItemClicked);
+            }
+        }
+ 
+        private void OnLedgerChanged(int ALedgerNr, string ALedgerName)
+        {
+            FCurrentLedger = ALedgerNr;
+            
+            if (FCurrentTaskList != null) 
+            {
+                FCurrentTaskList.CurrentLedger = FCurrentLedger;    
+            }
+            
+            if(LedgerChanged != null)
+            {
+                LedgerChanged(ALedgerNr, ALedgerName);
             }
         }
         

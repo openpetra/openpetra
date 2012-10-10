@@ -108,23 +108,6 @@ namespace Ict.Common.Controls
         #region Events (and related methods)
 
         /// <summary>
-        /// </summary>
-        public class ItemActivationEventArgs : EventArgs
-        {
-            /// <summary/>
-            public XmlNode TaskListNodeClicked;
-            /// <summary/>
-            public LinkLabel TaskListLabelClicked;
-
-            /// <summary/>
-            public ItemActivationEventArgs(XmlNode ATaskListNodeClicked, LinkLabel ATaskListLabelClicked)
-            {
-                this.TaskListNodeClicked = ATaskListNodeClicked;
-                this.TaskListLabelClicked = ATaskListLabelClicked;
-            }
-        }
-
-        /// <summary>
         /// Contains data about a Link that got clicked by the user.
         /// </summary>
         public delegate void TaskLinkClicked(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked);
@@ -614,24 +597,20 @@ namespace Ict.Common.Controls
             //Iterate through all children nodes of the node
             while (TaskNode != null)
             {
-                //If the node is a task node
-                if (TaskRegex.IsMatch(TaskNode.Name))
+                //If Task is the task being searched for
+                if (TaskNode.Name.Equals(TaskName))
                 {
-                    //If Task is the task being searched for
-                    if (TaskNode.Name.Equals(TaskName))
-                    {
-                        return TaskNode;
-                    }
+                    return TaskNode;
+                }
 
-                    //Recursively check tasks
-                    if (TaskNode.HasChildNodes)
-                    {
-                        XmlNode temp = GetTaskByName(TaskName, TaskNode);
+                //Recursively check tasks
+                if (TaskNode.HasChildNodes)
+                {
+                    XmlNode temp = GetTaskByName(TaskName, TaskNode);
 
-                        if (temp != null)
-                        {
-                            return temp;
-                        }
+                    if (temp != null)
+                    {
+                        return temp;
                     }
                 }
 
@@ -774,20 +753,16 @@ namespace Ict.Common.Controls
             //Iterate through all children nodes of the node
             while (TaskNode != null)
             {
-                //If the node is a task node
-                if (TaskRegex.IsMatch(TaskNode.Name))
+                //If Task is the task being searched for
+                if (TaskNode.Attributes["Active"] != null)
                 {
-                    //If Task is the task being searched for
-                    if (TaskNode.Attributes["Active"] != null)
-                    {
-                        TaskNode.Attributes.Remove(TaskNode.Attributes["Active"]);
-                    }
+                    TaskNode.Attributes.Remove(TaskNode.Attributes["Active"]);
+                }
 
-                    //Recursively check tasks
-                    if (TaskNode.HasChildNodes)
-                    {
-                        ClearAllAttributeOfType(AttributeType, TaskNode);
-                    }
+                //Recursively check tasks
+                if (TaskNode.HasChildNodes)
+                {
+                    ClearAllAttributeOfType(AttributeType, TaskNode);
                 }
 
                 TaskNode = TaskNode.NextSibling;
@@ -841,6 +816,32 @@ namespace Ict.Common.Controls
             ChangeAttribute(node, "Visible", "True", true);
         }
 
+        /// <summary>
+        /// Selects the first TaskItem (=LinkLabel). Beside selecting it, this also fires the 
+        /// 'ItemActivation' Event for that TaskItem.
+        /// </summary>
+        public void SelectFirstTaskItem()
+        {
+            LinkLabel FirstLinkLabel = (LinkLabel)this.tPnlGradient1.Controls[0];
+            
+            lblTaskItem_LinkClicked(FirstLinkLabel, new LinkLabelLinkClickedEventArgs
+                (FirstLinkLabel.Links[0]));
+        }
+        
+        /// <summary>
+        /// Fires the 'ItemActivation' Event for the Active TaskItem.
+        /// </summary>
+        public void FireLinkClickedEventForActiveTaskItem()
+        {
+            if (ActiveTaskItem != null) 
+            {
+                LinkLabel ActiveTaskItemsLinkLabel = GetLinkLabelForXmlNode(ActiveTaskItem);
+                
+                lblTaskItem_LinkClicked(ActiveTaskItemsLinkLabel, new LinkLabelLinkClickedEventArgs
+                    (ActiveTaskItemsLinkLabel.Links[0]));                
+            }
+        }
+        
         /// <summary>
         /// </summary>
         /// <param name="node"></param>

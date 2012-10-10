@@ -48,6 +48,7 @@ namespace Ict.Petra.Client.App.PetraClient
         private const string VIEWTASKS_LIST = "List";
 
         private static bool FMultiLedgerSite = false;
+        private static int FCurrentLedger = -1;
         
         private void InitializeManualCode()
         {
@@ -150,7 +151,7 @@ namespace Ict.Petra.Client.App.PetraClient
                     // If there is more than one Ledger in the system, show a 'Select Legdger' Collapsible Panel with a Task (=LinkLabel) 
                     // for each Ledger.
                     if (AAvailableLedgers.Rows.Count > 1)
-                    {    
+                    {
                         FMultiLedgerSite = true;
                         
                         string label = TXMLParser.GetAttribute(childNode, "Label");
@@ -172,6 +173,9 @@ namespace Ict.Petra.Client.App.PetraClient
                             XmlAttribute ledgerNumberAttribute = childNode.OwnerDocument.CreateAttribute("LedgerNumber");
                             ledgerNumberAttribute.Value = ledger.LedgerNumber.ToString();
                             SpecificLedgerNode.Attributes.Append(ledgerNumberAttribute);
+                            XmlAttribute ledgerNameAttribute = childNode.OwnerDocument.CreateAttribute("LedgerName");
+                            ledgerNameAttribute.Value = ledger.LedgerName;
+                            SpecificLedgerNode.Attributes.Append(ledgerNameAttribute);
                                                         
                             if (ledger.LedgerName != String.Empty) 
                             {
@@ -182,14 +186,21 @@ namespace Ict.Petra.Client.App.PetraClient
                                 SpecificLedgerNode.Attributes["Label"].Value = String.Format(Catalog.GetString("Ledger #{0}"), ledger.LedgerNumber);
                             }                            
                         }
+                        
+                        
+                        // Set the 'Current Ledger' to the users' Default Ledger, or if he/she hasn't got one, to the first Ledger of the Site.
+                        FCurrentLedger = TUserDefaults.GetInt32Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER, AAvailableLedgers[0].LedgerNumber);
                     }
-                    else
+                    else if (AAvailableLedgers.Rows.Count == 1)
                     {
                         // Dynamically add Attribute 'SkipThisLevel' to the next child, which would be the child for the Collapsible Panel, 
                         // which we don't need/want for a 'Single Ledger' Site!                        
                         XmlAttribute LabelSkipCollapsibleLevel = childNode.OwnerDocument.CreateAttribute("SkipThisLevel");
                         childNode.ChildNodes[0].Attributes.Append(LabelSkipCollapsibleLevel);
                         childNode.ChildNodes[0].Attributes["SkipThisLevel"].Value = "true";
+                        
+                        // Set the 'Current Ledger' to the only Ledger of the Site.
+                        FCurrentLedger = AAvailableLedgers[0].LedgerNumber;
                     }
                         
                     childNode = childNode.NextSibling;
@@ -235,6 +246,7 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode DepartmentNode = MainMenuNode.FirstChild;
 
             lstFolders.MultiLedgerSite = FMultiLedgerSite;
+            lstFolders.CurrentLedger = FCurrentLedger;
             
             lstFolders.ClearFolders();
 
