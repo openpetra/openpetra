@@ -525,7 +525,8 @@ namespace Tests.Common.Controls
 
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsDashboard;
             Assert.AreEqual(TVisualStylesEnum.vsDashboard, FPnl.VisualStyleEnum);
-
+            FPnl.Expand();  // To ensure Unit Test code coverage only - nothing to assert here...
+            
             // The following Tests should work with 'Assert.AreNotEqual' because the Visual Style we try to assign is only valid
             // for a different CollapseDirection: cdHorizontal or cdHorizontalRight
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse;
@@ -598,7 +599,35 @@ namespace Tests.Common.Controls
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TTestTaskList.GetTestXmlNode(), TVisualStylesEnum.vsHorizontalCollapse, TCollapseDirection.cdHorizontal);
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse_InfoPanelWithGradient;
         }
-
+        
+        /// <summary>
+        /// Tests the ActiveTaskItem Property.
+        /// </summary>
+        [Test]
+        public void TestSetter_ActiveTaskItem()
+        {
+            XmlNode TestNode = TTestTaskList.GetTestXmlNode();
+            
+            FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TestNode);
+            FPnl.Expand();            
+            
+            Assert.IsNull(FPnl.ActiveTaskItem);
+            
+            FPnl.ActiveTaskItem = TestNode.ChildNodes[1];
+            Assert.AreEqual(FPnl.ActiveTaskItem, TestNode.ChildNodes[1]);
+            
+            FPnl.ActiveTaskItem = TestNode.ChildNodes[2];
+            Assert.AreEqual(FPnl.ActiveTaskItem, TestNode.ChildNodes[2]);
+            
+            FPnl.ActiveTaskItem = null;
+            
+            Assert.IsNull(FPnl.ActiveTaskItem);
+            
+            FPnl.TaskListNode = null;
+            
+            Assert.IsNull(FPnl.ActiveTaskItem);
+        }
+        
         #endregion
 
         ///<summary />
