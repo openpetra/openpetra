@@ -174,6 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AddParam("BatchNumber", giftDetailRow.BatchNumber);
             AddParam("GiftNumber", giftDetailRow.GiftTransactionNumber);
             AddParam("GiftDetailNumber", giftDetailRow.DetailNumber);
+            //AddParam("CostCentre", giftDetailRow.CostCentreCode);
             AddParam("ReversalCommentOne", txtReversalCommentOne.Text);
             AddParam("ReversalCommentTwo", txtReversalCommentTwo.Text);
             AddParam("ReversalCommentThree", txtReversalCommentThree.Text);
