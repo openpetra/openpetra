@@ -97,7 +97,6 @@ namespace Ict.Petra.Client.CommonControls
                         OnDateChanged(new TPetraDateChangedEventArgs(FDate, DateIsOk));
                     }
                 }
-
             }
         }
 

@@ -147,6 +147,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string[] HtmlPages = HtmlDoc.Split(new string[] { "|PageBreak|" }, StringSplitOptions.None);
 
             String ReceiptedDonorsList = "";
+
             foreach (DataRow Row in FGiftTbl.Rows)
             {
                 if (Row["Selected"].Equals(true))
@@ -163,8 +164,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 if (MessageBox.Show(
-                        Catalog.GetString("Please check that receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n")
-                        + ReceiptedDonorsList,
+                        Catalog.GetString(
+                            "Please check that receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +
+                        ReceiptedDonorsList,
                         Catalog.GetString("Receipt Printing"),
                         MessageBoxButtons.OKCancel) == DialogResult.Cancel)
                 {

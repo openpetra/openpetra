@@ -284,6 +284,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             DataTable GiftsTbl = null;
+
             try
             {
                 String SqlQuery = "SELECT DISTINCT " +
@@ -305,9 +306,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                   "ORDER BY BatchNumber";
 
                 GiftsTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction);
+
                 foreach (DataRow Row in GiftsTbl.Rows)
                 {
-                    Row["Donor"] = Calculations.FormatShortName(Row["Donor"].ToString(),eShortNameFormat.eReverseShortname);
+                    Row["Donor"] = Calculations.FormatShortName(Row["Donor"].ToString(), eShortNameFormat.eReverseShortname);
                 }
             }
             finally
@@ -528,6 +530,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             string HtmlDoc;
+
             try
             {
                 string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
@@ -542,7 +545,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ADateEntered,
                     LocalCountryCode,
                     Transaction);
-
             }
             finally
             {
@@ -560,6 +562,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             string HtmlDoc = "";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
             try
             {
                 string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);

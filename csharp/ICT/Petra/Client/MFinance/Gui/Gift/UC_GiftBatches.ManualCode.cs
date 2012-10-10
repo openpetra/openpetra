@@ -745,7 +745,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftTable.GetLedgerNumberDBName(), GiftBatchRow.LedgerNumber,
                 AGiftTable.GetBatchNumberDBName(), GiftBatchRow.BatchNumber);
             String ReceiptedDonorsList = "";
-            List<Int32> ReceiptedGiftTransactions = new List<Int32>();
+            List <Int32>ReceiptedGiftTransactions = new List <Int32>();
 
             foreach (DataRowView rv in AGiftTDS.AGift.DefaultView)
             {
@@ -765,7 +765,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 String DonorShortName;
                 TPartnerClass DonorClass;
                 TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(GiftRow.DonorKey, out DonorShortName, out DonorClass);
-                DonorShortName = Calculations.FormatShortName(DonorShortName,eShortNameFormat.eReverseShortname);
+                DonorShortName = Calculations.FormatShortName(DonorShortName, eShortNameFormat.eReverseShortname);
 
                 if (ReceiptEachGift)
                 {
@@ -783,17 +783,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     TFrmReceiptControl.PrintSinglePageLetter(HtmlDoc);
                     ReceiptedDonorsList += (DonorShortName + "\r\n");
                     ReceiptedGiftTransactions.Add(GiftRow.GiftTransactionNumber);
-                    
                 }  // if receipt required
+
             } // foreach gift
 
             if (ReceiptedGiftTransactions.Count > 0)
             {
                 if (MessageBox.Show(
                         Catalog.GetString(
-                                "Please check that receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") 
-                                + ReceiptedDonorsList,
-                            
+                            "Please check that receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +
+                        ReceiptedDonorsList,
+
                         Catalog.GetString("Receipt Printing"),
                         MessageBoxButtons.OKCancel) == DialogResult.OK)
                 {
