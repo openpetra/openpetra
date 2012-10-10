@@ -182,7 +182,15 @@ namespace Ict.Common.Controls
 
             rbt.CheckedChanged += new System.EventHandler(this.FolderCheckedChanged);
 
-            rbt.Enabled = AHasAccessPermission(AFolderNode, AUserId);
+            if ((TYml2Xml.HasAttribute(AFolderNode, "Enabled"))
+                && (TYml2Xml.GetAttribute(AFolderNode, "Enabled").ToLower() == "false")) 
+            {
+                rbt.Enabled = false;
+            }
+            else
+            {
+                rbt.Enabled = AHasAccessPermission(AFolderNode, AUserId);
+            }
         }
 
         /// <summary>
