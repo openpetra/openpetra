@@ -417,7 +417,7 @@ namespace Ict.Petra.Client.CommonControls
             }
 
             Boolean ReturnValue = true;
-            DateTime? DateBeforeChange = FDate;
+            //DateTime? DateBeforeChange = FDate;
             DateTime Text2Date;
             TVerificationResult DateVerificationResult1;
             TVerificationResult DateVerificationResult2;
