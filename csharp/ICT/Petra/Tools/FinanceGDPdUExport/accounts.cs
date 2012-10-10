@@ -31,25 +31,59 @@ using System.Text;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 
 namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 {
     /// This will export the accounts and costcentres involved
     public class TGDPdUExportAccountsAndCostCentres
     {
-        private static ACostCentreRow GetDepartmentCostCentre(ACostCentreTable ACostCentres, ACostCentreRow ACostCentreToInvestigate, StringCollection ADepartmentCodes)
+        private static ACostCentreRow GetDepartmentCostCentre(ACostCentreTable ACostCentres,
+            ACostCentreRow ACostCentreToInvestigate,
+            StringCollection ADepartmentCodes)
         {
             if (ADepartmentCodes.Contains(ACostCentreToInvestigate.CostCentreCode))
             {
                 return ACostCentreToInvestigate;
             }
-            
+
             ACostCentreRow row = (ACostCentreRow)ACostCentres.DefaultView.FindRows(ACostCentreToInvestigate.CostCentreToReportTo)[0].Row;
-            
+
             return GetDepartmentCostCentre(ACostCentres, row, ADepartmentCodes);
         }
-        
+
+        /// <summary>
+        /// return a list of costcentres that does not contail any costcentre linked to a person
+        /// </summary>
+        public static string WithoutPersonCostCentres(int ALedgerNumber, String ACostCentreList)
+        {
+            // remove all costcentres that report to a costcentre which name ends with Personalkosten
+            ACostCentreTable costcentres = ACostCentreAccess.LoadViaALedger(ALedgerNumber, null);
+
+            costcentres.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+
+            string[] costcentresList = ACostCentreList.Split(new char[] { ',' });
+
+            List <string>newList = new List <string>();
+
+            foreach (string cc in costcentresList)
+            {
+                ACostCentreRow costcentre = (ACostCentreRow)costcentres.DefaultView.FindRows(cc)[0].Row;
+                ACostCentreRow parentCC = (ACostCentreRow)costcentres.DefaultView.FindRows(costcentre.CostCentreToReportTo)[0].Row;
+
+                if (!parentCC.CostCentreName.EndsWith("Personalkosten"))
+                {
+                    newList.Add(cc);
+                }
+            }
+
+            return String.Join(",", newList.ToArray());
+        }
+
         /// <summary>
         /// Export the cost centres
         /// </summary>
@@ -65,20 +99,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             StringBuilder sb = new StringBuilder();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            ACostCentreTable costcentres = ACostCentreAccess.LoadViaALedger(ALedgerNumber, null);
 
-            string sql =
-                String.Format("SELECT * from PUB_{0} WHERE {1} = {2} ORDER BY {3}",
-                    ACostCentreTable.GetTableDBName(),
-                    ACostCentreTable.GetLedgerNumberDBName(),
-                    ALedgerNumber,
-                    ACostCentreTable.GetCostCentreCodeDBName());
-
-            ACostCentreTable costcentres = new ACostCentreTable();
-            DBAccess.GDBAccessObj.SelectDT(costcentres, sql, Transaction, null, 0, 0);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-            
             costcentres.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
 
             foreach (ACostCentreRow row in costcentres.Rows)
@@ -86,10 +108,11 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 if (ACostCentres.Contains(row.CostCentreCode))
                 {
                     ACostCentreRow departmentRow = GetDepartmentCostCentre(costcentres,
-                                                                        row,
-                                                                        StringHelper.StrSplit(TAppSettingsManager.GetValue("SummaryCostCentres", "4300S"), ","));
-                    
-                    sb.Append(StringHelper.StrMerge(new string[] { row.CostCentreCode, row.CostCentreName, departmentRow.CostCentreName }, ACSVSeparator));
+                        row,
+                        StringHelper.StrSplit(TAppSettingsManager.GetValue("SummaryCostCentres", "4300S"), ","));
+
+                    sb.Append(StringHelper.StrMerge(new string[] { row.CostCentreCode, row.CostCentreName,
+                                                                   departmentRow.CostCentreName }, ACSVSeparator));
                     sb.Append(ANewLine);
                 }
             }

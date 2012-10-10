@@ -56,6 +56,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 }
 
                 string SummaryCostCentres = TAppSettingsManager.GetValue("SummaryCostCentres", "4300S");
+                string IgnoreCostCentres = TAppSettingsManager.GetValue("IgnoreCostCentres", "xyz");
                 string IgnoreAccounts = TAppSettingsManager.GetValue("IgnoreAccounts", "4300S,GIFT");
                 string IncludeAccounts = TAppSettingsManager.GetValue("IncludeAccounts", "4310");
                 string FinancialYears = TAppSettingsManager.GetValue("FinancialYearNumber", "0");
@@ -68,7 +69,12 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 string operation = TAppSettingsManager.GetValue("operation", "all");
 
                 string ReportingCostCentres =
-                    TFinanceReportingWebConnector.GetReportingCostCentres(LedgerNumber, SummaryCostCentres);
+                    TFinanceReportingWebConnector.GetReportingCostCentres(LedgerNumber, SummaryCostCentres, IgnoreCostCentres);
+
+                if (TAppSettingsManager.GetBoolean("IgnorePersonCostCentres", true))
+                {
+                    ReportingCostCentres = TGDPdUExportAccountsAndCostCentres.WithoutPersonCostCentres(LedgerNumber, ReportingCostCentres);
+                }
 
                 IgnoreAccounts =
                     TFinanceReportingWebConnector.GetReportingAccounts(LedgerNumber, IgnoreAccounts, IncludeAccounts);
@@ -79,8 +85,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 List <string>CostCentresInvolved = new List <string>();
                 List <string>AccountsInvolved = new List <string>();
 
-                SortedList<string, string> TaxAnalysisAttributes = TGDPdUExportTransactions.GetTaxAnalysisAttributes();
-                
+                SortedList <string, string>TaxAnalysisAttributes = TGDPdUExportTransactions.GetTaxAnalysisAttributes();
+
                 foreach (string FinancialYearString in FinancialYears.Split(new char[] { ',' }))
                 {
                     Int32 FinancialYear = Convert.ToInt32(FinancialYearString);
@@ -114,7 +120,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
                 TGDPdUExportAccountsAndCostCentres.ExportAccounts(OutputPath, CSVSeparator, NewLine, LedgerNumber,
                     AccountsInvolved);
-                
+
                 TGDPdUExportTransactions.ExportTaxAnalysisAttributes(OutputPath, CSVSeparator, NewLine, TaxAnalysisAttributes);
             }
             catch (Exception e)

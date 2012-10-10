@@ -140,10 +140,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             return ReturnTable;
         }
 
-        private static string GetReportingCostCentres(ACostCentreTable ACostCentres, string ASummaryCostCentreCode)
+        private static void GetReportingCostCentres(ACostCentreTable ACostCentres, ref List<string> AResult, string ASummaryCostCentreCode)
         {
-            ACostCentres.DefaultView.Sort = ACostCentreTable.GetCostCentreToReportToDBName();
-
             string result = string.Empty;
 
             string[] CostCentres = ASummaryCostCentreCode.Split(new char[] { ',' });
@@ -152,22 +150,33 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 DataRowView[] ReportingCostCentres = ACostCentres.DefaultView.FindRows(costcentre);
 
-                foreach (DataRowView rv in ReportingCostCentres)
+                if (ReportingCostCentres.Length > 0)
                 {
-                    ACostCentreRow row = (ACostCentreRow)rv.Row;
-
-                    if (row.PostingCostCentreFlag)
+                    foreach (DataRowView rv in ReportingCostCentres)
                     {
-                        result = StringHelper.AddCSV(result, row.CostCentreCode);
+                        ACostCentreRow row = (ACostCentreRow)rv.Row;
+    
+                        if (row.PostingCostCentreFlag)
+                        {
+                            AResult.Add(row.CostCentreCode);
+                        }
+                        else
+                        {
+                            GetReportingCostCentres(ACostCentres, ref AResult, row.CostCentreCode);
+                        }
                     }
-                    else
+                }
+                else
+                {
+                    DataView dv = new DataView(ACostCentres);
+                    dv.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+                    ACostCentreRow cc = (ACostCentreRow)dv.FindRows(costcentre)[0].Row;
+                    if (cc.PostingCostCentreFlag)
                     {
-                        result = StringHelper.ConcatCSV(result, GetReportingCostCentres(ACostCentres, row.CostCentreCode));
+                        AResult.Add(costcentre);
                     }
                 }
             }
-
-            return result;
         }
 
         /// <summary>
@@ -175,7 +184,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// </summary>
         /// <returns>a CSV list of the reporting cost centres</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static string GetReportingCostCentres(int ALedgerNumber, String ASummaryCostCentreCode)
+        public static string GetReportingCostCentres(int ALedgerNumber, String ASummaryCostCentreCode, string ARemoveCostCentresFromList)
         {
             System.Type typeofTable = null;
             TCacheable CachePopulator = new TCacheable();
@@ -186,7 +195,25 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ALedgerNumber,
                 out typeofTable);
 
-            return GetReportingCostCentres(CachedDataTable, ASummaryCostCentreCode);
+            CachedDataTable.DefaultView.Sort = ACostCentreTable.GetCostCentreToReportToDBName();
+
+            List<string> Result = new List<string>();
+            
+            GetReportingCostCentres(CachedDataTable, ref Result, ASummaryCostCentreCode);
+            
+            List<string> IgnoreCostCentres = new List<string>();
+            
+            GetReportingCostCentres(CachedDataTable, ref IgnoreCostCentres, ARemoveCostCentresFromList);
+            
+            foreach(string s in IgnoreCostCentres)
+            {
+                if (Result.Contains(s))
+                {
+                    Result.Remove(s);
+                }
+            }
+            
+            return StringHelper.StrMerge(Result.ToArray(), ',');
         }
 
         private static void GetReportingAccounts(AAccountHierarchyDetailTable AAccountHierarchyDetail,

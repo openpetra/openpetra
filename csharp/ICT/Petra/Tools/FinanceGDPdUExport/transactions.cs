@@ -98,7 +98,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             string ACostCentres,
             string AIgnoreAccounts,
             string AIgnoreReferences,
-            SortedList<string, string>ATaxAnalysisAttributes,
+            SortedList <string, string>ATaxAnalysisAttributes,
             ref List <string>ACostCentresInvolved,
             ref List <string>AAccountsInvolved)
         {
@@ -115,9 +115,9 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     "FROM PUB_{8} AS B, PUB_{7} AS T " +
                     "WHERE B.{9} = {10} AND B.{15} = {16} AND B.{11}='{12}' " +
                     "AND T.{9} = B.{9} AND T.{0} = B.{0} " +
-                    "AND T.{13} IN ({14}) " + 
-                    "AND NOT T.{17} IN ({19}) " + 
-                    "AND NOT T.{20} IN ({21}) " + 
+                    "AND T.{13} IN ({14}) " +
+                    "AND NOT T.{17} IN ({19}) " +
+                    "AND NOT T.{20} IN ({21}) " +
                     "ORDER BY {0}, {1}, {2}",
                     ATransactionTable.GetBatchNumberDBName(),
                     ATransactionTable.GetJournalNumberDBName(),
@@ -211,50 +211,54 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             // get all names of gift batches
             sql =
                 String.Format("SELECT * FROM PUB_{0} " +
-                              "WHERE {1} = {2} " +
-                              "AND {3} = {4}",
-                              AGiftBatchTable.GetTableDBName(),
-                              AGiftBatchTable.GetLedgerNumberDBName(),
-                              ALedgerNumber,
-                              AGiftBatchTable.GetBatchYearDBName(),
-                              AFinancialYear);
-    
+                    "WHERE {1} = {2} " +
+                    "AND {3} = {4}",
+                    AGiftBatchTable.GetTableDBName(),
+                    AGiftBatchTable.GetLedgerNumberDBName(),
+                    ALedgerNumber,
+                    AGiftBatchTable.GetBatchYearDBName(),
+                    AFinancialYear);
+
             AGiftBatchTable giftbatches = new AGiftBatchTable();
             DBAccess.GDBAccessObj.SelectDT(giftbatches, sql, Transaction, null, 0, 0);
             giftbatches.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName();
-            
-            
-            sql = 
+
+
+            sql =
                 String.Format("SELECT * FROM PUB_{0} " +
-                              "WHERE {1} = {2}",
-                              AAccountTable.GetTableDBName(),
-                              AAccountTable.GetLedgerNumberDBName(),
-                              ALedgerNumber);
-    
+                    "WHERE {1} = {2}",
+                    AAccountTable.GetTableDBName(),
+                    AAccountTable.GetLedgerNumberDBName(),
+                    ALedgerNumber);
+
             AAccountTable accounts = new AAccountTable();
             DBAccess.GDBAccessObj.SelectDT(accounts, sql, Transaction, null, 0, 0);
             accounts.DefaultView.Sort = AAccountTable.GetAccountCodeDBName();
-                
+
             DBAccess.GDBAccessObj.RollbackTransaction();
             int rowCounter = 0;
 
-            
             foreach (ATransactionRow row in transactions.Rows)
             {
+                if (row.DebitCreditIndicator)
+                {
+                    row.TransactionAmount *= -1.0m;
+                }
+
                 StringBuilder attributes = new StringBuilder();
 
                 DataRowView[] attribs = TransAnalAttrib.DefaultView.FindRows(new object[] { row.BatchNumber, row.JournalNumber, row.TransactionNumber });
 
                 decimal TaxOnIncome = 0.0m;
                 decimal TaxOnExpense = 0.0m;
-                    
+
                 foreach (DataRowView rv in attribs)
                 {
                     ATransAnalAttribRow attribRow = (ATransAnalAttribRow)rv.Row;
 
                     // also export attribRow.AnalysisTypeCode?
                     attributes.Append(attribRow.AnalysisAttributeValue);
-                    
+
                     if (attribRow.AnalysisAttributeValue == "v19")
                     {
                         TaxOnExpense = row.TransactionAmount * 0.19m;
@@ -288,10 +292,13 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 string OtherCostCentres = string.Empty;
                 string OtherAccountCodes = string.Empty;
 
-                foreach (ATransactionRow r in OtherTransactions)
+                if (OtherTransactions.Length < 30)
                 {
-                    OtherCostCentres = StringHelper.AddCSV(OtherCostCentres, r.CostCentreCode);
-                    OtherAccountCodes = StringHelper.AddCSV(OtherAccountCodes, r.AccountCode);
+                    foreach (ATransactionRow r in OtherTransactions)
+                    {
+                        OtherCostCentres = StringHelper.AddCSV(OtherCostCentres, r.CostCentreCode);
+                        OtherAccountCodes = StringHelper.AddCSV(OtherAccountCodes, r.AccountCode);
+                    }
                 }
 
                 if (!ACostCentresInvolved.Contains(row.CostCentreCode))
@@ -303,9 +310,10 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 {
                     AAccountsInvolved.Add(row.AccountCode);
                 }
-                
+
                 // we are using gift batch for receiving payments
                 string Narrative = row.Narrative;
+
                 if (Narrative.StartsWith("GB - Gift Batch ") && row.Reference.StartsWith("GB"))
                 {
                     // find the account and set the account description into the narrative
@@ -314,22 +322,20 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                         DataRowView[] acc = accounts.DefaultView.FindRows(row.AccountCode);
                         Narrative = ((AAccountRow)acc[0].Row).AccountCodeLongDesc;
                     }
-                    catch(Exception)
+                    catch (Exception)
                     {
-                        
                     }
-                    
+
                     try
                     {
                         DataRowView[] gb = giftbatches.DefaultView.FindRows(Convert.ToInt32(row.Reference.Substring(2)));
                         Narrative += " " + ((AGiftBatchRow)gb[0].Row).BatchDescription;
                     }
-                    catch(Exception)
+                    catch (Exception)
                     {
-                        
                     }
                 }
-                
+
                 sb.Append(StringHelper.StrMerge(
                         new string[] {
                             "B" + row.BatchNumber.ToString() + "_J" + row.JournalNumber.ToString() + "_T" + row.TransactionNumber.ToString(),
@@ -341,7 +347,6 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                             Narrative,
                             row.Reference,
                             String.Format("{0:N}", row.TransactionAmount),
-                            row.DebitCreditIndicator ? "Soll" : "Haben",
                             attributes.ToString(),
                             TaxOnIncome.ToString(),
                             TaxOnExpense.ToString()
@@ -357,18 +362,20 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 }
             }
 
+            TLogging.Log("Processing transactions " + rowCounter.ToString());
+
             StreamWriter sw = new StreamWriter(filename, false, Encoding.GetEncoding(1252));
             sw.Write(sb.ToString());
             sw.Close();
         }
-        
+
         /// <summary>
         /// get the tax keys and their description used for references in transactions
         /// </summary>
         /// <returns></returns>
-        public static SortedList<string, string> GetTaxAnalysisAttributes()
+        public static SortedList <string, string>GetTaxAnalysisAttributes()
         {
-            SortedList<string, string> TaxAnalysisAttributes = new SortedList<string, string>();
+            SortedList <string, string>TaxAnalysisAttributes = new SortedList <string, string>();
             TaxAnalysisAttributes.Add("70v19", "70 % von 19 % Vorsteuer");
             TaxAnalysisAttributes.Add("70v7", "70 % von 7 % Vorsteuer");
             TaxAnalysisAttributes.Add("m0", "Umsatzsteuer 0 %");
@@ -383,33 +390,32 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             TaxAnalysisAttributes.Add("v19", "Vorsteuer 19 %");
             TaxAnalysisAttributes.Add("vi0", "Vorsteuer Innenumsatz");
             TaxAnalysisAttributes.Add("veu", "Vorsteuer Innergemeinschaftliche Lieferung");
-            return TaxAnalysisAttributes;            
+            return TaxAnalysisAttributes;
         }
-        
+
         /// <summary>
         /// export the references that are used to mark transactions for taxes
         /// </summary>
         public static void ExportTaxAnalysisAttributes(string AOutputPath,
             char ACSVSeparator,
             string ANewLine,
-            SortedList<string, string> ATaxAnalysisAttributes)
+            SortedList <string, string>ATaxAnalysisAttributes)
         {
-             string filename = Path.GetFullPath(Path.Combine(AOutputPath, "steuerschluessel.csv"));
+            string filename = Path.GetFullPath(Path.Combine(AOutputPath, "steuerschluessel.csv"));
 
             Console.WriteLine("Writing file: " + filename);
-            
+
             StringBuilder sb = new StringBuilder();
-            
+
             foreach (string key in ATaxAnalysisAttributes.Keys)
             {
-                sb.Append(StringHelper.StrMerge(new string[]{key, ATaxAnalysisAttributes[key]}, ';'));
+                sb.Append(StringHelper.StrMerge(new string[] { key, ATaxAnalysisAttributes[key] }, ';'));
                 sb.Append(ANewLine);
             }
-            
+
             StreamWriter sw = new StreamWriter(filename, false, Encoding.GetEncoding(1252));
             sw.Write(sb.ToString());
             sw.Close();
         }
-        
     }
 }
