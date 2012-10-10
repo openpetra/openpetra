@@ -7,6 +7,7 @@ RootNode:
     FormType: edit
     Template: usercontrol
     MasterTable: PSubscription
+    MultipleMasterRows: true   # generates a call to the Method 'GetSelectedMasterRow' as there can be more than one master row so need to determine the current one in manual code file
     Actions:
         actEditIssues: {Label=Edit I&ssues, ActionClick=EditIssues}
     Controls:

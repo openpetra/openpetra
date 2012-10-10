@@ -194,6 +194,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
+        private PSubscriptionRow GetSelectedMasterRow()
+        {
+            return FSubscriptionDR;
+        }
+        
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
             if (HookupDataChange != null)
