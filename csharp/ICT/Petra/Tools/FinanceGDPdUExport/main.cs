@@ -59,6 +59,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 string IgnoreAccounts = TAppSettingsManager.GetValue("IgnoreAccounts", "4300S,GIFT");
                 string IncludeAccounts = TAppSettingsManager.GetValue("IncludeAccounts", "4310");
                 string FinancialYears = TAppSettingsManager.GetValue("FinancialYearNumber", "0");
+                string IgnoreTransactionsByReference = TAppSettingsManager.GetValue("IgnoreReference", "L1,L2,L3,L4,L5,L6,L7,L8,L9,L10,L11,L12");
                 int FirstFinancialYear = TAppSettingsManager.GetInt32("FirstFinancialYear", DateTime.Now.Year);
                 int LedgerNumber = TAppSettingsManager.GetInt32("LedgerNumber", 43);
                 char CSVSeparator = TAppSettingsManager.GetValue("CSVSeparator", ";")[0];
@@ -96,6 +97,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                         FinancialYear,
                         ReportingCostCentres,
                         IgnoreAccounts,
+                        IgnoreTransactionsByReference,
                         ref CostCentresInvolved,
                         ref AccountsInvolved);
 
