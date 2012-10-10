@@ -1260,6 +1260,9 @@ namespace Ict.Common.Controls
             FPnlCollapsibleHoster = new Ict.Common.Controls.TPnlCollapsibleHoster(FTaskListNode, PnlCollapsibleVisualStyleEnum);
             
             UpdateCollapsiblePanelHoster();
+
+            FPnlCollapsibleHoster.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+                { OnItemActivation(ATaskList, ATaskListNode, AItemClicked); };            
             
             return FPnlCollapsibleHoster;
         }

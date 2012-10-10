@@ -748,7 +748,7 @@ namespace Ict.Common.Controls
         /// <returns>True if the DontShowNestedTasksAsLinks attribute is set to true or if it isn't set, otherwise false.</returns>
         public bool DontShowNestedTasksAsLinks(XmlNode node)
         {
-            return AttributeTrue(node, "DontShowNestedTasksAsLinks");
+            return AttributeTrue(node, "DontShowNestedTasksAsLinks", false);
         }
 
         /// <summary>
