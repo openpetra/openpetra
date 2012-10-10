@@ -38,6 +38,18 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
     /// This will export the accounts and costcentres involved
     public class TGDPdUExportAccountsAndCostCentres
     {
+        private static ACostCentreRow GetDepartmentCostCentre(ACostCentreTable ACostCentres, ACostCentreRow ACostCentreToInvestigate, StringCollection ADepartmentCodes)
+        {
+            if (ADepartmentCodes.Contains(ACostCentreToInvestigate.CostCentreCode))
+            {
+                return ACostCentreToInvestigate;
+            }
+            
+            ACostCentreRow row = (ACostCentreRow)ACostCentres.DefaultView.FindRows(ACostCentreToInvestigate.CostCentreToReportTo)[0].Row;
+            
+            return GetDepartmentCostCentre(ACostCentres, row, ADepartmentCodes);
+        }
+        
         /// <summary>
         /// Export the cost centres
         /// </summary>
@@ -56,22 +68,28 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             string sql =
-                String.Format("SELECT {0}, {1} from PUB_{2} WHERE {3} = {4} ORDER BY {0}",
-                    ACostCentreTable.GetCostCentreCodeDBName(),
-                    ACostCentreTable.GetCostCentreNameDBName(),
+                String.Format("SELECT * from PUB_{0} WHERE {1} = {2} ORDER BY {3}",
                     ACostCentreTable.GetTableDBName(),
                     ACostCentreTable.GetLedgerNumberDBName(),
-                    ALedgerNumber);
+                    ALedgerNumber,
+                    ACostCentreTable.GetCostCentreCodeDBName());
 
-            DataTable costcentres = DBAccess.GDBAccessObj.SelectDT(sql, "costcentres", Transaction);
+            ACostCentreTable costcentres = new ACostCentreTable();
+            DBAccess.GDBAccessObj.SelectDT(costcentres, sql, Transaction, null, 0, 0);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
+            
+            costcentres.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
 
-            foreach (DataRow row in costcentres.Rows)
+            foreach (ACostCentreRow row in costcentres.Rows)
             {
-                if (ACostCentres.Contains(row[0].ToString()))
+                if (ACostCentres.Contains(row.CostCentreCode))
                 {
-                    sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString() }, ACSVSeparator));
+                    ACostCentreRow departmentRow = GetDepartmentCostCentre(costcentres,
+                                                                        row,
+                                                                        StringHelper.StrSplit(TAppSettingsManager.GetValue("SummaryCostCentres", "4300S"), ","));
+                    
+                    sb.Append(StringHelper.StrMerge(new string[] { row.CostCentreCode, row.CostCentreName, departmentRow.CostCentreName }, ACSVSeparator));
                     sb.Append(ANewLine);
                 }
             }
@@ -119,7 +137,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 if (AAccounts.Contains(row[0].ToString()))
                 {
                     sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString(),
-                                                                   Convert.ToBoolean(row[2]) ? "Debit" : "Credit" }, ACSVSeparator));
+                                                                   Convert.ToBoolean(row[2]) ? "Soll" : "Haben" }, ACSVSeparator));
                     sb.Append(ANewLine);
                 }
             }

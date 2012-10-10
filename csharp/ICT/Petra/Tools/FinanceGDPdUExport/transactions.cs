@@ -28,6 +28,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Common;
 using Ict.Common.DB;
@@ -207,9 +208,37 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 ATransactionTable.GetBatchNumberDBName() + "," +
                 ATransactionTable.GetJournalNumberDBName();
 
+            // get all names of gift batches
+            sql =
+                String.Format("SELECT * FROM PUB_{0} " +
+                              "WHERE {1} = {2} " +
+                              "AND {3} = {4}",
+                              AGiftBatchTable.GetTableDBName(),
+                              AGiftBatchTable.GetLedgerNumberDBName(),
+                              ALedgerNumber,
+                              AGiftBatchTable.GetBatchYearDBName(),
+                              AFinancialYear);
+    
+            AGiftBatchTable giftbatches = new AGiftBatchTable();
+            DBAccess.GDBAccessObj.SelectDT(giftbatches, sql, Transaction, null, 0, 0);
+            giftbatches.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName();
+            
+            
+            sql = 
+                String.Format("SELECT * FROM PUB_{0} " +
+                              "WHERE {1} = {2}",
+                              AAccountTable.GetTableDBName(),
+                              AAccountTable.GetLedgerNumberDBName(),
+                              ALedgerNumber);
+    
+            AAccountTable accounts = new AAccountTable();
+            DBAccess.GDBAccessObj.SelectDT(accounts, sql, Transaction, null, 0, 0);
+            accounts.DefaultView.Sort = AAccountTable.GetAccountCodeDBName();
+                
             DBAccess.GDBAccessObj.RollbackTransaction();
             int rowCounter = 0;
 
+            
             foreach (ATransactionRow row in transactions.Rows)
             {
                 StringBuilder attributes = new StringBuilder();
@@ -275,18 +304,44 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     AAccountsInvolved.Add(row.AccountCode);
                 }
                 
+                // we are using gift batch for receiving payments
+                string Narrative = row.Narrative;
+                if (Narrative.StartsWith("GB - Gift Batch ") && row.Reference.StartsWith("GB"))
+                {
+                    // find the account and set the account description into the narrative
+                    try
+                    {
+                        DataRowView[] acc = accounts.DefaultView.FindRows(row.AccountCode);
+                        Narrative = ((AAccountRow)acc[0].Row).AccountCodeLongDesc;
+                    }
+                    catch(Exception)
+                    {
+                        
+                    }
+                    
+                    try
+                    {
+                        DataRowView[] gb = giftbatches.DefaultView.FindRows(Convert.ToInt32(row.Reference.Substring(2)));
+                        Narrative += " " + ((AGiftBatchRow)gb[0].Row).BatchDescription;
+                    }
+                    catch(Exception)
+                    {
+                        
+                    }
+                }
+                
                 sb.Append(StringHelper.StrMerge(
                         new string[] {
+                            "B" + row.BatchNumber.ToString() + "_J" + row.JournalNumber.ToString() + "_T" + row.TransactionNumber.ToString(),
                             row.CostCentreCode,
                             row.AccountCode,
-                            "B" + row.BatchNumber.ToString() + "_J" + row.JournalNumber.ToString() + "_T" + row.TransactionNumber.ToString(),
-                            String.Format("{0:N}", row.TransactionAmount),
-                            row.DebitCreditIndicator ? "Debit" : "Credit",
                             row.TransactionDate.ToString("yyyyMMdd"),
                             OtherCostCentres,
                             OtherAccountCodes,
-                            row.Narrative,
+                            Narrative,
                             row.Reference,
+                            String.Format("{0:N}", row.TransactionAmount),
+                            row.DebitCreditIndicator ? "Soll" : "Haben",
                             attributes.ToString(),
                             TaxOnIncome.ToString(),
                             TaxOnExpense.ToString()
