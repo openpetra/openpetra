@@ -428,6 +428,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             {
                                 cmbPeriod.SelectedIndex = 0;
                             }
+
+                            //Period has changed, so update transactions DateEntered
+                            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateDateEntered();
                         }
                     }
                 }

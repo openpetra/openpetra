@@ -1181,6 +1181,56 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// update the transaction method payment from outside
+        /// </summary>
+        public void UpdateDateEntered()
+        {
+            Int32 ledgerNumber;
+            Int32 batchNumber;
+
+            DateTime batchEffectiveDate;
+
+            if (!((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
+            {
+                return;
+            }
+
+            FBatchRow = GetBatchRow();
+
+            if (FBatchRow == null)
+            {
+                FBatchRow = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().GetSelectedDetailRow();
+            }
+
+            ledgerNumber = FBatchRow.LedgerNumber;
+            batchNumber = FBatchRow.BatchNumber;
+            batchEffectiveDate = FBatchRow.GlEffectiveDate;
+
+            if (FMainDS.AGift.Rows.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
+            }
+            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
+            {
+                //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    FPreviouslySelectedDetailRow.DateEntered = batchEffectiveDate;
+                    dtpDateEntered.Date = batchEffectiveDate;
+                }
+            }
+
+            //Update all transactions
+            foreach (AGiftRow giftRow in FMainDS.AGift.Rows)
+            {
+                if (giftRow.BatchNumber.Equals(batchNumber) && giftRow.LedgerNumber.Equals(ledgerNumber))
+                {
+                    giftRow.DateEntered = batchEffectiveDate;
+                }
+            }
+        }
+
+        /// <summary>
         /// set the Hash Total symbols for the currency field from outside
         /// </summary>
         public void UpdateHashTotal(Decimal AHashTotal)
@@ -1292,7 +1342,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ARow == null)
             {
-                PnlDetailsProtected = true; //ViewMode;
+                PnlDetailsProtected = ViewMode;
             }
             else
             {
@@ -1411,6 +1461,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+
+            //It is necessary to validate the unbound control for date entered. This requires us to pass a the control.
+            //The reason for this is that the
+            AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+
+            TSharedFinanceValidation_Gift.ValidateGiftManual(this,
+                giftRow,
+                FBatchRow.BatchYear,
+                FBatchRow.BatchPeriod,
+                dtpDateEntered,
+                ref VerificationResultCollection,
                 FValidationControlsDict);
         }
     }
