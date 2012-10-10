@@ -198,7 +198,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             return FSubscriptionDR;
         }
-        
+
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
             if (HookupDataChange != null)

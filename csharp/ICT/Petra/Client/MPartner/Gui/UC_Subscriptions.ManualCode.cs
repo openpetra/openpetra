@@ -326,7 +326,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             this.DeletePSubscription();
         }
-        
+
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
@@ -393,14 +393,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 pnlDetails.Visible = false;
             }
         }
-        
+
         private void DoRecalculateScreenParts()
         {
             OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {
                     ScreenPart = TScreenPartEnum.spCounters
                 });
         }
-        
+
         /// <summary>
         ///
         /// </summary>
