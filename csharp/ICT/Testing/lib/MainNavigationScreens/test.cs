@@ -75,7 +75,7 @@ namespace Tests.MainNavigationScreens
 
             // load the UINavigation file (csharp\ICT\Petra\Definitions\UINavigation.yml)
             TLogging.Log("loading " + TAppSettingsManager.GetValue("UINavigation.File"));
-            XmlNode MainMenuNode = TFrmMainWindowNew.BuildNavigationXml();
+            XmlNode MainMenuNode = TFrmMainWindowNew.BuildNavigationXml(false);
 
             // saving a xml file for better understanding how to use the XPath commands
             StreamWriter sw = new StreamWriter(TAppSettingsManager.GetValue("UINavigation.File") + ".xml");

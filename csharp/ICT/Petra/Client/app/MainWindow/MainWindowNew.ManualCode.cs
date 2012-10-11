@@ -50,6 +50,23 @@ namespace Ict.Petra.Client.App.PetraClient
         private static bool FMultiLedgerSite = false;
         private static int FCurrentLedger = -1;
         
+
+        /// <summary>
+        /// The currently selected Ledger
+        /// </summary>        
+        public int CurrentLedger
+        {
+            get
+            {
+                return FCurrentLedger;
+            }
+            
+            set
+            {
+                FCurrentLedger = value;
+            }
+        }
+        
         private void InitializeManualCode()
         {
             LoadNavigationUI();
@@ -140,7 +157,7 @@ namespace Ict.Petra.Client.App.PetraClient
             return true;
         }
 
-        private static void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers)
+        private static void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers, bool ADontUseDefaultLedger)
         {
             XmlNode childNode = AMenuNode.FirstChild;
 
@@ -188,8 +205,11 @@ namespace Ict.Petra.Client.App.PetraClient
                         }
                         
                         
-                        // Set the 'Current Ledger' to the users' Default Ledger, or if he/she hasn't got one, to the first Ledger of the Site.
-                        FCurrentLedger = TUserDefaults.GetInt32Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER, AAvailableLedgers[0].LedgerNumber);
+                        if (!ADontUseDefaultLedger) 
+                        {
+                            // Set the 'Current Ledger' to the users' Default Ledger, or if he/she hasn't got one, to the first Ledger of the Site.
+                            FCurrentLedger = TUserDefaults.GetInt32Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER, AAvailableLedgers[0].LedgerNumber);                            
+                        }
                     }
                     else if (AAvailableLedgers.Rows.Count == 1)
                     {
@@ -207,7 +227,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 }
                 else
                 {
-                    AddNavigationForEachLedger(childNode, AAvailableLedgers);
+                    AddNavigationForEachLedger(childNode, AAvailableLedgers, ADontUseDefaultLedger);
                     childNode = childNode.NextSibling;
                 }
             }
@@ -216,7 +236,7 @@ namespace Ict.Petra.Client.App.PetraClient
         /// <summary>
         /// build an XML document which includes all ledgers etc.
         /// </summary>
-        public static XmlNode BuildNavigationXml()
+        public static XmlNode BuildNavigationXml(bool ADontUseDefaultLedger = false)
         {
             TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
@@ -232,7 +252,7 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
 
-            AddNavigationForEachLedger(MainMenuNode, AvailableLedgers);
+            AddNavigationForEachLedger(MainMenuNode, AvailableLedgers, ADontUseDefaultLedger);
 
             return MainMenuNode;
         }
@@ -240,9 +260,9 @@ namespace Ict.Petra.Client.App.PetraClient
         /// <summary>
         /// load or reload the navigation
         /// </summary>
-        public void LoadNavigationUI()
+        public void LoadNavigationUI(bool ADontUseDefaultLedger = false)
         {
-            XmlNode MainMenuNode = BuildNavigationXml();
+            XmlNode MainMenuNode = BuildNavigationXml(ADontUseDefaultLedger);
             XmlNode DepartmentNode = MainMenuNode.FirstChild;
 
             lstFolders.MultiLedgerSite = FMultiLedgerSite;

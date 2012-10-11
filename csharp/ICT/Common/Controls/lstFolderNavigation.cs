@@ -194,10 +194,11 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// for reloading the navigation file, eg. with newly created ledger
+        /// For reloading all Module's navigation Controls (TPnlModuleNavigation), eg. after creating/deleting Ledgers
         /// </summary>
         public void ClearFolders()
         {
+            this.sptNavigation.Panel1.Controls.Clear();
             this.sptNavigation.Panel2.Controls.Clear();
         }
 
