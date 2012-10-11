@@ -40,6 +40,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -258,6 +259,20 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         foreach (DataRowView rv in matches)
                         {
                             AEpMatchRow r = (AEpMatchRow)rv.Row;
+
+                            // check if the recipient key is still valid. could be that they have married, and merged into another family record
+                            if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                                        String.Format("SELECT COUNT(*) FROM PUB_{0} WHERE {1} = {2} AND {3} = '{4}'",
+                                            PPartnerTable.GetTableDBName(),
+                                            PPartnerTable.GetPartnerKeyDBName(),
+                                            r.RecipientKey,
+                                            PPartnerTable.GetStatusCodeDBName(),
+                                            MPartnerConstants.PARTNERSTATUS_ACTIVE),
+                                        IsolationLevel.ReadCommitted)) == 0)
+                            {
+                                r.RecipientKey = 0;
+                                r.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+                            }
 
                             if (r.RecentMatch < row.DateEffective)
                             {
