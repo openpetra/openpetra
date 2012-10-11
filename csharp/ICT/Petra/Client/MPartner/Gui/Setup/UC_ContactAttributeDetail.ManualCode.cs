@@ -254,7 +254,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
 
-            for (int i = dv.Count - 1; i >= 0 ; i--)
+            for (int i = dv.Count - 1; i >= 0; i--)
             {
                 dv[i].Delete();
             }

@@ -108,10 +108,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             int nRowCount = grdDetails.Rows.Count;
+
             CreateNewPContactAttribute();
 
             // Did we actually create one??
-            if (nRowCount == grdDetails.Rows.Count) return;
+            if (nRowCount == grdDetails.Rows.Count)
+            {
+                return;
+            }
 
             // Create the required initial detail attribute.  This will automatically fire the event that updates our details count column
             ucoContactDetail.CreateFirstAttributeDetail(txtDetailContactAttributeCode.Text);
@@ -161,7 +165,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 pnlDetails.Enabled = true;
                 ucoContactDetail.Enabled = true;
                 btnDelete.Enabled = grdDetails.Rows.Count > 1 && !txtDetailContactAttributeCode.ReadOnly;
-                
+
                 // Pass the contact attribute to the user control - it will then update itself
                 ucoContactDetail.SetContactAttribute(ARow.ContactAttributeCode);
             }
@@ -189,7 +193,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             // ooops!  The user has edited the attribute code and we have some detail codes that depended on it!
             // We have to update the detail codes provided the new code is good (and passed validation)
-            if (newCode == String.Empty) return;
+            if (newCode == String.Empty)
+            {
+                return;
+            }
 
             if (FMainDS.PContactAttribute.Rows.Find(new object[] { newCode }) != null)
             {
