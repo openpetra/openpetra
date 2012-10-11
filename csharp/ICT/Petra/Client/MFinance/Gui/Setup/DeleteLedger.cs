@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 if (method != null)
                 {
-                    method.Invoke(AMainWindow, new object[] { });
+                    method.Invoke(AMainWindow, new object[] { false });
                 }
             }
         }
