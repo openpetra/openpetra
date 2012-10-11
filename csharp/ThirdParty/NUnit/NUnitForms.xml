@@ -602,13 +602,6 @@
             </exception>
             <returns>The control if one is found.</returns>
         </member>
-        <member name="M:NUnit.Extensions.Forms.Finder`1.Matches(System.String,System.Object,System.Object)">
-            <summary>
-            Modifications by Timotheus Pokorra to NUnit.Extensions.Forms.Finder 
-            so that we can find controls without the long list of generated panels and tablelayoutpanels, 
-            but for example "name of tab"."name of control"
-            </summary>
-        </member>
         <member name="T:NUnit.Extensions.Forms.CheckBoxTester">
             <summary>
             A ControlTester for testing CheckBoxes.
