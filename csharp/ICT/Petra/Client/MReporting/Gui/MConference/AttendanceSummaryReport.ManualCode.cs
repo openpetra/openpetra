@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             ACalc.AddParameter("MaxDisplayColumns", ColumnCounter);
 
-            if (AReportAction == TReportActionEnum.raGenerate && DatesAreValid)
+            if ((AReportAction == TReportActionEnum.raGenerate) && DatesAreValid)
             {
                 if (dtpFromDate.Date > dtpToDate.Date)
                 {

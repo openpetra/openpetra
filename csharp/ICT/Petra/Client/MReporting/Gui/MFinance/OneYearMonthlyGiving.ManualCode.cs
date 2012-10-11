@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
 
-            if ((!dtpFromDate.Date.HasValue) ||(!dtpToDate.Date.HasValue))
+            if ((!dtpFromDate.Date.HasValue) || (!dtpToDate.Date.HasValue))
             {
                 if (AReportAction == TReportActionEnum.raGenerate)
                 {
@@ -107,6 +107,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalc.AddParameter("param_year", dtpFromDate.Date.Value.Year);
                 ACalc.AddParameter("param_months", dtpToDate.Date.Value.Month - dtpFromDate.Date.Value.Month + 1);
             }
+
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_recipient_key", txtRecipient.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);

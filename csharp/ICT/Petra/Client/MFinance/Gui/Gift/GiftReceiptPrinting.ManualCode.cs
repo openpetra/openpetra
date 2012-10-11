@@ -68,6 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 MessageBox.Show(Catalog.GetString("Please supply valid Start and End dates."));
                 return;
             }
+
             if (!printerInstalled)
             {
                 MessageBox.Show(Catalog.GetString("There is no printer, so printing is not possible"));

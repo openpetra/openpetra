@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 ACalc.AddParameter("param_report_detail", "Detail");
             }
 
-            if (AReportAction == TReportActionEnum.raGenerate && DatesAreValid)
+            if ((AReportAction == TReportActionEnum.raGenerate) && DatesAreValid)
             {
                 if (dtpFromDate.Date > dtpToDate.Date)
                 {
