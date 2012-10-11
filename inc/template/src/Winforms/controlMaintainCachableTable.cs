@@ -114,6 +114,9 @@ namespace {#NAMESPACE}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+{#IFDEF MASTERTABLE OR DETAILTABLE}
+      BuildValidationControlsDict();
+{#ENDIF MASTERTABLE OR DETAILTABLE}
 
       ShowData();
     }

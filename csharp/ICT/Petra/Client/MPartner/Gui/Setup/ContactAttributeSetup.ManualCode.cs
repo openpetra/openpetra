@@ -68,9 +68,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void RunOnceOnActivationManual()
         {
-            // Initialise the GUI of the user control
-            ucoContactDetail.InitUserControl();
-
             // Set up the correct filter for the bottom grid, based on our initial contact attribute
             if (FMainDS.PContactAttribute.Rows.Count > 0)
             {
@@ -110,10 +107,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void NewRecord(Object sender, EventArgs e)
         {
+            int nRowCount = grdDetails.Rows.Count;
             CreateNewPContactAttribute();
 
-            // Update our extra column for the new row
-            FPreviouslySelectedDetailRow[NumDetailCodesColumnOrdinal] = 0;
+            // Did we actually create one??
+            if (nRowCount == grdDetails.Rows.Count) return;
+
+            // Create the required initial detail attribute.  This will automatically fire the event that updates our details count column
+            ucoContactDetail.CreateFirstAttributeDetail(txtDetailContactAttributeCode.Text);
+            txtDetailContactAttributeCode.Focus();
         }
 
         private void DeleteRecord(Object sender, EventArgs e)
@@ -138,26 +140,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             ucoContactDetail.DeleteAll();
 
             // Get the selected grid row
-            int nSelectedRow = grdDetails.DataSourceRowToIndex2(grdDetails.SelectedDataRowsAsDataRowView[0]) + 1;
+            int nSelectedRow = grdDetails.SelectedRowIndex();
             FPreviouslySelectedDetailRow.Delete();
             FPetraUtilsObject.SetChangedFlag();
 
             // Select the next row to show
-            int maxRow = grdDetails.Rows.Count - 1;
-
-            if (nSelectedRow > maxRow)
-            {
-                nSelectedRow = maxRow;
-            }
-
-            if (nSelectedRow > 0)
-            {
-                grdDetails.SelectRowInGrid(nSelectedRow);
-            }
-
-            // Check the enabled states now that we have fewer rows
-            btnDelete.Enabled = nSelectedRow > 0 && !txtDetailContactAttributeCode.ReadOnly;
-            pnlDetails.Enabled = maxRow > 0;
+            SelectRowInGrid(nSelectedRow);
         }
 
         private void ShowDetailsManual(PContactAttributeRow ARow)
@@ -172,8 +160,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 pnlDetails.Enabled = true;
                 ucoContactDetail.Enabled = true;
-                btnDelete.Enabled = !txtDetailContactAttributeCode.ReadOnly;
-
+                btnDelete.Enabled = grdDetails.Rows.Count > 1 && !txtDetailContactAttributeCode.ReadOnly;
+                
                 // Pass the contact attribute to the user control - it will then update itself
                 ucoContactDetail.SetContactAttribute(ARow.ContactAttributeCode);
             }
@@ -200,6 +188,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             // ooops!  The user has edited the attribute code and we have some detail codes that depended on it!
+            // We have to update the detail codes provided the new code is good (and passed validation)
+            if (newCode == String.Empty) return;
+
             if (FMainDS.PContactAttribute.Rows.Find(new object[] { newCode }) != null)
             {
                 // It is the same as an existing code.
@@ -218,6 +209,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             // So it is safe to modify the detail attribute
             ucoContactDetail.ModifyAttributeCode(newCode);
+            grdDetails.Focus();
         }
 
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
@@ -246,8 +238,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // Our problem is that the control that is really the correct one to verify is the details grid of the user control.
             // This control is not one that can be verified.
             // We can do the verification here - either by using the Active checkbox as a proxy (the nearest control) in which case we get a tooltip
-            // but when we tab away from the checkbox, wich is not quite right...
-            // or we can just use htis code without the Validation=true in the YAML - in which case we just get the validation dialog
+            // but when we tab away from the checkbox, which is not quite right...
+            // or we can just use this code without the Validation=true in the YAML - in which case we just get the validation dialog
             ValidationColumn = ARow.Table.Columns[PContactAttributeTable.ColumnActiveId];
 
             if (ARow[NumDetailCodesColumnOrdinal] != System.DBNull.Value)
