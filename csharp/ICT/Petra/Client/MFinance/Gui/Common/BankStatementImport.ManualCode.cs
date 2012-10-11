@@ -767,7 +767,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
 
             string ShortCodeOfBank = txtBankStatement.Text;
-            string DateOfStatement = StringHelper.DateToLocalizedString(dtpBankStatementDate.Date.Value);
+            string DateOfStatement = StringHelper.DateToLocalizedString(dtpBankStatementDate.Date.HasValue? dtpBankStatementDate.Date.Value: DateTime.Today);
             string HtmlDocument = String.Empty;
 
             if (rbtListAll.Checked)

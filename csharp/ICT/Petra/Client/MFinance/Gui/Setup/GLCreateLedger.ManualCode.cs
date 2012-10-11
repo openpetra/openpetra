@@ -66,6 +66,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
+            if (!dtpCalendarStartDate.Date.HasValue)
+            {
+                MessageBox.Show(Catalog.GetString("Please supply valid Start date."),
+                     Catalog.GetString("Problem: No Ledger has been created"));
+           }
             if (!TRemote.MFinance.Setup.WebConnectors.CreateNewLedger(
                     Convert.ToInt32(nudLedgerNumber.Value),
                     txtLedgerName.Text,

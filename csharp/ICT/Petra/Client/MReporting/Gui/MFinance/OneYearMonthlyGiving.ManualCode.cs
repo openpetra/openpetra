@@ -71,32 +71,46 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
 
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && (dtpFromDate.Date > dtpToDate.Date))
+            if ((!dtpFromDate.Date.HasValue) ||(!dtpToDate.Date.HasValue))
             {
-                TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("From date is later than to date."),
-                    Catalog.GetString("Please change from date or to date."),
-                    TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                if (AReportAction == TReportActionEnum.raGenerate)
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("Invalid dates."),
+                        Catalog.GetString("Provide values for From date and To date."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
             }
-
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && (dtpFromDate.Date.Value.Year != dtpToDate.Date.Value.Year))
+            else
             {
-                TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("Year value in from-date is different than from year value in to-date."),
-                    Catalog.GetString("Please use the same year."),
-                    TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationResult);
-            }
+                if ((AReportAction == TReportActionEnum.raGenerate)
+                    && (dtpFromDate.Date > dtpToDate.Date))
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("From date is later than to date."),
+                        Catalog.GetString("Please change from date or to date."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
 
+                if ((AReportAction == TReportActionEnum.raGenerate)
+                    && (dtpFromDate.Date.Value.Year != dtpToDate.Date.Value.Year))
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("Year value in from-date is different than from year value in to-date."),
+                        Catalog.GetString("Please use the same year."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+
+                ACalc.AddParameter("param_year", dtpFromDate.Date.Value.Year);
+                ACalc.AddParameter("param_months", dtpToDate.Date.Value.Month - dtpFromDate.Date.Value.Month + 1);
+            }
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_recipient_key", txtRecipient.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);
 
-            ACalc.AddParameter("param_year", dtpFromDate.Date.Value.Year);
-            ACalc.AddParameter("param_months", dtpToDate.Date.Value.Month - dtpFromDate.Date.Value.Month + 1);
 
             int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
 

@@ -63,6 +63,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
             bool printerInstalled = printDocument.PrinterSettings.IsValid;
 
+            if ((!dtpStartDate.Date.HasValue) || (!dtpEndDate.Date.HasValue))
+            {
+                MessageBox.Show(Catalog.GetString("Please supply valid Start and End dates."));
+                return;
+            }
             if (!printerInstalled)
             {
                 MessageBox.Show(Catalog.GetString("There is no printer, so printing is not possible"));

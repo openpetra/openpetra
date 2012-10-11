@@ -36,8 +36,6 @@ using GNU.Gettext;
 
 namespace Ict.Petra.Client.CommonControls
 {
-    #region TtxtPetraDate
-
     /// <summary>
     /// A Control that derives from System.Windows.Forms.TextBox that allows entry
     /// and formatting of dates in the Petra-specific format and with all the Petra
@@ -112,6 +110,7 @@ namespace Ict.Petra.Client.CommonControls
                 if (!ValidDate(false))
                 {
                     FDate = null;
+                    this.Clear();
                 }
 
                 return FDate;
@@ -417,7 +416,7 @@ namespace Ict.Petra.Client.CommonControls
             }
 
             Boolean ReturnValue = true;
-            DateTime? DateBeforeChange = FDate;
+//          DateTime? DateBeforeChange = FDate;
             DateTime Text2Date;
             TVerificationResult DateVerificationResult1;
             TVerificationResult DateVerificationResult2;
@@ -563,8 +562,6 @@ namespace Ict.Petra.Client.CommonControls
 
         #endregion
     }
-
-    #endregion
 
     /// <summary>todoComment</summary>
     public delegate void TPetraDateChangedEventHandler(System.Object Sender, TPetraDateChangedEventArgs e);
