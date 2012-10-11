@@ -89,6 +89,7 @@ namespace Ict.Petra.Client.CommonControls
                 if (value != this.Text)
                 {
                     DateTime? HoldThis = FDate;
+                    base.Text = value;
                     bool DateIsOk = VerifyDate(true);
 
                     if (FDate != HoldThis)
@@ -96,8 +97,6 @@ namespace Ict.Petra.Client.CommonControls
                         OnDateChanged(new TPetraDateChangedEventArgs(FDate, DateIsOk));
                     }
                 }
-
-                base.Text = value;
             }
         }
 
@@ -297,7 +296,7 @@ namespace Ict.Petra.Client.CommonControls
             maximalDateValue = DateTime.MaxValue;
 
             // this.Text := DateTimeToLongDateString2(FDate);
-            this.Date = FDate;
+            // this.Date = FDate;
 
             // MessageBox.Show('TtxtPetraDate.Create: after assigning ''Text'' Property');
             this.Width = 94;
@@ -418,7 +417,7 @@ namespace Ict.Petra.Client.CommonControls
             }
 
             Boolean ReturnValue = true;
-            DateTime? DateBeforeChange = FDate;
+            //DateTime? DateBeforeChange = FDate;
             DateTime Text2Date;
             TVerificationResult DateVerificationResult1;
             TVerificationResult DateVerificationResult2;

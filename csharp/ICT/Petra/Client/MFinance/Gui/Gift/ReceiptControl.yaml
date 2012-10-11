@@ -10,7 +10,7 @@ RootNode:
         pnlContent:
             Dock: Fill
             Controls: [txtLedger,pnlDetails,pnlBtns]
-        txtLedger: {Label=Ledger, ReadOnly=true, Width=50}
+        txtLedger: {Label=Ledger, ReadOnly=true, Width=150}
         pnlDetails:
             Controls: [grdDetails]
             Height:400

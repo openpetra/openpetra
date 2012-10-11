@@ -316,6 +316,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
                     giftBatch = MainDS.AGiftBatch[1];
                     giftBatch.BankAccountCode = oldGiftBatch.BankAccountCode;
+                    giftBatch.BankCostCentre = oldGiftBatch.BankCostCentre;
                     giftBatch.CurrencyCode = oldGiftBatch.CurrencyCode;
                     giftBatch.ExchangeRateToBase = oldGiftBatch.ExchangeRateToBase;
                     giftBatch.MethodOfPaymentCode = oldGiftBatch.MethodOfPaymentCode;

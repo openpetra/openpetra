@@ -87,7 +87,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new ToolbarSeparatorGenerator());
                 AddControlGenerator(new StatusBarGenerator());
 
-                //			AddControlGenerator(new StatusBarTextGenerator());
+                //          AddControlGenerator(new StatusBarTextGenerator());
                 AddControlGenerator(new ToolBarGenerator());
                 AddControlGenerator(new GroupBoxGenerator());
                 AddControlGenerator(new LabelGenerator());
@@ -1170,6 +1170,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 && (FCodeStorage.GetAttribute("GenerateGetSelectedDetailRow") == "true"))
             {
                 FTemplate.AddToCodelet("GENERATEGETSELECTEDDETAILROW", "true");
+            }
+
+            if (FCodeStorage.HasAttribute("MultipleMasterRows")
+                && (FCodeStorage.GetAttribute("MultipleMasterRows") == "true"))
+            {
+                FTemplate.AddToCodelet("MULTIPLEMASTERROWS", "true");
             }
 
             // find the first control that is a panel or groupbox or tab control

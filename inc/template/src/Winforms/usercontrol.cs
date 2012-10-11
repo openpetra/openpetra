@@ -210,8 +210,8 @@ namespace {#NAMESPACE}
         }
 
 {#IFDEF MASTERTABLE}
-        GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
-        ValidateData(FMainDS.{#MASTERTABLE}[0]);
+        GetDataFromControls(GetMasterRow());
+        ValidateData(GetMasterRow());
 {#ENDIF MASTERTABLE}        
 {#ENDIFN SHOWDETAILS}
 {#IFDEF SHOWDETAILS}
@@ -226,7 +226,7 @@ namespace {#NAMESPACE}
 {#ENDIF VALIDATEDATADETAILSMANUAL}
 {#IFDEF VALIDATEDATAMANUAL}
 {#IFDEF MASTERTABLE}
-            ValidateDataManual(FMainDS.{#MASTERTABLE}[0]);
+            ValidateDataManual(GetMasterRow());
 {#ENDIF MASTERTABLE}
 {#ENDIF VALIDATEDATAMANUAL}
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
@@ -276,6 +276,27 @@ namespace {#NAMESPACE}
         return ReturnValue;
     }
 
+{#IFDEF MASTERTABLE}
+    private {#MASTERTABLETYPE}Row GetMasterRow()
+    {
+        if (FMainDS.{#MASTERTABLE}.Rows.Count > 1)
+        {
+{#IFDEF MULTIPLEMASTERROWS}
+            // GetSelectedMasterRow() needs to be implemented in ManualCode file in this case 
+            // as it is not automatically created with use of MASTERTABLE.
+            return GetSelectedMasterRow();
+{#ENDIF MULTIPLEMASTERROWS}
+{#IFNDEF MULTIPLEMASTERROWS}
+            return FMainDS.{#MASTERTABLE}[0];
+{#ENDIFN MULTIPLEMASTERROWS}
+        }
+        else
+        {
+            return FMainDS.{#MASTERTABLE}[0];
+        }
+    }
+{#ENDIF MASTERTABLE}        
+    
 {#IFDEF SHOWDETAILS}
     private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {

@@ -282,28 +282,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static DataTable GetUnreceiptedGifts(Int32 ALedgerNumber)
         {
-            String SqlQuery = "SELECT DISTINCT " +
-                              ALedgerNumber.ToString() + " As LedgerNumber," +
-                              "a_receipt_number_i AS ReceiptNumber," +
-                              "a_date_entered_d AS DateEntered," +
-                              "p_partner_short_name_c AS Donor," +
-                              "p_donor_key_n AS DonorKey," +
-                              "p_partner_class_c AS DonorClass," +
-                              "PUB_a_gift.a_batch_number_i AS BatchNumber," +
-                              "PUB_a_gift.a_gift_transaction_number_i AS TransactionNumber," +
-                              "a_reference_c AS Reference, " +
-                              "a_currency_code_c AS GiftCurrency " +
-                              "FROM PUB_a_gift LEFT JOIN PUB_p_partner on PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n " +
-                              "LEFT JOIN PUB_a_gift_batch ON PUB_a_gift.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i AND PUB_a_gift.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i "
-                              +
-                              "WHERE PUB_a_gift.a_ledger_number_i=" + ALedgerNumber.ToString() +
-                              " AND a_receipt_printed_l=FALSE AND p_receipt_each_gift_l=TRUE " +
-                              "ORDER BY BatchNumber";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            DataTable GiftsTbl = null;
 
-            DataTable GiftsTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction);
+            try
+            {
+                String SqlQuery = "SELECT DISTINCT " +
+                                  ALedgerNumber.ToString() + " As LedgerNumber," +
+                                  "a_receipt_number_i AS ReceiptNumber," +
+                                  "a_date_entered_d AS DateEntered," +
+                                  "p_partner_short_name_c AS Donor," +
+                                  "p_donor_key_n AS DonorKey," +
+                                  "p_partner_class_c AS DonorClass," +
+                                  "PUB_a_gift.a_batch_number_i AS BatchNumber," +
+                                  "PUB_a_gift.a_gift_transaction_number_i AS TransactionNumber," +
+                                  "a_reference_c AS Reference, " +
+                                  "a_currency_code_c AS GiftCurrency " +
+                                  "FROM PUB_a_gift LEFT JOIN PUB_p_partner on PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n " +
+                                  "LEFT JOIN PUB_a_gift_batch ON PUB_a_gift.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i AND PUB_a_gift.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i "
+                                  +
+                                  "WHERE PUB_a_gift.a_ledger_number_i=" + ALedgerNumber.ToString() +
+                                  " AND a_receipt_printed_l=FALSE AND p_receipt_each_gift_l=TRUE " +
+                                  "ORDER BY BatchNumber";
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                GiftsTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction);
+
+                foreach (DataRow Row in GiftsTbl.Rows)
+                {
+                    Row["Donor"] = Calculations.FormatShortName(Row["Donor"].ToString(), eShortNameFormat.eReverseShortname);
+                }
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
             return GiftsTbl;
         }
 
@@ -517,20 +529,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             )
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
-            string HtmlDoc = FormatHtmlReceipt(ALedgerNumber,
-                ABatchNumber,
-                ATransactionNumber,
-                ADonorShortName,
-                ADonorKey,
-                ADonorClass,
-                AReference,
-                AGiftCurrency,
-                ADateEntered,
-                LocalCountryCode,
-                Transaction);
+            string HtmlDoc;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            try
+            {
+                string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
+                HtmlDoc = FormatHtmlReceipt(ALedgerNumber,
+                    ABatchNumber,
+                    ATransactionNumber,
+                    ADonorShortName,
+                    ADonorKey,
+                    ADonorClass,
+                    AReference,
+                    AGiftCurrency,
+                    ADateEntered,
+                    LocalCountryCode,
+                    Transaction);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
             return HtmlDoc;
         }
 
@@ -543,36 +562,43 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             string HtmlDoc = "";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
 
-            foreach (DataRow Row in AGiftTbl.Rows)
+            try
             {
-                if (Row["Selected"].Equals(true))
+                string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
+
+                foreach (DataRow Row in AGiftTbl.Rows)
                 {
-                    string PageHtml = FormatHtmlReceipt(
-                        Convert.ToInt32(Row["LedgerNumber"]),
-                        Convert.ToInt32(Row["BatchNumber"]),
-                        Convert.ToInt32(Row["TransactionNumber"]),
-                        Row["Donor"].ToString(),
-                        Convert.ToInt64(Row["DonorKey"]),
-                        SharedTypes.PartnerClassStringToEnum(Row["DonorClass"].ToString()),
-                        Row["Reference"].ToString(),
-                        Row["GiftCurrency"].ToString(),
-                        Convert.ToDateTime(Row["DateEntered"]),
-                        LocalCountryCode,
-                        Transaction);
-
-                    if (HtmlDoc != "")
+                    if (Row["Selected"].Equals(true))
                     {
-                        HtmlDoc += "|PageBreak|";
-                    }
+                        string PageHtml = FormatHtmlReceipt(
+                            Convert.ToInt32(Row["LedgerNumber"]),
+                            Convert.ToInt32(Row["BatchNumber"]),
+                            Convert.ToInt32(Row["TransactionNumber"]),
+                            Row["Donor"].ToString(),
+                            Convert.ToInt64(Row["DonorKey"]),
+                            SharedTypes.PartnerClassStringToEnum(Row["DonorClass"].ToString()),
+                            Row["Reference"].ToString(),
+                            Row["GiftCurrency"].ToString(),
+                            Convert.ToDateTime(Row["DateEntered"]),
+                            LocalCountryCode,
+                            Transaction);
 
-                    HtmlDoc += PageHtml;
-                } // if selected
+                        if (HtmlDoc != "")
+                        {
+                            HtmlDoc += "|PageBreak|";
+                        }
 
-            } // foreach row
+                        HtmlDoc += PageHtml;
+                    } // if selected
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                } // foreach row
+
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
             return HtmlDoc;
         }
 

@@ -45,9 +45,24 @@ namespace Ict.Petra.Shared.MFinance.Validation
             out DateTime AEndDateLastForwardingPeriod);
 
         /// <summary>
+        /// Delegate for invoking the process of finding the valid start and end dates for the specified period.
+        /// </summary>
+        public delegate bool TGetValidPeriodDates(Int32 ALedgerNumber,
+            Int32 AYearNumber,
+            Int32 ADiffPeriod,
+            Int32 APeriodNumber,
+            out DateTime AStartDatePeriod,
+            out DateTime AEndDatePeriod);
+
+        /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Finance.
         /// </summary>
         private static TGetValidPostingDateRange FDelegateGetValidPostingDateRange;
+
+        /// <summary>
+        /// Reference to the Delegate for invoking the verification of the existence of a Finance.
+        /// </summary>
+        private static TGetValidPeriodDates FDelegateGetValidPeriodDates;
 
         /// <summary>
         /// This property is used to provide a function which invokes the verification of the existence of a Finance.
@@ -67,6 +82,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
         }
 
         /// <summary>
+        /// This property is used to provide a function which invokes the verification of the existence of a Finance.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TGetValidPeriodDates GetValidPeriodDatesDelegate
+        {
+            get
+            {
+                return FDelegateGetValidPeriodDates;
+            }
+
+            set
+            {
+                FDelegateGetValidPeriodDates = value;
+            }
+        }
+
+        /// <summary>
         /// Get the valid posting date range for the specified ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -80,6 +112,33 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (FDelegateGetValidPostingDateRange != null)
             {
                 return FDelegateGetValidPostingDateRange(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
+            }
+            else
+            {
+                throw new InvalidOperationException("Delegate 'TGetValidPostingDateRange' must be initialised before calling this Method");
+            }
+        }
+
+        /// <summary>
+        /// Get the valid date range for the specified period
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AYearNumber"></param>
+        /// <param name="ADiffPeriod"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <param name="AStartDatePeriod"></param>
+        /// <param name="AEndDatePeriod"></param>
+        /// <returns>true if dates are returned OK</returns>
+        public static bool GetValidPeriodDates(Int32 ALedgerNumber,
+            Int32 AYearNumber,
+            Int32 ADiffPeriod,
+            Int32 APeriodNumber,
+            out DateTime AStartDatePeriod,
+            out DateTime AEndDatePeriod)
+        {
+            if (FDelegateGetValidPostingDateRange != null)
+            {
+                return FDelegateGetValidPeriodDates(ALedgerNumber, AYearNumber, ADiffPeriod, APeriodNumber, out AStartDatePeriod, out AEndDatePeriod);
             }
             else
             {

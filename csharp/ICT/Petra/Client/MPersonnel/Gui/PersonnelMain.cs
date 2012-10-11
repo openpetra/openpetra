@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, timop
+//       wolfgangb
 //
 // Copyright 2004-2012 by OM International
 //
@@ -54,6 +54,18 @@ namespace Ict.Petra.Client.MPersonnel.Gui
 
             frm.CalledFromExtracts = true;
             frm.CalledForConferences = false;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// open screen to create "Event Role" Extract
+        /// </summary>
+        public static void PartnerByEventRoleExtract(Form AParentForm)
+        {
+            TFrmPartnerByEventRole frm = new TFrmPartnerByEventRole(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.CalledForConferences = true;
             frm.Show();
         }
 

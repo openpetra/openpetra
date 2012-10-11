@@ -55,6 +55,7 @@ OpenPetra:
                     GeneratePersonnelExtracts: {Label=Generate Personnel Extract}
                         PartnerByConference: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Conference, ActionClick=TPersonnelMain.PartnerByConferenceExtract}
                         PartnerByOutreach: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Outreach, ActionClick=TPersonnelMain.PartnerByOutreachExtract}
+                        PartnerByEventRole: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Event Role, ActionClick=TPersonnelMain.PartnerByEventRoleExtract}
                         PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, ActionClick=TPersonnelMain.PartnerByCommitmentExtract}
                         PartnerByField: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Field, ActionClick=TPersonnelMain.PartnerByFieldExtract}
                     GenerateFinanceExtracts: {Label=Generate Finance Extract}
@@ -269,6 +270,7 @@ OpenPetra:
                     GenerateExtracts: {Label=Generate Extract}
                         PartnerByConference: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Conference, ActionClick=TPersonnelMain.PartnerByConferenceExtract}
                         PartnerByOutreach: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Outreach, ActionClick=TPersonnelMain.PartnerByOutreachExtract}
+                        PartnerByEventRole: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Event Role, ActionClick=TPersonnelMain.PartnerByEventRoleExtract}
                         PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, ActionClick=TPersonnelMain.PartnerByCommitmentExtract}
                         PartnerByField: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Field, ActionClick=TPersonnelMain.PartnerByFieldExtract}
 
