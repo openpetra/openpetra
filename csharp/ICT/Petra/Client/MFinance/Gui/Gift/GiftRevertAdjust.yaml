@@ -1,13 +1,13 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraForm.yaml
-    FormTitle: Revert or adjust Gift
+    FormTitle: Reverse or Adjust Gift
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     DetailTable: AGiftBatch
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: browse
     Template: windowSingleTable
     WindowWidth: 660
-    WindowHeight: 660
+    WindowHeight: 450
     Actions:
         actOK: {Label=&OK, ActionClick=RevertAdjust}
         actClose:  {Label=Close, ActionClick=BtnCloseClick}
@@ -22,7 +22,7 @@ RootNode:
         pnlGrid:
             Dock: Top
             Controls: [grdDetails]
-            Height:400
+            Height:200
         pnlButtons:
             Dock: Bottom
             Controls:

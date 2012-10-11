@@ -666,8 +666,16 @@ namespace Ict.Petra.Client.App.Gui
         /// <returns></returns>
         private static String BuildMessageFooter(String AMessageNumber, String AContext)
         {
+            string version = string.Empty;
+
+            if (System.Reflection.Assembly.GetEntryAssembly() != null)
+            {
+                // for NUnit tests, there is no entry Assebmly
+                version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+            }
+
             return Environment.NewLine + Environment.NewLine + StrMessageNumber + AMessageNumber + "     " + StrContext + AContext +
-                   Environment.NewLine + StrRelease + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+                   Environment.NewLine + StrRelease + version;
         }
 
         /// <summary>
