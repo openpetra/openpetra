@@ -323,6 +323,7 @@ OpenPetra:
                         Country_EventPreferenceLevel: {Label=Setup Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}
                         EventRole: {Label=Setup Event Roles, Description=Maintain Event Roles, ActionOpenScreen=TFrmEventRoleSetup}
                         OrganisationContact: {Label=Setup Organisation Contacts, Description=Maintain Organisation Contacts, ActionOpenScreen=TFrmOrganisationContactSetup}
+                        TransportType: {Label=Setup Transport Types, Description=Maintain Transport Types, ActionOpenScreen=TFrmTransportTypeSetup}
                     LocalDataRelated: {Label=Local Data-related}
                         LocalDataOptionListNames: {Label=Setup Local Data Option List Names, Description=Maintain Local Data Option List names, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
                         #LocalApplicationDataFields: {Label=Setup Local Application Data Fields, Description=Maintain Local Application Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalApplicationDataFieldSetup}

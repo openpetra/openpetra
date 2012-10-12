@@ -1260,5 +1260,38 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
+
+        /// <summary>
+        /// Validates the MPersonnel Transport Type screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateTransportType(object AContext, PtTravelTypeRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtTravelTypeTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
     }
 }
