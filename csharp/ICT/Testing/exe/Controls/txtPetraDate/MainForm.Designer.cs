@@ -21,6 +21,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+using System.Windows.Forms;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 
@@ -60,16 +61,19 @@ namespace Ict.Testing.TxtPetraDate
             this.dtpDetailGlEffectiveDate = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnAssignInvalidDate = new System.Windows.Forms.Button();
 
             this.SuspendLayout();
 
             //
             // textBox1
             //
-            this.textBox1.Location = new System.Drawing.Point(50, 75);
+            this.textBox1.Location = new System.Drawing.Point(50, 120);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(200, 200);
+            this.textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            this.textBox1.Dock = DockStyle.Bottom;
             this.textBox1.TabIndex = 0;
 
             //
@@ -80,7 +84,6 @@ namespace Ict.Testing.TxtPetraDate
             this.label1.Size = new System.Drawing.Size(120, 23);
             this.label1.TabIndex = 1;
             this.label1.Text = "Please enter a date:";
-
 
             //
             // dtpDetailGlEffectiveDate
@@ -93,6 +96,17 @@ namespace Ict.Testing.TxtPetraDate
             this.dtpDetailGlEffectiveDate.Validated += new System.EventHandler(this.ControlValidatedHandler);
 
             //
+            // btnAssignInvalidDate
+            //
+            this.btnAssignInvalidDate.Location = new System.Drawing.Point(50, 80);
+            this.btnAssignInvalidDate.Name = "btnAssignInvalidDate";
+            this.btnAssignInvalidDate.Size = new System.Drawing.Size(152, 23);
+            this.btnAssignInvalidDate.TabIndex = 0;
+            this.btnAssignInvalidDate.Text = "textAssignInvalidDate";
+            this.btnAssignInvalidDate.UseVisualStyleBackColor = true;
+            this.btnAssignInvalidDate.Click += new System.EventHandler(this.BtnAssignInvalidDateClick);
+
+            //
             // MainForm
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -103,11 +117,13 @@ namespace Ict.Testing.TxtPetraDate
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dtpDetailGlEffectiveDate);
             this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.btnAssignInvalidDate);
             this.ResumeLayout(false);
         }
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDetailGlEffectiveDate;
+        private System.Windows.Forms.Button btnAssignInvalidDate;
     }
 }

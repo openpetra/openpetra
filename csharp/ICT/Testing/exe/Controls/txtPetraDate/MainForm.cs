@@ -47,6 +47,7 @@ namespace Ict.Testing.TxtPetraDate
             //
             InitializeComponent();
             new TLogging();
+            TLogging.DebugLevel = 1;
             TLogging.SetStatusBarProcedure(WriteLogging);
         }
 
@@ -64,6 +65,14 @@ namespace Ict.Testing.TxtPetraDate
         private void ControlValidatedHandler(object sender, EventArgs e)
         {
             TLogging.Log("ControlValidatedHandler");
+
+            // simulate GetDetailsFromControls
+            DateTime test = (dtpDetailGlEffectiveDate.Date.HasValue ? dtpDetailGlEffectiveDate.Date.Value : DateTime.MinValue);
+        }
+
+        void BtnAssignInvalidDateClick(object sender, System.EventArgs e)
+        {
+            dtpDetailGlEffectiveDate.Text = "30";
         }
     }
 }
