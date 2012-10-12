@@ -67,7 +67,7 @@ namespace Ict.Testing.TxtPetraDate
             TLogging.Log("ControlValidatedHandler");
 
             // simulate GetDetailsFromControls
-            DateTime test = (dtpDetailGlEffectiveDate.Date.HasValue ? dtpDetailGlEffectiveDate.Date.Value : DateTime.MinValue);
+            TLogging.Log((dtpDetailGlEffectiveDate.Date.HasValue ? dtpDetailGlEffectiveDate.Date.Value : DateTime.MinValue).ToString());
         }
 
         void BtnAssignInvalidDateClick(object sender, System.EventArgs e)
