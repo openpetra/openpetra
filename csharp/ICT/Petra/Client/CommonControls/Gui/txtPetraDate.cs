@@ -59,6 +59,9 @@ namespace Ict.Petra.Client.CommonControls
         private Boolean FAllowFutureDate;
         private Boolean FAllowPastDate;
         private Boolean FLeavingOnFailedValidationOK;
+
+        /// show no warning for invalid text, handled by the validation framework instead
+        private Boolean FShowWarningOnLostFocus = false;
         private String FDateDescription;
         private Boolean FAllowVerification = true;
 
@@ -314,7 +317,7 @@ namespace Ict.Petra.Client.CommonControls
 
         private void TtxtPetraDate_LostFocus(object sender, EventArgs e)
         {
-            bool DateIsOk = VerifyDate(base.Text, true);
+            bool DateIsOk = VerifyDate(base.Text, FShowWarningOnLostFocus);
 
             if (FDate != FDateBeforeUserEdit)
             {
