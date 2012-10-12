@@ -47,6 +47,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void FieldChangeAdjustment(System.Object sender, EventArgs e)
         {
+            if ((!dtpStartDate.Date.HasValue) || (!dtpEndDate.Date.HasValue) || (!dtpDateEffective.Date.HasValue))
+            {
+                MessageBox.Show(Catalog.GetString("Please supply valid Start, End and Effective dates."));
+                return;
+            }
+
             Int32 AdjustmentGiftBatch =
                 TRemote.MFinance.Gift.WebConnectors.FieldChangeAdjustment(FLedgerNumber,
                     Convert.ToInt64(txtRecipientKey.Text),

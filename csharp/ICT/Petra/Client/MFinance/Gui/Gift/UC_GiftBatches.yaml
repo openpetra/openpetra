@@ -67,7 +67,7 @@ RootNode:
         cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
         dtpDetailGlEffectiveDate: {Label=GL Effective Date, OnChange=UpdateBatchPeriod, Validation=true}
         lblValidDateRange:
-        txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged}
+        txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged, Validation=true}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
         txtDetailExchangeRateToBase: {ReadOnly=true, Validation=true, Format=Decimal}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList,OnChange=MethodOfPaymentChanged}

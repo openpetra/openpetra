@@ -81,11 +81,54 @@ namespace Tests.Common.Controls
             tester.Properties.Text = "31-12-2012";
 
             Assert.AreEqual(new DateTime(2012, 12, 31), tester.Properties.Date.Value, "date should be set");
-            Assert.AreEqual(2, TextChangedCalled, "event TextChanged should have been called twice");
             Assert.AreEqual(1, DateChangedCalled, "event DateChanged should have been called once");
+            Assert.AreEqual(1, TextChangedCalled, "event TextChanged should have been called once");
 
+            tester.Properties.Text = "30-12-2012";
+
+            TextChangedCalled = 0;
+            DateChangedCalled = 0;
+            tester.Properties.Text = "31-DEC-2012";
+
+            Assert.AreEqual(new DateTime(2012, 12, 31), tester.Properties.Date.Value, "date should be set, Test With DEC");
+            Assert.AreEqual(1, DateChangedCalled, "event DateChanged should have been called once, Test With DEC");
+            Assert.AreEqual(1, TextChangedCalled, "event TextChanged should have been called once, Test With DEC");
+
+            TextChangedCalled = 0;
+            DateChangedCalled = 0;
+            tester.Properties.Text = "31-12-2012";
+
+            Assert.AreEqual(new DateTime(2012, 12, 31), tester.Properties.Date.Value, "date should be set, test resetting");
+            Assert.AreEqual(0, DateChangedCalled, "event DateChanged should not have been called, test resetting");
+            Assert.AreEqual(0, TextChangedCalled, "event TextChanged should not have been called, test resetting");
+        }
+
+        /// <summary>
+        /// Test assigning month names for different culture
+        /// </summary>
+        [Test]
+        public void TestCulture()
+        {
+            TtxtPetraDate dtpDate = new TtxtPetraDate();
+
+            dtpDate.Name = "dtpDate";
+            dtpDate.DateChanged += new TPetraDateChangedEventHandler(DateChanged);
+            dtpDate.TextChanged += new EventHandler(TextChanged);
+
+            Form TestForm = new Form();
+            TestForm.Controls.Add(dtpDate);
+
+            TestForm.Show();
+
+            TTxtPetraDateTester tester = new TTxtPetraDateTester("dtpDate");
+
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
             tester.Properties.Text = "30-JAN-2012";
             Assert.AreEqual(new DateTime(2012, 1, 30), tester.Properties.Date.Value, "date should be set, 30-JAN-2012");
+            tester.Properties.Text = "30-JANUARY-2012";
+            Assert.AreEqual(new DateTime(2012, 1, 30), tester.Properties.Date.Value, "date should be set, 30-JANUARY-2012");
+            tester.Properties.Text = "30-SEPTEMBER-2012";
+            Assert.AreEqual(new DateTime(2012, 9, 30), tester.Properties.Date.Value, "date should be set, 30-SEPTEMBER-2012");
             tester.Properties.Text = "30-APR-2012";
             Assert.AreEqual(new DateTime(2012, 4, 30), tester.Properties.Date.Value, "date should be set, 30-APR-2012");
             tester.Properties.Text = "30-NOV-2012";
@@ -134,8 +177,16 @@ namespace Tests.Common.Controls
             DialogBoxHandler = HandleMessageBox;
             tester.Properties.Text = "30";
 
-            TLogging.Log("Warning: this test still fails! Please activate next test");
-            // Assert.AreEqual(1, NumberOfMessageBoxes, "entering an invalid date should only show a messagebox once");
+            Assert.AreEqual(1, NumberOfMessageBoxes, "entering an invalid date should only show a messagebox once");
+
+            TextChangedCalled = 0;
+            DateChangedCalled = 0;
+            NumberOfMessageBoxes = 0;
+
+            DialogBoxHandler = HandleMessageBox;
+            tester.Properties.Text = "301210000";
+
+            Assert.AreEqual(1, NumberOfMessageBoxes, "entering an invalid date should only show a messagebox once: year 10000");
 
             DialogBoxHandler = null;
         }

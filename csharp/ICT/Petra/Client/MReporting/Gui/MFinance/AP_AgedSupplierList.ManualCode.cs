@@ -49,11 +49,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+            DateTime SelDate = DateTime.Today;
+
+            if (dtpDateSelection.Date.HasValue)
+            {
+                SelDate = dtpDateSelection.Date.Value;
+            }
+
             ACalc.AddParameter("param_currency", "Base");
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("param_date_selection30", dtpDateSelection.Date.Value.AddDays(30));
-            ACalc.AddParameter("param_date_selectionSub30", dtpDateSelection.Date.Value.AddDays(-30));
-            ACalc.AddParameter("param_date_selection60", dtpDateSelection.Date.Value.AddDays(60));
+            ACalc.AddParameter("param_date_selection30", SelDate.AddDays(30));
+            ACalc.AddParameter("param_date_selectionSub30", SelDate.AddDays(-30));
+            ACalc.AddParameter("param_date_selection60", SelDate.AddDays(60));
             ACalc.AddParameter("DueDate", DateTime.Today);
 
             int ColumnCounter = 0;

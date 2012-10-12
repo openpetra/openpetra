@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Make sure the current effective date for the Batch is correct
             batchDateEffective = GetBatchRow().DateEffective;
 
-            if (dtpDetailDateEffective.Date.Value != batchDateEffective)
+            if ((!dtpDetailDateEffective.Date.HasValue) || (dtpDetailDateEffective.Date.Value != batchDateEffective))
             {
                 dtpDetailDateEffective.Date = batchDateEffective;
             }
@@ -167,7 +167,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TFrmSetupDailyExchangeRate setupDailyExchangeRate =
                 new TFrmSetupDailyExchangeRate(FPetraUtilsObject.GetForm());
 
-            if (setupDailyExchangeRate.ShowDialog(FLedgerNumber, dtpDetailDateEffective.Date.Value,
+            if (setupDailyExchangeRate.ShowDialog(FLedgerNumber,
+                    dtpDetailDateEffective.Date.HasValue ? dtpDetailDateEffective.Date.Value : DateTime.Today,
                     cmbDetailTransactionCurrency.GetSelectedString(),
                     DEFAULT_CURRENCY_EXCHANGE) == DialogResult.Cancel)
             {

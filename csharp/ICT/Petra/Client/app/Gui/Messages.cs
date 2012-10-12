@@ -203,8 +203,11 @@ namespace Ict.Petra.Client.App.Gui
                 AErrorText = AErrorText.Substring(0, AErrorText.Length - Environment.NewLine.Length);
             }
 
-            MessageBox.Show(AErrorText + BuildMessageFooter(AMessageNumber,
-                    ATypeWhichRaisesError.Name), ATitle, MessageBoxButtons.OK, AIcon);
+            string message = AErrorText + BuildMessageFooter(AMessageNumber,
+                ATypeWhichRaisesError.Name);
+
+            TLogging.LogAtLevel(1, ATitle + ": " + message);
+            MessageBox.Show(message, ATitle, MessageBoxButtons.OK, AIcon);
         }
 
         /// <summary>

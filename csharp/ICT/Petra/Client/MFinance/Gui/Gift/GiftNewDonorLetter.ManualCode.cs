@@ -58,6 +58,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GenerateLetters(System.Object sender, EventArgs e)
         {
+            if ((!dtpStartDate.Date.HasValue) || (!dtpEndDate.Date.HasValue))
+            {
+                MessageBox.Show(Catalog.GetString("Please supply valid Start and End dates."));
+                return;
+            }
+
             FMainDS = TRemote.MFinance.Gift.WebConnectors.GetNewDonorSubscriptions(
                 txtPublicationCode.Text,
                 dtpStartDate.Date.Value, dtpEndDate.Date.Value,
