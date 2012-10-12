@@ -413,7 +413,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 DateTime dateValue;
 
                 string aDate = dtpDetailGlEffectiveDate.Text;
-                
+
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
@@ -1038,15 +1038,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-			if (ARow != null)
-			{
-				if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
-				{
-					txtDetailHashTotal.NumberValueDecimal = 0m;
-					ARow.HashTotal = 0m;
-				}
-			}
-			
+            if (ARow != null)
+            {
+                if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+                {
+                    txtDetailHashTotal.NumberValueDecimal = 0m;
+                    ARow.HashTotal = 0m;
+                }
+            }
+
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
         }

@@ -1390,15 +1390,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!DateTime.TryParse(aDate, out dateValue))
                 {
-                	dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
+                    dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
                 }
             }
             catch
             {
-            	//Do nothing
+                //Do nothing
             }
         }
-        
+
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)
         {
             ARow.CostCentreCode = txtDetailCostCentreCode.Text;
@@ -1413,7 +1413,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (giftRow != null)
             {
                 giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
-                giftRow.DateEntered = (dtpDateEntered.Date.HasValue?dtpDateEntered.Date.Value:FBatchRow.GlEffectiveDate);
+                giftRow.DateEntered = (dtpDateEntered.Date.HasValue ? dtpDateEntered.Date.Value : FBatchRow.GlEffectiveDate);
 
                 GiftBatchTDSAGiftDetailRow giftDetailRow = GetGiftDetailRow(ARow.GiftTransactionNumber, ARow.DetailNumber);
                 giftDetailRow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);

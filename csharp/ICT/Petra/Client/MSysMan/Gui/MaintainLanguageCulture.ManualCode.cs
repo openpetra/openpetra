@@ -90,7 +90,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             cmbCulture.SetSelectedString(CultureCode);
             cmbLanguage.SetSelectedString(LanguageCode);
-            
+
             llbLaunchpadLink.Click += LaunchpadLinkClicked;
         }
 
