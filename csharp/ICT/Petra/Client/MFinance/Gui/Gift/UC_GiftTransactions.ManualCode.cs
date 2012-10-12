@@ -1342,7 +1342,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ARow == null)
             {
-                PnlDetailsProtected = ViewMode;
+                PnlDetailsProtected = true;
             }
             else
             {
@@ -1353,7 +1353,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                        );    // taken from old petra
             }
 
-            pnlDetails.Enabled = !PnlDetailsProtected;
+            pnlDetails.Enabled = !(PnlDetailsProtected);
         }
 
         private Boolean ViewMode
@@ -1375,6 +1375,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return ((TFrmGiftBatch)ParentForm).GetBatchControl().MethodOfPaymentCode;
         }
 
+        private void GiftDateChanged(object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            try
+            {
+                DateTime dateValue;
+
+                string aDate = dtpDateEntered.Date.ToString();
+
+                if (!DateTime.TryParse(aDate, out dateValue))
+                {
+                	dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
+                }
+            }
+            catch
+            {
+            	//Do nothing
+            }
+        }
+        
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)
         {
             ARow.CostCentreCode = txtDetailCostCentreCode.Text;
@@ -1389,7 +1413,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (giftRow != null)
             {
                 giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
-                giftRow.DateEntered = dtpDateEntered.Date.Value;
+                giftRow.DateEntered = (dtpDateEntered.Date.HasValue?dtpDateEntered.Date.Value:FBatchRow.GlEffectiveDate);
 
                 GiftBatchTDSAGiftDetailRow giftDetailRow = GetGiftDetailRow(ARow.GiftTransactionNumber, ARow.DetailNumber);
                 giftDetailRow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);

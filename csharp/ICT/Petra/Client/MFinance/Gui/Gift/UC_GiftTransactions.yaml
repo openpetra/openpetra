@@ -93,7 +93,7 @@ RootNode:
                 Row12: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
                 Row13: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
-        dtpDateEntered: {Label=Gift Date, Help: This date is used for receipt printing, Unbound=true, Validation=true}
+        dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Help: This date is used for receipt printing, Unbound=true, Validation=true}
         txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=yes, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=2, Unbound=true, OnChange=DonorKeyChanged}
         txtDetailReference: {Label=Reference}
