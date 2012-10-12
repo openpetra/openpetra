@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // we also want to know if the number of rows in our user control changes
             ucoContactDetail.CountChanged += new CountChangedEventHandler(ucoContactDetail_CountChanged);
 
-            // we capture the Leave event (This is more consistent than LostFocus. - it always occurs before validation, 
+            // we capture the Leave event (This is more consistent than LostFocus. - it always occurs before validation,
             //  whereas LostFocus is before or after depending on mouse or keyboard)
             txtDetailContactAttributeCode.Leave += new EventHandler(txtDetailContactAttributeCode_Leave);
         }

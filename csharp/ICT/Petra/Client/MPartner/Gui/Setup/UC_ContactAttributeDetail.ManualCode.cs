@@ -236,6 +236,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 {
                     grdDetails.Selection.SelectRow(1, true);
                 }
+
                 ShowDetails();
             }
 
@@ -293,6 +294,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             // we go round a loop where, as we change the column value, the number of rows in the dataview becomes zero
             int curRow = grdDetails.SelectedRowIndex();
+
             while (dv.Count > 0)
             {
                 dv[0][FMainDS.PContactAttributeDetail.ColumnContactAttributeCode.Ordinal] = NewCode;
