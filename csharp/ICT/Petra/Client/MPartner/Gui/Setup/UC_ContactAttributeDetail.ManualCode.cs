@@ -101,6 +101,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         // A variable that keeps track of the current value of the contact code
         private string _currentContactAttribute = String.Empty;
 
+        /// <summary>
+        /// Returns the string value for the current Contact Attribute used by the control.
+        /// </summary>
+        public string ContactAttribute
+        {
+            get
+            {
+                return _currentContactAttribute;
+            }
+        }
+
         private void InitializeManualCode()
         {
             // Before we start we set the defaultView RowFilter property to something unlikely.
@@ -138,6 +149,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 SetContactAttribute(_currentContactAttribute);
                 SelectDetailRowByDataTableIndex(FMainDS.PContactAttributeDetail.Rows.Count - 1);
                 OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
+                txtDetailContactAttrDetailCode.Focus();
             }
         }
 
@@ -217,11 +229,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 // specify the filter and bind  the data
                 string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), NewValue);
-                DataView myDataView = new DataView(FMainDS.PContactAttributeDetail, filter, "", DataViewRowState.CurrentRows);
-                myDataView.AllowNew = false;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                FMainDS.PContactAttributeDetail.DefaultView.RowFilter = filter;
 
-                SelectRowInGrid(1);
+                // We use these lines rather than SelectRowIngrid, because we do not want to upset the focus from the caller
+                if (grdDetails.Rows.Count > 1)
+                {
+                    grdDetails.Selection.SelectRow(1, true);
+                }
+                ShowDetails();
             }
 
             FPetraUtilsObject.EnableDataChangedEvent();
@@ -277,13 +292,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
 
             // we go round a loop where, as we change the column value, the number of rows in the dataview becomes zero
+            int curRow = grdDetails.SelectedRowIndex();
             while (dv.Count > 0)
             {
                 dv[0][FMainDS.PContactAttributeDetail.ColumnContactAttributeCode.Ordinal] = NewCode;
             }
 
             // Now we need to display the grid again based on the modified code
-            SetContactAttribute(NewCode);
+            _currentContactAttribute = NewCode;
+            string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), NewCode);
+            FMainDS.PContactAttributeDetail.DefaultView.RowFilter = filter;
+
+            // We use these two lines because nothing has actually changed and we do not want to play with focus
+            grdDetails.Selection.SelectRow(curRow, true);
+            ShowDetails();
 
             // The number of rows should be the same as before, so this should be unnecessary!
             OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));

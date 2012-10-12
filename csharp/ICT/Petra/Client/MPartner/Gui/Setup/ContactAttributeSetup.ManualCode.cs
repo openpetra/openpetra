@@ -62,8 +62,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // we also want to know if the number of rows in our user control changes
             ucoContactDetail.CountChanged += new CountChangedEventHandler(ucoContactDetail_CountChanged);
 
-
-            txtDetailContactAttributeCode.LostFocus += new EventHandler(txtDetailContactAttributeCode_LostFocus);
+            // we capture the Leave event (This is more consistent than LostFocus. - it always occurs before validation, 
+            //  whereas LostFocus is before or after depending on mouse or keyboard)
+            txtDetailContactAttributeCode.Leave += new EventHandler(txtDetailContactAttributeCode_Leave);
         }
 
         private void RunOnceOnActivationManual()
@@ -177,7 +178,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             ucoContactDetail.GetDetailsFromControls();
         }
 
-        private void txtDetailContactAttributeCode_LostFocus(object sender, EventArgs e)
+        private void txtDetailContactAttributeCode_Leave(object sender, EventArgs e)
         {
             if (NumDetailCodesColumnOrdinal == 0)
             {
@@ -186,7 +187,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             string newCode = txtDetailContactAttributeCode.Text;
 
-            if (newCode.CompareTo(FPreviouslySelectedDetailRow[0]) == 0)
+            if (newCode.CompareTo(ucoContactDetail.ContactAttribute) == 0)
             {
                 return;                                                                 // same as before
             }
@@ -198,25 +199,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 return;
             }
 
-            if (FMainDS.PContactAttribute.Rows.Find(new object[] { newCode }) != null)
-            {
-                // It is the same as an existing code.
-                // On most screens this would normally get trapped later but we want to
-                // trap it now so we don't change the detail attributes unnecessarily
-                MessageBox.Show(String.Format(
-                        Catalog.GetString("'{0}' has already been used for a Contact Attribute Code."), newCode),
-                    Catalog.GetString("Contact Attribute"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
-                txtDetailContactAttributeCode.Text = FPreviouslySelectedDetailRow.ContactAttributeCode;
-                txtDetailContactAttributeCode.Focus();
-                txtDetailContactAttributeCode.SelectAll();
-                return;
-            }
-
             // So it is safe to modify the detail attribute
             ucoContactDetail.ModifyAttributeCode(newCode);
-            grdDetails.Focus();
         }
 
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
@@ -226,6 +210,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 FPetraUtilsObject.SetChangedFlag();
                 ucoContactDetail.SaveChanges();
+                FPetraUtilsObject.DisableSaveButton();
             }
         }
 
