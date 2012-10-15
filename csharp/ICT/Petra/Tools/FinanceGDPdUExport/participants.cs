@@ -146,8 +146,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
                 sb.Append(StringHelper.StrMerge(
                         new string[] {
-                            detail.BatchNumber.ToString(),
-                            detail.GiftTransactionNumber.ToString(),
+                            "GB" + detail.BatchNumber.ToString() + "_G" + detail.GiftTransactionNumber.ToString() +
+                            "_D" + detail.DetailNumber.ToString(),
                             String.Format("{0:N}", detail.GiftTransactionAmount),
                             batch.GlEffectiveDate.ToString("yyyyMMdd"),
                             gift.DonorKey.ToString(),
