@@ -27,6 +27,7 @@ using System.Configuration;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Testing.NUnitPetraServer;
@@ -238,6 +239,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             DBAccess.GDBAccessObj.RollbackTransaction();
             int rowCounter = 0;
 
+            StringCollection costcentreCollection = StringHelper.StrSplit(ACostCentres, ",");
+
             foreach (ATransactionRow row in transactions.Rows)
             {
                 if (row.DebitCreditIndicator)
@@ -252,36 +255,40 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 decimal TaxOnIncome = 0.0m;
                 decimal TaxOnExpense = 0.0m;
 
-                foreach (DataRowView rv in attribs)
+                // only mention tax codes, if this transaction was against a costcentre that has to pay taxes
+                if (costcentreCollection.Contains(row.CostCentreCode))
                 {
-                    ATransAnalAttribRow attribRow = (ATransAnalAttribRow)rv.Row;
+                    foreach (DataRowView rv in attribs)
+                    {
+                        ATransAnalAttribRow attribRow = (ATransAnalAttribRow)rv.Row;
 
-                    // also export attribRow.AnalysisTypeCode?
-                    attributes.Append(attribRow.AnalysisAttributeValue);
+                        // also export attribRow.AnalysisTypeCode?
+                        attributes.Append(attribRow.AnalysisAttributeValue);
 
-                    if (attribRow.AnalysisAttributeValue == "v19")
-                    {
-                        TaxOnExpense = row.TransactionAmount * 0.19m;
-                    }
-                    else if (attribRow.AnalysisAttributeValue == "v7")
-                    {
-                        TaxOnExpense = row.TransactionAmount * 0.07m;
-                    }
-                    else if (attribRow.AnalysisAttributeValue == "70v7")
-                    {
-                        TaxOnExpense = row.TransactionAmount * 0.7m * 0.07m;
-                    }
-                    else if (attribRow.AnalysisAttributeValue == "70v19")
-                    {
-                        TaxOnExpense = row.TransactionAmount * 0.7m * 0.19m;
-                    }
-                    else if (attribRow.AnalysisAttributeValue == "m19")
-                    {
-                        TaxOnIncome = row.TransactionAmount * 0.19m;
-                    }
-                    else if (attribRow.AnalysisAttributeValue == "m7")
-                    {
-                        TaxOnIncome = row.TransactionAmount * 0.07m;
+                        if (attribRow.AnalysisAttributeValue == "v19")
+                        {
+                            TaxOnExpense = row.TransactionAmount * 0.19m;
+                        }
+                        else if (attribRow.AnalysisAttributeValue == "v7")
+                        {
+                            TaxOnExpense = row.TransactionAmount * 0.07m;
+                        }
+                        else if (attribRow.AnalysisAttributeValue == "70v7")
+                        {
+                            TaxOnExpense = row.TransactionAmount * 0.7m * 0.07m;
+                        }
+                        else if (attribRow.AnalysisAttributeValue == "70v19")
+                        {
+                            TaxOnExpense = row.TransactionAmount * 0.7m * 0.19m;
+                        }
+                        else if (attribRow.AnalysisAttributeValue == "m19")
+                        {
+                            TaxOnIncome = row.TransactionAmount * 0.19m;
+                        }
+                        else if (attribRow.AnalysisAttributeValue == "m7")
+                        {
+                            TaxOnIncome = row.TransactionAmount * 0.07m;
+                        }
                     }
                 }
 
