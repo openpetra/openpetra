@@ -39,10 +39,10 @@ using Ict.Petra.Shared.MFinance;
 namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 {
     /// This will export the finance data for the tax office, according to GDPdU
-    public class TGDPdUExportAccountsReceivable
+    public class TGDPdUExportParticipants
     {
         /// <summary>
-        /// export all posted invoices for our customers and conference participants in this year
+        /// export all posted invoices for conference and seminar participants in this year
         /// </summary>
         public static void Export(string AOutputPath,
             char ACSVSeparator,
@@ -51,7 +51,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             Int32 AFinancialYear,
             string ACostCentres)
         {
-            string filename = Path.GetFullPath(Path.Combine(AOutputPath, "accountsreceivable.csv"));
+            string filename = Path.GetFullPath(Path.Combine(AOutputPath, "participants.csv"));
 
             Console.WriteLine("Writing file: " + filename);
 

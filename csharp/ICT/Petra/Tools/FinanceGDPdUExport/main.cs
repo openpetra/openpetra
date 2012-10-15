@@ -115,7 +115,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                         IgnoreAccounts);
 
                     TGDPdUExportAccountsPayable.Export(OutputPathForYear, CSVSeparator, NewLine, LedgerNumber, FinancialYear, ReportingCostCentres);
-                    TGDPdUExportAccountsReceivable.Export(OutputPathForYear, CSVSeparator, NewLine,
+                    TGDPdUExportParticipants.Export(OutputPathForYear, CSVSeparator, NewLine,
                         LedgerNumber, FinancialYear,
                         ReportingCostCentres);
                 }
