@@ -243,12 +243,9 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                             new string[] {
                                 doc.ApNumber.ToString(),
                                 detail.DetailNumber.ToString(),
-                                doc.DocumentCode,
-                                doc.DocumentStatus,
                                 doc.DateIssued.ToString("yyyyMMdd"),
                                 DatePaid,
                                 doc.PartnerKey.ToString(),
-                                doc.Reference,
                                 detail.CostCentreCode,
                                 detail.AccountCode,
                                 String.Format("{0:N}", detail.Amount),
