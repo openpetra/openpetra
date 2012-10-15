@@ -30,6 +30,7 @@ using System.Text;
 using System.Collections.Generic;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Common;
 using Ict.Common.DB;
@@ -172,8 +173,33 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             apAttrib.DefaultView.Sort = AApAnalAttribTable.GetApDocumentIdDBName() + "," + AApAnalAttribTable.GetDetailNumberDBName();
 
+            // get the supplier name
+            sql =
+                String.Format(
+                    "SELECT DISTINCT p.* FROM PUB_{0} AS Doc, PUB_{8} AS p " +
+                    "WHERE Doc.{1} = {2} AND " +
+                    "({3} = '{4}' OR {3} = '{5}' OR {3} = '{6}') AND " +
+                    "{7} >= ? AND {7} <= ? AND " +
+                    "p.{9} = Doc.{10}",
+                    AApDocumentTable.GetTableDBName(),
+                    AApDocumentTable.GetLedgerNumberDBName(),
+                    ALedgerNumber,
+                    AApDocumentTable.GetDocumentStatusDBName(),
+                    MFinanceConstants.AP_DOCUMENT_POSTED,
+                    MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID,
+                    MFinanceConstants.AP_DOCUMENT_PAID,
+                    AApDocumentTable.GetDateIssuedDBName(),
+                    PPartnerTable.GetTableDBName(),
+                    PPartnerTable.GetPartnerKeyDBName(),
+                    AApDocumentTable.GetPartnerKeyDBName());
+
+            PPartnerTable suppliers = new PPartnerTable();
+            DBAccess.GDBAccessObj.SelectDT(suppliers, sql, Transaction, Parameters.ToArray(), 0, 0);
+
             foreach (AApDocumentRow doc in apDocuments.Rows)
             {
+                PPartnerRow supplier = (PPartnerRow)suppliers.Rows.Find(doc.PartnerKey);
+
                 DataRowView[] detailsRV = apDetails.DefaultView.FindRows(doc.ApDocumentId);
 
                 foreach (DataRowView rv in detailsRV)
@@ -183,36 +209,6 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     if (doc.CreditNoteFlag)
                     {
                         detail.Amount *= -1.0m;
-                    }
-
-                    StringBuilder attributes = new StringBuilder();
-
-                    DataRowView[] attribs = apAttrib.DefaultView.FindRows(new object[] { doc.ApDocumentId, detail.DetailNumber });
-
-                    decimal TaxOnExpense = 0.0m;
-
-                    foreach (DataRowView rvAttrib in attribs)
-                    {
-                        AApAnalAttribRow attribRow = (AApAnalAttribRow)rvAttrib.Row;
-
-                        attributes.Append(attribRow.AnalysisAttributeValue);
-
-                        if (attribRow.AnalysisAttributeValue == "v19")
-                        {
-                            TaxOnExpense = detail.Amount * 0.19m;
-                        }
-                        else if (attribRow.AnalysisAttributeValue == "v7")
-                        {
-                            TaxOnExpense = detail.Amount * 0.07m;
-                        }
-                        else if (attribRow.AnalysisAttributeValue == "70v7")
-                        {
-                            TaxOnExpense = detail.Amount * 0.7m * 0.07m;
-                        }
-                        else if (attribRow.AnalysisAttributeValue == "70v19")
-                        {
-                            TaxOnExpense = detail.Amount * 0.7m * 0.19m;
-                        }
                     }
 
                     DataRowView[] payments = apPayments.DefaultView.FindRows(doc.ApDocumentId);
@@ -246,12 +242,11 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                                 doc.DateIssued.ToString("yyyyMMdd"),
                                 DatePaid,
                                 doc.PartnerKey.ToString(),
+                                supplier.PartnerShortName,
                                 detail.CostCentreCode,
                                 detail.AccountCode,
                                 String.Format("{0:N}", detail.Amount),
-                                detail.Narrative,
-                                attributes.ToString(),
-                                String.Format("{0:N}", TaxOnExpense)
+                                detail.Narrative
                             }, ACSVSeparator));
                     sb.Append(ANewLine);
                 }
