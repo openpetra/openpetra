@@ -61,7 +61,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             // all gift details towards a costcentre that needs to be exported
             string sql =
-                String.Format("SELECT D.* " +
+                String.Format("SELECT DISTINCT D.* " +
                     "FROM PUB_{0} AS B, PUB_{1} AS G, PUB_{2} AS D " +
                     "WHERE B.{3} = {4} AND B.{5} = {6} AND B.{7}='{8}' " +
                     "AND G.{3} = B.{3} AND G.{9} = B.{9} " +
@@ -87,25 +87,23 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             AGiftDetailTable giftdetails = new AGiftDetailTable();
             DBAccess.GDBAccessObj.SelectDT(giftdetails, sql, Transaction, null, 0, 0);
 
-            sql = sql.Replace("SELECT D.*", "SELECT G.*");
+            sql = sql.Replace("SELECT DISTINCT D.*", "SELECT DISTINCT G.*");
 
             AGiftTable gifts = new AGiftTable();
-            gifts.Constraints.Clear();
             DBAccess.GDBAccessObj.SelectDT(gifts, sql, Transaction, null, 0, 0);
 
             gifts.DefaultView.Sort =
                 AGiftTable.GetBatchNumberDBName() + "," +
                 AGiftTable.GetGiftTransactionNumberDBName();
 
-            sql = sql.Replace("SELECT G.*", "SELECT B.*");
+            sql = sql.Replace("SELECT DISTINCT G.*", "SELECT DISTINCT B.*");
 
             AGiftBatchTable batches = new AGiftBatchTable();
-            batches.Constraints.Clear();
             DBAccess.GDBAccessObj.SelectDT(batches, sql, Transaction, null, 0, 0);
             batches.DefaultView.Sort = AGiftTable.GetBatchNumberDBName();
 
             sql =
-                String.Format("SELECT P.* " +
+                String.Format("SELECT DISTINCT P.* " +
                     "FROM PUB_{0} AS B, PUB_{1} AS G, PUB_{2} AS D, PUB.{15} AS P " +
                     "WHERE B.{3} = {4} AND B.{5} = {6} AND B.{7}='{8}' " +
                     "AND G.{3} = B.{3} AND G.{9} = B.{9} " +
@@ -133,7 +131,6 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     AGiftTable.GetDonorKeyDBName());
 
             PPersonTable persons = new PPersonTable();
-            persons.Constraints.Clear();
             DBAccess.GDBAccessObj.SelectDT(persons, sql, Transaction, null, 0, 0);
             persons.DefaultView.Sort = PPersonTable.GetPartnerKeyDBName();
 
