@@ -140,7 +140,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             return ReturnTable;
         }
 
-        private static void GetReportingCostCentres(ACostCentreTable ACostCentres, ref List<string> AResult, string ASummaryCostCentreCode)
+        private static void GetReportingCostCentres(ACostCentreTable ACostCentres, ref List <string>AResult, string ASummaryCostCentreCode)
         {
             string result = string.Empty;
 
@@ -155,7 +155,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     foreach (DataRowView rv in ReportingCostCentres)
                     {
                         ACostCentreRow row = (ACostCentreRow)rv.Row;
-    
+
                         if (row.PostingCostCentreFlag)
                         {
                             AResult.Add(row.CostCentreCode);
@@ -171,6 +171,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     DataView dv = new DataView(ACostCentres);
                     dv.Sort = ACostCentreTable.GetCostCentreCodeDBName();
                     ACostCentreRow cc = (ACostCentreRow)dv.FindRows(costcentre)[0].Row;
+
                     if (cc.PostingCostCentreFlag)
                     {
                         AResult.Add(costcentre);
@@ -197,22 +198,22 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             CachedDataTable.DefaultView.Sort = ACostCentreTable.GetCostCentreToReportToDBName();
 
-            List<string> Result = new List<string>();
-            
+            List <string>Result = new List <string>();
+
             GetReportingCostCentres(CachedDataTable, ref Result, ASummaryCostCentreCode);
-            
-            List<string> IgnoreCostCentres = new List<string>();
-            
+
+            List <string>IgnoreCostCentres = new List <string>();
+
             GetReportingCostCentres(CachedDataTable, ref IgnoreCostCentres, ARemoveCostCentresFromList);
-            
-            foreach(string s in IgnoreCostCentres)
+
+            foreach (string s in IgnoreCostCentres)
             {
                 if (Result.Contains(s))
                 {
                     Result.Remove(s);
                 }
             }
-            
+
             return StringHelper.StrMerge(Result.ToArray(), ',');
         }
 
