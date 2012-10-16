@@ -177,12 +177,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
             else if (rbtDate.Checked)
             {
-                if (dtpStartDate.Date.Value > dtpEndDate.Date.Value)
+                if (dtpStartDate.Date.HasValue && dtpEndDate.Date.HasValue)
                 {
-                    FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
-                            Catalog.GetString("Start Date must not be bigger than End Date."),
-                            Catalog.GetString("Invalid Data entered."),
-                            TResultSeverity.Resv_Critical));
+                    if (dtpStartDate.Date.Value > dtpEndDate.Date.Value)
+                    {
+                        FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                                Catalog.GetString("Start Date must not be later than End Date."),
+                                Catalog.GetString("Invalid Data entered."),
+                                TResultSeverity.Resv_Critical));
+                    }
                 }
             }
 

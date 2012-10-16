@@ -25,12 +25,13 @@ RootNode:
             Action: actNew
         grdDetails:
             Dock: Fill
-            Columns: [MethodOfPaymentCode, MethodOfPaymentDesc, SpecialMethodOfPmt]
+            Columns: [DetailMethodOfPaymentCode, DetailMethodOfPaymentDesc, DetailSpecialMethodOfPmt, DetailActive]
 #            ColWidths: [2=Fixed:50]
             CustomColumns:
-                MethodOfPaymentCode:  {Label=Method of Payment}
-                MethodOfPaymentDesc:  {Label=Description}
-                SpecialMethodOfPmt: {Label=Special, Type=Boolean}
+                DetailMethodOfPaymentCode:  {Label=Method of Payment}
+                DetailMethodOfPaymentDesc:  {Label=Description}
+                DetailSpecialMethodOfPmt: {Label=Special, Type=Boolean}
+                DetailActive: {Label=Active, Type=Boolean}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

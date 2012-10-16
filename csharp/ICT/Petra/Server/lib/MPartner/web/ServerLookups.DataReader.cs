@@ -183,7 +183,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 }
 
                 // sort rows according to name
-                SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
+                SqlStmt = SqlStmt + " ORDER BY " + PPartnerTable.GetPartnerShortNameDBName();
 
                 Events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "events",
                     ReadTransaction, SqlParameterList.ToArray());

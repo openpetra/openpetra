@@ -203,8 +203,11 @@ namespace Ict.Petra.Client.App.Gui
                 AErrorText = AErrorText.Substring(0, AErrorText.Length - Environment.NewLine.Length);
             }
 
-            MessageBox.Show(AErrorText + BuildMessageFooter(AMessageNumber,
-                    ATypeWhichRaisesError.Name), ATitle, MessageBoxButtons.OK, AIcon);
+            string message = AErrorText + BuildMessageFooter(AMessageNumber,
+                ATypeWhichRaisesError.Name);
+
+            TLogging.LogAtLevel(1, ATitle + ": " + message);
+            MessageBox.Show(message, ATitle, MessageBoxButtons.OK, AIcon);
         }
 
         /// <summary>
@@ -666,8 +669,16 @@ namespace Ict.Petra.Client.App.Gui
         /// <returns></returns>
         private static String BuildMessageFooter(String AMessageNumber, String AContext)
         {
+            string version = string.Empty;
+
+            if (System.Reflection.Assembly.GetEntryAssembly() != null)
+            {
+                // for NUnit tests, there is no entry Assebmly
+                version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+            }
+
             return Environment.NewLine + Environment.NewLine + StrMessageNumber + AMessageNumber + "     " + StrContext + AContext +
-                   Environment.NewLine + StrRelease + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+                   Environment.NewLine + StrRelease + version;
         }
 
         /// <summary>

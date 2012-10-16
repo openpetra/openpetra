@@ -1,3 +1,10 @@
 http://seleniumhq.org/
 
-download from http://selenium.googlecode.com/files/selenium-dotnet-2.15.0.zip
+downloaded from http://selenium.googlecode.com/files/selenium-dotnet-2.25.1.zip
+
+
+
+
+--------------------
+Used by: \setup\tools\MantisUpdateVersions\MantisUpdateVersions.csproj
+--------------------

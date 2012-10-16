@@ -412,7 +412,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 Int32 yearNumber = 0;
                 DateTime dateValue;
 
-                string aDate = dtpDetailGlEffectiveDate.Date.ToString();
+                string aDate = dtpDetailGlEffectiveDate.Text;
 
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
@@ -1037,6 +1037,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ValidateDataDetailsManual(AGiftBatchRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            if (ARow != null)
+            {
+                if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+                {
+                    txtDetailHashTotal.NumberValueDecimal = 0m;
+                    ARow.HashTotal = 0m;
+                }
+            }
 
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
