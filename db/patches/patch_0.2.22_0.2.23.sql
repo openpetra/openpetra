@@ -1,1 +1,2 @@
 -- updates for standalone SQLite database for OpenPetra
+-- alter table a_ep_statement add column a_start_balance_n numeric(24, 10);
