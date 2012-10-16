@@ -293,7 +293,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                                 r.RecentMatch = row.DateEffective;
                             }
 
-                            if ((row.EpMatchKey != r.EpMatchKey) && (r.Detail == 0))
+                            if (!row.IsEpMatchKeyNull() && (row.EpMatchKey != r.EpMatchKey) && (r.Detail == 0))
                             {
                                 row.EpMatchKey = r.EpMatchKey;
                                 tempTransactionRow.EpMatchKey = row.EpMatchKey;

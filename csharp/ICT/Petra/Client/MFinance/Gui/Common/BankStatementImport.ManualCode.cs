@@ -857,9 +857,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             msg = msg.Replace("#TITLE", ATitle);
             msg = msg.Replace("#PRINTDATE", DateTime.Now.ToShortDateString());
-            msg = msg.Replace("#STATEMENTNR", ACurrentStatement.IdFromBank);
-            msg = msg.Replace("#STARTBALANCE", String.Format("{0:N}", ACurrentStatement.StartBalance));
-            msg = msg.Replace("#ENDBALANCE", String.Format("{0:N}", ACurrentStatement.EndBalance));
+
+            if (!ACurrentStatement.IsIdFromBankNull())
+            {
+                msg = msg.Replace("#STATEMENTNR", ACurrentStatement.IdFromBank);
+            }
+
+            if (!ACurrentStatement.IsStartBalanceNull())
+            {
+                msg = msg.Replace("#STARTBALANCE", String.Format("{0:N}", ACurrentStatement.StartBalance));
+            }
+
+            if (!ACurrentStatement.IsEndBalanceNull())
+            {
+                msg = msg.Replace("#ENDBALANCE", String.Format("{0:N}", ACurrentStatement.EndBalance));
+            }
 
             // recognise detail lines automatically
             string RowTemplate;
