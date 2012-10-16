@@ -293,7 +293,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                                 r.RecentMatch = row.DateEffective;
                             }
 
-                            if (!row.IsEpMatchKeyNull() && (row.EpMatchKey != r.EpMatchKey) && (r.Detail == 0))
+                            if (row.IsEpMatchKeyNull() || ((row.EpMatchKey != r.EpMatchKey) && (r.Detail == 0)))
                             {
                                 row.EpMatchKey = r.EpMatchKey;
                                 tempTransactionRow.EpMatchKey = row.EpMatchKey;
@@ -311,8 +311,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     else if (!MatchesToAddLater.ContainsKey(row.MatchText))
                     {
                         // create new match
-                        AEpMatchRow tempRow = ResultDataset.AEpMatch.NewRowTyped(true);
-                        tempRow.EpMatchKey = (ResultDataset.AEpMatch.Count + MatchesToAddLater.Count + 1) * -1;
+                        AEpMatchRow tempRow = TempDataset.AEpMatch.NewRowTyped(true);
+                        tempRow.EpMatchKey = (TempDataset.AEpMatch.Count + MatchesToAddLater.Count + 1) * -1;
                         tempRow.Detail = 0;
                         tempRow.MatchText = row.MatchText;
                         tempRow.LedgerNumber = ALedgerNumber;
