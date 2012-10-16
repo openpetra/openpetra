@@ -166,7 +166,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
-            this.CreateNewPmPersonLanguage();
+            if(this.CreateNewPmPersonLanguage())
+            {
+                cmbLanguageCode.Focus();
+            }
         }
 
         private void NewRowManual(ref PmPersonLanguageRow ARow)

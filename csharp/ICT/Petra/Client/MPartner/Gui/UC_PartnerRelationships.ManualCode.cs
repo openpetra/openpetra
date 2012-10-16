@@ -128,7 +128,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
 
             if (grdDetails.Rows.Count > 1)
             {
@@ -199,19 +198,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     btnEditOtherPartner.Enabled = true;
                 }
-            }
-
-            if (ARow.RowState == DataRowState.Added)
-            {
-                txtPPartnerRelationshipPartnerKey.Enabled = true;
-                cmbPPartnerRelationshipRelationName.Enabled = true;
-                txtPPartnerRelationshipRelationKey.Enabled = true;
-            }
-            else
-            {
-                txtPPartnerRelationshipPartnerKey.Enabled = false;
-                cmbPPartnerRelationshipRelationName.Enabled = false;
-                txtPPartnerRelationshipRelationKey.Enabled = false;
+                
+                if (ARow.RowState == DataRowState.Added)
+                {
+                    txtPPartnerRelationshipPartnerKey.Enabled = true;
+                    cmbPPartnerRelationshipRelationName.Enabled = true;
+                    txtPPartnerRelationshipRelationKey.Enabled = true;
+                }
+                else
+                {
+                    txtPPartnerRelationshipPartnerKey.Enabled = false;
+                    cmbPPartnerRelationshipRelationName.Enabled = false;
+                    txtPPartnerRelationshipRelationKey.Enabled = false;
+                }
             }
         }
 
@@ -275,7 +274,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
-            NewRow(this, null);
+            NewRecord(this, null);
         }
 
         /// <summary>
@@ -286,7 +285,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.Row != -1)
             {
-                this.DeleteRow(this, null);
+                this.DeleteRecord(this, null);
             }
         }
 
@@ -295,11 +294,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void NewRow(System.Object sender, EventArgs e)
+        private void NewRecord(System.Object sender, EventArgs e)
         {
             TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
 
-            CreateNewPPartnerRelationship();
+            if (CreateNewPPartnerRelationship())
+            {
+                cmbPPartnerRelationshipRelationName.Focus();
+            }
 
             // Fire OnRecalculateScreenParts event: reset counter in tab header
             RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
@@ -319,52 +321,86 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.RelationKey = ARow.PartnerKey;
         }
 
-        /// <summary>
-        /// delete row from table and grid
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteRow(System.Object sender, EventArgs e)
+        private void DeleteRecord(Object sender, EventArgs e)
         {
-            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
-
-            if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.RelationName), Catalog.GetString("Confirm Delete"),
-                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-            {
-                int rowIndex = grdDetails.SelectedRowIndex();
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
-
-                // temporarily reset selected row to avoid interference with validation
-                FPreviouslySelectedDetailRow = null;
-                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                grdDetails.SelectRowInGrid(rowIndex, true);
-                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-
-                // Fire OnRecalculateScreenParts event: reset counter in tab header
-                RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-                RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-                OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
-
-                if (grdDetails.Rows.Count <= 1)
-                {
-                    // hide details part and disable buttons if no record in grid (first row for headings)
-                    btnDelete.Enabled = false;
-                    btnEditOtherPartner.Enabled = false;
-                    MakeDetailsInvisible(true);
-                }
-            }
+            this.DeletePPartnerRelationship();
         }
 
+        
+        /// <summary>
+        /// Performs checks to determine whether a deletion of the current
+        ///  row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(PartnerEditTDSPPartnerRelationshipRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            /*Code to execute before the delete can take place*/
+            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Relationship record: '{0}'?"),
+                ARowToDelete.RelationName);
+            return true;
+        }
+
+        /// <summary>
+        /// Deletes the current row and optionally populates a completion message
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to delete</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        /// <returns>true if row deletion is successful</returns>
+        private bool DeleteRowManual(PartnerEditTDSPPartnerRelationshipRow ARowToDelete, out string ACompletionMessage)
+        {
+            bool deletionSuccessful = false;
+
+            // no message to be shown after deletion
+            ACompletionMessage = "";
+
+            try
+            {
+                ARowToDelete.Delete();
+                deletionSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                ACompletionMessage = ex.Message;
+                MessageBox.Show(ex.Message,
+                    "Deletion Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+
+            return deletionSuccessful;
+        }
+
+        /// <summary>
+        /// Code to be run after the deletion process
+        /// </summary>
+        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
+        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
+        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        private void PostDeleteManual(PartnerEditTDSPPartnerRelationshipRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            DoRecalculateScreenParts();
+
+            if (grdDetails.Rows.Count <= 1)
+            {
+                // hide details part and disable buttons if no record in grid (first row for headings)
+                btnDelete.Enabled = false;
+                pnlDetails.Visible = false;
+            }
+        }
+        
+        private void DoRecalculateScreenParts()
+        {
+            OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {
+                    ScreenPart = TScreenPartEnum.spCounters
+                });
+        }
+        
         /// <summary>
         /// button was pressed to edit other partner in relationship record
         /// </summary>

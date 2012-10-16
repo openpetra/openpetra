@@ -302,7 +302,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
-            CreateNewPSubscription();
+            if (CreateNewPSubscription())
+            {
+                ucoDetails.Focus();
+            }
 
             // reset counter in tab header
             RecalculateTabHeaderCounter();
