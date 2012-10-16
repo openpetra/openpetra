@@ -774,25 +774,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             if (rbtListAll.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
+                    PrintHTML(
+                        CurrentStatement,
+                        FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Full bank statement") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtListUnmatchedGift.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
+                    PrintHTML(
+                        CurrentStatement,
+                        FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Unmatched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtListUnmatchedGL.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
+                    PrintHTML(
+                        CurrentStatement,
+                        FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Unmatched GL") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtListGift.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
+                    PrintHTML(
+                        CurrentStatement,
+                        FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Matched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
 
@@ -822,7 +830,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         /// <summary>
         /// dump unmatched gifts or other transactions to a HTML table for printing
         /// </summary>
-        private static string PrintHTML(DataView AEpTransactions, AEpMatchTable AMatches, string ATitle)
+        private static string PrintHTML(
+            AEpStatementRow ACurrentStatement,
+            DataView AEpTransactions, AEpMatchTable AMatches, string ATitle)
         {
             string letterTemplateFilename = TAppSettingsManager.GetValue("BankImport.ReportHTMLTemplate", false);
 
@@ -847,6 +857,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             msg = msg.Replace("#TITLE", ATitle);
             msg = msg.Replace("#PRINTDATE", DateTime.Now.ToShortDateString());
+            msg = msg.Replace("#STATEMENTNR", ACurrentStatement.IdFromBank);
+            msg = msg.Replace("#STARTBALANCE", String.Format("{0:N}", ACurrentStatement.StartBalance));
+            msg = msg.Replace("#ENDBALANCE", String.Format("{0:N}", ACurrentStatement.EndBalance));
 
             // recognise detail lines automatically
             string RowTemplate;
