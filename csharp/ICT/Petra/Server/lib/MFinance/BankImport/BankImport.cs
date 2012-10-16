@@ -261,15 +261,16 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                             AEpMatchRow r = (AEpMatchRow)rv.Row;
 
                             // check if the recipient key is still valid. could be that they have married, and merged into another family record
-                            if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
-                                        String.Format("SELECT COUNT(*) FROM PUB_{0} WHERE {1} = {2} AND {3} = '{4}'",
-                                            PPartnerTable.GetTableDBName(),
-                                            PPartnerTable.GetPartnerKeyDBName(),
-                                            r.RecipientKey,
-                                            PPartnerTable.GetStatusCodeDBName(),
-                                            MPartnerConstants.PARTNERSTATUS_ACTIVE),
-                                        IsolationLevel.ReadCommitted)) == 0)
+                            if ((r.RecipientKey != 0) && (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                                                                  String.Format("SELECT COUNT(*) FROM PUB_{0} WHERE {1} = {2} AND {3} = '{4}'",
+                                                                      PPartnerTable.GetTableDBName(),
+                                                                      PPartnerTable.GetPartnerKeyDBName(),
+                                                                      r.RecipientKey,
+                                                                      PPartnerTable.GetStatusCodeDBName(),
+                                                                      MPartnerConstants.PARTNERSTATUS_MERGED),
+                                                                  IsolationLevel.ReadCommitted)) == 1))
                             {
+                                TLogging.LogAtLevel(1, "partner has been merged: " + r.RecipientKey.ToString());
                                 r.RecipientKey = 0;
                                 r.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
                             }
