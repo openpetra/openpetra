@@ -917,7 +917,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 }
                 else
                 {
-                    rowToPrint = rowToPrint.Replace("#RECIPIENTDESCRIPTION", string.Empty);
+                    // extra space for unmatched gifts
+                    rowToPrint = rowToPrint.Replace("#RECIPIENTDESCRIPTION", "<br/><br/><br/><br/>");
                 }
 
                 if (!match.IsDonorKeyNull() && (match.DonorKey > 0))
