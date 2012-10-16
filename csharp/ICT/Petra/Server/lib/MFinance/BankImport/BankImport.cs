@@ -212,6 +212,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, Transaction);
 
+                BankImportTDS TempDataset = new BankImportTDS();
+                AEpTransactionAccess.LoadViaAEpStatement(TempDataset, AStatementKey, Transaction);
+
                 AEpMatchAccess.LoadViaALedger(ResultDataset, ResultDataset.AEpStatement[0].LedgerNumber, Transaction);
 
                 // load all bankingdetails and partner shortnames related to this statement
@@ -245,10 +248,20 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 // load the matches or create new matches
                 foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
                 {
+                    BankImportTDSAEpTransactionRow tempTransactionRow =
+                        (BankImportTDSAEpTransactionRow)TempDataset.AEpTransaction.Rows.Find(
+                            new object[] {
+                                row.StatementKey,
+                                row.Order,
+                                row.DetailKey
+                            });
+
                     // find a match with the same match text, or create a new one
                     if (row.IsMatchTextNull() || (row.MatchText.Length == 0) || !row.MatchText.StartsWith(BankAccountCode))
                     {
                         row.MatchText = TBankImportMatching.CalculateMatchText(BankAccountCode, row);
+
+                        tempTransactionRow.MatchText = row.MatchText;
                     }
 
                     DataRowView[] matches = EpMatchView.FindRows(row.MatchText);
@@ -280,7 +293,13 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                                 r.RecentMatch = row.DateEffective;
                             }
 
-                            row.EpMatchKey = r.EpMatchKey;
+                            if ((row.EpMatchKey != r.EpMatchKey) && (r.Detail == 0))
+                            {
+                                row.EpMatchKey = r.EpMatchKey;
+                                tempTransactionRow.EpMatchKey = row.EpMatchKey;
+                            }
+
+                            // do not modify tempRow.MatchAction, because that will not be stored in the database anyway, just costs time
                             row.MatchAction = r.Action;
 
                             if (r.IsDonorKeyNull() || (r.DonorKey <= 0))
@@ -327,6 +346,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         MatchesToAddLater.Add(tempRow.MatchText, tempRow);
 
                         row.EpMatchKey = tempRow.EpMatchKey;
+                        tempTransactionRow.EpMatchKey = row.EpMatchKey;
+
+                        // do not modify tempRow.MatchAction, because that will not be stored in the database anyway, just costs time
                         row.MatchAction = tempRow.Action;
                     }
                 }
@@ -336,11 +358,12 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 foreach (AEpMatchRow m in MatchesToAddLater.Values)
                 {
-                    ResultDataset.AEpMatch.Rows.Add(m);
+                    TempDataset.AEpMatch.Rows.Add(m);
                 }
 
-                ResultDataset.AEpMatch.ThrowAwayAfterSubmitChanges = true;
-                BankImportTDSAccess.SubmitChanges(ResultDataset, out VerificationResult);
+                TempDataset.ThrowAwayAfterSubmitChanges = true;
+                // only store a_ep_transactions and a_ep_matches, but without additional typed fields (ie MatchAction)
+                BankImportTDSAccess.SubmitChanges(TempDataset.GetChangesTyped(true), out VerificationResult);
             }
             catch (Exception e)
             {
