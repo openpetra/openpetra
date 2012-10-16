@@ -168,7 +168,7 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>Partner status</summary>
         public const String PARTNERSTATUS_MERGED = "MERGED";
-        
+
         /// <summary>Gender</summary>
         public const String GENDER_FEMALE = "Female";
 
