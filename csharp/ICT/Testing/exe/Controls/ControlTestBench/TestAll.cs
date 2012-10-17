@@ -101,22 +101,23 @@ namespace ControlTestBench
 
         private XmlNode GetHardCodedXmlNodes_AccordionPanel2()
         {
-            string[] lines = new string[7];
+            string[] lines = new string[8];
             
             lines[0] = "TaskGroup:\n";
             lines[1] = "    Task1:\n";
             lines[2] = "        Label: First Item";
             lines[3] = "    Task2:\n";
             lines[4] = "        Label: Second Item";
-            lines[5] = "    Task3:\n";
-            lines[6] = "        Label: Third Item";
+            lines[5] = "        Enabled: false";
+            lines[6] = "    Task3:\n";
+            lines[7] = "        Label: Third Item";
             
             return new TYml2Xml(lines).ParseYML2TaskListRoot();
         }
 
         private XmlNode GetHardCodedXmlNodes_AccordionPanel3()
         {
-            string[] lines = new string[23];
+            string[] lines = new string[24];
             
             lines[0] = "TaskGroup:\n";
             lines[1] = "    Task0:\n";
@@ -137,17 +138,18 @@ namespace ControlTestBench
             lines[16] = "        Label: S&witch Ledger";
             lines[17] = "        Task7:\n";
             lines[18] = "            Label: Ledger 49 - Germany";
-            lines[19] = "        Task8:\n";
-            lines[20] = "            Label: Ledger 43 - Austria";
-            lines[21] = "        Task9:\n";
-            lines[22] = "            Label: Ledger 1 - ICT";
+            lines[19] = "            Enabled: false";
+            lines[20] = "        Task8:\n";
+            lines[21] = "            Label: Ledger 43 - Austria";
+            lines[22] = "        Task9:\n";
+            lines[23] = "            Label: Ledger 1 - ICT";
             
             return new TYml2Xml(lines).ParseYML2TaskListRoot();
         }
         
         private XmlNode GetHardCodedXmlNodes_Shepherd()
         {
-            string[] lines = new string[11];
+            string[] lines = new string[12];
             
             lines[0] = "TaskGroup:\n";
             lines[1] = "    Task1:\n";
@@ -158,8 +160,9 @@ namespace ControlTestBench
             lines[6] = "            Label: Family Name";
             lines[7] = "        Task2b:\n";
             lines[8] = "            Label: Personal Information";
-            lines[9] = "    Task3:\n";
-            lines[10] = "        Label: &Home Church";
+            lines[9] = "            Enabled: false";
+            lines[10] = "    Task3:\n";
+            lines[11] = "        Label: &Home Church";
             
             return new TYml2Xml(lines).ParseYML2TaskListRoot();
         }

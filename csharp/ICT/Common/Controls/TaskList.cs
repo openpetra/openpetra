@@ -381,7 +381,12 @@ namespace Ict.Common.Controls
                 lblTaskItem.MouseEnter += new System.EventHandler(this.LinkLabelMouseEnter);
                 lblTaskItem.MouseLeave += new System.EventHandler(this.LinkLabelMouseLeave);
                 
-                lblTaskItem.Enabled = !IsDisabled(TaskNode);
+                if (IsDisabled(TaskNode)) 
+                {
+                    lblTaskItem.Links[0].Enabled = !IsDisabled(TaskNode);                    
+                    lblTaskItem.DisabledLinkColor = VisualStyle.ContentDisabledFontColour;
+                    lblTaskItem.LinkBehavior = LinkBehavior.NeverUnderline;
+                }
 
                 if (this.IsVisible(TaskNode))
                 {
@@ -865,6 +870,11 @@ namespace Ict.Common.Controls
         /// <param name="node"></param>
         public void DisableTaskItem(XmlNode node)
         {
+            if (node == FActiveTaskItem) 
+            {
+                FActiveTaskItem = null;    
+            }
+            
             ChangeAttribute(node, "Enabled", "False", true);
         }
 
