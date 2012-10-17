@@ -83,14 +83,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Same as previously selected
                 if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
                 {
-                	if (FGLEffectivePeriodChanged)
-                	{
-                		FGLEffectivePeriodChanged = false;
-                		GetSelectedDetailRow().DateEntered = FBatchRow.GlEffectiveDate;
-                		dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
-                	}
-                	
-                	GetDetailsFromControls(GetSelectedDetailRow());
+                    if (FGLEffectivePeriodChanged)
+                    {
+                        FGLEffectivePeriodChanged = false;
+                        GetSelectedDetailRow().DateEntered = FBatchRow.GlEffectiveDate;
+                        dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
+                    }
+
+                    GetDetailsFromControls(GetSelectedDetailRow());
 
                     if (AFromTabClick)
                     {
@@ -158,7 +158,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateTotals();
             UpdateControlsProtection();
-            
         }
 
         bool FinRecipientKeyChanging = false;
@@ -498,7 +497,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FPreviouslySelectedDetailRow == null)
             {
-            	txtGiftTotal.Text = "";
+                txtGiftTotal.Text = "";
                 txtBatchTotal.NumberValueDecimal = 0;
 
                 //If all details have been deleted
@@ -1178,10 +1177,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-		/// <summary>
-		/// update the transaction method payment from outside
-		/// </summary>
-		/// <param name="ABatchRow"></param>
+        /// <summary>
+        /// update the transaction method payment from outside
+        /// </summary>
+        /// <param name="ABatchRow"></param>
         public void UpdateDateEntered(AGiftBatchRow ABatchRow)
         {
             Int32 ledgerNumber;
@@ -1191,16 +1190,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ledgerNumber = ABatchRow.LedgerNumber;
             batchNumber = ABatchRow.BatchNumber;
             batchEffectiveDate = ABatchRow.GlEffectiveDate;
-            
+
             if (FMainDS.AGift.Rows.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
-            	FGLEffectivePeriodChanged = true;
-            	//Rows already active in transaction tab. Need to set current row ac code below will not update selected row
-            	GetSelectedDetailRow().DateEntered = batchEffectiveDate;
+                FGLEffectivePeriodChanged = true;
+                //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
+                GetSelectedDetailRow().DateEntered = batchEffectiveDate;
             }
 
             //Update all transactions
@@ -1211,12 +1210,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     giftRow.DateEntered = batchEffectiveDate;
                 }
             }
-            
+
             if (FGLEffectivePeriodChanged)
             {
-            	ShowDetails();
+                ShowDetails();
             }
-            
         }
 
         /// <summary>
@@ -1232,7 +1230,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateBatchStatus()
         {
-       		txtBatchStatus.Text = FBatchStatus;
+            txtBatchStatus.Text = FBatchStatus;
         }
 
         /// <summary>
@@ -1379,15 +1377,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!DateTime.TryParse(aDate, out dateValue))
                 {
-                	dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
+                    dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
                 }
             }
             catch
             {
-            	//Do nothing
+                //Do nothing
             }
         }
-        
+
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)
         {
             ARow.CostCentreCode = txtDetailCostCentreCode.Text;
@@ -1402,7 +1400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (giftRow != null)
             {
                 giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
-                giftRow.DateEntered = (dtpDateEntered.Date.HasValue?dtpDateEntered.Date.Value:FBatchRow.GlEffectiveDate);
+                giftRow.DateEntered = (dtpDateEntered.Date.HasValue ? dtpDateEntered.Date.Value : FBatchRow.GlEffectiveDate);
 
                 GiftBatchTDSAGiftDetailRow giftDetailRow = GetGiftDetailRow(ARow.GiftTransactionNumber, ARow.DetailNumber);
                 giftDetailRow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);

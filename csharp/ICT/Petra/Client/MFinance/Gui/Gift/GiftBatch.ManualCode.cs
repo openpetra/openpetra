@@ -279,7 +279,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
             }
-
         }
 
         /// <summary>

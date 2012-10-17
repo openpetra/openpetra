@@ -412,17 +412,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 Int32 yearNumber = 0;
                 DateTime dateValue;
                 string aDate = dtpDetailGlEffectiveDate.Text;
-                
+
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
-                	FPreviouslySelectedDetailRow.GlEffectiveDate = dateValue;
-                	
-                	if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
+                    FPreviouslySelectedDetailRow.GlEffectiveDate = dateValue;
+
+                    if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
                     {
-                		if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+                        if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
-                            
+
                             //Period has changed, so update transactions DateEntered
                             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateDateEntered(FPreviouslySelectedDetailRow);
 
@@ -561,7 +561,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-        	Int32 yearNumber = 0;
+            Int32 yearNumber = 0;
             Int32 periodNumber = 0;
 
             //If viewing posted batches only, show list of editing batches
@@ -1038,17 +1038,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateDataDetailsManual(AGiftBatchRow ARow)
         {
-        	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-			if (ARow != null)
-			{
-				if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
-				{
-					txtDetailHashTotal.NumberValueDecimal = 0m;
-					ARow.HashTotal = 0m;
-				}
-			}
-			
+            if (ARow != null)
+            {
+                if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+                {
+                    txtDetailHashTotal.NumberValueDecimal = 0m;
+                    ARow.HashTotal = 0m;
+                }
+            }
+
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
         }
