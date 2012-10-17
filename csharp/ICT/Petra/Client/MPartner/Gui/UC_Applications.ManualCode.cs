@@ -336,23 +336,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 btnDelete.Enabled = true;
                 pnlDetails.Visible = true;
-            }
 
-            if (IsEventApplication(ARow))
-            {
-                PmShortTermApplicationRow EventApplicationRow;
-                EventApplicationRow = GetEventApplicationRow(ARow);
-                pnlApplicationEvent.Visible = true;
-                pnlApplicationField.Visible = false;
-                ucoApplicationEvent.ShowDetails(ARow, EventApplicationRow);
-            }
-            else
-            {
-                PmYearProgramApplicationRow FieldApplicationRow;
-                FieldApplicationRow = GetFieldApplicationRow(ARow);
-                pnlApplicationEvent.Visible = false;
-                pnlApplicationField.Visible = true;
-                ucoApplicationField.ShowDetails(ARow, FieldApplicationRow);
+                if (IsEventApplication(ARow))
+                {
+                    PmShortTermApplicationRow EventApplicationRow;
+                    EventApplicationRow = GetEventApplicationRow(ARow);
+                    pnlApplicationEvent.Visible = true;
+                    pnlApplicationField.Visible = false;
+                    ucoApplicationEvent.ShowDetails(ARow, EventApplicationRow);
+                }
+                else
+                {
+                    PmYearProgramApplicationRow FieldApplicationRow;
+                    FieldApplicationRow = GetFieldApplicationRow(ARow);
+                    pnlApplicationEvent.Visible = false;
+                    pnlApplicationField.Visible = true;
+                    ucoApplicationField.ShowDetails(ARow, FieldApplicationRow);
+                }
             }
 
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
@@ -540,5 +540,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Row.EventOrFieldName = AEventOrFieldName;
             }
         }
+        
+        private void ValidateDataDetailsManual(IndividualDataTDSPmGeneralApplicationRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+   //xxx
+            if(IsEventApplication(ARow))
+            {
+                ucoApplicationEvent.ValidateAllData(false);
+            }
+            else
+            {
+                ucoApplicationField.ValidateAllData(false);
+            }
+        }
+        
     }
 }
