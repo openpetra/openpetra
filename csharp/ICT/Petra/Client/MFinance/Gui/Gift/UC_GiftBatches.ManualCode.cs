@@ -411,16 +411,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 Int32 periodNumber = 0;
                 Int32 yearNumber = 0;
                 DateTime dateValue;
-
                 string aDate = dtpDetailGlEffectiveDate.Text;
                 
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
-                    if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
+                	FPreviouslySelectedDetailRow.GlEffectiveDate = dateValue;
+                	
+                	if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
                     {
-                        if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+                		if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+                            
+                            //Period has changed, so update transactions DateEntered
+                            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateDateEntered(FPreviouslySelectedDetailRow);
 
                             if (cmbYear.SelectedIndex != 0)
                             {
@@ -430,9 +434,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             {
                                 cmbPeriod.SelectedIndex = 0;
                             }
-
-                            //Period has changed, so update transactions DateEntered
-                            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateDateEntered();
                         }
                     }
                 }
@@ -560,7 +561,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            Int32 yearNumber = 0;
+        	Int32 yearNumber = 0;
             Int32 periodNumber = 0;
 
             //If viewing posted batches only, show list of editing batches
@@ -588,6 +589,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.CreateNewAGiftBatch();
             txtDetailBatchDescription.Focus();
 
+            FPreviouslySelectedDetailRow.GlEffectiveDate = FDefaultDate;
             dtpDetailGlEffectiveDate.Date = FDefaultDate;
 
             if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
@@ -1036,7 +1038,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateDataDetailsManual(AGiftBatchRow ARow)
         {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+        	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
 			if (ARow != null)
 			{
