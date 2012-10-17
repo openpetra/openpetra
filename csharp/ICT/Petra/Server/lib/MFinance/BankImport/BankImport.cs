@@ -222,8 +222,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 BankImportTDS TempDataset = new BankImportTDS();
                 AEpTransactionAccess.LoadViaAEpStatement(TempDataset, AStatementKey, Transaction);
-
-                AEpMatchAccess.LoadViaALedger(ResultDataset, ResultDataset.AEpStatement[0].LedgerNumber, Transaction);
+                AEpMatchAccess.LoadViaALedger(TempDataset, ResultDataset.AEpStatement[0].LedgerNumber, Transaction);
 
                 // load all bankingdetails and partner shortnames related to this statement
                 string sqlLoadPartnerByBankAccount =
@@ -255,10 +254,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 string BankAccountCode = ResultDataset.AEpStatement[0].BankAccountCode;
 
-                DataView EpMatchView = new DataView(ResultDataset.AEpMatch,
-                    string.Empty,
-                    AEpMatchTable.GetMatchTextDBName(),
-                    DataViewRowState.CurrentRows);
+                TempDataset.AEpMatch.DefaultView.Sort = AEpMatchTable.GetMatchTextDBName();
 
                 SortedList <string, AEpMatchRow>MatchesToAddLater = new SortedList <string, AEpMatchRow>();
 
@@ -288,7 +284,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         tempTransactionRow.MatchText = row.MatchText;
                     }
 
-                    DataRowView[] matches = EpMatchView.FindRows(row.MatchText);
+                    DataRowView[] matches = TempDataset.AEpMatch.DefaultView.FindRows(row.MatchText);
 
                     if (matches.Length > 0)
                     {
@@ -372,7 +368,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 }
 
                 // for speed reasons, add the new rows after clearing the sort on the view
-                EpMatchView.Sort = string.Empty;
+                TempDataset.AEpMatch.DefaultView.Sort = string.Empty;
 
                 foreach (AEpMatchRow m in MatchesToAddLater.Values)
                 {
