@@ -26,6 +26,7 @@ using System.Data;
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
@@ -39,6 +40,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.Gift;
 
@@ -89,6 +91,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
+        private void GetBankStatementTransactionsAndMatches(Int32 AStatementKey)
+        {
+            // load the transactions of the selected statement, and the matches
+            FMainDS.Merge(
+                TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
+                    AStatementKey, FLedgerNumber));
+        }
+
         /// <summary>
         /// select the bank statement that should be loaded
         /// </summary>
@@ -103,9 +113,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             FMainDS.AMotivationDetail.Merge(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, FLedgerNumber));
 
             // load the transactions of the selected statement, and the matches
-            FMainDS.Merge(
-                TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
-                    AStatementKey, FLedgerNumber));
+            Thread t = new Thread(() => GetBankStatementTransactionsAndMatches(AStatementKey));
+            t.Start();
+
+            TProgressDialog dialog = new TProgressDialog();
+
+            if (dialog.ShowDialog() == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            while (FMainDS.AEpStatement.Rows.Count != 1)
+            {
+                // wait for the merging of the dataset to finish in the thread
+                Thread.Sleep(300);
+            }
 
             // an old version of the CSV import plugin did not set the potential gift typecode
             foreach (AEpTransactionRow r in FMainDS.AEpTransaction.Rows)

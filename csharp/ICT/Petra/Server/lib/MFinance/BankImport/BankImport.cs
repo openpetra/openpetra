@@ -197,6 +197,14 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             BankImportTDS ResultDataset = new BankImportTDS();
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Load Bank Statement"),
+                8);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("loading statement"),
+                0);
+
             try
             {
                 AEpStatementAccess.LoadByPrimaryKey(ResultDataset, AStatementKey, Transaction);
@@ -234,6 +242,15 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 DataTable PartnerByBankAccount = DBAccess.GDBAccessObj.SelectDT(sqlLoadPartnerByBankAccount, "partnerByBankAccount", Transaction);
                 PartnerByBankAccount.DefaultView.Sort = "BranchCode, BankAccountNumber";
 
+                // get all recipients that have been merged
+                string sqlGetMergedRecipients =
+                    string.Format(
+                        "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, p.p_status_code_c AS StatusCode FROM PUB_a_ep_match m, PUB_p_partner p " +
+                        "WHERE m.p_recipient_key_n = p.p_partner_key_n AND p.p_status_code_c = '{0}'",
+                        MPartnerConstants.PARTNERSTATUS_MERGED);
+                DataTable MergedPartners = DBAccess.GDBAccessObj.SelectDT(sqlGetMergedRecipients, "mergedPartners", Transaction);
+                MergedPartners.DefaultView.Sort = "PartnerKey";
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
                 string BankAccountCode = ResultDataset.AEpStatement[0].BankAccountCode;
@@ -245,9 +262,16 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 SortedList <string, AEpMatchRow>MatchesToAddLater = new SortedList <string, AEpMatchRow>();
 
+                int count = 0;
+
                 // load the matches or create new matches
                 foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
                 {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("finding matches"),
+                        3 + (count * 3.0m / ResultDataset.AEpTransaction.Rows.Count));
+                    count++;
+
                     BankImportTDSAEpTransactionRow tempTransactionRow =
                         (BankImportTDSAEpTransactionRow)TempDataset.AEpTransaction.Rows.Find(
                             new object[] {
@@ -274,14 +298,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                             AEpMatchRow r = (AEpMatchRow)rv.Row;
 
                             // check if the recipient key is still valid. could be that they have married, and merged into another family record
-                            if ((r.RecipientKey != 0) && (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
-                                                                  String.Format("SELECT COUNT(*) FROM PUB_{0} WHERE {1} = {2} AND {3} = '{4}'",
-                                                                      PPartnerTable.GetTableDBName(),
-                                                                      PPartnerTable.GetPartnerKeyDBName(),
-                                                                      r.RecipientKey,
-                                                                      PPartnerTable.GetStatusCodeDBName(),
-                                                                      MPartnerConstants.PARTNERSTATUS_MERGED),
-                                                                  IsolationLevel.ReadCommitted)) == 1))
+                            if ((r.RecipientKey != 0)
+                                && (MergedPartners.DefaultView.FindRows(r.RecipientKey).Length > 0))
                             {
                                 TLogging.LogAtLevel(1, "partner has been merged: " + r.RecipientKey.ToString());
                                 r.RecipientKey = 0;
@@ -361,6 +379,10 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     TempDataset.AEpMatch.Rows.Add(m);
                 }
 
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("save matches"),
+                    7);
+
                 TempDataset.ThrowAwayAfterSubmitChanges = true;
                 // only store a_ep_transactions and a_ep_matches, but without additional typed fields (ie MatchAction)
                 BankImportTDSAccess.SubmitChanges(TempDataset.GetChangesTyped(true), out VerificationResult);
@@ -405,6 +427,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             ResultDataset.ACostCentre.Clear();
 
             ResultDataset.AcceptChanges();
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             return ResultDataset;
         }
