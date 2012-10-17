@@ -143,16 +143,19 @@ namespace Ict.Petra.Client.App.PetraClient
                 }
             }
 
-//            if (TXMLParser.GetAttribute(ANode, "DependsOnLedger").ToLower() == "true")
-//            {
-//                // check if the user has permissions for this ledger
-//                Int32 LedgerNumber = TXMLParser.GetIntAttribute(ANode, "LedgerNumber");
-//
-//                if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumber.ToString("0000")))
-//                {
-//                    return false;
-//                }
-//            }
+            if (TXMLParser.GetAttributeRecursive(ANode, "DependsOnLedger", true).ToLower() == "true")
+            {
+                // check if the user has permissions for this ledger
+                Int32 LedgerNumber = TXMLParser.GetIntAttribute(ANode, "LedgerNumber");
+
+                if (LedgerNumber != -1) 
+                {
+                    if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumber.ToString("0000")))
+                    {
+                        return false;
+                    }                    
+                }
+            }
 
             return true;
         }
@@ -202,8 +205,14 @@ namespace Ict.Petra.Client.App.PetraClient
                             {
                                 SpecificLedgerNode.Attributes["Label"].Value = String.Format(Catalog.GetString("Ledger #{0}"), ledger.LedgerNumber);
                             }                            
+
+                            if (!HasAccessPermission(SpecificLedgerNode, UserInfo.GUserInfo.UserID))
+                            {
+                                XmlAttribute enabledAttribute = childNode.OwnerDocument.CreateAttribute("Enabled");
+                                enabledAttribute.Value = "false";
+                                SpecificLedgerNode.Attributes.Append(enabledAttribute);                                
+                            }                                
                         }
-                        
                         
                         if (!ADontUseDefaultLedger) 
                         {
