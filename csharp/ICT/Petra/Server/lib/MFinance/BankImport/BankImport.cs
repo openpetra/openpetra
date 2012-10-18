@@ -245,7 +245,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 string sqlGetMergedRecipients =
                     string.Format(
                         "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, p.p_status_code_c AS StatusCode FROM PUB_a_ep_match m, PUB_p_partner p " +
-                        "WHERE m.p_recipient_key_n = p.p_partner_key_n AND p.p_status_code_c = '{0}'",
+                        "WHERE (m.p_recipient_key_n = p.p_partner_key_n OR m.p_donor_key_n = p.p_partner_key_n) AND p.p_status_code_c = '{0}'",
                         MPartnerConstants.PARTNERSTATUS_MERGED);
                 DataTable MergedPartners = DBAccess.GDBAccessObj.SelectDT(sqlGetMergedRecipients, "mergedPartners", Transaction);
                 MergedPartners.DefaultView.Sort = "PartnerKey";
@@ -299,6 +299,15 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                             {
                                 TLogging.LogAtLevel(1, "partner has been merged: " + r.RecipientKey.ToString());
                                 r.RecipientKey = 0;
+                                r.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+                            }
+
+                            // check if the donor key is still valid. could be that they have married, and merged into another family record
+                            if ((r.DonorKey != 0)
+                                && (MergedPartners.DefaultView.FindRows(r.DonorKey).Length > 0))
+                            {
+                                TLogging.LogAtLevel(1, "partner has been merged: " + r.DonorKey.ToString());
+                                r.DonorKey = 0;
                                 r.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
                             }
 
