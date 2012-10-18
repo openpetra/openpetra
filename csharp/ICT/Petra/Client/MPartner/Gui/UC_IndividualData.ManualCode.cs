@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MCommon.Data;
@@ -62,6 +63,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_JobAssignments FUcoJobAssignments;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_LocalPersonnelData FUcoLocalPersonnelData;
 
+        private LinkLabel FCurrentLinkLabel;
+        
         //the background color that all PanelHelpers will have
         private System.Drawing.Color PanelHelperBackGround = System.Drawing.Color.Yellow;
 
@@ -1112,6 +1115,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void IndividualDataItemSelected(object ASender, EventArgs e)
         {
+            if (   ASender != FCurrentLinkLabel
+                && !ValidateCurrentDataItem())
+            {
+                // do not accept new link section if current one is not validated properly
+                return;
+            }
+            
             /*
              * Raise the following Event to inform the base Form that we might be loading some fresh data.
              * We need to bypass the ChangeDetection routine while this happens.
@@ -1778,6 +1788,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoLocalPersonnelData.Parent.BringToFront();
             }
 
+            // remember the currently selected link label
+            FCurrentLinkLabel = ASender as LinkLabel;
+            
             /*
              * Raise the following Event to inform the base Form that we have finished loading fresh data.
              * We need to turn the ChangeDetection routine back on.
@@ -2074,6 +2087,94 @@ namespace Ict.Petra.Client.MPartner.Gui
             llbPersonalAbilities.ResetBackColor();
         }
 
+        private bool ValidateCurrentDataItem ()
+        {
+            if (FCurrentLinkLabel == llbOverview)
+            {
+                
+            }
+            else if (FCurrentLinkLabel == llbCommitmentPeriods)
+            {
+                if (FUcoCommitmentPeriods != null)
+                {
+                    return FUcoCommitmentPeriods.ValidateAllData(true, true, FUcoCommitmentPeriods);
+                }
+            }
+            else if (FCurrentLinkLabel == llbJobAssignments)
+            {
+                if (FUcoJobAssignments != null)
+                {
+                    return FUcoJobAssignments.ValidateAllData(true, true, FUcoJobAssignments);
+                }
+            }
+            else if (FCurrentLinkLabel == llbPassportDetails)
+            {
+                if (FUcoPassportDetails != null)
+                {
+                    return FUcoPassportDetails.ValidateAllData(true, true, FUcoPassportDetails);
+                }
+            }
+            else if (FCurrentLinkLabel == llbPersonalDocuments)
+            {
+                if (FUcoPersonalDocuments != null)
+                {
+                    return FUcoPersonalDocuments.ValidateAllData(true, true, FUcoPersonalDocuments);
+                }
+            }
+            else if (FCurrentLinkLabel == llbSpecialNeeds)
+            {
+                if (FUcoSpecialNeeds != null)
+                {
+                    return FUcoSpecialNeeds.ValidateAllData(true, FUcoSpecialNeeds);
+                }
+            }
+            else if (FCurrentLinkLabel == llbLanguages)
+            {
+                if (FUcoPersonalLanguages != null)
+                {
+                    return FUcoPersonalLanguages.ValidateAllData(true, true, FUcoPersonalLanguages);
+                }
+            }
+            else if (FCurrentLinkLabel == llbPersonSkills)
+            {
+                if (FUcoPersonSkills != null)
+                {
+                    return FUcoPersonSkills.ValidateAllData(true, true, FUcoPersonSkills);
+                }
+            }
+            else if (FCurrentLinkLabel == llbPreviousExperience)
+            {
+                if (FUcoPreviousExperience != null)
+                {
+                    return FUcoPreviousExperience.ValidateAllData(true, true, FUcoPreviousExperience);
+                }
+            }
+            else if (FCurrentLinkLabel == llbProgressReports)
+            {
+                if (FUcoProgressReports != null)
+                {
+                    return FUcoProgressReports.ValidateAllData(true, true, FUcoProgressReports);
+                }
+            }
+            else if (FCurrentLinkLabel == llbLocalPersonnelData)
+            {
+                if (FUcoLocalPersonnelData != null)
+                {
+                    //TODO: no proper validation in place yet for local personnel data control
+                }
+            }
+            else if (FCurrentLinkLabel == llbPersonalData)
+            {
+                if (FUcoPersonalData != null)
+                {
+                    return FUcoPersonalData.ValidateAllData(true, FUcoPersonalData);
+                }
+            }
+
+            return true;            
+            
+        }
+        
         #endregion
     }
 }
