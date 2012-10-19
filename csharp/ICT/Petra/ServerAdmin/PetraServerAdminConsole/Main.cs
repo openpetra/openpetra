@@ -177,6 +177,34 @@ public class TAdminConsole
         TLogging.Log("backup has been written to " + backupFile);
     }
 
+    private static bool RestoreDatabase(IServerAdminInterface TRemote, string ARestoreFile)
+    {
+        string restoreFile = Path.GetFullPath(ARestoreFile);
+
+        if (!File.Exists(restoreFile) || !restoreFile.EndsWith(".yml.gz"))
+        {
+            Console.WriteLine("invalid filename, please try again");
+            return false;
+        }
+
+        FileStream fs = new FileStream(restoreFile, FileMode.Open);
+        byte[] buffer = new byte[fs.Length];
+        fs.Read(buffer, 0, buffer.Length);
+        fs.Close();
+        string YmlGZData = Convert.ToBase64String(buffer);
+
+        if (TRemote.RestoreDatabaseFromYmlGZ(YmlGZData))
+        {
+            TLogging.Log("backup has been restored from " + restoreFile);
+            return true;
+        }
+        else
+        {
+            TLogging.Log("there have been problems with the restore");
+            return false;
+        }
+    }
+
     private static void RestoreDatabase(IServerAdminInterface TRemote)
     {
         Console.WriteLine(Environment.NewLine + "-> DELETING YOUR DATABASE <-");
@@ -185,32 +213,19 @@ public class TAdminConsole
         if (Console.ReadLine() == "YES")
         {
             Console.Write("     Please enter filename of yml.gz file: ");
-            string restoreFile = Path.GetFullPath(Console.ReadLine());
+            string restoreFile = Console.ReadLine();
 
-            if (!File.Exists(restoreFile) || !restoreFile.EndsWith(".yml.gz"))
-            {
-                Console.WriteLine("invalid filename, please try again");
-            }
-
-            FileStream fs = new FileStream(restoreFile, FileMode.Open);
-            byte[] buffer = new byte[fs.Length];
-            fs.Read(buffer, 0, buffer.Length);
-            fs.Close();
-            string YmlGZData = Convert.ToBase64String(buffer);
-
-            if (TRemote.RestoreDatabaseFromYmlGZ(YmlGZData))
-            {
-                TLogging.Log("backup has been restored from " + restoreFile);
-            }
-            else
-            {
-                TLogging.Log("there have been problems with the restore");
-            }
+            RestoreDatabase(TRemote, restoreFile);
         }
         else
         {
             Console.WriteLine("     Reset of database cancelled!");
         }
+    }
+
+    private static void AddUser(IServerAdminInterface TRemote, string AUserId)
+    {
+        TRemote.AddUser(AUserId);
     }
 
     /// <summary>
@@ -589,6 +604,14 @@ public class TAdminConsole
                 {
                     ClientID = TAppSettingsManager.GetValue("ClientID");
                     DisconnectClient(TRemote, ClientID);
+                }
+                else if (TAppSettingsManager.GetValue("Command") == "LoadYmlGz")
+                {
+                    RestoreDatabase(TRemote, TAppSettingsManager.GetValue("YmlGzFile"));
+                }
+                else if (TAppSettingsManager.GetValue("Command") == "AddUser")
+                {
+                    AddUser(TRemote, TAppSettingsManager.GetValue("UserId"));
                 }
             }
             else

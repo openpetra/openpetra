@@ -341,5 +341,14 @@ namespace Ict.Common.Remoting.Server
             // implemented in derived class
             return false;
         }
+
+        /// <summary>
+        /// AddUser
+        /// </summary>
+        public virtual bool AddUser(string AUserId)
+        {
+            // implemented in derived class
+            return false;
+        }
     }
 }

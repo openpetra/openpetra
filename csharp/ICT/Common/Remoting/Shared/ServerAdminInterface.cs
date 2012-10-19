@@ -143,5 +143,11 @@ namespace Ict.Common.Remoting.Shared
         /// </summary>
         /// <returns></returns>
         bool RestoreDatabaseFromYmlGZ(string AYmlGzData);
+
+        /// <summary>
+        /// add a new user
+        /// </summary>
+        /// <returns></returns>
+        bool AddUser(string AUserID);
     }
 }

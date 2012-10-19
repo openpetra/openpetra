@@ -36,6 +36,11 @@ namespace Ict.Common.Remoting.Server
     public interface IUserManager
     {
         /// <summary>
+        /// add a new user
+        /// </summary>
+        bool AddUser(string AUserID);
+
+        /// <summary>
         /// authenticate a user
         /// </summary>
         IPrincipal PerformUserAuthentication(string AUserName, string APassword,
