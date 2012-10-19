@@ -304,6 +304,10 @@ namespace Ict.Common.Verification
             {
                 return FResultContext;
             }
+            set
+            {
+                FResultContext = value;
+            }
         }
 
         /// <summary>

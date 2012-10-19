@@ -543,8 +543,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private void ValidateDataDetailsManual(IndividualDataTDSPmGeneralApplicationRow ARow)
         {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-   //xxx
             if(IsEventApplication(ARow))
             {
                 ucoApplicationEvent.ValidateAllData(false);
@@ -552,6 +550,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 ucoApplicationField.ValidateAllData(false);
+            }
+            
+            // Since this is a special case of OpenPetra UI (a UserControl in a UserControl)
+            // this special treatment is introduced so verification can work. The ResultContext is modified
+            // to the outer UserControl (this) so the validation (FindUserControlOrForm) actually
+            // picks up the right one and does not stop at the inner one and quits.
+            foreach (TVerificationResult si in FPetraUtilsObject.VerificationResultCollection)
+            {
+                si.ResultContext = this;
             }
         }
         
