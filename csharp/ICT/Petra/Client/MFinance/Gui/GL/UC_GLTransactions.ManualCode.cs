@@ -124,7 +124,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //This will update Batch and journal totals
             UpdateTotals();
-            ((TFrmGLBatch)ParentForm).SaveChanges();
 
             if (grdDetails.Rows.Count < 2)
             {
@@ -355,7 +354,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else if (FPetraUtilsObject.HasChanges && (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
                 FPetraUtilsObject.DisableSaveButton();
-                FPetraUtilsObject.HasChanges = false;
             }
         }
 
@@ -397,22 +395,44 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateTotals()
         {
-            if ((FJournalNumber != -1))     // && !pnlDetailsProtected)
+            bool alreadyChanged;
+
+            if ((FJournalNumber != -1))         // && !pnlDetailsProtected)
             {
                 GLBatchTDSAJournalRow journal = GetJournalRow();
 
                 GLRoutines.UpdateTotalsOfJournal(ref FMainDS, journal);
+
+                alreadyChanged = FPetraUtilsObject.HasChanges;
+
+                if (!alreadyChanged)
+                {
+                    FPetraUtilsObject.DisableDataChangedEvent();
+                }
 
                 txtCreditTotalAmount.NumberValueDecimal = journal.JournalCreditTotal;
                 txtDebitTotalAmount.NumberValueDecimal = journal.JournalDebitTotal;
                 txtCreditTotalAmountBase.NumberValueDecimal = journal.JournalCreditTotalBase;
                 txtDebitTotalAmountBase.NumberValueDecimal = journal.JournalDebitTotalBase;
 
+                if (!alreadyChanged)
+                {
+                    FPetraUtilsObject.EnableDataChangedEvent();
+                }
+
                 // refresh the currency symbols
                 ShowDataManual();
 
-                ((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(GetBatchRow());
-                ((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
+                if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                {
+                    ((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(GetBatchRow());
+                    ((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
+                }
+
+                if (!alreadyChanged && FPetraUtilsObject.HasChanges)
+                {
+                    FPetraUtilsObject.DisableSaveButton();
+                }
             }
         }
 
