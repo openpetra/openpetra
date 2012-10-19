@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 UpdateControlsProtection();
 
-                if (FExchangeRateToBase != GetBatchRow().ExchangeRateToBase)
+                if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (FExchangeRateToBase != GetBatchRow().ExchangeRateToBase))
                 {
                     UpdateBaseAmount(false);
                 }
@@ -494,6 +494,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             Decimal sum = 0;
             Decimal sumBatch = 0;
+            Int32 GiftNumber = 0;
+            bool disableSaveButton = false;
+
+            if (FPetraUtilsObject == null)
+            {
+                return;
+            }
+
+            //Sometimes a change in this unbound textbox causes a data changed condition
+            disableSaveButton = !FPetraUtilsObject.HasChanges;
 
             if (FPreviouslySelectedDetailRow == null)
             {
@@ -505,48 +515,51 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FBatchRow.BatchTotal = 0;
                 }
-
-                return;
             }
-
-            Int32 GiftNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
-
-            foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
+            else
             {
-                if (gdr.RowState != DataRowState.Deleted)
+                GiftNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
+
+                foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
                 {
-                    if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
+                    if (gdr.RowState != DataRowState.Deleted)
                     {
-                        if (gdr.GiftTransactionNumber == GiftNumber)
+                        if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
                         {
-                            if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
+                            if (gdr.GiftTransactionNumber == GiftNumber)
                             {
-                                sum += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
-                                sumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                                if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
+                                {
+                                    sum += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                                    sumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                                }
+                                else
+                                {
+                                    sum += gdr.GiftTransactionAmount;
+                                    sumBatch += gdr.GiftTransactionAmount;
+                                }
                             }
                             else
                             {
-                                sum += gdr.GiftTransactionAmount;
                                 sumBatch += gdr.GiftTransactionAmount;
                             }
                         }
-                        else
-                        {
-                            sumBatch += gdr.GiftTransactionAmount;
-                        }
                     }
                 }
+
+                txtGiftTotal.NumberValueDecimal = sum;
+                txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
+                txtGiftTotal.ReadOnly = true;
+                //this is here because at the moment the generator does not generate this
+                txtBatchTotal.NumberValueDecimal = sumBatch;
+                //Now we look at the batch and update the batch data
+                FBatchRow.BatchTotal = sumBatch;
             }
 
-            txtGiftTotal.NumberValueDecimal = sum;
-            txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
-            txtGiftTotal.ReadOnly = true;
-            //this is here because at the moment the generator does not generate this
-            txtBatchTotal.NumberValueDecimal = sumBatch;
-            //Now we look at the batch and update the batch data
-//            AGiftBatchRow batchRow = GetBatchRow();
-//            batchRow.BatchTotal = sumBatch;
-            FBatchRow.BatchTotal = sumBatch;
+            if (disableSaveButton && FPetraUtilsObject.HasChanges)
+            {
+                FPetraUtilsObject.DisableSaveButton();
+            }
         }
 
         /// reset the control
@@ -1230,7 +1243,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateBatchStatus()
         {
+            //Sometimes a change in this unbound textbox causes a data changed condition
+            bool disableSave = !FPetraUtilsObject.HasChanges;
+
             txtBatchStatus.Text = FBatchStatus;
+
+            if (disableSave && FPetraUtilsObject.HasChanges)
+            {
+                FPetraUtilsObject.DisableSaveButton();
+            }
         }
 
         /// <summary>
