@@ -102,12 +102,16 @@ namespace Ict.Common.Controls
             
             set
             {
-                if (FIsLedgerBasedModule
+                if ((FIsLedgerBasedModule)
                     && (FCurrentLedger != value))
                 {
                     FCurrentLedger = value;
                     
-                    SelectCurrentLedgerLink();
+                    // Select the LinkLabel that represents the current Ledger if the 'Select Ledger' Collapsible Panel is present
+                    if (FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(1) != null) 
+                    {
+                        SelectCurrentLedgerLink();    
+                    }
                 }
                 else
                 {
@@ -299,7 +303,7 @@ namespace Ict.Common.Controls
 
             FCurrentTaskList.Statusbar = FStatusbar;
             FCurrentTaskList.Dock = DockStyle.Fill;
-            FCurrentTaskList.CurrentLedger = FCurrentLedger;
+            TLstTasks.CurrentLedger = FCurrentLedger;
             
             FDashboard.ShowTaskList(FCurrentTaskList);
 //            Invalidate();
@@ -358,7 +362,7 @@ namespace Ict.Common.Controls
             
             if (FCurrentTaskList != null) 
             {
-                FCurrentTaskList.CurrentLedger = FCurrentLedger;    
+                TLstTasks.CurrentLedger = FCurrentLedger;    
             }
             
             if(LedgerChanged != null)

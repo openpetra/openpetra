@@ -41,7 +41,7 @@ namespace Ict.Common.Controls
     public partial class TLstTasks : UserControl
     {
         private static string FUserId;
-        private static CheckAccessPermissionDelegate FHasAccessPermission;
+        private static TLstFolderNavigation.CheckAccessPermissionDelegate FHasAccessPermission;
         private static int FCurrentLedger = -1;
         
         private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
@@ -118,7 +118,7 @@ namespace Ict.Common.Controls
                             TaskAppearance.staLargeTile ? TIconCache.TIconSize.is32by32 : TIconCache.TIconSize.is16by16);
                         SingleTask.RequestForDifferentIconSize += new TRequestForDifferentIconSize(SingleTask_RequestForDifferentIconSize);
 
-                        if (!FHasAccessPermission(TaskGroupNode, FUserId))
+                        if (!FHasAccessPermission(TaskGroupNode, FUserId, false))
                         {
                             SingleTask.Enabled = false;
                         }
@@ -146,7 +146,7 @@ namespace Ict.Common.Controls
                                 TaskAppearance.staLargeTile ? TIconCache.TIconSize.is32by32 : TIconCache.TIconSize.is16by16);
                             SingleTask.RequestForDifferentIconSize += new TRequestForDifferentIconSize(SingleTask_RequestForDifferentIconSize);
 
-                            if (!FHasAccessPermission(TaskNode, FUserId))
+                            if (!FHasAccessPermission(TaskNode, FUserId, false))
                             {
                                 SingleTask.Enabled = false;
                             }
@@ -218,15 +218,6 @@ namespace Ict.Common.Controls
 
             return PathStr;
         }
-
-        #endregion
-
-        #region Delegates
-
-        /// <summary>
-        /// this function checks if the user has access to the navigation node
-        /// </summary>
-        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
 
         #endregion
 
@@ -340,7 +331,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// The currently selected Ledger
         /// </summary>
-        public int CurrentLedger
+        public static int CurrentLedger
         {
             get
             {
@@ -376,7 +367,7 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="AUserId"></param>
         /// <param name="AHasAccessPermission"></param>
-        public static void Init(string AUserId, CheckAccessPermissionDelegate AHasAccessPermission)
+        public static void Init(string AUserId, TLstFolderNavigation.CheckAccessPermissionDelegate AHasAccessPermission)
         {
             FUserId = AUserId;
             FHasAccessPermission = AHasAccessPermission;
@@ -388,7 +379,7 @@ namespace Ict.Common.Controls
         /// <returns>The error or status message.</returns>
         public static string ExecuteAction(XmlNode node, Form AParentWindow)
         {
-            if (!FHasAccessPermission(node, FUserId))
+            if (!FHasAccessPermission(node, FUserId, true))
             {
                 return Catalog.GetString("Sorry, you don't have enough permissions to do this");
             }

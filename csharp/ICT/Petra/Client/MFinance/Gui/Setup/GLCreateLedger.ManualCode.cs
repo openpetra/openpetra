@@ -56,6 +56,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void BtnOK_Click(System.Object sender, EventArgs e)
         {
+            MethodInfo method;
+            
             TVerificationResultCollection VerificationResult;
 
             if (txtLedgerName.Text.Length == 0)
@@ -108,16 +110,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // reload navigation
                 Form MainWindow = FPetraUtilsObject.GetCallerForm();
                 
-                PropertyInfo CurrenLedgerProperty = MainWindow.GetType().GetProperty("CurrentLedger");
-                CurrenLedgerProperty.SetValue(MainWindow, Convert.ToInt32(nudLedgerNumber.Value), null);
+                PropertyInfo CurrentLedgerProperty = MainWindow.GetType().GetProperty("CurrentLedger");
+                CurrentLedgerProperty.SetValue(MainWindow, Convert.ToInt32(nudLedgerNumber.Value), null);
                 
-                MethodInfo method = MainWindow.GetType().GetMethod("LoadNavigationUI");
+                method = MainWindow.GetType().GetMethod("LoadNavigationUI");
 
                 if (method != null)
                 {
                     method.Invoke(MainWindow, new object[] { true });
                 }
 
+                method = MainWindow.GetType().GetMethod("ShowCurrentLedgerInfoInStatusBar");                
+
+                if (method != null)
+                {
+                    method.Invoke(MainWindow, new object[] { });
+                }
+                
                 Close();
             }
         }

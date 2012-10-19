@@ -63,6 +63,9 @@ namespace Ict.Common.Controls
 
         #endregion
 
+        /// <summary>Ledger Number value that signalises that the user hasn't got access to any Ledger in the Site.</summary>
+        public const int LEDGERNUMBER_NO_ACCESS_TO_ANY_LEDGER = -2;
+        
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -94,7 +97,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// this function checks if the user has access to the navigation node
         /// </summary>
-        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
+        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId, bool ACheckLedgerPermissions);
 
         #endregion
 
@@ -163,7 +166,7 @@ namespace Ict.Common.Controls
         /// </summary>
         public void AddFolder(XmlNode AFolderNode, string AUserId, CheckAccessPermissionDelegate AHasAccessPermission)
         {
-            TRbtNavigationButton rbt = new TRbtNavigationButton();
+            TRbtNavigationButton rbt = new TRbtNavigationButton(FolderCheckChanging);
 
             this.sptNavigation.Panel2.Controls.Add(rbt);
             rbt.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -189,7 +192,7 @@ namespace Ict.Common.Controls
             }
             else
             {
-                rbt.Enabled = AHasAccessPermission(AFolderNode, AUserId);
+                rbt.Enabled = AHasAccessPermission(AFolderNode, AUserId, false);
             }
         }
 
@@ -276,8 +279,8 @@ namespace Ict.Common.Controls
                 CollPanelHoster.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked) 
                     { OnItemActivation(ATaskList, ATaskListNode, AItemClicked); };
                 CollPanelHoster.LedgerChanged += delegate(int ALedgerNr, string ALedgerName) 
-                    { OnLedgerChanged(ALedgerNr, ALedgerName); };
-                
+                    { OnLedgerChanged(ALedgerNr, ALedgerName); };                
+                                
                 this.sptNavigation.Panel1.Controls.Add(CollPanelHoster);
 
                 return CollPanelHoster;
@@ -288,6 +291,29 @@ namespace Ict.Common.Controls
 
         #region Event Handling
 
+        private bool FolderCheckChanging(TRbtNavigationButton ANavigationButton)
+        {
+            bool ReturnValue = true;
+            
+            XmlNode ModuleXmlNode = (XmlNode)ANavigationButton.Tag;
+            
+            if (TXMLParser.GetAttribute(ModuleXmlNode, "DependsOnLedger").ToLower() == "true")
+            {
+                if (FCurrentLedger == LEDGERNUMBER_NO_ACCESS_TO_ANY_LEDGER) 
+                {
+                    MessageBox.Show(String.Format("Access to OpenPetra Module '{0}' is denied as you don't have access rights to any Ledger!\r\n\r\n" +
+                                    "Someone with OpenPetra System Administrator rights needs to grant you access rights to at least one Ledger " +
+                                    "for you to be able to work with this Module.", TXMLParser.GetAttribute(ModuleXmlNode, "Label")),
+                                    "Access to OpenPetra Module Denied",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    
+                    ReturnValue = false;
+                }
+            }
+            
+            return ReturnValue;
+        }
+        
         private void FolderCheckedChanged(object sender, EventArgs e)
         {
             bool PanelCreated;

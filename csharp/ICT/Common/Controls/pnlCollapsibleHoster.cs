@@ -298,7 +298,16 @@ namespace Ict.Common.Controls
         /// <returns>TaskList Instance that corresponds with <paramref name="ANumber" />.</returns>
         public TTaskList GetTaskListInstance(int ANumber)
         {
-            return GetCollapsiblePanelInstance(ANumber).TaskListInstance;
+            TPnlCollapsible CollPanelInstance = GetCollapsiblePanelInstance(ANumber);
+            
+            if (CollPanelInstance != null) 
+            {
+                return CollPanelInstance.TaskListInstance;    
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
