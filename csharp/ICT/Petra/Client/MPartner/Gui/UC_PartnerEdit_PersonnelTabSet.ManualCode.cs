@@ -333,6 +333,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (!ValidateAllData(false))
             {
+                //TODO WB: temporary lines as false may be returned from validation wrongly
+                if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
+                {
+                    return;
+                }
+                    
                 Boolean ReturnValue = true;
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
                     this.GetType(), null, true);

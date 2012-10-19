@@ -298,15 +298,14 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Context of the Verification Result (where the Verification Result originated from).
         /// </summary>
+        /// <remarks>This Property cannot be written to in order to avoid accidental overwriting. However,
+        /// by calling the Method <see cref="OverrideResultContext" /> the <see cref="ResultContext" />
+        /// <em>can</em> be modified.</remarks>
         public object ResultContext
         {
             get
             {
                 return FResultContext;
-            }
-            set
-            {
-                FResultContext = value;
             }
         }
 
@@ -415,6 +414,16 @@ namespace Ict.Common.Verification
             }
         }
 
+        /// <summary>
+        /// Overrides the ResultContext that the <see cref="TVerificationResult" /> was
+        /// originally populated with.
+        /// </summary>
+        /// <param name="ANewResultContext">New ResultText.</param>
+        public void OverrideResultContext(object ANewResultContext)
+        {
+            FResultContext = ANewResultContext;
+        }
+        
         /// <summary>
         /// Overrides the ResultText that the <see cref="TVerificationResult" /> was
         /// originally populated with.

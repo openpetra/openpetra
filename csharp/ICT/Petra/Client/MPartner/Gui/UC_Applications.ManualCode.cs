@@ -558,7 +558,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // picks up the right one and does not stop at the inner one and quits.
             foreach (TVerificationResult si in FPetraUtilsObject.VerificationResultCollection)
             {
-                si.ResultContext = this;
+                si.OverrideResultContext(this);
             }
         }
         
