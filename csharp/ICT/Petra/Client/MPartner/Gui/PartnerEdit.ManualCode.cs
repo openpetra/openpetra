@@ -1972,7 +1972,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     return;
                 }
             }
-            
+
             tbbViewPartnerData.Checked = true;
             tbbViewPersonnelData.Checked = false;
             tbbViewFinanceData.Checked = false;
@@ -1999,7 +1999,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     return;
                 }
             }
-            
+
             if (UserHasPersonnelAccess())
             {
                 if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))

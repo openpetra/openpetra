@@ -198,7 +198,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     btnEditOtherPartner.Enabled = true;
                 }
-                
+
                 if (ARow.RowState == DataRowState.Added)
                 {
                     txtPPartnerRelationshipPartnerKey.Enabled = true;
@@ -326,7 +326,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.DeletePPartnerRelationship();
         }
 
-        
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
@@ -393,14 +392,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 pnlDetails.Visible = false;
             }
         }
-        
+
         private void DoRecalculateScreenParts()
         {
             OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {
                     ScreenPart = TScreenPartEnum.spCounters
                 });
         }
-        
+
         /// <summary>
         /// button was pressed to edit other partner in relationship record
         /// </summary>

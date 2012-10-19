@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_LocalPersonnelData FUcoLocalPersonnelData;
 
         private LinkLabel FCurrentLinkLabel;
-        
+
         //the background color that all PanelHelpers will have
         private System.Drawing.Color PanelHelperBackGround = System.Drawing.Color.Yellow;
 
@@ -1115,13 +1115,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void IndividualDataItemSelected(object ASender, EventArgs e)
         {
-            if (   ASender != FCurrentLinkLabel
+            if ((ASender != FCurrentLinkLabel)
                 && !ValidateCurrentDataItem())
             {
                 // do not accept new link section if current one is not validated properly
                 return;
             }
-            
+
             /*
              * Raise the following Event to inform the base Form that we might be loading some fresh data.
              * We need to bypass the ChangeDetection routine while this happens.
@@ -1790,7 +1790,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // remember the currently selected link label
             FCurrentLinkLabel = ASender as LinkLabel;
-            
+
             /*
              * Raise the following Event to inform the base Form that we have finished loading fresh data.
              * We need to turn the ChangeDetection routine back on.
@@ -2087,11 +2087,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             llbPersonalAbilities.ResetBackColor();
         }
 
-        private bool ValidateCurrentDataItem ()
+        private bool ValidateCurrentDataItem()
         {
             if (FCurrentLinkLabel == llbOverview)
             {
-                
             }
             else if (FCurrentLinkLabel == llbCommitmentPeriods)
             {
@@ -2171,10 +2170,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            return true;            
-            
+            return true;
         }
-        
+
         #endregion
     }
 }

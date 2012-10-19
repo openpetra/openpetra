@@ -423,7 +423,7 @@ namespace Ict.Common.Verification
         {
             FResultContext = ANewResultContext;
         }
-        
+
         /// <summary>
         /// Overrides the ResultText that the <see cref="TVerificationResult" /> was
         /// originally populated with.

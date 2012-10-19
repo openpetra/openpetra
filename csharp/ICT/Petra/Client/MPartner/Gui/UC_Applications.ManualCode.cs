@@ -540,10 +540,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Row.EventOrFieldName = AEventOrFieldName;
             }
         }
-        
+
         private void ValidateDataDetailsManual(IndividualDataTDSPmGeneralApplicationRow ARow)
         {
-            if(IsEventApplication(ARow))
+            if (IsEventApplication(ARow))
             {
                 ucoApplicationEvent.ValidateAllData(false);
             }
@@ -551,7 +551,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ucoApplicationField.ValidateAllData(false);
             }
-            
+
             // Since this is a special case of OpenPetra UI (a UserControl in a UserControl)
             // this special treatment is introduced so verification can work. The ResultContext is modified
             // to the outer UserControl (this) so the validation (FindUserControlOrForm) actually
@@ -561,6 +561,5 @@ namespace Ict.Petra.Client.MPartner.Gui
                 si.OverrideResultContext(this);
             }
         }
-        
     }
 }

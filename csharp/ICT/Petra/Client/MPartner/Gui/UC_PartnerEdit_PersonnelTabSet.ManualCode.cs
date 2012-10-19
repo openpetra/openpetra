@@ -338,22 +338,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     return;
                 }
-                    
+
                 Boolean ReturnValue = true;
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
                     this.GetType(), null, true);
-    
+
                 if (ReturnValue)
                 {
                     // Remove a possibly shown Validation ToolTip as the data validation succeeded
                     FPetraUtilsObject.ValidationToolTip.RemoveAll();
                 }
-                
+
                 e.Cancel = true;
 
                 FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
             }
-            
         }
 
         /// <summary>

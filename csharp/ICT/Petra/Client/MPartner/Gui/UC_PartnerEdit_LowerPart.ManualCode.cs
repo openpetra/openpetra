@@ -380,23 +380,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         public bool ValidateCurrentModuleTabGroupData()
         {
             bool ReturnValue = true;
-            
+
             FPetraUtilsObject.VerificationResultCollection.Clear();
-            
+
             switch (CurrentModuleTabGroup)
             {
                 case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
                     ucoPartnerTabSet.ValidateAllData(false);
                     break;
-                    
+
                 case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
                     ucoPersonnelTabSet.ValidateAllData(false);
                     break;
-                    
+
                 default:
                     break;
             }
-            
+
             ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
                 this.GetType(), null, true);
 
@@ -405,11 +405,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Remove a possibly shown Validation ToolTip as the data validation succeeded
                 FPetraUtilsObject.ValidationToolTip.RemoveAll();
             }
-            
+
             return ReturnValue;
         }
-       
-        
+
         /// <summary>
         /// Gets the data from all controls on this TabControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls

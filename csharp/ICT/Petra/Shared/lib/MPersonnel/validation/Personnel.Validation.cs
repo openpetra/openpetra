@@ -805,7 +805,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         ValidationControlsData.ValidationControlLabel,
                         TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctNoFutureDate,
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-    
+
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
