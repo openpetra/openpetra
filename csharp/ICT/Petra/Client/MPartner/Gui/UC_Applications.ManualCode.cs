@@ -336,23 +336,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 btnDelete.Enabled = true;
                 pnlDetails.Visible = true;
-            }
 
-            if (IsEventApplication(ARow))
-            {
-                PmShortTermApplicationRow EventApplicationRow;
-                EventApplicationRow = GetEventApplicationRow(ARow);
-                pnlApplicationEvent.Visible = true;
-                pnlApplicationField.Visible = false;
-                ucoApplicationEvent.ShowDetails(ARow, EventApplicationRow);
-            }
-            else
-            {
-                PmYearProgramApplicationRow FieldApplicationRow;
-                FieldApplicationRow = GetFieldApplicationRow(ARow);
-                pnlApplicationEvent.Visible = false;
-                pnlApplicationField.Visible = true;
-                ucoApplicationField.ShowDetails(ARow, FieldApplicationRow);
+                if (IsEventApplication(ARow))
+                {
+                    PmShortTermApplicationRow EventApplicationRow;
+                    EventApplicationRow = GetEventApplicationRow(ARow);
+                    pnlApplicationEvent.Visible = true;
+                    pnlApplicationField.Visible = false;
+                    ucoApplicationEvent.ShowDetails(ARow, EventApplicationRow);
+                }
+                else
+                {
+                    PmYearProgramApplicationRow FieldApplicationRow;
+                    FieldApplicationRow = GetFieldApplicationRow(ARow);
+                    pnlApplicationEvent.Visible = false;
+                    pnlApplicationField.Visible = true;
+                    ucoApplicationField.ShowDetails(ARow, FieldApplicationRow);
+                }
             }
 
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
@@ -538,6 +538,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (Row != null)
             {
                 Row.EventOrFieldName = AEventOrFieldName;
+            }
+        }
+
+        private void ValidateDataDetailsManual(IndividualDataTDSPmGeneralApplicationRow ARow)
+        {
+            if (IsEventApplication(ARow))
+            {
+                ucoApplicationEvent.ValidateAllData(false);
+            }
+            else
+            {
+                ucoApplicationField.ValidateAllData(false);
+            }
+
+            // Since this is a special case of OpenPetra UI (a UserControl in a UserControl)
+            // this special treatment is introduced so verification can work. The ResultContext is modified
+            // to the outer UserControl (this) so the validation (FindUserControlOrForm) actually
+            // picks up the right one and does not stop at the inner one and quits.
+            foreach (TVerificationResult si in FPetraUtilsObject.VerificationResultCollection)
+            {
+                si.OverrideResultContext(this);
             }
         }
     }

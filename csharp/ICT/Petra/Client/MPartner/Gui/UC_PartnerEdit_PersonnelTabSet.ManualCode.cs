@@ -331,8 +331,24 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!ValidateAllData(true, FCurrentUserControl))
+            if (!ValidateAllData(false))
             {
+                //TODO WB: temporary lines as false may be returned from validation wrongly
+                if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
+                {
+                    return;
+                }
+
+                Boolean ReturnValue = true;
+                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                    this.GetType(), null, true);
+
+                if (ReturnValue)
+                {
+                    // Remove a possibly shown Validation ToolTip as the data validation succeeded
+                    FPetraUtilsObject.ValidationToolTip.RemoveAll();
+                }
+
                 e.Cancel = true;
 
                 FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;

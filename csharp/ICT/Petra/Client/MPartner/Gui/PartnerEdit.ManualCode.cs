@@ -1964,6 +1964,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ViewPartnerData(System.Object sender, System.EventArgs e)
         {
+            // if tab group is about to be changed make sure that validation is ok
+            if (ucoLowerPart.CurrentModuleTabGroup != TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
+            {
+                if (!ucoLowerPart.ValidateCurrentModuleTabGroupData())
+                {
+                    return;
+                }
+            }
+
             tbbViewPartnerData.Checked = true;
             tbbViewPersonnelData.Checked = false;
             tbbViewFinanceData.Checked = false;
@@ -1982,6 +1991,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ViewPersonnelData(System.Object sender, System.EventArgs e)
         {
+            // if tab group is about to be changed make sure that validation is ok
+            if (ucoLowerPart.CurrentModuleTabGroup != TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel)
+            {
+                if (!ucoLowerPart.ValidateCurrentModuleTabGroupData())
+                {
+                    return;
+                }
+            }
+
             if (UserHasPersonnelAccess())
             {
                 if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))

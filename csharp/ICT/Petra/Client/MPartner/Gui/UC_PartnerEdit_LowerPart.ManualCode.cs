@@ -374,6 +374,42 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Performs data validation for the currently displayed module tab group
+        /// </summary>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateCurrentModuleTabGroupData()
+        {
+            bool ReturnValue = true;
+
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
+            switch (CurrentModuleTabGroup)
+            {
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
+                    ucoPartnerTabSet.ValidateAllData(false);
+                    break;
+
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
+                    ucoPersonnelTabSet.ValidateAllData(false);
+                    break;
+
+                default:
+                    break;
+            }
+
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType(), null, true);
+
+            if (ReturnValue)
+            {
+                // Remove a possibly shown Validation ToolTip as the data validation succeeded
+                FPetraUtilsObject.ValidationToolTip.RemoveAll();
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Gets the data from all controls on this TabControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls
         /// are mapped.

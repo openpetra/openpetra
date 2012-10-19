@@ -113,8 +113,8 @@ namespace Ict.Petra.Client.MCommon.Gui
             {
                 this.DialogResult = DialogResult.OK;
 
-                FSelectedUnitName = (String)((DataRowView)grdEvent.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerShortNameDBName()];
-                FSelectedOutreachCode = (String)((DataRowView)grdEvent.SelectedDataRows[0]).Row[PUnitTable.GetOutreachCodeDBName()];
+                FSelectedUnitName = (((DataRowView)grdEvent.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerShortNameDBName()]).ToString();
+                FSelectedOutreachCode = (((DataRowView)grdEvent.SelectedDataRows[0]).Row[PUnitTable.GetOutreachCodeDBName()]).ToString();
                 String PartnerKey = ((DataRowView)grdEvent.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerKeyDBName()].ToString();
                 FSelectedPartnerKey = Convert.ToInt64(PartnerKey);
             }
