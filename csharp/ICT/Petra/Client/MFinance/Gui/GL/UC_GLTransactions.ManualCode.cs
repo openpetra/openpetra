@@ -28,11 +28,13 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
+using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Validation;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
@@ -453,8 +455,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ControlHasChanged(System.Object sender, EventArgs e)
         {
-            SourceGrid.RowEventArgs egrid = new SourceGrid.RowEventArgs(-10);
-            FocusedRowChanged(sender, egrid);
+            //TODO: Find out why these were put here as they stop the field updates from working
+            //SourceGrid.RowEventArgs egrid = new SourceGrid.RowEventArgs(-10);
+            //FocusedRowChanged(sender, egrid);
         }
 
         /// <summary>
@@ -554,6 +557,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ProcessAnalysisAttributes()
         {
             ((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes(cmbDetailAccountCode.GetSelectedString());
+        }
+
+        private void ValidateDataDetailsManual(ATransactionRow ARow)
+        {
+            //TODO: Code for manual data validation. Change below as needed
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+//            if (ARow != null)
+//            {
+//				//some local validation e.g.
+//              if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+//                {
+//                    txtDetailHashTotal.NumberValueDecimal = 0m;
+//                    ARow.HashTotal = 0m;
+//                }
+//            }
+
+//			TSharedFinanceValidation_GL.ValidateGLDetailManual(this, ARow, ref VerificationResultCollection,
+//                FValidationControlsDict);
         }
     }
 }
