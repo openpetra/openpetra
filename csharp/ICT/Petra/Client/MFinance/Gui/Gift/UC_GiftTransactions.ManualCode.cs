@@ -56,6 +56,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int64 FLastDonor = -1;
         private bool FActiveOnly = true;
         private AGiftBatchRow FBatchRow = null;
+        private bool FGLEffectivePeriodChanged = false;
 
         /// <summary>
         /// load the gifts into the grid
@@ -82,6 +83,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Same as previously selected
                 if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
                 {
+                    if (FGLEffectivePeriodChanged)
+                    {
+                        FGLEffectivePeriodChanged = false;
+                        GetSelectedDetailRow().DateEntered = FBatchRow.GlEffectiveDate;
+                        dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
+                    }
+
                     GetDetailsFromControls(GetSelectedDetailRow());
 
                     if (AFromTabClick)
@@ -92,7 +100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 UpdateControlsProtection();
 
-                if (FExchangeRateToBase != GetBatchRow().ExchangeRateToBase)
+                if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (FExchangeRateToBase != GetBatchRow().ExchangeRateToBase))
                 {
                     UpdateBaseAmount(false);
                 }
@@ -486,6 +494,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             Decimal sum = 0;
             Decimal sumBatch = 0;
+            Int32 GiftNumber = 0;
+            bool disableSaveButton = false;
+
+            if (FPetraUtilsObject == null)
+            {
+                return;
+            }
+
+            //Sometimes a change in this unbound textbox causes a data changed condition
+            disableSaveButton = !FPetraUtilsObject.HasChanges;
 
             if (FPreviouslySelectedDetailRow == null)
             {
@@ -497,48 +515,51 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FBatchRow.BatchTotal = 0;
                 }
-
-                return;
             }
-
-            Int32 GiftNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
-
-            foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
+            else
             {
-                if (gdr.RowState != DataRowState.Deleted)
+                GiftNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
+
+                foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
                 {
-                    if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
+                    if (gdr.RowState != DataRowState.Deleted)
                     {
-                        if (gdr.GiftTransactionNumber == GiftNumber)
+                        if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
                         {
-                            if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
+                            if (gdr.GiftTransactionNumber == GiftNumber)
                             {
-                                sum += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
-                                sumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                                if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
+                                {
+                                    sum += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                                    sumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+                                }
+                                else
+                                {
+                                    sum += gdr.GiftTransactionAmount;
+                                    sumBatch += gdr.GiftTransactionAmount;
+                                }
                             }
                             else
                             {
-                                sum += gdr.GiftTransactionAmount;
                                 sumBatch += gdr.GiftTransactionAmount;
                             }
                         }
-                        else
-                        {
-                            sumBatch += gdr.GiftTransactionAmount;
-                        }
                     }
                 }
+
+                txtGiftTotal.NumberValueDecimal = sum;
+                txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
+                txtGiftTotal.ReadOnly = true;
+                //this is here because at the moment the generator does not generate this
+                txtBatchTotal.NumberValueDecimal = sumBatch;
+                //Now we look at the batch and update the batch data
+                FBatchRow.BatchTotal = sumBatch;
             }
 
-            txtGiftTotal.NumberValueDecimal = sum;
-            txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
-            txtGiftTotal.ReadOnly = true;
-            //this is here because at the moment the generator does not generate this
-            txtBatchTotal.NumberValueDecimal = sumBatch;
-            //Now we look at the batch and update the batch data
-//            AGiftBatchRow batchRow = GetBatchRow();
-//            batchRow.BatchTotal = sumBatch;
-            FBatchRow.BatchTotal = sumBatch;
+            if (disableSaveButton && FPetraUtilsObject.HasChanges)
+            {
+                FPetraUtilsObject.DisableSaveButton();
+            }
         }
 
         /// reset the control
@@ -787,18 +808,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
                 SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
-                //int newRowIndex = FMainDS.AGiftDetail.Rows.Count - 1;
-
-                //SelectDetailRowByDataTableIndex(newRowIndex);
-                //InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-
-                //FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                //ShowDetails(FPreviouslySelectedDetailRow);
-
-                //GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
-
-                ////Need to redo this just in case the sorting is not on primary key
-                //SelectDetailRowByDataTableIndex(newRowIndex);
             }
         }
 
@@ -924,6 +933,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
 
+                giftRow.DateEntered = FBatchRow.GlEffectiveDate;
                 giftRow.LedgerNumber = FBatchRow.LedgerNumber;
                 giftRow.BatchNumber = FBatchRow.BatchNumber;
                 giftRow.GiftTransactionNumber = FBatchRow.LastGiftNumber + 1;
@@ -1183,28 +1193,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// update the transaction method payment from outside
         /// </summary>
-        public void UpdateDateEntered()
+        /// <param name="ABatchRow"></param>
+        public void UpdateDateEntered(AGiftBatchRow ABatchRow)
         {
             Int32 ledgerNumber;
             Int32 batchNumber;
-
             DateTime batchEffectiveDate;
 
-            if (!((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
-            {
-                return;
-            }
-
-            FBatchRow = GetBatchRow();
-
-            if (FBatchRow == null)
-            {
-                FBatchRow = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().GetSelectedDetailRow();
-            }
-
-            ledgerNumber = FBatchRow.LedgerNumber;
-            batchNumber = FBatchRow.BatchNumber;
-            batchEffectiveDate = FBatchRow.GlEffectiveDate;
+            ledgerNumber = ABatchRow.LedgerNumber;
+            batchNumber = ABatchRow.BatchNumber;
+            batchEffectiveDate = ABatchRow.GlEffectiveDate;
 
             if (FMainDS.AGift.Rows.Count == 0)
             {
@@ -1212,12 +1210,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
+                FGLEffectivePeriodChanged = true;
                 //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
-                if (FPreviouslySelectedDetailRow != null)
-                {
-                    FPreviouslySelectedDetailRow.DateEntered = batchEffectiveDate;
-                    dtpDateEntered.Date = batchEffectiveDate;
-                }
+                GetSelectedDetailRow().DateEntered = batchEffectiveDate;
             }
 
             //Update all transactions
@@ -1227,6 +1222,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     giftRow.DateEntered = batchEffectiveDate;
                 }
+            }
+
+            if (FGLEffectivePeriodChanged)
+            {
+                ShowDetails();
             }
         }
 
@@ -1243,7 +1243,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateBatchStatus()
         {
+            //Sometimes a change in this unbound textbox causes a data changed condition
+            bool disableSave = !FPetraUtilsObject.HasChanges;
+
             txtBatchStatus.Text = FBatchStatus;
+
+            if (disableSave && FPetraUtilsObject.HasChanges)
+            {
+                FPetraUtilsObject.DisableSaveButton();
+            }
         }
 
         /// <summary>

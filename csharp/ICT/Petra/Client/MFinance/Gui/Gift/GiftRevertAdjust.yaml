@@ -28,7 +28,7 @@ RootNode:
             Controls:
                 Row0: [btnOK, btnClose]
         btnOK:
-            Action: actNew
+            Action: actOK
         btnClose: 
             Action: actClose
         grdDetails:
