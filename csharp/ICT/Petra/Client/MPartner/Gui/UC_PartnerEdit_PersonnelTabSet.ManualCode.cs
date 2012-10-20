@@ -220,6 +220,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Private Methods
 
+        private void DummyMethod()
+        {
+            // only reason for this method is to avoid warnings when compiling this class to say
+            // that FCurrentUserControl is assigned but never used
+            FCurrentUserControl.Focus();
+        }
+        
         partial void PreInitUserControl(UserControl AUserControl)
         {
             if (AUserControl == FUcoIndividualData)
