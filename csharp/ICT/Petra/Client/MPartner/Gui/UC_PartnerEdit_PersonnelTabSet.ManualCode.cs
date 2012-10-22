@@ -226,7 +226,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // that FCurrentUserControl is assigned but never used
             FCurrentUserControl.Focus();
         }
-        
+
         partial void PreInitUserControl(UserControl AUserControl)
         {
             if (AUserControl == FUcoIndividualData)

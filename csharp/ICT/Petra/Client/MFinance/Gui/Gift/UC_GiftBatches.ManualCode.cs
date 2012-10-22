@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.DisableDataChangedEvent();
                 LoadBatches(FLedgerNumber);
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().RefreshAll();
             }
             finally
             {
@@ -202,10 +203,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             ShowData();
+            ShowDetails(GetCurrentBatchRow());
 
             FBatchLoaded = true;
-
-            ShowDetails(GetCurrentBatchRow());
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -526,12 +526,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateChangeableStatus();
 
             RefreshCurrencyAndExchangeRate();
-
-//            FPetraUtilsObject.DetailProtectedMode =
-//                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
-//            ((TFrmGiftBatch)ParentForm).LoadTransactions(
-//                ARow.LedgerNumber,
-//                ARow.BatchNumber);
         }
 
         private Boolean ViewMode
@@ -855,8 +849,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Verifications = new TVerificationResultCollection();
 
-            Thread t = new Thread(() => PostGiftBatch(out Verifications));
-            t.Start();
+            Thread postingThread = new Thread(() => PostGiftBatch(out Verifications));
+            postingThread.Start();
 
             TProgressDialog dialog = new TProgressDialog();
 
@@ -1040,13 +1034,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            if (ARow != null)
+            if (ARow == null)
             {
-                if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
-                {
-                    txtDetailHashTotal.NumberValueDecimal = 0m;
-                    ARow.HashTotal = 0m;
-                }
+                return;
+            }
+
+            if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+            {
+                txtDetailHashTotal.NumberValueDecimal = 0m;
+                ARow.HashTotal = 0m;
             }
 
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
