@@ -41,7 +41,9 @@ namespace Ict.Common.Controls
     public partial class TLstTasks : UserControl
     {
         private static string FUserId;
-        private static CheckAccessPermissionDelegate FHasAccessPermission;
+        private static TLstFolderNavigation.CheckAccessPermissionDelegate FHasAccessPermission;
+        private static int FCurrentLedger = -1;
+
         private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
         private TaskAppearance FTaskAppearance;
         private bool FSingleClickExecution = false;
@@ -116,7 +118,7 @@ namespace Ict.Common.Controls
                             TaskAppearance.staLargeTile ? TIconCache.TIconSize.is32by32 : TIconCache.TIconSize.is16by16);
                         SingleTask.RequestForDifferentIconSize += new TRequestForDifferentIconSize(SingleTask_RequestForDifferentIconSize);
 
-                        if (!FHasAccessPermission(TaskGroupNode, FUserId))
+                        if (!FHasAccessPermission(TaskGroupNode, FUserId, false))
                         {
                             SingleTask.Enabled = false;
                         }
@@ -144,7 +146,7 @@ namespace Ict.Common.Controls
                                 TaskAppearance.staLargeTile ? TIconCache.TIconSize.is32by32 : TIconCache.TIconSize.is16by16);
                             SingleTask.RequestForDifferentIconSize += new TRequestForDifferentIconSize(SingleTask_RequestForDifferentIconSize);
 
-                            if (!FHasAccessPermission(TaskNode, FUserId))
+                            if (!FHasAccessPermission(TaskNode, FUserId, false))
                             {
                                 SingleTask.Enabled = false;
                             }
@@ -216,15 +218,6 @@ namespace Ict.Common.Controls
 
             return PathStr;
         }
-
-        #endregion
-
-        #region Delegates
-
-        /// <summary>
-        /// this function checks if the user has access to the navigation node
-        /// </summary>
-        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
 
         #endregion
 
@@ -335,6 +328,22 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// The currently selected Ledger
+        /// </summary>
+        public static int CurrentLedger
+        {
+            get
+            {
+                return FCurrentLedger;
+            }
+
+            set
+            {
+                FCurrentLedger = value;
+            }
+        }
+
         #endregion
 
         #region Events
@@ -358,7 +367,7 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="AUserId"></param>
         /// <param name="AHasAccessPermission"></param>
-        public static void Init(string AUserId, CheckAccessPermissionDelegate AHasAccessPermission)
+        public static void Init(string AUserId, TLstFolderNavigation.CheckAccessPermissionDelegate AHasAccessPermission)
         {
             FUserId = AUserId;
             FHasAccessPermission = AHasAccessPermission;
@@ -370,7 +379,7 @@ namespace Ict.Common.Controls
         /// <returns>The error or status message.</returns>
         public static string ExecuteAction(XmlNode node, Form AParentWindow)
         {
-            if (!FHasAccessPermission(node, FUserId))
+            if (!FHasAccessPermission(node, FUserId, true))
             {
                 return Catalog.GetString("Sorry, you don't have enough permissions to do this");
             }
@@ -465,6 +474,11 @@ namespace Ict.Common.Controls
                         }
                     }
 
+                    if (SomeParentDependsOnLedger(node))
+                    {
+                        parameters.Add((object)FCurrentLedger);
+                    }
+
                     method.Invoke(null, parameters.ToArray());
                 }
                 else
@@ -543,6 +557,14 @@ namespace Ict.Common.Controls
                             prop.SetValue(screen, obj, null);
                         }
                     }
+
+                    if (prop.Name == "LedgerNumber")
+                    {
+                        if (SomeParentDependsOnLedger(node))
+                        {
+                            prop.SetValue(screen, (object)FCurrentLedger, null);
+                        }
+                    }
                 }
 
                 MethodInfo method = classType.GetMethod("Show", BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Any,
@@ -573,6 +595,49 @@ namespace Ict.Common.Controls
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Recursively check all Node's ParentNodes for the 'DependsOnLedger' Attribute to be true.
+        /// </summary>
+        /// <param name="ANode">Node whose ParentNodes are to be checked.</param>
+        /// <returns>True if any of <paramref name="ANode" />' ParentNodes has got the 'DependsOnLedger' Attribute
+        /// set to true, otherwise false.</returns>
+        private static bool SomeParentDependsOnLedger(XmlNode ANode)
+        {
+            XmlNode InspectNode = ANode.ParentNode;
+
+            if (InspectNode != null)
+            {
+                if (InspectNode.Attributes.Count > 0)
+                {
+                    if (InspectNode.Attributes["DependsOnLedger"] != null)
+                    {
+                        return InspectNode.Attributes["DependsOnLedger"].Value == "true";
+                    }
+                    else
+                    {
+                        return SomeParentDependsOnLedger(InspectNode);
+                    }
+                }
+                else
+                {
+                    if (InspectNode.Name != TYml2Xml.ROOTNODEINTERNAL)
+                    {
+                        return SomeParentDependsOnLedger(InspectNode);
+                    }
+                    else
+                    {
+                        // We have reached the top of the 'sensible' ParentNodes and haven't found the 'DependsOnLedger' Attribute
+                        // to be true on any of the lower-level ParentNodes
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         void ListResize(object sender, EventArgs e)
         {

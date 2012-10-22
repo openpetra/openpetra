@@ -855,6 +855,18 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// loads an yml document into one xml document; then returns only the part meant
+        /// to be passed directly to a TaskList constructor as the TaskList root.
+        /// </summary>
+        /// <returns></returns>
+        public XmlNode ParseYML2TaskListRoot()
+        {
+            XmlDocument xmldoc = ParseYML2XML();
+
+            return (XmlNode)xmldoc.FirstChild.NextSibling.FirstChild;
+        }
+
+        /// <summary>
         /// merges several yml documents into one xml document, and maintains their inheritance hierarchy
         /// for nodes that have the same name
         /// </summary>

@@ -1258,6 +1258,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                          AMotivationDetailTable.GetTableDBName(),
                          AMotivationGroupTable.GetTableDBName(),
+                         AFeesReceivableTable.GetTableDBName(),
+                         AFeesPayableTable.GetTableDBName(),
                          ACostCentreTable.GetTableDBName(),
                          ATransactionTypeTable.GetTableDBName(),
                          AAccountPropertyTable.GetTableDBName(),
