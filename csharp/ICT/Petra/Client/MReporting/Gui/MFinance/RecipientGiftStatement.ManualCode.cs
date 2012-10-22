@@ -50,13 +50,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_recipientkey", txtRecipient.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);
 
-            DateTime FromDateThisYear = new DateTime(dtpToDate.Date.Value.Year, 1, 1);
-            DateTime ToDatePreviousYear = new DateTime(dtpToDate.Date.Value.Year - 1, 12, 31);
-            DateTime FromDatePreviousYear = new DateTime(dtpToDate.Date.Value.Year - 1, 1, 1);
+            if (dtpToDate.Date.HasValue)
+            {
+                Int32 ToDateYear = dtpToDate.Date.Value.Year;
+                DateTime FromDateThisYear = new DateTime(ToDateYear, 1, 1);
+                DateTime ToDatePreviousYear = new DateTime(ToDateYear - 1, 12, 31);
+                DateTime FromDatePreviousYear = new DateTime(ToDateYear - 1, 1, 1);
 
-            ACalc.AddParameter("param_from_date_this_year", FromDateThisYear);
-            ACalc.AddParameter("param_to_date_previous_year", ToDatePreviousYear);
-            ACalc.AddParameter("param_from_date_previous_year", FromDatePreviousYear);
+                ACalc.AddParameter("param_from_date_this_year", FromDateThisYear);
+                ACalc.AddParameter("param_to_date_previous_year", ToDatePreviousYear);
+                ACalc.AddParameter("param_from_date_previous_year", FromDatePreviousYear);
+            }
 
             int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
 

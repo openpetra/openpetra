@@ -411,16 +411,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 Int32 periodNumber = 0;
                 Int32 yearNumber = 0;
                 DateTime dateValue;
-
-                string aDate = dtpDetailGlEffectiveDate.Date.ToString();
+                string aDate = dtpDetailGlEffectiveDate.Text;
 
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
+                    FPreviouslySelectedDetailRow.GlEffectiveDate = dateValue;
+
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
                     {
                         if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+
+                            //Period has changed, so update transactions DateEntered
+                            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateDateEntered(FPreviouslySelectedDetailRow);
 
                             if (cmbYear.SelectedIndex != 0)
                             {
@@ -430,9 +434,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             {
                                 cmbPeriod.SelectedIndex = 0;
                             }
-
-                            //Period has changed, so update transactions DateEntered
-                            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateDateEntered();
                         }
                     }
                 }
@@ -588,6 +589,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.CreateNewAGiftBatch();
             txtDetailBatchDescription.Focus();
 
+            FPreviouslySelectedDetailRow.GlEffectiveDate = FDefaultDate;
             dtpDetailGlEffectiveDate.Date = FDefaultDate;
 
             if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
@@ -1037,6 +1039,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ValidateDataDetailsManual(AGiftBatchRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            if (ARow != null)
+            {
+                if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+                {
+                    txtDetailHashTotal.NumberValueDecimal = 0m;
+                    ARow.HashTotal = 0m;
+                }
+            }
 
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);

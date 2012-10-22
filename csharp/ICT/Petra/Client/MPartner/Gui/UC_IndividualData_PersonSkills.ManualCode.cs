@@ -105,7 +105,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
-            this.CreateNewPmPersonSkill();
+            if (this.CreateNewPmPersonSkill())
+            {
+                cmbSkillCode.Focus();
+            }
         }
 
         private void NewRowManual(ref PmPersonSkillRow ARow)
