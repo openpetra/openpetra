@@ -41,7 +41,7 @@ namespace Ict.Testing.ControlTestBench
         private static void Main(string[] args)
         {
             new TLogging("ControlTestBench.log");
-            
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm3());

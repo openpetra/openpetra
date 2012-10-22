@@ -862,7 +862,8 @@ namespace Ict.Common.IO
         public XmlNode ParseYML2TaskListRoot()
         {
             XmlDocument xmldoc = ParseYML2XML();
-            return (XmlNode) xmldoc.FirstChild.NextSibling.FirstChild;
+
+            return (XmlNode)xmldoc.FirstChild.NextSibling.FirstChild;
         }
 
         /// <summary>

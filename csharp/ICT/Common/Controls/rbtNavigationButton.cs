@@ -82,7 +82,7 @@ namespace Ict.Common.Controls
             this.Enter += new System.EventHandler(this.PanelEnter);
             this.Leave += new System.EventHandler(this.PanelLeave);
             this.Click += new System.EventHandler(this.PanelClick);
-            
+
             FCheckChangingDelegate = ACheckChangingDelegate;
         }
 
@@ -108,22 +108,22 @@ namespace Ict.Common.Controls
             {
                 return FChecked;
             }
-            
+
             set
             {
                 bool CheckChangeOK = true;
-                
+
                 if (FChecked != value)
                 {
-                    if (FCheckChangingDelegate != null) 
+                    if (FCheckChangingDelegate != null)
                     {
-                        CheckChangeOK = FCheckChangingDelegate(this);    
-                    }                    
-                    
-                    if (CheckChangeOK) 
+                        CheckChangeOK = FCheckChangingDelegate(this);
+                    }
+
+                    if (CheckChangeOK)
                     {
                         FChecked = value;
-    
+
                         if (FChecked)
                         {
                             // uncheck all other sibling controls of type TRbtNavigationButton
@@ -135,9 +135,9 @@ namespace Ict.Common.Controls
                                 }
                             }
                         }
-    
+
                         Refresh();
-    
+
                         if (CheckedChanged != null)
                         {
                             CheckedChanged(this, null);
@@ -162,7 +162,7 @@ namespace Ict.Common.Controls
         /// Triggered when the Checked state is changing.
         /// </summary>
         public delegate bool CheckedChanging(TRbtNavigationButton ASender);
-        
+
         /// <summary>
         /// Triggered when the Checked state has changed.
         /// </summary>

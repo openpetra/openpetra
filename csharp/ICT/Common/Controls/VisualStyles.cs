@@ -123,7 +123,7 @@ namespace Ict.Common.Controls
                 return InternalCollapsedInfoTextFontColour;
             }
         }
-        
+
         private Color InternalContentActivatedFontColour;
         /// <summary>The ContentActivatedFontColour property gets the value of the InternalContentActivatedFontColour</summary>
         /// <value> The ContentActivatedFontColour property represents the colour of activated content text</value>
@@ -163,40 +163,40 @@ namespace Ict.Common.Controls
                 return InternalContentActivatedFontUnderline;
             }
         }
-        
+
         private int InternalTitlePaddingTop;
         /// <summary>The TitlePaddingTop property gets the value of the InternalTitlePaddingTop</summary>
-        /// <value> The TitlePaddingTop property represents the padding in pixels that is added before the Title (from the top)</value>       
+        /// <value> The TitlePaddingTop property represents the padding in pixels that is added before the Title (from the top)</value>
         public int TitlePaddingTop {
             get
             {
                 return InternalTitlePaddingTop;
             }
         }
-        
+
         private int InternalTitlePaddingLeft;
         /// <summary>The TitlePaddingLeft property gets the value of the InternalTitlePaddingLeft</summary>
-        /// <value> The TitlePaddingLeft property represents the padding in pixels that is added before the Title (from the left)</value>       
+        /// <value> The TitlePaddingLeft property represents the padding in pixels that is added before the Title (from the left)</value>
         public int TitlePaddingLeft {
             get
             {
                 return InternalTitlePaddingLeft;
             }
         }
-        
+
         private int InternalTitlePaddingBottom;
         /// <summary>The TitlePaddingBottom property gets the value of the InternalTitlePaddingBottom</summary>
-        /// <value> The TitlePaddingBottom property represents the padding in pixels that is added after the Title (at the bottom)</value>       
+        /// <value> The TitlePaddingBottom property represents the padding in pixels that is added after the Title (at the bottom)</value>
         public int TitlePaddingBottom {
             get
             {
                 return InternalTitlePaddingBottom;
             }
         }
-        
+
         private int InternalTitlePaddingRight;
         /// <summary>The TitlePaddingRight property gets the value of the InternalTitlePaddingRight</summary>
-        /// <value> The TitlePaddingRight property represents the padding in pixels that is added after the Title (to the right)</value>       
+        /// <value> The TitlePaddingRight property represents the padding in pixels that is added after the Title (to the right)</value>
         public int TitlePaddingRight {
             get
             {
@@ -206,44 +206,44 @@ namespace Ict.Common.Controls
 
         private int InternalContentPaddingTop;
         /// <summary>The ContentPaddingTop property gets the value of the InternalContentPaddingTop</summary>
-        /// <value> The ContentPaddingTop property represents the padding in pixels that is added before the content (from the top)</value>       
+        /// <value> The ContentPaddingTop property represents the padding in pixels that is added before the content (from the top)</value>
         public int ContentPaddingTop {
             get
             {
                 return InternalContentPaddingTop;
             }
         }
-        
+
         private int InternalContentPaddingLeft;
         /// <summary>The ContentPaddingLeft property gets the value of the InternalContentPaddingLeft</summary>
-        /// <value> The ContentPaddingLeft property represents the padding in pixels that is added before the content (from the left)</value>       
+        /// <value> The ContentPaddingLeft property represents the padding in pixels that is added before the content (from the left)</value>
         public int ContentPaddingLeft {
             get
             {
                 return InternalContentPaddingLeft;
             }
         }
-        
+
         private int InternalContentPaddingBottom;
         /// <summary>The ContentPaddingBottom property gets the value of the InternalContentPaddingBottom</summary>
-        /// <value> The ContentPaddingBottom property represents the padding in pixels that is added after the content (at the bottom)</value>       
+        /// <value> The ContentPaddingBottom property represents the padding in pixels that is added after the content (at the bottom)</value>
         public int ContentPaddingBottom {
             get
             {
                 return InternalContentPaddingBottom;
             }
         }
-        
+
         private int InternalContentPaddingRight;
         /// <summary>The ContentPaddingRight property gets the value of the InternalContentPaddingRight</summary>
-        /// <value> The ContentPaddingRight property represents the padding in pixels that is added after the content (to the right)</value>       
+        /// <value> The ContentPaddingRight property represents the padding in pixels that is added after the content (to the right)</value>
         public int ContentPaddingRight {
             get
             {
                 return InternalContentPaddingRight;
             }
         }
-        
+
         private Color InternalContentHoverFontColour;
         /// <summary>The ContentHoverFontColour property gets the value of the InternalContentHoverFontColour</summary>
         /// <value> The ContentHOverFontColour property represents the colour of the content text when the mouse hovers over it</value>
@@ -254,7 +254,7 @@ namespace Ict.Common.Controls
             }
         }
 
-        
+
         private Color InternalCollapsedInfoTextFontColourHover;
         /// <summary>The CollapsedInfoTextFontColourHover property gets the value of the InternalCollapsedInfoTextFontColourHover</summary>
         /// <value> The CollapsedInfoTextFontColourHover property represents the colour of the Collapsed Info Text  when the mouse hovers over it</value>
@@ -295,7 +295,7 @@ namespace Ict.Common.Controls
                 return InternalCollapsedInfoBackgroundColour;
             }
         }
-        
+
         private Color InternalContentHoverBackgroundColour;
         /// <summary>The ContentHoverBackgroundColour property gets the value of the InternalContentHoverBackgroundColour</summary>
         /// <value> The ContentHoverBackgroundColour property represent the content's background colour when the mouse hovers over it</value>
@@ -416,7 +416,7 @@ namespace Ict.Common.Controls
                 return InternalCollapsedInfoGradientMode;
             }
         }
-        
+
         //Layout Variables
         private int InternalTaskIndentation;
         /// <summary> The TaskIndentation property gets the value of the InternalTaskIndentation</summary>
@@ -437,7 +437,7 @@ namespace Ict.Common.Controls
                 return InternalTaskHeight;
             }
         }
-        
+
         private int InternalTitleHeightAdjustment;
         /// <summary> The TitleHeightAdjustment property gets the value of the InternalTitleHeightAdjustment</summary>
         /// <value> The TitleHeightAdjustment property allows adjustment of the height of the Title</value>
@@ -446,30 +446,30 @@ namespace Ict.Common.Controls
             {
                 return InternalTitleHeightAdjustment;
             }
-        }        
-        
+        }
+
         private int InternalCollapsiblePanelDistance = -1;
         /// <summary> The CollapsiblePanelDistance property gets the value of the InternalCollapsiblePanelDistance</summary>
-        /// <value> The CollapsiblePanelDistance property allows adjustment of the distance between adjacent Collapsible Panels 
+        /// <value> The CollapsiblePanelDistance property allows adjustment of the distance between adjacent Collapsible Panels
         /// in a pnlCollapsiblePanelHoster Control</value>
         public int CollapsiblePanelDistance {
             get
             {
                 return InternalCollapsiblePanelDistance;
             }
-        }              
-        
+        }
+
         private int InternalCollapsiblePanelPadding = 0;
         /// <summary> The CollapsiblePanelPadding property gets the value of the InternalCollapsiblePanelPadding</summary>
-        /// <value> The CollapsiblePanelPadding property allows adjustment of the distance between the Collapsible Panels 
+        /// <value> The CollapsiblePanelPadding property allows adjustment of the distance between the Collapsible Panels
         /// and the edges of the pnlCollapsiblePanelHoster Control</value>
         public int CollapsiblePanelPadding {
             get
             {
                 return InternalCollapsiblePanelPadding;
             }
-        }              
-        
+        }
+
         private bool InternalAutomaticNumbering;
         /// <summary>The AutomaticNumbering property gets the value of the InternalAutomaticNumbering</summary>
         /// <value> The AutomaticNumbering property determines if automatic numbering is on</value>
@@ -481,17 +481,17 @@ namespace Ict.Common.Controls
         }
 
         #region Variables for determining style in TaskList
-        
+
         /// <summary>
-        /// Boolean flag to specify whether the style uses a gradient background in the Title Panel 
+        /// Boolean flag to specify whether the style uses a gradient background in the Title Panel
         /// </summary>
         public bool UseTitleGradient;
-        
+
         /// <summary>
         /// Boolean flag to specify whether certain Controls will use the background colours of the Content Panel
         /// </summary>
         public bool UseContentBackgroundColours;
-        
+
         /// <summary>
         /// Boolean flag to specify whether the style uses a gradient background in the Content Panel
         /// </summary>
@@ -501,9 +501,9 @@ namespace Ict.Common.Controls
         /// Boolean flag to specify whether the style uses a gradient background in Collapsed Info Panel
         /// </summary>
         public bool UseCollapsedInfoGradient;
-        
+
         #endregion
-        
+
         #region Constructor
 
         /// <summary>
@@ -527,7 +527,7 @@ namespace Ict.Common.Controls
                     InternalContentActivatedFontColour = InternalContentHoverFontColour;
                     InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
                     InternalContentDisabledFontColour = Color.FromArgb(44, 58, 56);
-                    
+
                     // Padding Variables
                     InternalTitlePaddingTop = 4;
                     InternalTitlePaddingLeft = 4;
@@ -537,10 +537,10 @@ namespace Ict.Common.Controls
                     InternalContentPaddingLeft = 0;
                     InternalContentPaddingRight = 10;
                     InternalContentPaddingBottom = 5;
-                    
+
                     //BackgroundVariables
                     InternalCollapsiblePanelBackgroundColour = Color.FromArgb(150, 184, 228);
-                    
+
                     //Gradient Variables
                     InternalTitleGradientStart = Color.FromArgb(224, 233, 247);
                     InternalTitleGradientEnd = Color.FromArgb(183, 202, 226);
@@ -559,13 +559,13 @@ namespace Ict.Common.Controls
                     UseTitleGradient = true;
                     UseContentGradient = true;
                     UseContentBackgroundColours = false;
-                    
+
                     // CollapsiblePanelHoster variables
                     InternalCollapsiblePanelDistance = 5;
                     InternalCollapsiblePanelPadding = 1;
-                    
+
                     break;
-                    
+
                 case TVisualStylesEnum.vsTaskPanel:
                     //TitleFont Variables
                     InternalTitleFont = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
@@ -609,10 +609,10 @@ namespace Ict.Common.Controls
                     UseTitleGradient = true;
                     UseContentGradient = false;
                     UseContentBackgroundColours = false;
-                    
+
                     // CollapsiblePanelHoster variables
                     InternalCollapsiblePanelDistance = 9;
-                    
+
                     break;
 
                 case TVisualStylesEnum.vsDashboard:
@@ -622,7 +622,7 @@ namespace Ict.Common.Controls
                     InternalTitleFontColourHover = Color.FromArgb(50, 94, 222);
 
                     //ContentFont Variables
-                
+
                     // Padding Variables
                     InternalTitlePaddingTop = 6;
                     InternalTitlePaddingLeft = 2;
@@ -669,12 +669,12 @@ namespace Ict.Common.Controls
                     InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
                     InternalContentActivatedFontUnderline = false;
                     InternalContentDisabledFontColour = Color.DarkSlateGray;
-                    
+
                     //CollapsedInfoTextFont Variables
                     InternalCollapsedInfoTextFont = InternalTitleFont;
                     InternalCollapsedInfoTextFontColour = InternalTitleFontColour;
-                    InternalCollapsedInfoTextFontColourHover = InternalTitleFontColourHover;                     
-                                        
+                    InternalCollapsedInfoTextFontColourHover = InternalTitleFontColourHover;
+
                     // Padding Variables
                     InternalTitlePaddingTop = 5;
                     InternalTitlePaddingLeft = 5;
@@ -693,7 +693,7 @@ namespace Ict.Common.Controls
                     //Background variables
                     InternalTitleBackgroundColour = Color.FromArgb(255, 255, 255);
                     InternalContentBackgroundColour = Color.FromArgb(255, 255, 255);
-                    InternalContentHoverBackgroundColour = Color.FromArgb(255, 255, 255);  
+                    InternalContentHoverBackgroundColour = Color.FromArgb(255, 255, 255);
                     InternalContentActivatedBackgroundColour = Color.FromArgb(0, 128, 192);
                     InternalCollapsedInfoBackgroundColour = Color.FromArgb(255, 255, 255);
 
@@ -711,11 +711,11 @@ namespace Ict.Common.Controls
                     break;
 
                 case TVisualStylesEnum.vsHorizontalCollapse:
-                     //TitleFont Variables
+                    //TitleFont Variables
                     InternalTitleFont = new System.Drawing.Font("Verdana", 13, System.Drawing.FontStyle.Bold);
                     InternalTitleFontColour = Color.FromArgb(21, 66, 139);
                     InternalTitleFontColourHover = Color.FromArgb(32, 101, 215);
-                    
+
                     //ContentFont Variables
                     InternalContentFont = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
                     InternalContentFontColour = Color.FromArgb(21, 66, 139);
@@ -723,12 +723,12 @@ namespace Ict.Common.Controls
                     InternalContentActivatedFontColour = InternalContentHoverFontColour;
                     InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
                     InternalContentDisabledFontColour = Color.FromArgb(44, 58, 56);
-                    
+
                     //CollapsedInfoTextFont Variables
                     InternalCollapsedInfoTextFont = InternalTitleFont;
                     InternalCollapsedInfoTextFontColour = InternalTitleFontColour;
-                    InternalCollapsedInfoTextFontColourHover = InternalTitleFontColourHover;                     
-                    
+                    InternalCollapsedInfoTextFontColourHover = InternalTitleFontColourHover;
+
                     // Padding Variables
                     InternalTitlePaddingTop = 1;
                     InternalTitlePaddingLeft = 3;
@@ -738,12 +738,12 @@ namespace Ict.Common.Controls
                     InternalContentPaddingLeft = 0;
                     InternalContentPaddingRight = 10;
                     InternalContentPaddingBottom = 5;
-                    
+
                     //BackgroundVariables
                     InternalContentBackgroundColour = Color.FromArgb(227, 239, 255);
                     InternalCollapsedInfoBackgroundColour = Color.FromArgb(212, 221, 249);
-                    InternalCollapsiblePanelBackgroundColour = Color.FromArgb(105, 105, 105);                    
-                    
+                    InternalCollapsiblePanelBackgroundColour = Color.FromArgb(105, 105, 105);
+
                     //Gradient Variables
                     InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
                     InternalTitleGradientEnd = Color.FromArgb(183, 202, 226);
@@ -754,7 +754,7 @@ namespace Ict.Common.Controls
                     InternalCollapsedInfoGradientStart = Color.FromArgb(212, 228, 254);
                     InternalCollapsedInfoGradientEnd = Color.FromArgb(183, 202, 226);
                     InternalCollapsedInfoGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
-                        
+
                     //Layout Variables
                     InternalTaskIndentation = 15;
                     InternalTaskHeight = 18;
@@ -767,13 +767,13 @@ namespace Ict.Common.Controls
                     UseCollapsedInfoGradient = false;
                     UseContentBackgroundColours = false;
                     break;
-            
+
                 case TVisualStylesEnum.vsHorizontalCollapse_InfoPanelWithGradient:
-                     //TitleFont Variables
+                    //TitleFont Variables
                     InternalTitleFont = new System.Drawing.Font("Verdana", 13, System.Drawing.FontStyle.Bold);
                     InternalTitleFontColour = Color.FromArgb(21, 66, 139);
                     InternalTitleFontColourHover = Color.FromArgb(32, 101, 215);
-                    
+
                     //ContentFont Variables
                     InternalContentFont = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
                     InternalContentFontColour = Color.FromArgb(21, 66, 139);
@@ -784,8 +784,8 @@ namespace Ict.Common.Controls
                     //CollapsedInfoTextFont Variables
                     InternalCollapsedInfoTextFont = InternalTitleFont;
                     InternalCollapsedInfoTextFontColour = InternalTitleFontColour;
-                    InternalCollapsedInfoTextFontColourHover = InternalTitleFontColourHover;                     
-                    
+                    InternalCollapsedInfoTextFontColourHover = InternalTitleFontColourHover;
+
                     // Padding Variables
                     InternalTitlePaddingTop = 1;
                     InternalTitlePaddingLeft = 3;
@@ -795,12 +795,12 @@ namespace Ict.Common.Controls
                     InternalContentPaddingLeft = 0;
                     InternalContentPaddingRight = 10;
                     InternalContentPaddingBottom = 5;
-                    
+
                     //BackgroundVariables
                     InternalContentBackgroundColour = Color.FromArgb(227, 239, 255);
                     InternalCollapsedInfoBackgroundColour = Color.FromArgb(212, 221, 249);
-                    InternalCollapsiblePanelBackgroundColour = Color.FromArgb(105, 105, 105);                    
-                    
+                    InternalCollapsiblePanelBackgroundColour = Color.FromArgb(105, 105, 105);
+
                     //Gradient Variables
                     InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
                     InternalTitleGradientEnd = Color.FromArgb(183, 202, 226);
@@ -811,7 +811,7 @@ namespace Ict.Common.Controls
                     InternalCollapsedInfoGradientStart = Color.FromArgb(212, 228, 254);
                     InternalCollapsedInfoGradientEnd = Color.FromArgb(183, 202, 226);
                     InternalCollapsedInfoGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Horizontal;
-                        
+
                     //Layout Variables
                     InternalTaskIndentation = 15;
                     InternalTaskHeight = 18;
@@ -824,13 +824,13 @@ namespace Ict.Common.Controls
                     UseCollapsedInfoGradient = true;
                     UseContentBackgroundColours = false;
                     break;
-            
+
                 default:
                     System.Windows.Forms.MessageBox.Show("TVisualStyles Constructor: no support for style '" + style.ToString("G") + "'");
                     break;
-           }
+            }
         }
-        
+
         #endregion
     }
 }

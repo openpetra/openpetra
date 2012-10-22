@@ -58,9 +58,9 @@ partial class ShepherdTest
         this.tPnlCollapsible1 = new Ict.Common.Controls.TPnlCollapsible();
         this.panel1 = new System.Windows.Forms.Panel();
         this.SuspendLayout();
-        // 
+        //
         // tPnlCollapsible1
-        // 
+        //
         this.tPnlCollapsible1.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontal;
         this.tPnlCollapsible1.Dock = System.Windows.Forms.DockStyle.Left;
         this.tPnlCollapsible1.ExpandedSize = 200;
@@ -75,18 +75,18 @@ partial class ShepherdTest
         this.tPnlCollapsible1.UserControlNamespace = "";
         this.tPnlCollapsible1.UserControlString = ".";
         this.tPnlCollapsible1.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
-        // 
+        //
         // panel1
-        // 
+        //
         this.panel1.BackColor = System.Drawing.SystemColors.ControlDark;
         this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
         this.panel1.Location = new System.Drawing.Point(200, 0);
         this.panel1.Name = "panel1";
         this.panel1.Size = new System.Drawing.Size(550, 359);
         this.panel1.TabIndex = 1;
-        // 
+        //
         // ShepherdTest
-        // 
+        //
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(750, 359);
@@ -96,6 +96,7 @@ partial class ShepherdTest
         this.Text = "ShepherdTest";
         this.ResumeLayout(false);
     }
+
     private System.Windows.Forms.Panel panel1;
     private Ict.Common.Controls.TPnlCollapsible tPnlCollapsible1;
 }

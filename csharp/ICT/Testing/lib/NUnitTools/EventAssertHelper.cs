@@ -48,13 +48,14 @@ namespace Ict.Testing.NUnitTools
         /// <param name="AEventCapturer"><see cref="TNUnitEventHandlerCheck{T}" /> instance.</param>
         /// <param name="AEventTest">Event test that should be executed.</param>
         /// <param name="ACodeToRun">Code that is to be executed that should/shouldn't raise the Event.</param>
-        public static void Assert <TEventArgs>(TNUnitEventHandlerCheck <TEventArgs>AEventCapturer, Action <TNUnitEventHandlerCheck <TEventArgs>>AEventTest,
+        public static void Assert <TEventArgs>(TNUnitEventHandlerCheck <TEventArgs>AEventCapturer,
+            Action <TNUnitEventHandlerCheck <TEventArgs>>AEventTest,
             Action ACodeToRun) where TEventArgs : EventArgs
         {
             AEventCapturer.ResetCheck();
-            
+
             ACodeToRun();
-            
+
             AEventTest(AEventCapturer);
         }
 
@@ -64,10 +65,10 @@ namespace Ict.Testing.NUnitTools
         /// <returns><see cref="Assert" /> that is used as input for the <see cref="Assert" /> Method.</returns>
         public static Action <TNUnitEventHandlerCheck <TEventArgs>>GotRaised <TEventArgs>() where TEventArgs : EventArgs
         {
-            return (TNUnitEventHandlerCheck <TEventArgs>Check) => 
-            {
-                NUnit.Framework.Assert.That(Check.EventGotRaised, Is.True);
-            };
+            return (TNUnitEventHandlerCheck <TEventArgs>Check) =>
+                   {
+                       NUnit.Framework.Assert.That(Check.EventGotRaised, Is.True);
+                   };
         }
 
         /// <summary>
@@ -76,14 +77,13 @@ namespace Ict.Testing.NUnitTools
         /// <returns><see cref="Assert" /> that is used as input for the <see cref="Assert" /> Method.</returns>
         public static Action <TNUnitEventHandlerCheck <TEventArgs>>DidNotGetRaised <TEventArgs>() where TEventArgs : EventArgs
         {
-            return (TNUnitEventHandlerCheck <TEventArgs>Check) => 
-            {
-                NUnit.Framework.Assert.That(Check.EventGotRaised, Is.False);
-            };
+            return (TNUnitEventHandlerCheck <TEventArgs>Check) =>
+                   {
+                       NUnit.Framework.Assert.That(Check.EventGotRaised, Is.False);
+                   };
         }
-
     }
-    
+
     /// <summary>
     /// To be used with NUnit to faciltate checking of Events - if they are getting
     /// raised and if they aren't getting raised.
@@ -92,7 +92,7 @@ namespace Ict.Testing.NUnitTools
     public class TNUnitEventHandlerCheck <TEventArgs>where TEventArgs : EventArgs
     {
         #region Constructor
-        
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -102,43 +102,43 @@ namespace Ict.Testing.NUnitTools
         }
 
         #endregion
-        
+
         #region Properties
-        
+
         /// <summary>
         /// Sender of the Event.
         /// </summary>
-        public object Sender 
+        public object Sender
         {
-            get; 
-            
+            get;
+
             private set;
         }
-        
+
         /// <summary>
         /// EventArgs of the Event.
         /// </summary>
-        public TEventArgs EventArgs 
+        public TEventArgs EventArgs
         {
-            get; 
-            
+            get;
+
             private set;
         }
-        
+
         /// <summary>
         /// True if the Event got raised, false if it did not get raised.
         /// </summary>
-        public bool EventGotRaised 
+        public bool EventGotRaised
         {
-            get; 
-            
+            get;
+
             private set;
         }
 
         #endregion
-        
+
         #region Public Methods
-        
+
         /// <summary>
         /// Use this to re-use the same instance of TNUnitEventHandlerCheck for multiple checks.
         /// </summary>
@@ -161,7 +161,7 @@ namespace Ict.Testing.NUnitTools
             Sender = sender;
             EventArgs = e;
         }
-        
+
         #endregion
     }
 }

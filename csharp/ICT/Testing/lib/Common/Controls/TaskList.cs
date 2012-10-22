@@ -43,7 +43,7 @@ namespace Tests.Common.Controls
     public class TTestTaskList
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         [Test]
         public void CreateWithDefaultConstructor()
@@ -58,11 +58,11 @@ namespace Tests.Common.Controls
         public static XmlNode GetTestXmlNode()
         {
             string[] lines = new string[3];
-            
+
             lines[0] = "TaskGroup:\n";
             lines[1] = "    Task1:\n";
-            lines[2] = "        Label: Testing";            
-            
+            lines[2] = "        Label: Testing";
+
             return new TYml2Xml(lines).ParseYML2TaskListRoot();;
         }
 
@@ -73,7 +73,7 @@ namespace Tests.Common.Controls
         public static XmlNode GetTestXmlNode2()
         {
             string[] lines = new string[7];
-            
+
             lines[0] = "TaskGroup:\n";
             lines[1] = "    Task1:\n";
             lines[2] = "        Label: First Item";
@@ -81,15 +81,18 @@ namespace Tests.Common.Controls
             lines[4] = "        Label: Second Item";
             lines[5] = "    Task3:\n";
             lines[6] = "        Label: Third Item";
-            
+
             return new TYml2Xml(lines).ParseYML2TaskListRoot();
         }
-        
+
         /// <summary>
         /// </summary>
         public void ExampleCallback()
         {
-            MessageBox.Show("The callback worked.", "Tests.Common.Controls.TTestTaskList.ExampleCallback", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("The callback worked.",
+                "Tests.Common.Controls.TTestTaskList.ExampleCallback",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
 
         /// <summary>
@@ -100,7 +103,6 @@ namespace Tests.Common.Controls
         [Test]
         public void TestCallbackOnActivateEvent()
         {
-
             //node.Attributes["Namespace"] = "Tests.Common.Controls";
             //node.Attributes["Class"] = "TTestTaskList";
             //node.Attributes["Method"] = "ExampleCallback";

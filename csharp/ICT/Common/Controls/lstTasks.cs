@@ -43,7 +43,7 @@ namespace Ict.Common.Controls
         private static string FUserId;
         private static TLstFolderNavigation.CheckAccessPermissionDelegate FHasAccessPermission;
         private static int FCurrentLedger = -1;
-        
+
         private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
         private TaskAppearance FTaskAppearance;
         private bool FSingleClickExecution = false;
@@ -337,13 +337,13 @@ namespace Ict.Common.Controls
             {
                 return FCurrentLedger;
             }
-            
+
             set
             {
                 FCurrentLedger = value;
             }
         }
-        
+
         #endregion
 
         #region Events
@@ -478,7 +478,7 @@ namespace Ict.Common.Controls
                     {
                         parameters.Add((object)FCurrentLedger);
                     }
-                    
+
                     method.Invoke(null, parameters.ToArray());
                 }
                 else
@@ -558,12 +558,12 @@ namespace Ict.Common.Controls
                         }
                     }
 
-                    if (prop.Name == "LedgerNumber") 
+                    if (prop.Name == "LedgerNumber")
                     {
                         if (SomeParentDependsOnLedger(node))
                         {
-                             prop.SetValue(screen, (object)FCurrentLedger, null);
-                        }                        
+                            prop.SetValue(screen, (object)FCurrentLedger, null);
+                        }
                     }
                 }
 
@@ -605,14 +605,14 @@ namespace Ict.Common.Controls
         private static bool SomeParentDependsOnLedger(XmlNode ANode)
         {
             XmlNode InspectNode = ANode.ParentNode;
-            
-            if (InspectNode != null) 
+
+            if (InspectNode != null)
             {
-                if (InspectNode.Attributes.Count > 0) 
+                if (InspectNode.Attributes.Count > 0)
                 {
-                    if (InspectNode.Attributes["DependsOnLedger"] != null) 
+                    if (InspectNode.Attributes["DependsOnLedger"] != null)
                     {
-                        return InspectNode.Attributes["DependsOnLedger"].Value == "true"; 
+                        return InspectNode.Attributes["DependsOnLedger"].Value == "true";
                     }
                     else
                     {
@@ -621,24 +621,24 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    if (InspectNode.Name != TYml2Xml.ROOTNODEINTERNAL) 
+                    if (InspectNode.Name != TYml2Xml.ROOTNODEINTERNAL)
                     {
-                        return SomeParentDependsOnLedger(InspectNode);    
+                        return SomeParentDependsOnLedger(InspectNode);
                     }
                     else
                     {
-                        // We have reached the top of the 'sensible' ParentNodes and haven't found the 'DependsOnLedger' Attribute 
+                        // We have reached the top of the 'sensible' ParentNodes and haven't found the 'DependsOnLedger' Attribute
                         // to be true on any of the lower-level ParentNodes
                         return false;
                     }
-                }                    
+                }
             }
             else
             {
                 return false;
             }
         }
-        
+
         void ListResize(object sender, EventArgs e)
         {
             foreach (var Group in Groups)

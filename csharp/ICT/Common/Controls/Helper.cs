@@ -46,33 +46,32 @@ namespace Ict.Common.Controls
     /// </summary>
     public partial class TCommonControlsHelper
     {
-
         /// <summary>
         /// Used for determining whether the Control is instantiated in the WinForms Designer, or not.
         /// </summary>
         /// <returns>True if the Control is instantiated in the WinForms Designer, otherwise false.</returns>
-        public static bool IsInDesignMode()  
-        {     
+        public static bool IsInDesignMode()
+        {
             bool returnFlag = false;
 
-#if DEBUG  
-           if(System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime)
-           {
+#if DEBUG
+            if (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime)
+            {
                 returnFlag = true;
 //                MessageBox.Show("Design Mode #1");
-           }
-           else if(Application.ExecutablePath.IndexOf("devenv.exe", StringComparison.OrdinalIgnoreCase) > -1)
-           {
+            }
+            else if (Application.ExecutablePath.IndexOf("devenv.exe", StringComparison.OrdinalIgnoreCase) > -1)
+            {
                 returnFlag = true;
 //                MessageBox.Show("Design Mode #2");
-           }    
-           else
-           {
+            }
+            else
+            {
 //                MessageBox.Show("Runtime Mode");
-           }
+            }
 #endif
 
-           return returnFlag; 
-      }   
+            return returnFlag;
+        }
     }
 }

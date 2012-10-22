@@ -69,9 +69,9 @@ namespace Ict.Common.Controls
             this.pnlCollapsedInfoText.SuspendLayout();
             this.pnlTitleText.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // pnlTitle
-            // 
+            //
             this.pnlTitle.AutoSize = true;
             this.pnlTitle.Controls.Add(this.pnlCollapsedInfoText);
             this.pnlTitle.Controls.Add(this.pnlTitleText);
@@ -87,27 +87,33 @@ namespace Ict.Common.Controls
             this.pnlTitle.TabIndex = 2;
             this.pnlTitle.MouseEnter += new System.EventHandler(this.BtnToggleMouseEnter);
             this.pnlTitle.MouseLeave += new System.EventHandler(this.BtnToggleMouseLeave);
-            // 
+            //
             // pnlCollapsedInfoText
-            // 
+            //
             this.pnlCollapsedInfoText.AutoSize = true;
             this.pnlCollapsedInfoText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(216)))), ((int)(((byte)(228)))), ((int)(((byte)(248)))));
             this.pnlCollapsedInfoText.Controls.Add(this.otlCollapsedInfoText);
             this.pnlCollapsedInfoText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlCollapsedInfoText.GradientColorBottom = System.Drawing.Color.FromArgb(((int)(((byte)(216)))), ((int)(((byte)(228)))), ((int)(((byte)(248)))));
-            this.pnlCollapsedInfoText.GradientColorTop = System.Drawing.Color.FromArgb(((int)(((byte)(216)))), ((int)(((byte)(228)))), ((int)(((byte)(248)))));
-            this.pnlCollapsedInfoText.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;            
+            this.pnlCollapsedInfoText.GradientColorBottom =
+                System.Drawing.Color.FromArgb(((int)(((byte)(216)))), ((int)(((byte)(228)))), ((int)(((byte)(248)))));
+            this.pnlCollapsedInfoText.GradientColorTop =
+                System.Drawing.Color.FromArgb(((int)(((byte)(216)))), ((int)(((byte)(228)))), ((int)(((byte)(248)))));
+            this.pnlCollapsedInfoText.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;
             this.pnlCollapsedInfoText.Location = new System.Drawing.Point(0, 19);
             this.pnlCollapsedInfoText.Name = "pnlCollapsedInfoText";
             this.pnlCollapsedInfoText.Size = new System.Drawing.Size(39, 157);
             this.pnlCollapsedInfoText.TabIndex = 0;
             this.pnlCollapsedInfoText.Visible = false;
-            // 
+            //
             // otlCollapsedInfoText
-            // 
+            //
             this.otlCollapsedInfoText.BackColor = System.Drawing.Color.Transparent;
             this.otlCollapsedInfoText.Dock = System.Windows.Forms.DockStyle.Left;
-            this.otlCollapsedInfoText.Font = new System.Drawing.Font("Verdana", 12.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.otlCollapsedInfoText.Font = new System.Drawing.Font("Verdana",
+                12.75F,
+                System.Drawing.FontStyle.Bold,
+                System.Drawing.GraphicsUnit.Point,
+                ((byte)(0)));
             this.otlCollapsedInfoText.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(21)))), ((int)(((byte)(66)))), ((int)(((byte)(139)))));
             this.otlCollapsedInfoText.Location = new System.Drawing.Point(0, 0);
             this.otlCollapsedInfoText.Margin = new System.Windows.Forms.Padding(0);
@@ -122,13 +128,14 @@ namespace Ict.Common.Controls
             this.tipCollapseExpandHints.SetToolTip(this.otlCollapsedInfoText, "Click here to expand the panel");
             this.otlCollapsedInfoText.Click += new System.EventHandler(CollapsedInfoTextClick);
             this.otlCollapsedInfoText.MouseEnter += new System.EventHandler(this.BtnCollapsedInfoTextMouseEnter);
-            this.otlCollapsedInfoText.MouseLeave += new System.EventHandler(this.BtnCollapsedInfoTextMouseLeave);            
-            // 
+            this.otlCollapsedInfoText.MouseLeave += new System.EventHandler(this.BtnCollapsedInfoTextMouseLeave);
+            //
             // pnlContent
-            // 
-            this.pnlContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-                                    | System.Windows.Forms.AnchorStyles.Left) 
-                                    | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.pnlContent.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
+                                                       System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.pnlContent.BackColor = System.Drawing.Color.Transparent;
             this.pnlContent.DontDrawBottomLine = false;
             this.pnlContent.Font = new System.Drawing.Font("Verdana", 6.75F);
@@ -140,9 +147,9 @@ namespace Ict.Common.Controls
             this.pnlContent.Padding = new System.Windows.Forms.Padding(0, 9, 0, 0);
             this.pnlContent.Size = new System.Drawing.Size(424, 161);
             this.pnlContent.TabIndex = 2;
-            // 
+            //
             // pnlTitleText
-            // 
+            //
             this.pnlTitleText.AutoSize = true;
             this.pnlTitleText.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.pnlTitleText.BackColor = System.Drawing.Color.Transparent;
@@ -159,13 +166,15 @@ namespace Ict.Common.Controls
             this.pnlTitleText.TabIndex = 1;
             this.tipCollapseExpandHints.SetToolTip(this.pnlTitleText, "Click here to expand / collapse the panel");
             this.pnlTitleText.Click += new System.EventHandler(this.BtnToggleClick);
-            // 
+            //
             // lblDetailHeading
-            // 
-            this.lblDetailHeading.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-                                    | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.lblDetailHeading.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.lblDetailHeading.AutoEllipsis = true;
-            this.lblDetailHeading.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDetailHeading.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDetailHeading.ForeColor = System.Drawing.Color.MediumBlue;
             this.lblDetailHeading.Location = new System.Drawing.Point(2, 0);
             this.lblDetailHeading.Name = "lblDetailHeading";
@@ -176,10 +185,11 @@ namespace Ict.Common.Controls
             this.lblDetailHeading.Click += new System.EventHandler(this.BtnToggleClick);
             this.lblDetailHeading.MouseEnter += new System.EventHandler(this.BtnToggleMouseEnter);
             this.lblDetailHeading.MouseLeave += new System.EventHandler(this.BtnToggleMouseLeave);
-            // 
+            //
             // btnToggle
-            // 
-            this.btnToggle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.btnToggle.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnToggle.BackColor = System.Drawing.Color.Transparent;
             this.btnToggle.FlatAppearance.BorderColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.btnToggle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -196,9 +206,9 @@ namespace Ict.Common.Controls
             this.btnToggle.Click += new System.EventHandler(this.BtnToggleClick);
             this.btnToggle.MouseEnter += new System.EventHandler(this.BtnToggleMouseEnter);
             this.btnToggle.MouseLeave += new System.EventHandler(this.BtnToggleMouseLeave);
-            // 
+            //
             // imlUpDownArrows
-            // 
+            //
             this.imlUpDownArrows.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imlUpDownArrows.ImageStream")));
             this.imlUpDownArrows.TransparentColor = System.Drawing.Color.Transparent;
             this.imlUpDownArrows.Images.SetKeyName(0, "CollapseDown.ico");
@@ -213,9 +223,9 @@ namespace Ict.Common.Controls
             this.imlUpDownArrows.Images.SetKeyName(9, "TaskPanel_CollapseDown_Hover.ico");
             this.imlUpDownArrows.Images.SetKeyName(10, "TaskPanel_CollapseUp.ico");
             this.imlUpDownArrows.Images.SetKeyName(11, "TaskPanel_CollapseUp_Hover.ico");
-            // 
+            //
             // TPnlCollapsible
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
@@ -235,7 +245,7 @@ namespace Ict.Common.Controls
 
         private Ict.Common.Controls.TPnlGradient pnlCollapsedInfoText;
         private CustomControl.OrientAbleTextControls.OrientedTextLabel otlCollapsedInfoText;
-        
+
         private System.Windows.Forms.ToolTip tipCollapseExpandHints;
         private System.Windows.Forms.ImageList imlUpDownArrows;
         private System.Windows.Forms.Button btnToggle;

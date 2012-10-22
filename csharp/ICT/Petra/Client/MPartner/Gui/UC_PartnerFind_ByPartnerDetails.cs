@@ -925,10 +925,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             OnPartnerInfoPaneExpanded();
 
-            if (!AUserControlIsArleadyExpanded) 
+            if (!AUserControlIsArleadyExpanded)
             {
-                ucoPartnerInfo.Expand();    
-            }            
+                ucoPartnerInfo.Expand();
+            }
 
             if (FPartnerInfoUC == null)
             {
@@ -977,10 +977,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             OnPartnerInfoPaneCollapsed();
 
-            if (!AUserControlIsArleadyCollapsed) 
+            if (!AUserControlIsArleadyCollapsed)
             {
-                ucoPartnerInfo.Collapse();    
-            }            
+                ucoPartnerInfo.Collapse();
+            }
 
             FPartnerInfoPaneOpen = false;
         }

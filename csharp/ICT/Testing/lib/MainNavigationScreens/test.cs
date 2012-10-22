@@ -230,7 +230,7 @@ namespace Tests.MainNavigationScreens
                     string Module = TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
 
                     TLstTasks.CurrentLedger = TFrmMainWindowNew.CurrentLedger;
-                    
+
                     // Try to open each screen and log the screens that cannot open
                     try
                     {

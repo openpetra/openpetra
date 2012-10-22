@@ -102,7 +102,6 @@ namespace Tests.Common.Controls
             Assert.AreNotEqual(null, APnl.TaskListNode); //required because expand() may be called at any moment, and it will throw an error if TaskListNode is null. So we require it's existance at all times.
         }
 
-
         ///<summary/>
         [SetUp]
         public void Setup()
@@ -114,7 +113,6 @@ namespace Tests.Common.Controls
         }
 
         #endregion
-
 
 
         ///<summary/>
@@ -185,6 +183,7 @@ namespace Tests.Common.Controls
             FPnl.UserControlNamespace = HOSTEDUSERCONTROL;
             assertIsStable(FPnl);
         }
+
         /// <summary/>
         [Test]
         public void TestConstructorString()
@@ -196,6 +195,7 @@ namespace Tests.Common.Controls
 
             assertIsStable(FPnl);
         }
+
         /// <summary/>
         [Test]
         public void TestConstructorStringMalformed()
@@ -208,6 +208,7 @@ namespace Tests.Common.Controls
 
             assertIsStable(FPnl);
         }
+
         /// <summary/>
         [Test]
         public void TestConstructorStringMalformedNoPeriod()
@@ -337,7 +338,6 @@ namespace Tests.Common.Controls
             {
                 Assert.AreEqual(typeof(ENoTaskListNodeSpecifiedException), e.GetType());
             }
-            
         }
 
         /// <summary/>
@@ -504,7 +504,6 @@ namespace Tests.Common.Controls
             Assert.AreEqual(UC2, FPnl.UserControlInstance);
         }
 
-        
         ///<summary/>
         [Test]
         public void TestSetter_VisualStyleEnum()
@@ -512,7 +511,7 @@ namespace Tests.Common.Controls
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TTestTaskList.GetTestXmlNode());
 
             Assert.AreEqual(TVisualStylesEnum.vsAccordionPanel, FPnl.VisualStyleEnum);
-            
+
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsTaskPanel;
             Assert.AreEqual(TVisualStylesEnum.vsTaskPanel, FPnl.VisualStyleEnum);
 
@@ -526,7 +525,7 @@ namespace Tests.Common.Controls
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsDashboard;
             Assert.AreEqual(TVisualStylesEnum.vsDashboard, FPnl.VisualStyleEnum);
             FPnl.Expand();  // To ensure Unit Test code coverage only - nothing to assert here...
-            
+
             // The following Tests should work with 'Assert.AreNotEqual' because the Visual Style we try to assign is only valid
             // for a different CollapseDirection: cdHorizontal or cdHorizontalRight
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse;
@@ -582,7 +581,8 @@ namespace Tests.Common.Controls
             Assert.AreNotEqual(TVisualStylesEnum.vsShepherd, FPnl.VisualStyleEnum);
 
 
-            FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TTestTaskList.GetTestXmlNode(), TVisualStylesEnum.vsShepherd, TCollapseDirection.cdHorizontal);
+            FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList,
+                TTestTaskList.GetTestXmlNode(), TVisualStylesEnum.vsShepherd, TCollapseDirection.cdHorizontal);
 
             Assert.AreEqual(TVisualStylesEnum.vsShepherd, FPnl.VisualStyleEnum);
 
@@ -596,10 +596,11 @@ namespace Tests.Common.Controls
 
 
             // To ensure Unit Test code coverage only - nothing to assert here...
-            FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TTestTaskList.GetTestXmlNode(), TVisualStylesEnum.vsHorizontalCollapse, TCollapseDirection.cdHorizontal);
+            FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList,
+                TTestTaskList.GetTestXmlNode(), TVisualStylesEnum.vsHorizontalCollapse, TCollapseDirection.cdHorizontal);
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse_InfoPanelWithGradient;
         }
-        
+
         /// <summary>
         /// Tests the ActiveTaskItem Property.
         /// </summary>
@@ -607,27 +608,27 @@ namespace Tests.Common.Controls
         public void TestSetter_ActiveTaskItem()
         {
             XmlNode TestNode = TTestTaskList.GetTestXmlNode();
-            
+
             FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TestNode);
-            FPnl.Expand();            
-            
+            FPnl.Expand();
+
             Assert.IsNull(FPnl.ActiveTaskItem);
-            
+
             FPnl.ActiveTaskItem = TestNode.ChildNodes[1];
             Assert.AreEqual(FPnl.ActiveTaskItem, TestNode.ChildNodes[1]);
-            
+
             FPnl.ActiveTaskItem = TestNode.ChildNodes[2];
             Assert.AreEqual(FPnl.ActiveTaskItem, TestNode.ChildNodes[2]);
-            
+
             FPnl.ActiveTaskItem = null;
-            
+
             Assert.IsNull(FPnl.ActiveTaskItem);
-            
+
             FPnl.TaskListNode = null;
-            
+
             Assert.IsNull(FPnl.ActiveTaskItem);
         }
-        
+
         #endregion
 
         ///<summary />
@@ -647,7 +648,8 @@ namespace Tests.Common.Controls
             }
 
             // To ensure Unit Test code coverage only - nothing to assert here...
-            FPnl = new TPnlCollapsible(THostedControlKind.hckCollapsiblePanelHoster, TTestTaskList.GetTestXmlNode(), TCollapseDirection.cdHorizontalRight);
+            FPnl = new TPnlCollapsible(THostedControlKind.hckCollapsiblePanelHoster,
+                TTestTaskList.GetTestXmlNode(), TCollapseDirection.cdHorizontalRight);
             FPnl.VisualStyleEnum = TVisualStylesEnum.vsHorizontalCollapse;
 
             FPnl.RealiseCollapsiblePanelHoster();
@@ -944,10 +946,18 @@ namespace Tests.Common.Controls
 
             // It might look a bit weird to check Assert AreNotSame, but only this way we find out that the
             // .Invoke calls below do in fact do something!
-            FPnl.Expanded += delegate(object sender, EventArgs e) { Assert.AreNotSame(FPnl, null); };
-            FPnl.Expanded += delegate(object sender, EventArgs e) { Assert.AreSame(FPnl, sender); };
-            FPnl.Collapsed += delegate(object sender, EventArgs e) { Assert.AreNotSame(FPnl, null); };
-            FPnl.Collapsed += delegate(object sender, EventArgs e) { Assert.AreSame(FPnl, sender); };
+            FPnl.Expanded += delegate(object sender, EventArgs e) {
+                Assert.AreNotSame(FPnl, null);
+            };
+            FPnl.Expanded += delegate(object sender, EventArgs e) {
+                Assert.AreSame(FPnl, sender);
+            };
+            FPnl.Collapsed += delegate(object sender, EventArgs e) {
+                Assert.AreNotSame(FPnl, null);
+            };
+            FPnl.Collapsed += delegate(object sender, EventArgs e) {
+                Assert.AreSame(FPnl, sender);
+            };
 
             InvokedPrivateMethod.Invoke(FPnl, new object[] { FPnl, null });
             InvokedPrivateMethod.Invoke(FPnl, new object[] { FPnl, null });

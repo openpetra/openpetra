@@ -69,18 +69,18 @@ partial class CollapsiblePanelHosterTest
         this.btnGetActiveTask = new System.Windows.Forms.Button();
         this.groupBox1.SuspendLayout();
         this.SuspendLayout();
-        // 
+        //
         // pnlCollapsiblePanelHostTest
-        // 
+        //
         this.pnlCollapsiblePanelHostTest.BackColor = System.Drawing.SystemColors.ControlDark;
         this.pnlCollapsiblePanelHostTest.Dock = System.Windows.Forms.DockStyle.Left;
         this.pnlCollapsiblePanelHostTest.Location = new System.Drawing.Point(0, 0);
         this.pnlCollapsiblePanelHostTest.Name = "pnlCollapsiblePanelHostTest";
         this.pnlCollapsiblePanelHostTest.Size = new System.Drawing.Size(221, 359);
         this.pnlCollapsiblePanelHostTest.TabIndex = 1;
-        // 
+        //
         // btnGetTaskList1
-        // 
+        //
         this.btnGetTaskList1.Location = new System.Drawing.Point(351, 33);
         this.btnGetTaskList1.Name = "btnGetTaskList1";
         this.btnGetTaskList1.Size = new System.Drawing.Size(255, 23);
@@ -88,9 +88,9 @@ partial class CollapsiblePanelHosterTest
         this.btnGetTaskList1.Text = "Get Task List #1";
         this.btnGetTaskList1.UseVisualStyleBackColor = true;
         this.btnGetTaskList1.Click += new System.EventHandler(this.BtnGetTaskList1Click);
-        // 
+        //
         // btnGetTaskList2
-        // 
+        //
         this.btnGetTaskList2.Location = new System.Drawing.Point(351, 62);
         this.btnGetTaskList2.Name = "btnGetTaskList2";
         this.btnGetTaskList2.Size = new System.Drawing.Size(255, 23);
@@ -98,9 +98,9 @@ partial class CollapsiblePanelHosterTest
         this.btnGetTaskList2.Text = "Get Task List #2";
         this.btnGetTaskList2.UseVisualStyleBackColor = true;
         this.btnGetTaskList2.Click += new System.EventHandler(this.BtnGetTaskList2Click);
-        // 
+        //
         // btnGetCollPanel1
-        // 
+        //
         this.btnGetCollPanel1.Location = new System.Drawing.Point(351, 115);
         this.btnGetCollPanel1.Name = "btnGetCollPanel1";
         this.btnGetCollPanel1.Size = new System.Drawing.Size(255, 23);
@@ -108,9 +108,9 @@ partial class CollapsiblePanelHosterTest
         this.btnGetCollPanel1.Text = "Get Collapsible Panel #1";
         this.btnGetCollPanel1.UseVisualStyleBackColor = true;
         this.btnGetCollPanel1.Click += new System.EventHandler(this.BtnGetCollPanel1Click);
-        // 
+        //
         // btnGetCollPanel2
-        // 
+        //
         this.btnGetCollPanel2.Location = new System.Drawing.Point(351, 144);
         this.btnGetCollPanel2.Name = "btnGetCollPanel2";
         this.btnGetCollPanel2.Size = new System.Drawing.Size(255, 23);
@@ -118,9 +118,9 @@ partial class CollapsiblePanelHosterTest
         this.btnGetCollPanel2.Text = "Get Collapsible Panel #2";
         this.btnGetCollPanel2.UseVisualStyleBackColor = true;
         this.btnGetCollPanel2.Click += new System.EventHandler(this.BtnGetCollPanel2Click);
-        // 
+        //
         // groupBox1
-        // 
+        //
         this.groupBox1.Controls.Add(this.label1);
         this.groupBox1.Controls.Add(this.txtTaskName);
         this.groupBox1.Controls.Add(this.btnSetActiveTask);
@@ -130,24 +130,24 @@ partial class CollapsiblePanelHosterTest
         this.groupBox1.TabIndex = 32;
         this.groupBox1.TabStop = false;
         this.groupBox1.Text = "Activate Task";
-        // 
+        //
         // label1
-        // 
+        //
         this.label1.Location = new System.Drawing.Point(6, 25);
         this.label1.Name = "label1";
         this.label1.Size = new System.Drawing.Size(68, 23);
         this.label1.TabIndex = 8;
         this.label1.Text = "Task Name:";
-        // 
+        //
         // txtTaskName
-        // 
+        //
         this.txtTaskName.Location = new System.Drawing.Point(80, 25);
         this.txtTaskName.Name = "txtTaskName";
         this.txtTaskName.Size = new System.Drawing.Size(114, 20);
         this.txtTaskName.TabIndex = 7;
-        // 
+        //
         // btnSetActiveTask
-        // 
+        //
         this.btnSetActiveTask.Location = new System.Drawing.Point(23, 56);
         this.btnSetActiveTask.Name = "btnSetActiveTask";
         this.btnSetActiveTask.Size = new System.Drawing.Size(161, 23);
@@ -155,9 +155,9 @@ partial class CollapsiblePanelHosterTest
         this.btnSetActiveTask.Text = "Activate Task by This Name";
         this.btnSetActiveTask.UseVisualStyleBackColor = true;
         this.btnSetActiveTask.Click += new System.EventHandler(this.BtnSetActiveTaskClick);
-        // 
+        //
         // btnGetActiveTask
-        // 
+        //
         this.btnGetActiveTask.Location = new System.Drawing.Point(400, 230);
         this.btnGetActiveTask.Name = "btnGetActiveTask";
         this.btnGetActiveTask.Size = new System.Drawing.Size(147, 23);
@@ -165,9 +165,9 @@ partial class CollapsiblePanelHosterTest
         this.btnGetActiveTask.Text = "Get Active Task";
         this.btnGetActiveTask.UseVisualStyleBackColor = true;
         this.btnGetActiveTask.Click += new System.EventHandler(this.BtnGetActiveTaskClick);
-        // 
+        //
         // CollapsiblePanelHosterTest
-        // 
+        //
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(750, 359);
@@ -184,6 +184,7 @@ partial class CollapsiblePanelHosterTest
         this.groupBox1.PerformLayout();
         this.ResumeLayout(false);
     }
+
     private System.Windows.Forms.Button btnGetActiveTask;
     private System.Windows.Forms.Button btnSetActiveTask;
     private System.Windows.Forms.TextBox txtTaskName;
@@ -194,5 +195,5 @@ partial class CollapsiblePanelHosterTest
     private System.Windows.Forms.Button btnGetTaskList2;
     private System.Windows.Forms.Button btnGetTaskList1;
     private System.Windows.Forms.Panel pnlCollapsiblePanelHostTest;
- }
+}
 }

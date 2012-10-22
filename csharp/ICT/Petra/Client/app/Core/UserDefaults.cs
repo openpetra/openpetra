@@ -308,15 +308,15 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>todoComment</summary>
         public const String USERDEFAULT_LASTPERSONCONFERENCE = "ConferenceLastPerson";
 
-        
+
         /*------------------------------------------------------------------------------
          *  Finance User Default Constants
          * -------------------------------------------------------------------------------*/
 
         /// <summary>todoComment</summary>
         public const String FINANCE_DEFAULT_LEDGERNUMBER = "a_default_ledger_number_i";
-        
-        
+
+
         /// <summary>
         /// initialise static variables
         /// </summary>

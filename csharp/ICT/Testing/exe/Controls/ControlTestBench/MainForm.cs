@@ -71,16 +71,16 @@ namespace Ict.Testing.ControlTestBench
 
             switch (VisualStyle)
             {
-                    case "AccordionPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
+                case "AccordionPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
                     break;
 
-                    case "TaskPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
+                case "TaskPanel": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
                     break;
 
-                    case "Dashboard":  EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
+                case "Dashboard":  EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
                     break;
 
-                    case "Shepherd": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
+                case "Shepherd": EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
                     break;
 
                 case "HorizontalCollapse":
