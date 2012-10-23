@@ -22,8 +22,14 @@ RootNode:
         actHelpImproveTranslations: {ActionClick=HelpImproveTranslations}
     Controls:
         pnlContent:
-            Controls: [dsbContent, lstFolders]
+            Controls: [pnlTaskArea, lstFolders]
             Dock: Fill
+        pnlTaskArea:
+            Controls: [pnlTop, dsbContent]
+            Dock: Fill
+        pnlTop:
+            Height: 28
+            Dock: Top
         dsbContent: {Type=Ict.Common.Controls.TDashboard, Dock=Fill}
         lstFolders: {Type=Ict.Common.Controls.TLstFolderNavigation, Dock=Left, Width=200}
         mnuMain: 

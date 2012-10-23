@@ -92,12 +92,18 @@ namespace Ict.Common.Controls
 #endif
         }
 
-        #region Delegates
+        #region Delegates and Events
 
         /// <summary>
         /// this function checks if the user has access to the navigation node
         /// </summary>
         public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId, bool ACheckLedgerPermissions);
+
+        /// <summary>Fired when a TaskLink got activated (by clicking on it or programmatically).</summary>
+        public event TTaskList.TaskLinkClicked SubmoduleChanged;
+
+        /// <summary>Fired when a Ledger got selected by the user (by clicking on it's LinkLabel).</summary>
+        public event TPnlModuleNavigation.LedgerSelected LedgerChanged;
 
         #endregion
 
@@ -382,7 +388,13 @@ namespace Ict.Common.Controls
 
         private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
         {
-            // TODO
+            if (SubmoduleChanged != null) 
+            {
+                if (ATaskListNode.Attributes["LedgerNumber"] == null) 
+                {
+                    SubmoduleChanged(ATaskList, ATaskListNode, AItemClicked);    
+                }                
+            }
         }
 
         private void OnLedgerChanged(int ALedgerNr, string ALedgerName)
@@ -391,16 +403,9 @@ namespace Ict.Common.Controls
 
             FCurrentLedger = ALedgerNr;
 
-            if (ALedgerName != String.Empty)
+            if (LedgerChanged != null) 
             {
-                MessageBox.Show(String.Format("You have changed the Ledger to\r\n\r\n    Ledger {0} (#{1}).",
-                        ALedgerName, ALedgerNr), 
-                        LedgerChangeTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                MessageBox.Show(String.Format("You have changed the Ledger to\r\n\r\n    Ledger #{0}.", ALedgerNr), LedgerChangeTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LedgerChanged(ALedgerNr, ALedgerName);
             }
         }
 

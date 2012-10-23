@@ -745,7 +745,7 @@ namespace Ict.Common.Controls
                     InternalCollapsiblePanelBackgroundColour = Color.FromArgb(105, 105, 105);
 
                     //Gradient Variables
-                    InternalTitleGradientStart = Color.FromArgb(255, 255, 255);
+                    InternalTitleGradientStart = Color.FromArgb(255, 247, 253);
                     InternalTitleGradientEnd = Color.FromArgb(183, 202, 226);
                     InternalTitleGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
                     InternalContentGradientStart = Color.FromArgb(212, 228, 254);
