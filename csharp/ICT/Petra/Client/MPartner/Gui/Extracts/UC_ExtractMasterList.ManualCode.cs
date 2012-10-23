@@ -564,7 +564,68 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void ChangeSubscription(System.Object sender, EventArgs e)
         {
-            //TODO
+            PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
+            PSubscriptionRow SubscriptionRow = SubscriptionTable.NewRowTyped();
+            PPartnerTable PartnersWithoutSubs = new PPartnerTable();
+            int SubscriptionsChanged;
+            String MessageText;
+            List<String> FieldsToChange = new List<string>();
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Add Subscription"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractChangeSubscriptionDialog dialog = new TFrmUpdateExtractChangeSubscriptionDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    if (dialog.GetReturnedParameters(ref SubscriptionRow, ref FieldsToChange))
+                    {
+                        SubscriptionTable.Rows.Add(SubscriptionRow);
+    
+                        // perform update of extract data on server side
+                        if (TRemote.MPartner.Partner.WebConnectors.ChangeSubscription
+                                (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, FieldsToChange, out PartnersWithoutSubs, out SubscriptionsChanged))
+                        {
+                            MessageText =
+                                String.Format(Catalog.GetString(
+                                        "Subscription {0} successfully changed for {1} out of {2} Partner(s) in Extract {3}."),
+                                    SubscriptionRow.PublicationCode,
+                                    SubscriptionsChanged, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
+    
+                            if (PartnersWithoutSubs.Rows.Count > 0)
+                            {
+                                MessageText += "\r\n\r\n" +
+                                               String.Format(Catalog.GetString(
+                                        "See the following Dialog for the {0} Partner(s) that are not subscribed for this Publication and therefore no change was made for them."),
+                                    PartnersWithoutSubs.Rows.Count);
+                            }
+    
+                            MessageBox.Show(MessageText,
+                                Catalog.GetString("Change Subscription"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+    
+                            if (PartnersWithoutSubs.Rows.Count > 0)
+                            {
+                                TFrmSimplePartnerListDialog partnerDialog = new TFrmSimplePartnerListDialog(this.FindForm());
+                                partnerDialog.SetExplanation("These partners do not have a Subscription for " + SubscriptionRow.PublicationCode,
+                                    "The Subscription was therefore not changed for the following Partners:");
+                                partnerDialog.SetPartnerList(PartnersWithoutSubs);
+                                partnerDialog.ShowDialog();
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show(Catalog.GetString("Error while changing Subscription for Partners in Extract ") +
+                                GetSelectedDetailRow().ExtractName,
+                                Catalog.GetString("Change Subscription"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>

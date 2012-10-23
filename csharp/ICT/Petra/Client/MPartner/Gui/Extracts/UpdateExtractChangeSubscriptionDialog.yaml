@@ -1,0 +1,119 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    UtilObjectClass: TFrmPetraEditUtils
+    FormTitle: Change Subscription
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data, Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    #DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    #MasterTable: PSubscription
+    FormType: dialog
+    Template: window
+    WindowWidth: 950
+    WindowHeight: 400
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent:
+            Controls: 
+                Row0: [lblExtractName]
+                Row1: [pnlDetailsLeft, pnlDetailsRight]
+            Dock: Fill
+
+        lblExtractName:
+        pnlDetailsLeft:
+            Controls: [grpSubscription, grpMisc]
+        pnlDetailsRight:
+            Controls: [grpDates, grpIssues]
+
+        grpSubscription: {Label=Change Subscription}
+            Controls: 
+                Row0: [pnlChangeSubscription, pnlSubscription]
+        pnlChangeSubscription:
+            Controls: [chkChangePublicationCode, chkChangeSubscriptionStatus, chkChangeGratisSubscription]
+        pnlSubscription:
+            Controls: [cmbPSubscriptionPublicationCode, cmbPSubscriptionSubscriptionStatus, chkPSubscriptionGratisSubscription]
+
+        grpMisc: {Label=Change Miscellaneous}
+            Controls: 
+                Row0: [pnlChangeMisc, pnlMisc]
+        pnlChangeMisc: {Stretch=horizontally}
+            Controls: [chkChangeNumberComplimentary, chkChangePublicationCopies, chkChangeReasonSubsGivenCode, chkChangeReasonSubsCancelledCode, chkChangeGiftFromKey]
+        pnlMisc: {Stretch=horizontally}
+            Controls: [txtPSubscriptionNumberComplimentary, txtPSubscriptionPublicationCopies, cmbPSubscriptionReasonSubsGivenCode, cmbPSubscriptionReasonSubsCancelledCode, txtPSubscriptionGiftFromKey]
+
+        grpDates: {Label=Change Dates}
+            Controls: 
+                Row0: [pnlChangeDates, pnlDates]
+        pnlChangeDates: {Stretch=horizontally}
+            Controls: [chkChangeStartDate, chkChangeExpiryDate, chkChangeRenewalDate, chkChangeDateNoticeSent, chkChangeDateCancelled]
+        pnlDates: {Stretch=horizontally}
+            Controls: [dtpPSubscriptionStartDate, dtpPSubscriptionExpiryDate, dtpPSubscriptionSubscriptionRenewalDate, dtpPSubscriptionDateNoticeSent, dtpPSubscriptionDateCancelled]
+
+        grpIssues: {Label=Change Issues}
+            Controls: 
+                Row0: [pnlChangeIssues, pnlIssues]
+        pnlChangeIssues: {Stretch=horizontally}
+            Controls: [chkChangeNumberIssuesReceived, chkChangeFirstIssue, chkChangeLastIssue]
+        pnlIssues: {Stretch=horizontally}
+            Controls: [txtPSubscriptionNumberIssuesReceived, dtpPSubscriptionFirstIssue, dtpPSubscriptionLastIssue]
+
+        cmbPSubscriptionPublicationCode: {List=PublicationInfoList}
+            Label: Pub&lication Code
+            Validation: true
+        cmbPSubscriptionSubscriptionStatus:
+            Label: S&ubscription Status
+            OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]
+        chkPSubscriptionGratisSubscription:
+            Label: Free Subscri&ption
+
+        chkChangePublicationCode: {NoLabel=true, Visible=false, OnChange=OnTickChangeItem}
+        chkChangeSubscriptionStatus: {NoLabel=true, OnChange=OnTickChangeItem}
+        chkChangeGratisSubscription: {NoLabel=true, OnChange=OnTickChangeItem}
+
+        txtPSubscriptionNumberComplimentary: {Format=Integer}
+            Label: Complimentar&y
+        txtPSubscriptionPublicationCopies: {Format=Integer}
+            Label: &Copies
+        cmbPSubscriptionReasonSubsGivenCode: {List=ReasonSubscriptionGivenList}
+            Label: Reason &Given
+        cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList}
+            Label: Reason Ended
+        txtPSubscriptionGiftFromKey:
+            Label: Gift Given By
+            Type: PartnerKey
+
+        chkChangeNumberComplimentary: {NoLabel=true, OnChange=OnTickChangeItem}
+        chkChangePublicationCopies: {NoLabel=true, OnChange=OnTickChangeItem}
+        chkChangeReasonSubsGivenCode: {NoLabel=true, OnChange=OnTickChangeItem}
+        chkChangeReasonSubsCancelledCode: {NoLabel=true, OnChange=OnTickChangeItem}
+        chkChangeGiftFromKey: {NoLabel=true, OnChange=OnTickChangeItem}
+
+        dtpPSubscriptionStartDate:
+            Label: S&tart Date
+        dtpPSubscriptionExpiryDate:
+            Label: E&xpiry Date
+        dtpPSubscriptionSubscriptionRenewalDate:
+            Label: Date Rene&wed
+        dtpPSubscriptionDateNoticeSent:
+            Label: Not&ice Sent
+        dtpPSubscriptionDateCancelled:
+            Label: Date E&nded
+
+        chkChangeStartDate: {NoLabel=true, OnChange=OnTickChangeItem}
+        chkChangeExpiryDate: {NoLabel=true, OnChange=OnTickChangeItem}
+        chkChangeRenewalDate: {NoLabel=true, OnChange=OnTickChangeItem}
+        chkChangeDateNoticeSent: {NoLabel=true, OnChange=OnTickChangeItem}
+        chkChangeDateCancelled: {NoLabel=true, OnChange=OnTickChangeItem}
+
+        txtPSubscriptionNumberIssuesReceived: {Format=Integer, Width=60}
+            Label: Issues Received
+        dtpPSubscriptionFirstIssue:
+            Label: Fi&rst Issue Sent
+        dtpPSubscriptionLastIssue:
+            Label: L&ast Issue Sent
+
+        chkChangeNumberIssuesReceived: {NoLabel=true, OnChange=OnTickChangeItem}
+        chkChangeFirstIssue: {NoLabel=true, OnChange=OnTickChangeItem}
+        chkChangeLastIssue: {NoLabel=true, OnChange=OnTickChangeItem}
