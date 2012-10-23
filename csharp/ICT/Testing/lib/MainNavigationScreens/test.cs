@@ -75,7 +75,7 @@ namespace Tests.MainNavigationScreens
 
             // load the UINavigation file (csharp\ICT\Petra\Definitions\UINavigation.yml)
             TLogging.Log("loading " + TAppSettingsManager.GetValue("UINavigation.File"));
-            XmlNode MainMenuNode = TFrmMainWindowNew.BuildNavigationXml();
+            XmlNode MainMenuNode = TFrmMainWindowNew.BuildNavigationXml(false);
 
             // saving a xml file for better understanding how to use the XPath commands
             StreamWriter sw = new StreamWriter(TAppSettingsManager.GetValue("UINavigation.File") + ".xml");
@@ -193,7 +193,7 @@ namespace Tests.MainNavigationScreens
 
                 TLogging.Log(ActionNode.Name + " " + ActionNode.Attributes["ActionOpenScreen"].Value);
 
-                Assert.AreEqual(false, TFrmMainWindowNew.HasAccessPermission(ActionNode, UserInfo.GUserInfo.UserID),
+                Assert.AreEqual(false, TFrmMainWindowNew.HasAccessPermission(ActionNode, UserInfo.GUserInfo.UserID, false),
                     "user DEMO should not have permissions for TFrmMaintainUsers");
 
                 // open the screen. should return an error message
@@ -228,6 +228,8 @@ namespace Tests.MainNavigationScreens
                     XmlNode ActionNode = ((IHasXmlNode)iterator.Current).GetNode();
                     // look at the permissions module the window came from
                     string Module = TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
+
+                    TLstTasks.CurrentLedger = TFrmMainWindowNew.CurrentLedger;
 
                     // Try to open each screen and log the screens that cannot open
                     try
@@ -340,13 +342,13 @@ namespace Tests.MainNavigationScreens
         }
 
         //helper method for the below test
-        private static bool TruePermission(XmlNode node, string aUserID)
+        private static bool TruePermission(XmlNode node, string aUserID, bool ACheckLedgerPermissions)
         {
             return true;
         }
 
         //another helper method to reset the test below
-        private static bool FalsePermission(XmlNode node, string aUserId)
+        private static bool FalsePermission(XmlNode node, string aUserId, bool ACheckLedgerPermissions)
         {
             return false;
         }
@@ -373,7 +375,7 @@ namespace Tests.MainNavigationScreens
 
                 TLogging.Log(ActionNode.Name + " " + ActionNode.Attributes["ActionOpenScreen"].Value);
 
-                Assert.AreEqual(false, TFrmMainWindowNew.HasAccessPermission(ActionNode, UserInfo.GUserInfo.UserID),
+                Assert.AreEqual(false, TFrmMainWindowNew.HasAccessPermission(ActionNode, UserInfo.GUserInfo.UserID, false),
                     "user DEMO should not have permissions for TFrmMaintainUsers");
 
                 try

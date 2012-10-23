@@ -4,6 +4,7 @@
 // @Authors:
 //		 chadds
 //		 ashleyc
+//       sethb
 //
 // Copyright 2004-2010 by OM International
 //
@@ -62,6 +63,7 @@ namespace Ict.Common.Controls
             //
             // tPnlGradient1
             //
+            this.tPnlGradient1.AutoScroll = true;
             this.tPnlGradient1.AutoSize = true;
             this.tPnlGradient1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tPnlGradient1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
@@ -71,7 +73,7 @@ namespace Ict.Common.Controls
             this.tPnlGradient1.GradientColorTop = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(251)))), ((int)(((byte)(255)))));
             this.tPnlGradient1.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
             this.tPnlGradient1.Location = new System.Drawing.Point(0, 0);
-            this.tPnlGradient1.Margin = new System.Windows.Forms.Padding(0);
+            this.tPnlGradient1.Padding = new System.Windows.Forms.Padding(10);
             this.tPnlGradient1.Name = "tPnlGradient1";
             this.tPnlGradient1.Size = new System.Drawing.Size(81, 32);
             this.tPnlGradient1.TabIndex = 0;

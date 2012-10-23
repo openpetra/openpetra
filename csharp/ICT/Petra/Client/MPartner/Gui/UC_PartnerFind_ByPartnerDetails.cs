@@ -899,14 +899,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         void UcoPartnerInfo_Collapsed(object sender, EventArgs e)
         {
             //            MessageBox.Show("UcoPartnerInfo_Collapsed");
-            ClosePartnerInfoPane();
+            ClosePartnerInfoPane(true);
         }
 
         void UcoPartnerInfo_Expanded(object sender, EventArgs e)
         {
             //            MessageBox.Show("UcoPartnerInfo_Expanded");
 
-            OpenPartnerInfoPane();
+            OpenPartnerInfoPane(true);
         }
 
         void TogglePartnerInfoPane()
@@ -921,11 +921,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void OpenPartnerInfoPane()
+        private void OpenPartnerInfoPane(bool AUserControlIsArleadyExpanded = false)
         {
             OnPartnerInfoPaneExpanded();
 
-            ucoPartnerInfo.Expand();
+            if (!AUserControlIsArleadyExpanded)
+            {
+                ucoPartnerInfo.Expand();
+            }
 
             if (FPartnerInfoUC == null)
             {
@@ -970,11 +973,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPartnerInfoPaneOpen = true;
         }
 
-        private void ClosePartnerInfoPane()
+        private void ClosePartnerInfoPane(bool AUserControlIsArleadyCollapsed = false)
         {
             OnPartnerInfoPaneCollapsed();
 
-            ucoPartnerInfo.Collapse();
+            if (!AUserControlIsArleadyCollapsed)
+            {
+                ucoPartnerInfo.Collapse();
+            }
 
             FPartnerInfoPaneOpen = false;
         }

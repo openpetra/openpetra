@@ -59,11 +59,12 @@ namespace Ict.Common.Controls
 
         private bool FChecked = false;
         private bool FHovering = false;
+        private CheckedChanging FCheckChangingDelegate = null;
 
         /// <summary>
         /// constructor
         /// </summary>
-        public TRbtNavigationButton()
+        public TRbtNavigationButton(CheckedChanging ACheckChangingDelegate)
         {
             InitializeComponent();
             #region CATALOGI18N
@@ -81,6 +82,8 @@ namespace Ict.Common.Controls
             this.Enter += new System.EventHandler(this.PanelEnter);
             this.Leave += new System.EventHandler(this.PanelLeave);
             this.Click += new System.EventHandler(this.PanelClick);
+
+            FCheckChangingDelegate = ACheckChangingDelegate;
         }
 
         /// Caption of the button
@@ -105,29 +108,40 @@ namespace Ict.Common.Controls
             {
                 return FChecked;
             }
+
             set
             {
+                bool CheckChangeOK = true;
+
                 if (FChecked != value)
                 {
-                    FChecked = value;
-
-                    if (FChecked)
+                    if (FCheckChangingDelegate != null)
                     {
-                        // uncheck all other sibling controls of type TRbtNavigationButton
-                        foreach (Control sibling in Parent.Controls)
-                        {
-                            if ((sibling.GetType() == typeof(TRbtNavigationButton)) && (sibling != this))
-                            {
-                                ((TRbtNavigationButton)sibling).Checked = false;
-                            }
-                        }
+                        CheckChangeOK = FCheckChangingDelegate(this);
                     }
 
-                    Refresh();
-
-                    if (CheckedChanged != null)
+                    if (CheckChangeOK)
                     {
-                        CheckedChanged(this, null);
+                        FChecked = value;
+
+                        if (FChecked)
+                        {
+                            // uncheck all other sibling controls of type TRbtNavigationButton
+                            foreach (Control sibling in Parent.Controls)
+                            {
+                                if ((sibling.GetType() == typeof(TRbtNavigationButton)) && (sibling != this))
+                                {
+                                    ((TRbtNavigationButton)sibling).Checked = false;
+                                }
+                            }
+                        }
+
+                        Refresh();
+
+                        if (CheckedChanged != null)
+                        {
+                            CheckedChanged(this, null);
+                        }
                     }
                 }
             }
@@ -145,7 +159,12 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// is triggered if the checked state changes
+        /// Triggered when the Checked state is changing.
+        /// </summary>
+        public delegate bool CheckedChanging(TRbtNavigationButton ASender);
+
+        /// <summary>
+        /// Triggered when the Checked state has changed.
         /// </summary>
         public EventHandler CheckedChanged;
 
