@@ -262,7 +262,7 @@ namespace Ict.Common.Controls
                 else
                 {
                     FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstanceWhereLastItemActivationHappened().
-                        FireLinkClickedEventForActiveTaskItem();
+                    FireLinkClickedEventForActiveTaskItem();
                 }
             }
             else

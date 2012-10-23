@@ -192,13 +192,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ucoTransactions == null)
             {
-            	return null;
+                return null;
             }
             else
             {
-            	return ucoTransactions;
+                return ucoTransactions;
             }
-        	
         }
 
         /// this window contains 2 tabs
