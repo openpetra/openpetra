@@ -34,7 +34,7 @@ namespace ControlTestBench
 /// </summary>
 public partial class TestAll : Form
 {
-    XmlNode FTestYAMLNode = null;
+//    XmlNode FTestYAMLNode = null;
     bool FFolderCollapsing = false;
 
     /// <summary>
@@ -51,7 +51,7 @@ public partial class TestAll : Form
     /// <param name="ATestYAMLNode"></param>
     public TestAll(XmlNode ATestYAMLNode)
     {
-        FTestYAMLNode = ATestYAMLNode;
+//        FTestYAMLNode = ATestYAMLNode;
 
         InitializeComponent();
 

@@ -1110,7 +1110,6 @@ namespace Ict.Common.Controls
         /// <summary></summary>
         private void ChangeDirection(TCollapseDirection ADirection)
         {
-            TCollapseDirection oldDirection = FCollapseDirection;
             TCollapseDirection newDirection = ADirection;
 
             FCollapseDirection = newDirection;

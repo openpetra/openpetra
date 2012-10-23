@@ -185,8 +185,6 @@ namespace Ict.Petra.Client.App.PetraClient
 
                         FMultiLedgerSite = true;
 
-                        string label = TXMLParser.GetAttribute(childNode, "Label");
-
                         // Create 'Select Legdger' Node
                         XmlAttribute LabelAttributeLedger = childNode.OwnerDocument.CreateAttribute("Label");
                         XmlElement SelLedgerElmnt = childNode.OwnerDocument.CreateElement("SelectLedger");
