@@ -105,29 +105,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Print this HTML file on the default printer (with no UI)
+        /// Use a .NET PrintPreview Dialog to print (or not print) this (possibly multi-page) HTML document.
         /// </summary>
-        /// <param name="AHtmlText"></param>
-        public static void PrintSinglePageLetter(String AHtmlText)
+        /// <param name="HtmlPages"></param>
+        public static void PreviewOrPrint(String HtmlPages)
         {
-            try
+            System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
+            bool printerInstalled = printDocument.PrinterSettings.IsValid;
+
+            if (!printerInstalled)
             {
-                System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
-                TGfxPrinter GfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
-                TPrinterHtml htmlPrinter = new TPrinterHtml(AHtmlText,
-                    TAppSettingsManager.GetValue("Formletters.Path"),
-                    GfxPrinter);
-                GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
-                GfxPrinter.Document.Print();
+                MessageBox.Show (Catalog.GetString("There is no printer, so printing is not possible"));
+                return;
             }
-            catch (System.Drawing.Printing.InvalidPrinterException e)
-            {
-                TLogging.Log(e.ToString());
-                MessageBox.Show(Catalog.GetString("Gift receipts cannot be printed, since no Printer or PDFCreator is installed."),
-                    Catalog.GetString("Printing of gift receipts failed"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
+
+            TGfxPrinter GfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+            TPrinterHtml htmlPrinter = new TPrinterHtml(HtmlPages,
+                TAppSettingsManager.GetValue("Formletters.Path"),
+                GfxPrinter);
+            GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+
+            PrintPreviewDialog PrintDlg = new PrintPreviewDialog();
+            PrintDlg.Document = GfxPrinter.Document;
+            PrintDlg.ClientSize = new System.Drawing.Size(500, 720);
+            PrintDlg.ShowDialog();
         }
 
         private void OnBtnPrint(Object sender, EventArgs e)
@@ -142,9 +143,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //
-            // The HTML string returned here may be several complete HTML documents, with "|PageBreak|" between each one.
+            // The HTML string returned here may be several complete HTML documents, with <body>...</body> for each page.
             string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintReceipts(FGiftTbl);
-            string[] HtmlPages = HtmlDoc.Split(new string[] { "|PageBreak|" }, StringSplitOptions.None);
 
             String ReceiptedDonorsList = "";
 
@@ -152,20 +152,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (Row["Selected"].Equals(true))
                 {
-                    ReceiptedDonorsList += (Row["Donor"].ToString() + "\r\n");
+                    String DonorName = Row["Donor"].ToString() + "\r\n";
+                    if (!ReceiptedDonorsList.Contains(DonorName))
+                    {
+                        ReceiptedDonorsList += DonorName;
+                    }
                 }
             }
 
             try
             {
-                foreach (string HtmlPage in HtmlPages)
-                {
-                    PrintSinglePageLetter(HtmlPage);
-                }
-
+                PreviewOrPrint(HtmlDoc);
                 if (MessageBox.Show(
                         Catalog.GetString(
-                            "Please check that receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +
+                            "Press OK if receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +
                         ReceiptedDonorsList,
                         Catalog.GetString("Receipt Printing"),
                         MessageBoxButtons.OKCancel) == DialogResult.Cancel)

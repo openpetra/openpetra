@@ -220,7 +220,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     rowTexts += RowTemplate.
                                 Replace("#DONATIONDATE", dateEntered.ToString("dd.MM.yyyy")).
-                                Replace("#AMOUNT", String.Format("{0:C}", amount)).
+                                Replace("#AMOUNT", String.Format("{0:2}", amount)).
                                 Replace("#COMMENTONE", commentOne).
                                 Replace("#ACCOUNTDESC", accountDesc).
                                 Replace("#COSTCENTREDESC", costcentreDesc);
@@ -231,7 +231,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         rowTexts += RowTemplate.
                                     Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
-                                    Replace("#AMOUNT", String.Format("{0:C}", prevAmount)).
+                                    Replace("#AMOUNT", String.Format("{0:2}", prevAmount)).
                                     Replace("#COMMENTONE", prevCommentOne).
                                     Replace("#ACCOUNTDESC", prevAccountDesc).
                                     Replace("#COSTCENTREDESC", prevCostCentreDesc);
@@ -253,14 +253,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 rowTexts += RowTemplate.
                             Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
-                            Replace("#AMOUNT", String.Format("{0:C}", prevAmount)).
+                            Replace("#AMOUNT", String.Format("{0:2}", prevAmount)).
                             Replace("#COMMENTONE", prevCommentOne).
                             Replace("#ACCOUNTDESC", prevAccountDesc).
                             Replace("#COSTCENTREDESC", prevCostCentreDesc);
                 prevAmount = 0.0M;
             }
 
-            msg = msg.Replace("#OVERALLAMOUNT", String.Format("{0:C}", sum));
+            msg = msg.Replace("#OVERALLAMOUNT", String.Format("{0:2}", sum));
 
             if ((ADonations.Rows.Count == 1) && msg.Contains("#DONATIONDATE"))
             {
@@ -322,30 +322,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// Produce a single page HTML letter to receipt a gift
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="ATransactionNumber"></param>
         /// <param name="ADonorShortName"></param>
         /// <param name="ADonorKey"></param>
         /// <param name="ADonorClass"></param>
-        /// <param name="AReference"></param>
         /// <param name="AGiftCurrency"></param>
         /// <param name="ADateEntered"></param>
         /// <param name="ALocalCountryCode">If the addressee's country is the same as this, it won't be printed on the address label.</param>
+        /// <param name="AGiftsThisDonor"></param>
         /// <param name="ATransaction">This can be read-only - nothing is written to the DB.</param>
         /// <returns>Complete (simple) HTML file</returns>
         [NoRemoting]
         public static string FormatHtmlReceipt(
-            Int32 ALedgerNumber,
-            Int32 ABatchNumber,
-            Int32 ATransactionNumber,
             String ADonorShortName,
             Int64 ADonorKey,
             TPartnerClass ADonorClass,
-            String AReference,
             String AGiftCurrency,
             DateTime ADateEntered,
             string ALocalCountryCode,
+            AGiftTable AGiftsThisDonor,
             TDBTransaction ATransaction)
         {
             SortedList <string, List <string>>FormValues = new SortedList <string, List <string>>();
@@ -366,16 +360,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             FormValues.Add("DateEntered", new List <string>());
             FormValues.Add("GiftAmount", new List <string>());
+            FormValues.Add("GiftCurrency", new List <string>());
             FormValues.Add("GiftTxd", new List <string>());
             FormValues.Add("RecipientShortName", new List <string>());
             FormValues.Add("MotivationDetail", new List <string>());
             FormValues.Add("Reference", new List <string>());
             FormValues.Add("DonorComment", new List <string>());
 
-            FormValues.Add("GiftTotalAmount", new List <string>());
+            FormValues.Add("GiftTotalAmount", new List<string>());
+            FormValues.Add("GiftTotalCurrency", new List<string>());
             FormValues.Add("TxdTotal", new List <string>());
             FormValues.Add("NonTxdTotal", new List <string>());
-            FormValues.Add("GiftCurrency", new List <string>());
 
 
             // Donor Name:
@@ -433,99 +428,112 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         Calculations.TPartnerLocationFormatEnum.plfHtmlLineBreak));
             }
 
-            // Details of gift:
-            FormValues["DateEntered"].Add(ADateEntered.ToString("dd MMM yyyy"));
-            FormValues["Reference"].Add(AReference);
-            AGiftDetailTable DetailTbl = AGiftDetailAccess.LoadViaAGift(
-                ALedgerNumber, ABatchNumber, ATransactionNumber, ATransaction);
-
             decimal GiftTotal = 0;
             decimal TxdTotal = 0;
             decimal NonTxdTotal = 0;
 
-            foreach (AGiftDetailRow DetailRow in DetailTbl.Rows)
+            // Details per gift:
+            foreach (AGiftRow GiftRow in AGiftsThisDonor.Rows)
             {
-                string DonorComment = "";
-                FormValues["GiftAmount"].Add(DetailRow.GiftAmount.ToString("0.00"));
-                FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
-                GiftTotal += DetailRow.GiftAmount;
+                String DateEntered = ADateEntered.ToString("dd MMM yyyy");
+                String GiftReference = GiftRow.Reference;
+                AGiftDetailTable DetailTbl = AGiftDetailAccess.LoadViaAGift(
+                    GiftRow.LedgerNumber, GiftRow.BatchNumber, GiftRow.GiftTransactionNumber, ATransaction);
 
-                if (DetailRow.TaxDeductable)
-                {
-                    FormValues["GiftTxd"].Add("Y");
-                    TxdTotal += DetailRow.GiftAmount;
-                }
-                else
-                {
-                    FormValues["GiftTxd"].Add(" ");
-                    NonTxdTotal += DetailRow.GiftAmount;
-                }
 
-                // Recipient Short Name:
-                PPartnerTable RecipientTbl = PPartnerAccess.LoadByPrimaryKey(DetailRow.RecipientKey, ATransaction);
-
-                if (RecipientTbl.Rows.Count > 0)
+                foreach (AGiftDetailRow DetailRow in DetailTbl.Rows)
                 {
-                    String ShortName = Calculations.FormatShortName(RecipientTbl[0].PartnerShortName, eShortNameFormat.eReverseShortname);
-                    FormValues["RecipientShortName"].Add(ShortName);
-                }
+                    FormValues["Reference"].Add(GiftReference);
+                    FormValues["DateEntered"].Add(DateEntered);
+                    GiftReference = "";                         // Date and Reference are one-per-gift, not per detail
+                    DateEntered = "";                           // so if this gift has several details, I'll blank the subsequent lines.
+                    
+                    string DonorComment = "";
+                    FormValues["GiftAmount"].Add(DetailRow.GiftAmount.ToString("0.00"));
+                    FormValues["GiftCurrency"].Add(AGiftCurrency);
+                    FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
+                    GiftTotal += DetailRow.GiftAmount;
 
-                if (DetailRow.CommentOneType == "Donor")
-                {
-                    DonorComment += DetailRow.GiftCommentOne;
-                }
-
-                if (DetailRow.CommentTwoType == "Donor")
-                {
-                    if (DonorComment != "")
+                    if (DetailRow.TaxDeductable)
                     {
-                        DonorComment += "\r\n";
+                        FormValues["GiftTxd"].Add("Y");
+                        TxdTotal += DetailRow.GiftAmount;
+                    }
+                    else
+                    {
+                        FormValues["GiftTxd"].Add(" ");
+                        NonTxdTotal += DetailRow.GiftAmount;
                     }
 
-                    DonorComment += DetailRow.GiftCommentTwo;
-                }
+                    // Recipient Short Name:
+                    PPartnerTable RecipientTbl = PPartnerAccess.LoadByPrimaryKey(DetailRow.RecipientKey, ATransaction);
 
-                if (DetailRow.CommentThreeType == "Donor")
-                {
-                    if (DonorComment != "")
+                    if (RecipientTbl.Rows.Count > 0)
                     {
-                        DonorComment += "\r\n";
+                        String ShortName = Calculations.FormatShortName(RecipientTbl[0].PartnerShortName, eShortNameFormat.eReverseShortname);
+                        FormValues["RecipientShortName"].Add(ShortName);
                     }
 
-                    DonorComment += DetailRow.GiftCommentThree;
-                }
+                    if (DetailRow.CommentOneType == "Donor")
+                    {
+                        DonorComment += DetailRow.GiftCommentOne;
+                    }
 
-                if (DonorComment != "")
-                {
-                    DonorComment = "Comment: " + DonorComment;
-                }
+                    if (DetailRow.CommentTwoType == "Donor")
+                    {
+                        if (DonorComment != "")
+                        {
+                            DonorComment += "\r\n";
+                        }
 
-                FormValues["DonorComment"].Add(DonorComment);
-            } // foreach detail
+                        DonorComment += DetailRow.GiftCommentTwo;
+                    }
+
+                    if (DetailRow.CommentThreeType == "Donor")
+                    {
+                        if (DonorComment != "")
+                        {
+                            DonorComment += "\r\n";
+                        }
+
+                        DonorComment += DetailRow.GiftCommentThree;
+                    }
+
+                    if (DonorComment != "")
+                    {
+                        DonorComment = "Comment: " + DonorComment;
+                    }
+
+                    FormValues["DonorComment"].Add(DonorComment);
+                } // foreach GiftDetail
+            } // foreach Gift
 
             FormValues["GiftTotalAmount"].Add(GiftTotal.ToString("0.00"));
+            FormValues["GiftTotalCurrency"].Add(AGiftCurrency);
             FormValues["TxdTotal"].Add(TxdTotal.ToString("0.00"));
             FormValues["NonTxdTotal"].Add(NonTxdTotal.ToString("0.00"));
-            FormValues["GiftCurrency"].Add(AGiftCurrency);
 
             string PageHtml = TFormLettersTools.PrintSimpleHTMLLetter(
                 TAppSettingsManager.GetValue("Formletters.Path") + "\\GiftReceipt.html", FormValues);
             return PageHtml;
         }
 
+        /// <param name="AGiftCurrency"></param>
+        /// <param name="ADateEntered"></param>
+        /// <param name="ADonorShortName"></param>
+        /// <param name="ADonorKey"></param>
+        /// <param name="ADonorClass"></param>
+        /// <param name="GiftsThisDonor"></param>
         /// <summary></summary>
         /// <returns>A Receipt formatted with HTML</returns>
         [RequireModulePermission("FINANCE-1")]
         public static string PrintGiftReceipt(
-            Int32 ALedgerNumber,
-            Int32 ABatchNumber,
-            Int32 ATransactionNumber,
+            String AGiftCurrency,
+            DateTime ADateEntered,
             String ADonorShortName,
             Int64 ADonorKey,
             TPartnerClass ADonorClass,
-            String AReference,
-            String AGiftCurrency,
-            DateTime ADateEntered
+            AGiftTable GiftsThisDonor
             )
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -534,16 +542,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             try
             {
                 string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
-                HtmlDoc = FormatHtmlReceipt(ALedgerNumber,
-                    ABatchNumber,
-                    ATransactionNumber,
+                HtmlDoc = FormatHtmlReceipt(
                     ADonorShortName,
                     ADonorKey,
                     ADonorClass,
-                    AReference,
                     AGiftCurrency,
                     ADateEntered,
                     LocalCountryCode,
+                    GiftsThisDonor,
                     Transaction);
             }
             finally
@@ -551,6 +557,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
             return HtmlDoc;
+        }
+
+        private class TempDonorInfo
+        {
+            public String DonorShortName;
+            public TPartnerClass DonorClass;
+            public String GiftCurrency;
+            public DateTime DateEntered;
         }
 
         /// <summary>
@@ -563,37 +577,58 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string HtmlDoc = "";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            SortedList<Int64, AGiftTable> GiftsPerDonor = new SortedList<Int64, AGiftTable>();
+            SortedList<Int64, TempDonorInfo> DonorInfo = new SortedList<Int64, TempDonorInfo>();
+
             try
             {
                 string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
-
                 foreach (DataRow Row in AGiftTbl.Rows)
                 {
                     if (Row["Selected"].Equals(true))
                     {
-                        string PageHtml = FormatHtmlReceipt(
-                            Convert.ToInt32(Row["LedgerNumber"]),
-                            Convert.ToInt32(Row["BatchNumber"]),
-                            Convert.ToInt32(Row["TransactionNumber"]),
-                            Row["Donor"].ToString(),
-                            Convert.ToInt64(Row["DonorKey"]),
-                            SharedTypes.PartnerClassStringToEnum(Row["DonorClass"].ToString()),
-                            Row["Reference"].ToString(),
-                            Row["GiftCurrency"].ToString(),
-                            Convert.ToDateTime(Row["DateEntered"]),
-                            LocalCountryCode,
-                            Transaction);
+                        Int64 DonorKey = Convert.ToInt64(Row["DonorKey"]);
+                        //
+                        // I need to merge any rows that have the same donor.
+                        //
 
-                        if (HtmlDoc != "")
+                        if (!GiftsPerDonor.ContainsKey(DonorKey))
                         {
-                            HtmlDoc += "|PageBreak|";
+                            GiftsPerDonor.Add(DonorKey, new AGiftTable());
+                            DonorInfo.Add(DonorKey, new TempDonorInfo());
                         }
 
-                        HtmlDoc += PageHtml;
-                    } // if selected
+                        TempDonorInfo DonorRow = DonorInfo[DonorKey];
+                        DonorRow.DonorShortName = Row["Donor"].ToString();
+                        DonorRow.DonorClass = SharedTypes.PartnerClassStringToEnum(Row["DonorClass"].ToString());
+                        DonorRow.GiftCurrency = Row["GiftCurrency"].ToString();
+                        DonorRow.DateEntered = Convert.ToDateTime(Row["DateEntered"]);
 
-                } // foreach row
+                        AGiftRow GiftRow = GiftsPerDonor[DonorKey].NewRowTyped();
+                        GiftRow.LedgerNumber = Convert.ToInt32(Row["LedgerNumber"]);
+                        GiftRow.BatchNumber = Convert.ToInt32(Row["BatchNumber"]);
+                        GiftRow.GiftTransactionNumber = Convert.ToInt32(Row["TransactionNumber"]);
+                        GiftRow.Reference = Row["Reference"].ToString();
+                        GiftsPerDonor[DonorKey].Rows.Add(GiftRow);
+                    } // if Selected
+                } // foreach Row
 
+                foreach (Int64 DonorKey in GiftsPerDonor.Keys)
+                {
+                    TempDonorInfo DonorRow = DonorInfo[DonorKey];
+                    string PageHtml = FormatHtmlReceipt(
+                        DonorRow.DonorShortName,
+                        DonorKey,
+                        DonorRow.DonorClass,
+                        DonorRow.GiftCurrency,
+                        DonorRow.DateEntered,
+                        LocalCountryCode,
+                        GiftsPerDonor[DonorKey],
+                        Transaction);
+
+                    TFormLettersTools.AttachNextPage(ref HtmlDoc, PageHtml);
+                } // foreach DonorKey
+                TFormLettersTools.CloseDocument(ref HtmlDoc);
             }
             finally
             {
