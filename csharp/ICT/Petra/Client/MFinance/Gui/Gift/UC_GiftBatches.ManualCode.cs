@@ -193,7 +193,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 out FDefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
-            dtpDetailGlEffectiveDate.Date = FDefaultDate;
+
+            //dtpDetailGlEffectiveDate.Date = FDefaultDate;
 
             if (grdDetails.Rows.Count > 1)
             {
@@ -522,6 +523,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ((TFrmGiftBatch)ParentForm).EnableTransactions();
 
+            dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
+
             //Update the batch period if necessary
             UpdateBatchPeriod(null, null);
 
@@ -581,8 +584,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbPeriod.SelectedIndex = 0;
             }
 
+            FPreviouslySelectedDetailRow = null;
+
             pnlDetails.Enabled = true;
             this.CreateNewAGiftBatch();
+
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
             txtDetailBatchDescription.Focus();
 
             FPreviouslySelectedDetailRow.GlEffectiveDate = FDefaultDate;
