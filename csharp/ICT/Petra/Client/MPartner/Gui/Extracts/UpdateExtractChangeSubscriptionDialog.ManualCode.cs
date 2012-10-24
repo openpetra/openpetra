@@ -49,6 +49,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
     {
         private PartnerEditTDS FMainDS;
         private System.Drawing.Color ChangeControlBackgroundColor = System.Drawing.Color.Yellow;
+        private String ExtractName;
 
         /// <summary>
         /// set the initial value for passport name in the dialog
@@ -56,6 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="AExtractName"></param>
         public void SetExtractName(String AExtractName)
         {
+            ExtractName = AExtractName;
             lblExtractName.Text = Catalog.GetString("Extract Name: ") + AExtractName;
         }
 
@@ -382,26 +384,149 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Returns text to be displayed to user with details about fields to be changed.
+        /// Will return empty string if no boxes were ticked.
+        /// </summary>
+        /// <returns>String</returns>
+        public String GetFieldsToChangeText()
+        {
+            String MessageText = "";
+
+          
+            if (chkChangeSubscriptionStatus.Checked)
+            {
+                MessageText += "* " + Catalog.GetString("Subscription Status") + " => " 
+                    + cmbPSubscriptionSubscriptionStatus.Text + "\r\n";
+            }
+            if (chkChangeGratisSubscription.Checked)
+            {
+                MessageText += "* " + Catalog.GetString("Free Subscription") + " => " ;
+                if (chkPSubscriptionGratisSubscription.Checked)
+                {
+                    MessageText += Catalog.GetString("Yes") + "\r\n";
+                }
+                else
+                {
+                    MessageText += Catalog.GetString("No") + "\r\n";
+                }
+            }
+
+            if (   chkChangeNumberComplimentary.Checked
+                && txtPSubscriptionNumberComplimentary.NumberValueInt.HasValue)
+            {
+                MessageText += "* " + Catalog.GetString("Complimentary") + " => " 
+                    + txtPSubscriptionNumberComplimentary.NumberValueInt.ToString() + "\r\n";
+            }
+            if (   chkChangePublicationCopies.Checked
+                && txtPSubscriptionPublicationCopies.NumberValueInt.HasValue)
+            {
+                MessageText += "* " + Catalog.GetString("Copies") + " => " 
+                    + txtPSubscriptionPublicationCopies.NumberValueInt.ToString() + "\r\n";
+            }
+            if (chkChangeReasonSubsGivenCode.Checked)
+            {
+                MessageText += "* " + Catalog.GetString("Reason Given") + " => " 
+                    + cmbPSubscriptionReasonSubsGivenCode.GetSelectedString() + "\r\n";
+            }
+            if (chkChangeReasonSubsCancelledCode.Checked)
+            {
+                MessageText += "* " + Catalog.GetString("Reason Ended") + " => " 
+                    + cmbPSubscriptionReasonSubsCancelledCode.GetSelectedString() + "\r\n";
+            }
+            if (chkChangeGiftFromKey.Checked)
+            {
+                MessageText += "* " + Catalog.GetString("Gift Given By") + " => " 
+                    + txtPSubscriptionGiftFromKey.LabelText + "\r\n";
+            }
+    
+            if (   chkChangeStartDate.Checked
+                && dtpPSubscriptionStartDate.Date.HasValue)
+            {
+                MessageText += "* " + Catalog.GetString("Start Date") + " => " 
+                    + dtpPSubscriptionStartDate.Text + "\r\n";
+            }
+            if (chkChangeExpiryDate.Checked)
+            {
+                MessageText += "* " + Catalog.GetString("Expiry Date") + " => " 
+                    + dtpPSubscriptionExpiryDate.Text + "\r\n";
+            }
+            if (chkChangeRenewalDate.Checked)
+            {
+                MessageText += "* " + Catalog.GetString("Date Renewed") + " => " 
+                    + dtpPSubscriptionSubscriptionRenewalDate.Text + "\r\n";
+            }
+            if (chkChangeDateNoticeSent.Checked)
+            {
+                MessageText += "* " + Catalog.GetString("Notice Sent") + " => " 
+                    + dtpPSubscriptionDateNoticeSent.Text + "\r\n";
+            }
+            if (chkChangeDateCancelled.Checked)
+            {
+                MessageText += "* " + Catalog.GetString("Date Ended") + " => " 
+                    + dtpPSubscriptionDateCancelled.Text + "\r\n";
+            }
+
+            if (   chkChangeNumberIssuesReceived.Checked
+                && txtPSubscriptionNumberIssuesReceived.NumberValueInt.HasValue)
+            {
+                MessageText += "* " + Catalog.GetString("Issues Received") + " => " 
+                    + txtPSubscriptionNumberIssuesReceived.NumberValueInt.ToString() + "\r\n";
+            }
+            if (chkChangeFirstIssue.Checked)
+            {
+                MessageText += "* " + Catalog.GetString("First Issue Sent") + " => " 
+                    + dtpPSubscriptionFirstIssue.Text + "\r\n";
+            }
+            if (chkChangeLastIssue.Checked)
+            {
+                MessageText += "* " + Catalog.GetString("Last Issue Sent") + " => " 
+                    + dtpPSubscriptionLastIssue.Text + "\r\n";
+            }
+            
+            if (MessageText.Length > 0)
+            {
+                MessageText = "You are about to make the following changes to the Subscriptions " +
+                    "for Publication '" + cmbPSubscriptionPublicationCode.GetSelectedString() +
+                    "' for Partners in Extract '" + ExtractName + "':" + "\r\n\r\n" +
+                    MessageText + "\r\n\r\n" + "Do you really want to do this?";
+            }
+            
+            return MessageText;
+        }
+        
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
+            String MessageText;
+            
             // publication code needs to be set, otherwise change can not be performed
             if (cmbPSubscriptionPublicationCode.GetSelectedString() == "")
             {
-                MessageBox.Show(Catalog.GetString("Please select a publication"),
+                MessageBox.Show(Catalog.GetString("Please select a Publication"),
                         Catalog.GetString("Change Subscription"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
                 return;
             }
 
-            if (MessageBox.Show(Catalog.GetString("Are you sure that you want to change the selected subscription" +
-                        "\r\nfor all partners in the extract?"),
-                    Catalog.GetString("Change Subscription"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+            MessageText = GetFieldsToChangeText();
+            if (MessageText.Length > 0)
             {
-                this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                this.Close();
+                if (MessageBox.Show(MessageText,
+                        Catalog.GetString("Change Subscription"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                    this.Close();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Nothing to be changed. You need to tick at least one box!",
+                    Catalog.GetString("Change Subscription"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
             }
         }
 
