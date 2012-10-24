@@ -575,16 +575,9 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             FBreadcrumbTrail.ModuleText = Catalog.GetString("Ledger" + " " + ALedgerNr.ToString());
             FCurrentLedger = ALedgerNr;
-            
-            if (ALedgerName != String.Empty)
-            {
-                this.stbMain.ShowMessage(String.Format("You have changed the Ledger to Ledger {0} (#{1}).",
-                    ALedgerName, ALedgerNr));            
-            }
-            else
-            {
-                this.stbMain.ShowMessage(String.Format("You have changed the Ledger to Ledger #{0}.", ALedgerNr));
-            }
+
+            // Remove any message that is shown in the Status Bar (e.g. the one that is put there when creating a new Ledger)
+            this.stbMain.ShowMessage(String.Empty);            
         }
     }
 }

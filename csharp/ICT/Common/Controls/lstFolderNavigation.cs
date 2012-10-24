@@ -403,6 +403,18 @@ namespace Ict.Common.Controls
 
             FCurrentLedger = ALedgerNr;
 
+            if (ALedgerName != String.Empty)
+            {
+                MessageBox.Show(String.Format("You have changed the Ledger to\r\n\r\n    Ledger {0} (#{1}).",
+                        ALedgerName, ALedgerNr), 
+                        LedgerChangeTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(String.Format("You have changed the Ledger to\r\n\r\n    Ledger #{0}.", ALedgerNr), LedgerChangeTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            
             if (LedgerChanged != null) 
             {
                 LedgerChanged(ALedgerNr, ALedgerName);
