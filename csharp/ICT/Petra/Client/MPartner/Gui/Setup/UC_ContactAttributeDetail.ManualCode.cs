@@ -230,14 +230,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 // specify the filter and bind  the data
                 string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), NewValue);
                 FMainDS.PContactAttributeDetail.DefaultView.RowFilter = filter;
-
-                // We use these lines rather than SelectRowIngrid, because we do not want to upset the focus from the caller
-                if (grdDetails.Rows.Count > 1)
-                {
-                    grdDetails.Selection.SelectRow(1, true);
-                }
-
-                ShowDetails();
+                SelectRowInGrid(1);
             }
 
             FPetraUtilsObject.EnableDataChangedEvent();
@@ -304,10 +297,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             _currentContactAttribute = NewCode;
             string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), NewCode);
             FMainDS.PContactAttributeDetail.DefaultView.RowFilter = filter;
-
-            // We use these two lines because nothing has actually changed and we do not want to play with focus
-            grdDetails.Selection.SelectRow(curRow, true);
-            ShowDetails();
+            SelectRowInGrid(curRow);
 
             // The number of rows should be the same as before, so this should be unnecessary!
             OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
