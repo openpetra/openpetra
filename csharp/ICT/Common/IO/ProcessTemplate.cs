@@ -27,6 +27,7 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Xml;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using Ict.Common;
 
@@ -40,7 +41,7 @@ namespace Ict.Common.IO
         /// <summary>
         /// the template
         /// </summary>
-        public String FTemplateCode = "";
+        public StringBuilder FTemplateCode = new StringBuilder();
 
         /// <summary>
         /// the name of the file to write to
@@ -50,12 +51,12 @@ namespace Ict.Common.IO
         /// <summary>
         /// temporary strings to store code into that will later each be inserted into a placeholder
         /// </summary>
-        public SortedList FCodelets = new SortedList();
+        public SortedList <string, StringBuilder>FCodelets = new SortedList <string, StringBuilder>();
 
         /// <summary>
         /// snippets are smaller pieces of template code
         /// </summary>
-        public SortedList FSnippets = new SortedList();
+        public SortedList <string, string>FSnippets = new SortedList <string, string>();
 
         /// <summary>
         /// constructor, open template from file
@@ -75,12 +76,12 @@ namespace Ict.Common.IO
 
             StreamReader r;
             r = File.OpenText(AFullPath);
-            FTemplateCode = string.Empty;
+            FTemplateCode = new StringBuilder();
 
             while (!r.EndOfStream)
             {
                 string line = r.ReadLine().TrimEnd(new char[] { '\r', '\t', ' ', '\n' }).Replace("\t", "    ");
-                FTemplateCode += line + Environment.NewLine;
+                FTemplateCode.Append(line).Append(Environment.NewLine);
             }
 
             r.Close();
@@ -97,7 +98,7 @@ namespace Ict.Common.IO
                 // do this recursively, to get snippets and code in the right place, even from the include files
                 ProcessTemplate includedTemplate = new ProcessTemplate(Path.GetDirectoryName(AFullPath) + Path.DirectorySeparatorChar + filename);
 
-                FTemplateCode = FTemplateCode.Replace(line, includedTemplate.FTemplateCode);
+                FTemplateCode = FTemplateCode.Replace(line, includedTemplate.FTemplateCode.ToString());
 
                 foreach (string key in includedTemplate.FSnippets.Keys)
                 {
@@ -108,10 +109,10 @@ namespace Ict.Common.IO
             // split off snippets (identified by "{##")
             if (FTemplateCode.Contains("{##"))
             {
-                StringCollection snippets = StringHelper.StrSplit(FTemplateCode, "{##");
+                StringCollection snippets = StringHelper.StrSplit(FTemplateCode.ToString(), "{##");
 
                 // first part is the actual template code
-                FTemplateCode = snippets[0];
+                FTemplateCode = new StringBuilder(snippets[0]);
 
                 for (int counter = 1; counter < snippets.Count; counter++)
                 {
@@ -127,7 +128,7 @@ namespace Ict.Common.IO
             }
 
             // just make sure that there is a newline at the end, for ENDIF etc
-            FTemplateCode += Environment.NewLine;
+            FTemplateCode.Append(Environment.NewLine);
         }
 
         /// <summary>
@@ -174,7 +175,7 @@ namespace Ict.Common.IO
         {
             ProcessTemplate snippetTemplate = new ProcessTemplate();
 
-            snippetTemplate.FTemplateCode = (string)FSnippets[ASnippetName];
+            snippetTemplate.FTemplateCode = new StringBuilder(FSnippets[ASnippetName]);
 
             if (snippetTemplate.FTemplateCode == null)
             {
@@ -193,17 +194,17 @@ namespace Ict.Common.IO
         public void InsertSnippet(string ACodeletName, ProcessTemplate ASnippet)
         {
             ASnippet.ReplaceCodelets();
-            ASnippet.FTemplateCode = ASnippet.ProcessIFDEFs(ASnippet.FTemplateCode);
-            ASnippet.FTemplateCode = ASnippet.ProcessIFNDEFs(ASnippet.FTemplateCode);
+            ASnippet.ProcessIFDEFs(ref ASnippet.FTemplateCode);
+            ASnippet.ProcessIFNDEFs(ref ASnippet.FTemplateCode);
 
             if (FCodelets.ContainsKey(ACodeletName)
-                && !((string)FCodelets[ACodeletName]).EndsWith(Environment.NewLine)
-                && (((string)FCodelets[ACodeletName]).Length > 0))
+                && !FCodelets[ACodeletName].ToString().EndsWith(Environment.NewLine)
+                && (FCodelets[ACodeletName].Length > 0))
             {
                 AddToCodelet(ACodeletName, Environment.NewLine);
             }
 
-            AddToCodelet(ACodeletName, ASnippet.FTemplateCode);
+            AddToCodelet(ACodeletName, ASnippet.FTemplateCode.ToString());
         }
 
         /// <summary>
@@ -216,16 +217,16 @@ namespace Ict.Common.IO
         public void InsertSnippet(string ACodeletName, ProcessTemplate ASnippet, string ASeparator)
         {
             ASnippet.ReplaceCodelets();
-            ASnippet.FTemplateCode = ASnippet.ProcessIFDEFs(ASnippet.FTemplateCode);
-            ASnippet.FTemplateCode = ASnippet.ProcessIFNDEFs(ASnippet.FTemplateCode);
+            ASnippet.ProcessIFDEFs(ref ASnippet.FTemplateCode);
+            ASnippet.ProcessIFNDEFs(ref ASnippet.FTemplateCode);
 
             if (FCodelets.ContainsKey(ACodeletName)
-                && (((string)FCodelets[ACodeletName]).Length > 0))
+                && (FCodelets[ACodeletName].Length > 0))
             {
                 AddSeparatorToCodelet(ACodeletName, ASeparator);
             }
 
-            AddToCodelet(ACodeletName, ASnippet.FTemplateCode);
+            AddToCodelet(ACodeletName, ASnippet.FTemplateCode.ToString());
         }
 
         /// <summary>
@@ -240,30 +241,26 @@ namespace Ict.Common.IO
 
             if (FCodelets.ContainsKey(ACodeletName))
             {
-                AddToCodeletPrepend(ACodeletName, ASnippet.FTemplateCode + Environment.NewLine);
+                AddToCodeletPrepend(ACodeletName, ASnippet.FTemplateCode.ToString() + Environment.NewLine);
             }
             else
             {
-                AddToCodeletPrepend(ACodeletName, ASnippet.FTemplateCode);
+                AddToCodeletPrepend(ACodeletName, ASnippet.FTemplateCode.ToString());
             }
         }
 
         /// check if all placeholders have been replaced in the template; ignore IFDEF
-        public Boolean CheckTemplateCompletion(string s)
+        public Boolean CheckTemplateCompletion(StringBuilder s)
         {
-            string Backup = s;
             int posPlaceholder = s.IndexOf("{#");
             string remainingTemplatePlaceholders = "";
 
             while (posPlaceholder > -1)
             {
-                s = s.Substring(posPlaceholder + 2);
-                string latestPlaceholder = s.Substring(0, s.IndexOf("}"));
+                string latestPlaceholder = s.Substring(posPlaceholder + 2, s.IndexOf("}", posPlaceholder) - posPlaceholder - 2);
                 remainingTemplatePlaceholders +=
                     latestPlaceholder + Environment.NewLine;
-                s = s.Substring(s.IndexOf("}"));
-                s = s.Replace("{#" + latestPlaceholder + "}", "todo");
-                posPlaceholder = s.IndexOf("{#");
+                posPlaceholder = s.IndexOf("{#", posPlaceholder + 2);
             }
 
             if (remainingTemplatePlaceholders.Length > 0)
@@ -272,7 +269,7 @@ namespace Ict.Common.IO
                 {
                     StreamWriter FWriter;
                     FWriter = File.CreateText(FDestinationFile + ".error");
-                    FWriter.Write(Backup);
+                    FWriter.Write(s.ToString());
                     FWriter.Close();
 
                     throw new Exception("The template has not completely been filled in. " +
@@ -283,7 +280,7 @@ namespace Ict.Common.IO
                 else
                 {
                     TLogging.Log("Failure in this code: ");
-                    TLogging.Log(Backup);
+                    TLogging.Log(s.ToString());
 
                     throw new Exception("The template has not completely been filled in. " +
                         Environment.NewLine + "You are missing: " + Environment.NewLine +
@@ -297,8 +294,9 @@ namespace Ict.Common.IO
         /// <summary>
         /// remove all ifndefs that are defined
         /// </summary>
-        public string RemoveDefinedIFNDEF(string s, string APlaceHolderName)
+        private void RemoveDefinedIFNDEF(ref StringBuilder sb, List <string>APlaceHolderName)
         {
+            string s = sb.ToString();
             int posPlaceholder = s.IndexOf("{#IFNDEF ");
 
             while (posPlaceholder > -1)
@@ -314,28 +312,31 @@ namespace Ict.Common.IO
                         Environment.NewLine + "We are missing the ENDIFN for: " + name);
                 }
 
-                string before = s.Substring(0, posPlaceholder);
-                string between = s.Substring(posPlaceholder + 9 + name.Length + 1, posPlaceholderAfter - (posPlaceholder + 9 + name.Length + 1));
-                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
+                StringBuilder newName = new StringBuilder(name);
 
-                s = before +
-                    "{#IFNDEF " + name.Replace(APlaceHolderName, "TRUE") + "}" +
-                    between +
-                    "{#ENDIFN " + name.Replace(APlaceHolderName, "TRUE") + "}" +
-                    after;
+                foreach (string placeholder in APlaceHolderName)
+                {
+                    newName.Replace(placeholder, "TRUE");
+                }
 
+                sb.Replace("{#IFNDEF " + name + "}",
+                    "{#IFNDEF " + newName.ToString() + "}");
+                sb.Replace("{#ENDIFN " + name + "}",
+                    "{#ENDIFN " + newName.ToString() + "}");
+
+                s = sb.ToString();
                 posPlaceholder = s.IndexOf("{#IFNDEF ", posPlaceholder + 1);
             }
-
-            return s;
         }
 
         /// <summary>
         /// activate all ifdefs that are defined
         /// </summary>
-        public string ActivateDefinedIFDEF(string s, string APlaceholder)
+        private void ActivateDefinedIFDEF(ref StringBuilder sb, List <string>APlaceholder)
         {
             // get all ifdefs, and replace the APlaceHolder with TRUE
+            string s = sb.ToString();
+
             int posPlaceholder = s.IndexOf("{#IFDEF ");
 
             while (posPlaceholder > -1)
@@ -350,27 +351,65 @@ namespace Ict.Common.IO
                         Environment.NewLine + "We are missing the ENDIF for: " + name);
                 }
 
-                string before = s.Substring(0, posPlaceholder);
-                string between = s.Substring(posPlaceholder + 8 + name.Length + 1, posPlaceholderAfter - (posPlaceholder + 8 + name.Length + 1));
-                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
+                StringBuilder newName = new StringBuilder(name);
 
-                s = before +
-                    "{#IFDEF " + name.Replace(APlaceholder, "TRUE") + "}" +
-                    between +
-                    "{#ENDIF " + name.Replace(APlaceholder, "TRUE") + "}" +
-                    after;
+                foreach (string placeholder in APlaceholder)
+                {
+                    newName.Replace(placeholder, "TRUE");
+                }
 
+                sb.Replace("{#IFDEF " + name + "}",
+                    "{#IFDEF " + newName + "}");
+                sb.Replace("{#ENDIF " + name + "}",
+                    "{#ENDIF " + newName + "}");
+
+                s = sb.ToString();
                 posPlaceholder = s.IndexOf("{#IFDEF ", posPlaceholder + 1);
             }
+        }
 
-            return s;
+        private int FindMatchingEndTag(string s, int posStartTag, string AStartTag, string AEndTag)
+        {
+            int pos = posStartTag + 1;
+            int counterStartTag = 1;
+
+            while (pos < s.Length)
+            {
+                int startPos = s.IndexOf(AStartTag, pos);
+                int endPos = s.IndexOf(AEndTag, pos);
+
+                if ((startPos != -1) && (startPos < endPos))
+                {
+                    counterStartTag++;
+                    pos = startPos + 1;
+                }
+                else if (endPos != -1)
+                {
+                    counterStartTag--;
+
+                    if (counterStartTag == 0)
+                    {
+                        return endPos;
+                    }
+
+                    pos = endPos + 1;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+
+            // cannot find
+            return -1;
         }
 
         /// <summary>
         /// remove all ifdefs that are not defined, or activate them
         /// </summary>
-        public string ProcessIFDEFs(string s)
+        public void ProcessIFDEFs(ref StringBuilder sb)
         {
+            string s = sb.ToString();
             int posPlaceholder = s.IndexOf("{#IFDEF ");
 
             while (posPlaceholder > -1)
@@ -378,20 +417,7 @@ namespace Ict.Common.IO
                 string name = s.Substring(posPlaceholder + 8, s.IndexOf("}", posPlaceholder) - posPlaceholder - 8);
 
                 // find the matching closing ENDIF
-                int posPlaceholderAfter = s.IndexOf("{#ENDIF " + name + "}", posPlaceholder);
-                int posInBetween = posPlaceholder;
-                int countInBetween = 0;
-
-                while ((posInBetween = s.IndexOf("{#IFDEF " + name + "}", posInBetween + 1)) < posPlaceholderAfter && posInBetween >= 0)
-                {
-                    countInBetween++;
-                }
-
-                while (countInBetween > 0)
-                {
-                    posPlaceholderAfter = s.IndexOf("{#ENDIF " + name + "}", posPlaceholderAfter + 1);
-                    countInBetween--;
-                }
+                int posPlaceholderAfter = FindMatchingEndTag(s.ToString(), posPlaceholder, "{#IFDEF " + name + "}", "{#ENDIF " + name + "}");
 
                 if (posPlaceholderAfter == -1)
                 {
@@ -399,53 +425,27 @@ namespace Ict.Common.IO
                         Environment.NewLine + "We are missing the ENDIF for: " + name);
                 }
 
-                string before = string.Empty;
+                sb.Remove(posPlaceholder, 8 + name.Length + 1);
+                posPlaceholderAfter -= 8 + name.Length + 1;
+                sb.Remove(posPlaceholderAfter, 8 + name.Length + 1);
 
-                if (posPlaceholder > 0)
+                if (!((name == "TRUE") || (name == "TRUE AND TRUE") || name.StartsWith("TRUE OR") || name.EndsWith("OR TRUE")))
                 {
-                    before = s.Substring(0, posPlaceholder - Environment.NewLine.Length);
+                    sb.Remove(posPlaceholder, posPlaceholderAfter - posPlaceholder);
                 }
 
-                int firstCharAfterIfDef = posPlaceholder + 8 + name.Length + 1 + Environment.NewLine.Length;
-                string between = string.Empty;
-
-                if (posPlaceholderAfter - firstCharAfterIfDef - Environment.NewLine.Length > 0)
-                {
-                    between = s.Substring(firstCharAfterIfDef, posPlaceholderAfter - firstCharAfterIfDef - Environment.NewLine.Length);
-                }
-
-                string after = string.Empty;
-
-                if (s.IndexOf(Environment.NewLine, posPlaceholderAfter) != -1)
-                {
-                    after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter) + Environment.NewLine.Length);
-                }
-
-                if (before.Length > 0)
-                {
-                    before += Environment.NewLine;
-                }
-
-                if ((name == "TRUE") || (name == "TRUE AND TRUE") || name.StartsWith("TRUE OR") || name.EndsWith("OR TRUE"))
-                {
-                    s = before + between + Environment.NewLine + after;
-                }
-                else
-                {
-                    s = before + after;
-                }
+                s = sb.ToString();
 
                 posPlaceholder = s.IndexOf("{#IFDEF ");
             }
-
-            return s;
         }
 
         /// <summary>
         /// activate all ifndefs that are not defined
         /// </summary>
-        private string ProcessIFNDEFs(string s)
+        private void ProcessIFNDEFs(ref StringBuilder sb)
         {
+            string s = sb.ToString();
             int posPlaceholder = s.IndexOf("{#IFNDEF ");
 
             while (posPlaceholder > -1)
@@ -453,20 +453,7 @@ namespace Ict.Common.IO
                 string name = s.Substring(posPlaceholder + 9, s.IndexOf("}", posPlaceholder) - posPlaceholder - 9);
 
                 // find the matching closing ENDIFN
-                int posPlaceholderAfter = s.IndexOf("{#ENDIFN " + name + "}", posPlaceholder);
-                int posInBetween = posPlaceholder;
-                int countInBetween = 0;
-
-                while ((posInBetween = s.IndexOf("{#IFNDEF " + name + "}", posInBetween + 1)) < posPlaceholderAfter && posInBetween >= 0)
-                {
-                    countInBetween++;
-                }
-
-                while (countInBetween > 0)
-                {
-                    posPlaceholderAfter = s.IndexOf("{#ENDIFN " + name + "}", posPlaceholderAfter + 1);
-                    countInBetween--;
-                }
+                int posPlaceholderAfter = FindMatchingEndTag(s.ToString(), posPlaceholder, "{#IFNDEF " + name + "}", "{#ENDIFN " + name + "}");
 
                 if (posPlaceholderAfter == -1)
                 {
@@ -474,46 +461,19 @@ namespace Ict.Common.IO
                         Environment.NewLine + "We are missing the ENDIFN for: " + name);
                 }
 
-                string before = string.Empty;
+                sb.Remove(posPlaceholder, 9 + name.Length + 1);
+                posPlaceholderAfter -= 9 + name.Length + 1;
+                sb.Remove(posPlaceholderAfter, 9 + name.Length + 1);
 
-                if (posPlaceholder > 0)
+                if ((name == "TRUE") || (name == "TRUE AND TRUE") || name.StartsWith("TRUE OR") || name.EndsWith("OR TRUE"))
                 {
-                    before = s.Substring(0, posPlaceholder - Environment.NewLine.Length);
+                    sb.Remove(posPlaceholder, posPlaceholderAfter - posPlaceholder);
                 }
 
-                int firstCharAfterIfnDef = posPlaceholder + 9 + name.Length + 1 + Environment.NewLine.Length;
-                string between = string.Empty;
-
-                if (posPlaceholderAfter - firstCharAfterIfnDef - Environment.NewLine.Length > 0)
-                {
-                    between = s.Substring(firstCharAfterIfnDef, posPlaceholderAfter - firstCharAfterIfnDef - Environment.NewLine.Length);
-                }
-
-                string after = string.Empty;
-
-                if (s.IndexOf(Environment.NewLine, posPlaceholderAfter) != -1)
-                {
-                    after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter) + Environment.NewLine.Length);
-                }
-
-                if (before.Length > 0)
-                {
-                    before += Environment.NewLine;
-                }
-
-                if (!((name == "TRUE") || (name == "TRUE AND TRUE") || name.StartsWith("TRUE OR") || name.EndsWith("OR TRUE")))
-                {
-                    s = before + between + Environment.NewLine + after;
-                }
-                else
-                {
-                    s = before + after;
-                }
+                s = sb.ToString();
 
                 posPlaceholder = s.IndexOf("{#IFNDEF ");
             }
-
-            return s;
         }
 
         /// <summary>
@@ -531,16 +491,14 @@ namespace Ict.Common.IO
         }
 
         /// add code to existing code that will be replaced later
-        public string AddToCodelet(string APlaceholder, string ACodelet)
+        public void AddToCodelet(string APlaceholder, string ACodelet)
         {
             if (!FCodelets.ContainsKey(APlaceholder + FCodeletPostfix))
             {
-                FCodelets.Add(APlaceholder + FCodeletPostfix, "");
+                FCodelets.Add(APlaceholder + FCodeletPostfix, new StringBuilder());
             }
 
-            int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
-            FCodelets.SetByIndex(index, FCodelets.GetByIndex(index) + ACodelet);
-            return FCodelets.GetByIndex(index).ToString();
+            FCodelets[APlaceholder + FCodeletPostfix].Append(ACodelet);
         }
 
         /// add separator to codelet at the end of the previous row
@@ -551,8 +509,7 @@ namespace Ict.Common.IO
                 return String.Empty;
             }
 
-            int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
-            string Codelet = FCodelets.GetByIndex(index).ToString();
+            string Codelet = FCodelets[APlaceholder + FCodeletPostfix].ToString();
 
             if (Codelet.Trim().EndsWith(";"))
             {
@@ -569,36 +526,34 @@ namespace Ict.Common.IO
                 Codelet += ASeparator;
             }
 
-            FCodelets.SetByIndex(index, Codelet);
+            FCodelets[APlaceholder + FCodeletPostfix] = new StringBuilder(Codelet);
             return Codelet;
         }
 
         /// add code to existing code that will be replaced later.
         /// the new code is added before the existing code.
         /// this overload allows duplicates to be added
-        public string AddToCodeletPrepend(string APlaceholder, string ACodelet)
+        public void AddToCodeletPrepend(string APlaceholder, string ACodelet)
         {
-            return AddToCodeletPrepend(APlaceholder, ACodelet, true);
+            AddToCodeletPrepend(APlaceholder, ACodelet, true);
         }
 
         /// add code to existing code that will be replaced later.
         /// the new code is added before the existing code
-        public string AddToCodeletPrepend(string APlaceholder, string ACodelet, bool AAllowDuplicates)
+        public void AddToCodeletPrepend(string APlaceholder, string ACodelet, bool AAllowDuplicates)
         {
             if (!FCodelets.ContainsKey(APlaceholder + FCodeletPostfix))
             {
-                FCodelets.Add(APlaceholder + FCodeletPostfix, "");
+                FCodelets.Add(APlaceholder + FCodeletPostfix, new StringBuilder());
             }
 
-            int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
-            string previousValue = FCodelets.GetByIndex(index).ToString();
+            string previousValue = FCodelets[APlaceholder + FCodeletPostfix].ToString();
 
             if (AAllowDuplicates || !previousValue.Contains(ACodelet))
             {
-                FCodelets.SetByIndex(index, ACodelet + previousValue);
+                FCodelets[APlaceholder + FCodeletPostfix] = new StringBuilder(ACodelet);
+                FCodelets[APlaceholder + FCodeletPostfix].Append(previousValue);
             }
-
-            return FCodelets.GetByIndex(index).ToString();
         }
 
         /// <summary>
@@ -608,40 +563,37 @@ namespace Ict.Common.IO
         /// <param name="ACodelet"></param>
         /// <param name="AAddDuplicates"></param>
         /// <returns></returns>
-        public string AddToCodelet(string APlaceholder, string ACodelet, bool AAddDuplicates)
+        public void AddToCodelet(string APlaceholder, string ACodelet, bool AAddDuplicates)
         {
             if (!FCodelets.ContainsKey(APlaceholder + FCodeletPostfix))
             {
-                FCodelets.Add(APlaceholder + FCodeletPostfix, "");
+                FCodelets.Add(APlaceholder + FCodeletPostfix, new StringBuilder());
             }
 
-            int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
-
-            if (!AAddDuplicates && FCodelets.GetByIndex(index).ToString().Contains(ACodelet))
+            if (!AAddDuplicates && FCodelets[APlaceholder + FCodeletPostfix].ToString().Contains(ACodelet))
             {
-                return FCodelets.GetByIndex(index).ToString();
+                return;
             }
 
-            FCodelets.SetByIndex(index, FCodelets.GetByIndex(index) + ACodelet);
-            return FCodelets.GetByIndex(index).ToString();
+            FCodelets[APlaceholder + FCodeletPostfix].Append(ACodelet);
         }
 
         /// create a new codelet, overwrites existing one
-        public string SetCodelet(string APlaceholder, string ACodelet)
+        public void SetCodelet(string APlaceholder, string ACodelet)
         {
             if (ACodelet == null)
             {
-                ACodelet = "";
+                ACodelet = string.Empty;
             }
 
             if (!FCodelets.ContainsKey(APlaceholder + FCodeletPostfix))
             {
-                FCodelets.Add(APlaceholder + FCodeletPostfix, "");
+                FCodelets.Add(APlaceholder + FCodeletPostfix, new StringBuilder(ACodelet));
             }
-
-            int index = FCodelets.IndexOfKey(APlaceholder + FCodeletPostfix);
-            FCodelets.SetByIndex(index, ACodelet);
-            return FCodelets.GetByIndex(index).ToString();
+            else
+            {
+                FCodelets[APlaceholder + FCodeletPostfix] = new StringBuilder(ACodelet);
+            }
         }
 
         /// special way of splitting a multiline comment into several lines with comment slashes
@@ -676,22 +628,37 @@ namespace Ict.Common.IO
         {
             Boolean somethingWasReplaced = true;
 
+            List <string>Placeholders = new List <string>();
+
+            foreach (string key in FCodelets.Keys)
+            {
+                if (FCodelets[key].Length > 0)
+                {
+                    Placeholders.Add(key);
+                }
+            }
+
             // needs to be done several times, because the keys are ordered by name, which does not help here
             // protect from endless loop: only continue if a replacement still has happened.
             while (somethingWasReplaced)
             {
                 somethingWasReplaced = false;
 
+                int pos = FTemplateCode.IndexOf("{#");
+
+                ActivateDefinedIFDEF(ref FTemplateCode, Placeholders);
+                RemoveDefinedIFNDEF(ref FTemplateCode, Placeholders);
+
                 for (int index = 0; index < FCodelets.Count; index++)
                 {
-                    string s = FCodelets.GetByIndex(index).ToString();
+                    string s = FCodelets.Values[index].ToString();
 
                     if (s.Length == 0)
                     {
                         s = "BLANK";
                     }
 
-                    if (DoReplacePlaceHolder(FCodelets.GetKey(index).ToString(), s))
+                    if (DoReplacePlaceHolder(FCodelets.Keys[index], s))
                     {
                         somethingWasReplaced = true;
                     }
@@ -751,12 +718,6 @@ namespace Ict.Common.IO
                     throw new Exception("DoReplacePlaceHolder() Problem: Placeholder recursion, " + APlaceholder);
                 }
 
-                if (AValue.Length > 0)
-                {
-                    FTemplateCode = ActivateDefinedIFDEF(FTemplateCode, APlaceholder);
-                    FTemplateCode = RemoveDefinedIFNDEF(FTemplateCode, APlaceholder);
-                }
-
                 // automatically indent to the same indentation as the placeholder
                 int posPlaceholder = FTemplateCode.IndexOf("{#" + APlaceholder + "}");
 
@@ -765,7 +726,7 @@ namespace Ict.Common.IO
                     return false; // place holder cannot be found, so no replacement necessary
                 }
 
-                string placeHolderLine = FTemplateCode.Substring(FTemplateCode.LastIndexOf(Environment.NewLine,
+                string placeHolderLine = FTemplateCode.Substring(FTemplateCode.ToString().LastIndexOf(Environment.NewLine,
                         posPlaceholder + 1) + Environment.NewLine.Length + 1);
 
                 if (placeHolderLine.IndexOf(Environment.NewLine) != -1)
@@ -777,8 +738,6 @@ namespace Ict.Common.IO
                 {
                     // replace the whole line
                     int posNewline = FTemplateCode.Substring(0, posPlaceholder).LastIndexOf(Environment.NewLine);
-                    string before = FTemplateCode.Substring(0, posNewline);
-                    string after = FTemplateCode.Substring(FTemplateCode.IndexOf(Environment.NewLine, posPlaceholder + 1));
 
                     if (AValue.Length > 0)
                     {
@@ -793,12 +752,13 @@ namespace Ict.Common.IO
                         AValue = AValue.Replace(whitespaces + "{#ENDIFN ", Environment.NewLine + "{#ENDIFN ");
                     }
 
-                    FTemplateCode = before + AValue + after;
+                    FTemplateCode.Remove(posNewline, FTemplateCode.IndexOf(Environment.NewLine, posPlaceholder + 1) - posNewline);
+
+                    FTemplateCode.Insert(posNewline, AValue);
                 }
                 else
                 {
                     // replace just the placeholder
-
                     // insert indenting whitespaces if AValue has several lines
                     if (AValue.Contains(Environment.NewLine))
                     {
@@ -832,11 +792,11 @@ namespace Ict.Common.IO
         public Boolean ReplaceRegion(string regionName, string content)
         {
             // todo: if there is no region, create one, in the right place? before the brackets close of the last class?
-            FTemplateCode = Regex.Replace(
-                FTemplateCode,
-                "#region " + regionName + ".*" + "#endregion",
-                "#region " + regionName + Environment.NewLine + content + "#endregion",
-                RegexOptions.Singleline);
+            FTemplateCode = new StringBuilder(Regex.Replace(
+                    FTemplateCode.ToString(),
+                    "#region " + regionName + ".*" + "#endregion",
+                    "#region " + regionName + Environment.NewLine + content + "#endregion",
+                    RegexOptions.Singleline));
             return true;
         }
 
@@ -875,21 +835,19 @@ namespace Ict.Common.IO
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public string BeautifyCode(string s)
+        public void BeautifyCode(ref StringBuilder s)
         {
             // remove spaces at end of line
             while (s.IndexOf(" " + Environment.NewLine) != -1)
             {
-                s = s.Replace(" " + Environment.NewLine, Environment.NewLine);
+                s.Replace(" " + Environment.NewLine, Environment.NewLine);
             }
 
             // remove 2 or more empty lines and replace with just one
             while (s.IndexOf(Environment.NewLine + Environment.NewLine + Environment.NewLine) != -1)
             {
-                s = s.Replace(Environment.NewLine + Environment.NewLine + Environment.NewLine, Environment.NewLine + Environment.NewLine);
+                s.Replace(Environment.NewLine + Environment.NewLine + Environment.NewLine, Environment.NewLine + Environment.NewLine);
             }
-
-            return s;
         }
 
         /// <summary>
@@ -902,13 +860,12 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public Boolean FinishWriting(string AXAMLFilename, string ADestFileExtension, Boolean ACheckTemplateCompletion)
         {
+//            TLogging.Log("1");
             ReplaceCodelets();
-            FTemplateCode = ProcessIFDEFs(FTemplateCode);
-            FTemplateCode = ProcessIFNDEFs(FTemplateCode);
-            FTemplateCode = BeautifyCode(FTemplateCode);
-
-            // just one line break at the end
-            FTemplateCode = FTemplateCode.TrimEnd(new char[] { ' ', '\t', '\r', '\n' });
+//            TLogging.Log("2");
+            ProcessIFDEFs(ref FTemplateCode);
+            ProcessIFNDEFs(ref FTemplateCode);
+            BeautifyCode(ref FTemplateCode);
 
             AXAMLFilename = AXAMLFilename.Replace('\\', Path.DirectorySeparatorChar);
             AXAMLFilename = AXAMLFilename.Replace('/', Path.DirectorySeparatorChar);
@@ -922,8 +879,11 @@ namespace Ict.Common.IO
             {
                 Console.WriteLine("Writing " + Path.GetFileName(FDestinationFile));
 
+                // just one line break at the end
+                string code = FTemplateCode.ToString().TrimEnd(new char[] { ' ', '\t', '\r', '\n' });
+
                 StreamWriter sw = new StreamWriter(FDestinationFile + ".new", false, System.Text.Encoding.UTF8);
-                sw.Write(FTemplateCode);
+                sw.Write(code);
                 sw.Close();
 
                 TTextFile.UpdateFile(FDestinationFile, true);
@@ -940,20 +900,54 @@ namespace Ict.Common.IO
         public string FinishWriting(Boolean ACheckTemplateCompletion)
         {
             ReplaceCodelets();
-            FTemplateCode = ProcessIFDEFs(FTemplateCode);
-            FTemplateCode = ProcessIFNDEFs(FTemplateCode);
-            FTemplateCode = BeautifyCode(FTemplateCode);
-
-            // just one line break at the end
-            FTemplateCode = FTemplateCode.TrimEnd(new char[] { ' ', '\t', '\r', '\n' }) + Environment.NewLine;
+            ProcessIFDEFs(ref FTemplateCode);
+            ProcessIFNDEFs(ref FTemplateCode);
+            BeautifyCode(ref FTemplateCode);
 
             if (!ACheckTemplateCompletion || CheckTemplateCompletion(FTemplateCode))
             {
-                return FTemplateCode;
+                // just one line break at the end
+                return FTemplateCode.ToString().TrimEnd(new char[] { ' ', '\t', '\r', '\n' }) + Environment.NewLine;
             }
 
             // an exception is thrown anyways by CheckTemplateCompletion
             return "";
+        }
+    }
+
+    /// <summary>
+    /// helpful extensions for the StringBuilder
+    /// </summary>
+    public static class StringBuilderExtensions
+    {
+        /// useful extension for StringBuilder
+        public static bool Contains(this StringBuilder sb, string s)
+        {
+            return sb.ToString().Contains(s);
+        }
+
+        /// useful extension for StringBuilder
+        public static int IndexOf(this StringBuilder sb, string s)
+        {
+            return sb.ToString().IndexOf(s);
+        }
+
+        /// useful extension for StringBuilder
+        public static int IndexOf(this StringBuilder sb, string s, int pos)
+        {
+            return sb.ToString().IndexOf(s, pos);
+        }
+
+        /// useful extension for StringBuilder
+        public static string Substring(this StringBuilder sb, int pos, int length)
+        {
+            return sb.ToString().Substring(pos, length);
+        }
+
+        /// useful extension for StringBuilder
+        public static string Substring(this StringBuilder sb, int pos)
+        {
+            return sb.ToString().Substring(pos);
         }
     }
 }
