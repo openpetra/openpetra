@@ -542,7 +542,7 @@ namespace Ict.Petra.Client.App.PetraClient
         
         private void OnSubmoduleChanged(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
         {
-            const string DetailTextPrefix = "-> ";
+            const string DetailTextPrefix = "» ";
             string ModuleText = String.Empty;
             string BreadcrumbDetailText = String.Empty;
             

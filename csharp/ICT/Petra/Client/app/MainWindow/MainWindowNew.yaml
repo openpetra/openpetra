@@ -42,7 +42,7 @@ RootNode:
         lstFolders:
             Type: Ict.Common.Controls.TLstFolderNavigation
             Dock: Left
-            Width: 220
+            Width: 215
         mnuMain: 
         tbrMain:
         stbMain:
