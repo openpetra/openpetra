@@ -325,7 +325,7 @@ namespace Ict.Common.Controls
                 if (FCurrentLedger == LEDGERNUMBER_NO_ACCESS_TO_ANY_LEDGER)
                 {
                     MessageBox.Show(String.Format("Access to OpenPetra Module '{0}' is denied as you don't have access rights to any Ledger!" +
-                            "\r\n\r\n" + 
+                            "\r\n\r\n" +
                             "Someone with OpenPetra System Administrator rights needs to grant you access rights to at least one Ledger " +
                             "for you to be able to work with this Module.", TXMLParser.GetAttribute(ModuleXmlNode, "Label")),
                         "Access to OpenPetra Module Denied",
@@ -415,8 +415,8 @@ namespace Ict.Common.Controls
             if (ALedgerName != String.Empty)
             {
                 MessageBox.Show(String.Format("You have changed the Ledger to\r\n\r\n    Ledger {0} (#{1}).",
-                        ALedgerName, ALedgerNr), 
-                        LedgerChangeTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ALedgerName, ALedgerNr),
+                    LedgerChangeTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
