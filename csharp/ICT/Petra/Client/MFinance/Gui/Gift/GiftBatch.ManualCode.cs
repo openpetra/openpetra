@@ -190,14 +190,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public TUC_GiftTransactions GetTransactionsControl()
         {
-            if (ucoTransactions == null)
-            {
-                return null;
-            }
-            else
-            {
-                return ucoTransactions;
-            }
+			return ucoTransactions;
         }
 
         /// this window contains 2 tabs
