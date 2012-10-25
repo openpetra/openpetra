@@ -37,7 +37,7 @@ namespace Ict.Common.Controls
     /// it has an icon and a label;
     /// it has a gradient background
     /// </summary>
-    public partial class TRbtNavigationButton : TPnlGradient
+    public partial class TRbtNavigationButton : Owf.Controls.A1Panel
     {
         private static TOpenPetraMenuColours FOpenPetraMenuColours = new TOpenPetraMenuColours();
         
@@ -56,7 +56,11 @@ namespace Ict.Common.Controls
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             #endregion
             
-            this.Border = new Pen(FOpenPetraMenuColours.MenuBackgroundColour);
+            this.BorderColor = FOpenPetraMenuColours.MenuBackgroundColour;
+            this.GradientDirection = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+            this.ShadowOffSet = 0;
+            this.RoundCornerRadius = 0;
+            this.ImageLocation = new System.Drawing.Point(7, 7);
 
             this.lblCaption.Enter += new System.EventHandler(this.PanelEnter);
             this.lblCaption.Leave += new System.EventHandler(this.PanelLeave);
@@ -69,6 +73,8 @@ namespace Ict.Common.Controls
             this.Leave += new System.EventHandler(this.PanelLeave);
             this.Click += new System.EventHandler(this.PanelClick);
 
+            SetStandardAppearance();
+            
             FCheckChangingDelegate = ACheckChangingDelegate;
         }
 
@@ -144,7 +150,7 @@ namespace Ict.Common.Controls
         {
             set
             {
-                pbxIcon.Image = (new System.Drawing.Icon(value, 16, 16)).ToBitmap();
+                Image = (new System.Drawing.Icon(value, 16, 16)).ToBitmap();
             }
         }
 
@@ -196,24 +202,24 @@ namespace Ict.Common.Controls
 
         private void SetStandardAppearance()
         {
-            this.GradientColorTop = FOpenPetraMenuColours.ToolStripGradientBegin;
-            this.GradientColorBottom = FOpenPetraMenuColours.ToolStripGradientEnd;                
+            this.GradientStartColor = FOpenPetraMenuColours.ToolStripGradientBegin;
+            this.GradientEndColor = FOpenPetraMenuColours.ToolStripGradientEnd;                
             
             Refresh();
         }
 
         private void SetClickedAppearance()
         {
-            this.GradientColorTop = FOpenPetraMenuColours.ButtonSelectedGradientBegin;
-            this.GradientColorBottom = FOpenPetraMenuColours.ButtonPressedGradientEnd;                                        
+            this.GradientStartColor = FOpenPetraMenuColours.ButtonSelectedGradientBegin;
+            this.GradientEndColor = FOpenPetraMenuColours.ButtonPressedGradientEnd;                                        
             
             Refresh();
         }
         
         private void SetHoveringAppearance()
         {
-            this.GradientColorTop = FOpenPetraMenuColours.ButtonSelectedGradientBegin;
-            this.GradientColorBottom = FOpenPetraMenuColours.ButtonSelectedGradientEnd;                
+            this.GradientStartColor = FOpenPetraMenuColours.ButtonSelectedGradientBegin;
+            this.GradientEndColor = FOpenPetraMenuColours.ButtonSelectedGradientEnd;                
             
             Refresh();
         }      
