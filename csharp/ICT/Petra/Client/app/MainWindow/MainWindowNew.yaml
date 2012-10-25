@@ -4,7 +4,7 @@ RootNode:
     FormType: navigation
     Namespace: Ict.Petra.Client.App.PetraClient
     Icon: petraico-big.ico
-    WindowWidth: 815
+    WindowWidth: 828
     WindowHeight: 600
     Events:
         Activated: {class=System.EventHandler,method=FPetraUtilsObject.TFrmPetra_Activated}
@@ -23,15 +23,26 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [pnlTaskArea, lstFolders]
+            BackColor: System.Drawing.Color.FromArgb(94, 136, 194)
             Dock: Fill
+            Padding: 3,3,3,3
         pnlTaskArea:
             Controls: [pnlTop, dsbContent]
+            Padding: 4,0,1,1
             Dock: Fill
         pnlTop:
-            Height: 28
+            Height: 27
             Dock: Top
-        dsbContent: {Type=Ict.Common.Controls.TDashboard, Dock=Fill}
-        lstFolders: {Type=Ict.Common.Controls.TLstFolderNavigation, Dock=Left, Width=200}
+            BackColor: System.Drawing.Color.FromArgb(94, 136, 194)
+        dsbContent: 
+            Type: Ict.Common.Controls.TDashboard
+            BackColor: System.Drawing.Color.White
+            Padding: 3,3,0,5
+            Dock: Fill
+        lstFolders:
+            Type: Ict.Common.Controls.TLstFolderNavigation
+            Dock: Left
+            Width: 220
         mnuMain: 
         tbrMain:
         stbMain:
@@ -41,16 +52,17 @@ RootNode:
             Order: AlwaysFirst
             mniClose: {Order=AlwaysLast}
         mniView:
-            mniViewTasks: {Label=Tasks}
-                mniViewTasksTiles: {Label=Tiles}
-                mniViewTasksList: {Label=List}
+            Label: &View
+            mniViewTasks: {Label=&Tasks}
+                mniViewTasksTiles: {Label=&Tiles}
+                mniViewTasksList: {Label=&List}
                 mniSeparator: {Label=-}
-                mniViewTaskSize: {Label="Task Size"}
-                    mniViewTaskSizeLarge: {Label=Large, Action=actViewTaskSizeChange}
-                    mniViewTaskSizeMedium: {Label=Medium, Action=actViewTaskSizeChange}
-                    mniViewTaskSizeSmall: {Label=Small, Action=actViewTaskSizeChange}
+                mniViewTaskSize: {Label="Task &Size"}
+                    mniViewTaskSizeLarge: {Label=&Large, Action=actViewTaskSizeChange}
+                    mniViewTaskSizeMedium: {Label=&Medium, Action=actViewTaskSizeChange}
+                    mniViewTaskSizeSmall: {Label=&Small, Action=actViewTaskSizeChange}
                 mniSeparator: {Label=-}
-                mniViewTasksSingleClickExecution: {Label=Single-click to open an item}
+                mniViewTasksSingleClickExecution: {Label=Single-&click to open an item}
         mniHelp: 
             Label: &Help
             Order: AlwaysLast

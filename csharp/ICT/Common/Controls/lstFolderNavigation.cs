@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Drawing;
 using System.Xml;
 using System.Windows.Forms;
 using Ict.Common.IO;
@@ -72,8 +73,16 @@ namespace Ict.Common.Controls
         public TLstFolderNavigation()
         {
             ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
-
+            TVisualStyles VisualStyle = new TVisualStyles(TVisualStylesEnum.vsHorizontalCollapse);
+            
             InitializeComponent();
+            
+            sptNavigation.BackColor = VisualStyle.TitleGradientEnd;
+            
+            pnlMoreButtons.GradientColorTop = VisualStyle.TitleGradientStart;
+            pnlMoreButtons.GradientColorBottom = VisualStyle.TitleGradientEnd;
+            pnlMoreButtons.Border = new System.Drawing.Pen(new TOpenPetraMenuColours().MenuBackgroundColour);
+            
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N

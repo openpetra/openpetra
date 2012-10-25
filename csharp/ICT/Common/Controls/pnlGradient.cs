@@ -127,16 +127,16 @@ namespace Ict.Common.Controls
         /// </summary>
         protected override void OnPaint(PaintEventArgs e)
         {
-            Rectangle BaseRectangle = new Rectangle(1, 1, this.Width - 2, this.Height - 2);
+            Rectangle BaseRectangle = new Rectangle(0, 0, this.Width, this.Height - 1);
 
             if (DontDrawBottomLine)
             {
-                BaseRectangle = new Rectangle(1, 1, this.Width - 2, this.Height - 1);
+                BaseRectangle = new Rectangle(0, 0, this.Width, this.Height);
             }
 
             if (Border != Pens.Transparent)
             {
-                BaseRectangle = new Rectangle(0, 0, this.Width - 1, this.Height - 1);
+                BaseRectangle = new Rectangle(1, 1, this.Width - 2, this.Height - 2);
             }
 
             Brush Gradient_Brush =

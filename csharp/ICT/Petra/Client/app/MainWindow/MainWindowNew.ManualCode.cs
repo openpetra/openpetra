@@ -72,6 +72,11 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private void InitializeManualCode()
         {
+            // Currently, only the Main Menu gets an 'OpenPetra styled' StatusBar (an 'OpenPetra styled' StatusBar
+            // doesn't go with normal Forms at the moment as pnlContent's BackColor [and UserControls] is white 
+            // in colour and that doesn't look that good with an 'OpenPetra styled' StatusBar at the bottom).
+            stbMain.UseOpenPetraToolStripRenderer = true;
+            
             InitialiseTopPanel();
             
             LoadNavigationUI();
@@ -525,6 +530,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TopPanel.Padding = new Padding(0, 1, 0, 0);
             TopPanel.GradientColorTop = VisualStyle.TitleGradientStart;
             TopPanel.GradientColorBottom = VisualStyle.TitleGradientEnd;
+            TopPanel.DontDrawBottomLine = false;
             
             pnlTop.Controls.Add(TopPanel);
                 
@@ -579,5 +585,5 @@ namespace Ict.Petra.Client.App.PetraClient
             // Remove any message that is shown in the Status Bar (e.g. the one that is put there when creating a new Ledger)
             this.stbMain.ShowMessage(String.Empty);            
         }
-    }
+    }    
 }
