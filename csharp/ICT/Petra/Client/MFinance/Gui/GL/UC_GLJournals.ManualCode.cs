@@ -62,9 +62,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Make sure the current effective date for the Batch is correct
             batchDateEffective = GetBatchRow().DateEffective;
 
-            if ((!dtpDetailDateEffective.Date.HasValue) || (dtpDetailDateEffective.Date.Value != batchDateEffective))
+            if (ABatchStatus == MFinanceConstants.BATCH_UNPOSTED)
             {
-                dtpDetailDateEffective.Date = batchDateEffective;
+                if ((!dtpDetailDateEffective.Date.HasValue) || (dtpDetailDateEffective.Date.Value != batchDateEffective))
+                {
+                    dtpDetailDateEffective.Date = batchDateEffective;
+                }
             }
 
             //Check if same Journals as previously selected
@@ -119,7 +122,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //This will update Batch totals
             UpdateTotals(GetBatchRow());
-            ((TFrmGLBatch)ParentForm).SaveChanges();
         }
 
         private void RefreshCurrencyAndExchangeRate()
@@ -233,15 +235,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (ABatch.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
             {
-                ABatch.BatchCreditTotal = sumCredits;
-                ABatch.BatchDebitTotal = sumDebits;
-                ABatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
+                if (ABatch.BatchCreditTotal != sumCredits)
+                {
+                    ABatch.BatchCreditTotal = sumCredits;
+                }
+
+                if (ABatch.BatchDebitTotal != sumDebits)
+                {
+                    ABatch.BatchDebitTotal = sumDebits;
+                }
+
+                if (ABatch.BatchRunningTotal != Math.Round(sumDebits - sumCredits, 2))
+                {
+                    ABatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
+                }
             }
 
+            FPetraUtilsObject.DisableDataChangedEvent();
             txtCurrentPeriod.Text = ABatch.BatchPeriod.ToString();
             txtDebit.NumberValueDecimal = sumDebits;
             txtCredit.NumberValueDecimal = sumCredits;
             txtControl.NumberValueDecimal = ABatch.BatchControlTotal;
+            FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         private void ShowDetailsManual(AJournalRow ARow)

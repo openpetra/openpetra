@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.DisableDataChangedEvent();
                 LoadBatches(FLedgerNumber);
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().RefreshAll();
             }
             finally
             {
@@ -190,7 +191,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 out FDefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
-            dtpDetailGlEffectiveDate.Date = FDefaultDate;
+
+            //dtpDetailGlEffectiveDate.Date = FDefaultDate;
 
             if (grdDetails.Rows.Count > 1)
             {
@@ -202,10 +204,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             ShowData();
+            ShowDetails(GetCurrentBatchRow());
 
             FBatchLoaded = true;
-
-            ShowDetails(GetCurrentBatchRow());
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -411,16 +412,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 Int32 periodNumber = 0;
                 Int32 yearNumber = 0;
                 DateTime dateValue;
-
                 string aDate = dtpDetailGlEffectiveDate.Text;
 
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
+                    FPreviouslySelectedDetailRow.GlEffectiveDate = dateValue;
+
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
                     {
                         if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+
+                            //Period has changed, so update transactions DateEntered
+                            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateDateEntered(FPreviouslySelectedDetailRow);
 
                             if (cmbYear.SelectedIndex != 0)
                             {
@@ -430,9 +435,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             {
                                 cmbPeriod.SelectedIndex = 0;
                             }
-
-                            //Period has changed, so update transactions DateEntered
-                            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateDateEntered();
                         }
                     }
                 }
@@ -519,18 +521,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ((TFrmGiftBatch)ParentForm).EnableTransactions();
 
+            dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
+
             //Update the batch period if necessary
             UpdateBatchPeriod(null, null);
 
             UpdateChangeableStatus();
 
             RefreshCurrencyAndExchangeRate();
-
-//            FPetraUtilsObject.DetailProtectedMode =
-//                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
-//            ((TFrmGiftBatch)ParentForm).LoadTransactions(
-//                ARow.LedgerNumber,
-//                ARow.BatchNumber);
         }
 
         private Boolean ViewMode
@@ -584,10 +582,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbPeriod.SelectedIndex = 0;
             }
 
+            FPreviouslySelectedDetailRow = null;
+
             pnlDetails.Enabled = true;
             this.CreateNewAGiftBatch();
+
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
             txtDetailBatchDescription.Focus();
 
+            FPreviouslySelectedDetailRow.GlEffectiveDate = FDefaultDate;
             dtpDetailGlEffectiveDate.Date = FDefaultDate;
 
             if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
@@ -853,8 +857,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Verifications = new TVerificationResultCollection();
 
-            Thread t = new Thread(() => PostGiftBatch(out Verifications));
-            t.Start();
+            Thread postingThread = new Thread(() => PostGiftBatch(out Verifications));
+            postingThread.Start();
 
             TProgressDialog dialog = new TProgressDialog();
 
@@ -1038,13 +1042,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            if (ARow != null)
+            if (ARow == null)
             {
-                if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
-                {
-                    txtDetailHashTotal.NumberValueDecimal = 0m;
-                    ARow.HashTotal = 0m;
-                }
+                return;
+            }
+
+            if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+            {
+                txtDetailHashTotal.NumberValueDecimal = 0m;
+                ARow.HashTotal = 0m;
             }
 
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,

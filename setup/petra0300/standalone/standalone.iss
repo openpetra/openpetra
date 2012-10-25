@@ -36,6 +36,7 @@ Source: ..\..\..\delivery\bin\ICSharpCode.SharpZipLib.dll; DestDir: {app}/bin30;
 Source: ..\..\..\delivery\bin\GNU.Gettext.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Npgsql.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Owf.Controls.A1Panel.dll; DestDir: {app}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\CustomControl.OrientedTextControls.dll; DestDir: {app}/bin30; Flags: ignoreversion
 
 Source: ..\..\..\delivery\bin\Ict.Common*.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.ClientPlugins*.dll; DestDir: {app}/bin30; Flags: ignoreversion

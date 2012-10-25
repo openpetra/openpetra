@@ -798,14 +798,17 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TDateChecks.IsDateBetweenDates(
-                    new DateTime(ARow.BelieverSinceYear, 12, 31), new DateTime(1850, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
-                    ValidationControlsData.ValidationControlLabel,
-                    TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctNoFutureDate,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                if (!ARow.IsBelieverSinceYearNull())
+                {
+                    VerificationResult = TDateChecks.IsDateBetweenDates(
+                        new DateTime(ARow.BelieverSinceYear, 12, 31), new DateTime(1850, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
+                        ValidationControlsData.ValidationControlLabel,
+                        TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctNoFutureDate,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
             }
         }
 
