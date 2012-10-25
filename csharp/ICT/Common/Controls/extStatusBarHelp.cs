@@ -43,7 +43,7 @@ namespace Ict.Common.Controls
         private System.Windows.Forms.Control FActiveControl;
         private System.Windows.Forms.ToolStripStatusLabel FStatusLabel;
         private bool FUseOpenPetraToolStripRenderer = false;
-        
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -53,7 +53,8 @@ namespace Ict.Common.Controls
             this.SuspendLayout();
 
             this.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-                    this.FStatusLabel });
+                    this.FStatusLabel
+                });
 
             this.FStatusLabel.Name = "FStatusLabel";
             this.FStatusLabel.AutoSize = true;
@@ -86,14 +87,14 @@ namespace Ict.Common.Controls
             {
                 return FUseOpenPetraToolStripRenderer;
             }
-            
+
             set
             {
                 FUseOpenPetraToolStripRenderer = value;
-                
-                if (value == true) 
+
+                if (value == true)
                 {
-                    this.Renderer = new TOpenPetraToolStripRenderer(new TOpenPetraMenuColours());    
+                    this.Renderer = new TOpenPetraToolStripRenderer(new TOpenPetraMenuColours());
                 }
                 else
                 {
@@ -101,7 +102,7 @@ namespace Ict.Common.Controls
                 }
             }
         }
-        
+
         //
         // <doc>
         // <desc>
@@ -190,7 +191,7 @@ namespace Ict.Common.Controls
         {
             FStatusLabel.Text = msg;
         }
-        
+
         /// <summary>
         /// OpenPetra-styled ToolStripRenderer (paints a vertical gradient instead of a horizontal one)
         /// </summary>
@@ -198,47 +199,50 @@ namespace Ict.Common.Controls
         {
             // Brush that paints the background of the GridStrip control (needed for vertical gradient).
             private Brush backgroundBrush = null;
-        
+
             /// <summary>
             /// Constructor.
             /// </summary>
             public TOpenPetraToolStripRenderer() : base()
             {
-                
             }
-    
+
             /// <summary>
             /// Constructor.
             /// </summary>
             /// <param name="AColorTable">The <see cref="System.Windows.Forms.ProfessionalColorTable" /> to initialise the Renderer with.</param>
             public TOpenPetraToolStripRenderer(ProfessionalColorTable AColorTable) : base(AColorTable)
             {
-                
             }
-            
+
             /// <summary>
             /// Raises the <see cref="System.Windows.Forms.ToolStripRenderer.RenderToolStripBackground" /> event.
             /// </summary>
             /// <param name="e">Provided by WinForms.</param>
-            protected override void OnRenderToolStripBackground (ToolStripRenderEventArgs e)
+            protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
             {
-                base.OnRenderToolStripBackground (e);
-                
+                base.OnRenderToolStripBackground(e);
+
                 if (e.ToolStrip is MenuStrip || e.ToolStrip is StatusStrip)
                 {
-                    if (this.backgroundBrush == null) 
+                    if (this.backgroundBrush == null)
                     {
-                        this.backgroundBrush = new LinearGradientBrush (e.AffectedBounds, this.ColorTable.ToolStripGradientBegin, this.ColorTable.ToolStripGradientEnd, LinearGradientMode.Vertical);
+                        this.backgroundBrush = new LinearGradientBrush(e.AffectedBounds,
+                            this.ColorTable.ToolStripGradientBegin,
+                            this.ColorTable.ToolStripGradientEnd,
+                            LinearGradientMode.Vertical);
                     }
-                    
-                    e.Graphics.FillRectangle (this.backgroundBrush, e.AffectedBounds);
+
+                    e.Graphics.FillRectangle(this.backgroundBrush, e.AffectedBounds);
                 }
                 else
                 {
-                    using (LinearGradientBrush b = new LinearGradientBrush (e.AffectedBounds, this.ColorTable.ToolStripGradientBegin, this.ColorTable.ToolStripGradientEnd, LinearGradientMode.Horizontal))
-                        e.Graphics.FillRectangle (b, e.AffectedBounds);
+                    using (LinearGradientBrush b =
+                               new LinearGradientBrush(e.AffectedBounds, this.ColorTable.ToolStripGradientBegin, this.ColorTable.ToolStripGradientEnd,
+                                   LinearGradientMode.Horizontal))
+                        e.Graphics.FillRectangle(b, e.AffectedBounds);
                 }
-            }        
-        }        
+            }
+        }
     }
 }

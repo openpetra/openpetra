@@ -74,15 +74,15 @@ namespace Ict.Common.Controls
         {
             ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
             TVisualStyles VisualStyle = new TVisualStyles(TVisualStylesEnum.vsHorizontalCollapse);
-            
+
             InitializeComponent();
-            
+
             sptNavigation.BackColor = VisualStyle.TitleGradientEnd;
-            
+
             pnlMoreButtons.GradientColorTop = VisualStyle.TitleGradientStart;
             pnlMoreButtons.GradientColorBottom = VisualStyle.TitleGradientEnd;
             pnlMoreButtons.Border = new System.Drawing.Pen(new TOpenPetraMenuColours().MenuBackgroundColour);
-            
+
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
@@ -397,12 +397,12 @@ namespace Ict.Common.Controls
 
         private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
         {
-            if (SubmoduleChanged != null) 
+            if (SubmoduleChanged != null)
             {
-                if (ATaskListNode.Attributes["LedgerNumber"] == null) 
+                if (ATaskListNode.Attributes["LedgerNumber"] == null)
                 {
-                    SubmoduleChanged(ATaskList, ATaskListNode, AItemClicked);    
-                }                
+                    SubmoduleChanged(ATaskList, ATaskListNode, AItemClicked);
+                }
             }
         }
 
@@ -423,8 +423,8 @@ namespace Ict.Common.Controls
                 MessageBox.Show(String.Format("You have changed the Ledger to\r\n\r\n    Ledger #{0}.", ALedgerNr), LedgerChangeTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            
-            if (LedgerChanged != null) 
+
+            if (LedgerChanged != null)
             {
                 LedgerChanged(ALedgerNr, ALedgerName);
             }

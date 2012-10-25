@@ -340,7 +340,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("mnu", typeof(MenuStrip))
         {
         }
-        
+
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
@@ -351,7 +351,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.SetControlProperty(ctrl, "GripMargin", "new System.Windows.Forms.Padding(0)");
 
             return writer.FTemplate;
-        }        
+        }
     }
 
     /// <summary>
@@ -378,7 +378,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FRequiresChildren = true;
         }
-        
+
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {

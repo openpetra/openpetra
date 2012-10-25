@@ -37,7 +37,7 @@ namespace Ict.Petra.Client.App.PetraClient
         Panel FBreadcrumbTrailPanel;
         Label FBreadcrumbTrailModuleLabel;
         Label FBreadcrumbTrailDetailLabel;
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -45,23 +45,23 @@ namespace Ict.Petra.Client.App.PetraClient
         public TBreadcrumbTrail(Panel ATopPanel)
         {
             TVisualStyles VisualStyle = new TVisualStyles(TVisualStylesEnum.vsHorizontalCollapse);
-                        
+
             FBreadcrumbTrailPanel = new Panel();
             FBreadcrumbTrailPanel.Name = "BreadcrumbTrail";
             FBreadcrumbTrailPanel.BackColor = Color.Transparent;
-            FBreadcrumbTrailPanel.Dock = DockStyle.Fill;           
-            
+            FBreadcrumbTrailPanel.Dock = DockStyle.Fill;
+
             ATopPanel.Controls.Add(FBreadcrumbTrailPanel);
-            
+
             Panel BreadcrumbTrailModulePanel = new Panel();
             BreadcrumbTrailModulePanel.Name = "BreadcrumbTrailMainPanel";
             BreadcrumbTrailModulePanel.BackColor = Color.Transparent;
-            BreadcrumbTrailModulePanel.Dock = DockStyle.Left;           
+            BreadcrumbTrailModulePanel.Dock = DockStyle.Left;
             BreadcrumbTrailModulePanel.AutoSize = true;
             BreadcrumbTrailModulePanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            
+
             FBreadcrumbTrailPanel.Controls.Add(BreadcrumbTrailModulePanel);
-            
+
             FBreadcrumbTrailModuleLabel = new Label();
             FBreadcrumbTrailModuleLabel.Name = "BreadcrumbTrailModuleLabel";
             FBreadcrumbTrailModuleLabel.Font = VisualStyle.TitleFont;
@@ -69,25 +69,25 @@ namespace Ict.Petra.Client.App.PetraClient
             FBreadcrumbTrailModuleLabel.BackColor = Color.Transparent;
             FBreadcrumbTrailModuleLabel.AutoSize = true;
             FBreadcrumbTrailModuleLabel.Dock = DockStyle.Left;
-            
+
             BreadcrumbTrailModulePanel.Controls.Add(FBreadcrumbTrailModuleLabel);
-            
+
             FBreadcrumbTrailDetailLabel = new Label();
             FBreadcrumbTrailDetailLabel.Name = "BreadcrumbTrailDetailLabel";
-            FBreadcrumbTrailDetailLabel.Font = new System.Drawing.Font(VisualStyle.TitleFont.FontFamily, VisualStyle.TitleFont.SizeInPoints - 2, 
+            FBreadcrumbTrailDetailLabel.Font = new System.Drawing.Font(VisualStyle.TitleFont.FontFamily, VisualStyle.TitleFont.SizeInPoints - 2,
                 FontStyle.Bold);
             FBreadcrumbTrailDetailLabel.ForeColor = VisualStyle.TitleFontColour;
             FBreadcrumbTrailDetailLabel.BackColor = Color.Transparent;
             FBreadcrumbTrailDetailLabel.AutoEllipsis = true;
             FBreadcrumbTrailDetailLabel.Dock = DockStyle.Fill;
             FBreadcrumbTrailDetailLabel.Padding = new Padding(0, 2, 0, 0);
-            
+
             FBreadcrumbTrailPanel.Controls.Add(FBreadcrumbTrailDetailLabel);
-            
+
             FBreadcrumbTrailDetailLabel.BringToFront();
-            
+
             FBreadcrumbTrailModuleLabel.Text = "Ledger 43";
-            FBreadcrumbTrailDetailLabel.Text = "-> Gift";           
+            FBreadcrumbTrailDetailLabel.Text = "-> Gift";
         }
 
         /// <summary>
@@ -99,13 +99,13 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 return FBreadcrumbTrailModuleLabel.Text;
             }
-            
+
             set
             {
                 FBreadcrumbTrailModuleLabel.Text = value;
             }
         }
-                /// <summary>
+        /// <summary>
         /// Detail Text of the Breadcrumb Trail
         /// </summary>
         public string DetailText
@@ -114,12 +114,11 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 return FBreadcrumbTrailDetailLabel.Text;
             }
-            
+
             set
             {
                 FBreadcrumbTrailDetailLabel.Text = value;
             }
         }
-        
     }
 }

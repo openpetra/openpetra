@@ -40,7 +40,7 @@ namespace Ict.Common.Controls
     public partial class TRbtNavigationButton : Owf.Controls.A1Panel
     {
         private static TOpenPetraMenuColours FOpenPetraMenuColours = new TOpenPetraMenuColours();
-        
+
         private bool FChecked = false;
         private bool FHovering = false;
         private CheckedChanging FCheckChangingDelegate = null;
@@ -55,7 +55,7 @@ namespace Ict.Common.Controls
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             #endregion
-            
+
             this.BorderColor = FOpenPetraMenuColours.MenuBackgroundColour;
             this.GradientDirection = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
             this.ShadowOffSet = 0;
@@ -74,7 +74,7 @@ namespace Ict.Common.Controls
             this.Click += new System.EventHandler(this.PanelClick);
 
             SetStandardAppearance();
-            
+
             FCheckChangingDelegate = ACheckChangingDelegate;
         }
 
@@ -126,7 +126,7 @@ namespace Ict.Common.Controls
                                     ((TRbtNavigationButton)sibling).Checked = false;
                                 }
                             }
-                            
+
                             SetClickedAppearance();
                         }
                         else
@@ -170,7 +170,7 @@ namespace Ict.Common.Controls
             if (!FHovering)
             {
                 FHovering = true;
-                
+
                 SetHoveringAppearance();
             }
         }
@@ -182,7 +182,7 @@ namespace Ict.Common.Controls
             {
                 FHovering = false;
 
-                if (Checked) 
+                if (Checked)
                 {
                     SetClickedAppearance();
                 }
@@ -198,30 +198,29 @@ namespace Ict.Common.Controls
         {
             Checked = true;
         }
-        
 
         private void SetStandardAppearance()
         {
             this.GradientStartColor = FOpenPetraMenuColours.ToolStripGradientBegin;
-            this.GradientEndColor = FOpenPetraMenuColours.ToolStripGradientEnd;                
-            
+            this.GradientEndColor = FOpenPetraMenuColours.ToolStripGradientEnd;
+
             Refresh();
         }
 
         private void SetClickedAppearance()
         {
             this.GradientStartColor = FOpenPetraMenuColours.ButtonSelectedGradientBegin;
-            this.GradientEndColor = FOpenPetraMenuColours.ButtonPressedGradientEnd;                                        
-            
+            this.GradientEndColor = FOpenPetraMenuColours.ButtonPressedGradientEnd;
+
             Refresh();
         }
-        
+
         private void SetHoveringAppearance()
         {
             this.GradientStartColor = FOpenPetraMenuColours.ButtonSelectedGradientBegin;
-            this.GradientEndColor = FOpenPetraMenuColours.ButtonSelectedGradientEnd;                
-            
+            this.GradientEndColor = FOpenPetraMenuColours.ButtonSelectedGradientEnd;
+
             Refresh();
-        }      
+        }
     }
 }

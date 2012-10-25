@@ -834,7 +834,7 @@ namespace Ict.Common.Controls
 
         #endregion
     }
-    
+
     /// <summary>
     /// OpenPetra-styled colours for use with <see cref="TExtStatusBarHelp.TOpenPetraToolStripRenderer" />, or simply
     /// for accessing colours that are used for Menus, ToolBars and StatusBars.
@@ -842,56 +842,56 @@ namespace Ict.Common.Controls
     public class TOpenPetraMenuColours : System.Windows.Forms.ProfessionalColorTable
     {
         #region MenuStrip
-        
+
         /// <summary>
-        /// Gets the starting color of the gradient used in the MenuStrip. 
+        /// Gets the starting color of the gradient used in the MenuStrip.
         /// </summary>
         public override Color MenuStripGradientBegin
-        { 
-            get 
-            { 
-                return Color.FromArgb(216,228,248); 
-            } 
+        {
+            get
+            {
+                return Color.FromArgb(216, 228, 248);
+            }
         }
 
         /// <summary>
-        /// Gets the end color of the gradient used in the MenuStrip. 
+        /// Gets the end color of the gradient used in the MenuStrip.
         /// </summary>
         public override Color MenuStripGradientEnd
-        { 
-            get 
-            { 
-                return Color.FromArgb(216,228,248); 
-            } 
+        {
+            get
+            {
+                return Color.FromArgb(216, 228, 248);
+            }
         }
-                
+
         /// <summary>
-        /// Gets the border color to use with a ToolStripMenuItem. 
+        /// Gets the border color to use with a ToolStripMenuItem.
         /// </summary>
-        public override Color MenuItemBorder 
-        { 
+        public override Color MenuItemBorder
+        {
             get
             {
                 return Color.FromArgb(254, 187, 100);
             }
         }
-        
+
         /// <summary>
         /// Gets the starting color of the gradient used when a top-level ToolStripMenuItem is pressed.
         /// </summary>
-        public override Color MenuItemPressedGradientBegin 
-        { 
+        public override Color MenuItemPressedGradientBegin
+        {
             get
             {
                 return Color.FromArgb(255, 247, 253);
             }
         }
-        
+
         /// <summary>
         /// Gets the end color of the gradient used when a top-level ToolStripMenuItem is pressed.
         /// </summary>
         public override Color MenuItemPressedGradientEnd
-        { 
+        {
             get
             {
                 return Color.FromArgb(183, 202, 226);
@@ -899,29 +899,29 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Gets the solid color to use when a ToolStripMenuItem other than the top-level ToolStripMenuItem is selected. 
+        /// Gets the solid color to use when a ToolStripMenuItem other than the top-level ToolStripMenuItem is selected.
         /// </summary>
         public override Color MenuItemSelected
-        { 
+        {
             get
             {
                 return Color.FromArgb(254, 230, 160);
             }
         }
-            
+
         /// <summary>
-        /// Gets the starting color of the gradient used when the ToolStripMenuItem is selected. 
+        /// Gets the starting color of the gradient used when the ToolStripMenuItem is selected.
         /// </summary>
-        public override Color MenuItemSelectedGradientBegin 
-        { 
-            get 
+        public override Color MenuItemSelectedGradientBegin
+        {
+            get
             {
                 return Color.FromArgb(255, 240, 201);
-            } 
+            }
         }
 
         /// <summary>
-        /// Gets the end color of the gradient used when the ToolStripMenuItem is selected. 
+        /// Gets the end color of the gradient used when the ToolStripMenuItem is selected.
         /// </summary>
         public override Color MenuItemSelectedGradientEnd
         {
@@ -930,9 +930,9 @@ namespace Ict.Common.Controls
                 return Color.FromArgb(254, 230, 160);
             }
         }
-        
+
         /// <summary>
-        /// Gets the starting color of the gradient used in the image margin of a ToolStripDropDownMenu. 
+        /// Gets the starting color of the gradient used in the image margin of a ToolStripDropDownMenu.
         /// </summary>
         public override Color ImageMarginGradientBegin
         {
@@ -941,29 +941,29 @@ namespace Ict.Common.Controls
                 return Color.FromArgb(230, 235, 230);
             }
         }
-        
+
         /// <summary>
-        /// Gets the end color of the gradient used in the image margin of a ToolStripDropDownMenu. 
-        /// </summary>        
+        /// Gets the end color of the gradient used in the image margin of a ToolStripDropDownMenu.
+        /// </summary>
         public override Color ImageMarginGradientEnd
         {
             get
             {
                 return Color.FromArgb(230, 235, 230);
             }
-        }        
-        
+        }
+
         /// <summary>
-        /// Gets the middle color of the gradient used in the image margin of a ToolStripDropDownMenu. 
-        /// </summary>        
+        /// Gets the middle color of the gradient used in the image margin of a ToolStripDropDownMenu.
+        /// </summary>
         public override Color ImageMarginGradientMiddle
         {
             get
             {
                 return Color.FromArgb(230, 235, 230);
             }
-        }                
-        
+        }
+
         /// <summary>
         /// Gets the solid color to use when the button is checked and gradients are being used.
         /// </summary>
@@ -971,10 +971,10 @@ namespace Ict.Common.Controls
         {
             get
             {
-                return Color.FromArgb(254, 185, 110);               
+                return Color.FromArgb(254, 185, 110);
             }
         }
-        
+
         /// <summary>
         /// Gets the solid color to use when the button is checked and selected and gradients are being used.
         /// </summary>
@@ -982,10 +982,10 @@ namespace Ict.Common.Controls
         {
             get
             {
-                return Color.FromArgb(254, 170, 68);  
+                return Color.FromArgb(254, 170, 68);
             }
         }
-        
+
         /// <summary>
         /// Gets the solid color to use when the button is checked and selected and gradients are being used.
         /// </summary>
@@ -993,99 +993,99 @@ namespace Ict.Common.Controls
         {
             get
             {
-                return Color.FromArgb(254, 170, 68);               
+                return Color.FromArgb(254, 170, 68);
             }
         }
-            
+
         /// <summary>
-        /// Gets the color that is the border color to use on a MenuStrip. 
+        /// Gets the color that is the border color to use on a MenuStrip.
         /// </summary>
         public override Color MenuBorder
         {
             get
             {
-                return Color.FromArgb(100, 140, 215);               
+                return Color.FromArgb(100, 140, 215);
             }
         }
-        
+
         #endregion
-        
-        
+
+
         #region ToolStrip
-        
+
         /// <summary>
-        /// Gets the border color to use on the bottom edge of the ToolStrip. 
+        /// Gets the border color to use on the bottom edge of the ToolStrip.
         /// </summary>
         public override Color ToolStripBorder
         {
             get
             {
-                return Color.FromArgb(100, 140, 215);               
+                return Color.FromArgb(100, 140, 215);
             }
-        }
-                
-        /// <summary>
-        /// Gets the starting color of the gradient used in the ToolStrip background. 
-        /// </summary>
-        public override Color ToolStripGradientBegin
-        { 
-            get 
-            { 
-                return Color.FromArgb(230, 235, 253);
-            } 
         }
 
         /// <summary>
-        /// Gets the middle color of the gradient used in the ToolStrip background. 
-        /// </summary>       
-        public override Color ToolStripGradientMiddle
-        { 
-            get 
-            { 
-                return Color.FromArgb(225, 241, 251); 
-            } 
+        /// Gets the starting color of the gradient used in the ToolStrip background.
+        /// </summary>
+        public override Color ToolStripGradientBegin
+        {
+            get
+            {
+                return Color.FromArgb(230, 235, 253);
+            }
         }
-            
+
         /// <summary>
-        /// Gets the end color of the gradient used in the ToolStrip background. 
+        /// Gets the middle color of the gradient used in the ToolStrip background.
+        /// </summary>
+        public override Color ToolStripGradientMiddle
+        {
+            get
+            {
+                return Color.FromArgb(225, 241, 251);
+            }
+        }
+
+        /// <summary>
+        /// Gets the end color of the gradient used in the ToolStrip background.
         /// </summary>
         public override Color ToolStripGradientEnd
-        { 
-            get 
-            { 
+        {
+            get
+            {
                 return Color.FromArgb(183, 212, 250);
-            } 
-        }   
-        
+            }
+        }
+
         /// <summary>
-        /// Gets the color to use to for shadow effects on the ToolStripSeparator. 
+        /// Gets the color to use to for shadow effects on the ToolStripSeparator.
         /// </summary>
         public override Color SeparatorDark
-        { 
-            get 
-            { 
-                return Color.FromArgb(140, 180, 235);               
-            } 
+        {
+            get
+            {
+                return Color.FromArgb(140, 180, 235);
+            }
         }
-            
+
         /// <summary>
-        /// Gets the color to use to for highlight effects on the ToolStripSeparator. 
+        /// Gets the color to use to for highlight effects on the ToolStripSeparator.
         /// </summary>
         public override Color SeparatorLight
-        { 
-            get 
-            { 
+        {
+            get
+            {
                 return Color.FromArgb(255, 240, 230);
-            } 
-        }        
-        
-        #endregion        
-        
-        
-        #region Common to both MenuStrip and ToolStrip       
-        
+            }
+        }
+
+        #endregion
+
+
+        #region Common to both MenuStrip and ToolStrip
+
         /// <summary>
-        /// Gets the border color to use with the ButtonSelectedGradientBegin, ButtonSelectedGradientMiddle, and ButtonSelectedGradientEnd colors. 
+        /// Gets the border color to use with the ButtonSelectedGradientBegin, ButtonSelectedGradientMiddle, and ButtonSelectedGradientEnd colors.
         /// </summary>
         public override Color ButtonSelectedBorder
         {
@@ -1094,7 +1094,7 @@ namespace Ict.Common.Controls
                 return Color.FromArgb(254, 187, 100);
             }
         }
-        
+
         /// <summary>
         /// Gets the starting color of the gradient used when the button is selected.
         /// </summary>
@@ -1127,7 +1127,7 @@ namespace Ict.Common.Controls
                 return Color.FromArgb(251, 225, 130);
             }
         }
-        
+
         /// <summary>
         /// Gets the starting color of the gradient used when the button is pressed.
         /// </summary>
@@ -1159,7 +1159,7 @@ namespace Ict.Common.Controls
             {
                 return Color.FromArgb(254, 188, 107);
             }
-        }              
+        }
 
         /// <summary>
         /// Gets the starting color of the gradient used when the button is checked.
@@ -1192,72 +1192,72 @@ namespace Ict.Common.Controls
             {
                 return Color.FromArgb(249, 208, 68);
             }
-        }              
-        
+        }
+
         /// <summary>
         /// Gets the color to use for shadow effects on the grip (move handle).
         /// </summary>
         public override Color GripDark
-        { 
-            get 
-            { 
-                return Color.FromArgb(105, 152, 212);               
-            } 
+        {
+            get
+            {
+                return Color.FromArgb(105, 152, 212);
+            }
         }
-            
+
         /// <summary>
         /// Gets the color to use for highlight effects on the grip (move handle).
         /// </summary>
         public override Color GripLight
-        { 
-            get 
-            { 
+        {
+            get
+            {
                 return Color.FromArgb(255, 250, 249);
-            } 
-        }        
-            
+            }
+        }
+
         #endregion
-        
+
         #region StatusStrip
-        
+
         /// <summary>
-        /// Gets the starting color of the gradient used on the StatusStrip. 
+        /// Gets the starting color of the gradient used on the StatusStrip.
         /// </summary>
         public override Color StatusStripGradientBegin
-        { 
-            get 
-            { 
+        {
+            get
+            {
                 return Color.FromArgb(230, 235, 253);
-            } 
+            }
         }
-        
+
         /// <summary>
-        /// Gets the end color of the gradient used on the StatusStrip. 
-        /// </summary>                
+        /// Gets the end color of the gradient used on the StatusStrip.
+        /// </summary>
         public override Color StatusStripGradientEnd
-        { 
-            get 
-            { 
+        {
+            get
+            {
                 return Color.FromArgb(0, 0, 0);
-            } 
-        }   
-          
-        #endregion        
+            }
+        }
+
+        #endregion
 
         #region Main Menu-specific
- 
+
         /// <summary>
         /// The background colour of the Main Menu - seen as a border around the controls that make up the Main Menu.
         /// </summary>
         /// <remarks>Not related to TOpenPetraToolStripRenderer.</remarks>
         public Color MenuBackgroundColour
-        { 
-            get 
-            { 
+        {
+            get
+            {
                 return Color.FromArgb(94, 136, 194);
-            } 
-        }   
-        
+            }
+        }
+
         #endregion
-   }        
+    }
 }
