@@ -4,8 +4,8 @@ RootNode:
     FormTitle: Change Subscription
     Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data, Ict.Petra.Shared.MPartner.Mailroom.Validation]
-    #DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
-    #MasterTable: PSubscription
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    MasterTable: PSubscription
     FormType: dialog
     Template: window
     WindowWidth: 950
@@ -61,7 +61,6 @@ RootNode:
 
         cmbPSubscriptionPublicationCode: {List=PublicationInfoList}
             Label: Pub&lication Code
-            Validation: true
         cmbPSubscriptionSubscriptionStatus:
             Label: S&ubscription Status
             OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]

@@ -157,6 +157,30 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Subscription Status Mandatory")]
         public const String ERR_SUBSCRIPTION_STATUSMANDATORY = "PARTN.00007V";
 
+        /// <summary>Reason Ended Mandatory.</summary>
+        [ErrCodeAttribute("Reason Ended Mandatory",
+             ErrorMessageText = "Cannot have a cancelled or expired subscription without a reason for ending.",
+             ErrorMessageTitle = "Reason Ended Mandatory")]
+        public const String ERR_SUBSCRIPTION_REASONENDEDMANDATORY_WHEN_EXPIRED = "PARTN.00009V";
+
+        /// <summary>Date Ended Mandatory.</summary>
+        [ErrCodeAttribute("Date Ended Mandatory",
+             ErrorMessageText = "Cannot have a cancelled or expired subscription without an end date.",
+             ErrorMessageTitle = "Date Ended Mandatory")]
+        public const String ERR_SUBSCRIPTION_DATEENDEDMANDATORY_WHEN_EXPIRED = "PARTN.00010V";
+        
+        /// <summary>Reason Ended must not be set for active Subscription.</summary>
+        [ErrCodeAttribute("Clear Reason Ended",
+             ErrorMessageText = "Cannot have a reason for ending without setting status to 'CANCELLED' or 'EXPIRED'.",
+             ErrorMessageTitle = "Clear Reason Ended")]
+        public const String ERR_SUBSCRIPTION_REASONENDEDSET_WHEN_ACTIVE = "PARTN.00011V";
+
+        /// <summary>Date Ended must not be set for active Subscription.</summary>
+        [ErrCodeAttribute("Clear Date Ended",
+             ErrorMessageText = "Cannot have an end date without setting status to 'CANCELLED' or 'EXPIRED'.",
+             ErrorMessageTitle = "Clear Date Ended")]
+        public const String ERR_SUBSCRIPTION_DATEENDEDSET_WHEN_ACTIVE = "PARTN.00012V";
+
         #endregion
 
         #endregion

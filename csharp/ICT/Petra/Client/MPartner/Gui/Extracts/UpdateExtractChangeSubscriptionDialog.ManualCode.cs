@@ -35,12 +35,14 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared.MPartner.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
@@ -66,6 +68,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // show this dialog in center of screen
             this.StartPosition = FormStartPosition.CenterScreen;
 
+            // remove validation handler for controls as we only want validation when clicking the ok button
+            cmbPSubscriptionPublicationCode.Validated -= new System.EventHandler(this.ControlValidatedHandler);
+            cmbPSubscriptionSubscriptionStatus.Validated -= new System.EventHandler(this.ControlValidatedHandler);
+            chkPSubscriptionGratisSubscription.Validated -= new System.EventHandler(this.ControlValidatedHandler);
+
+            txtPSubscriptionNumberComplimentary.Validated -= new System.EventHandler(this.ControlValidatedHandler);
+            txtPSubscriptionPublicationCopies.Validated -= new System.EventHandler(this.ControlValidatedHandler);
+            cmbPSubscriptionReasonSubsGivenCode.Validated -= new System.EventHandler(this.ControlValidatedHandler);
+            cmbPSubscriptionReasonSubsCancelledCode.Validated -= new System.EventHandler(this.ControlValidatedHandler);
+            txtPSubscriptionGiftFromKey.Validated -= new System.EventHandler(this.ControlValidatedHandler);
+
+            dtpPSubscriptionStartDate.Validated -= new System.EventHandler(this.ControlValidatedHandler);
+
+            txtPSubscriptionNumberIssuesReceived.Validated -= new System.EventHandler(this.ControlValidatedHandler);
+            
+            
             FMainDS = new PartnerEditTDS();
 
             // now add the one subscription row to the DS that we are working with
@@ -509,6 +527,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 return;
             }
 
+            // validate data (outside the norm, therefore done manually here)
+            GetDataFromControls(FMainDS.PSubscription[0]);
+            ValidateDataManual(FMainDS.PSubscription[0]);
+            
+            if (!TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                                                                this.GetType(), null, true))
+            {
+                return;
+            }
+            
+            
             MessageText = GetFieldsToChangeText();
             if (MessageText.Length > 0)
             {
@@ -530,6 +559,60 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
+        private void ValidateDataManual(PSubscriptionRow ARow)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+            
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            VerificationResultCollection.Clear();
+
+            // if 'SubscriptionStatus' is CANCELLED or EXPIRED then 'Reason Ended' and 'End Data' must be set
+            ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnSubscriptionStatusId];
+
+            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (   (!ARow.IsSubscriptionStatusNull())
+                    && (   ARow.SubscriptionStatus == "CANCELLED"
+                        || ARow.SubscriptionStatus == "EXPIRED"))
+                {
+                    if (   ARow.IsReasonSubsCancelledCodeNull()
+                        || ARow.ReasonSubsCancelledCode  == String.Empty)
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_REASONENDEDMANDATORY_WHEN_EXPIRED)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+                    else if (ARow.IsDateCancelledNull())
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_DATEENDEDMANDATORY_WHEN_EXPIRED)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+                }
+                else
+                {
+                    if (   (!ARow.IsReasonSubsCancelledCodeNull())
+                        && ARow.ReasonSubsCancelledCode  != String.Empty)
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_REASONENDEDSET_WHEN_ACTIVE)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+                    else if (!ARow.IsDateCancelledNull())
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_DATEENDEDSET_WHEN_ACTIVE)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+            }
+
+        }
     }
 
     // in addition derive class from IFrmPetraEdit so TFrmPetraEditUtils can be created
