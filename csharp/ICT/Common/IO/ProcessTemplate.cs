@@ -644,8 +644,6 @@ namespace Ict.Common.IO
             {
                 somethingWasReplaced = false;
 
-                int pos = FTemplateCode.IndexOf("{#");
-
                 ActivateDefinedIFDEF(ref FTemplateCode, Placeholders);
                 RemoveDefinedIFNDEF(ref FTemplateCode, Placeholders);
 
