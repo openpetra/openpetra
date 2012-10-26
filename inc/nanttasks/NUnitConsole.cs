@@ -40,11 +40,12 @@ namespace Ict.Tools.NAntTasks
     public class NUnitConsoleTask : NAnt.Core.Task
     {
         private string FAssemblyName = string.Empty;
+        private string FTestCase = string.Empty;
 
         /// <summary>
         /// which dll to load and to run the tests contained in it
         /// </summary>
-        [TaskAttribute("assemblyname", Required = false)]
+        [TaskAttribute("assemblyname", Required = true)]
         public string AssemblyName {
             get
             {
@@ -53,6 +54,21 @@ namespace Ict.Tools.NAntTasks
             set
             {
                 FAssemblyName = value;
+            }
+        }
+
+        /// <summary>
+        /// which test to run. if not defined, all tests will be run
+        /// </summary>
+        [TaskAttribute("testcase", Required = false)]
+        public string TestCase {
+            get
+            {
+                return FTestCase;
+            }
+            set
+            {
+                FTestCase = value;
             }
         }
 
@@ -84,6 +100,11 @@ namespace Ict.Tools.NAntTasks
                 process.StartInfo.FileName = exeName;
 
                 process.StartInfo.Arguments = "\"" + FAssemblyName + "\"";
+            }
+
+            if (FTestCase.Length > 0)
+            {
+                process.StartInfo.Arguments += " /run=" + FTestCase;
             }
 
             process.StartInfo.WorkingDirectory = Path.GetDirectoryName(FAssemblyName);
