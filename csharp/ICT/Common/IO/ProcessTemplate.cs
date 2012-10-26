@@ -425,9 +425,16 @@ namespace Ict.Common.IO
                         Environment.NewLine + "We are missing the ENDIF for: " + name);
                 }
 
-                sb.Remove(posPlaceholder, 8 + name.Length + 1);
-                posPlaceholderAfter -= 8 + name.Length + 1;
-                sb.Remove(posPlaceholderAfter, 8 + name.Length + 1);
+                sb.Remove(posPlaceholder, 8 + name.Length + 1 + Environment.NewLine.Length);
+                posPlaceholderAfter -= 8 + name.Length + 1 + Environment.NewLine.Length;
+                int LengthLineBreakAfter = 0;
+
+                if (posPlaceholderAfter + 8 + name.Length + 1 + Environment.NewLine.Length < sb.Length)
+                {
+                    LengthLineBreakAfter = Environment.NewLine.Length;
+                }
+
+                sb.Remove(posPlaceholderAfter, 8 + name.Length + 1 + LengthLineBreakAfter);
 
                 if (!((name == "TRUE") || (name == "TRUE AND TRUE") || name.StartsWith("TRUE OR") || name.EndsWith("OR TRUE")))
                 {
@@ -461,9 +468,16 @@ namespace Ict.Common.IO
                         Environment.NewLine + "We are missing the ENDIFN for: " + name);
                 }
 
-                sb.Remove(posPlaceholder, 9 + name.Length + 1);
-                posPlaceholderAfter -= 9 + name.Length + 1;
-                sb.Remove(posPlaceholderAfter, 9 + name.Length + 1);
+                sb.Remove(posPlaceholder, 9 + name.Length + 1 + Environment.NewLine.Length);
+                posPlaceholderAfter -= 9 + name.Length + 1 + Environment.NewLine.Length;
+                int LengthLineBreakAfter = 0;
+
+                if (posPlaceholderAfter + 9 + name.Length + 1 + Environment.NewLine.Length < sb.Length)
+                {
+                    LengthLineBreakAfter = Environment.NewLine.Length;
+                }
+
+                sb.Remove(posPlaceholderAfter, 9 + name.Length + 1 + LengthLineBreakAfter);
 
                 if ((name == "TRUE") || (name == "TRUE AND TRUE") || name.StartsWith("TRUE OR") || name.EndsWith("OR TRUE"))
                 {
