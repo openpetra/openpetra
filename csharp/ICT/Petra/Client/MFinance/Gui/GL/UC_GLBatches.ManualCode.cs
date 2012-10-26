@@ -561,6 +561,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.AcceptChanges();
                     this.FPreviouslySelectedDetailRow = null;
                     ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+
                     LoadBatches(FLedgerNumber);
 
                     //Select unposted batch row in same index position as batch just posted
