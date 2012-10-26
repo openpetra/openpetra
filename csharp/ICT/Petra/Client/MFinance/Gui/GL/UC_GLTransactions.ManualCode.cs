@@ -470,10 +470,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                  && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                                  && (GetJournalRow().JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
 
+            // pnlDetailsProtected must be changed first: when the enabled property of the control is changed, the focus changes, which triggers validation
+            pnlDetailsProtected = !changeable;
             this.btnRemove.Enabled = changeable;
             this.btnNew.Enabled = changeable;
             pnlDetails.Enabled = changeable;
-            pnlDetailsProtected = !changeable;
         }
 
         /// <summary>
