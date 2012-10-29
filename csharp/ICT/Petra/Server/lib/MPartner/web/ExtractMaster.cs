@@ -710,7 +710,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <returns>true if change was successful</returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean ChangeSubscription(int AExtractId, ref PSubscriptionTable ATable,
-            List<String> AFieldsToChange, out PPartnerTable APartnersWithoutSubscription, out int ASubscriptionsChanged)
+            List <String>AFieldsToChange, out PPartnerTable APartnersWithoutSubscription, out int ASubscriptionsChanged)
         {
             Boolean ResultValue = true;
             PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
@@ -739,66 +739,82 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     // for each extract row either change subscription or add to list of partners that don't have one
                     if (PSubscriptionAccess.Exists(SubscriptionRowTemplate.PublicationCode, ExtractRow.PartnerKey, Transaction))
                     {
-                        SubscriptionTable = PSubscriptionAccess.LoadByPrimaryKey(SubscriptionRowTemplate.PublicationCode, ExtractRow.PartnerKey, Transaction);
+                        SubscriptionTable = PSubscriptionAccess.LoadByPrimaryKey(SubscriptionRowTemplate.PublicationCode,
+                            ExtractRow.PartnerKey,
+                            Transaction);
                         SubscriptionRow = (PSubscriptionRow)SubscriptionTable.Rows[0];
-                        
+
                         // change field contents
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetSubscriptionStatusDBName()))
                         {
                             SubscriptionRow.SubscriptionStatus = SubscriptionRowTemplate.SubscriptionStatus;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetGratisSubscriptionDBName()))
                         {
                             SubscriptionRow.GratisSubscription = SubscriptionRowTemplate.GratisSubscription;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetNumberComplimentaryDBName()))
                         {
                             SubscriptionRow.NumberComplimentary = SubscriptionRowTemplate.NumberComplimentary;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetPublicationCopiesDBName()))
                         {
                             SubscriptionRow.PublicationCopies = SubscriptionRowTemplate.PublicationCopies;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetReasonSubsGivenCodeDBName()))
                         {
                             SubscriptionRow.ReasonSubsGivenCode = SubscriptionRowTemplate.ReasonSubsGivenCode;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetReasonSubsCancelledCodeDBName()))
                         {
                             SubscriptionRow.ReasonSubsCancelledCode = SubscriptionRowTemplate.ReasonSubsCancelledCode;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetGiftFromKeyDBName()))
                         {
                             SubscriptionRow.GiftFromKey = SubscriptionRowTemplate.GiftFromKey;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetStartDateDBName()))
                         {
                             SubscriptionRow.StartDate = SubscriptionRowTemplate.StartDate;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetExpiryDateDBName()))
                         {
                             SubscriptionRow.ExpiryDate = SubscriptionRowTemplate.ExpiryDate;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetSubscriptionRenewalDateDBName()))
                         {
                             SubscriptionRow.SubscriptionRenewalDate = SubscriptionRowTemplate.SubscriptionRenewalDate;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetDateNoticeSentDBName()))
                         {
                             SubscriptionRow.DateNoticeSent = SubscriptionRowTemplate.DateNoticeSent;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetDateCancelledDBName()))
                         {
                             SubscriptionRow.DateCancelled = SubscriptionRowTemplate.DateCancelled;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetNumberIssuesReceivedDBName()))
                         {
                             SubscriptionRow.NumberIssuesReceived = SubscriptionRowTemplate.NumberIssuesReceived;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetFirstIssueDBName()))
                         {
                             SubscriptionRow.FirstIssue = SubscriptionRowTemplate.FirstIssue;
                         }
+
                         if (AFieldsToChange.Contains(PSubscriptionTable.GetLastIssueDBName()))
                         {
                             SubscriptionRow.LastIssue = SubscriptionRowTemplate.LastIssue;
@@ -815,7 +831,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             ResultValue = false;
                             return ResultValue;
                         }
-                        
+
                         //SubscriptionTable.Rows.Add(SubscriptionRow);
                         ASubscriptionsChanged++;
                     }
@@ -826,10 +842,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         PartnerTable = PPartnerAccess.LoadByPrimaryKey(ExtractRow.PartnerKey, Transaction);
                         DataUtilities.CopyAllColumnValues(PartnerTable.Rows[0], PartnerRow);
                         APartnersWithoutSubscription.Rows.Add(PartnerRow);
-                            
                     }
                 }
-                
+
                 if (ResultValue)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
@@ -844,7 +859,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return ResultValue;
         }
-        
+
         /// <summary>
         /// delete subscription for a partner in a given extract
         /// </summary>

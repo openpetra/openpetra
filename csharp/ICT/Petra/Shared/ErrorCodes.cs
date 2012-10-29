@@ -168,7 +168,7 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Cannot have a cancelled or expired subscription without an end date.",
              ErrorMessageTitle = "Date Ended Mandatory")]
         public const String ERR_SUBSCRIPTION_DATEENDEDMANDATORY_WHEN_EXPIRED = "PARTN.00010V";
-        
+
         /// <summary>Reason Ended must not be set for active Subscription.</summary>
         [ErrCodeAttribute("Clear Reason Ended",
              ErrorMessageText = "Cannot have a reason for ending without setting status to 'CANCELLED' or 'EXPIRED'.",

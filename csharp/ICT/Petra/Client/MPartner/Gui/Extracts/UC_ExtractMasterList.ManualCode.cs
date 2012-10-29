@@ -569,7 +569,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             PPartnerTable PartnersWithoutSubs = new PPartnerTable();
             int SubscriptionsChanged;
             String MessageText;
-            List<String> FieldsToChange = new List<string>();
+
+            List <String>FieldsToChange = new List <string>();
 
             if (!WarnIfNotSingleSelection(Catalog.GetString("Add Subscription"))
                 && (GetSelectedDetailRow() != null))
@@ -582,17 +583,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     if (dialog.GetReturnedParameters(ref SubscriptionRow, ref FieldsToChange))
                     {
                         SubscriptionTable.Rows.Add(SubscriptionRow);
-    
+
                         // perform update of extract data on server side
                         if (TRemote.MPartner.Partner.WebConnectors.ChangeSubscription
-                                (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, FieldsToChange, out PartnersWithoutSubs, out SubscriptionsChanged))
+                                (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, FieldsToChange, out PartnersWithoutSubs,
+                                out SubscriptionsChanged))
                         {
                             MessageText =
                                 String.Format(Catalog.GetString(
                                         "Subscription {0} successfully changed for {1} out of {2} Partner(s) in Extract {3}."),
                                     SubscriptionRow.PublicationCode,
                                     SubscriptionsChanged, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
-    
+
                             if (PartnersWithoutSubs.Rows.Count > 0)
                             {
                                 MessageText += "\r\n\r\n" +
@@ -600,12 +602,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                         "See the following Dialog for the {0} Partner(s) that are not subscribed for this Publication and therefore no change was made for them."),
                                     PartnersWithoutSubs.Rows.Count);
                             }
-    
+
                             MessageBox.Show(MessageText,
                                 Catalog.GetString("Change Subscription"),
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Information);
-    
+
                             if (PartnersWithoutSubs.Rows.Count > 0)
                             {
                                 TFrmSimplePartnerListDialog partnerDialog = new TFrmSimplePartnerListDialog(this.FindForm());
