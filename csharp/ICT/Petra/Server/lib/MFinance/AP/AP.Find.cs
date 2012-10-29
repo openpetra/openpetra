@@ -178,6 +178,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         {
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
 
+            FPagedDataSetObject = new TPagedDataSet(null);
+/*
             if (FSearchTransactions)
             {
                 FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITDSTransactionListTable());
@@ -190,7 +192,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             {
                 FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITDSInvoiceListTable());
             }
-
+*/
             // Pass the TAsynchronousExecutionProgress object to FPagedDataSetObject so that it
             // can update execution status
             FPagedDataSetObject.AsyncExecProgress = FAsyncExecProgress;
@@ -237,6 +239,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                                   " ORDER BY Date DESC"
                 ;
                 FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(SqlQuery);
+                FPagedDataSetObject.FindParameters.FSearchName = "Transactions";
             }
             else
             {
@@ -261,6 +264,14 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     OrderByClause,
                     ColumnNameMapping,
                     ParametersArray);
+                if (FSearchSupplierOrInvoice)
+                {
+                    FPagedDataSetObject.FindParameters.FSearchName = "Suppliers";
+                }
+                else
+                {
+                    FPagedDataSetObject.FindParameters.FSearchName = "Invoices";
+                }
             }
 
             //
@@ -359,58 +370,53 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             // searching for outstanding invoices on the main screen
             if (!FSearchTransactions && !FSearchSupplierOrInvoice)
             {
-                // initvars on typed table
-                AccountsPayableGUITDSInvoiceListTable table = (AccountsPayableGUITDSInvoiceListTable)ReturnValue;
-                table.InitVars();
 
-                foreach (AccountsPayableGUITDSInvoiceListRow Row in ReturnValue.Rows)
+                foreach (DataRow Row in ReturnValue.Rows)
                 {
                     // calculate DateDue and DateDiscountUntil
                     // add creditTerms to dateIssued to get DateDue
-                    Row.DateDue = Row.DateIssued;
-                    Row.DateDiscountUntil = Row.DateIssued;
 
-                    if (!Row.IsCreditTermsNull())
+                    if (Row["CreditTerms"].GetType() != typeof(DBNull))
                     {
-                        Row.DateDue = Row.DateIssued.AddDays(Row.CreditTerms);
+                        Row["DateDue"] = Convert.ToDateTime(Row["DateIssued"]).AddDays(Convert.ToDouble(Row["CreditTerms"]));
                     }
 
-                    if (!Row.IsDiscountDaysNull())
+                    if (Row["DiscountDays"].GetType() != typeof(DBNull))
                     {
-                        Row.DateDiscountUntil = Row.DateIssued.AddDays(Row.DiscountDays);
+                        Row["DateDiscountUntil"] = Convert.ToDateTime(Row["DateIssued"]).AddDays(Convert.ToDouble(Row["DiscountDays"]));
                     }
 
                     // If any of the invoices are part-paid, I want to retrieve the outstanding amount.
-                    Row.OutstandingAmount = Row.TotalAmount;
+                    Row["OutstandingAmount"] = Row["TotalAmount"];
 
-                    if (Row.DocumentStatus == MFinanceConstants.AP_DOCUMENT_PAID)
+                    if (Convert.ToString(Row["DocumentStatus"]) == MFinanceConstants.AP_DOCUMENT_PAID)
                     {
-                        Row.OutstandingAmount = 0.0m;
+                        Row["OutstandingAmount"] = 0.0m;
                     }
 
-                    if (Row.DocumentStatus == MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID)
+                    if (Convert.ToString(Row["DocumentStatus"]) == MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID)
                     {
-                        Row.OutstandingAmount = Row.TotalAmount - GetPartPaidAmount(Row.ApDocumentId);
+                        Row["OutstandingAmount"] = Convert.ToInt32(Row["TotalAmount"]) - GetPartPaidAmount(Convert.ToInt32(Row["ApDocumentId"]));
                     }
 
-                    Row.DiscountMsg = "None";
-                    Row.Selected = false;
+                    Row["DiscountMsg"] = "None";
+                    Row["Selected"] = false;
 
-                    if (Row.IsDiscountPercentageNull())
+                    if (Row["DiscountPercentage"].GetType() == typeof(DBNull))
                     {
-                        Row.DiscountPercentage = 0;
+                        Row["DiscountPercentage"] = 0;
                     }
 
-                    if (Row.DateDiscountUntil > DateTime.Now)
+                    if (Convert.ToDateTime(Row["DateDiscountUntil"]) > DateTime.Now)
                     {
-                        Row.DiscountMsg =
+                        Row["DiscountMsg"] =
                             String.Format("{0:n0}% until {1}",
-                                Row.DiscountPercentage,
-                                TDate.DateTimeToLongDateString2(Row.DateDiscountUntil));
+                                Row["DiscountPercentage"],
+                                TDate.DateTimeToLongDateString2(Convert.ToDateTime(Row["DateDiscountUntil"])));
                     }
                     else
                     {
-                        Row.DiscountMsg = "Expired";
+                        Row["DiscountMsg"] = "Expired";
                     }
                 }
             }
@@ -518,26 +524,31 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             {
                 String DocTbl = "PUB_" + AApDocumentTable.GetTableDBName() + ".";
                 // TODO: FSearchSupplierOrInvoice: select invoices
-                return DocTbl + AApDocumentTable.GetApNumberDBName() + "," +
-                       DocTbl + AApDocumentTable.GetDocumentCodeDBName() + "," +
-                       "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + "," +
-                       "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + "," +
-                       DocTbl + AApDocumentTable.GetTotalAmountDBName() + "," +
-                       DocTbl + AApDocumentTable.GetDocumentStatusDBName() + "," +
-                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "," +
-                       DocTbl + AApDocumentTable.GetCreditTermsDBName() + "," +
-                       DocTbl + AApDocumentTable.GetDiscountPercentageDBName() + "," +
-                       DocTbl + AApDocumentTable.GetDiscountDaysDBName() + "," +
-                       DocTbl + AApDocumentTable.GetCreditNoteFlagDBName() + "," +
-                       DocTbl + AApDocumentTable.GetApDocumentIdDBName();
+                return DocTbl + AApDocumentTable.GetApNumberDBName() + " AS ApNumber, " +
+                       DocTbl + AApDocumentTable.GetDocumentCodeDBName() + " AS DocumentCode, " +
+                       "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS PartnerShortName, " +
+                       "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + " AS CurrencyCode, " +
+                       DocTbl + AApDocumentTable.GetTotalAmountDBName() + " AS TotalAmount, " +
+                       DocTbl + AApDocumentTable.GetTotalAmountDBName() + " AS OutstandingAmount, " +
+                       DocTbl + AApDocumentTable.GetDocumentStatusDBName() + " AS DocumentStatus, " +
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + " AS DateIssued, " +
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + " AS DateDue, " +
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + " AS DateDiscountUntil, " + 
+                       DocTbl + AApDocumentTable.GetCreditTermsDBName() + " AS CreditTerms, " +
+                       DocTbl + AApDocumentTable.GetDiscountPercentageDBName() + " AS DiscountPercentage, " +
+                       DocTbl + AApDocumentTable.GetDiscountDaysDBName() + " AS DiscountDays, " +
+                       "\"none\" AS DiscountMsg, " + 
+                       "false AS Selected, " +
+                       DocTbl + AApDocumentTable.GetCreditNoteFlagDBName() + " AS CreditNoteFlag, " +
+                       DocTbl + AApDocumentTable.GetApDocumentIdDBName() + " AS DocumentId ";
             }
             else    // Find Suppliers
             {
                 // TODO: add amount of outstanding invoices etc
-                return "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetPartnerKeyDBName() + "," +
-                       "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + "," +
-                       "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + "," +
-                       "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetStatusCodeDBName();
+                return "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetPartnerKeyDBName() + " AS PartnerKey, " +
+                       "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS PartnerShortName, " +
+                       "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + " AS CurrencyCode, " +
+                       "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetStatusCodeDBName() + " AS StatusCode ";
             }
         }
 
