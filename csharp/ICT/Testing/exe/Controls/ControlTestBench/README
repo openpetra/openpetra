@@ -1,0 +1,7 @@
+
+This is for manully testing the GUI of different usercontrols.
+
+First, dlls must be compiled into the delivery folder (see `nant.bat Compile` in `OpenPetra.build` at root of code).
+
+Then open Solution and run. The GUI testbench will come up and should be self-explanatory.
+

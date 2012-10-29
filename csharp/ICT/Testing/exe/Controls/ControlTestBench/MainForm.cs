@@ -1,11 +1,26 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Taylor Students
- * Date: 13/01/2011
- * Time: 13:55
- *
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//		 Taylor Students
+//
+// Copyright 2004-2012 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -32,7 +47,7 @@ namespace Ict.Testing.ControlTestBench
     public partial class MainForm : Form
     {
         /// <summary>
-        /// constructor
+        /// Constructor.
         /// </summary>
         public MainForm()
         {
@@ -93,7 +108,7 @@ namespace Ict.Testing.ControlTestBench
             this.taskList1.TabIndex = 6;
             this.Controls.Add(taskList1);
             //	this.taskList1.VisualStyle = null;
-//            using ( TaskListCheck newForm = new TaskListCheck(UINavigation.FirstChild.NextSibling.FirstChild,EnumStyle) ) newForm.ShowDialog();
+            //            using ( TaskListCheck newForm = new TaskListCheck(UINavigation.FirstChild.NextSibling.FirstChild,EnumStyle) ) newForm.ShowDialog();
             //newForm.Controls.Add(
         }
 
@@ -103,32 +118,8 @@ namespace Ict.Testing.ControlTestBench
             TYml2Xml parser = new TYml2Xml(yamlFile);
             XmlDocument UINavigation = parser.ParseYML2XML();
 
-            String VisualStyle = cmbVisualStyle.Text.ToString();
-            TVisualStylesEnum EnumStyle;
 
-            switch (VisualStyle)
-            {
-                case "AccordionPanel":
-                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
-                    break;
-
-                case "TaskPanel":
-                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
-                    break;
-
-                case "Dashboard":
-                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
-                    break;
-
-                case "Shepherd":
-                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
-                    break;
-
-                case "HorizontalCollapse":
-                default:
-                    EnumStyle = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
-                    break;
-            }
+            TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
 
             new MainForm2(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
         }

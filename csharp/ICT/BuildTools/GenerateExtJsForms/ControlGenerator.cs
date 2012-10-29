@@ -231,7 +231,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             {
                 ProcessTemplate redirectSnippet = writer.FTemplate.GetSnippet("REDIRECTONSUCCESS");
 
-                ctrlSnippet.SetCodelet("REDIRECTONSUCCESS", redirectSnippet.FTemplateCode);
+                ctrlSnippet.SetCodelet("REDIRECTONSUCCESS", redirectSnippet.FTemplateCode.ToString());
             }
 
             if (ctrl.HasAttribute("AjaxRequestUrl"))
@@ -542,7 +542,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
 
             ctrlSnippet.SetCodelet("PAGENUMBER", PageCounter.ToString());
 
-            if (writer.FTemplate.FCodelets.Contains("CUSTOMFUNCTIONS"))
+            if (writer.FTemplate.FCodelets.Keys.Contains("CUSTOMFUNCTIONS"))
             {
                 ctrlSnippet.SetCodelet("CUSTOMFUNCTIONS", writer.FTemplate.FCodelets["CUSTOMFUNCTIONS"].ToString());
                 writer.FTemplate.FCodelets.Remove("CUSTOMFUNCTIONS");
@@ -552,19 +552,19 @@ namespace Ict.Tools.CodeGeneration.ExtJs
                 ctrlSnippet.SetCodelet("CUSTOMFUNCTIONS", String.Empty);
             }
 
-            if (writer.FTemplate.FCodelets.Contains("ONSHOW"))
+            if (writer.FTemplate.FCodelets.Keys.Contains("ONSHOW"))
             {
                 ctrlSnippet.SetCodelet("ONSHOW", writer.FTemplate.FCodelets["ONSHOW"].ToString());
                 writer.FTemplate.FCodelets.Remove("ONSHOW");
             }
 
-            if (writer.FTemplate.FCodelets.Contains("ISVALID"))
+            if (writer.FTemplate.FCodelets.Keys.Contains("ISVALID"))
             {
                 ctrlSnippet.SetCodelet("ISVALID", writer.FTemplate.FCodelets["ISVALID"].ToString());
                 writer.FTemplate.FCodelets.Remove("ISVALID");
             }
 
-            if (writer.FTemplate.FCodelets.Contains("ONHIDE"))
+            if (writer.FTemplate.FCodelets.Keys.Contains("ONHIDE"))
             {
                 ctrlSnippet.SetCodelet("ONHIDE", writer.FTemplate.FCodelets["ONHIDE"].ToString());
                 writer.FTemplate.FCodelets.Remove("ONHIDE");

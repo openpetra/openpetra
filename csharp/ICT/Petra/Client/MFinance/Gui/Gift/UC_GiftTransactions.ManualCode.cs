@@ -160,6 +160,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateControlsProtection();
         }
 
+        /// <summary>
+        /// Refresh the dataset for this form
+        /// </summary>
+        public void RefreshAll()
+        {
+            if ((FMainDS != null) && (FMainDS.AGiftDetail != null))
+            {
+                FMainDS.AGiftDetail.Rows.Clear();
+            }
+
+            FBatchRow = GetBatchRow();
+
+            LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus);
+        }
+
         bool FinRecipientKeyChanging = false;
         private void RecipientKeyChanged(Int64 APartnerKey,
             String APartnerShortName,
@@ -582,7 +597,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns></returns>
         private AGiftBatchRow GetBatchRow()
         {
-            return (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FBatchNumber });
+            return ((TFrmGiftBatch)ParentForm).GetBatchControl().GetCurrentBatchRow();
+            //return (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FBatchNumber });
         }
 
         /// <summary>
@@ -1270,7 +1286,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 ledgerNumber;
             Int32 batchNumber;
 
-            if ((FLedgerNumber == -1) || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            if ((((TFrmGiftBatch)ParentForm).GetBatchControl().GetCurrentBatchRow() == null) || (FLedgerNumber == -1)
+                || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
                 return;
             }
@@ -1490,13 +1507,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateDataDetailsManual(AGiftDetailRow ARow)
         {
+            if ((ARow == null) || (GetBatchRow() == null) || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
 
-            //It is necessary to validate the unbound control for date entered. This requires us to pass a the control.
-            //The reason for this is that the
+            //It is necessary to validate the unbound control for date entered. This requires us to pass the control.
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
 
             TSharedFinanceValidation_Gift.ValidateGiftManual(this,

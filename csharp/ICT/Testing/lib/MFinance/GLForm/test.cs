@@ -53,7 +53,7 @@ namespace Tests.MFinance.GLBatches
             // nant startPetraServer
             // this may take some time ....
             new TLogging("TestClient.log");
-            TPetraConnector.Connect("../../../../../etc/TestClient.config");
+            TPetraConnector.Connect("../../etc/TestClient.config");
             FLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValue("LedgerNumber"));
         }
 
@@ -175,9 +175,9 @@ namespace Tests.MFinance.GLBatches
             TextBoxTester txtDetailReference = new TextBoxTester("txtDetailReference");
             txtDetailReference.Properties.Text = "test";
 
-            TextBoxTester txtDebitAmount = new TextBoxTester("txtDebitAmount");
+            TTxtNumericTextBoxTester txtDebitAmount = new TTxtNumericTextBoxTester("txtDebitAmount");
             decimal Amount = 1111.44M;
-            txtDebitAmount.Properties.Text = Amount.ToString();
+            txtDebitAmount.Properties.NumberValueDecimal = Amount;
 
             TCmbAutoPopulatedTester cmbDetailAccountCode = new TCmbAutoPopulatedTester("cmbDetailAccountCode");
             cmbDetailAccountCode.Properties.SetSelectedString("6000");
@@ -188,8 +188,8 @@ namespace Tests.MFinance.GLBatches
             btnNewTransaction.Click();
             txtDetailNarrative.Properties.Text = "test";
             txtDetailReference.Properties.Text = "test";
-            TextBoxTester txtCreditAmount = new TextBoxTester("txtCreditAmount");
-            txtCreditAmount.Properties.Text = Amount.ToString();
+            TTxtNumericTextBoxTester txtCreditAmount = new TTxtNumericTextBoxTester("txtCreditAmount");
+            txtCreditAmount.Properties.NumberValueDecimal = Amount;
 
             cmbDetailAccountCode.Properties.SetSelectedString("0200");
             cmbDetailCostCentreCode.Properties.SetSelectedString(FLedgerNumber.ToString("00") + "00");
@@ -220,6 +220,12 @@ namespace Tests.MFinance.GLBatches
 
             ToolStripButtonTester btnPost = new ToolStripButtonTester("tbbPostBatch");
             btnPost.Click();
+
+            // and now try to create a new batch, bug https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=1058
+            // go to Batch tab
+            tabGLBatch.SelectTab(0);
+            btnNewBatch.Click();
+            btnSave.Click();
         }
 
         /// <summary>
