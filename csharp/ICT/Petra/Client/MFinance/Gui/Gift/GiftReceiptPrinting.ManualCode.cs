@@ -59,11 +59,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private TGfxPrinter FGfxPrinter = null;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AllLetters">HTML text (could be several pages)</param>
         /// <param name="APathForImagesBase">Could be null if I'm not printing images!</param>
-        public void PreviewOrPrint (String AllLetters, String APathForImagesBase)
+        public void PreviewOrPrint(String AllLetters, String APathForImagesBase)
         {
             System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
             bool printerInstalled = printDocument.PrinterSettings.IsValid;
@@ -99,7 +99,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 MessageBox.Show(Catalog.GetString("Please supply valid Start and End dates."));
                 return;
             }
-
 
             OpenFileDialog DialogOpen = new OpenFileDialog();
 

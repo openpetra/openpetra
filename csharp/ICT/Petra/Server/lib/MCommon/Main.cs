@@ -452,12 +452,13 @@ namespace Ict.Petra.Server.MCommon
 //                    DBAccess.GDBAccessObj.CommitTransaction();
 //                }
             }
+
 /*
-            if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
-            {
-                PerformColumnNameMapping();
-            }
-*/
+ *          if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
+ *          {
+ *              PerformColumnNameMapping();
+ *          }
+ */
             try
             {
 //              FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
@@ -611,26 +612,26 @@ namespace Ict.Petra.Server.MCommon
         }
 
 /*
-        /// <summary>
-        /// Creates a mapping between the names of the fields in the DB and how they
-        /// should be named in the resulting DataTable.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private void PerformColumnNameMapping()
-        {
-            DataTableMapping AliasNames;
-            IDictionaryEnumerator ColumNameMappingEnumerator;
-
-            AliasNames = FDataAdapter.TableMappings.Add(FTmpDataTable.TableName, FTmpDataTable.TableName);
-            ColumNameMappingEnumerator = FFindParameters.FColumNameMapping.GetEnumerator();
-
-            while (ColumNameMappingEnumerator.MoveNext())
-            {
-                AliasNames.ColumnMappings.Add(ColumNameMappingEnumerator.Key.ToString(), ColumNameMappingEnumerator.Value.ToString());
-            }
-        }
-*/
+ *      /// <summary>
+ *      /// Creates a mapping between the names of the fields in the DB and how they
+ *      /// should be named in the resulting DataTable.
+ *      ///
+ *      /// </summary>
+ *      /// <returns>void</returns>
+ *      private void PerformColumnNameMapping()
+ *      {
+ *          DataTableMapping AliasNames;
+ *          IDictionaryEnumerator ColumNameMappingEnumerator;
+ *
+ *          AliasNames = FDataAdapter.TableMappings.Add(FTmpDataTable.TableName, FTmpDataTable.TableName);
+ *          ColumNameMappingEnumerator = FFindParameters.FColumNameMapping.GetEnumerator();
+ *
+ *          while (ColumNameMappingEnumerator.MoveNext())
+ *          {
+ *              AliasNames.ColumnMappings.Add(ColumNameMappingEnumerator.Key.ToString(), ColumNameMappingEnumerator.Value.ToString());
+ *          }
+ *      }
+ */
         /// <summary>
         /// Cancels an asynchronously executing query. This might take some time;
         /// therefore always execute this procedure in a separate Thread!

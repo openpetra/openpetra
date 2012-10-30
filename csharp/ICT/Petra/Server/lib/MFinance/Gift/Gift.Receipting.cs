@@ -367,8 +367,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             FormValues.Add("Reference", new List <string>());
             FormValues.Add("DonorComment", new List <string>());
 
-            FormValues.Add("GiftTotalAmount", new List<string>());
-            FormValues.Add("GiftTotalCurrency", new List<string>());
+            FormValues.Add("GiftTotalAmount", new List <string>());
+            FormValues.Add("GiftTotalCurrency", new List <string>());
             FormValues.Add("TxdTotal", new List <string>());
             FormValues.Add("NonTxdTotal", new List <string>());
 
@@ -440,14 +440,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 AGiftDetailTable DetailTbl = AGiftDetailAccess.LoadViaAGift(
                     GiftRow.LedgerNumber, GiftRow.BatchNumber, GiftRow.GiftTransactionNumber, ATransaction);
 
-
                 foreach (AGiftDetailRow DetailRow in DetailTbl.Rows)
                 {
                     FormValues["Reference"].Add(GiftReference);
                     FormValues["DateEntered"].Add(DateEntered);
                     GiftReference = "";                         // Date and Reference are one-per-gift, not per detail
                     DateEntered = "";                           // so if this gift has several details, I'll blank the subsequent lines.
-                    
+
                     string DonorComment = "";
                     FormValues["GiftAmount"].Add(DetailRow.GiftAmount.ToString("0.00"));
                     FormValues["GiftCurrency"].Add(AGiftCurrency);
@@ -506,6 +505,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     FormValues["DonorComment"].Add(DonorComment);
                 } // foreach GiftDetail
+
             } // foreach Gift
 
             FormValues["GiftTotalAmount"].Add(GiftTotal.ToString("0.00"));
@@ -577,12 +577,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string HtmlDoc = "";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            SortedList<Int64, AGiftTable> GiftsPerDonor = new SortedList<Int64, AGiftTable>();
-            SortedList<Int64, TempDonorInfo> DonorInfo = new SortedList<Int64, TempDonorInfo>();
+            SortedList <Int64, AGiftTable>GiftsPerDonor = new SortedList <Int64, AGiftTable>();
+            SortedList <Int64, TempDonorInfo>DonorInfo = new SortedList <Int64, TempDonorInfo>();
 
             try
             {
                 string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
+
                 foreach (DataRow Row in AGiftTbl.Rows)
                 {
                     if (Row["Selected"].Equals(true))
@@ -611,6 +612,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         GiftRow.Reference = Row["Reference"].ToString();
                         GiftsPerDonor[DonorKey].Rows.Add(GiftRow);
                     } // if Selected
+
                 } // foreach Row
 
                 foreach (Int64 DonorKey in GiftsPerDonor.Keys)
@@ -628,6 +630,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     TFormLettersTools.AttachNextPage(ref HtmlDoc, PageHtml);
                 } // foreach DonorKey
+
                 TFormLettersTools.CloseDocument(ref HtmlDoc);
             }
             finally

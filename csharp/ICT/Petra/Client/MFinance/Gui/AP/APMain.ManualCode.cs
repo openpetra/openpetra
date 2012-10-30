@@ -438,6 +438,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     return FInvoiceTable;
                 }
             }
+
             return null;
         }
 
@@ -655,6 +656,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             RowFilter += ActiveRowFilter;
+
             if (FSupplierTable != null)
             {
                 FSupplierTable.DefaultView.RowFilter = RowFilter;

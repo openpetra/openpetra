@@ -677,7 +677,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             // The user has clicked Save.  We need to consider if we need to make any Inverse currency additions...
             if (!ValidateAllData(false, true))
+            {
                 return;
+            }
 
 //          GetDetailsFromControls(FPreviouslySelectedDetailRow);
 

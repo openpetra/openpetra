@@ -115,7 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (!printerInstalled)
             {
-                MessageBox.Show (Catalog.GetString("There is no printer, so printing is not possible"));
+                MessageBox.Show(Catalog.GetString("There is no printer, so printing is not possible"));
                 return;
             }
 
@@ -153,6 +153,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (Row["Selected"].Equals(true))
                 {
                     String DonorName = Row["Donor"].ToString() + "\r\n";
+
                     if (!ReceiptedDonorsList.Contains(DonorName))
                     {
                         ReceiptedDonorsList += DonorName;
@@ -163,6 +164,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             try
             {
                 PreviewOrPrint(HtmlDoc);
+
                 if (MessageBox.Show(
                         Catalog.GetString(
                             "Press OK if receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +

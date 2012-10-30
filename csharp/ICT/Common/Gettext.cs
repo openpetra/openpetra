@@ -63,10 +63,11 @@ namespace Ict.Common
 
             // modify current locale for the given language
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(ALanguageCode);
-            
-            string ResourceDllFname = TAppSettingsManager.ApplicationDirectory 
-                + "\\" + Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName + "\\OpenPetra.resources.dll";
-            if (File.Exists (ResourceDllFname))
+
+            string ResourceDllFname = TAppSettingsManager.ApplicationDirectory +
+                                      "\\" + Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName + "\\OpenPetra.resources.dll";
+
+            if (File.Exists(ResourceDllFname))
             {
                 catalog = new GettextResourceManager("OpenPetra");
             }

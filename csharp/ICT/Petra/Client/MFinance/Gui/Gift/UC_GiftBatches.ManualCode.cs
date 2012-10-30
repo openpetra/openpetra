@@ -754,8 +754,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftTable.GetLedgerNumberDBName(), GiftBatchRow.LedgerNumber,
                 AGiftTable.GetBatchNumberDBName(), GiftBatchRow.BatchNumber);
             String ReceiptedDonorsList = "";
-            List<Int32> ReceiptedGiftTransactions = new List<Int32>();
-            SortedList<Int64, AGiftTable> GiftsPerDonor = new SortedList<Int64, AGiftTable>();
+            List <Int32>ReceiptedGiftTransactions = new List <Int32>();
+            SortedList <Int64, AGiftTable>GiftsPerDonor = new SortedList <Int64, AGiftTable>();
 
             foreach (DataRowView rv in AGiftTDS.AGift.DefaultView)
             {
@@ -772,7 +772,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     out EmailGiftStatement,
                     out AnonymousDonor);
 
-
                 if (ReceiptEachGift)
                 {
                     // I want to print a receipt for this gift,
@@ -783,6 +782,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         GiftsPerDonor.Add(GiftRow.DonorKey, new AGiftTable());
                     }
+
                     AGiftRow NewRow = GiftsPerDonor[GiftRow.DonorKey].NewRowTyped();
                     DataUtilities.CopyAllColumnValues(GiftRow, NewRow);
                     GiftsPerDonor[GiftRow.DonorKey].Rows.Add(NewRow);
@@ -791,6 +791,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             } // foreach gift
 
             String HtmlDoc = "";
+
             foreach (Int64 DonorKey in GiftsPerDonor.Keys)
             {
                 String DonorShortName;
@@ -809,14 +810,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 TFormLettersTools.AttachNextPage(ref HtmlDoc, HtmlPage);
                 ReceiptedDonorsList += (DonorShortName + "\r\n");
+
                 foreach (AGiftRow GiftRow in GiftsPerDonor[DonorKey].Rows)
                 {
                     ReceiptedGiftTransactions.Add(GiftRow.GiftTransactionNumber);
                 }
             }
+
             TFormLettersTools.CloseDocument(ref HtmlDoc);
             TFrmReceiptControl.PreviewOrPrint(HtmlDoc);
-
 
             if (ReceiptedGiftTransactions.Count > 0)
             {

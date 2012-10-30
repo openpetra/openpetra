@@ -107,7 +107,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FPetraUtilsObject.ValidationControlsDict);
         }
 
-
         /// <summary>
         /// The focus is send to the grid to "unfocus" the input controls and to
         /// enforce that the dataset verification routines are invoked

@@ -179,20 +179,21 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
 
             FPagedDataSetObject = new TPagedDataSet(null);
+
 /*
-            if (FSearchTransactions)
-            {
-                FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITDSTransactionListTable());
-            }
-            else if (FSearchSupplierOrInvoice)
-            {
-                FPagedDataSetObject = new TPagedDataSet(null);
-            }
-            else
-            {
-                FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITDSInvoiceListTable());
-            }
-*/
+ *          if (FSearchTransactions)
+ *          {
+ *              FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITDSTransactionListTable());
+ *          }
+ *          else if (FSearchSupplierOrInvoice)
+ *          {
+ *              FPagedDataSetObject = new TPagedDataSet(null);
+ *          }
+ *          else
+ *          {
+ *              FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITDSInvoiceListTable());
+ *          }
+ */
             // Pass the TAsynchronousExecutionProgress object to FPagedDataSetObject so that it
             // can update execution status
             FPagedDataSetObject.AsyncExecProgress = FAsyncExecProgress;
@@ -264,6 +265,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     OrderByClause,
                     ColumnNameMapping,
                     ParametersArray);
+
                 if (FSearchSupplierOrInvoice)
                 {
                     FPagedDataSetObject.FindParameters.FSearchName = "Suppliers";
@@ -370,7 +372,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             // searching for outstanding invoices on the main screen
             if (!FSearchTransactions && !FSearchSupplierOrInvoice)
             {
-
                 foreach (DataRow Row in ReturnValue.Rows)
                 {
                     // calculate DateDue and DateDiscountUntil
@@ -533,11 +534,11 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                        DocTbl + AApDocumentTable.GetDocumentStatusDBName() + " AS DocumentStatus, " +
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + " AS DateIssued, " +
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + " AS DateDue, " +
-                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + " AS DateDiscountUntil, " + 
+                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + " AS DateDiscountUntil, " +
                        DocTbl + AApDocumentTable.GetCreditTermsDBName() + " AS CreditTerms, " +
                        DocTbl + AApDocumentTable.GetDiscountPercentageDBName() + " AS DiscountPercentage, " +
                        DocTbl + AApDocumentTable.GetDiscountDaysDBName() + " AS DiscountDays, " +
-                       "\"none\" AS DiscountMsg, " + 
+                       "\"none\" AS DiscountMsg, " +
                        "false AS Selected, " +
                        DocTbl + AApDocumentTable.GetCreditNoteFlagDBName() + " AS CreditNoteFlag, " +
                        DocTbl + AApDocumentTable.GetApDocumentIdDBName() + " AS DocumentId ";

@@ -129,7 +129,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.DateEffectiveFrom,
                     ValidationControlsData.ValidationControlLabel,
                     true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
             }
         }
 
@@ -148,11 +147,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
             {
                 DataColumn ValidationColumn = ARow.Table.Columns[AFeesPayableTable.ColumnChargePercentageId];
                 TValidationControlsData ValidationControlsData;
+
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     TVerificationResult VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.ChargePercentage,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        ValidationControlsData.ValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -162,11 +162,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
             {
                 DataColumn ValidationColumn = ARow.Table.Columns[AFeesPayableTable.ColumnChargeAmountId];
                 TValidationControlsData ValidationControlsData;
+
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     TVerificationResult VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.ChargeAmount,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        ValidationControlsData.ValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -189,11 +190,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
             {
                 DataColumn ValidationColumn = ARow.Table.Columns[AFeesReceivableTable.ColumnChargePercentageId];
                 TValidationControlsData ValidationControlsData;
+
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     TVerificationResult VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.ChargePercentage,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        ValidationControlsData.ValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -203,17 +205,17 @@ namespace Ict.Petra.Shared.MFinance.Validation
             {
                 DataColumn ValidationColumn = ARow.Table.Columns[AFeesReceivableTable.ColumnChargeAmountId];
                 TValidationControlsData ValidationControlsData;
+
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     TVerificationResult VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.ChargeAmount,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        ValidationControlsData.ValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
             }
         }
-
     }
 }
