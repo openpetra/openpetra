@@ -659,7 +659,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TSharedFinanceValidation_GLSetup.ValidateDailyExchangeRates(this, ARow, ref VerificationResultCollection,
+            TSharedFinanceValidation_GLSetup.ValidateDailyExchangeRate(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
 
