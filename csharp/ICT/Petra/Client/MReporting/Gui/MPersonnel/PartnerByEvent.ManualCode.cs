@@ -31,6 +31,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Client.MReporting.Gui;
@@ -57,6 +58,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             }
         }
 
+        /// <summary>
+        /// This Procedure will get called when the event filter criteria are changed
+        /// </summary>
+        /// <param name="sender">The Object that throws this Event</param>
+        /// <param name="e">Event Arguments.
+        /// </param>
+        /// <returns>void</returns>
+        private void EventFilterChanged(System.Object sender, System.EventArgs e)
+        {
+            LoadEventListData();
+        }
+
         private void InitializeManualCode()
         {
         }
@@ -74,18 +87,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             ucoChkFilter.ShowFamiliesOnly(false);
 
-            // Prepare the window title and settings directory (will be used later by TFrmPetraReportingUtils).
-            // Normally the settings directory is set earlier but since this is one form that covers two extracts
-            // we need to initialize it a second time here with the correct directory.
-            if (FCalledForConferences)
-            {
-                FPetraUtilsObject.WindowCaption = Catalog.GetString("Partner by Conference");
-            }
-            else
-            {
-                FPetraUtilsObject.WindowCaption = Catalog.GetString("Partner by Outreach");
-            }
-
             // enable autofind in list for first character (so the user can press character to find list entry)
             this.clbEvent.AutoFindColumn = ((Int16)(1));
             this.clbEvent.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
@@ -97,13 +98,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                                                  SourceGrid.GridSpecialKeys.Escape) |
                                                 SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
 
+            // set controls in filter to default values
+            ucoFilter.InitialiseUserControl();
+
+            // Hook up EventFilterChanged Event to be able to react to changed filter
+            ucoFilter.EventFilterChanged += new TEventHandlerEventFilterChanged(this.EventFilterChanged);
+
             // populate list with data to be loaded
-            this.LoadListData("");
+            this.LoadEventListData();
 
             FPetraUtilsObject.LoadDefaultSettings();
         }
 
-        private void LoadListData(string AFilter)
+        private void LoadEventListData()
         {
             string CheckedMember = "CHECKED";
             string ValueMember = PPartnerTable.GetPartnerKeyDBName();
@@ -111,8 +118,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             string EventCodeMember = PUnitTable.GetOutreachCodeDBName();
             DataTable Table;
 
-            Table = TRemote.MPartner.Partner.WebConnectors.GetEventUnits(FCalledForConferences, !FCalledForConferences,
-                AFilter, false, false);
+            Table = TRemote.MPartner.Partner.WebConnectors.GetEventUnits
+                        (ucoFilter.IncludeConferenceUnits, ucoFilter.IncludeOutreachUnits,
+                        ucoFilter.NameFilter, false, ucoFilter.CurrentAndFutureEventsOnly);
 
             DataView view = new DataView(Table);
 
@@ -125,7 +133,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             clbEvent.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 100);
 
             // outreach/event code column only needed in case of displaying Outreaches
-            if (!FCalledForConferences)
+            if (ucoFilter.IncludeOutreachUnits)
             {
                 clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 110);
             }
@@ -134,11 +142,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             //TODO: only temporarily until settings file exists
             clbEvent.SetCheckedStringList("");
-        }
-
-        private void FilterList(System.Object sender, EventArgs e)
-        {
-            LoadListData(txtFilter.Text);
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
