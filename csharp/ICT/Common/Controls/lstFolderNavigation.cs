@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Drawing;
 using System.Xml;
 using System.Windows.Forms;
 using Ict.Common.IO;
@@ -72,8 +73,16 @@ namespace Ict.Common.Controls
         public TLstFolderNavigation()
         {
             ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
+            TVisualStyles VisualStyle = new TVisualStyles(TVisualStylesEnum.vsHorizontalCollapse);
 
             InitializeComponent();
+
+            sptNavigation.BackColor = VisualStyle.TitleGradientEnd;
+
+            pnlMoreButtons.GradientColorTop = VisualStyle.TitleGradientStart;
+            pnlMoreButtons.GradientColorBottom = VisualStyle.TitleGradientEnd;
+            pnlMoreButtons.Border = new System.Drawing.Pen(new TOpenPetraMenuColours().MenuBackgroundColour);
+
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
@@ -92,12 +101,18 @@ namespace Ict.Common.Controls
 #endif
         }
 
-        #region Delegates
+        #region Delegates and Events
 
         /// <summary>
         /// this function checks if the user has access to the navigation node
         /// </summary>
         public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId, bool ACheckLedgerPermissions);
+
+        /// <summary>Fired when a TaskLink got activated (by clicking on it or programmatically).</summary>
+        public event TTaskList.TaskLinkClicked SubmoduleChanged;
+
+        /// <summary>Fired when a Ledger got selected by the user (by clicking on it's LinkLabel).</summary>
+        public event TPnlModuleNavigation.LedgerSelected LedgerChanged;
 
         #endregion
 
@@ -382,7 +397,13 @@ namespace Ict.Common.Controls
 
         private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
         {
-            // TODO
+            if (SubmoduleChanged != null)
+            {
+                if (ATaskListNode.Attributes["LedgerNumber"] == null)
+                {
+                    SubmoduleChanged(ATaskList, ATaskListNode, AItemClicked);
+                }
+            }
         }
 
         private void OnLedgerChanged(int ALedgerNr, string ALedgerName)
@@ -401,6 +422,11 @@ namespace Ict.Common.Controls
             {
                 MessageBox.Show(String.Format("You have changed the Ledger to\r\n\r\n    Ledger #{0}.", ALedgerNr), LedgerChangeTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            if (LedgerChanged != null)
+            {
+                LedgerChanged(ALedgerNr, ALedgerName);
             }
         }
 
