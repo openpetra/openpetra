@@ -76,6 +76,11 @@ namespace Ict.Common.Controls
             TVisualStyles VisualStyle = new TVisualStyles(TVisualStylesEnum.vsHorizontalCollapse);
 
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblNavigationCaption.Text = Catalog.GetString("Caption");
+            #endregion
 
             sptNavigation.BackColor = VisualStyle.TitleGradientEnd;
 
@@ -83,11 +88,6 @@ namespace Ict.Common.Controls
             pnlMoreButtons.GradientColorBottom = VisualStyle.TitleGradientEnd;
             pnlMoreButtons.Border = new System.Drawing.Pen(new TOpenPetraMenuColours().MenuBackgroundColour);
 
-            #region CATALOGI18N
-
-            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblNavigationCaption.Text = Catalog.GetString("Caption");
-            #endregion
 
 #if disabled
             if (System.IO.File.Exists(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2leftarrow.png"))
