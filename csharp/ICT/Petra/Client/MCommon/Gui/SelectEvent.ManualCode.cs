@@ -30,6 +30,7 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -45,8 +46,6 @@ namespace Ict.Petra.Client.MCommon.Gui
     {
         /// <summary>Holds the current event data</summary>
         private DataTable FEventTable;
-        /// <summary>Prevents updates during initialisation</summary>
-        private bool DuringInitialization;
 
         /// <summary>String holding the selected unit name</summary>
         public String FSelectedUnitName;
@@ -55,49 +54,16 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <summary>PartnerKey of the selected unit</summary>
         public Int64 FSelectedPartnerKey;
 
-        private void EventTypeChanged(System.Object sender, EventArgs e)
+        /// <summary>
+        /// This Procedure will get called when the event filter criteria are changed
+        /// </summary>
+        /// <param name="sender">The Object that throws this Event</param>
+        /// <param name="e">Event Arguments.
+        /// </param>
+        /// <returns>void</returns>
+        private void EventFilterChanged(System.Object sender, System.EventArgs e)
         {
-            RadioButton RadioBtn = (RadioButton)sender;
-
-            if (RadioBtn.Checked)
-            {
-                this.Cursor = Cursors.WaitCursor;
-
-                InitEventTable();
-
-                this.Cursor = Cursors.Default;
-            }
-        }
-
-        private void EventDateChanged(System.Object sender, EventArgs e)
-        {
-            this.Cursor = Cursors.WaitCursor;
-
-            SetTableFilter();
-            grdEvent.AutoSizeCells();
-
-            this.Cursor = Cursors.Default;
-        }
-
-        private void FilterEvents(System.Object sender, EventArgs e)
-        {
-            this.Cursor = Cursors.WaitCursor;
-
-            SetTableFilter();
-            grdEvent.AutoSizeCells();
-
-            this.Cursor = Cursors.Default;
-        }
-
-        private void ClearFilterEvents(System.Object sender, EventArgs e)
-        {
-            this.Cursor = Cursors.WaitCursor;
-
-            txtEventName.Text = "";
-            SetTableFilter();
-            grdEvent.AutoSizeCells();
-
-            this.Cursor = Cursors.Default;
+            LoadEventListData();
         }
 
         private void grdEventDoubleClick(System.Object sender, EventArgs e)
@@ -130,10 +96,14 @@ namespace Ict.Petra.Client.MCommon.Gui
 
         private void InitUserControlsManually()
         {
-            DuringInitialization = true;
-            // Get list of commitment statuses
-            FEventTable = TDataCache.TMPersonnel.GetCacheableUnitsTable(
-                TCacheableUnitTablesEnum.ConferenceList);
+            // set controls in filter to default values
+            ucoFilter.InitialiseUserControl();
+
+            // Hook up EventFilterChanged Event to be able to react to changed filter
+            ucoFilter.EventFilterChanged += new TEventHandlerEventFilterChanged(this.EventFilterChanged);
+
+            // now the filter is initialized we can load the initial data
+            LoadEventListData();
 
             grdEvent.Columns.Clear();
 
@@ -149,97 +119,17 @@ namespace Ict.Petra.Client.MCommon.Gui
             FEventTable.DefaultView.AllowEdit = false;
             FEventTable.DefaultView.AllowNew = false;
 
-            grdEvent.DataSource = new DevAge.ComponentModel.BoundDataView(FEventTable.DefaultView);
-            grdEvent.AutoSizeCells();
             grdEvent.Selection.EnableMultiSelection = false;
-
-            chkCurrentFutureOnly.Checked = true;
-
-            // set DuringInitialization to false now, so that we call at least once InitEventTable()
-            DuringInitialization = false;
-            rbtConference.Checked = true;
         }
 
-        private void InitEventTable()
+        private void LoadEventListData()
         {
-            if (DuringInitialization)
-            {
-                return;
-            }
-
-            grdEvent.DataSource = null;
-
-            FEventTable.Rows.Clear();
-
-            if (rbtOutreach.Checked || rbtAll.Checked)
-            {
-                // get all the outreaches
-                DataTable TmpTable = TDataCache.TMPersonnel.GetCacheableUnitsTable(
-                    TCacheableUnitTablesEnum.OutreachList);
-
-                AddTableToGrid(TmpTable);
-            }
-
-            if (rbtConference.Checked || rbtAll.Checked)
-            {
-                // get all the conferences
-                DataTable TmpTable = TDataCache.TMPersonnel.GetCacheableUnitsTable(
-                    TCacheableUnitTablesEnum.ConferenceList);
-
-                AddTableToGrid(TmpTable);
-            }
-
-            SetTableFilter();
+            FEventTable = TRemote.MPartner.Partner.WebConnectors.GetEventUnits
+                        (ucoFilter.IncludeConferenceUnits, ucoFilter.IncludeOutreachUnits,
+                        ucoFilter.NameFilter, true, ucoFilter.CurrentAndFutureEventsOnly);
 
             grdEvent.DataSource = new DevAge.ComponentModel.BoundDataView(FEventTable.DefaultView);
             grdEvent.AutoSizeCells();
-        }
-
-        private void AddTableToGrid(DataTable ATmpTable)
-        {
-            FEventTable.BeginLoadData();
-
-            if (ATmpTable.Columns.Count != FEventTable.Columns.Count)
-            {
-                TLogging.Log("Can't show events in Events Grid for " + this.Name);
-            }
-
-            foreach (DataRow Row in ATmpTable.Rows)
-            {
-                FEventTable.LoadDataRow(Row.ItemArray, true);
-            }
-
-            FEventTable.EndLoadData();
-        }
-
-        /// <summary>
-        /// Update the filter for the data table so that only those events are shown which are in accordance
-        /// with the radio button selection and the chekc box
-        /// </summary>
-        private void SetTableFilter()
-        {
-            String RowFilter = "";
-            String EventName = "";
-
-            if (chkCurrentFutureOnly.Checked)
-            {
-                RowFilter = PPartnerLocationTable.GetDateGoodUntilDBName() + " >= #" + DateTime.Today.ToString("yyyy-MM-dd") + "#";
-            }
-
-            if (txtEventName.Text.Length > 0)
-            {
-                // in case there is a filter set for the event name
-
-                if (RowFilter.Length > 0)
-                {
-                    RowFilter = RowFilter + " AND ";
-                }
-
-                EventName = txtEventName.Text.Replace('*', '%') + "%";
-                RowFilter = RowFilter + PPartnerTable.GetPartnerShortNameDBName() + " LIKE '" + EventName + "'";
-            }
-
-            FEventTable.DefaultView.RowFilter = RowFilter;
         }
     }
 

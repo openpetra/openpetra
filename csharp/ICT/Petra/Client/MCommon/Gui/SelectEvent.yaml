@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MCommon.Gui
     FormType: browse
     Template: window
-    WindowWidth: 600
+    WindowWidth: 700
     WindowHeight: 600
     TemplateParameters:
         INITUSERCONTROLS: InitUserControlsManually();
@@ -17,50 +17,20 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Stretch: horizontally
-            Controls: [pnlFilter, grdEvent, pnlBottom]
+            Controls: [pnlFilter, pnlBottom]
         pnlFilter:
-            Stretch: horizontally
-            Controls: [grpFilterEventType, grpFilterEventName]
-        grpFilterEventType:
-            Stretch: horizontally
-            Label: Filter by Event Type
-            Controls:
-                Row1: [rbtConference, rbtOutreach, rbtAll]
-                Row2: [chkCurrentFutureOnly]
-        rbtOutreach:
-            Label: Outreaches Only
-            OnChange: EventTypeChanged
-        rbtConference:
-            Label: Conferences Only
-            OnChange: EventTypeChanged
-        rbtAll:
-            Label: All
-            OnChange: EventTypeChanged
-        chkCurrentFutureOnly:
-            Label: Current / Future Events Only
-            OnChange: EventDateChanged
-        
-        grpFilterEventName:
-            Label: Filter by Event Name
-            Stretch: horizontally
-            Controls:
-                Row1: [txtEventName, btnFilter, btnClearFilter]
-        txtEventName:
-            Label: Event Name
-            Width: 300
-        btnFilter:
-            Label: Filter
-            Action: actActivateFilter
-        btnClearFilter:
-            Label: Clear Filter
-            Action: actClearFilter
+            Dock: Top
+            Height: 140
+            Controls: [ucoFilter]
+        pnlBottom:
+            Dock: Fill
+            Controls: [grdEvent, pnlButtons]
                     
         grdEvent:
-            Stretch: horizontally
-            Height: 350
+            Dock: Fill
             ActionDoubleClick: grdEventDoubleClick
-        pnlBottom:
+        pnlButtons:
+            Dock: Bottom
             Controls:
                 Row1: [btnAccept, btnCancel]
         btnAccept:
@@ -69,3 +39,8 @@ RootNode:
         btnCancel:
             Label: Cancel
             Action: actCancel
+
+        ucoFilter:
+            Dock: Fill
+            Type: Ict.Petra.Client.MCommon.Gui.TUC_EventFilter
+            NoParameter: true
