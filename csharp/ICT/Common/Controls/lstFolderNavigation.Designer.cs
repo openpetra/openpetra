@@ -60,7 +60,7 @@ namespace Ict.Common.Controls
             new System.ComponentModel.ComponentResourceManager(typeof(TRbtNavigationButton));
 
             this.sptNavigation = new System.Windows.Forms.SplitContainer();
-            this.pnlMoreButtons = new System.Windows.Forms.Panel();
+            this.pnlMoreButtons = new TPnlGradient();
             this.lblNavigationCaption = new System.Windows.Forms.Label();
 
             this.sptNavigation.Panel1.SuspendLayout();
@@ -92,7 +92,6 @@ namespace Ict.Common.Controls
             this.pnlMoreButtons.Name = "pnlMoreButtons";
             this.pnlMoreButtons.Size = new System.Drawing.Size(200, 28);
             this.pnlMoreButtons.TabIndex = 2;
-            this.pnlMoreButtons.BorderStyle = BorderStyle.FixedSingle;
 
             //
             // sptNavigation
@@ -134,6 +133,6 @@ namespace Ict.Common.Controls
 
         private System.Windows.Forms.Label lblNavigationCaption;
         private System.Windows.Forms.SplitContainer sptNavigation;
-        private System.Windows.Forms.Panel pnlMoreButtons;
+        private TPnlGradient pnlMoreButtons;
     }
 }

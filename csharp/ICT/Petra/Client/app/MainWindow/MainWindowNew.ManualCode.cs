@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml;
@@ -51,6 +52,7 @@ namespace Ict.Petra.Client.App.PetraClient
         private static bool FMultiLedgerSite = false;
         private static int FCurrentLedger = -1;
         private static List <string>FLedgersAvailableToUser = null;
+        TBreadcrumbTrail FBreadcrumbTrail;
 
         /// <summary>
         /// The currently selected Ledger
@@ -70,6 +72,13 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private void InitializeManualCode()
         {
+            // Currently, only the Main Menu gets an 'OpenPetra styled' StatusBar (an 'OpenPetra styled' StatusBar
+            // doesn't go with normal Forms at the moment as pnlContent's BackColor [and UserControls] is white
+            // in colour and that doesn't look that good with an 'OpenPetra styled' StatusBar at the bottom).
+            stbMain.UseOpenPetraToolStripRenderer = true;
+
+            InitialiseTopPanel();
+
             LoadNavigationUI();
 
             Version version = new Version(TClientInfo.ClientAssemblyVersion);
@@ -348,6 +357,15 @@ namespace Ict.Petra.Client.App.PetraClient
 
             lstFolders.ClearFolders();
 
+            lstFolders.SubmoduleChanged += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+            {
+                OnSubmoduleChanged(ATaskList, ATaskListNode, AItemClicked);
+            };
+            lstFolders.LedgerChanged += delegate(int ALedgerNr, string ALedgerName)
+            {
+                OnLedgerChanged(ALedgerNr, ALedgerName);
+            };
+
             TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission);
 
             while (DepartmentNode != null)
@@ -500,6 +518,73 @@ namespace Ict.Petra.Client.App.PetraClient
         private static string FormatLedgerNumberForModuleAccess(int ALedgerNumber)
         {
             return "LEDGER" + ALedgerNumber.ToString("0000");
+        }
+
+        private void InitialiseTopPanel()
+        {
+            TVisualStyles VisualStyle = new TVisualStyles(TVisualStylesEnum.vsHorizontalCollapse);
+
+            TPnlGradient TopPanel = new TPnlGradient();
+
+            TopPanel.Name = "Top";
+            TopPanel.Dock = DockStyle.Fill;
+            TopPanel.Padding = new Padding(0, 1, 0, 0);
+            TopPanel.GradientColorTop = VisualStyle.TitleGradientStart;
+            TopPanel.GradientColorBottom = VisualStyle.TitleGradientEnd;
+            TopPanel.DontDrawBottomLine = false;
+
+            pnlTop.Controls.Add(TopPanel);
+
+            // Add Breadcrumb Trail Panel to TopPanel
+            FBreadcrumbTrail = new TBreadcrumbTrail(TopPanel);
+
+            // in the future: add SearchBox (still to be created) to TopPanel, too...
+        }
+
+        private void OnSubmoduleChanged(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+        {
+            const string DetailTextPrefix = "» ";
+            string ModuleText = String.Empty;
+            string BreadcrumbDetailText = String.Empty;
+
+            if ((ATaskListNode.ParentNode.Attributes["SkipThisLevel"] != null)
+                && (ATaskListNode.ParentNode.Attributes["SkipThisLevel"].Value == "true"))
+            {
+                ModuleText = TLstFolderNavigation.GetLabel(ATaskListNode.ParentNode.ParentNode);
+                BreadcrumbDetailText = DetailTextPrefix + AItemClicked.Text;
+            }
+            else
+            {
+                if ((ATaskListNode.ParentNode.Attributes["DontShowNestedTasksAsLinks"] == null)
+                    || (ATaskListNode.ParentNode.Attributes["DontShowNestedTasksAsLinks"].Value == "false"))
+                {
+                    if ((ATaskListNode.ParentNode.ParentNode.Attributes["DependsOnLedger"] == null)
+                        || (ATaskListNode.ParentNode.ParentNode.Attributes["DependsOnLedger"].Value == "false"))
+                    {
+                        ModuleText = TLstFolderNavigation.GetLabel(ATaskListNode.ParentNode.ParentNode);
+                    }
+                    else
+                    {
+                        ModuleText = Catalog.GetString("Ledger" + " " + FCurrentLedger.ToString());
+                    }
+
+                    BreadcrumbDetailText = DetailTextPrefix + TLstFolderNavigation.GetLabel(ATaskListNode.ParentNode) + " ";
+                }
+
+                BreadcrumbDetailText += DetailTextPrefix + AItemClicked.Text;
+            }
+
+            FBreadcrumbTrail.ModuleText = ModuleText;
+            FBreadcrumbTrail.DetailText = BreadcrumbDetailText;
+        }
+
+        private void OnLedgerChanged(int ALedgerNr, string ALedgerName)
+        {
+            FBreadcrumbTrail.ModuleText = Catalog.GetString("Ledger" + " " + ALedgerNr.ToString());
+            FCurrentLedger = ALedgerNr;
+
+            // Remove any message that is shown in the Status Bar (e.g. the one that is put there when creating a new Ledger)
+            this.stbMain.ShowMessage(String.Empty);
         }
     }
 }

@@ -59,7 +59,6 @@ namespace Ict.Common.Controls
             new System.ComponentModel.ComponentResourceManager(typeof(TRbtNavigationButton));
 
             this.lblCaption = new System.Windows.Forms.Label();
-            this.pbxIcon = new System.Windows.Forms.PictureBox();
 
             this.SuspendLayout();
 
@@ -73,19 +72,10 @@ namespace Ict.Common.Controls
             this.lblCaption.Size = new System.Drawing.Size(168, 22);
 
             //
-            // pbxIcon
-            //
-            this.pbxIcon.BackColor = System.Drawing.Color.Transparent;
-            this.pbxIcon.Location = new System.Drawing.Point(8, 5);
-            this.pbxIcon.Name = "pbxIcon";
-            this.pbxIcon.Size = new System.Drawing.Size(32, 32);
-
-            //
             // TRbtNavigationButton
             //
             this.Size = new System.Drawing.Size(184, 28);
             this.Controls.Add(lblCaption);
-            this.Controls.Add(pbxIcon);
             this.DoubleBuffered = true;
             this.Name = "TRbtNavigationButton";
 
@@ -94,6 +84,5 @@ namespace Ict.Common.Controls
         }
 
         private System.Windows.Forms.Label lblCaption;
-        private System.Windows.Forms.PictureBox pbxIcon;
     }
 }

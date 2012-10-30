@@ -73,6 +73,10 @@ namespace Ict.Common.Controls
         public TPnlCollapsibleHoster()
         {
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            #endregion
         }
 
         /// <summary>
