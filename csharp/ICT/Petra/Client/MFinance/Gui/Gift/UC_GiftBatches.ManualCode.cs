@@ -87,10 +87,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.DisableDataChangedEvent();
                 LoadBatches(FLedgerNumber);
-				if (((TFrmGiftBatch)ParentForm).GetTransactionsControl() != null)
-				{
-					((TFrmGiftBatch)ParentForm).GetTransactionsControl().RefreshAll();
-				}
+
+                if (((TFrmGiftBatch)ParentForm).GetTransactionsControl() != null)
+                {
+                    ((TFrmGiftBatch)ParentForm).GetTransactionsControl().RefreshAll();
+                }
             }
             finally
             {
