@@ -105,6 +105,8 @@ namespace Ict.Petra.Client.MCommon.Gui
             // now the filter is initialized we can load the initial data
             LoadEventListData();
 
+            grdEvent.AutoSizeCells();
+
             grdEvent.Columns.Clear();
 
             grdEvent.AddTextColumn("Event Name", FEventTable.Columns[PPartnerTable.GetPartnerShortNameDBName()]);
@@ -112,7 +114,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             grdEvent.AddTextColumn("Country", FEventTable.Columns[PCountryTable.GetCountryNameDBName()]);
             grdEvent.AddDateColumn("Start Date", FEventTable.Columns[PPartnerLocationTable.GetDateEffectiveDBName()]);
             grdEvent.AddDateColumn("End Date", FEventTable.Columns[PPartnerLocationTable.GetDateGoodUntilDBName()]);
-            grdEvent.AddTextColumn("Event Key", FEventTable.Columns[PPartnerTable.GetPartnerKeyDBName()]);
+            grdEvent.AddPartnerKeyColumn("Event Key", FEventTable.Columns[PPartnerTable.GetPartnerKeyDBName()]);
             grdEvent.AddTextColumn("Event Type", FEventTable.Columns[PUnitTable.GetUnitTypeCodeDBName()], 80);
 
             FEventTable.DefaultView.AllowDelete = false;
@@ -127,9 +129,11 @@ namespace Ict.Petra.Client.MCommon.Gui
             FEventTable = TRemote.MPartner.Partner.WebConnectors.GetEventUnits
                         (ucoFilter.IncludeConferenceUnits, ucoFilter.IncludeOutreachUnits,
                         ucoFilter.NameFilter, true, ucoFilter.CurrentAndFutureEventsOnly);
-
+            
+            // set "AllowNew" to false as otherwise an empty line is shown in the grid when filter is refreshed
+            FEventTable.DefaultView.AllowNew = false;
+            
             grdEvent.DataSource = new DevAge.ComponentModel.BoundDataView(FEventTable.DefaultView);
-            grdEvent.AutoSizeCells();
         }
     }
 
