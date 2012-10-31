@@ -361,7 +361,7 @@ OpenPetra:
                 Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     General:
                         ConferenceCostType: {Label= Setup Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
-        FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Fin. Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}
+        FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Financial Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}
             Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}  # Icon=Print.ico
                 GeneralReports: {DontShowNestedTasksAsLinks=true}
                     IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}

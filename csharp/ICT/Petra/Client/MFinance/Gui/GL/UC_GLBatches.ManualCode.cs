@@ -260,6 +260,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ClearDetailControls();
+
             EnableButtonControl(true);
 
             grdDetails.DataSource = null;
@@ -275,7 +276,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 newBatchRow.BatchPeriod = periodNumber;
             }
 
-            FPetraUtilsObject.SetChangedFlag();
+            //FPetraUtilsObject.SetChangedFlag();
 
             // BoundDataView bdv = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
             //bdv
@@ -283,9 +284,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
-            txtDetailBatchDescription.Text = "PLEASE ENTER DESCRIPTION";
+            txtDetailBatchDescription.Text = "Please enter description";
             txtDetailBatchDescription.Focus();
 
             ((TFrmGLBatch)ParentForm).SaveChanges();
@@ -757,6 +759,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FPreviouslySelectedDetailRow != null)
             {
                 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+
+                if (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                {
+                    FPetraUtilsObject.DisableSaveButton();
+                }
             }
 
             if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())

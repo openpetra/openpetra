@@ -42,7 +42,7 @@ namespace Ict.Tools.GenerateI18N
             GettextProcess.EnableRaisingEvents = false;
             GettextProcess.StartInfo.FileName = AGettextApp;
             GettextProcess.StartInfo.Arguments = String.Format(
-                "-j --add-comments=_ --add-location --from-code=UTF-8 {0} -o \"{1}\"",
+                "-j --add-comments=/ --add-location --from-code=UTF-8 {0} -o \"{1}\"",
                 AListOfFilesToParse, APoFile);
             GettextProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             GettextProcess.EnableRaisingEvents = true;

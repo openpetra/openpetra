@@ -88,11 +88,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FPreviouslySelectedDetailRow = null;
 
-            grdDetails.DataSource = null;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
-
             // only load from server if there are no transactions loaded yet for this journal
             // otherwise we would overwrite transactions that have already been modified
+            FMainDS.ATransaction.DefaultView.RowFilter = string.Empty;
+
+            if (FMainDS.ATransaction.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(ALedgerNumber, ABatchNumber, AJournalNumber));
+            }
+            else
+            {
+                FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                    ATransactionTable.GetLedgerNumberDBName(),
+                    ATransactionTable.GetBatchNumberDBName(),
+                    ATransactionTable.GetJournalNumberDBName()
+                    );
+
+                if (FMainDS.ATransaction.DefaultView.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber }) == -1)
+                {
+                    FMainDS.ATransaction.Clear();
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(ALedgerNumber, ABatchNumber, AJournalNumber));
+                }
+            }
+
             FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
                 ATransactionTable.GetBatchNumberDBName(),
                 FBatchNumber,
@@ -103,10 +121,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ATransactionTable.GetTransactionNumberDBName()
                 );
 
-            if (FMainDS.ATransaction.DefaultView.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
-            }
+            grdDetails.DataSource = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
 
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
@@ -278,46 +294,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         true, false, ActiveOnly, false, TransactionCurrency);
 
                     cmbDetailAccountCode.SetSelectedString(SelectedAccount);
-                }
 
-                FTransactionCurrency = TransactionCurrency;
-            }
-
-            // Create Text description of Anal Attribs for each transaction..
-
-            foreach (GLBatchTDSATransactionRow TransactionRow in FMainDS.ATransaction.Rows)
-            {
-                if (TransactionRow.RowState != DataRowState.Deleted)
-                {
-                    ((TFrmGLBatch)ParentForm).LoadAttributes(
-                        TransactionRow.LedgerNumber,
-                        TransactionRow.BatchNumber,
-                        TransactionRow.JournalNumber,
-                        TransactionRow.TransactionNumber
-                        );
-
-
-                    string strAnalAttr = "";
-                    FMainDS.ATransAnalAttrib.DefaultView.RowFilter =
-                        String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
-                            ATransAnalAttribTable.GetLedgerNumberDBName(), TransactionRow.LedgerNumber,
-                            ATransAnalAttribTable.GetBatchNumberDBName(), TransactionRow.BatchNumber,
-                            ATransAnalAttribTable.GetJournalNumberDBName(), TransactionRow.JournalNumber,
-                            ATransAnalAttribTable.GetTransactionNumberDBName(), TransactionRow.TransactionNumber);
-
-                    foreach (DataRowView rv in FMainDS.ATransAnalAttrib.DefaultView)
+                    if ((GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED) && FPetraUtilsObject.HasChanges)
                     {
-                        ATransAnalAttribRow Row = (ATransAnalAttribRow)rv.Row;
-
-                        if (strAnalAttr.Length > 0)
-                        {
-                            strAnalAttr += ", ";
-                        }
-
-                        strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                        FPetraUtilsObject.DisableSaveButton();
                     }
 
-                    TransactionRow.AnalysisAttributes = strAnalAttr;
+                    FTransactionCurrency = TransactionCurrency;
                 }
             }
 
