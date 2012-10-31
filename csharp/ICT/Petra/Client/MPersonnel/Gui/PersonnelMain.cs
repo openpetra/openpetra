@@ -34,26 +34,13 @@ namespace Ict.Petra.Client.MPersonnel.Gui
     public class TPersonnelMain
     {
         /// <summary>
-        /// open screen to create "Conference" Extract
+        /// open screen to create "Event" Extract
         /// </summary>
-        public static void PartnerByConferenceExtract(Form AParentForm)
+        public static void PartnerByEventExtract(Form AParentForm)
         {
             TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
 
             frm.CalledFromExtracts = true;
-            frm.CalledForConferences = true;
-            frm.Show();
-        }
-
-        /// <summary>
-        /// open screen to create "Outreach" Extract
-        /// </summary>
-        public static void PartnerByOutreachExtract(Form AParentForm)
-        {
-            TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
-
-            frm.CalledFromExtracts = true;
-            frm.CalledForConferences = false;
             frm.Show();
         }
 
@@ -65,7 +52,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             TFrmPartnerByEventRole frm = new TFrmPartnerByEventRole(AParentForm);
 
             frm.CalledFromExtracts = true;
-            frm.CalledForConferences = true;
             frm.Show();
         }
 
