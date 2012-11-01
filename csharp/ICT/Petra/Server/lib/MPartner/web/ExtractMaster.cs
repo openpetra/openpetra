@@ -630,7 +630,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="ATable">table with only one subscription row to be added for each partner</param>
         /// <param name="AExistingSubscriptionPartners">table containing partners that already have subscription for given publication</param>
         /// <param name="ASubscriptionsAdded">number of subscriptions added</param>
-        /// <returns>true if deletion was successful</returns>
+        /// <returns>true if adding was successful</returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean AddSubscription(int AExtractId, ref PSubscriptionTable ATable,
             out PPartnerTable AExistingSubscriptionPartners, out int ASubscriptionsAdded)
@@ -692,6 +692,167 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             catch (Exception e)
             {
                 TLogging.Log("Problem during adding of subscription for an extract: " + e.Message);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                ResultValue = false;
+            }
+
+            return ResultValue;
+        }
+
+        /// <summary>
+        /// change subscription for all partners in a given extract for which the subscription exists
+        /// </summary>
+        /// <param name="AExtractId">extract to add subscription to</param>
+        /// <param name="ATable">table with only one subscription row to be changed for each partner</param>
+        /// <param name="AFieldsToChange">table with only one subscription row to be changed for each partner</param>
+        /// <param name="APartnersWithoutSubscription">table containing partners that do not have the given subscription</param>
+        /// <param name="ASubscriptionsChanged">number of subscriptions changed</param>
+        /// <returns>true if change was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean ChangeSubscription(int AExtractId, ref PSubscriptionTable ATable,
+            List <String>AFieldsToChange, out PPartnerTable APartnersWithoutSubscription, out int ASubscriptionsChanged)
+        {
+            Boolean ResultValue = true;
+            PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
+            PSubscriptionRow SubscriptionRowTemplate;
+            PSubscriptionRow SubscriptionRow;
+            MExtractTable ExtractTable;
+            PPartnerTable PartnerTable;
+            PPartnerRow PartnerRow;
+            TVerificationResultCollection VerificationResultCollection;
+
+            // only use first row in table (as rows can't be serialized as parameters)
+            SubscriptionRowTemplate = (PSubscriptionRow)ATable.Rows[0];
+
+            APartnersWithoutSubscription = new PPartnerTable();
+            ASubscriptionsChanged = 0;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            try
+            {
+                ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
+
+                // query all rows of given extract
+                foreach (MExtractRow ExtractRow in ExtractTable.Rows)
+                {
+                    // for each extract row either change subscription or add to list of partners that don't have one
+                    if (PSubscriptionAccess.Exists(SubscriptionRowTemplate.PublicationCode, ExtractRow.PartnerKey, Transaction))
+                    {
+                        SubscriptionTable = PSubscriptionAccess.LoadByPrimaryKey(SubscriptionRowTemplate.PublicationCode,
+                            ExtractRow.PartnerKey,
+                            Transaction);
+                        SubscriptionRow = (PSubscriptionRow)SubscriptionTable.Rows[0];
+
+                        // change field contents
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetSubscriptionStatusDBName()))
+                        {
+                            SubscriptionRow.SubscriptionStatus = SubscriptionRowTemplate.SubscriptionStatus;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetGratisSubscriptionDBName()))
+                        {
+                            SubscriptionRow.GratisSubscription = SubscriptionRowTemplate.GratisSubscription;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetNumberComplimentaryDBName()))
+                        {
+                            SubscriptionRow.NumberComplimentary = SubscriptionRowTemplate.NumberComplimentary;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetPublicationCopiesDBName()))
+                        {
+                            SubscriptionRow.PublicationCopies = SubscriptionRowTemplate.PublicationCopies;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetReasonSubsGivenCodeDBName()))
+                        {
+                            SubscriptionRow.ReasonSubsGivenCode = SubscriptionRowTemplate.ReasonSubsGivenCode;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetReasonSubsCancelledCodeDBName()))
+                        {
+                            SubscriptionRow.ReasonSubsCancelledCode = SubscriptionRowTemplate.ReasonSubsCancelledCode;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetGiftFromKeyDBName()))
+                        {
+                            SubscriptionRow.GiftFromKey = SubscriptionRowTemplate.GiftFromKey;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetStartDateDBName()))
+                        {
+                            SubscriptionRow.StartDate = SubscriptionRowTemplate.StartDate;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetExpiryDateDBName()))
+                        {
+                            SubscriptionRow.ExpiryDate = SubscriptionRowTemplate.ExpiryDate;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetSubscriptionRenewalDateDBName()))
+                        {
+                            SubscriptionRow.SubscriptionRenewalDate = SubscriptionRowTemplate.SubscriptionRenewalDate;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetDateNoticeSentDBName()))
+                        {
+                            SubscriptionRow.DateNoticeSent = SubscriptionRowTemplate.DateNoticeSent;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetDateCancelledDBName()))
+                        {
+                            SubscriptionRow.DateCancelled = SubscriptionRowTemplate.DateCancelled;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetNumberIssuesReceivedDBName()))
+                        {
+                            SubscriptionRow.NumberIssuesReceived = SubscriptionRowTemplate.NumberIssuesReceived;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetFirstIssueDBName()))
+                        {
+                            SubscriptionRow.FirstIssue = SubscriptionRowTemplate.FirstIssue;
+                        }
+
+                        if (AFieldsToChange.Contains(PSubscriptionTable.GetLastIssueDBName()))
+                        {
+                            SubscriptionRow.LastIssue = SubscriptionRowTemplate.LastIssue;
+                        }
+
+                        // submit changes to the database after each row
+                        if (PSubscriptionAccess.SubmitChanges(SubscriptionTable, Transaction, out VerificationResultCollection))
+                        {
+                            ResultValue = true;
+                        }
+                        else
+                        {
+                            DBAccess.GDBAccessObj.RollbackTransaction();
+                            ResultValue = false;
+                            return ResultValue;
+                        }
+
+                        //SubscriptionTable.Rows.Add(SubscriptionRow);
+                        ASubscriptionsChanged++;
+                    }
+                    else
+                    {
+                        // this partner does not have given subscription, therefore it cannot be changed
+                        PartnerRow = APartnersWithoutSubscription.NewRowTyped();
+                        PartnerTable = PPartnerAccess.LoadByPrimaryKey(ExtractRow.PartnerKey, Transaction);
+                        DataUtilities.CopyAllColumnValues(PartnerTable.Rows[0], PartnerRow);
+                        APartnersWithoutSubscription.Rows.Add(PartnerRow);
+                    }
+                }
+
+                if (ResultValue)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during changing of subscription for an extract: " + e.Message);
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 ResultValue = false;
             }

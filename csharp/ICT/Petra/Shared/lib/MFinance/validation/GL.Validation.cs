@@ -58,8 +58,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
 
-            // Don't validate deleted DataRows
-            if ((ARow.RowState == DataRowState.Deleted) || (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            // Don't validate deleted or posted DataRows
+            if ((ARow.RowState == DataRowState.Deleted) || (ARow.BatchStatus == MFinanceConstants.BATCH_POSTED))
             {
                 return true;
             }

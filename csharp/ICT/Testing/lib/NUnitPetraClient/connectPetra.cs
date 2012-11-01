@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using Ict.Petra.Client.App.Core;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
@@ -29,9 +30,13 @@ using System.Threading;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Shared.MCommon;
 using Ict.Testing.NUnitTools;
 
@@ -70,6 +75,13 @@ namespace Ict.Testing.NUnitPetraClient
             new TClientSettings();
             TClientInfo.InitializeUnit();
             TCacheableTablesManager.InitializeUnit();
+
+            // Set up Data Validation Delegates
+            TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
+            TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TServerLookup.TMPartner.VerifyPartner;
+            TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TServerLookup.TMFinance.GetCurrentPostingRangeDates;
+            TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TServerLookup.TMFinance.GetCurrentPeriodDates;
+
             Connect(TAppSettingsManager.GetValue("AutoLogin"), TAppSettingsManager.GetValue("AutoLoginPasswd"),
                 TAppSettingsManager.GetInt64("SiteKey"));
         }

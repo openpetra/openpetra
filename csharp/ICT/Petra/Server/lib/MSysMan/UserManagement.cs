@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 {
@@ -45,28 +46,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
     /// </summary>
     public class TMaintenanceWebConnector
     {
-        private static IUserAuthentication FUserAuthenticationClass = null;
-
-        private static IUserAuthentication LoadAuthAssembly(string AUserAuthenticationMethod)
-        {
-            if (FUserAuthenticationClass == null)
-            {
-                // namespace of the class TUserAuthentication, eg. Plugin.AuthenticationPhpBB
-                // the dll has to be in the normal application directory
-                string Namespace = AUserAuthenticationMethod;
-                string NameOfDll = Namespace + ".dll";
-                string NameOfClass = Namespace + ".TUserAuthentication";
-
-                // dynamic loading of dll
-                System.Reflection.Assembly assemblyToUse = System.Reflection.Assembly.LoadFrom(NameOfDll);
-                System.Type CustomClass = assemblyToUse.GetType(NameOfClass);
-
-                FUserAuthenticationClass = (IUserAuthentication)Activator.CreateInstance(CustomClass);
-            }
-
-            return FUserAuthenticationClass;
-        }
-
         /// <summary>
         /// set the password of an existing user. this takes into consideration how users are authenticated in this system, by
         /// using an optional authentication plugin dll
@@ -79,12 +58,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
                 TPetraPrincipal tempPrincipal;
-                SUserRow UserDR = TUserManager.LoadUser(AUsername.ToUpper(), out tempPrincipal);
+                SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUsername.ToUpper(), out tempPrincipal);
                 SUserTable UserTable = (SUserTable)UserDR.Table;
 
                 Random r = new Random();
                 UserDR.PasswordSalt = r.Next(1000000000).ToString();
-                UserDR.PasswordHash = TUserManager.CreateHashOfPassword(String.Concat(APassword,
+                UserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
                         UserDR.PasswordSalt), "SHA1");
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -97,7 +76,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
             else
             {
-                IUserAuthentication auth = LoadAuthAssembly(UserAuthenticationMethod);
+                IUserAuthentication auth = TUserManagerWebConnector.LoadAuthAssembly(UserAuthenticationMethod);
 
                 return auth.SetPassword(AUsername, APassword);
             }
@@ -150,9 +129,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
                 TPetraPrincipal tempPrincipal;
-                SUserRow UserDR = TUserManager.LoadUser(AUsername.ToUpper(), out tempPrincipal);
+                SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUsername.ToUpper(), out tempPrincipal);
 
-                if (TUserManager.CreateHashOfPassword(String.Concat(AOldPassword,
+                if (TUserManagerWebConnector.CreateHashOfPassword(String.Concat(AOldPassword,
                             UserDR.PasswordSalt)) != UserDR.PasswordHash)
                 {
                     return false;
@@ -160,7 +139,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
                 SUserTable UserTable = (SUserTable)UserDR.Table;
 
-                UserDR.PasswordHash = TUserManager.CreateHashOfPassword(String.Concat(APassword,
+                UserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
                         UserDR.PasswordSalt));
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -173,7 +152,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
             else
             {
-                IUserAuthentication auth = LoadAuthAssembly(UserAuthenticationMethod);
+                IUserAuthentication auth = TUserManagerWebConnector.LoadAuthAssembly(UserAuthenticationMethod);
 
                 return auth.SetPassword(AUsername, APassword, AOldPassword);
             }
@@ -186,12 +165,25 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         public static bool CreateUser(string AUsername, string APassword, string AModulePermissions)
         {
             // TODO: check permissions. is the current user allowed to create other users?
-            // TODO: fail on situation that user exists already, etc.
-
             SUserTable userTable = new SUserTable();
             SUserRow newUser = userTable.NewRowTyped();
 
             newUser.UserId = AUsername.ToUpper();
+
+            if (AUsername.Contains("@"))
+            {
+                newUser.EmailAddress = AUsername;
+                newUser.UserId = AUsername.Substring(0, AUsername.IndexOf("@")).
+                                 Replace(".", string.Empty).
+                                 Replace("_", string.Empty).ToUpper();
+            }
+
+            if (SUserAccess.Exists(newUser.UserId, null))
+            {
+                TLogging.Log("A user with userid " + newUser.UserId + " already exists");
+                return false;
+            }
+
             userTable.Rows.Add(newUser);
 
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
@@ -203,12 +195,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
                 rng.GetNonZeroBytes(saltBytes);
                 newUser.PasswordSalt = Convert.ToBase64String(saltBytes);
-                newUser.PasswordHash = TUserManager.CreateHashOfPassword(String.Concat(APassword,
+                newUser.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
                         newUser.PasswordSalt));
             }
             else
             {
-                IUserAuthentication auth = LoadAuthAssembly(UserAuthenticationMethod);
+                IUserAuthentication auth = TUserManagerWebConnector.LoadAuthAssembly(UserAuthenticationMethod);
 
                 if (!auth.CreateUser(AUsername, APassword))
                 {
@@ -233,6 +225,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     List <string>modules = new List <string>();
                     modules.Add("PTNRUSER");
                     modules.Add("FINANCE-1");
+
+                    // the first user must have access to the System Manager module
+                    if (SUserAccess.CountAll(Transaction) == 0)
+                    {
+                        modules.Add("SYSMAN");
+                    }
 
                     ALedgerTable theLedgers = ALedgerAccess.LoadAll(Transaction);
 
@@ -311,7 +309,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             if (UserAuthenticationMethod != "OpenPetraDBSUser")
             {
-                IUserAuthentication auth = LoadAuthAssembly(UserAuthenticationMethod);
+                IUserAuthentication auth = TUserManagerWebConnector.LoadAuthAssembly(UserAuthenticationMethod);
 
                 auth.GetAuthenticationFunctionality(out ACanCreateUser, out ACanChangePassword, out ACanChangePermissions);
             }
