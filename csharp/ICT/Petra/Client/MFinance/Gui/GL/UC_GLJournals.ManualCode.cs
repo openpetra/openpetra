@@ -134,12 +134,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTotals();
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
-            
+
             if (AFromUserAction && btnGetSetExchangeRate.Enabled)
             {
-            	btnGetSetExchangeRate.Focus();
+                btnGetSetExchangeRate.Focus();
             }
-            
         }
 
         private void ResetCurrencyExchangeRate(object sender, EventArgs e)
