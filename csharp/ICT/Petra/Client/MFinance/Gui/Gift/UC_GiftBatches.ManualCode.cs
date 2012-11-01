@@ -982,17 +982,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPreviouslySelectedDetailRow.CurrencyCode,
                     FPreviouslySelectedDetailRow.GlEffectiveDate);
 
-                RefreshCurrencyAndExchangeRate();
+                RefreshCurrencyAndExchangeRate(true);
             }
         }
 
-        private void RefreshCurrencyAndExchangeRate()
+        private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)
         {
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
+            
+            if (AFromUserAction && btnGetSetExchangeRate.Enabled)
+            {
+            	btnGetSetExchangeRate.Focus();
+            }
         }
 
         private void SetExchangeRateValue(Object sender, EventArgs e)

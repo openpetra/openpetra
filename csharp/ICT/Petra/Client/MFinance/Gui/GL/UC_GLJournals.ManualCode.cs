@@ -124,7 +124,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateTotals(GetBatchRow());
         }
 
-        private void RefreshCurrencyAndExchangeRate()
+        private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)
         {
             txtDetailExchangeRateToBase.Text = FPreviouslySelectedDetailRow.ExchangeRateToBase.ToString("0.00000000");
             txtDetailExchangeRateToBase.BackColor =
@@ -134,6 +134,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTotals();
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
+            
+            if (AFromUserAction && btnGetSetExchangeRate.Enabled)
+            {
+            	btnGetSetExchangeRate.Focus();
+            }
+            
         }
 
         private void ResetCurrencyExchangeRate(object sender, EventArgs e)
@@ -150,7 +156,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPreviouslySelectedDetailRow.TransactionCurrency,
                     batchrow.DateEffective);
 
-                RefreshCurrencyAndExchangeRate();
+                RefreshCurrencyAndExchangeRate(true);
             }
         }
 
