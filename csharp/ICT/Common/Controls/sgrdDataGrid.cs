@@ -1577,8 +1577,8 @@ namespace Ict.Common.Controls
                 if (NewSelectedItemRow != -1)
                 {
                     // A matching Row was found after the currently selected row, so select it
-                    // Scroll grid to line where the new record is now displayed
-                    this.ShowCell(new Position(NewSelectedItemRow + 1, 0), false);
+                    // Scroll grid to line where the new record is now displayed and keep the focus on the grid
+                    this.ShowCell(NewSelectedItemRow + 1);
                     this.Selection.Focus(new Position(NewSelectedItemRow + 1, 0), true);
                 }
                 else
@@ -1598,8 +1598,8 @@ namespace Ict.Common.Controls
 
                     //                  MessageBox.Show("Only found Row above CurrentGridRow! NewSelectedItemRow: " + NewSelectedItemRow.ToString());
 
-                    // Scroll grid to line where the new record is now displayed
-                    this.ShowCell(new Position(NewSelectedItemRow + 1, 0), false);
+                    // Scroll grid to line where the new record is now displayed and keep the focus on the grid
+                    this.ShowCell(NewSelectedItemRow + 1);
                     this.Selection.Focus(new Position(NewSelectedItemRow + 1, 0), true);
                 }
             }
@@ -1622,29 +1622,19 @@ namespace Ict.Common.Controls
             {
                 // Key for scrolling to and selecting the first row in the Grid
                 // MessageBox.Show('Home pressed!');
-                this.Selection.ResetSelection(false);
-                this.Selection.Focus(Position.Empty, false);
-                this.Selection.SelectRow(1, true);
+                SelectRowInGrid(1);
 
-                // Scroll grid to line where the selection is now displayed
-                this.ShowCell(new Position(1, 0), false);
-
-                // Give focus to the rows so that Cursor keys, PageUp/PageDown, etc. work
-                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 1), false);
+                // keep the focus on the grid
+                this.Selection.Focus(new Position(1, 0), true);
             }
             // Key for scrolling to and selecting the last row in the Grid
             else if (AKeyEventArgs.KeyCode == Keys.End)
             {
                 // MessageBox.Show('End pressed!  Rows: ' + this.Rows.Count.ToString);
-                this.Selection.ResetSelection(false);
-                this.Selection.Focus(Position.Empty, false);
-                this.Selection.SelectRow(this.Rows.Count - 1, true);
+                SelectRowInGrid(this.Rows.Count - 1);
 
-                // Scroll grid to line where the selection is now displayed
-                this.ShowCell(new Position(this.Rows.Count - 1, 0), false);
-
-                // Give focus to the rows so that Cursor keys, PageUp/PageDown, etc. work
-                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 1), false);
+                // keep the focus on the grid
+                this.Selection.Focus(new Position(this.Rows.Count - 1, 0), true);
             }
             // Key for firing OnInsertKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Insert)
