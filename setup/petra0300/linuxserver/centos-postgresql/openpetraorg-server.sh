@@ -33,6 +33,8 @@ fi
 if [ "$2" != "" ]
 then
   backupfile=$2
+  useremail=$2
+  ymlgzfile=$2
 fi
 
 . /lib/lsb/init-functions
@@ -63,6 +65,24 @@ stop() {
     cd $OpenPetraOrgPath/bin30
     parameters="-Server.Port:$OPENPETRA_PORT -Server.ChannelEncryption.PublicKeyfile:$OPENPETRA_LocationPublicKeyFile"
     su $userName -c "$mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerAdminConsole.config $parameters -Command:Stop"
+    status=0
+    log_end_msg $status
+}
+
+# add a new user with an empty password
+addUser() {
+    cd $OpenPetraOrgPath/bin30
+    parameters="-Server.Port:$OPENPETRA_PORT -Server.ChannelEncryption.PublicKeyfile:$OPENPETRA_LocationPublicKeyFile"
+    su $userName -c "$mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerAdminConsole.config $parameters -Command:AddUser -Email:$useremail"
+    status=0
+    log_end_msg $status
+}
+
+# load a new database from a yml.gz file. this will overwrite the current database!
+loadYmlGz() {
+    cd $OpenPetraOrgPath/bin30
+    parameters="-Server.Port:$OPENPETRA_PORT -Server.ChannelEncryption.PublicKeyfile:$OPENPETRA_LocationPublicKeyFile"
+    su $userName -c "$mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$OpenPetraOrgPath/etc30/PetraServerAdminConsole.config $parameters -Command:LoadYmlGz -YmlGzFile:$ymlgzfile"
     status=0
     log_end_msg $status
 }
@@ -159,6 +179,12 @@ case "$1" in
         ;;
     init)
         init
+        ;;
+    addUser)
+        addUser
+        ;;
+    loadYmlGz)
+        loadYmlGz
         ;;
     menu)
         menu

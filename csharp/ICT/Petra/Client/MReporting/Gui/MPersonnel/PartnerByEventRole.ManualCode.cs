@@ -148,7 +148,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             clbEvent.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 100);
 
             // outreach/event code column only needed in case of displaying Outreaches
-            if (!FCalledForConferences)
+            if (ucoFilter.IncludeOutreachUnits)
             {
                 clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 110);
             }

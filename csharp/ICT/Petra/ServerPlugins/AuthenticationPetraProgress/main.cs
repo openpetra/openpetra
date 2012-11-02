@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,7 +34,7 @@ using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.Security;
-using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors;
 using GNU.Gettext;
 
 namespace Plugin.AuthenticationPetraProgress
@@ -54,14 +54,14 @@ namespace Plugin.AuthenticationPetraProgress
             AMessage = "";
 
             TPetraPrincipal tempPrincipal;
-            SUserRow UserDR = TUserManager.LoadUser(AUsername, out tempPrincipal);
+            SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUsername, out tempPrincipal);
 
             // Petra 2.x, s_password2_c, 16 characters only
             // set demo password:
             // . sqlexp.sh "update pub.s_user set s_password2_c = 'FE01CE2A7FBAC8FA' where s_user_id_c = 'TIMOP'"
             string password2 = UserDR["s_password2_c"].ToString();
 
-            if ((UserDR != null) && (TUserManager.CreateHashOfPassword(APassword, "MD5").Substring(0, 16) != password2))
+            if ((UserDR != null) && (TUserManagerWebConnector.CreateHashOfPassword(APassword, "MD5").Substring(0, 16) != password2))
             {
                 // todo: increase failed logins
                 throw new EPasswordWrongException(Catalog.GetString("Invalid User ID/Password."));
@@ -78,11 +78,11 @@ namespace Plugin.AuthenticationPetraProgress
         public bool SetPassword(string AUsername, string APassword)
         {
             TPetraPrincipal tempPrincipal;
-            SUserRow UserDR = TUserManager.LoadUser(AUsername, out tempPrincipal);
+            SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUsername, out tempPrincipal);
 
             if (UserDR != null)
             {
-                string NewPasswordHash = TUserManager.CreateHashOfPassword(APassword, "MD5").Substring(0, 16);
+                string NewPasswordHash = TUserManagerWebConnector.CreateHashOfPassword(APassword, "MD5").Substring(0, 16);
 
                 TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -116,7 +116,7 @@ namespace Plugin.AuthenticationPetraProgress
         public bool SetPassword(string AUsername, string APassword, string AOldPassword)
         {
             TPetraPrincipal tempPrincipal;
-            SUserRow UserDR = TUserManager.LoadUser(AUsername, out tempPrincipal);
+            SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUsername, out tempPrincipal);
 
             if (UserDR != null)
             {
@@ -137,7 +137,7 @@ namespace Plugin.AuthenticationPetraProgress
                     return false;
                 }
 
-                string NewPasswordHash = TUserManager.CreateHashOfPassword(APassword, "MD5").Substring(0, 16);
+                string NewPasswordHash = TUserManagerWebConnector.CreateHashOfPassword(APassword, "MD5").Substring(0, 16);
 
                 TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 

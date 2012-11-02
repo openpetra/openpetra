@@ -2,6 +2,8 @@
     BaseYaml: PersonnelReportingForm.yaml
     FormType: report
     FormTitle: Partner By Event
+    WindowWidth: 750
+    WindowHeight: 650
     Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MPersonnel.queries.QueryPartnerByEvent.CalculateExtract
@@ -18,14 +20,14 @@
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Actions:
-        actFilter: {Label=Filter List, ActionClick=FilterList}
     Controls:
         tpgGeneralSettings: {ControlsOrientation=vertical}
             Label: General Settings
             Controls: [pnlFilter, pnlMiddle, pnlBottom]
         pnlFilter: {ControlsOrientation=horizontal}
             Dock: Top
-            Controls: [txtFilter, btnFilter]
+            Height: 140
+            Controls: [ucoFilter]
         pnlMiddle:
             Dock: Fill
             Controls: [clbEvent, pnlDockChkBoxs]
@@ -47,16 +49,15 @@
             Dock: Fill
             NoLabel: true 
             ParameterName: param_events
-        txtFilter:
-            NoLabel: true
-            Width: 300
-        btnFilter:
-            Action: actFilter
         chkCancelled: {Label=Cancelled, CheckBoxAttachedLabel=right, ParameterName=param_status_cancelled}
         chkRejected: {Label=Rejected, CheckBoxAttachedLabel=right, ParameterName=param_status_rejected}
         chkAccepted: {Label=Accepted, CheckBoxAttachedLabel=right, ParameterName=param_status_accepted}
         chkHold: {Label=Hold, CheckBoxAttachedLabel=right, ParameterName=param_status_hold}
         chkEnquiry:{Label=Enquiry, CheckBoxAttachedLabel=right, ParameterName=param_status_enquiry}
+        ucoFilter:
+            Dock: Fill
+            Type: Ict.Petra.Client.MCommon.Gui.TUC_EventFilter
+            NoParameter: true
         ucoAddress:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
             Width: 470

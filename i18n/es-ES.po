@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openpetraorg\n"
 "Report-Msgid-Bugs-To: joejoe2010 <joejoe2010@users.sourceforge.net>\n"
-"POT-Creation-Date: 2012-10-12 09:29+0200\n"
+"POT-Creation-Date: 2012-10-30 09:31+0100\n"
 "PO-Revision-Date: 2011-06-23 05:24+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
 "Language-Team: Spanish <joejoe2010@users.sourceforge.net>\n"
@@ -15,32 +15,40 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2012-10-13 04:46+0000\n"
-"X-Generator: Launchpad (build 16137)\n"
+"X-Launchpad-Export-Date: 2012-10-31 04:52+0000\n"
+"X-Generator: Launchpad (build 16218)\n"
 "X-Poedit-Bookmarks: 1509,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "X-Poedit-Language: Spanish\n"
 
-#: csharp\ICT\Common\Controls\lstFolderNavigation.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Common\Controls\lstFolderNavigation.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Caption"
 msgstr "Leyenda"
 
-#: csharp\ICT\Common\Controls\lstTasks.cs:375
+#: csharp\ICT\Common\Controls\lstFolderNavigation.cs:411
+msgid "Ledger Change"
+msgstr ""
+
+#: csharp\ICT\Common\Controls\lstTasks.cs:384
 msgid "Sorry, you don't have enough permissions to do this"
 msgstr ""
 
-#: csharp\ICT\Common\Controls\pnlCollapsible.cs:290 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Common\Controls\pnlCollapsible.cs:494 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Navigation Bar"
+msgstr ""
+
+#: csharp\ICT\Common\Controls\pnlCollapsible.cs:495 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Collapsible Panel"
 msgstr "Panel plegable"
 
-#: csharp\ICT\Common\Controls\txtNumericTextBox.cs:1433
+#: csharp\ICT\Common\Controls\txtNumericTextBox.cs:1435
 msgid "Value Out of Range"
 msgstr ""
 
-#: csharp\ICT\Common\Controls\txtNumericTextBox.cs:1463
+#: csharp\ICT\Common\Controls\txtNumericTextBox.cs:1465
 msgid "The number entered has an invalid number format!"
 msgstr ""
 
-#: csharp\ICT\Common\Controls\txtNumericTextBox.cs:1463
+#: csharp\ICT\Common\Controls\txtNumericTextBox.cs:1465
 msgid "Invalid Number Format"
 msgstr ""
 
@@ -271,18 +279,18 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: csharp\ICT\Common\Verification\Main.cs:635
+#: csharp\ICT\Common\Verification\Main.cs:648
 msgid ""
 "  Context: {0}; Severity: {1}.\r\n"
 "    Problem: {2}\r\n"
 "    Code: {3}"
 msgstr ""
 
-#: csharp\ICT\Common\Verification\Main.cs:1759
+#: csharp\ICT\Common\Verification\Main.cs:1772
 msgid "Exception has been thrown"
 msgstr ""
 
-#: csharp\ICT\Common\Verification\Main.cs:1767
+#: csharp\ICT\Common\Verification\Main.cs:1780
 msgid "Inner Exception"
 msgstr ""
 
@@ -698,39 +706,39 @@ msgstr ""
 msgid " it in another place on {0}"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:398 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:401 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Security Violation"
 msgstr "Violación de seguridad"
 
-#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:424 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:427 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "You do not have permission to {0} {1} records."
 msgstr "No tiene permisos para {0} {1} registros."
 
-#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:446
+#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:449
 msgid "Access to Partner {0}denied."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:463
+#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:466
 msgid "Reason: Partner is a Private Partner of another user."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:468
+#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:471
 msgid "Reason: You must be the owner of a foundation in order to edit it."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:710
+#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:713
 msgid "This date has exceeded the limit: {0}"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:714
+#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:717
 msgid "Date exceeded ..."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:724
+#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:727
 msgid "This date is earlier than the date limit: {0}"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:728
+#: csharp\ICT\Petra\Client\app\Gui\Messages.cs:731
 msgid "Date underrun ..."
 msgstr ""
 
@@ -759,40 +767,40 @@ msgid "&File"
 msgstr "&Archivo"
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:71 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Tiles"
+msgid "&Tiles"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:72 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "List"
+msgid "&List"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Large"
+msgid "&Large"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:74 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Medium"
+msgid "&Medium"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Small"
+msgid "&Small"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Task Size"
+msgid "Task &Size"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Single-click to open an item"
+msgid "Single-&click to open an item"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:78 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Tasks"
+msgid "&Tasks"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:79 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "View"
-msgstr "Ver"
+msgid "&View"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:80 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&Petra Help"
@@ -817,6 +825,22 @@ msgstr "&El Equipo de Desarrollo"
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&Help"
 msgstr "&Ayuda"
+
+#: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew.ManualCode.cs:202
+msgid "Select Ledger"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew.ManualCode.cs:223
+msgid "Ledger {0} (#{1})"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew.ManualCode.cs:228
+msgid "Ledger #{0}"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew.ManualCode.cs:568 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Ledger "
+msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\PetraClientMain.cs:188
 msgid "Starting OpenPetra Server..."
@@ -1269,52 +1293,52 @@ msgid "This code is Required for System operation by other code"
 msgstr ""
 "Este código es requerido por la operación del sistema por otro código"
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:706 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:711 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Are you sure you want to delete the current row?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:717 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:722 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Confirm Delete"
 msgstr "Confirmar eliminación"
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:737 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:742 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Deletion Completed"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1214 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1219 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid ""
 "--> The value you entered has been changed back to what it was before! <--"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1246 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1251 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Country Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1256
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1261
 msgid "Country Name Local"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1261
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1266
 msgid "Int'l Access Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1266
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1271
 msgid "Int'l Dialling Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1271
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1276
 msgid "Int'l Postal Type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1276
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1281
 msgid "Time Zone From"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1277 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1282 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "To"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1287 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\CountrySetup-generated.cs:1292 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Deletable"
 msgstr ""
 
@@ -1354,31 +1378,31 @@ msgstr "Nueva frecuencia"
 msgid "Maintain Frequencies"
 msgstr "Mantener frecuencias"
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1144 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1147 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Frequency Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1149
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1152
 msgid "Frequency Description"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1154
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1157
 msgid "Number Of Years"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1159
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1162
 msgid "Number Of Months"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1164
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1167
 msgid "Number Of Days"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1169
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1172
 msgid "Number Of Hours"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1174
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:1177
 msgid "Number Of Minutes"
 msgstr ""
 
@@ -1406,11 +1430,11 @@ msgstr "Mantener Códigos de Tipo Postal Internacional"
 msgid "Enter a description"
 msgstr "Entrar una descripción"
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:996
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:998
 msgid "Int. Postal Type Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:1001 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:1003 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Description"
 msgstr "Descripción"
 
@@ -1454,11 +1478,11 @@ msgstr "Ingresar una descripción o nombre completo"
 msgid "Indicates if the language is an 'official' Congress Language."
 msgstr "Indica si el idioma es un idioma «oficial» del congreso"
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LanguageCodeSetup-generated.cs:1031 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LanguageCodeSetup-generated.cs:1033 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Language Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LanguageCodeSetup-generated.cs:1036
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LanguageCodeSetup-generated.cs:1038
 msgid "Language Description"
 msgstr ""
 
@@ -1578,27 +1602,27 @@ msgstr ""
 msgid "Do you want this data label to be displayed?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1159
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1165
 msgid "Label"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1164
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1170
 msgid "Group heading (optional)"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1169
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1175
 msgid "Data type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1174 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1180 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Currency Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1179
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1185
 msgid "Lookup Category Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1184
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup-generated.cs:1190
 msgid "Help description"
 msgstr ""
 
@@ -1747,15 +1771,15 @@ msgid "The format in which to display and accept input on a currency."
 msgstr ""
 "El formato en el cual se muestra y acepta la escritura en una moneda."
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1035
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1039
 msgid "Currency Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1040
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1044
 msgid "Currency Symbol"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1050
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:1054
 msgid "Number of Decimals"
 msgstr ""
 
@@ -2309,15 +2333,15 @@ msgstr ""
 msgid "Indicates if a record can be deleted."
 msgstr "Indica si el registro puede ser borrado."
 
-#: csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:1068
+#: csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:1071
 msgid "Cost Type Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:1078 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:1081 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Unassignable"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:1083 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MConference\Gui\Setup\ConferenceCostTypeSetup-generated.cs:1086 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Unassignable Date"
 msgstr ""
 
@@ -2548,59 +2572,59 @@ msgstr "Referencia al Centro de Costos a utilizar para este detalle."
 msgid "Reference to the account to use for this detail"
 msgstr "Referencia a la cuenta a utilizar para este detalle."
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1272 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1281 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Currency"
 msgstr "Moneda"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1277
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1286
 msgid "Invoice &Number"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1282
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1291
 msgid "T&ype"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1287 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1296 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&Reference"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1292
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1301
 msgid "&Date Issued"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1297
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1306
 msgid "Date D&ue"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1302
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1311
 msgid "Discount"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1307
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1316
 msgid "&Amount"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1312
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1321
 msgid "E&xchange Rate"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1317
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1326
 msgid "Narrati&ve"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1322
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1331
 msgid "Detail &Ref"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1327
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1336
 msgid "A&mount"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1332
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1341
 msgid "C&ost Centre"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1337
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditDocument-generated.cs:1346
 msgid "Accou&nt"
 msgstr ""
 
@@ -2799,43 +2823,43 @@ msgstr ""
 "Referencia a la cuenta de gastos por defecto que se utilizar para los "
 "detalles de la factura."
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:552 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:560 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Partner Key"
 msgstr "Clave de socio"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:557
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:565
 msgid "&Currency"
 msgstr "&Moneda"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:562
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:570
 msgid "Supplier &Type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:567
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:575
 msgid "Our Ref"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:572
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:580
 msgid "Default &Payment Type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:577
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:585
 msgid "Discount &Value (%)"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:582
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:590
 msgid "&AP Account"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:587
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:595
 msgid "Default &Bank Account"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:592
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:600
 msgid "Default C&ost Centre"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:597
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APEditSupplier-generated.cs:605
 msgid "Default &Expense Account"
 msgstr ""
 
@@ -3115,7 +3139,7 @@ msgstr "Pago de Cuentas a pagar"
 msgid "Enter the reference for this accounts payable payment"
 msgstr "Ingresar la referencia para este pago de Cuentas a Pagar"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APPayment-generated.cs:430
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APPayment-generated.cs:432
 msgid "Payment T&ype"
 msgstr ""
 
@@ -3526,11 +3550,11 @@ msgstr "Ingresar un código de Centro de costos"
 msgid "Enter an account code"
 msgstr "Entrar un código de cuenta"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Budget\MaintainBudget-generated.cs:960 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Budget\MaintainBudget-generated.cs:962 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Cost Centre"
 msgstr "Centro de costos"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Budget\MaintainBudget-generated.cs:965 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Budget\MaintainBudget-generated.cs:967 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Account"
 msgstr ""
 
@@ -3772,23 +3796,23 @@ msgstr "Problema: No se han creado lotes de Libro General"
 msgid "Info: gift batch has been created"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:777
+#: csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:778
 msgid "Full bank statement"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:783
+#: csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:784
 msgid "Unmatched gifts"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:789
+#: csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:790
 msgid "Unmatched GL"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:795
+#: csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:796
 msgid "Matched gifts"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:800
+#: csharp\ICT\Petra\Client\MFinance\Gui\Common\BankStatementImport.ManualCode.cs:801
 msgid "nothing to print"
 msgstr ""
 
@@ -3863,6 +3887,10 @@ msgstr "Fecha desde:"
 #: csharp\ICT\Petra\Client\MFinance\Gui\Gift\DonorRecipientHistory-generated.cs:74 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Detail:"
 msgstr "Detalle:"
+
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\DonorRecipientHistory-generated.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "View"
+msgstr "Ver"
 
 #: csharp\ICT\Petra\Client\MFinance\Gui\Gift\DonorRecipientHistory-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Total:"
@@ -4072,11 +4100,15 @@ msgstr "Fecha para el lote de regalos ajustado"
 msgid "tick this if the gift was already receipted last year"
 msgstr "Seleccionar si se emitió un recibo por la ofrenda el año pasado"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftFieldAdjustment.ManualCode.cs:62
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftFieldAdjustment.ManualCode.cs:52
+msgid "Please supply valid Start, End and Effective dates."
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftFieldAdjustment.ManualCode.cs:68
 msgid "Please check and post gift batch {0}"
 msgstr "Revisar y registrar el lote de ofrenda {0}"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftFieldAdjustment.ManualCode.cs:67
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftFieldAdjustment.ManualCode.cs:73
 msgid "There was a problem creating the adjustment batch"
 msgstr "Hubo un problema al crear el lote de ajuste"
 
@@ -4088,7 +4120,11 @@ msgstr "Código de publicación:"
 msgid "Subscriptions for new Donors"
 msgstr "Suscripciones para nuevos donantes"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftNewDonorLetter.ManualCode.cs:198
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftNewDonorLetter.ManualCode.cs:63 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Please supply valid Start and End dates."
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftNewDonorLetter.ManualCode.cs:204
 msgid "Letter for new donors announcing subscription to magazine"
 msgstr "Cartas para nuevos donadores anunciando suscripciones a revistas"
 
@@ -4096,15 +4132,15 @@ msgstr "Cartas para nuevos donadores anunciando suscripciones a revistas"
 msgid "Print Annual Gift Receipts"
 msgstr "Imprimir Recibos de ofrenda anual"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftReceiptPrinting.ManualCode.cs:68 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftReceiptPrinting.ManualCode.cs:74 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "There is no printer, so printing is not possible"
 msgstr "No hay impresora, así que no se puede imprimir"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftReceiptPrinting.ManualCode.cs:76
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftReceiptPrinting.ManualCode.cs:82
 msgid "Select the template for the gift receipt"
 msgstr "Seleccionar la plantilla para el recibo de ofrenda"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftReceiptPrinting.ManualCode.cs:98
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftReceiptPrinting.ManualCode.cs:104
 msgid "There are no posted gifts in the date range"
 msgstr "No hay ofrendas registradas dentro del rango de fechas"
 
@@ -4386,27 +4422,27 @@ msgstr ""
 msgid "Enter the gift type (gift/gift in kind/etc.)"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:992 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1000 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Batch Description"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1002 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1010 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Bank Account"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1007
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1015
 msgid "GL Effective Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1012 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1020 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Hash Total"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1022
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1030
 msgid "Exchange Rate To Base"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1027 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches-generated.cs:1035 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Method of Payment"
 msgstr ""
 
@@ -4426,47 +4462,47 @@ msgstr ""
 msgid "Please enter batch description"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:622
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:626
 msgid "No Gift Batch is selected to delete."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:623
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:627
 msgid "Cancelling of Gift Batch"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:629
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:633
 msgid "Are you sure you want to cancel Gift Batch no: {0} ?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:648
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:652
 msgid "Batch no.: {0} cancelled successfully."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:658
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:662
 msgid "The cancelled batch cannot be saved!"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:659
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:663
 msgid "Please click Save to confirm the deletion."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:833 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:837 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "The batch was not posted due to problems during saving; "
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:834 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:838 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Please first save the batch, and then post it!"
 msgstr "Primero guarde el lote y luego regístrelo"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:848
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:852
 msgid "Do you really want to post this gift batch?"
 msgstr "¿Realmente quiere registrar este lote de ofrendas?"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:848
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:852
 msgid "Confirm posting of Gift Batch"
 msgstr "Confirmar registro de Lote de Ofrendas"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:878 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftBatches.ManualCode.cs:882 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "The batch has been posted successfully!"
 msgstr "¡El lote fue registrado satisfactoriamente!"
 
@@ -4581,43 +4617,43 @@ msgstr "Ingresar un código de detalle de motivación"
 msgid "Enter a comment"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1111 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1128 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Confidential?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1116 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Recipient"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1121 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1138 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Mailing"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1126 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1143 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Motivation Group"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1131 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1148 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Motivation Detail"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1141 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1158 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Comment 1"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1146 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1163 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "for"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1151 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1168 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Comment 2"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1161 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1178 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Comment 3"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:616 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:653 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid ""
 "Are you sure you want to delete transaction {1} from Gift Batch no. {2}?\n"
 "\r\n"
@@ -4626,7 +4662,7 @@ msgid ""
 "\rAmount:  {5}"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:630 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:667 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid ""
 "Are you sure you want to delete detail {0} from transaction {1} in Gift "
 "Batch no. {2}?\n"
@@ -4636,49 +4672,49 @@ msgid ""
 "\rAmount:  {5}"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:644 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:681 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid ""
 "Gift transaction {1} in Gift Batch no. {2} has no detail rows in the Gift "
 "Detail table!"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:709
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:746
 msgid "Gift row deleted successfully!"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:714
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:751
 msgid ""
 "Error in trying to delete the current gift!\n"
 "\r\n"
 "\rError: {0}"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:820
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:845
 msgid "Please select a Gift Batch."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:826
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:851
 msgid ""
 "This function is only possible when the selected batch is already posted."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:832
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:857
 msgid "Please select a Gift to Reverse."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:838
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:863
 msgid "Please save first and than try again!"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:1023 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:1049 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Enter method of giving"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:1025 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:1051 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Enter a reference code."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:1026 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions.ManualCode.cs:1052 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Select the receipt letter code"
 msgstr ""
 
@@ -4922,11 +4958,11 @@ msgstr "(Opcional) Ingresar el monto total del lote (total predeterminado)."
 msgid "Enter the date for which this batch is to take effect."
 msgstr "Ingresar la fecha desde la cual este lote tiene efecto."
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches-generated.cs:856
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches-generated.cs:858
 msgid "Batch Hash Total"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches-generated.cs:861 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches-generated.cs:863 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Effective Date"
 msgstr ""
 
@@ -4979,41 +5015,41 @@ msgstr "¿Está seguro de querer registrar el lote {0}?"
 msgid "Question"
 msgstr "Pregunta"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:627
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:629
 msgid "{1}/{0} ({3}/{2}) is: {4} and would be: {5}"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:637 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:639 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Result of Test Posting"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:667
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:669
 msgid "Please see file {0} for the result of the test posting"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:916
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:918
 msgid "Import transactions from spreadsheet file"
 msgstr "Importar transacciones desde un archivo de hoja de cálculo"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:917 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:919 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Spreadsheet files (*.csv)|*.csv"
 msgstr "Archivos de hoja de cálculo (*.csv)|*.csv"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:933
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:935
 msgid ""
 "Please select a yml file that describes the content of the spreadsheet"
 msgstr ""
 "Seleccionar un archivo yml que describa el contenido de la hoja de cálculo"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:934
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:936
 msgid "Data description files (*.yml)|*.yml"
 msgstr "Archivos de descripción de datos (*.yml)|*.yml"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1033
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1035
 msgid "Problem with date in row "
 msgstr "Hay un problema con la fecha en la fila "
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1135
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1137
 msgid "Automatically generated balancing transaction"
 msgstr "Transacción de balance generada automáticamente"
 
@@ -5065,23 +5101,23 @@ msgstr "Seleccionar el tipo de diario."
 msgid "Enter the date for the journal to come into effect."
 msgstr "Ingresar la fecha desde la cual el diario tiene efecto."
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:822
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:828
 msgid "Journal Description"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:827
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:833
 msgid "Sub System"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:832
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:838
 msgid "Transaction Type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:847
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals-generated.cs:853
 msgid "Exchange Rate to Base"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals.ManualCode.cs:374
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals.ManualCode.cs:390
 msgid ""
 "You have chosen to cancel this journal ({0}).\n"
 "\n"
@@ -5163,39 +5199,39 @@ msgstr ""
 msgid "Credit"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:874 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:881 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Cost Centre Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:879 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:886 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Account Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:884
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:891
 msgid "Narrative"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:889
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:896
 msgid "Reference"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:894
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:901
 msgid "Transaction Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:899
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions-generated.cs:906
 msgid "Key Ministry"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:257
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:258
 msgid "{0} (Base Currency)"
 msgstr "{0} (Moneda base)"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:258
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:259
 msgid "{0} (Transaction Currency)"
 msgstr "{0} (Moneda de transacción)"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:470
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:494
 msgid ""
 "You have chosen to delete this transaction ({0}).\n"
 "\n"
@@ -5294,47 +5330,47 @@ msgstr ""
 msgid "This is needed to determine the gender in some languages."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1186
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1194
 msgid "Singular amount"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1191
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1199
 msgid "Decimal Label Singular"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1196
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1204
 msgid "Plural amount"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1201
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1209
 msgid "Decimal Label Plural"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1206 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\CurrencyLanguageSetup-generated.cs:1214 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Gender"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:56
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:57
 msgid "Deletion of Ledger '{0}' failed"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:64
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:65
 msgid "Deletion successful"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:65
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:66
 msgid "Ledger '{0}' has been deleted"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:76
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:86
 msgid "Please save a backup of your database first!!!"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:77
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:87
 msgid "Do you REALLY want to delete ledger '{0}'?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:79 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\DeleteLedger.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Delete Ledger"
 msgstr ""
 
@@ -5378,15 +5414,15 @@ msgstr ""
 msgid "Enter an Email address."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1011
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1015
 msgid "File Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1016
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1020
 msgid "Condition value"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1026
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\EmailDestinationSetup-generated.cs:1030
 msgid "Email address(es) (one per line)"
 msgstr ""
 
@@ -5430,11 +5466,11 @@ msgstr "¿Aún está en uso este código de motivación?"
 msgid "Do you want receipts for gifts with this motivation code?"
 msgstr "¿Desea recibos por ofrendas con este código de motivación?"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GiftMotivationSetup-generated.cs:1013
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GiftMotivationSetup-generated.cs:1019
 msgid "Group"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GiftMotivationSetup-generated.cs:1038 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GiftMotivationSetup-generated.cs:1044 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Active"
 msgstr ""
 
@@ -5532,27 +5568,27 @@ msgstr ""
 msgid "Is this account available for posting transactions?"
 msgstr "¿Está disponible esta cuenta para transacciones registrables?"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:776
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:784
 msgid "Account Type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:781
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:789
 msgid "Description Long English"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:786
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:794
 msgid "Description Short English"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:791
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:799
 msgid "Description Long Local"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:796
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:804
 msgid "Description Short Local"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:801
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLAccountHierarchy-generated.cs:809
 msgid "Valid Cost Centres"
 msgstr ""
 
@@ -5618,7 +5654,7 @@ msgstr "Jerarquía de Centro de Costos en Libro General"
 msgid "Type of cost centre (foreign or local)."
 msgstr "Tipo de Centro de Costos (extranjero o local)"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCostCentreHierarchy-generated.cs:642 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCostCentreHierarchy-generated.cs:645 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Cost Centre Type"
 msgstr ""
 
@@ -5696,21 +5732,26 @@ msgstr "Cantidad de Períodos que pueden estar abiertos"
 msgid "Create Ledger"
 msgstr "Crear extracto"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCreateLedger.ManualCode.cs:64
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCreateLedger.ManualCode.cs:66
 msgid "Please enter a name for your ledger!"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCreateLedger.ManualCode.cs:65 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCreateLedger.ManualCode.cs:67 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Problem: No Ledger has been created"
 msgstr "Problema: No se ha creado el mayor"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCreateLedger.ManualCode.cs:96
-msgid ""
-"The ledger {0} ({1}) has been created successfully. Please assign "
-"permissions to the users in System Manager."
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCreateLedger.ManualCode.cs:73
+msgid "Please supply valid Start date."
 msgstr ""
-"El libro {0} ({1}) ha sido creado con éxito. Asigne permisos a los usuarios "
-"en el Administrador del Sistema."
+
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\GLCreateLedger.ManualCode.cs:104
+msgid ""
+"Ledger {0} ({1}) has been created successfully and is now the current "
+"Ledger.\r\n"
+"\r\n"
+"Permissions for users to be able to access this Ledger can be assigned in "
+"the System Manager Module."
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Group Code:"
@@ -5740,15 +5781,15 @@ msgstr ""
 msgid "Enter a description in your local language."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:934 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:937 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Group Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:944 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:947 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Assignable"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:949
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\MotivationGroupSetup-generated.cs:952
 msgid "Description (local)"
 msgstr ""
 
@@ -5804,19 +5845,19 @@ msgstr ""
 msgid "Selecct an expense account code to debit for this fee."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1129 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1134 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Fee Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1139 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1144 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Charge Option"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1144 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1149 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Charge Percentage"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1149 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAdminGrantsPayable-generated.cs:1154 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Charge Amount"
 msgstr ""
 
@@ -5861,7 +5902,7 @@ msgid "To indicate whether the user or system has set up the analysis type."
 msgstr ""
 "Indica si el usuario o el sistema han configurado el tipo de análisis"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAnalysisTypes-generated.cs:931
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupAnalysisTypes-generated.cs:933
 msgid "&Analysis Type Code"
 msgstr ""
 
@@ -5938,19 +5979,19 @@ msgstr "Ingresar la fecha desde la cual el cambio es efectivo"
 msgid "Enter the rate of exchange"
 msgstr "Ingresar el tipo de cambio"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1021 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1025 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&From Currency Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1026 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1030 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&To Currency Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1031 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1035 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "D&ate"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1036 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupCorporateExchangeRate-generated.cs:1040 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&Rate of exchange"
 msgstr ""
 
@@ -6006,19 +6047,19 @@ msgstr ""
 msgid "Select if this method can be used"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1068 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1073 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Method of Giving"
 msgstr "Método de donación"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1078
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1083
 msgid "Used by Recurring Gifts"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1083
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1088
 msgid "Involves a Tax Rebate"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1088
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfGiving-generated.cs:1093
 msgid "Involves a Trust"
 msgstr ""
 
@@ -6034,7 +6075,7 @@ msgstr ""
 msgid "Maintain Methods of Payment"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfPayment-generated.cs:1031
+#: csharp\ICT\Petra\Client\MFinance\Gui\Setup\SetupMethodOfPayment-generated.cs:1035
 msgid "Special Method of Payment"
 msgstr ""
 
@@ -6527,15 +6568,15 @@ msgstr ""
 msgid "User ID of who last modified this record."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:878
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:884
 msgid "Extract Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:888
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:894
 msgid "Frozen"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:898
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList-generated.cs:904
 msgid "By"
 msgstr ""
 
@@ -6600,45 +6641,61 @@ msgid ""
 "Subscription deleted for {2} Partners."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:579 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:594
+msgid ""
+"Subscription {0} successfully changed for {1} out of {2} Partner(s) in "
+"Extract {3}."
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:602
+msgid ""
+"See the following Dialog for the {0} Partner(s) that are not subscribed for "
+"this Publication and therefore no change was made for them."
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:622
+msgid "Error while changing Subscription for Partners in Extract "
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:642 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Update 'No Solicitations' Flag"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:593
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:656
 msgid ""
 "'No Solicitations' flag successfully updated for all Partners in Extract "
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:601
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:664
 msgid "Error while updating 'No Solicitations' flag for Partners in Extract "
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:623 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:686 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Update Receipt Frequency"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:639
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:702
 msgid "Receipt Frequency successfully updated for all Partners in Extract "
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:647
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:710
 msgid "Error while updating Receipt Frequency for Partners in Extract "
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:666 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:729 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Update Email Gift Statement"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:680
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:743
 msgid ""
 "Email Gift Statement successfully updated for all Partners in Extract "
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:688
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:751
 msgid "Error while updating Email Gift Statement for Partners in Extract "
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:820
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UC_ExtractMasterList.ManualCode.cs:883
 msgid "Please select the one Extract that you want to use for this action: "
 msgstr ""
 
@@ -6650,6 +6707,246 @@ msgstr ""
 msgid ""
 "Are you sure that you want to add the selected subscription\r\n"
 "for all partners in the extract?"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "PERMANENT"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Pub&lication Code:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "S&ubscription Status:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:78 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Free Subscri&ption:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:81 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Complimentar&y:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "&Copies:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:83 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Reason &Given:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Reason Ended:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Gift Given By:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:86 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Change Miscellaneous"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:87 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "S&tart Date:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:88 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "E&xpiry Date:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Date Rene&wed:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:90 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Not&ice Sent:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:91 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Date E&nded:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:92 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Change Dates"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:93 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Issues Received:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:94 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Fi&rst Issue Sent:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:95 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "L&ast Issue Sent:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:96 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Change Issues"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:102 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter a publication code"
+msgstr "Ingresar un código de publicación"
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:104 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Select the current status of the subscription"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:105 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Select if this a free subscription (no dates updated)"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:106 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter the number of Complimentary issues to be given"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:107 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter the number of subscription issues"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:108 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter a reason subscription was given"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:110 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter a reason subscription was cancelled"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:112 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Who gave this subscription as a gift"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:113 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter the subscription start date"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:114 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter the date this subscription discontinues (if necessary)"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:115 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter the projected renewal date (if necessary)"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:116 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter the date a notice was sent (if necessary)"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:117 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter the date subscription was cancelled (if necessary)"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:118 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter the number of Issues Received"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:119 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Date the first issue was sent to the Partner"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:120 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Date the most recent issue was sent to this Partner"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:726 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Pub&lication Code"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:731 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "S&ubscription Status"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:736 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Free Subscri&ption"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:741 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Complimentar&y"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:746 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Reason &Given"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:751 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Reason Ended"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:756 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Gift Given By"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:761 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "S&tart Date"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:766 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Issues Received"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:454
+msgid "Subscription Status"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:460
+msgid "Free Subscription"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:464
+msgid "Yes"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:468 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "No"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:475
+msgid "Complimentary"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:482 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Copies"
+msgstr "Copias"
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:488
+msgid "Reason Given"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:507 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Start Date"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:513
+msgid "Expiry Date"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:519
+msgid "Date Renewed"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:525
+msgid "Notice Sent"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:531
+msgid "Date Ended"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:544
+msgid "First Issue Sent"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:550
+msgid "Last Issue Sent"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:572
+msgid "Please select a Publication"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractDeleteSubscriptionDialog-generated.cs:72 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -6747,11 +7044,11 @@ msgid "Indicates if acquisition code represents a recruiting effort."
 msgstr ""
 "Indicar si el código de obtención representa un esfuerzo de reclutamiento"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\AcquisitionCodeSetup-generated.cs:1056 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\AcquisitionCodeSetup-generated.cs:1058 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Acquisition Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\AcquisitionCodeSetup-generated.cs:1061
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\AcquisitionCodeSetup-generated.cs:1063
 msgid "Acquisition Description"
 msgstr ""
 
@@ -6771,7 +7068,7 @@ msgstr "Mantener tipos de destinatarios"
 msgid "Enter an addressee type code"
 msgstr "Ingresar un código de tipo de destinatario"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\AddresseeTypeSetup-generated.cs:987
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\AddresseeTypeSetup-generated.cs:989
 msgid "Addressee Type Code"
 msgstr ""
 
@@ -6799,11 +7096,11 @@ msgstr "Ingresar un código de negocio"
 msgid "Enter a Business Code Description"
 msgstr "Ingresar una descripción de código de negocio"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\BusinessCodeSetup-generated.cs:987 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\BusinessCodeSetup-generated.cs:989 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Business Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\BusinessCodeSetup-generated.cs:992
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\BusinessCodeSetup-generated.cs:994
 msgid "Business Description"
 msgstr ""
 
@@ -6831,34 +7128,26 @@ msgstr ""
 msgid "allowed to use this attribute for new contacts?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup-generated.cs:1004
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup-generated.cs:1007
 msgid "Attribute Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup.ManualCode.cs:90
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup.ManualCode.cs:88
 msgid "Number of Detail Codes"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup.ManualCode.cs:127
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup.ManualCode.cs:134
 msgid ""
 "Are you sure that you want to delete the current Contact Attribute?  If you "
 "choose 'Yes', all the detail attributes for this Contact Attribute will be "
 "deleted as well."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup.ManualCode.cs:128 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup.ManualCode.cs:135 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Delete Row"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup.ManualCode.cs:209
-msgid "'{0}' has already been used for a Contact Attribute Code."
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup.ManualCode.cs:210
-msgid "Contact Attribute"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup.ManualCode.cs:262
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactAttributeSetup.ManualCode.cs:246
 msgid ""
 "You must create at least one 'Attribute Detail Code' for each 'Contact "
 "Attribute'."
@@ -6900,15 +7189,15 @@ msgstr "Seleccionar un tipo de contacto"
 msgid "Should this option be selectable by users"
 msgstr "Esta opción, ¿debería ser seleccionable por los usuarios?"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1029
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1033
 msgid "Method Of Contact"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1039
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1043
 msgid "Contact Type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1044
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ContactMethodSetup-generated.cs:1048
 msgid "Valid Method"
 msgstr ""
 
@@ -6941,11 +7230,11 @@ msgid "Select if denomination can be selected by users"
 msgstr ""
 "Seleccionar si la denominación puede ser seleccionada por los usuarios"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\DenominationCodeSetup-generated.cs:1010 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\DenominationCodeSetup-generated.cs:1013 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Denomination Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\DenominationCodeSetup-generated.cs:1015
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\DenominationCodeSetup-generated.cs:1018
 msgid "Denomination Name"
 msgstr ""
 
@@ -6985,11 +7274,11 @@ msgstr ""
 "Descripción de todos los niveles de intensidad de interés. Dejar en blanco "
 "si no se requiere niveles."
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestCategorySetup-generated.cs:1068 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestCategorySetup-generated.cs:1071 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Category"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestCategorySetup-generated.cs:1078
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestCategorySetup-generated.cs:1081
 msgid "Level Descriptions"
 msgstr ""
 
@@ -7013,7 +7302,7 @@ msgstr "Mantener intereses de socio"
 msgid "Interest category"
 msgstr "Categoría de interés"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestSetup-generated.cs:982
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\InterestSetup-generated.cs:984
 msgid "Interest"
 msgstr ""
 
@@ -7037,7 +7326,7 @@ msgstr ""
 msgid "Enter a description for the Lookup Category"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\LocalDataOptionListNameSetup-generated.cs:964 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\LocalDataOptionListNameSetup-generated.cs:965 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "List Name"
 msgstr ""
 
@@ -7081,7 +7370,7 @@ msgstr "Nuevo tipo de ubicación"
 msgid "Maintain Location Types"
 msgstr "Mantener tipos de ubicación"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\LocationTypeSetup-generated.cs:1006
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\LocationTypeSetup-generated.cs:1009
 msgid "Location Code"
 msgstr ""
 
@@ -7121,15 +7410,15 @@ msgstr ""
 msgid "Cost of Mailing"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1059 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1061 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Mailing Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1069
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1071
 msgid "Mailing Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1074
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\MailingSetup-generated.cs:1076
 msgid "Mailing Cost"
 msgstr ""
 
@@ -7161,7 +7450,7 @@ msgstr "Indicar si este código aún puede ser asignado"
 msgid "Date from which this code was made unassignable."
 msgstr "Fecha desde la cual este código ya no es asignable."
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\MaritalStatusSetup-generated.cs:1055
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\MaritalStatusSetup-generated.cs:1058
 msgid "Marital Status Code"
 msgstr ""
 
@@ -7189,11 +7478,11 @@ msgstr "Ingresar un código de ocupación aprobado"
 msgid "Select this to make this available to selection lists"
 msgstr "Seleccionar para que esté disponible en listas de selección"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\OccupationCodeSetup-generated.cs:1023
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\OccupationCodeSetup-generated.cs:1025
 msgid "Occupation Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\OccupationCodeSetup-generated.cs:1028
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\OccupationCodeSetup-generated.cs:1030
 msgid "Occupation Description"
 msgstr ""
 
@@ -7233,7 +7522,7 @@ msgstr "Seleccionar si el estado del socio debe considerarse como activo"
 msgid "Select if partner should be included on reports"
 msgstr "Seleccionar si el socio debe incluirse en los informes"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PartnerStatusSetup-generated.cs:1054
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PartnerStatusSetup-generated.cs:1056
 msgid "Status Code"
 msgstr ""
 
@@ -7261,7 +7550,7 @@ msgstr "Seleccionar si el Código de Tipo es seleccionable por usuarios"
 msgid "Select if deletable"
 msgstr "Seleccionar si se puede borrar"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PartnerTypeSetup-generated.cs:1031 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PartnerTypeSetup-generated.cs:1033 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Type Code"
 msgstr "Código de tipo"
 
@@ -7281,10 +7570,6 @@ msgstr ""
 msgid "Maintain Publication Costs"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:156 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter a publication code"
-msgstr "Ingresar un código de publicación"
-
 #: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:158
 msgid "The effective date of the publication cost"
 msgstr ""
@@ -7297,15 +7582,15 @@ msgstr ""
 msgid "Enter the postage cost"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1043 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1046 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Publication Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1053
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1056
 msgid "Publication Cost"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1058
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:1061
 msgid "Postage Cost"
 msgstr ""
 
@@ -7358,11 +7643,11 @@ msgid "Select if publication can be selected by users"
 msgstr ""
 "Seleccionar si la publicación puede ser seleccionada por los usuarios"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationSetup-generated.cs:1126 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationSetup-generated.cs:1130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Publication Description"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationSetup-generated.cs:1131
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationSetup-generated.cs:1135
 msgid "Publication Label Code"
 msgstr ""
 
@@ -7386,7 +7671,7 @@ msgstr "Ingresar un código de Motivo de Cancelación"
 msgid "Enter a full description of reason cancelled"
 msgstr "Ingrese una descripción completa de motivo de cancelación"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ReasonSubscriptionCancelledSetup-generated.cs:964
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ReasonSubscriptionCancelledSetup-generated.cs:965
 msgid "Reason Cancelled Code"
 msgstr ""
 
@@ -7410,7 +7695,7 @@ msgstr "Ingresar código de motivo dado"
 msgid "Enter a full description for reason Subscription is given"
 msgstr "Ingresar una descripción completa de motivo de suscripción dado"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ReasonSubscriptionGivenSetup-generated.cs:964
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\ReasonSubscriptionGivenSetup-generated.cs:965
 msgid "Reason Given Code"
 msgstr ""
 
@@ -7434,7 +7719,7 @@ msgstr "Este código indica la categoría de una relación."
 msgid "This describes the relation category."
 msgstr "Esto describe la categoría relacional"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationCategorySetup-generated.cs:1075
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationCategorySetup-generated.cs:1077
 msgid "Relationship Category Code"
 msgstr ""
 
@@ -7478,15 +7763,15 @@ msgstr ""
 msgid "Select if this is available for to users"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1061 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1065 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Relationship"
 msgstr "Relación"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1066
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1070
 msgid "Relation Category"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1076
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\RelationshipSetup-generated.cs:1080
 msgid "Reciprocal Description"
 msgstr ""
 
@@ -7506,15 +7791,15 @@ msgstr ""
 msgid "allowed to use this attribute detail for new contacts?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\UC_ContactAttributeDetail-generated.cs:805
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\UC_ContactAttributeDetail-generated.cs:809
 msgid "Data Cannot Be Saved"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\UC_ContactAttributeDetail-generated.cs:902 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\UC_ContactAttributeDetail-generated.cs:906 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Detail Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\UC_ContactAttributeDetail.ManualCode.cs:149
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\UC_ContactAttributeDetail.ManualCode.cs:163
 msgid ""
 "Are you sure that you want to delete the current Contact Detail Attribute?"
 msgstr ""
@@ -7555,11 +7840,11 @@ msgstr "Ingresar el ID de usuario"
 msgid "Enter the mailing code associated with the contact"
 msgstr "Ingresar el código de mailing asociado con el contacto"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PartnerContacts-generated.cs:380
+#: csharp\ICT\Petra\Client\MPartner\Gui\PartnerContacts-generated.cs:382
 msgid "Contact Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PartnerContacts-generated.cs:385
+#: csharp\ICT\Petra\Client\MPartner\Gui\PartnerContacts-generated.cs:387
 msgid "Contactor"
 msgstr ""
 
@@ -7765,7 +8050,7 @@ msgstr ""
 msgid "Save Partners into File"
 msgstr "Guardar socios en un archivo"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PartnerEdit.ManualCode.cs:2005
+#: csharp\ICT\Petra\Client\MPartner\Gui\PartnerEdit.ManualCode.cs:2023
 msgid ""
 "You do not have access rights to the Personnel System of OpenPetra.\r\n"
 "\r\n"
@@ -7773,7 +8058,7 @@ msgid ""
 "Partner Edit screen. Showing the Partner Data Tabs instead."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PartnerEdit.ManualCode.cs:2008
+#: csharp\ICT\Petra\Client\MPartner\Gui\PartnerEdit.ManualCode.cs:2026
 msgid "Access Denied"
 msgstr ""
 
@@ -8368,31 +8653,31 @@ msgstr ""
 msgid "An unofficial job title for the person."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1061 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1069 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Receiving Field"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1066 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1074 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&Start of Commitment"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1071
+#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1079
 msgid "&End of Commitment"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1082
+#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1090
 msgid "Home Office"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1087
+#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1095
 msgid "Recruiting Office"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1092 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1100 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Comments"
 msgstr "Comentarios"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1097 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\PersonnelStaffData-generated.cs:1105 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Job Title"
 msgstr ""
 
@@ -8425,14 +8710,6 @@ msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\SubscriptionsCancelAllDialog-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "==Will be set in the dialog initialization=="
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\SubscriptionsCancelAllDialog-generated.cs:74 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Reason Ended:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\SubscriptionsCancelAllDialog-generated.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Date E&nded:"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\SubscriptionsCancelAllDialog-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -8538,27 +8815,27 @@ msgstr ""
 msgid "Indicates if the person is a leader of a fellowship group."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:611 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:616 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Application Status"
 msgstr "Estado de la solicitud"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:616 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:621 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Reason"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:621 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:626 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Receiving Field Acceptance Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:626 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:631 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Conference Role"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:631
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:636
 msgid "Conference Language"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:636
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Event-generated.cs:641
 msgid "Fellowship Group"
 msgstr ""
 
@@ -8598,19 +8875,19 @@ msgstr ""
 msgid "Length of time the support period covers."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Field-generated.cs:625
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Field-generated.cs:631
 msgid "Application Currency"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Field-generated.cs:630
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Field-generated.cs:636
 msgid "Joining Charge"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Field-generated.cs:635
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Field-generated.cs:641
 msgid "Agreed Support"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Field-generated.cs:640
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Applicant_Field-generated.cs:646
 msgid "Support Period"
 msgstr ""
 
@@ -8658,27 +8935,27 @@ msgstr ""
 msgid "This is the placement person handling this application"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:485 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:490 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Event"
 msgstr "Evento"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:490
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:495
 msgid "Field Charged"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:495 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:500 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Application Type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:500
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:505
 msgid "Organization Contact 1"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:505
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:510
 msgid "Organization Contact 2"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:510 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Event-generated.cs:515 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Placement Person"
 msgstr ""
 
@@ -8702,15 +8979,15 @@ msgstr ""
 msgid "Enter when commitment ends."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Field-generated.cs:486 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Field-generated.cs:489 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Field"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Field-generated.cs:491 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Field-generated.cs:494 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Available from"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Field-generated.cs:496
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Field-generated.cs:499
 msgid "Available to"
 msgstr ""
 
@@ -8830,39 +9107,39 @@ msgstr ""
 msgid "Gives further comments on departure information."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:863 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:865 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Travel Method"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:868
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:870
 msgid "Arrival Point"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:873 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:875 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Arrival Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:878 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:880 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Time"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:889 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:891 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Transport Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:894
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:896
 msgid "Arrival Comment"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:904
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:906
 msgid "Departure Point"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:909
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:911
 msgid "Departure Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:931
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_ApplicationPage_Travel-generated.cs:933
 msgid "Departure Comment"
 msgstr ""
 
@@ -9138,19 +9415,19 @@ msgstr ""
 msgid "Numeric representation of level of ability."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:833
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:837
 msgid "Ability"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:838 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:842 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Years Of Experience"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:843 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:847 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Level"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:848 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Abilities-generated.cs:852 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Comment"
 msgstr ""
 
@@ -9186,27 +9463,27 @@ msgstr ""
 msgid "Recruiting Field:"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:891 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:898 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Commitment Start Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:896
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:903
 msgid "Commitment End Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:902 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:909 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Commitment Status"
 msgstr "Estado del compromiso"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:907 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:914 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Sending Field"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:912
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods-generated.cs:919
 msgid "Recruiting Field"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods.ManualCode.cs:145
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_CommitmentPeriods.ManualCode.cs:148
 msgid ""
 "Are you sure you want to delete Commitment record:\r\n"
 "{0} at {1} started {2}?"
@@ -9318,51 +9595,51 @@ msgstr ""
 msgid "Enter the answer to the person's proof of life question"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:543
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:553
 msgid "Weight (kg)"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:548
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:558
 msgid "Eye Colour"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:553
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:563
 msgid "Hair Colour"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:558
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:568
 msgid "Facial Hair"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:563
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:573
 msgid "Identifying Marks"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:568
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:578
 msgid "Blood Type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:573
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:583
 msgid "Question1"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:578
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:588
 msgid "Answer1"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:583
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:593
 msgid "Question2"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:588
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:598
 msgid "Answer2"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:593
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:603
 msgid "Question3"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:598
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_EmergencyData-generated.cs:608
 msgid "Answer3"
 msgstr ""
 
@@ -9414,27 +9691,27 @@ msgstr ""
 msgid "Is the assignment in assistance to the given position?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:869
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:873
 msgid "Assignment Type Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:874 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:878 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "From Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:879
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:883
 msgid "To Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:885 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:889 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Unit Key"
 msgstr "Clave de unidad"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:890
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments-generated.cs:894
 msgid "Position/Role"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments.ManualCode.cs:137
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_JobAssignments.ManualCode.cs:140
 msgid ""
 "Are you sure you want to delete Job Assignment record:\r\n"
 "{0} at {1} started {2}?"
@@ -9508,35 +9785,35 @@ msgstr ""
 msgid "Enter the passport expiration date."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:954
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:960
 msgid "Passport Number"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:959
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:965
 msgid "Type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:964
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:970
 msgid "Passport Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:969
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:975
 msgid "Place of Birth"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:974
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:980
 msgid "Passport Nationality"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:979 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:985 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Place of Issue"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:984 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:990 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Date of Issue"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:989
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_Passport-generated.cs:995
 msgid "Date of Expiration"
 msgstr ""
 
@@ -9622,27 +9899,23 @@ msgstr ""
 msgid "Enter comments and details for the document"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:932
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:937
 msgid "Document Type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:937
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:942
 msgid "Document ID"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:942
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:947
 msgid "Associated Document ID"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:957 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Start Date"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:962
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:967
 msgid "Expiration Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments.ManualCode.cs:130
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments.ManualCode.cs:133
 msgid "Are you sure you want to delete Personal Document record: {0} {1}?"
 msgstr ""
 
@@ -9662,19 +9935,19 @@ msgstr ""
 msgid "Numeric representation of level of language."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalLanguages-generated.cs:835 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalLanguages-generated.cs:839 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Language"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalLanguages.ManualCode.cs:207
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalLanguages.ManualCode.cs:210
 msgid "Are you sure you want to delete Language record: '{0}'?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalLanguages.ManualCode.cs:300
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalLanguages.ManualCode.cs:303
 msgid "Language Level Explanation"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalLanguages.ManualCode.cs:304
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalLanguages.ManualCode.cs:307
 msgid "There is no explanation available for Language Level {0}."
 msgstr ""
 
@@ -9754,27 +10027,27 @@ msgstr ""
 msgid "Enter any additional comment"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1052
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1058
 msgid "Skill Category"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1057 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1063 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Skill Level"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1067
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1073
 msgid "Local Language"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1072
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1078
 msgid "Description in local language"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1077
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills-generated.cs:1083
 msgid "Degree linked with this skill"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills.ManualCode.cs:132
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonSkills.ManualCode.cs:135
 msgid "Are you sure you want to delete Skill record: '{0}'?"
 msgstr ""
 
@@ -9832,15 +10105,15 @@ msgstr ""
 msgid "Comments on previous experience."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:892
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:898
 msgid "Location"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:897 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:903 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Role"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:907
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PreviousExperience-generated.cs:913
 msgid "End Date"
 msgstr ""
 
@@ -9896,23 +10169,23 @@ msgstr ""
 msgid "What actions should be taken."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:850
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:855
 msgid "Reporter"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:855 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:860 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Report Date"
 msgstr "Fecha del informe"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:860
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:865
 msgid "Next Report Date"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:866 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:871 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Report Type"
 msgstr "Tipo de informe"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:876
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_ProgressReports-generated.cs:881
 msgid "Next Action"
 msgstr ""
 
@@ -9952,15 +10225,15 @@ msgstr ""
 msgid "Enter any other special need that exists."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_SpecialNeeds-generated.cs:402
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_SpecialNeeds-generated.cs:404
 msgid "Medical Comment"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_SpecialNeeds-generated.cs:407
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_SpecialNeeds-generated.cs:409
 msgid "Dietary Comment"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_SpecialNeeds-generated.cs:412
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_SpecialNeeds-generated.cs:414
 msgid "Other Special Need"
 msgstr ""
 
@@ -10127,23 +10400,23 @@ msgstr ""
 "Persona de contacto para la unidad que será referida en cualquier "
 "correspondencia"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Bank-generated.cs:515 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Bank-generated.cs:517 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Previous Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Bank-generated.cs:520 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Bank-generated.cs:522 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Local Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Bank-generated.cs:525 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Bank-generated.cs:527 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Bank/Branch Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Bank-generated.cs:526 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Bank-generated.cs:528 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "BIC/SWIFT Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Bank-generated.cs:546 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Bank-generated.cs:548 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Contact Partner"
 msgstr ""
 
@@ -10203,7 +10476,7 @@ msgstr "Máximo de personas que se pueden alojar"
 msgid "Select type of accomodation"
 msgstr "Seleccionar tipo de alojamiento"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Church-generated.cs:671
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Church-generated.cs:672
 msgid "Accomodation Type"
 msgstr ""
 
@@ -10223,7 +10496,7 @@ msgstr "Fecha desde la que es válido el estado civil"
 msgid "Enter a comment for the marital status"
 msgstr "Ingresar un comentario sobre el estado civil"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Family-generated.cs:524 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Family-generated.cs:526 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Marital Status Comment"
 msgstr ""
 
@@ -10283,19 +10556,19 @@ msgstr "Ingresar el título académico de la persona"
 msgid "Enter an occupation code"
 msgstr "Ingresar un código de ocupación"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Person-generated.cs:590
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Person-generated.cs:595
 msgid "Preferred Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Person-generated.cs:605
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Person-generated.cs:610
 msgid "Decorations"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Person-generated.cs:615
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Person-generated.cs:620
 msgid "Academic Title"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Person-generated.cs:635
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Person-generated.cs:640
 msgid "Occupation"
 msgstr ""
 
@@ -10343,19 +10616,19 @@ msgstr ""
 msgid "Currency used for the outreach cost"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Unit-generated.cs:541
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Unit-generated.cs:546
 msgid "Unit Type Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Unit-generated.cs:556 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Unit-generated.cs:561 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Outreach Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Unit-generated.cs:561
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Unit-generated.cs:566
 msgid "Outreach Cost"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Unit-generated.cs:566
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Unit-generated.cs:571
 msgid "Outreach Cost Currency Code"
 msgstr ""
 
@@ -10367,7 +10640,7 @@ msgstr "Código del lugar de encuentro:"
 msgid "Currency used for the venue"
 msgstr "Moneda utilizada para el lugar de encuentro"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Venue-generated.cs:519
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Venue-generated.cs:521
 msgid "Venue Code"
 msgstr ""
 
@@ -10439,7 +10712,7 @@ msgstr ""
 msgid "Applications ({0})"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_PersonnelTabSet.ManualCode.cs:276 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_PersonnelTabSet.ManualCode.cs:283 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Applications"
 msgstr ""
 
@@ -10547,47 +10820,47 @@ msgstr "Seleccionar estado de socio"
 msgid "Set this if the partner does not want extra mailings"
 msgstr "Seleccionar si el socio no quiere recibir correos extras"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:935
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:941
 msgid "Key"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:945 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:951 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Title/Na&me"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:950
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:956
 msgid "Family First Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:955
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:961
 msgid "Family Family Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:965
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:971
 msgid "Person First Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:970
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:976
 msgid "Person Middle Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:975
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:981
 msgid "Person Family Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:980 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:986 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Na&me"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:1005 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:1011 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Partner &Status"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:1010
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:1016
 msgid "&Addressee Type"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:1015
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:1021
 msgid "&Gender"
 msgstr ""
 
@@ -10914,62 +11187,8 @@ msgstr ""
 msgid "Another Partner"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerRelationships.ManualCode.cs:337
-msgid ""
-"You have choosen to delete this value ({0}).\n"
-"\n"
-"Do you really want to delete it?"
-msgstr ""
-"Ha elegido borrar este valor ({0}).\n"
-"\n"
-"¿Realmente quiere borrarlo?"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "PERMANENT"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Pub&lication Code:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:78 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "S&ubscription Status:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:79 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Free Subscri&ption:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:83 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Complimentar&y:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Copies:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Reason &Given:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:87 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Gift Given By:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "S&tart Date:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:90 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "E&xpiry Date:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:91 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Date Rene&wed:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:92 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Not&ice Sent:"
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerRelationships.ManualCode.cs:339
+msgid "Are you sure you want to delete Relationship record: '{0}'?"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:94 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -10980,116 +11199,8 @@ msgstr "Fechas"
 msgid "Edit Issues"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:96 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Issues Received:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:97 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Fi&rst Issue Sent:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:98 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "L&ast Issue Sent:"
-msgstr ""
-
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:99 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Issues"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:156
-msgid "Select the current status of the subscription"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:157
-msgid "Select if this a free subscription (no dates updated)"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:158
-msgid "Enter the number of Complimentary issues to be given"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:159
-msgid "Enter the number of subscription issues"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:160
-msgid "Enter a reason subscription was given"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:162
-msgid "Enter a reason subscription was cancelled"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:164
-msgid "Who gave this subscription as a gift"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:165
-msgid "Enter the subscription start date"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:166
-msgid "Enter the date this subscription discontinues (if necessary)"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:167
-msgid "Enter the projected renewal date (if necessary)"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:168
-msgid "Enter the date a notice was sent (if necessary)"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:169
-msgid "Enter the date subscription was cancelled (if necessary)"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:170
-msgid "Enter the number of Issues Received"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:171
-msgid "Date the first issue was sent to the Partner"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:172
-msgid "Date the most recent issue was sent to this Partner"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:694
-msgid "Pub&lication Code"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:699
-msgid "S&ubscription Status"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:704
-msgid "Free Subscri&ption"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:709
-msgid "Complimentar&y"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:714
-msgid "Reason &Given"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:719
-msgid "Reason Ended"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:724
-msgid "Gift Given By"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:729
-msgid "S&tart Date"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:734
-msgid "Issues Received"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription.ManualCode.cs:317
@@ -11102,26 +11213,26 @@ msgstr ""
 msgid "&Cancel All Subscriptions"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscriptions.ManualCode.cs:340
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscriptions.ManualCode.cs:343
 msgid "Are you sure you want to delete Subscription {0}?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscriptions.ManualCode.cs:478
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscriptions.ManualCode.cs:481
 msgid ""
 "The following {0} Subscription(s) was/were cancelled:\r\n"
 "{1}\r\n"
 "The Partner has no active Subscriptions left."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscriptions.ManualCode.cs:482
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscriptions.ManualCode.cs:485
 msgid "All Subscriptions Cancelled"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscriptions.ManualCode.cs:489
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscriptions.ManualCode.cs:492
 msgid "No Subscriptions were cancelled."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscriptions.ManualCode.cs:501
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscriptions.ManualCode.cs:504
 msgid "There are no Subscriptions to cancel."
 msgstr ""
 
@@ -11357,10 +11468,6 @@ msgstr ""
 msgid "found"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:198
-msgid "No"
-msgstr ""
-
 #: csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:202
 msgid ""
 " records found.\r\n"
@@ -11514,7 +11621,7 @@ msgstr "Seleccionar si el área de capacidad ya no se puede asignar."
 msgid "Date from which the ability area is unassignable."
 msgstr "Fecha desde la cual el área de capacidad no se puede asignar."
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\AbilityAreaSetup-generated.cs:1069
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\AbilityAreaSetup-generated.cs:1072
 msgid "Ability Area"
 msgstr ""
 
@@ -11542,7 +11649,7 @@ msgstr ""
 msgid "Date from which the ability level is unassignable."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\AbilityLevelSetup-generated.cs:1068
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\AbilityLevelSetup-generated.cs:1071
 msgid "Ability Level"
 msgstr ""
 
@@ -11566,7 +11673,7 @@ msgstr ""
 msgid "This describes the applicant status code."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ApplicantStatusSetup-generated.cs:1075
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ApplicantStatusSetup-generated.cs:1077
 msgid "Applicant Status"
 msgstr ""
 
@@ -11618,7 +11725,7 @@ msgstr ""
 msgid "This describes the arrival point."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ArrivalDeparturePointSetup-generated.cs:1074
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ArrivalDeparturePointSetup-generated.cs:1076
 msgid "Point Code"
 msgstr ""
 
@@ -11642,7 +11749,7 @@ msgstr ""
 msgid "This describes the preference level code."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\Country_EventLevelSetup-generated.cs:1075
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\Country_EventLevelSetup-generated.cs:1077
 msgid "Level Code"
 msgstr ""
 
@@ -11666,7 +11773,7 @@ msgstr ""
 msgid "This describes the document type category."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeCategorySetup-generated.cs:1075
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeCategorySetup-generated.cs:1077
 msgid "Document Type Category"
 msgstr ""
 
@@ -11690,11 +11797,11 @@ msgstr ""
 msgid "This describes the document type."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeSetup-generated.cs:1093
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeSetup-generated.cs:1096
 msgid "Document Code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeSetup-generated.cs:1103
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DocumentTypeSetup-generated.cs:1106
 msgid "Document Category"
 msgstr ""
 
@@ -11718,7 +11825,7 @@ msgstr ""
 msgid "This describes the driver status."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DriverStatusSetup-generated.cs:1075
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\DriverStatusSetup-generated.cs:1077
 msgid "Driver Status Code"
 msgstr ""
 
@@ -11814,7 +11921,7 @@ msgstr ""
 msgid "Date from which the qualification level is unassignable."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\JobAssignmentTypeSetup-generated.cs:1067
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\JobAssignmentTypeSetup-generated.cs:1070
 msgid "Job Assignment Type"
 msgstr ""
 
@@ -11850,11 +11957,11 @@ msgstr ""
 msgid "Date from which this contact cannot be listed."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LanguageLevelSetup-generated.cs:1093
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LanguageLevelSetup-generated.cs:1096
 msgid "Language Level"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LanguageLevelSetup-generated.cs:1103
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LanguageLevelSetup-generated.cs:1106
 msgid "Language Comment"
 msgstr ""
 
@@ -11878,7 +11985,7 @@ msgstr ""
 msgid "This describes the Leadership Rating code."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LeadershipRatingSetup-generated.cs:1074
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LeadershipRatingSetup-generated.cs:1076
 msgid "Leadership Rating"
 msgstr ""
 
@@ -11902,7 +12009,7 @@ msgstr ""
 msgid "Enter the appropriate description of the leaving code."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LeavingCodeSetup-generated.cs:1067
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\LeavingCodeSetup-generated.cs:1070
 msgid "Leaving Code"
 msgstr ""
 
@@ -11930,7 +12037,7 @@ msgstr ""
 msgid "Check box if position is no longer assignable."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\OrganisationContactSetup-generated.cs:1069
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\OrganisationContactSetup-generated.cs:1072
 msgid "Contact Name"
 msgstr ""
 
@@ -11954,7 +12061,7 @@ msgstr ""
 msgid "This describes the passport type."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\PassportTypeSetup-generated.cs:1075
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\PassportTypeSetup-generated.cs:1077
 msgid "Passport Type"
 msgstr ""
 
@@ -11978,7 +12085,7 @@ msgstr ""
 msgid "Enter a description for this position."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\PositionSetup-generated.cs:1067
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\PositionSetup-generated.cs:1070
 msgid "Position"
 msgstr ""
 
@@ -12010,7 +12117,7 @@ msgstr ""
 msgid "Date from which this qualification area is unassignable."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ProfessionalAreaSetup-generated.cs:1067
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\ProfessionalAreaSetup-generated.cs:1070
 msgid "Professional Area"
 msgstr ""
 
@@ -12034,7 +12141,7 @@ msgstr ""
 msgid "Enter a description for this level of qualification."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\QualificationLevelSetup-generated.cs:1066
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\QualificationLevelSetup-generated.cs:1069
 msgid "Qualification Level"
 msgstr ""
 
@@ -12066,7 +12173,7 @@ msgstr ""
 msgid "Date from which the category is unassignable."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\SkillCategorySetup-generated.cs:1067
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\SkillCategorySetup-generated.cs:1070
 msgid "Skill Category Code"
 msgstr ""
 
@@ -12092,6 +12199,22 @@ msgstr ""
 
 #: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\SkillLevelSetup-generated.cs:161
 msgid "Date from which the skill level is unassignable."
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\TransportTypeSetup-generated.cs:135 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "New Transport Type"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\TransportTypeSetup-generated.cs:151 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Maintain Transport Types"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\TransportTypeSetup-generated.cs:159
+msgid "This code indicates the different types of travel."
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\TransportTypeSetup-generated.cs:160
+msgid "This describes the types of travel ."
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MPersonnel\Gui\Setup\UnitHierarchy-generated.cs:68 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -12290,21 +12413,21 @@ msgstr "Informe de Arribos"
 msgid "Attendance Summary Report"
 msgstr "Informe Resumen de Asistencia"
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MConference\AttendanceSummaryReport.ManualCode.cs:84
+#: csharp\ICT\Petra\Client\MReporting\Gui\MConference\AttendanceSummaryReport.ManualCode.cs:82
 msgid "Change From-Date or To-Date"
 msgstr "Cambiar Fecha-Desde o Fecha-Hasta"
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MConference\AttendanceSummaryReport.ManualCode.cs:85
-msgid "From Date must be smaller than To Date"
-msgstr "Fecha Desde debe ser anterior a Fecha Hasta"
+#: csharp\ICT\Petra\Client\MReporting\Gui\MConference\AttendanceSummaryReport.ManualCode.cs:83
+msgid "From-Date must be earlier than To-Date"
+msgstr ""
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MConference\AttendanceSummaryReport.ManualCode.cs:94
-msgid "Enter valid To- and From-Date."
-msgstr "Ingresar Fechas Desde y Hasta Válidas"
+#: csharp\ICT\Petra\Client\MReporting\Gui\MConference\AttendanceSummaryReport.ManualCode.cs:92
+msgid "Enter valid From-Date and To-Date."
+msgstr ""
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MConference\AttendanceSummaryReport.ManualCode.cs:95
-msgid "Dates must be a valid date"
-msgstr "Las fechas deben ser válidas"
+#: csharp\ICT\Petra\Client\MReporting\Gui\MConference\AttendanceSummaryReport.ManualCode.cs:93
+msgid "Dates must be valid"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\MConference\AttendeeReport-generated.cs:103 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Attendee Report"
@@ -13080,11 +13203,19 @@ msgstr "Seleccionar destinatario"
 msgid "One Year Monthly Giving"
 msgstr "Ofrendas mensuales durante un año"
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\OneYearMonthlyGiving.ManualCode.cs:88
+#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\OneYearMonthlyGiving.ManualCode.cs:79
+msgid "Invalid dates."
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\OneYearMonthlyGiving.ManualCode.cs:80
+msgid "Provide values for From date and To date."
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\OneYearMonthlyGiving.ManualCode.cs:101
 msgid "Year value in from-date is different than from year value in to-date."
 msgstr "El año desde es diferente al año hasta"
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\OneYearMonthlyGiving.ManualCode.cs:89
+#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\OneYearMonthlyGiving.ManualCode.cs:102
 msgid "Please use the same year."
 msgstr "Utilice el mismo año."
 
@@ -13316,31 +13447,31 @@ msgstr "El periodo de inicio no debe ser mayor que el de finalización"
 msgid "Invalid Data entered."
 msgstr "Datos ingresados inválidos."
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:183
-msgid "Start Date must not be bigger than End Date."
-msgstr "Fecha de inicio no puede ser posterior a fecha final"
+#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:185
+msgid "Start Date must not be later than End Date."
+msgstr ""
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:335 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:338 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "1 and "
 msgstr "1 y "
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:347
+#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:350
 msgid "Invalid Period entered."
 msgstr "Período ingresado inválido."
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:347
+#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:350
 msgid "Period must be between "
 msgstr "El período debe ser entre "
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:349 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:352 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Invalid Data entered"
 msgstr "Datos ingresados inválidos"
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:385
+#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:388
 msgid "Invalid Quarter entered."
 msgstr "Trimestre ingresado inválido."
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:385
+#: csharp\ICT\Petra\Client\MReporting\Gui\MFinance\UC_GeneralSettings.ManualCode.cs:388
 msgid "Quarter must be between "
 msgstr "El trimestre debe ser entre "
 
@@ -13563,10 +13694,6 @@ msgstr "Breve informe de dirección"
 #: csharp\ICT\Petra\Client\MReporting\Gui\MPartner\BriefFoundationReport-generated.cs:102 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Brief Foundation Report"
 msgstr "Breve informe de la fundación"
-
-#: csharp\ICT\Petra\Client\MReporting\Gui\MPartner\BulkAddressReport-generated.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Copies"
-msgstr "Copias"
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\MPartner\BulkAddressReport-generated.cs:108 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Bulk Address Report"
@@ -14579,99 +14706,99 @@ msgstr ""
 msgid "The language specific short month name 12."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1388
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1412
 msgid "Name of Month 1"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1393
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1417
 msgid "Month Name Short1"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1398
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1422
 msgid "Name of Month 7"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1403
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1427
 msgid "Month Name Short7"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1408
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1432
 msgid "Name of Month 2"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1413
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1437
 msgid "Month Name Short2"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1418
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1442
 msgid "Name of Month 8"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1423
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1447
 msgid "Month Name Short8"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1428
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1452
 msgid "Name of Month 3"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1433
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1457
 msgid "Month Name Short3"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1438
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1462
 msgid "Name of Month 9"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1443
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1467
 msgid "Month Name Short9"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1448
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1472
 msgid "Name of Month 4"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1453
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1477
 msgid "Month Name Short4"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1458
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1482
 msgid "Name of Month 10"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1463
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1487
 msgid "Month Name Short10"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1468
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1492
 msgid "Name of Month 5"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1473
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1497
 msgid "Month Name Short5"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1478
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1502
 msgid "Name of Month 11"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1483
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1507
 msgid "Month Name Short11"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1488
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1512
 msgid "Name of Month 6"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1493
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1517
 msgid "Month Name Short6"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1498
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1522
 msgid "Name of Month 12"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1503
+#: csharp\ICT\Petra\Client\MSysMan\Gui\Setup\LanguageSpecificSetup-generated.cs:1527
 msgid "Month Name Short12"
 msgstr ""
 
@@ -14917,11 +15044,11 @@ msgstr ""
 msgid "Maintain Language and Culture"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\MaintainLanguageCulture.ManualCode.cs:107
+#: csharp\ICT\Petra\Client\MSysMan\Gui\MaintainLanguageCulture.ManualCode.cs:109
 msgid "Please restart the OpenPetra client to see the new language"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\MaintainLanguageCulture.ManualCode.cs:108
+#: csharp\ICT\Petra\Client\MSysMan\Gui\MaintainLanguageCulture.ManualCode.cs:110
 msgid "Restart the client"
 msgstr ""
 
@@ -14965,15 +15092,15 @@ msgstr "Ingresar el nombre del personal"
 msgid "Enter the Family Name"
 msgstr "Ingresar el nombre de la familia"
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:927
+#: csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:930
 msgid "User Id"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:932
+#: csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:935
 msgid "First Name"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:937
+#: csharp\ICT\Petra\Client\MSysMan\Gui\MaintainUsers-generated.cs:940
 msgid "Last Name"
 msgstr ""
 
@@ -16404,19 +16531,19 @@ msgstr "Estimada Señora o Señor"
 msgid "Dear {0}{1}{#NOGENDER}"
 msgstr "Estimado {0} {1}{#NOGENDER}"
 
-#: csharp\ICT\Petra\Shared\lib\MPersonnel\validation\Personnel.Validation.cs:961
+#: csharp\ICT\Petra\Shared\lib\MPersonnel\validation\Personnel.Validation.cs:964
 msgid "Arrival Hour"
 msgstr ""
 
-#: csharp\ICT\Petra\Shared\lib\MPersonnel\validation\Personnel.Validation.cs:974
+#: csharp\ICT\Petra\Shared\lib\MPersonnel\validation\Personnel.Validation.cs:977
 msgid "Arrival Minute"
 msgstr ""
 
-#: csharp\ICT\Petra\Shared\lib\MPersonnel\validation\Personnel.Validation.cs:987
+#: csharp\ICT\Petra\Shared\lib\MPersonnel\validation\Personnel.Validation.cs:990
 msgid "Departure Hour"
 msgstr ""
 
-#: csharp\ICT\Petra\Shared\lib\MPersonnel\validation\Personnel.Validation.cs:1000
+#: csharp\ICT\Petra\Shared\lib\MPersonnel\validation\Personnel.Validation.cs:1003
 msgid "Departure Minute"
 msgstr ""
 
@@ -16851,10 +16978,6 @@ msgid "Setup Mailings"
 msgstr ""
 
 #: - This item was created automatically from a designer file
-msgid "Ledger {0} {1}"
-msgstr "Libro {0} {1}"
-
-#: - This item was created automatically from a designer file
 msgid "Gift Processing"
 msgstr "Procesamiento de ofrendas"
 
@@ -17132,10 +17255,6 @@ msgid "Ledger"
 msgstr ""
 
 #: - This item was created automatically from a designer file
-msgid "Create a new Ledger"
-msgstr ""
-
-#: - This item was created automatically from a designer file
 msgid "Finance Setup (Cross-Ledger)"
 msgstr ""
 
@@ -17146,10 +17265,6 @@ msgstr ""
 #: - This item was created automatically from a designer file
 msgid "Setup Currencies"
 msgstr "Configurar monedas"
-
-#: - This item was created automatically from a designer file
-msgid "Maintain Currencies"
-msgstr ""
 
 #: - This item was created automatically from a designer file
 msgid "Setup Currency Languages"
@@ -17328,6 +17443,10 @@ msgid "Maintain Organisation Contacts"
 msgstr ""
 
 #: - This item was created automatically from a designer file
+msgid "Setup Transport Types"
+msgstr ""
+
+#: - This item was created automatically from a designer file
 msgid "Setup Local Personnel Data Fields"
 msgstr ""
 
@@ -17368,8 +17487,8 @@ msgid "Setup Conference Cost Types"
 msgstr ""
 
 #: - This item was created automatically from a designer file
-msgid "FinDev {0} {1}"
-msgstr "Desarrollo Financiero {0} {1}"
+msgid "Financial Development"
+msgstr ""
 
 #: - This item was created automatically from a designer file
 msgid "General Reports"
@@ -17416,15 +17535,7 @@ msgid "Safety"
 msgstr "Seguridad"
 
 #: - This item was created automatically from a designer file
-msgid "Please change your own password regularly"
-msgstr ""
-
-#: - This item was created automatically from a designer file
 msgid "Set Language Settings"
-msgstr ""
-
-#: - This item was created automatically from a designer file
-msgid "Switch to another language or culture settings"
 msgstr ""
 
 #: - This item was created automatically from a designer file
