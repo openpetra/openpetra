@@ -288,10 +288,14 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                     if (matches.Length > 0)
                     {
+                        Decimal sum = 0.0m;
+
                         // update the recent date
                         foreach (DataRowView rv in matches)
                         {
                             AEpMatchRow r = (AEpMatchRow)rv.Row;
+
+                            sum += r.GiftTransactionAmount;
 
                             // check if the recipient key is still valid. could be that they have married, and merged into another family record
                             if ((r.RecipientKey != 0)
@@ -328,6 +332,18 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                             if (r.IsDonorKeyNull() || (r.DonorKey <= 0))
                             {
                                 FindDonorByAccountNumber(r, PartnerByBankAccount.DefaultView, row.BranchCode, row.BankAccountNumber);
+                            }
+                        }
+
+                        if (sum != row.TransactionAmount)
+                        {
+                            TLogging.Log("we should drop this match since the total is wrong: " + row.Description);
+                            row.MatchAction = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+
+                            foreach (DataRowView rv in matches)
+                            {
+                                AEpMatchRow r = (AEpMatchRow)rv.Row;
+                                r.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
                             }
                         }
                     }
