@@ -172,6 +172,61 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FValidationControlsDict);
         }
 
+        private void ParseHashTotal(ABatchRow ARow)
+        {
+            decimal correctHashValue;
+            string hashTotal = txtDetailBatchControlTotal.Text.Trim();
+            string hashNumericPart = string.Empty;
+            decimal hashDecimalVal;
+            Int32 hashTotalIndexOfLastNumeric = -1;
+            bool isNumericVal;
+
+            if (!txtDetailBatchControlTotal.NumberValueDecimal.HasValue)
+            {
+                correctHashValue = 0m;
+            }
+            else if (hashTotal.Contains(" "))
+            {
+                hashNumericPart = hashTotal.Substring(0, hashTotal.IndexOf(' '));
+
+                if (!Decimal.TryParse(hashNumericPart, out hashDecimalVal))
+                {
+                    correctHashValue = 0m;
+                }
+                else
+                {
+                    correctHashValue = hashDecimalVal;
+                }
+            }
+            else
+            {
+                hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+
+                if (hashTotalIndexOfLastNumeric > -1)
+                {
+                    hashNumericPart = hashTotal.Substring(0, hashTotalIndexOfLastNumeric + 1);
+                    isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
+
+                    if (!isNumericVal)
+                    {
+                        correctHashValue = 0m;
+                    }
+                    else
+                    {
+                        //hashTotal = hashTotal.Insert(hashNumericPart.Length, " ");
+                        correctHashValue = hashDecimalVal;
+                    }
+                }
+                else
+                {
+                    correctHashValue = 0m;
+                }
+            }
+
+            txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
+            ARow.BatchControlTotal = correctHashValue;
+        }
+
         private void ShowDetailsManual(ABatchRow ARow)
         {
             UpdateChangeableStatus(ARow != null);
@@ -260,6 +315,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ClearDetailControls();
+
             EnableButtonControl(true);
 
             grdDetails.DataSource = null;
@@ -275,7 +331,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 newBatchRow.BatchPeriod = periodNumber;
             }
 
-            FPetraUtilsObject.SetChangedFlag();
+            //FPetraUtilsObject.SetChangedFlag();
 
             // BoundDataView bdv = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
             //bdv
@@ -283,9 +339,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
-            txtDetailBatchDescription.Text = "PLEASE ENTER DESCRIPTION";
+            txtDetailBatchDescription.Text = "Please enter description";
             txtDetailBatchDescription.Focus();
 
             ((TFrmGLBatch)ParentForm).SaveChanges();
@@ -561,6 +618,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.AcceptChanges();
                     this.FPreviouslySelectedDetailRow = null;
                     ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+
                     LoadBatches(FLedgerNumber);
 
                     //Select unposted batch row in same index position as batch just posted
@@ -755,6 +814,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FPreviouslySelectedDetailRow != null)
             {
                 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+
+                if (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                {
+                    FPetraUtilsObject.DisableSaveButton();
+                }
             }
 
             if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())

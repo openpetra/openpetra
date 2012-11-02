@@ -1,11 +1,26 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Taylor Students
- * Date: 13/01/2011
- * Time: 14:42
- *
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//		 Taylor Students
+//
+// Copyright 2004-2012 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
 using System.Windows.Forms;
 using Ict.Common.Controls;
 using System.Xml;
@@ -75,7 +90,6 @@ partial class MainForm2
         this.tPnlCollapsible1.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontal;
         this.tPnlCollapsible1.Dock = System.Windows.Forms.DockStyle.Left;
         this.tPnlCollapsible1.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
-        this.tPnlCollapsible1.IsCollapsed = false;
         this.tPnlCollapsible1.Location = new System.Drawing.Point(0, 291);
         this.tPnlCollapsible1.Margin = new System.Windows.Forms.Padding(0);
         this.tPnlCollapsible1.Name = "tPnlCollapsible1";
@@ -85,7 +99,7 @@ partial class MainForm2
         this.tPnlCollapsible1.TaskListNode = null;
         this.tPnlCollapsible1.UserControlClass = "";
         this.tPnlCollapsible1.UserControlNamespace = "";
-        this.tPnlCollapsible1.VisualStyle = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
+        this.tPnlCollapsible1.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
         //
         // tPnlCollapsible2
         //
@@ -94,7 +108,6 @@ partial class MainForm2
         this.tPnlCollapsible2.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
         this.tPnlCollapsible2.Dock = System.Windows.Forms.DockStyle.Top;
         this.tPnlCollapsible2.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckUserControl;
-        this.tPnlCollapsible2.IsCollapsed = false;
         this.tPnlCollapsible2.Location = new System.Drawing.Point(0, 151);
         this.tPnlCollapsible2.Margin = new System.Windows.Forms.Padding(0);
         this.tPnlCollapsible2.Name = "tPnlCollapsible2";
@@ -104,7 +117,7 @@ partial class MainForm2
         this.tPnlCollapsible2.TaskListNode = null;
         this.tPnlCollapsible2.UserControlClass = "TUC_PartnerInfo";
         this.tPnlCollapsible2.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
-        this.tPnlCollapsible2.VisualStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
+        this.tPnlCollapsible2.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
         //
         // tPnlCollapsible3
         //
@@ -113,7 +126,6 @@ partial class MainForm2
         this.tPnlCollapsible3.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdVertical;
         this.tPnlCollapsible3.Dock = System.Windows.Forms.DockStyle.Top;
         this.tPnlCollapsible3.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckTaskList;
-        this.tPnlCollapsible3.IsCollapsed = false;
         this.tPnlCollapsible3.Location = new System.Drawing.Point(0, 0);
         this.tPnlCollapsible3.Margin = new System.Windows.Forms.Padding(0);
         this.tPnlCollapsible3.Name = "tPnlCollapsible3";
@@ -123,7 +135,7 @@ partial class MainForm2
         this.tPnlCollapsible3.TaskListNode = null;
         this.tPnlCollapsible3.UserControlClass = "";
         this.tPnlCollapsible3.UserControlNamespace = "";
-        this.tPnlCollapsible3.VisualStyle = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
+        this.tPnlCollapsible3.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
         //
         // button2
         //

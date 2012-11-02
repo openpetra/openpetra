@@ -2203,7 +2203,7 @@ namespace Ict.Common.DB
             if (ADefines != null)
             {
                 ProcessTemplate template = new ProcessTemplate(null);
-                template.FTemplateCode = stmt;
+                template.FTemplateCode = new StringBuilder(stmt);
 
                 foreach (string define in ADefines)
                 {

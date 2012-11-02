@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Xml;
+using System.Text;
 using System.IO;
 using Ict.Common;
 using Ict.Common.IO;
@@ -213,10 +214,10 @@ namespace Ict.Common.IO.Testing
         {
             ProcessTemplate template = new ProcessTemplate();
 
-            template.FTemplateCode = "my test" + Environment.NewLine +
-                                     "{#IFDEF TEST1}" + Environment.NewLine +
-                                     "test1" + Environment.NewLine +
-                                     "{#ENDIF TEST1}" + Environment.NewLine;
+            template.FTemplateCode = new StringBuilder("my test" + Environment.NewLine +
+                "{#IFDEF TEST1}" + Environment.NewLine +
+                "test1" + Environment.NewLine +
+                "{#ENDIF TEST1}" + Environment.NewLine);
 
             template.SetCodelet("TEST1", "test");
 
@@ -225,10 +226,10 @@ namespace Ict.Common.IO.Testing
                 "TEST1");
 
             template = new ProcessTemplate();
-            template.FTemplateCode = "my test" + Environment.NewLine +
-                                     "{#IFNDEF TEST2}" + Environment.NewLine +
-                                     "test2" + Environment.NewLine +
-                                     "{#ENDIFN TEST2}" + Environment.NewLine;
+            template.FTemplateCode = new StringBuilder("my test" + Environment.NewLine +
+                "{#IFNDEF TEST2}" + Environment.NewLine +
+                "test2" + Environment.NewLine +
+                "{#ENDIFN TEST2}" + Environment.NewLine);
 
             template.SetCodelet("TEST2", "test");
 
@@ -237,11 +238,11 @@ namespace Ict.Common.IO.Testing
                 "TEST2");
 
             template = new ProcessTemplate();
-            template.FTemplateCode = "my test" + Environment.NewLine +
-                                     "{#IFNDEF TEST3}" + Environment.NewLine +
-                                     "test3" + Environment.NewLine +
-                                     "{#ENDIFN TEST3}" + Environment.NewLine +
-                                     "hallo" + Environment.NewLine;
+            template.FTemplateCode = new StringBuilder("my test" + Environment.NewLine +
+                "{#IFNDEF TEST3}" + Environment.NewLine +
+                "test3" + Environment.NewLine +
+                "{#ENDIFN TEST3}" + Environment.NewLine +
+                "hallo" + Environment.NewLine);
 
             Assert.AreEqual("my test" + Environment.NewLine +
                 "test3" + Environment.NewLine +
@@ -250,20 +251,20 @@ namespace Ict.Common.IO.Testing
                 "TEST3");
 
             template = new ProcessTemplate();
-            template.FTemplateCode = "my test" + Environment.NewLine +
-                                     "{#IFDEF TEST1}" + Environment.NewLine +
-                                     "test1" + Environment.NewLine +
-                                     "{#ENDIF TEST1}" + Environment.NewLine +
-                                     "{#IFNDEF TEST2}" + Environment.NewLine +
-                                     "test2" + Environment.NewLine +
-                                     "{#ENDIFN TEST2}" + Environment.NewLine +
-                                     "{#IFNDEF TEST3}" + Environment.NewLine +
-                                     "test3" + Environment.NewLine +
-                                     "{#ENDIFN TEST3}" + Environment.NewLine +
-                                     "{#IFDEF TEST4}" + Environment.NewLine +
-                                     "test4" + Environment.NewLine +
-                                     "{#ENDIF TEST4}" + Environment.NewLine +
-                                     "hallo" + Environment.NewLine;
+            template.FTemplateCode = new StringBuilder("my test" + Environment.NewLine +
+                "{#IFDEF TEST1}" + Environment.NewLine +
+                "test1" + Environment.NewLine +
+                "{#ENDIF TEST1}" + Environment.NewLine +
+                "{#IFNDEF TEST2}" + Environment.NewLine +
+                "test2" + Environment.NewLine +
+                "{#ENDIFN TEST2}" + Environment.NewLine +
+                "{#IFNDEF TEST3}" + Environment.NewLine +
+                "test3" + Environment.NewLine +
+                "{#ENDIFN TEST3}" + Environment.NewLine +
+                "{#IFDEF TEST4}" + Environment.NewLine +
+                "test4" + Environment.NewLine +
+                "{#ENDIF TEST4}" + Environment.NewLine +
+                "hallo" + Environment.NewLine);
 
             template.SetCodelet("TEST1", "test");
             template.SetCodelet("TEST3", "test");
@@ -276,10 +277,10 @@ namespace Ict.Common.IO.Testing
                 "TEST4");
 
             template = new ProcessTemplate();
-            template.FTemplateCode = "my test" + Environment.NewLine +
-                                     "{#IFDEF TEST5 OR TEST1}" + Environment.NewLine +
-                                     "test5" + Environment.NewLine +
-                                     "{#ENDIF TEST5 OR TEST1}" + Environment.NewLine;
+            template.FTemplateCode = new StringBuilder("my test" + Environment.NewLine +
+                "{#IFDEF TEST5 OR TEST1}" + Environment.NewLine +
+                "test5" + Environment.NewLine +
+                "{#ENDIF TEST5 OR TEST1}" + Environment.NewLine);
 
             template.SetCodelet("TEST5", "test");
 
@@ -288,10 +289,10 @@ namespace Ict.Common.IO.Testing
                 "TEST5");
 
             template = new ProcessTemplate();
-            template.FTemplateCode = "my test" + Environment.NewLine +
-                                     "{#IFDEF TEST5 AND TEST6}" + Environment.NewLine +
-                                     "test6" + Environment.NewLine +
-                                     "{#ENDIF TEST5 AND TEST6}" + Environment.NewLine;
+            template.FTemplateCode = new StringBuilder("my test" + Environment.NewLine +
+                "{#IFDEF TEST5 AND TEST6}" + Environment.NewLine +
+                "test6" + Environment.NewLine +
+                "{#ENDIF TEST5 AND TEST6}" + Environment.NewLine);
 
             template.SetCodelet("TEST6", "test");
 
@@ -300,10 +301,10 @@ namespace Ict.Common.IO.Testing
                 "TEST6");
 
             template = new ProcessTemplate();
-            template.FTemplateCode = "my test" + Environment.NewLine +
-                                     "{#IFDEF TEST6 AND TEST7}" + Environment.NewLine +
-                                     "test7" + Environment.NewLine +
-                                     "{#ENDIF TEST6 AND TEST7}" + Environment.NewLine;
+            template.FTemplateCode = new StringBuilder("my test" + Environment.NewLine +
+                "{#IFDEF TEST6 AND TEST7}" + Environment.NewLine +
+                "test7" + Environment.NewLine +
+                "{#ENDIF TEST6 AND TEST7}" + Environment.NewLine);
 
             template.SetCodelet("TEST6", "test");
             template.SetCodelet("TEST7", "test");
@@ -313,13 +314,13 @@ namespace Ict.Common.IO.Testing
                 "TEST7");
 
             template = new ProcessTemplate();
-            template.FTemplateCode = "{#IFDEF TEST8}" + Environment.NewLine +
-                                     "test8" + Environment.NewLine +
-                                     "{#ENDIF TEST8}" + Environment.NewLine +
-                                     "test8" + Environment.NewLine +
-                                     "{#IFDEF TEST8}" + Environment.NewLine +
-                                     "test8" + Environment.NewLine +
-                                     "{#ENDIF TEST8}" + Environment.NewLine;
+            template.FTemplateCode = new StringBuilder("{#IFDEF TEST8}" + Environment.NewLine +
+                "test8" + Environment.NewLine +
+                "{#ENDIF TEST8}" + Environment.NewLine +
+                "test8" + Environment.NewLine +
+                "{#IFDEF TEST8}" + Environment.NewLine +
+                "test8" + Environment.NewLine +
+                "{#ENDIF TEST8}" + Environment.NewLine);
 
 
             template.SetCodelet("TEST8", "test");
@@ -329,13 +330,13 @@ namespace Ict.Common.IO.Testing
                 "TEST8");
 
             template = new ProcessTemplate();
-            template.FTemplateCode = "{#IFNDEF TEST9}" + Environment.NewLine +
-                                     "test8" + Environment.NewLine +
-                                     "{#ENDIFN TEST9}" + Environment.NewLine +
-                                     "test9" + Environment.NewLine +
-                                     "{#IFNDEF TEST9}" + Environment.NewLine +
-                                     "test8" + Environment.NewLine +
-                                     "{#ENDIFN TEST9}" + Environment.NewLine;
+            template.FTemplateCode = new StringBuilder("{#IFNDEF TEST9}" + Environment.NewLine +
+                "test8" + Environment.NewLine +
+                "{#ENDIFN TEST9}" + Environment.NewLine +
+                "test9" + Environment.NewLine +
+                "{#IFNDEF TEST9}" + Environment.NewLine +
+                "test8" + Environment.NewLine +
+                "{#ENDIFN TEST9}" + Environment.NewLine);
 
 
             template.SetCodelet("TEST9", "test");
@@ -345,13 +346,13 @@ namespace Ict.Common.IO.Testing
                 "TEST9");
 
             template = new ProcessTemplate();
-            template.FTemplateCode = "{#IFNDEF TEST10}" + Environment.NewLine +
-                                     "test8" + Environment.NewLine +
-                                     "{#ENDIFN TEST10}" + Environment.NewLine +
-                                     "test9" + Environment.NewLine +
-                                     "{#IFDEF TEST10}" + Environment.NewLine +
-                                     "test10" + Environment.NewLine +
-                                     "{#ENDIF TEST10}" + Environment.NewLine;
+            template.FTemplateCode = new StringBuilder("{#IFNDEF TEST10}" + Environment.NewLine +
+                "test8" + Environment.NewLine +
+                "{#ENDIFN TEST10}" + Environment.NewLine +
+                "test9" + Environment.NewLine +
+                "{#IFDEF TEST10}" + Environment.NewLine +
+                "test10" + Environment.NewLine +
+                "{#ENDIF TEST10}" + Environment.NewLine);
 
 
             template.SetCodelet("TEST10", "test");
@@ -361,24 +362,24 @@ namespace Ict.Common.IO.Testing
                 "TEST10");
 
             template = new ProcessTemplate();
-            template.FTemplateCode = "{#IFDEF TEST10}" + Environment.NewLine +
-                                     "{#IFDEF TEST11}" + Environment.NewLine +
-                                     "{#IFDEF TEST11}" + Environment.NewLine +
-                                     "test11" + Environment.NewLine +
-                                     "{#ENDIF TEST11}" + Environment.NewLine +
-                                     "{#ENDIF TEST11}" + Environment.NewLine +
-                                     "{#IFNDEF TEST11}" + Environment.NewLine +
-                                     "test10" + Environment.NewLine +
-                                     "{#ENDIFN TEST11}" + Environment.NewLine +
-                                     "{#ENDIF TEST10}" + Environment.NewLine +
-                                     "{#IFNDEF TEST10}" + Environment.NewLine +
-                                     "{#IFNDEF TEST11}" + Environment.NewLine +
-                                     "{#IFDEF TEST11}" + Environment.NewLine +
-                                     "test13" + Environment.NewLine +
-                                     "{#ENDIF TEST11}" + Environment.NewLine +
-                                     "{#ENDIFN TEST11}" + Environment.NewLine +
-                                     "{#ENDIFN TEST10}" + Environment.NewLine +
-                                     "test1" + Environment.NewLine;
+            template.FTemplateCode = new StringBuilder("{#IFDEF TEST10}" + Environment.NewLine +
+                "{#IFDEF TEST11}" + Environment.NewLine +
+                "{#IFDEF TEST11}" + Environment.NewLine +
+                "test11" + Environment.NewLine +
+                "{#ENDIF TEST11}" + Environment.NewLine +
+                "{#ENDIF TEST11}" + Environment.NewLine +
+                "{#IFNDEF TEST11}" + Environment.NewLine +
+                "test10" + Environment.NewLine +
+                "{#ENDIFN TEST11}" + Environment.NewLine +
+                "{#ENDIF TEST10}" + Environment.NewLine +
+                "{#IFNDEF TEST10}" + Environment.NewLine +
+                "{#IFNDEF TEST11}" + Environment.NewLine +
+                "{#IFDEF TEST11}" + Environment.NewLine +
+                "test13" + Environment.NewLine +
+                "{#ENDIF TEST11}" + Environment.NewLine +
+                "{#ENDIFN TEST11}" + Environment.NewLine +
+                "{#ENDIFN TEST10}" + Environment.NewLine +
+                "test1" + Environment.NewLine);
 
             template.SetCodelet("TEST11", "test_11");
             template.SetCodelet("TEST10", "test_10");

@@ -62,9 +62,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Make sure the current effective date for the Batch is correct
             batchDateEffective = GetBatchRow().DateEffective;
 
-            if ((!dtpDetailDateEffective.Date.HasValue) || (dtpDetailDateEffective.Date.Value != batchDateEffective))
+            if (ABatchStatus == MFinanceConstants.BATCH_UNPOSTED)
             {
-                dtpDetailDateEffective.Date = batchDateEffective;
+                if ((!dtpDetailDateEffective.Date.HasValue) || (dtpDetailDateEffective.Date.Value != batchDateEffective))
+                {
+                    dtpDetailDateEffective.Date = batchDateEffective;
+                }
             }
 
             //Check if same Journals as previously selected
@@ -119,10 +122,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //This will update Batch totals
             UpdateTotals(GetBatchRow());
-            ((TFrmGLBatch)ParentForm).SaveChanges();
         }
 
-        private void RefreshCurrencyAndExchangeRate()
+        private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)
         {
             txtDetailExchangeRateToBase.Text = FPreviouslySelectedDetailRow.ExchangeRateToBase.ToString("0.00000000");
             txtDetailExchangeRateToBase.BackColor =
@@ -132,6 +134,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTotals();
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
+
+            if (AFromUserAction && btnGetSetExchangeRate.Enabled)
+            {
+                btnGetSetExchangeRate.Focus();
+            }
         }
 
         private void ResetCurrencyExchangeRate(object sender, EventArgs e)
@@ -148,7 +155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPreviouslySelectedDetailRow.TransactionCurrency,
                     batchrow.DateEffective);
 
-                RefreshCurrencyAndExchangeRate();
+                RefreshCurrencyAndExchangeRate(true);
             }
         }
 
@@ -233,15 +240,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (ABatch.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
             {
-                ABatch.BatchCreditTotal = sumCredits;
-                ABatch.BatchDebitTotal = sumDebits;
-                ABatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
+                if (ABatch.BatchCreditTotal != sumCredits)
+                {
+                    ABatch.BatchCreditTotal = sumCredits;
+                }
+
+                if (ABatch.BatchDebitTotal != sumDebits)
+                {
+                    ABatch.BatchDebitTotal = sumDebits;
+                }
+
+                if (ABatch.BatchRunningTotal != Math.Round(sumDebits - sumCredits, 2))
+                {
+                    ABatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
+                }
             }
 
+            FPetraUtilsObject.DisableDataChangedEvent();
             txtCurrentPeriod.Text = ABatch.BatchPeriod.ToString();
             txtDebit.NumberValueDecimal = sumDebits;
             txtCredit.NumberValueDecimal = sumCredits;
             txtControl.NumberValueDecimal = ABatch.BatchControlTotal;
+            FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         private void ShowDetailsManual(AJournalRow ARow)

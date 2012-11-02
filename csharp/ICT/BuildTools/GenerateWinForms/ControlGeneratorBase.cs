@@ -674,7 +674,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 string ActionToPerform = ctrl.GetAction().actionName;
 
                 // deal with enabling and disabling of action, affecting the menu item
-                if (!writer.Template.FCodelets.Contains("ENABLEDEPENDINGACTIONS_" + ActionToPerform))
+                if (!writer.Template.FCodelets.Keys.Contains("ENABLEDEPENDINGACTIONS_" + ActionToPerform))
                 {
                     string ActionEnabling = "";
                     ActionEnabling += "if (e.ActionName == \"" + ActionToPerform + "\")" + Environment.NewLine;
@@ -1097,7 +1097,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                               "Id\", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).GetValue(FMainDS." + tablename +
                               ".GetType())]";
 
-                if (writer.Template.FCodelets[targetCodeletValidation] != null)
+                if (writer.Template.FCodelets.Keys.Contains(targetCodeletValidation))
                 {
                     // Check if code for the addition of a certain DataColumn is is already contained in Template;
                     // if so, skip a further addition to prevent an Exception at runtime

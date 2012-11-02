@@ -23,9 +23,9 @@ OpenPetra:
         # Department
         Partner: {Label=Pa&rtner, Icon=partner.ico, PermissionsRequired=PTNRUSER}
             # Module
-            Main:
+            Main: {SkipThisLevel=true}
                 # Sub Module
-                Partners: {Namespace=Ict.Petra.Client.MPartner.Gui}
+                Partners: {Namespace=Ict.Petra.Client.MPartner.Gui, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Partner]
                     MaintainPartners:
                         #ChangeAddress:
@@ -41,7 +41,7 @@ OpenPetra:
                     ImportExport: {Label=Import and Export}
                         ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description="Export to YAML file for importing into other OpenPetra database"}
                         ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from file or satellite database}
-                Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
+                Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
                     GenerateExtracts: {Label=Generate Partner Extract}
@@ -53,8 +53,7 @@ OpenPetra:
                         FamilyMembersExtract: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Family Members Extract, ActionClick=TPartnerExtractsMain.FamilyMembersExtract}
                         FamilyExtractForPersons: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Family Extract for Persons, ActionClick=TPartnerExtractsMain.FamilyExtractForPersons}
                     GeneratePersonnelExtracts: {Label=Generate Personnel Extract}
-                        PartnerByConference: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Conference, ActionClick=TPersonnelMain.PartnerByConferenceExtract}
-                        PartnerByOutreach: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Outreach, ActionClick=TPersonnelMain.PartnerByOutreachExtract}
+                        PartnerByEvent: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Event, ActionClick=TPersonnelMain.PartnerByEventExtract}
                         PartnerByEventRole: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Event Role, ActionClick=TPersonnelMain.PartnerByEventRoleExtract}
                         PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, ActionClick=TPersonnelMain.PartnerByCommitmentExtract}
                         PartnerByField: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Field, ActionClick=TPersonnelMain.PartnerByFieldExtract}
@@ -64,7 +63,7 @@ OpenPetra:
                         DonorByMotivation: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Motivation, ActionClick=TFinanceMain.DonorByMotivationExtract}
                         DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Amount, ActionClick=TFinanceMain.DonorByAmountExtract}
                         DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtract}
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}  # Icon=Print.ico
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
                         PartnerBySpecialType: {ActionOpenScreen=TFrmPartnerBySpecialType}
@@ -80,7 +79,7 @@ OpenPetra:
                         LocalPartnerDataReport: {Label=Local Partner Data, ActionOpenScreen=TFrmLocalPartnerDataReport}
            
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
-                Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
+                Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     Partner-related:           
                         ContactAttributes: {Label=Setup Contact Attributes, Description=Maintain Contact Attributes, ActionOpenScreen=TFrmContactAttributeSetup}
                         Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup Countries, Description=Maintain Countries, ActionOpenScreen=TFrmCountrySetup}              
@@ -128,9 +127,9 @@ OpenPetra:
             #MoreFunctions:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
-        Finance: {Icon=accounts.ico, Label=Ledger {0} {1}, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui, PermissionsRequired=FINANCE-1}
+        Finance: {Icon=accounts.ico, Label=Finance, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui, PermissionsRequired=FINANCE-1}
             Finance:
-                GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift}
+                GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Donor, Recipient]
                     GiftEntry:
                         ImportGiftsFromBankStatement: {Description: Matching donors and recipients, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
@@ -159,7 +158,7 @@ OpenPetra:
                         FieldLeaderGiftSummary-2: {ActionOpenScreen=TFrmFieldLeaderGiftSummary_2}
                         TotalGiftsThroughField: {ActionOpenScreen=TFrmTotalGiftsThroughField}
                         OneYearMonthlyGiving: {ActionOpenScreen=TFrmOneYearMonthlyGiving}
-                AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP}
+                AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP, DontShowNestedTasksAsLinks=true}
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
@@ -167,7 +166,7 @@ OpenPetra:
                         CurrentAccountsPayable: {Description:"Invoices payable today, or on a specified date", ActionOpenScreen=TFrmAP_CurrentPayable}
                         PaymentReport: {Description:Report for a Payment or group of payments, ActionOpenScreen=TFrmAP_PaymentReport}
                         RemittanceAdvice: {Description:Reprint Payment advice sent to supplier, ActionOpenScreen=TFrmAP_RemittanceAdvice}
-                Budgets: {Namespace=Ict.Petra.Client.MFinance.Gui.Budget}
+                Budgets: {Namespace=Ict.Petra.Client.MFinance.Gui.Budget, DontShowNestedTasksAsLinks=true}
                     General:
                         MaintainBudget: {ActionOpenScreen=TFrmMaintainBudget}
                         AutoGenerateBudget: {ActionOpenScreen=TFrmAutoGenerateBudget}
@@ -177,7 +176,7 @@ OpenPetra:
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
                         IncomeExpenseStatementMultiPeriod: {ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
                         IncomeExpenseStatementMultiLedger: {ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
-                GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
+                GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Transaction, Batch]
                     General:
                         ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
@@ -217,7 +216,7 @@ OpenPetra:
                         DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Donor by Amount, ActionClick=TFinanceMain.DonorByAmountExtract}
                         DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtract}
                 #Reports:
-                Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
+                Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     GeneralLedgerSetup:
                         ManageAccounts: {Description:Maintain Accounts and modify their hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
                         ManageCostCentres: {Description:Maintain Cost Centres and modify their hierarchy, ActionOpenScreen=TFrmGLCostCentreHierarchy}
@@ -248,34 +247,32 @@ OpenPetra:
                         SetupAdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
                         SetupAdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
         CrossLedgerSetup: {Icon=finance_setup.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
-            CrossLedgerSetup: {Label="Finance Setup"}
-                General:
-                    Ledger:
-                        CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedger, PermissionsRequired="FINANCE-3"}
-                    Setup: {Label="Finance Setup (Cross-Ledger)"}
-                        SetupEmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
-                        SetupCurrencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency, PermissionsRequired=FINANCE-3}
-                        SetupCurrencyLanguages: {Description=Maintain Currency Languages, ActionOpenScreen=TFrmCurrencyLanguageSetup, PermissionsRequired=FINANCE-3}
-                        SetupMethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
-                        SetupMethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}
-                    ExchangeRates: {Label="Exchange Rates (Cross-Ledger)"}
-                        SetupCorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
-                        SetupDailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
+            General: {SkipThisLevel=true}
+                Ledger: {DontShowNestedTasksAsLinks=true}
+                    CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedger, PermissionsRequired="FINANCE-3"}
+                Setup: {Label="Finance Setup (Cross-Ledger)", DontShowNestedTasksAsLinks=true}
+                    SetupEmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
+                    SetupCurrencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency, PermissionsRequired=FINANCE-3}
+                    SetupCurrencyLanguages: {Description=Maintain Currency Languages, ActionOpenScreen=TFrmCurrencyLanguageSetup, PermissionsRequired=FINANCE-3}
+                    SetupMethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
+                    SetupMethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}
+                ExchangeRates: {Label="Exchange Rates (Cross-Ledger)", DontShowNestedTasksAsLinks=true}
+                    SetupCorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
+                    SetupDailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
         Personnel: {Icon=personel.ico, PermissionsRequired=PERSONNEL}
             # Module
-            Main:
+            Main: {SkipThisLevel=true}
                 # Sub Module
-                Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
+                Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
                     GenerateExtracts: {Label=Generate Extract}
-                        PartnerByConference: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Conference, ActionClick=TPersonnelMain.PartnerByConferenceExtract}
-                        PartnerByOutreach: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Outreach, ActionClick=TPersonnelMain.PartnerByOutreachExtract}
+                        PartnerByEvent: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Event, ActionClick=TPersonnelMain.PartnerByEventExtract}
                         PartnerByEventRole: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Event Role, ActionClick=TPersonnelMain.PartnerByEventRoleExtract}
                         PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, ActionClick=TPersonnelMain.PartnerByCommitmentExtract}
                         PartnerByField: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Field, ActionClick=TPersonnelMain.PartnerByFieldExtract}
 
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel}  # Icon=Print.ico
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     PersonnelReports:
                         ProgressReport: {ActionOpenScreen=TFrmProgressReport}
                         PreviousExperienceReport: {ActionOpenScreen=TFrmPreviousExperienceReport}
@@ -298,7 +295,7 @@ OpenPetra:
                         EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactInformationReport}
                         LanguagesReport: {ActionOpenScreen=TFrmLanguagesReport}
 
-                Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup}
+                Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     General:
                         AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}
                         AbilityLevel: {Label=Setup Ability Levels, Description=Maintain Ability Levels, ActionOpenScreen=TFrmAbilityLevelSetup}
@@ -333,10 +330,10 @@ OpenPetra:
                         LocalDataFieldOrderPersonnel: {Label=Setup Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}
                         
         ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE}
-            Main:
-                Find: {Namespace=Ict.Petra.Client.MConference.Gui}
+            Main: {SkipThisLevel=true}
+                Find: {Namespace=Ict.Petra.Client.MConference.Gui, DontShowNestedTasksAsLinks=true}
                     FindConference: {ActionOpenScreen=TFrmConferenceFindForm}
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference}  # Icon=Print.ico
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     Reports:
                         AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}
                         AccommodationReport: {ActionOpenScreen=TFrmAccommodationReport}
@@ -361,18 +358,18 @@ OpenPetra:
                         ReceivingFieldReport: {ActionOpenScreen=TFrmReceivingFieldReport}
                         RegisteringFieldReport: {ActionOpenScreen=TFrmRegisteringFieldReport}
                         OutreachReport: {ActionOpenScreen=TFrmOutreachReport}
-                Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup}
+                Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     General:
                         ConferenceCostType: {Label= Setup Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
-        FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true, PermissionsRequired=DEVUSER}
+        FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Financial Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}
             Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}  # Icon=Print.ico
-                GeneralReports:
+                GeneralReports: {DontShowNestedTasksAsLinks=true}
                     IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
                     LocalIncomeSplit: {ActionOpenScreen=TFrmIncomeLocalSplit}
                     DonorsPerRecipient: {ActionOpenScreen=TFrmDonorsPerRecipient}
                     TotalGiftPerDonor: {ActionOpenScreen=TFrmTotalGiftPerDonor}
                     MethodOfGiving: {ActionOpenScreen=TFrmMethodOfGiving}
-                OldStyleReports:
+                OldStyleReports: {DontShowNestedTasksAsLinks=true}
                     ShortDonorReport: {ActionOpenScreen=TFrmDonorReportShort}
                     DetailDonorReport: {ActionOpenScreen=TFrmDonorReportDetail}
                     GiftsOverMinimumAmount: {ActionOpenScreen=TFrmGiftsOverMinimumAmount}
@@ -381,18 +378,17 @@ OpenPetra:
                     NewDonorReport: {ActionOpenScreen=TFrmNewDonorReport}
                         TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
         Settings: {Icon=settings.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
-            Main:
-                Main:
-                    Safety:
-                        SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
-                    Language:
-                        SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
-                    Export:
-                        ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExport}
+            Main: {SkipThisLevel=true}
+                Safety: {DontShowNestedTasksAsLinks=true}
+                    SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
+                Language: {DontShowNestedTasksAsLinks=true}
+                    SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
+                Export: {DontShowNestedTasksAsLinks=true}
+                    ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExport}
 
-        SystemManager: {Icon=sysman.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
+        SystemManager: {Icon=sysman.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN, ShowAsCollapsiblePanels=true}
             Security:
-                Users:
+                Users: {DontShowNestedTasksAsLinks=true}
                     Maintenance:
                         MaintainUsers: {Description: Add new users and manage permissions, ActionOpenScreen=TFrmMaintainUsers}
                         #DeleteUser:
@@ -401,21 +397,21 @@ OpenPetra:
                     Activity:
                         #ViewCurrentUsers:
                         #ViewLoginLog:
-                Setup:
+                Setup: {DontShowNestedTasksAsLinks=true}
                     Security-related:
                         Groups: {Label=Setup Groups, Description=Maintain Security-related Groups, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmSecurityGroupSetup}
             Database:
-                ImportExport:
+                ImportExport: {DontShowNestedTasksAsLinks=true}
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}
                     RestoreDatabaseFromBackup: {ActionClick=TSysManMain.ImportAllData, Description=This will overwrite all your existing data}
             Auditing:
-                Logs:
+                Logs: {DontShowNestedTasksAsLinks=true}
                     #ErrorLog
                     #SystemStatusLog
-                Reports:
+                Reports: {DontShowNestedTasksAsLinks=true}
                     #PartnerFullReport
             SystemSettings:
-                Setup:
+                Setup: {DontShowNestedTasksAsLinks=true}
                     #SystemParameters
                     #Sites
                     #Purging

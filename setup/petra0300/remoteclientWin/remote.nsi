@@ -96,6 +96,7 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\csharp\ThirdParty\GNU\GNU.Gettext.dll
   File ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll
   File ..\..\..\csharp\ThirdParty\A1Panel\Owf.Controls.A1Panel.dll
+  File ..\..\..\csharp\ThirdParty\OrientedTextControls\CustomControl.OrientedTextControls.dll
   File ..\..\..\delivery\bin\Ict.Common*dll
   File ..\..\..\delivery\bin\Ict.Petra.Server.*.connect.dll
   File ..\..\..\delivery\bin\Ict.Petra.Client*dll

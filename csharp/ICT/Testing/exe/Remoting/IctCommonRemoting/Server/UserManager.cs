@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,6 +39,14 @@ namespace Tests.IctCommonRemoting.Server
     /// </summary>
     public class TUserManager : IUserManager
     {
+        /// <summary>
+        /// add a new user
+        /// </summary>
+        public bool AddUser(string AUserID)
+        {
+            return false;
+        }
+
         /// <summary>
         /// make sure the user can login with the correct password
         /// </summary>

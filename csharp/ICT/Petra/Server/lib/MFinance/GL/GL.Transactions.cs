@@ -183,12 +183,66 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
 
         /// <summary>
-        /// loads a list of attributes for the given transaction (identified by ledger,batch,Journal and Transactionnumber)
+        /// loads a list of transactions for the given ledger and batch and journal with analysis attributes
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadATransactionWithAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            string strAnalAttr = string.Empty;
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+
+            foreach (GLBatchTDSATransactionRow transRow in MainDS.ATransaction.Rows)
+            {
+                ATransAnalAttribAccess.LoadViaATransaction(MainDS,
+                    ALedgerNumber,
+                    ABatchNumber,
+                    AJournalNumber,
+                    transRow.TransactionNumber,
+                    Transaction);
+
+                foreach (DataRowView rv in MainDS.ATransAnalAttrib.DefaultView)
+                {
+                    ATransAnalAttribRow Row = (ATransAnalAttribRow)rv.Row;
+
+                    if (strAnalAttr.Length > 0)
+                    {
+                        strAnalAttr += ", ";
+                    }
+
+                    strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                }
+
+                transRow.AnalysisAttributes = strAnalAttr;
+
+                //clear the attributes string and table
+                strAnalAttr = string.Empty;
+
+                if (MainDS.ATransAnalAttrib.Count > 0)
+                {
+                    MainDS.ATransAnalAttrib.Clear();
+                }
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of attributes for the given transaction (identified by ledger,batch,journal and transaction number)
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>

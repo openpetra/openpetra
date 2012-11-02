@@ -37,39 +37,30 @@ namespace Ict.Common.Controls
     /// it has an icon and a label;
     /// it has a gradient background
     /// </summary>
-    public partial class TRbtNavigationButton : System.Windows.Forms.UserControl
+    public partial class TRbtNavigationButton : Owf.Controls.A1Panel
     {
-        /// see variable name
-        public Color GradientColorTopUnchecked = Color.FromArgb(0xEF, 0xFB, 0xFF);
-
-        /// see variable name
-        public Color GradientColorBottomUnchecked = Color.FromArgb(0xB5, 0xCB, 0xE7);
-
-        /// see variable name
-        public Color GradientColorTopChecked = Color.FromArgb(0x9A, 0xB3, 0xDF);
-
-        /// see variable name
-        public Color GradientColorBottomChecked = Color.FromArgb(0x9A, 0xB3, 0xDF);
-
-        /// see variable name
-        public Color GradientColorTopHovering = Color.FromArgb(0xC5, 0xD4, 0xEF);
-
-        /// see variable name
-        public Color GradientColorBottomHovering = Color.FromArgb(0xC5, 0xD4, 0xEF);
+        private static TOpenPetraMenuColours FOpenPetraMenuColours = new TOpenPetraMenuColours();
 
         private bool FChecked = false;
         private bool FHovering = false;
+        private CheckedChanging FCheckChangingDelegate = null;
 
         /// <summary>
         /// constructor
         /// </summary>
-        public TRbtNavigationButton()
+        public TRbtNavigationButton(CheckedChanging ACheckChangingDelegate)
         {
             InitializeComponent();
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             #endregion
+
+            this.BorderColor = FOpenPetraMenuColours.MenuBackgroundColour;
+            this.GradientDirection = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+            this.ShadowOffSet = 0;
+            this.RoundCornerRadius = 0;
+            this.ImageLocation = new System.Drawing.Point(7, 7);
 
             this.lblCaption.Enter += new System.EventHandler(this.PanelEnter);
             this.lblCaption.Leave += new System.EventHandler(this.PanelLeave);
@@ -81,6 +72,10 @@ namespace Ict.Common.Controls
             this.Enter += new System.EventHandler(this.PanelEnter);
             this.Leave += new System.EventHandler(this.PanelLeave);
             this.Click += new System.EventHandler(this.PanelClick);
+
+            SetStandardAppearance();
+
+            FCheckChangingDelegate = ACheckChangingDelegate;
         }
 
         /// Caption of the button
@@ -105,29 +100,44 @@ namespace Ict.Common.Controls
             {
                 return FChecked;
             }
+
             set
             {
+                bool CheckChangeOK = true;
+
                 if (FChecked != value)
                 {
-                    FChecked = value;
-
-                    if (FChecked)
+                    if (FCheckChangingDelegate != null)
                     {
-                        // uncheck all other sibling controls of type TRbtNavigationButton
-                        foreach (Control sibling in Parent.Controls)
-                        {
-                            if ((sibling.GetType() == typeof(TRbtNavigationButton)) && (sibling != this))
-                            {
-                                ((TRbtNavigationButton)sibling).Checked = false;
-                            }
-                        }
+                        CheckChangeOK = FCheckChangingDelegate(this);
                     }
 
-                    Refresh();
-
-                    if (CheckedChanged != null)
+                    if (CheckChangeOK)
                     {
-                        CheckedChanged(this, null);
+                        FChecked = value;
+
+                        if (FChecked)
+                        {
+                            // uncheck all other sibling controls of type TRbtNavigationButton
+                            foreach (Control sibling in Parent.Controls)
+                            {
+                                if ((sibling.GetType() == typeof(TRbtNavigationButton)) && (sibling != this))
+                                {
+                                    ((TRbtNavigationButton)sibling).Checked = false;
+                                }
+                            }
+
+                            SetClickedAppearance();
+                        }
+                        else
+                        {
+                            SetStandardAppearance();
+                        }
+
+                        if (CheckedChanged != null)
+                        {
+                            CheckedChanged(this, null);
+                        }
                     }
                 }
             }
@@ -140,47 +150,19 @@ namespace Ict.Common.Controls
         {
             set
             {
-                pbxIcon.Image = (new System.Drawing.Icon(value, 16, 16)).ToBitmap();
+                Image = (new System.Drawing.Icon(value, 16, 16)).ToBitmap();
             }
         }
 
         /// <summary>
-        /// is triggered if the checked state changes
+        /// Triggered when the Checked state is changing.
+        /// </summary>
+        public delegate bool CheckedChanging(TRbtNavigationButton ASender);
+
+        /// <summary>
+        /// Triggered when the Checked state has changed.
         /// </summary>
         public EventHandler CheckedChanged;
-
-        /// <summary>
-        /// overwrite OnPaint for the gradient background color
-        /// </summary>
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            Color GradientTop = GradientColorTopUnchecked;
-            Color GradientBottom = GradientColorBottomUnchecked;
-
-            if (FChecked)
-            {
-                GradientTop = GradientColorTopChecked;
-                GradientBottom = GradientColorBottomChecked;
-            }
-            else if (FHovering)
-            {
-                GradientTop = GradientColorTopHovering;
-                GradientBottom = GradientColorBottomHovering;
-            }
-
-            // don't show bottom line; otherwise there would be 2 pixel line between buttons;
-            // the pnlMoreButtons below the buttons has a border as well
-            Rectangle BaseRectangle = new Rectangle(1, 1, this.Width - 2, this.Height - 1);
-
-            Brush Gradient_Brush =
-                new LinearGradientBrush(
-                    BaseRectangle,
-                    GradientTop, GradientBottom,
-                    LinearGradientMode.Vertical);
-
-            e.Graphics.DrawRectangle(Pens.Black, new Rectangle(0, 0, this.Width - 1, this.Height - 1));
-            e.Graphics.FillRectangle(Gradient_Brush, BaseRectangle);
-        }
 
         /// mouse is hovering over button
         protected void PanelEnter(object sender, EventArgs e)
@@ -188,7 +170,8 @@ namespace Ict.Common.Controls
             if (!FHovering)
             {
                 FHovering = true;
-                Refresh();
+
+                SetHoveringAppearance();
             }
         }
 
@@ -198,7 +181,15 @@ namespace Ict.Common.Controls
             if (FHovering)
             {
                 FHovering = false;
-                Refresh();
+
+                if (Checked)
+                {
+                    SetClickedAppearance();
+                }
+                else
+                {
+                    SetStandardAppearance();
+                }
             }
         }
 
@@ -206,6 +197,30 @@ namespace Ict.Common.Controls
         protected void PanelClick(object sender, EventArgs e)
         {
             Checked = true;
+        }
+
+        private void SetStandardAppearance()
+        {
+            this.GradientStartColor = FOpenPetraMenuColours.ToolStripGradientBegin;
+            this.GradientEndColor = FOpenPetraMenuColours.ToolStripGradientEnd;
+
+            Refresh();
+        }
+
+        private void SetClickedAppearance()
+        {
+            this.GradientStartColor = FOpenPetraMenuColours.ButtonSelectedGradientBegin;
+            this.GradientEndColor = FOpenPetraMenuColours.ButtonPressedGradientEnd;
+
+            Refresh();
+        }
+
+        private void SetHoveringAppearance()
+        {
+            this.GradientStartColor = FOpenPetraMenuColours.ButtonSelectedGradientBegin;
+            this.GradientEndColor = FOpenPetraMenuColours.ButtonSelectedGradientEnd;
+
+            Refresh();
         }
     }
 }

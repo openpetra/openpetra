@@ -1,10 +1,10 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -21,11 +21,9 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-using System;
-
 namespace Ict.Common.Controls
 {
-    partial class TPnlAccordion
+    partial class TPnlCollapsibleHoster
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -33,7 +31,7 @@ namespace Ict.Common.Controls
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        /// Disposes resources used by the form.
+        /// Disposes resources used by the control.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
@@ -56,43 +54,20 @@ namespace Ict.Common.Controls
         /// </summary>
         private void InitializeComponent()
         {
-            new System.ComponentModel.ComponentResourceManager(typeof(TRbtNavigationButton));
-
-            this.lblCaption = new System.Windows.Forms.Label();
-            this.pbxIcon = new System.Windows.Forms.PictureBox();
-
             this.SuspendLayout();
 
             //
-            // lblCaption
+            // TPnlCollapsibleHoster
             //
-            this.lblCaption.BackColor = System.Drawing.Color.Transparent;
-            this.lblCaption.Location = new System.Drawing.Point(31, 7);
-            this.lblCaption.Name = "lblCaption";
-            this.lblCaption.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-            this.lblCaption.Size = new System.Drawing.Size(168, 22);
-
-            //
-            // pbxIcon
-            //
-            this.pbxIcon.BackColor = System.Drawing.Color.Transparent;
-            this.pbxIcon.Location = new System.Drawing.Point(8, 5);
-            this.pbxIcon.Name = "pbxIcon";
-            this.pbxIcon.Size = new System.Drawing.Size(32, 32);
-
-            //
-            // TRbtNavigationButton
-            //
-            this.Size = new System.Drawing.Size(184, 28);
-            this.Controls.Add(lblCaption);
-            this.Controls.Add(pbxIcon);
-            this.Name = "TRbtNavigationButton";
-
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.BackColor = System.Drawing.Color.Transparent;
+            this.Padding = new System.Windows.Forms.Padding(1);
+            this.Name = "TPnlCollapsibleHoster";
+            this.Size = new System.Drawing.Size(250, 372);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
-
-        private System.Windows.Forms.Label lblCaption;
-        private System.Windows.Forms.PictureBox pbxIcon;
     }
 }

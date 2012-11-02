@@ -1,3 +1,4 @@
+CustomControl.OrientAbleTextControls=${dir.3rdParty}/OrientedTextControls/CustomControl.OrientedTextControls.dll
 Owf.Controls=${dir.3rdParty}/A1Panel/Owf.Controls.A1Panel.dll
 DevAge*=${dir.3rdParty}/DevAge/SourceGrid.dll
 SourceGrid*=${dir.3rdParty}/DevAge/SourceGrid.dll

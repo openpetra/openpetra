@@ -56,6 +56,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void BtnOK_Click(System.Object sender, EventArgs e)
         {
+            MethodInfo method;
+
             TVerificationResultCollection VerificationResult;
 
             if (txtLedgerName.Text.Length == 0)
@@ -99,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
-                            "The ledger {0} ({1}) has been created successfully. Please assign permissions to the users in System Manager."),
+                            "Ledger {0} ({1}) has been created successfully and is now the current Ledger.\r\n\r\nPermissions for users to be able to access this Ledger can be assigned in the System Manager Module."),
                         txtLedgerName.Text,
                         nudLedgerNumber.Value),
                     Catalog.GetString("Success"),
@@ -113,7 +115,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 // reload navigation
                 Form MainWindow = FPetraUtilsObject.GetCallerForm();
-                MethodInfo method = MainWindow.GetType().GetMethod("LoadNavigationUI");
+
+                PropertyInfo CurrentLedgerProperty = MainWindow.GetType().GetProperty("CurrentLedger");
+                CurrentLedgerProperty.SetValue(MainWindow, Convert.ToInt32(nudLedgerNumber.Value), null);
+
+                method = MainWindow.GetType().GetMethod("LoadNavigationUI");
+
+                if (method != null)
+                {
+                    method.Invoke(MainWindow, new object[] { true });
+                }
+
+                method = MainWindow.GetType().GetMethod("ShowCurrentLedgerInfoInStatusBar");
 
                 if (method != null)
                 {

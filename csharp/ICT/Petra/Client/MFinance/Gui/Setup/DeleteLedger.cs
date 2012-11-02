@@ -49,6 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private static void ProcessDeletion(Form AMainWindow, Int32 ALedgerNumber, string ALedgerNameAndNumber)
         {
             TVerificationResultCollection VerificationResult;
+            MethodInfo method;
 
             if (!TRemote.MFinance.Setup.WebConnectors.DeleteLedger(ALedgerNumber, out VerificationResult))
             {
@@ -66,11 +67,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
             }
+
+            method = AMainWindow.GetType().GetMethod("ShowCurrentLedgerInfoInStatusBar");
+
+            if (method != null)
+            {
+                method.Invoke(AMainWindow, new object[] { });
+            }
         }
 
         /// delete ledger
         public static void DeleteLedger(Form AMainWindow, Int32 ALedgerNumber)
         {
+            MethodInfo method;
+
             string LedgerNameAndNumber = TFinanceControls.GetLedgerNumberAndName(ALedgerNumber);
 
             if (MessageBox.Show(Catalog.GetString("Please save a backup of your database first!!!") + Environment.NewLine +
@@ -91,11 +101,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
 
                 // reload navigation
-                MethodInfo method = AMainWindow.GetType().GetMethod("LoadNavigationUI");
+                method = AMainWindow.GetType().GetMethod("LoadNavigationUI");
+
+                // Setting the "CurrentLedger" to -1 isn't strictly needed, but it eradicates the Ledger
+                // we have presently deleted to make sure the Main Menu isn't working any further with a
+                // Ledger that doesn't exist anymore.
+                PropertyInfo CurrentLedgerProperty = AMainWindow.GetType().GetProperty("CurrentLedger");
+                CurrentLedgerProperty.SetValue(AMainWindow, -1, null);
 
                 if (method != null)
                 {
-                    method.Invoke(AMainWindow, new object[] { });
+                    method.Invoke(AMainWindow, new object[] { false });
                 }
             }
         }

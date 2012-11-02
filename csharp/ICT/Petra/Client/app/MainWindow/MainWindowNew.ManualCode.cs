@@ -23,6 +23,8 @@
 //
 using System;
 using System.Data;
+using System.Drawing;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml;
 using System.Windows.Forms;
@@ -47,8 +49,36 @@ namespace Ict.Petra.Client.App.PetraClient
         private const string VIEWTASKS_TILES = "Tiles";
         private const string VIEWTASKS_LIST = "List";
 
+        private static bool FMultiLedgerSite = false;
+        private static int FCurrentLedger = -1;
+        private static List <string>FLedgersAvailableToUser = null;
+        TBreadcrumbTrail FBreadcrumbTrail;
+
+        /// <summary>
+        /// The currently selected Ledger
+        /// </summary>
+        public static int CurrentLedger
+        {
+            get
+            {
+                return FCurrentLedger;
+            }
+
+            set
+            {
+                FCurrentLedger = value;
+            }
+        }
+
         private void InitializeManualCode()
         {
+            // Currently, only the Main Menu gets an 'OpenPetra styled' StatusBar (an 'OpenPetra styled' StatusBar
+            // doesn't go with normal Forms at the moment as pnlContent's BackColor [and UserControls] is white
+            // in colour and that doesn't look that good with an 'OpenPetra styled' StatusBar at the bottom).
+            stbMain.UseOpenPetraToolStripRenderer = true;
+
+            InitialiseTopPanel();
+
             LoadNavigationUI();
 
             Version version = new Version(TClientInfo.ClientAssemblyVersion);
@@ -107,7 +137,7 @@ namespace Ict.Petra.Client.App.PetraClient
         /// <summary>
         /// checks if the user has access to the navigation node
         /// </summary>
-        public static bool HasAccessPermission(XmlNode ANode, string AUserId)
+        public static bool HasAccessPermission(XmlNode ANode, string AUserId, bool ACheckLedgerPermissions)
         {
             // TODO: if this is an action node, eg. opens a screen, check the static function that tells RequiredPermissions of the screen
 
@@ -123,56 +153,165 @@ namespace Ict.Petra.Client.App.PetraClient
                 }
             }
 
-            if (TXMLParser.GetAttribute(ANode, "DependsOnLedger").ToLower() == "true")
+            if (ACheckLedgerPermissions)
             {
-                // check if the user has permissions for this ledger
-                Int32 LedgerNumber = TXMLParser.GetIntAttribute(ANode, "LedgerNumber");
-
-                if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumber.ToString("0000")))
+                if (TXMLParser.GetAttributeRecursive(ANode, "DependsOnLedger", true).ToLower() == "true")
                 {
-                    return false;
+                    // check if the user has permissions for this ledger
+                    Int32 LedgerNumber = TXMLParser.GetIntAttribute(ANode, "LedgerNumber");
+
+                    if (LedgerNumber != -1)
+                    {
+                        if (!UserInfo.GUserInfo.IsInModule(FormatLedgerNumberForModuleAccess(LedgerNumber)))
+                        {
+                            return false;
+                        }
+                    }
                 }
             }
 
             return true;
         }
 
-        private static void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers)
+        private static void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers, bool ADontUseDefaultLedger)
         {
             XmlNode childNode = AMenuNode.FirstChild;
+            int PotentialCurrentLedger;
+            ALedgerRow ProcessedLedger;
+            XmlAttribute enabledAttribute;
+            bool LedgersAvailableToUserCreatedInThisIteration = false;
 
             while (childNode != null)
             {
                 if (TXMLParser.GetAttribute(childNode, "DependsOnLedger").ToLower() == "true")
                 {
-                    string label = TXMLParser.GetAttribute(childNode, "Label");
-
-                    foreach (ALedgerRow ledger in AAvailableLedgers.Rows)
+                    // If there is more than one Ledger in the system, show a 'Select Ledger' Collapsible Panel with a Task (=LinkLabel)
+                    // for each Ledger.
+                    if (AAvailableLedgers.Rows.Count > 1)
                     {
-                        XmlNode NewNode = childNode.Clone();
-                        childNode.ParentNode.InsertBefore(NewNode, childNode);
-                        XmlAttribute ledgerNumberAttribute = childNode.OwnerDocument.CreateAttribute("LedgerNumber");
-                        ledgerNumberAttribute.Value = ledger.LedgerNumber.ToString();
-                        NewNode.Attributes.Append(ledgerNumberAttribute);
+                        LedgersAvailableToUserCreatedInThisIteration = false;
+                        AAvailableLedgers.DefaultView.Sort = ALedgerTable.GetLedgerNumberDBName() + " ASC";
 
-                        if (AAvailableLedgers.Rows.Count > 1)
+                        FMultiLedgerSite = true;
+
+                        // Create 'Select Legdger' Node
+                        XmlAttribute LabelAttributeLedger = childNode.OwnerDocument.CreateAttribute("Label");
+                        XmlElement SelLedgerElmnt = childNode.OwnerDocument.CreateElement("SelectLedger");
+                        XmlNode SelectLedgerNode = childNode.AppendChild(SelLedgerElmnt);
+                        SelectLedgerNode.Attributes.Append(LabelAttributeLedger);
+                        SelectLedgerNode.Attributes["Label"].Value = Catalog.GetString("Select Ledger");
+
+                        // Create 1..n 'Ledger xyz' Nodes
+                        foreach (DataRowView Drv in AAvailableLedgers.DefaultView)
                         {
-                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), ledger.LedgerName, ledger.LedgerNumber);
+                            ProcessedLedger = (ALedgerRow)Drv.Row;
+
+                            XmlElement SpecificLedgerElmnt = childNode.OwnerDocument.CreateElement("Ledger" + ProcessedLedger.LedgerNumber);
+                            XmlNode SpecificLedgerNode = SelectLedgerNode.AppendChild(SpecificLedgerElmnt);
+                            XmlAttribute LabelAttributeSpecificLedger = childNode.OwnerDocument.CreateAttribute("Label");
+                            SpecificLedgerNode.Attributes.Append(LabelAttributeSpecificLedger);
+                            XmlAttribute ledgerNumberAttribute = childNode.OwnerDocument.CreateAttribute("LedgerNumber");
+                            ledgerNumberAttribute.Value = ProcessedLedger.LedgerNumber.ToString();
+                            SpecificLedgerNode.Attributes.Append(ledgerNumberAttribute);
+                            XmlAttribute ledgerNameAttribute = childNode.OwnerDocument.CreateAttribute("LedgerName");
+                            ledgerNameAttribute.Value = ProcessedLedger.LedgerName;
+                            SpecificLedgerNode.Attributes.Append(ledgerNameAttribute);
+
+                            if (ProcessedLedger.LedgerName != String.Empty)
+                            {
+                                SpecificLedgerNode.Attributes["Label"].Value = String.Format(Catalog.GetString(
+                                        "Ledger {0} (#{1})"), ProcessedLedger.LedgerName, ProcessedLedger.LedgerNumber);
+                            }
+                            else
+                            {
+                                SpecificLedgerNode.Attributes["Label"].Value = String.Format(Catalog.GetString(
+                                        "Ledger #{0}"), ProcessedLedger.LedgerNumber);
+                            }
+
+                            // Check access permission for Ledger
+                            if (!HasAccessPermission(SpecificLedgerNode, UserInfo.GUserInfo.UserID, true))
+                            {
+                                enabledAttribute = childNode.OwnerDocument.CreateAttribute("Enabled");
+                                enabledAttribute.Value = "false";
+                                SpecificLedgerNode.Attributes.Append(enabledAttribute);
+                            }
+                            else
+                            {
+                                if (FLedgersAvailableToUser == null)
+                                {
+                                    // (Re-)Calculate which Ledgers the user has access to
+                                    FLedgersAvailableToUser = new List <string>();
+                                    LedgersAvailableToUserCreatedInThisIteration = true;
+                                }
+
+                                if (LedgersAvailableToUserCreatedInThisIteration)
+                                {
+                                    // Add Ledger to the List of Ledgers that are available to the user
+                                    if (!FLedgersAvailableToUser.Contains(FormatLedgerNumberForModuleAccess(ProcessedLedger.LedgerNumber)))
+                                    {
+                                        FLedgersAvailableToUser.Add(FormatLedgerNumberForModuleAccess(ProcessedLedger.LedgerNumber));
+                                    }
+                                }
+                            }
                         }
-                        else
+
+                        if ((LedgersAvailableToUserCreatedInThisIteration)
+                            || (FLedgersAvailableToUser == null))
                         {
-                            NewNode.Attributes["Label"].Value = String.Format(Catalog.GetString(label), "", "");
+                            if (!ADontUseDefaultLedger)
+                            {
+                                // Set the 'Current Ledger' to the users' Default Ledger, or if he/she hasn't got one, to the first Ledger of the Site.
+                                PotentialCurrentLedger = TUserDefaults.GetInt32Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER,
+                                    ((ALedgerRow)AAvailableLedgers.DefaultView[0].Row).LedgerNumber);
+
+                                if ((FLedgersAvailableToUser != null)
+                                    && (FLedgersAvailableToUser.Contains(FormatLedgerNumberForModuleAccess(PotentialCurrentLedger))))
+                                {
+                                    FCurrentLedger = PotentialCurrentLedger;
+                                }
+                                else
+                                {
+                                    if (FLedgersAvailableToUser != null)
+                                    {
+                                        FCurrentLedger = Convert.ToInt32(FLedgersAvailableToUser[0].Substring(6));    // Skip "LEDGER"
+                                    }
+                                    else   // = no Ledgers available to the user at all!
+                                    {
+                                        FCurrentLedger = TLstFolderNavigation.LEDGERNUMBER_NO_ACCESS_TO_ANY_LEDGER;
+                                    }
+                                }
+                            }
                         }
                     }
+                    else if (AAvailableLedgers.Rows.Count == 1)
+                    {
+                        // Dynamically add Attribute 'SkipThisLevel' to the next child, which would be the child for the Collapsible Panel,
+                        // which we don't need/want for a 'Single Ledger' Site!
+                        XmlAttribute LabelSkipCollapsibleLevel = childNode.OwnerDocument.CreateAttribute("SkipThisLevel");
+                        childNode.ChildNodes[0].Attributes.Append(LabelSkipCollapsibleLevel);
+                        childNode.ChildNodes[0].Attributes["SkipThisLevel"].Value = "true";
 
-                    // remove the node that has the place holder for the ledger
-                    XmlNode toRemove = childNode;
+                        // Check access permission for Ledger
+                        if (UserInfo.GUserInfo.IsInModule(FormatLedgerNumberForModuleAccess(AAvailableLedgers[0].LedgerNumber)))
+                        {
+                            // Set the 'Current Ledger' to the only Ledger of the Site.
+                            FCurrentLedger = AAvailableLedgers[0].LedgerNumber;
+                        }
+                        else   // = no Ledgers available to the user at all!
+                        {
+                            FCurrentLedger = TLstFolderNavigation.LEDGERNUMBER_NO_ACCESS_TO_ANY_LEDGER;
+                        }
+                    }
+                    else   // = no Ledgers available to the user at all!
+                    {
+                        FCurrentLedger = TLstFolderNavigation.LEDGERNUMBER_NO_ACCESS_TO_ANY_LEDGER;
+                    }
+
                     childNode = childNode.NextSibling;
-                    AMenuNode.RemoveChild(toRemove);
                 }
                 else
                 {
-                    AddNavigationForEachLedger(childNode, AAvailableLedgers);
+                    AddNavigationForEachLedger(childNode, AAvailableLedgers, ADontUseDefaultLedger);
                     childNode = childNode.NextSibling;
                 }
             }
@@ -181,7 +320,7 @@ namespace Ict.Petra.Client.App.PetraClient
         /// <summary>
         /// build an XML document which includes all ledgers etc.
         /// </summary>
-        public static XmlNode BuildNavigationXml()
+        public static XmlNode BuildNavigationXml(bool ADontUseDefaultLedger = false)
         {
             TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
             XmlDocument UINavigation = parser.ParseYML2XML();
@@ -197,7 +336,7 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
 
-            AddNavigationForEachLedger(MainMenuNode, AvailableLedgers);
+            AddNavigationForEachLedger(MainMenuNode, AvailableLedgers, ADontUseDefaultLedger);
 
             return MainMenuNode;
         }
@@ -205,12 +344,27 @@ namespace Ict.Petra.Client.App.PetraClient
         /// <summary>
         /// load or reload the navigation
         /// </summary>
-        public void LoadNavigationUI()
+        public void LoadNavigationUI(bool ADontUseDefaultLedger = false)
         {
-            XmlNode MainMenuNode = BuildNavigationXml();
+            // Force re-calculation of available Ledgers and correct setting of FCurrentLedger
+            FLedgersAvailableToUser = null;
+
+            XmlNode MainMenuNode = BuildNavigationXml(ADontUseDefaultLedger);
             XmlNode DepartmentNode = MainMenuNode.FirstChild;
 
+            lstFolders.MultiLedgerSite = FMultiLedgerSite;
+            lstFolders.CurrentLedger = FCurrentLedger;
+
             lstFolders.ClearFolders();
+
+            lstFolders.SubmoduleChanged += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+            {
+                OnSubmoduleChanged(ATaskList, ATaskListNode, AItemClicked);
+            };
+            lstFolders.LedgerChanged += delegate(int ALedgerNr, string ALedgerName)
+            {
+                OnLedgerChanged(ALedgerNr, ALedgerName);
+            };
 
             TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission);
 
@@ -238,6 +392,21 @@ namespace Ict.Petra.Client.App.PetraClient
             }
 
             lstFolders.SelectFirstAvailableFolder();
+        }
+
+        /// <summary>
+        /// Shows the current Ledger in the StatusBar.
+        /// </summary>
+        public void ShowCurrentLedgerInfoInStatusBar()
+        {
+            if (FCurrentLedger != TLstFolderNavigation.LEDGERNUMBER_NO_ACCESS_TO_ANY_LEDGER)
+            {
+                this.stbMain.ShowMessage("Current Ledger is Ledger " + FCurrentLedger.ToString());
+            }
+            else
+            {
+                this.stbMain.ShowMessage("There are now NO LEDGERS that you have access to!");
+            }
         }
 
         private void ExitManualCode()
@@ -344,6 +513,78 @@ namespace Ict.Petra.Client.App.PetraClient
         private void HelpImproveTranslations(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Documentation_for_Translators");
+        }
+
+        private static string FormatLedgerNumberForModuleAccess(int ALedgerNumber)
+        {
+            return "LEDGER" + ALedgerNumber.ToString("0000");
+        }
+
+        private void InitialiseTopPanel()
+        {
+            TVisualStyles VisualStyle = new TVisualStyles(TVisualStylesEnum.vsHorizontalCollapse);
+
+            TPnlGradient TopPanel = new TPnlGradient();
+
+            TopPanel.Name = "Top";
+            TopPanel.Dock = DockStyle.Fill;
+            TopPanel.Padding = new Padding(0, 1, 0, 0);
+            TopPanel.GradientColorTop = VisualStyle.TitleGradientStart;
+            TopPanel.GradientColorBottom = VisualStyle.TitleGradientEnd;
+            TopPanel.DontDrawBottomLine = false;
+
+            pnlTop.Controls.Add(TopPanel);
+
+            // Add Breadcrumb Trail Panel to TopPanel
+            FBreadcrumbTrail = new TBreadcrumbTrail(TopPanel);
+
+            // in the future: add SearchBox (still to be created) to TopPanel, too...
+        }
+
+        private void OnSubmoduleChanged(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+        {
+            const string DetailTextPrefix = "» ";
+            string ModuleText = String.Empty;
+            string BreadcrumbDetailText = String.Empty;
+
+            if ((ATaskListNode.ParentNode.Attributes["SkipThisLevel"] != null)
+                && (ATaskListNode.ParentNode.Attributes["SkipThisLevel"].Value == "true"))
+            {
+                ModuleText = TLstFolderNavigation.GetLabel(ATaskListNode.ParentNode.ParentNode);
+                BreadcrumbDetailText = DetailTextPrefix + AItemClicked.Text;
+            }
+            else
+            {
+                if ((ATaskListNode.ParentNode.Attributes["DontShowNestedTasksAsLinks"] == null)
+                    || (ATaskListNode.ParentNode.Attributes["DontShowNestedTasksAsLinks"].Value == "false"))
+                {
+                    if ((ATaskListNode.ParentNode.ParentNode.Attributes["DependsOnLedger"] == null)
+                        || (ATaskListNode.ParentNode.ParentNode.Attributes["DependsOnLedger"].Value == "false"))
+                    {
+                        ModuleText = TLstFolderNavigation.GetLabel(ATaskListNode.ParentNode.ParentNode);
+                    }
+                    else
+                    {
+                        ModuleText = Catalog.GetString("Ledger" + " " + FCurrentLedger.ToString());
+                    }
+
+                    BreadcrumbDetailText = DetailTextPrefix + TLstFolderNavigation.GetLabel(ATaskListNode.ParentNode) + " ";
+                }
+
+                BreadcrumbDetailText += DetailTextPrefix + AItemClicked.Text;
+            }
+
+            FBreadcrumbTrail.ModuleText = ModuleText;
+            FBreadcrumbTrail.DetailText = BreadcrumbDetailText;
+        }
+
+        private void OnLedgerChanged(int ALedgerNr, string ALedgerName)
+        {
+            FBreadcrumbTrail.ModuleText = Catalog.GetString("Ledger" + " " + ALedgerNr.ToString());
+            FCurrentLedger = ALedgerNr;
+
+            // Remove any message that is shown in the Status Bar (e.g. the one that is put there when creating a new Ledger)
+            this.stbMain.ShowMessage(String.Empty);
         }
     }
 }

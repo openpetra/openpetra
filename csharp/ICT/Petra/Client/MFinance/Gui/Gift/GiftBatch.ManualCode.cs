@@ -30,6 +30,7 @@ using Ict.Common.Verification;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 
@@ -128,18 +129,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
         /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = "unposted", bool AFromTabClick = true)
+        public void LoadTransactions(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
+            bool AFromTabClick = true)
         {
-            try
-            {
-                //this.tpgTransactions.Enabled = true;
-                FPetraUtilsObject.DisableDataChangedEvent();
-                this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
-            }
-            finally
-            {
-                FPetraUtilsObject.EnableDataChangedEvent();
-            }
+            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
+//            try
+//            {
+//                //this.tpgTransactions.Enabled = true;
+//                FPetraUtilsObject.DisableDataChangedEvent();
+//                this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
+//            }
+//            finally
+//            {
+//                FPetraUtilsObject.EnableDataChangedEvent();
+//            }
         }
 
         /// <summary>

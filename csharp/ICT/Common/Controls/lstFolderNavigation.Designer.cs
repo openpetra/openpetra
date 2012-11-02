@@ -60,8 +60,7 @@ namespace Ict.Common.Controls
             new System.ComponentModel.ComponentResourceManager(typeof(TRbtNavigationButton));
 
             this.sptNavigation = new System.Windows.Forms.SplitContainer();
-            this.pnlMoreButtons = new System.Windows.Forms.Panel();
-            this.pnlNavigationCaption = new Ict.Common.Controls.TPnlGradient();
+            this.pnlMoreButtons = new TPnlGradient();
             this.lblNavigationCaption = new System.Windows.Forms.Label();
 
             this.sptNavigation.Panel1.SuspendLayout();
@@ -93,17 +92,6 @@ namespace Ict.Common.Controls
             this.pnlMoreButtons.Name = "pnlMoreButtons";
             this.pnlMoreButtons.Size = new System.Drawing.Size(200, 28);
             this.pnlMoreButtons.TabIndex = 2;
-            this.pnlMoreButtons.BorderStyle = BorderStyle.FixedSingle;
-
-            //
-            // pnlNavigationCaption
-            //
-            this.pnlNavigationCaption.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlNavigationCaption.Location = new System.Drawing.Point(0, 0);
-            this.pnlNavigationCaption.Name = "pnlNavigationCaption";
-            this.pnlNavigationCaption.Size = new System.Drawing.Size(200, 27);
-            this.pnlNavigationCaption.TabIndex = 7;
-            this.pnlNavigationCaption.Controls.Add(this.lblNavigationCaption);
 
             //
             // sptNavigation
@@ -135,8 +123,7 @@ namespace Ict.Common.Controls
             //
             this.Controls.Add(this.sptNavigation);
             this.Controls.Add(this.pnlMoreButtons);
-            this.Controls.Add(this.pnlNavigationCaption);
-
+            this.DoubleBuffered = true;
             this.sptNavigation.Panel1.ResumeLayout(false);
             this.sptNavigation.Panel2.ResumeLayout(false);
             this.sptNavigation.ResumeLayout(false);
@@ -146,7 +133,6 @@ namespace Ict.Common.Controls
 
         private System.Windows.Forms.Label lblNavigationCaption;
         private System.Windows.Forms.SplitContainer sptNavigation;
-        private Ict.Common.Controls.TPnlGradient pnlNavigationCaption;
-        private System.Windows.Forms.Panel pnlMoreButtons;
+        private TPnlGradient pnlMoreButtons;
     }
 }

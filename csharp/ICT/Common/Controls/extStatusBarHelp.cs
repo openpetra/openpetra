@@ -25,6 +25,8 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace Ict.Common.Controls
@@ -40,6 +42,7 @@ namespace Ict.Common.Controls
         private Hashtable FControlTexts;
         private System.Windows.Forms.Control FActiveControl;
         private System.Windows.Forms.ToolStripStatusLabel FStatusLabel;
+        private bool FUseOpenPetraToolStripRenderer = false;
 
         /// <summary>
         /// constructor
@@ -73,6 +76,31 @@ namespace Ict.Common.Controls
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Whehter the StatusBar should appear 'OpenPetra-styled'.
+        /// </summary>
+        public bool UseOpenPetraToolStripRenderer
+        {
+            get
+            {
+                return FUseOpenPetraToolStripRenderer;
+            }
+
+            set
+            {
+                FUseOpenPetraToolStripRenderer = value;
+
+                if (value == true)
+                {
+                    this.Renderer = new TOpenPetraToolStripRenderer(new TOpenPetraMenuColours());
+                }
+                else
+                {
+                    this.Renderer = new System.Windows.Forms.ToolStripProfessionalRenderer();
+                }
+            }
         }
 
         //
@@ -162,6 +190,59 @@ namespace Ict.Common.Controls
         public void ShowMessage(string msg)
         {
             FStatusLabel.Text = msg;
+        }
+
+        /// <summary>
+        /// OpenPetra-styled ToolStripRenderer (paints a vertical gradient instead of a horizontal one)
+        /// </summary>
+        private class TOpenPetraToolStripRenderer : System.Windows.Forms.ToolStripProfessionalRenderer
+        {
+            // Brush that paints the background of the GridStrip control (needed for vertical gradient).
+            private Brush backgroundBrush = null;
+
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            public TOpenPetraToolStripRenderer() : base()
+            {
+            }
+
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="AColorTable">The <see cref="System.Windows.Forms.ProfessionalColorTable" /> to initialise the Renderer with.</param>
+            public TOpenPetraToolStripRenderer(ProfessionalColorTable AColorTable) : base(AColorTable)
+            {
+            }
+
+            /// <summary>
+            /// Raises the <see cref="System.Windows.Forms.ToolStripRenderer.RenderToolStripBackground" /> event.
+            /// </summary>
+            /// <param name="e">Provided by WinForms.</param>
+            protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
+            {
+                base.OnRenderToolStripBackground(e);
+
+                if (e.ToolStrip is MenuStrip || e.ToolStrip is StatusStrip)
+                {
+                    if (this.backgroundBrush == null)
+                    {
+                        this.backgroundBrush = new LinearGradientBrush(e.AffectedBounds,
+                            this.ColorTable.ToolStripGradientBegin,
+                            this.ColorTable.ToolStripGradientEnd,
+                            LinearGradientMode.Vertical);
+                    }
+
+                    e.Graphics.FillRectangle(this.backgroundBrush, e.AffectedBounds);
+                }
+                else
+                {
+                    using (LinearGradientBrush b =
+                               new LinearGradientBrush(e.AffectedBounds, this.ColorTable.ToolStripGradientBegin, this.ColorTable.ToolStripGradientEnd,
+                                   LinearGradientMode.Horizontal))
+                        e.Graphics.FillRectangle(b, e.AffectedBounds);
+                }
+            }
         }
     }
 }

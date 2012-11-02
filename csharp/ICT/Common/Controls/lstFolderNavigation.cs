@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Drawing;
 using System.Xml;
 using System.Windows.Forms;
 using Ict.Common.IO;
@@ -38,6 +39,8 @@ namespace Ict.Common.Controls
         private TDashboard FDashboard;
         private TExtStatusBarHelp FStatusbar = null;
         private bool FMovingSplitter = false;       // avoid recursion of events on Mono
+        private bool FMultiLedgerSite = false;
+        private int FCurrentLedger = -1;
 
         #region Public Static
 
@@ -61,12 +64,16 @@ namespace Ict.Common.Controls
 
         #endregion
 
+        /// <summary>Ledger Number value that signalises that the user hasn't got access to any Ledger in the Site.</summary>
+        public const int LEDGERNUMBER_NO_ACCESS_TO_ANY_LEDGER = -2;
+
         /// <summary>
         /// Constructor.
         /// </summary>
         public TLstFolderNavigation()
         {
             ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
+            TVisualStyles VisualStyle = new TVisualStyles(TVisualStylesEnum.vsHorizontalCollapse);
 
             InitializeComponent();
             #region CATALOGI18N
@@ -74,6 +81,13 @@ namespace Ict.Common.Controls
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.lblNavigationCaption.Text = Catalog.GetString("Caption");
             #endregion
+
+            sptNavigation.BackColor = VisualStyle.TitleGradientEnd;
+
+            pnlMoreButtons.GradientColorTop = VisualStyle.TitleGradientStart;
+            pnlMoreButtons.GradientColorBottom = VisualStyle.TitleGradientEnd;
+            pnlMoreButtons.Border = new System.Drawing.Pen(new TOpenPetraMenuColours().MenuBackgroundColour);
+
 
 #if disabled
             if (System.IO.File.Exists(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2leftarrow.png"))
@@ -85,17 +99,20 @@ namespace Ict.Common.Controls
                 MessageBox.Show("cannot find file " + ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2leftarrow.png");
             }
 #endif
-
-            pnlNavigationCaption.GradientColorTop = System.Drawing.Color.FromArgb(0xF7, 0xFB, 0xFF);
-            pnlNavigationCaption.GradientColorBottom = System.Drawing.Color.FromArgb(0xAD, 0xBE, 0xE7);
         }
 
-        #region Delegates
+        #region Delegates and Events
 
         /// <summary>
         /// this function checks if the user has access to the navigation node
         /// </summary>
-        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
+        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId, bool ACheckLedgerPermissions);
+
+        /// <summary>Fired when a TaskLink got activated (by clicking on it or programmatically).</summary>
+        public event TTaskList.TaskLinkClicked SubmoduleChanged;
+
+        /// <summary>Fired when a Ledger got selected by the user (by clicking on it's LinkLabel).</summary>
+        public event TPnlModuleNavigation.LedgerSelected LedgerChanged;
 
         #endregion
 
@@ -123,6 +140,38 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// True if the Site that OpenPetra is running on uses multiple Ledgers, otherwise false.
+        /// </summary>
+        public bool MultiLedgerSite
+        {
+            get
+            {
+                return FMultiLedgerSite;
+            }
+
+            set
+            {
+                FMultiLedgerSite = value;
+            }
+        }
+
+        /// <summary>
+        /// The currently selected Ledger
+        /// </summary>
+        public int CurrentLedger
+        {
+            get
+            {
+                return FCurrentLedger;
+            }
+
+            set
+            {
+                FCurrentLedger = value;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -132,7 +181,7 @@ namespace Ict.Common.Controls
         /// </summary>
         public void AddFolder(XmlNode AFolderNode, string AUserId, CheckAccessPermissionDelegate AHasAccessPermission)
         {
-            TRbtNavigationButton rbt = new TRbtNavigationButton();
+            TRbtNavigationButton rbt = new TRbtNavigationButton(FolderCheckChanging);
 
             this.sptNavigation.Panel2.Controls.Add(rbt);
             rbt.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -151,14 +200,23 @@ namespace Ict.Common.Controls
 
             rbt.CheckedChanged += new System.EventHandler(this.FolderCheckedChanged);
 
-            rbt.Enabled = AHasAccessPermission(AFolderNode, AUserId);
+            if ((TYml2Xml.HasAttribute(AFolderNode, "Enabled"))
+                && (TYml2Xml.GetAttribute(AFolderNode, "Enabled").ToLower() == "false"))
+            {
+                rbt.Enabled = false;
+            }
+            else
+            {
+                rbt.Enabled = AHasAccessPermission(AFolderNode, AUserId, false);
+            }
         }
 
         /// <summary>
-        /// for reloading the navigation file, eg. with newly created ledger
+        /// For reloading all Module's navigation Controls (TPnlModuleNavigation), eg. after creating/deleting Ledgers
         /// </summary>
         public void ClearFolders()
         {
+            this.sptNavigation.Panel1.Controls.Clear();
             this.sptNavigation.Panel2.Controls.Clear();
         }
 
@@ -201,8 +259,9 @@ namespace Ict.Common.Controls
 
         #region Private Methods
 
-        private TPnlAccordion GetOrCreatePanel(XmlNode AFolderNode)
+        private TPnlModuleNavigation GetOrCreatePanel(XmlNode AFolderNode, out bool APanelCreated)
         {
+            TPnlModuleNavigation CollPanelHoster;
             string pnlName = "pnl" + AFolderNode.Name;
 
             if (AFolderNode.Attributes["Label"] != null)
@@ -212,16 +271,42 @@ namespace Ict.Common.Controls
 
             if (this.sptNavigation.Panel1.Controls.ContainsKey(pnlName))
             {
-                return (TPnlAccordion) this.sptNavigation.Panel1.Controls[pnlName];
+                APanelCreated = false;
+
+                CollPanelHoster = (TPnlModuleNavigation) this.sptNavigation.Panel1.Controls[pnlName];
+                CollPanelHoster.CurrentLedger = FCurrentLedger;
+
+                return CollPanelHoster;
             }
             else
             {
-                TPnlAccordion pnlAccordion = new TPnlAccordion(AFolderNode, FDashboard, pnlName);
+                APanelCreated = true;
 
-                pnlAccordion.Statusbar = FStatusbar;
-                this.sptNavigation.Panel1.Controls.Add(pnlAccordion);
+                CollPanelHoster = new TPnlModuleNavigation(AFolderNode, FDashboard, this.Width, FMultiLedgerSite);
+                CollPanelHoster.Name = pnlName;
+                CollPanelHoster.Statusbar = FStatusbar;
+                CollPanelHoster.Dock = DockStyle.Left;
+                CollPanelHoster.CurrentLedger = FCurrentLedger;
+                CollPanelHoster.Collapsed += delegate(object sender, EventArgs e)
+                {
+                    CollapsibleNavigationCollapsed(sender, e);
+                };
+                CollPanelHoster.Expanded += delegate(object sender, EventArgs e)
+                {
+                    CollapsibleNavigationExpanded(sender, e);
+                };
+                CollPanelHoster.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+                {
+                    OnItemActivation(ATaskList, ATaskListNode, AItemClicked);
+                };
+                CollPanelHoster.LedgerChanged += delegate(int ALedgerNr, string ALedgerName)
+                {
+                    OnLedgerChanged(ALedgerNr, ALedgerName);
+                };
 
-                return pnlAccordion;
+                this.sptNavigation.Panel1.Controls.Add(CollPanelHoster);
+
+                return CollPanelHoster;
             }
         }
 
@@ -229,20 +314,53 @@ namespace Ict.Common.Controls
 
         #region Event Handling
 
+        private bool FolderCheckChanging(TRbtNavigationButton ANavigationButton)
+        {
+            bool ReturnValue = true;
+
+            XmlNode ModuleXmlNode = (XmlNode)ANavigationButton.Tag;
+
+            if (TXMLParser.GetAttribute(ModuleXmlNode, "DependsOnLedger").ToLower() == "true")
+            {
+                if (FCurrentLedger == LEDGERNUMBER_NO_ACCESS_TO_ANY_LEDGER)
+                {
+                    MessageBox.Show(String.Format("Access to OpenPetra Module '{0}' is denied as you don't have access rights to any Ledger!" +
+                            "\r\n\r\n" +
+                            "Someone with OpenPetra System Administrator rights needs to grant you access rights to at least one Ledger " +
+                            "for you to be able to work with this Module.", TXMLParser.GetAttribute(ModuleXmlNode, "Label")),
+                        "Access to OpenPetra Module Denied",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    ReturnValue = false;
+                }
+            }
+
+            return ReturnValue;
+        }
+
         private void FolderCheckedChanged(object sender, EventArgs e)
         {
+            bool PanelCreated;
             TRbtNavigationButton rbtFolder = (TRbtNavigationButton)sender;
-            TPnlAccordion pnlAccordion = GetOrCreatePanel((XmlNode)rbtFolder.Tag);
+            TPnlModuleNavigation CollPanelHoster = GetOrCreatePanel((XmlNode)rbtFolder.Tag, out PanelCreated);
 
             if (rbtFolder.Checked)
             {
-                lblNavigationCaption.Text = rbtFolder.Text;
-                pnlAccordion.Show();
-                pnlAccordion.SelectFirstLink();
+                CollPanelHoster.Text = rbtFolder.Text;
+                CollPanelHoster.Show();
+
+                if (PanelCreated)
+                {
+                    CollPanelHoster.SelectFirstLink();
+                }
+                else
+                {
+                    CollPanelHoster.FireSelectedLinkEvent();
+                }
             }
             else
             {
-                pnlAccordion.Hide();
+                CollPanelHoster.Hide();
             }
         }
 
@@ -261,6 +379,55 @@ namespace Ict.Common.Controls
         private void SptNavigationSplitterMoving(object sender, System.Windows.Forms.SplitterCancelEventArgs e)
         {
             // TODO: hide lowest folder radio button, add it to panel pnlMoreButtons
+        }
+
+        void CollapsibleNavigationCollapsed(object sender, EventArgs e)
+        {
+            this.Width = ((TPnlModuleNavigation)sender).Width;
+//            FFolderCollapsing = true;
+//            sptContent.SplitterDistance = cplFolders.Width;
+//            FFolderCollapsing = false;
+        }
+
+        void CollapsibleNavigationExpanded(object sender, EventArgs e)
+        {
+            this.Width = ((TPnlModuleNavigation)sender).Width;
+//            sptContent.SplitterDistance = cplFolders.Width;
+        }
+
+        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+        {
+            if (SubmoduleChanged != null)
+            {
+                if (ATaskListNode.Attributes["LedgerNumber"] == null)
+                {
+                    SubmoduleChanged(ATaskList, ATaskListNode, AItemClicked);
+                }
+            }
+        }
+
+        private void OnLedgerChanged(int ALedgerNr, string ALedgerName)
+        {
+            string LedgerChangeTitle = Catalog.GetString("Ledger Change");
+
+            FCurrentLedger = ALedgerNr;
+
+            if (ALedgerName != String.Empty)
+            {
+                MessageBox.Show(String.Format("You have changed the Ledger to\r\n\r\n    Ledger {0} (#{1}).",
+                        ALedgerName, ALedgerNr),
+                    LedgerChangeTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(String.Format("You have changed the Ledger to\r\n\r\n    Ledger #{0}.", ALedgerNr), LedgerChangeTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            if (LedgerChanged != null)
+            {
+                LedgerChanged(ALedgerNr, ALedgerName);
+            }
         }
 
         #endregion

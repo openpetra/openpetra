@@ -340,6 +340,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("mnu", typeof(MenuStrip))
         {
         }
+
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            writer.SetControlProperty(ctrl, "Renderer", "new ToolStripProfessionalRenderer(new TOpenPetraMenuColours())");
+            writer.SetControlProperty(ctrl, "GripStyle", "ToolStripGripStyle.Visible");
+            writer.SetControlProperty(ctrl, "GripMargin", "new System.Windows.Forms.Padding(0)");
+
+            return writer.FTemplate;
+        }
     }
 
     /// <summary>
@@ -365,6 +377,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("tbr", typeof(System.Windows.Forms.ToolStrip))
         {
             FRequiresChildren = true;
+        }
+
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            writer.SetControlProperty(ctrl, "Renderer", "new ToolStripProfessionalRenderer(new TOpenPetraMenuColours())");
+            writer.SetControlProperty(ctrl, "GripStyle", "ToolStripGripStyle.Visible");
+            writer.SetControlProperty(ctrl, "GripMargin", "new System.Windows.Forms.Padding(3)");
+
+            return writer.FTemplate;
         }
     }
 

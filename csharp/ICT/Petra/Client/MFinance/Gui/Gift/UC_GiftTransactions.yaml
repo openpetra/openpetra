@@ -61,10 +61,10 @@ RootNode:
                 DonorKey: {Label=Donor Key, Type=PartnerKey}
                 DonorName: {Label=Donor Name, Type=String}
                 DonorClass: {Label=Class, Type=String}
-                GiftTransactionAmount: {Label=Amount, Type=Decimal}
+                GiftTransactionAmount: {Label=Amount, Type=Currency}
                 RecipientDescription: {Label=Recipient, Type=String}
                 RecipientField: {Label=Field, Type=Int64}
-                GiftAmount: {Label=Amount (Base), Type=Decimal}
+                GiftAmount: {Label=Amount (Base), Type=Currency}
                 MethodOfGivingCode: {Label=Method of Giving, Type=String}
                 MethodOfPaymentCode: {Label=Method of Payment, Type=String}
                 ReceiptNumber: {Label=Receipt, Type=Int32}

@@ -730,7 +730,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // if no other control depends on a combobox, e.g. cmbPostalRegionRegion, don't require any code
             foreach (string dependsOn in FControlDataTypes.GetKeyList())
             {
-                string currentContent = FTemplate.AddToCodelet("INITIALISE_" + dependsOn, "");
+                string currentContent = FTemplate.FCodelets["INITIALISE_" + dependsOn].ToString();
 
                 if (currentContent.Length == 0)
                 {
@@ -1106,7 +1106,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             TTable.GetNamespace(table.strGroup)));
                 }
 
-                if ((FTemplate.FSnippets.Contains("INLINETYPEDDATASET"))
+                if ((FTemplate.FSnippets.Keys.Contains("INLINETYPEDDATASET"))
                     && (!FCodeStorage.HasAttribute("DatasetType")))
                 {
                     ProcessTemplate inlineTypedDataSetSnippet = FTemplate.GetSnippet("INLINETYPEDDATASET");
