@@ -423,7 +423,7 @@ namespace Ict.Common.Remoting.Server
 
             // Server.ClientKeepAliveTimeoutAfterXSeconds_Remote
             FClientKeepAliveTimeoutAfterXSecondsRemote =
-                TAppSettingsManager.GetInt32("Server.ClientKeepAliveTimeoutAfterXSeconds_Remote", (short)(ClientKeepAliveTimeoutAfterXSecondsLAN * 2));
+                TAppSettingsManager.GetInt32("Server.ClientKeepAliveTimeoutAfterXSeconds_Remote", (ClientKeepAliveTimeoutAfterXSecondsLAN * 2));
 
             // Server.ClientConnectionTimeoutAfterXSeconds
             FClientConnectionTimeoutAfterXSeconds = TAppSettingsManager.GetInt32("Server.ClientConnectionTimeoutAfterXSeconds", 20);
