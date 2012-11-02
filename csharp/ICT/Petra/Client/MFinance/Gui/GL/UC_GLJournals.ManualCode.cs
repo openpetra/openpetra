@@ -29,11 +29,13 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MFinance.Gui.Setup;
@@ -449,5 +451,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.FPreviouslySelectedDetailRow = null;
         }
+        
+        private void ValidateDataDetailsManual(AJournalRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_GL.ValidateGLJournalManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+        }
+
+        
+        
     }
 }
