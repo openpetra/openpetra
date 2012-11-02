@@ -66,7 +66,6 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 char CSVSeparator = TAppSettingsManager.GetValue("CSVSeparator", ";")[0];
                 string NewLine = "\r\n";
                 string culture = TAppSettingsManager.GetValue("culture", "de-DE");
-                string operation = TAppSettingsManager.GetValue("operation", "all");
 
                 string ReportingCostCentres =
                     TFinanceReportingWebConnector.GetReportingCostCentres(LedgerNumber, SummaryCostCentres, IgnoreCostCentres);

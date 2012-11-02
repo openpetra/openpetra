@@ -142,8 +142,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
         private static void GetReportingCostCentres(ACostCentreTable ACostCentres, ref List <string>AResult, string ASummaryCostCentreCode)
         {
-            string result = string.Empty;
-
             string[] CostCentres = ASummaryCostCentreCode.Split(new char[] { ',' });
 
             foreach (string costcentre in CostCentres)
