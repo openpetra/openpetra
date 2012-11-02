@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Collections.Generic;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
@@ -30,10 +31,12 @@ using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -137,10 +140,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             return ReturnTable;
         }
 
-        private static string GetReportingCostCentres(ACostCentreTable ACostCentres, string ASummaryCostCentreCode)
+        private static void GetReportingCostCentres(ACostCentreTable ACostCentres, ref List <string>AResult, string ASummaryCostCentreCode)
         {
-            ACostCentres.DefaultView.Sort = ACostCentreTable.GetCostCentreToReportToDBName();
-
             string result = string.Empty;
 
             string[] CostCentres = ASummaryCostCentreCode.Split(new char[] { ',' });
@@ -149,22 +150,34 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 DataRowView[] ReportingCostCentres = ACostCentres.DefaultView.FindRows(costcentre);
 
-                foreach (DataRowView rv in ReportingCostCentres)
+                if (ReportingCostCentres.Length > 0)
                 {
-                    ACostCentreRow row = (ACostCentreRow)rv.Row;
+                    foreach (DataRowView rv in ReportingCostCentres)
+                    {
+                        ACostCentreRow row = (ACostCentreRow)rv.Row;
 
-                    if (row.PostingCostCentreFlag)
-                    {
-                        result = StringHelper.AddCSV(result, row.CostCentreCode);
+                        if (row.PostingCostCentreFlag)
+                        {
+                            AResult.Add(row.CostCentreCode);
+                        }
+                        else
+                        {
+                            GetReportingCostCentres(ACostCentres, ref AResult, row.CostCentreCode);
+                        }
                     }
-                    else
+                }
+                else
+                {
+                    DataView dv = new DataView(ACostCentres);
+                    dv.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+                    ACostCentreRow cc = (ACostCentreRow)dv.FindRows(costcentre)[0].Row;
+
+                    if (cc.PostingCostCentreFlag)
                     {
-                        result = StringHelper.ConcatCSV(result, GetReportingCostCentres(ACostCentres, row.CostCentreCode));
+                        AResult.Add(costcentre);
                     }
                 }
             }
-
-            return result;
         }
 
         /// <summary>
@@ -172,7 +185,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// </summary>
         /// <returns>a CSV list of the reporting cost centres</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static string GetReportingCostCentres(int ALedgerNumber, String ASummaryCostCentreCode)
+        public static string GetReportingCostCentres(int ALedgerNumber, String ASummaryCostCentreCode, string ARemoveCostCentresFromList)
         {
             System.Type typeofTable = null;
             TCacheable CachePopulator = new TCacheable();
@@ -183,7 +196,83 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ALedgerNumber,
                 out typeofTable);
 
-            return GetReportingCostCentres(CachedDataTable, ASummaryCostCentreCode);
+            CachedDataTable.DefaultView.Sort = ACostCentreTable.GetCostCentreToReportToDBName();
+
+            List <string>Result = new List <string>();
+
+            GetReportingCostCentres(CachedDataTable, ref Result, ASummaryCostCentreCode);
+
+            List <string>IgnoreCostCentres = new List <string>();
+
+            GetReportingCostCentres(CachedDataTable, ref IgnoreCostCentres, ARemoveCostCentresFromList);
+
+            foreach (string s in IgnoreCostCentres)
+            {
+                if (Result.Contains(s))
+                {
+                    Result.Remove(s);
+                }
+            }
+
+            return StringHelper.StrMerge(Result.ToArray(), ',');
+        }
+
+        private static void GetReportingAccounts(AAccountHierarchyDetailTable AAccountHierarchyDetail,
+            ref List <string>AResult,
+            string ASummaryAccountCodes,
+            string AAccountHierarchy)
+        {
+            string[] Accounts = ASummaryAccountCodes.Split(new char[] { ',' });
+
+            foreach (string account in Accounts)
+            {
+                DataRowView[] ReportingAccounts = AAccountHierarchyDetail.DefaultView.FindRows(new object[] { AAccountHierarchy, account });
+
+                if (ReportingAccounts.Length == 0)
+                {
+                    AResult.Add(account);
+                }
+                else
+                {
+                    foreach (DataRowView rv in ReportingAccounts)
+                    {
+                        AAccountHierarchyDetailRow row = (AAccountHierarchyDetailRow)rv.Row;
+
+                        GetReportingAccounts(AAccountHierarchyDetail, ref AResult, row.ReportingAccountCode, AAccountHierarchy);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get all accounts that report into the given summary account
+        /// </summary>
+        /// <returns>a CSV list of the reporting accounts</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static string GetReportingAccounts(int ALedgerNumber, string ASummaryAccountCodes, string ARemoveAccountsFromList)
+        {
+            GLSetupTDS MainDS = TGLSetupWebConnector.LoadAccountHierarchies(ALedgerNumber);
+
+            List <string>accountcodes = new List <string>();
+
+            MainDS.AAccountHierarchyDetail.DefaultView.Sort =
+                AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + "," +
+                AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName();
+
+
+            GetReportingAccounts(MainDS.AAccountHierarchyDetail, ref accountcodes, ASummaryAccountCodes, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD);
+
+            string[] RemoveAccountsFromList = ARemoveAccountsFromList.Split(new char[] { ',' });
+
+            foreach (string s in RemoveAccountsFromList)
+            {
+                if (accountcodes.Contains(s))
+                {
+                    accountcodes.Remove(s);
+                }
+            }
+
+            return StringHelper.StrMerge(accountcodes.ToArray(), ',');
         }
     }
 }

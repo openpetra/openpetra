@@ -45,7 +45,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             string ANewLine,
             Int32 ALedgerNumber,
             Int32 AFinancialYear,
-            string ACostCentres)
+            string ACostCentres,
+            string AIgnoreAccounts)
         {
             string filename = Path.GetFullPath(Path.Combine(AOutputPath, "balance.csv"));
 
@@ -56,15 +57,17 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             string sql =
-                String.Format("SELECT {1}, GLM.{0}, {2}, {3} FROM PUB_{4} AS GLM, PUB_{10} AS A " +
+                String.Format("SELECT GLM.{1} AS CostCentre, GLM.{0} AS Account, {2} AS StartBalance, GLMP.{3} AS EndBalance " +
+                    "FROM PUB_{4} AS GLM, PUB_{10} AS A, PUB_{13} AS GLMP " +
                     "WHERE GLM.{5} = {6} AND {7} = {8} AND GLM.{1} IN ({9}) " +
+                    "AND GLMP.{14} = GLM.{14} AND GLMP.{15} = 12 " +
                     "AND A.{5} = GLM.{5} AND A.{0} = GLM.{0} AND " +
-                    "A.{11}=true " +
-                    "ORDER BY {1}, {0}",
+                    "A.{11}=true AND NOT GLM.{0} IN ({12})" +
+                    "ORDER BY GLM.{1}, GLM.{0}",
                     AGeneralLedgerMasterTable.GetAccountCodeDBName(),
                     AGeneralLedgerMasterTable.GetCostCentreCodeDBName(),
-                    AGeneralLedgerMasterTable.GetYtdActualBaseDBName(),
                     AGeneralLedgerMasterTable.GetStartBalanceBaseDBName(),
+                    AGeneralLedgerMasterPeriodTable.GetActualBaseDBName(),
                     AGeneralLedgerMasterTable.GetTableDBName(),
                     AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
                     ALedgerNumber,
@@ -72,7 +75,11 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     AFinancialYear,
                     "'" + ACostCentres.Replace(",", "','") + "'",
                     AAccountTable.GetTableDBName(),
-                    AAccountTable.GetPostingStatusDBName());
+                    AAccountTable.GetPostingStatusDBName(),
+                    "'" + AIgnoreAccounts.Replace(",", "','") + "'",
+                    AGeneralLedgerMasterPeriodTable.GetTableDBName(),
+                    AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName(),
+                    AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName());
 
             DataTable balances = DBAccess.GDBAccessObj.SelectDT(sql, "balances", Transaction);
 
@@ -82,10 +89,10 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             {
                 sb.Append(StringHelper.StrMerge(
                         new string[] {
-                            row[0].ToString(),
-                            row[1].ToString(),
-                            String.Format("{0:N}", Convert.ToDecimal(row[2])),
-                            String.Format("{0:N}", Convert.ToDecimal(row[3]))
+                            row["CostCentre"].ToString(),
+                            row["Account"].ToString(),
+                            String.Format("{0:N}", Convert.ToDecimal(row["StartBalance"])),
+                            String.Format("{0:N}", Convert.ToDecimal(row["EndBalance"]))
                         }, ACSVSeparator));
 
                 sb.Append(ANewLine);
