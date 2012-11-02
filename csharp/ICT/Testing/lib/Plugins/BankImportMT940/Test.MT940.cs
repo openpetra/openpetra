@@ -69,6 +69,7 @@ namespace Ict.Testing.Petra.Plugins.Bankimport
         public void ImportFile()
         {
             TSwiftParser p = new TSwiftParser();
+
             p.ProcessFile(TAppSettingsManager.GetValue("Testing.Path") + "/lib/Plugins/BankImportMT940/test-data/test1.sta");
         }
     }
