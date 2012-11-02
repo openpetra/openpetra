@@ -8,5 +8,6 @@ AND PUB_a_gift.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i
 AND PUB_a_gift_detail.a_ledger_number_i = PUB_a_gift.a_ledger_number_i
 AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
 AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+AND NOT PUB_a_gift_detail.a_modified_detail_l = true
 AND PUB_p_partner.p_partner_key_n = PUB_a_gift.p_donor_key_n
 AND RecipientPartner.p_partner_key_n = PUB_a_gift_detail.p_recipient_key_n
