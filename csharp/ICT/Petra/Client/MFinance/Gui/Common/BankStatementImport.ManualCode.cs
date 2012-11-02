@@ -645,13 +645,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
-        private void CreateGiftBatch(System.Object sender, EventArgs e)
+        private void CreateGiftBatchThread()
         {
-            GetValuesFromScreen();
-
-            // TODO: should we first ask? also when closing the window?
-            SaveChanges();
-
             TVerificationResultCollection VerificationResult;
             Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
                 FLedgerNumber,
@@ -678,6 +673,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                         Catalog.GetString("Problem: No gift batch has been created"));
                 }
             }
+        }
+
+        private void CreateGiftBatch(System.Object sender, EventArgs e)
+        {
+            GetValuesFromScreen();
+
+            // TODO: should we first ask? also when closing the window?
+            SaveChanges();
+
+            // load the transactions of the selected statement, and the matches
+            Thread t = new Thread(() => CreateGiftBatchThread());
+            t.Start();
+
+            TProgressDialog dialog = new TProgressDialog();
+
+            dialog.ShowDialog();
         }
 
         private void CreateGLBatch(System.Object sender, EventArgs e)

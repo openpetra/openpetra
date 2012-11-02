@@ -493,10 +493,15 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             }
 
             ACostCentreAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
+            AMotivationDetailAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
 
             AMainDS.AEpMatch.DefaultView.Sort =
                 AEpMatchTable.GetActionDBName() + ", " +
                 AEpMatchTable.GetMatchTextDBName();
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Creating gift batch"),
+                AMainDS.AEpTransaction.DefaultView.Count + 10);
 
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
@@ -560,8 +565,14 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 AEpMatchTable.GetActionDBName() + ", " +
                 AEpMatchTable.GetMatchTextDBName();
 
+            int counter = 5;
+
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Preparing the gifts"),
+                    counter++);
+
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
 
                 DataRowView[] matches = AMainDS.AEpMatch.DefaultView.FindRows(new object[] {
@@ -607,8 +618,30 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         detail.RecipientKey = match.RecipientKey;
                         detail.RecipientLedgerNumber = match.RecipientLedgerNumber;
 
+                        if (detail.CostCentreCode.Length == 0)
+                        {
+                            // try to retrieve the current costcentre for this recipient
+                            if (detail.RecipientKey != 0)
+                            {
+                                detail.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(detail.RecipientKey);
+
+                                detail.CostCentreCode = TGiftTransactionWebConnector.IdentifyPartnerCostCentre(detail.LedgerNumber,
+                                    detail.RecipientLedgerNumber);
+                            }
+                            else
+                            {
+                                AMotivationDetailRow motivation = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
+                                    new object[] { ALedgerNumber, detail.MotivationGroupCode, detail.MotivationDetailCode });
+
+                                if (motivation != null)
+                                {
+                                    detail.CostCentreCode = motivation.CostCentreCode;
+                                }
+                            }
+                        }
+
                         // check for active cost centre
-                        ACostCentreRow costcentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, match.CostCentreCode });
+                        ACostCentreRow costcentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, detail.CostCentreCode });
 
                         if ((costcentre == null) || !costcentre.CostCentreActiveFlag)
                         {
@@ -623,6 +656,10 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 }
             }
 
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Submit to database"),
+                counter++);
+
             if (AVerificationResult.HasCriticalErrors)
             {
                 return -1;
@@ -636,6 +673,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             TSubmitChangesResult result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS,
                 out VerificationResultSubmitChanges);
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             if (result == TSubmitChangesResult.scrOK)
             {
