@@ -86,13 +86,14 @@ namespace Ict.Tools.GenerateGlue
                 if (namespaceRoot.Children.Count < 1)
                 {
                     Console.WriteLine("problems with parsing namespaces from " + OutputDir + "/Server/lib/");
-                    return;
+                    Environment.Exit(-1);
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
+                Environment.Exit(-1);
                 return;
             }
 

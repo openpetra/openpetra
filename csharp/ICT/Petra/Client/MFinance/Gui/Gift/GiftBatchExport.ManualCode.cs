@@ -302,7 +302,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                sw1 = new StreamWriter(fileName);
+                sw1 = new StreamWriter(fileName,
+                    false,
+                    Encoding.GetEncoding(TAppSettingsManager.GetInt32("ExportGiftBatchEncoding", 1252)));
                 sw1.Write(exportString);
             }
             finally

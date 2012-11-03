@@ -40,6 +40,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -196,6 +197,14 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             BankImportTDS ResultDataset = new BankImportTDS();
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Load Bank Statement"),
+                8);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("loading statement"),
+                0);
+
             try
             {
                 AEpStatementAccess.LoadByPrimaryKey(ResultDataset, AStatementKey, Transaction);
@@ -211,7 +220,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, Transaction);
 
-                AEpMatchAccess.LoadViaALedger(ResultDataset, ResultDataset.AEpStatement[0].LedgerNumber, Transaction);
+                BankImportTDS TempDataset = new BankImportTDS();
+                AEpTransactionAccess.LoadViaAEpStatement(TempDataset, AStatementKey, Transaction);
+                AEpMatchAccess.LoadViaALedger(TempDataset, ResultDataset.AEpStatement[0].LedgerNumber, Transaction);
 
                 // load all bankingdetails and partner shortnames related to this statement
                 string sqlLoadPartnerByBankAccount =
@@ -230,41 +241,92 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 DataTable PartnerByBankAccount = DBAccess.GDBAccessObj.SelectDT(sqlLoadPartnerByBankAccount, "partnerByBankAccount", Transaction);
                 PartnerByBankAccount.DefaultView.Sort = "BranchCode, BankAccountNumber";
 
+                // get all recipients that have been merged
+                string sqlGetMergedRecipients =
+                    string.Format(
+                        "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, p.p_status_code_c AS StatusCode FROM PUB_a_ep_match m, PUB_p_partner p " +
+                        "WHERE (m.p_recipient_key_n = p.p_partner_key_n OR m.p_donor_key_n = p.p_partner_key_n) AND p.p_status_code_c = '{0}'",
+                        MPartnerConstants.PARTNERSTATUS_MERGED);
+                DataTable MergedPartners = DBAccess.GDBAccessObj.SelectDT(sqlGetMergedRecipients, "mergedPartners", Transaction);
+                MergedPartners.DefaultView.Sort = "PartnerKey";
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
                 string BankAccountCode = ResultDataset.AEpStatement[0].BankAccountCode;
 
-                DataView EpMatchView = new DataView(ResultDataset.AEpMatch,
-                    string.Empty,
-                    AEpMatchTable.GetMatchTextDBName(),
-                    DataViewRowState.CurrentRows);
+                TempDataset.AEpMatch.DefaultView.Sort = AEpMatchTable.GetMatchTextDBName();
 
                 SortedList <string, AEpMatchRow>MatchesToAddLater = new SortedList <string, AEpMatchRow>();
+
+                int count = 0;
 
                 // load the matches or create new matches
                 foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
                 {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("finding matches"),
+                        3 + (count * 3.0m / ResultDataset.AEpTransaction.Rows.Count));
+                    count++;
+
+                    BankImportTDSAEpTransactionRow tempTransactionRow =
+                        (BankImportTDSAEpTransactionRow)TempDataset.AEpTransaction.Rows.Find(
+                            new object[] {
+                                row.StatementKey,
+                                row.Order,
+                                row.DetailKey
+                            });
+
                     // find a match with the same match text, or create a new one
                     if (row.IsMatchTextNull() || (row.MatchText.Length == 0) || !row.MatchText.StartsWith(BankAccountCode))
                     {
                         row.MatchText = TBankImportMatching.CalculateMatchText(BankAccountCode, row);
+
+                        tempTransactionRow.MatchText = row.MatchText;
                     }
 
-                    DataRowView[] matches = EpMatchView.FindRows(row.MatchText);
+                    DataRowView[] matches = TempDataset.AEpMatch.DefaultView.FindRows(row.MatchText);
 
                     if (matches.Length > 0)
                     {
+                        Decimal sum = 0.0m;
+
                         // update the recent date
                         foreach (DataRowView rv in matches)
                         {
                             AEpMatchRow r = (AEpMatchRow)rv.Row;
+
+                            sum += r.GiftTransactionAmount;
+
+                            // check if the recipient key is still valid. could be that they have married, and merged into another family record
+                            if ((r.RecipientKey != 0)
+                                && (MergedPartners.DefaultView.FindRows(r.RecipientKey).Length > 0))
+                            {
+                                TLogging.LogAtLevel(1, "partner has been merged: " + r.RecipientKey.ToString());
+                                r.RecipientKey = 0;
+                                r.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+                            }
+
+                            // check if the donor key is still valid. could be that they have married, and merged into another family record
+                            if ((r.DonorKey != 0)
+                                && (MergedPartners.DefaultView.FindRows(r.DonorKey).Length > 0))
+                            {
+                                TLogging.LogAtLevel(1, "partner has been merged: " + r.DonorKey.ToString());
+                                r.DonorKey = 0;
+                                r.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+                            }
 
                             if (r.RecentMatch < row.DateEffective)
                             {
                                 r.RecentMatch = row.DateEffective;
                             }
 
-                            row.EpMatchKey = r.EpMatchKey;
+                            if (row.IsEpMatchKeyNull() || ((row.EpMatchKey != r.EpMatchKey) && (r.Detail == 0)))
+                            {
+                                row.EpMatchKey = r.EpMatchKey;
+                                tempTransactionRow.EpMatchKey = row.EpMatchKey;
+                            }
+
+                            // do not modify tempRow.MatchAction, because that will not be stored in the database anyway, just costs time
                             row.MatchAction = r.Action;
 
                             if (r.IsDonorKeyNull() || (r.DonorKey <= 0))
@@ -272,12 +334,24 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                                 FindDonorByAccountNumber(r, PartnerByBankAccount.DefaultView, row.BranchCode, row.BankAccountNumber);
                             }
                         }
+
+                        if (sum != row.TransactionAmount)
+                        {
+                            TLogging.Log("we should drop this match since the total is wrong: " + row.Description);
+                            row.MatchAction = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+
+                            foreach (DataRowView rv in matches)
+                            {
+                                AEpMatchRow r = (AEpMatchRow)rv.Row;
+                                r.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+                            }
+                        }
                     }
                     else if (!MatchesToAddLater.ContainsKey(row.MatchText))
                     {
                         // create new match
-                        AEpMatchRow tempRow = ResultDataset.AEpMatch.NewRowTyped(true);
-                        tempRow.EpMatchKey = (ResultDataset.AEpMatch.Count + MatchesToAddLater.Count + 1) * -1;
+                        AEpMatchRow tempRow = TempDataset.AEpMatch.NewRowTyped(true);
+                        tempRow.EpMatchKey = (TempDataset.AEpMatch.Count + MatchesToAddLater.Count + 1) * -1;
                         tempRow.Detail = 0;
                         tempRow.MatchText = row.MatchText;
                         tempRow.LedgerNumber = ALedgerNumber;
@@ -311,20 +385,28 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         MatchesToAddLater.Add(tempRow.MatchText, tempRow);
 
                         row.EpMatchKey = tempRow.EpMatchKey;
+                        tempTransactionRow.EpMatchKey = row.EpMatchKey;
+
+                        // do not modify tempRow.MatchAction, because that will not be stored in the database anyway, just costs time
                         row.MatchAction = tempRow.Action;
                     }
                 }
 
                 // for speed reasons, add the new rows after clearing the sort on the view
-                EpMatchView.Sort = string.Empty;
+                TempDataset.AEpMatch.DefaultView.Sort = string.Empty;
 
                 foreach (AEpMatchRow m in MatchesToAddLater.Values)
                 {
-                    ResultDataset.AEpMatch.Rows.Add(m);
+                    TempDataset.AEpMatch.Rows.Add(m);
                 }
 
-                ResultDataset.AEpMatch.ThrowAwayAfterSubmitChanges = true;
-                BankImportTDSAccess.SubmitChanges(ResultDataset, out VerificationResult);
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("save matches"),
+                    7);
+
+                TempDataset.ThrowAwayAfterSubmitChanges = true;
+                // only store a_ep_transactions and a_ep_matches, but without additional typed fields (ie MatchAction)
+                BankImportTDSAccess.SubmitChanges(TempDataset.GetChangesTyped(true), out VerificationResult);
             }
             catch (Exception e)
             {
@@ -366,6 +448,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             ResultDataset.ACostCentre.Clear();
 
             ResultDataset.AcceptChanges();
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             return ResultDataset;
         }
@@ -425,10 +509,15 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             }
 
             ACostCentreAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
+            AMotivationDetailAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
 
             AMainDS.AEpMatch.DefaultView.Sort =
                 AEpMatchTable.GetActionDBName() + ", " +
                 AEpMatchTable.GetMatchTextDBName();
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Creating gift batch"),
+                AMainDS.AEpTransaction.DefaultView.Count + 10);
 
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
@@ -492,8 +581,14 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 AEpMatchTable.GetActionDBName() + ", " +
                 AEpMatchTable.GetMatchTextDBName();
 
+            int counter = 5;
+
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Preparing the gifts"),
+                    counter++);
+
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
 
                 DataRowView[] matches = AMainDS.AEpMatch.DefaultView.FindRows(new object[] {
@@ -539,8 +634,30 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         detail.RecipientKey = match.RecipientKey;
                         detail.RecipientLedgerNumber = match.RecipientLedgerNumber;
 
+                        if (detail.CostCentreCode.Length == 0)
+                        {
+                            // try to retrieve the current costcentre for this recipient
+                            if (detail.RecipientKey != 0)
+                            {
+                                detail.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(detail.RecipientKey);
+
+                                detail.CostCentreCode = TGiftTransactionWebConnector.IdentifyPartnerCostCentre(detail.LedgerNumber,
+                                    detail.RecipientLedgerNumber);
+                            }
+                            else
+                            {
+                                AMotivationDetailRow motivation = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
+                                    new object[] { ALedgerNumber, detail.MotivationGroupCode, detail.MotivationDetailCode });
+
+                                if (motivation != null)
+                                {
+                                    detail.CostCentreCode = motivation.CostCentreCode;
+                                }
+                            }
+                        }
+
                         // check for active cost centre
-                        ACostCentreRow costcentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, match.CostCentreCode });
+                        ACostCentreRow costcentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, detail.CostCentreCode });
 
                         if ((costcentre == null) || !costcentre.CostCentreActiveFlag)
                         {
@@ -555,6 +672,10 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 }
             }
 
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Submit to database"),
+                counter++);
+
             if (AVerificationResult.HasCriticalErrors)
             {
                 return -1;
@@ -568,6 +689,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             TSubmitChangesResult result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS,
                 out VerificationResultSubmitChanges);
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             if (result == TSubmitChangesResult.scrOK)
             {

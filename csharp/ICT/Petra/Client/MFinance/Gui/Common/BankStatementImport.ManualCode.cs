@@ -26,6 +26,7 @@ using System.Data;
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
@@ -39,6 +40,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.Gift;
 
@@ -89,6 +91,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
+        private void GetBankStatementTransactionsAndMatches(Int32 AStatementKey)
+        {
+            // load the transactions of the selected statement, and the matches
+            FMainDS.Merge(
+                TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
+                    AStatementKey, FLedgerNumber));
+        }
+
         /// <summary>
         /// select the bank statement that should be loaded
         /// </summary>
@@ -103,9 +113,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             FMainDS.AMotivationDetail.Merge(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, FLedgerNumber));
 
             // load the transactions of the selected statement, and the matches
-            FMainDS.Merge(
-                TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
-                    AStatementKey, FLedgerNumber));
+            Thread t = new Thread(() => GetBankStatementTransactionsAndMatches(AStatementKey));
+            t.Start();
+
+            TProgressDialog dialog = new TProgressDialog();
+
+            if (dialog.ShowDialog() == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            while (FMainDS.AEpStatement.Rows.Count != 1)
+            {
+                // wait for the merging of the dataset to finish in the thread
+                Thread.Sleep(300);
+            }
 
             // an old version of the CSV import plugin did not set the potential gift typecode
             foreach (AEpTransactionRow r in FMainDS.AEpTransaction.Rows)
@@ -623,13 +645,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
-        private void CreateGiftBatch(System.Object sender, EventArgs e)
+        private void CreateGiftBatchThread()
         {
-            GetValuesFromScreen();
-
-            // TODO: should we first ask? also when closing the window?
-            SaveChanges();
-
             TVerificationResultCollection VerificationResult;
             Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
                 FLedgerNumber,
@@ -656,6 +673,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                         Catalog.GetString("Problem: No gift batch has been created"));
                 }
             }
+        }
+
+        private void CreateGiftBatch(System.Object sender, EventArgs e)
+        {
+            GetValuesFromScreen();
+
+            // TODO: should we first ask? also when closing the window?
+            SaveChanges();
+
+            // load the transactions of the selected statement, and the matches
+            Thread t = new Thread(() => CreateGiftBatchThread());
+            t.Start();
+
+            TProgressDialog dialog = new TProgressDialog();
+
+            dialog.ShowDialog();
         }
 
         private void CreateGLBatch(System.Object sender, EventArgs e)
@@ -692,17 +725,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
-        /// <summary>
-        /// this is useful for the situation, where we are using OpenPetra only for the bankimport,
-        /// but need to post the gift batches in the old Petra 2.x database
-        /// </summary>
-        private void ExportGiftBatch(System.Object sender, EventArgs e)
+        private void ExportGiftBatchThread()
         {
-            GetValuesFromScreen();
-
-            // TODO: should we first ask? also when closing the window?
-            SaveChanges();
-
             TVerificationResultCollection VerificationResult;
             Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
                 FLedgerNumber,
@@ -750,6 +774,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
+        /// <summary>
+        /// this is useful for the situation, where we are using OpenPetra only for the bankimport,
+        /// but need to post the gift batches in the old Petra 2.x database
+        /// </summary>
+        private void ExportGiftBatch(System.Object sender, EventArgs e)
+        {
+            GetValuesFromScreen();
+
+            // TODO: should we first ask? also when closing the window?
+            SaveChanges();
+
+            // load the transactions of the selected statement, and the matches
+            Thread t = new Thread(() => ExportGiftBatchThread());
+            t.Start();
+
+            TProgressDialog dialog = new TProgressDialog();
+
+            dialog.ShowDialog();
+        }
+
         private void PrintReport(System.Object sender, EventArgs e)
         {
             if (FMainDS.AEpTransaction.DefaultView.Count == 0)
@@ -774,25 +818,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             if (rbtListAll.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
+                    PrintHTML(
+                        CurrentStatement,
+                        FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Full bank statement") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtListUnmatchedGift.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
+                    PrintHTML(
+                        CurrentStatement,
+                        FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Unmatched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtListUnmatchedGL.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
+                    PrintHTML(
+                        CurrentStatement,
+                        FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Unmatched GL") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtListGift.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
+                    PrintHTML(
+                        CurrentStatement,
+                        FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Matched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
 
@@ -822,7 +874,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         /// <summary>
         /// dump unmatched gifts or other transactions to a HTML table for printing
         /// </summary>
-        private static string PrintHTML(DataView AEpTransactions, AEpMatchTable AMatches, string ATitle)
+        private static string PrintHTML(
+            AEpStatementRow ACurrentStatement,
+            DataView AEpTransactions, AEpMatchTable AMatches, string ATitle)
         {
             string letterTemplateFilename = TAppSettingsManager.GetValue("BankImport.ReportHTMLTemplate", false);
 
@@ -847,6 +901,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             msg = msg.Replace("#TITLE", ATitle);
             msg = msg.Replace("#PRINTDATE", DateTime.Now.ToShortDateString());
+
+            if (!ACurrentStatement.IsIdFromBankNull())
+            {
+                msg = msg.Replace("#STATEMENTNR", ACurrentStatement.IdFromBank);
+            }
+
+            if (!ACurrentStatement.IsStartBalanceNull())
+            {
+                msg = msg.Replace("#STARTBALANCE", String.Format("{0:N}", ACurrentStatement.StartBalance));
+            }
+
+            if (!ACurrentStatement.IsEndBalanceNull())
+            {
+                msg = msg.Replace("#ENDBALANCE", String.Format("{0:N}", ACurrentStatement.EndBalance));
+            }
 
             // recognise detail lines automatically
             string RowTemplate;
@@ -904,7 +973,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 }
                 else
                 {
-                    rowToPrint = rowToPrint.Replace("#RECIPIENTDESCRIPTION", string.Empty);
+                    // extra space for unmatched gifts
+                    rowToPrint = rowToPrint.Replace("#RECIPIENTDESCRIPTION", "<br/><br/><br/>");
                 }
 
                 if (!match.IsDonorKeyNull() && (match.DonorKey > 0))
