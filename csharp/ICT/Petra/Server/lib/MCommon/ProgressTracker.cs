@@ -41,7 +41,18 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
     public class TProgressTrackerWebConnector
     {
         /// <summary>
-        ///
+        /// reset the tracker
+        /// </summary>
+        [RequireModulePermission("NONE")]
+        public static bool Reset()
+        {
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), string.Empty, 100.0m);
+
+            return true;
+        }
+
+        /// <summary>
+        /// get the current state
         /// </summary>
         [RequireModulePermission("NONE")]
         public static bool GetCurrentState(out string ACaption, out string AStatusMessage, out int APercentageDone, out bool AJobFinished)

@@ -478,6 +478,10 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             Int32 AGiftBatchNumber,
             out TVerificationResultCollection AVerificationResult)
         {
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Creating gift batch"),
+                AMainDS.AEpTransaction.DefaultView.Count + 10);
+
             AVerificationResult = new TVerificationResultCollection();
 
             AMainDS.AEpTransaction.DefaultView.RowFilter =
@@ -514,10 +518,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             AMainDS.AEpMatch.DefaultView.Sort =
                 AEpMatchTable.GetActionDBName() + ", " +
                 AEpMatchTable.GetMatchTextDBName();
-
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Creating gift batch"),
-                AMainDS.AEpTransaction.DefaultView.Count + 10);
 
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
