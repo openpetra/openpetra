@@ -725,17 +725,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
-        /// <summary>
-        /// this is useful for the situation, where we are using OpenPetra only for the bankimport,
-        /// but need to post the gift batches in the old Petra 2.x database
-        /// </summary>
-        private void ExportGiftBatch(System.Object sender, EventArgs e)
+        private void ExportGiftBatchThread()
         {
-            GetValuesFromScreen();
-
-            // TODO: should we first ask? also when closing the window?
-            SaveChanges();
-
             TVerificationResultCollection VerificationResult;
             Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
                 FLedgerNumber,
@@ -781,6 +772,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                         Catalog.GetString("Problem: No gift batch has been created"));
                 }
             }
+        }
+
+        /// <summary>
+        /// this is useful for the situation, where we are using OpenPetra only for the bankimport,
+        /// but need to post the gift batches in the old Petra 2.x database
+        /// </summary>
+        private void ExportGiftBatch(System.Object sender, EventArgs e)
+        {
+            GetValuesFromScreen();
+
+            // TODO: should we first ask? also when closing the window?
+            SaveChanges();
+
+            // load the transactions of the selected statement, and the matches
+            Thread t = new Thread(() => ExportGiftBatchThread());
+            t.Start();
+
+            TProgressDialog dialog = new TProgressDialog();
+
+            dialog.ShowDialog();
         }
 
         private void PrintReport(System.Object sender, EventArgs e)
