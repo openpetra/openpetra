@@ -1,0 +1,5 @@
+<configuration>
+  <appSettings>
+    <add key="YAMLDemodataPath" value="C:\openpetraorg\trunk\csharp\ICT\Testing\exe\Controls\ControlTestBench\Demodata" />
+</appSettings>
+</configuration>
