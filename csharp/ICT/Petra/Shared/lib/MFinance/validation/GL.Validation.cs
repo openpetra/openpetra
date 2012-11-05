@@ -97,6 +97,51 @@ namespace Ict.Petra.Shared.MFinance.Validation
         }
 
         /// <summary>
+        /// Validates the GL Batch data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
+        public static bool ValidateGLJournalManual(object AContext, AJournalRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TScreenVerificationResult VerificationResult;
+            string ValidationContext;
+            int VerifResultCollAddedCount = 0;
+
+            // Don't validate deleted or posted DataRows
+            if ((ARow.RowState == DataRowState.Deleted) || (ARow.JournalStatus == MFinanceConstants.BATCH_POSTED))
+            {
+                return true;
+            }
+
+            // 'Exchange Rate' must be greater than 0
+            ValidationColumn = ARow.Table.Columns[AJournalTable.ColumnExchangeRateToBaseId];
+            ValidationContext = ARow.JournalNumber.ToString() + " of Batch Number: " + ARow.BatchNumber.ToString();
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
+                    ValidationControlsData.ValidationControlLabel + " of Journal Number: " + ValidationContext.ToString(),
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            return VerifResultCollAddedCount == 0;
+        }
+
+        /// <summary>
         /// Validates the GL Detail data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
