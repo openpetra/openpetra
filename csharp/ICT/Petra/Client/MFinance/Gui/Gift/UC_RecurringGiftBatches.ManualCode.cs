@@ -466,8 +466,71 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
+            if (ARow == null)
+            {
+                return;
+            }
+
+            //Hash total special case in view of the textbox handling
+            ParseHashTotal(ARow);
+
             TSharedFinanceValidation_Gift.ValidateRecurringGiftBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
+        }
+
+        private void ParseHashTotal(ARecurringGiftBatchRow ARow)
+        {
+            decimal correctHashValue;
+            string hashTotal = txtDetailHashTotal.Text.Trim();
+            string hashNumericPart = string.Empty;
+            decimal hashDecimalVal;
+            Int32 hashTotalIndexOfLastNumeric = -1;
+            bool isNumericVal;
+
+            if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+            {
+                correctHashValue = 0m;
+            }
+            else if (hashTotal.Contains(" "))
+            {
+                hashNumericPart = hashTotal.Substring(0, hashTotal.IndexOf(' '));
+
+                if (!Decimal.TryParse(hashNumericPart, out hashDecimalVal))
+                {
+                    correctHashValue = 0m;
+                }
+                else
+                {
+                    correctHashValue = hashDecimalVal;
+                }
+            }
+            else
+            {
+                hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+
+                if (hashTotalIndexOfLastNumeric > -1)
+                {
+                    hashNumericPart = hashTotal.Substring(0, hashTotalIndexOfLastNumeric + 1);
+                    isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
+
+                    if (!isNumericVal)
+                    {
+                        correctHashValue = 0m;
+                    }
+                    else
+                    {
+                        //hashTotal = hashTotal.Insert(hashNumericPart.Length, " ");
+                        correctHashValue = hashDecimalVal;
+                    }
+                }
+                else
+                {
+                    correctHashValue = 0m;
+                }
+            }
+
+            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            ARow.HashTotal = correctHashValue;
         }
     }
 }

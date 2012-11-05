@@ -49,7 +49,7 @@ RootNode:
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
         cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
         cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
-        txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged}
+        txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged, Validation=true}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList,OnChange=MethodOfPaymentChanged}
         rgrDetailGiftType:

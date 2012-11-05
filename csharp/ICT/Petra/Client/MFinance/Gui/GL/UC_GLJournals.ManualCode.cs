@@ -451,7 +451,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.FPreviouslySelectedDetailRow = null;
         }
-        
+
         private void ValidateDataDetailsManual(AJournalRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -459,8 +459,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TSharedFinanceValidation_GL.ValidateGLJournalManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
         }
-
-        
-        
     }
 }
