@@ -75,6 +75,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FMainDS.AcceptChanges();
 
+            FMainDS.ARecurringGiftBatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
+                AGiftBatchTable.GetLedgerNumberDBName(),
+                AGiftBatchTable.GetBatchNumberDBName()
+                );
+
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
@@ -350,8 +355,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-            	((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-            	((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                ((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
             }
         }
 
@@ -530,8 +535,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
-            ARow.HashTotal = correctHashValue;
+            if (txtDetailHashTotal.NumberValueDecimal != correctHashValue)
+            {
+                txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            }
+
+            if (ARow.HashTotal != correctHashValue)
+            {
+                ARow.HashTotal = correctHashValue;
+            }
         }
     }
 }

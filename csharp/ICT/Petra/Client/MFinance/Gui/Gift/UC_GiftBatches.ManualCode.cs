@@ -1110,7 +1110,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                     else
                     {
-                        //hashTotal = hashTotal.Insert(hashNumericPart.Length, " ");
                         correctHashValue = hashDecimalVal;
                     }
                 }
@@ -1120,8 +1119,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
-            ARow.HashTotal = correctHashValue;
+            if (txtDetailHashTotal.NumberValueDecimal != correctHashValue)
+            {
+                txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            }
+
+            if (ARow.HashTotal != correctHashValue)
+            {
+                ARow.HashTotal = correctHashValue;
+            }
         }
     }
 }
