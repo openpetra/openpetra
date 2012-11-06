@@ -350,7 +350,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                ((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
+            	((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+            	((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
             }
         }
 
