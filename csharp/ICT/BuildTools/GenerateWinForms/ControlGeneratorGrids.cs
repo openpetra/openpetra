@@ -176,6 +176,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             //A list of table columns that should contain the word Detail (separated by a |)
             //  Just add accordingly
             TableFields.Add("AGiftDetail|DetailNumber");
+            TableFields.Add("ARecurringGiftDetail|DetailNumber");
 
             return TableFields.Contains(ATableName + "|" + AFieldName);
         }
