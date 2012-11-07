@@ -118,6 +118,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(ALedgerNumber, ABatchNumber));
             }
 
+            FMainDS.ARecurringGiftDetail.DefaultView.Sort = string.Format("{0} ASC, {1} ASC",
+                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                AGiftDetailTable.GetDetailNumberDBName());
+
             ShowData();
             ShowDetails();
 

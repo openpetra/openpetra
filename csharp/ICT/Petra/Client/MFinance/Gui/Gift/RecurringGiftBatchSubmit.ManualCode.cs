@@ -130,8 +130,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //check the gift batch date
             if (dtpEffectiveDate.Date < FStartDateCurrentPeriod)
             {
-                dtpEffectiveDate.Date = FStartDateCurrentPeriod;
-                MessageBox.Show(Catalog.GetString("Your date was before the allowed posting period start date."));
+                MessageBox.Show(Catalog.GetString("Your date was before the allowed posting period start date: " +
+                        FStartDateCurrentPeriod.ToShortDateString()));
                 dtpEffectiveDate.Focus();
                 dtpEffectiveDate.SelectAll();
                 return;
@@ -139,11 +139,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (dtpEffectiveDate.Date > FEndDateLastForwardingPeriod)
             {
-                dtpEffectiveDate.Date = FEndDateLastForwardingPeriod;
-                MessageBox.Show(Catalog.GetString("Your date was later than the allowed posting period end date."));
+                MessageBox.Show(Catalog.GetString("Your date was later than the allowed posting period end date: " +
+                        FEndDateLastForwardingPeriod.ToShortDateString()));
                 dtpEffectiveDate.Focus();
                 dtpEffectiveDate.SelectAll();
                 return;
+            }
+
+            //Check if any details have been loaded yet
+            FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = ARecurringGiftDetailTable.GetBatchNumberDBName() + "=" + FBatchNumber.ToString();
+
+            if (FMainDS.ARecurringGiftDetail.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, FBatchNumber));
             }
 
             foreach (ARecurringGiftRow gift in FMainDS.ARecurringGift.Rows)
@@ -180,14 +188,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 requestParams.Add("ALedgerNumber", FLedgerNumber);
                 requestParams.Add("ABatchNumber", FBatchNumber);
                 requestParams.Add("AExchangeRateToBase", Convert.ToDecimal(txtExchangeRateToBase.Text));
-                requestParams.Add("AEffectiveDate", dtpEffectiveDate.Date);
+                requestParams.Add("AEffectiveDate", dtpEffectiveDate.Date.Value);
                 TVerificationResultCollection AMessages;
 
                 Boolean submitOK = TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch(requestParams, out AMessages);
 
                 if (submitOK)
                 {
-                    MessageBox.Show(Catalog.GetString("Your recurring batch  was submitted successfully!"),
+                    MessageBox.Show(Catalog.GetString("Your recurring batch was submitted successfully!"),
                         Catalog.GetString("Success"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
@@ -213,7 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // TODO
         }
 
-        private void BatchDateDateChanged(object sender, EventArgs e)
+        private void CheckBatchEffectiveDate(object sender, EventArgs e)
         {
             DateTime dateValue;
             string aDate = dtpEffectiveDate.Text;
@@ -228,6 +236,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 MessageBox.Show(Catalog.GetString("Invalid date entered!"));
+                dtpEffectiveDate.Focus();
+                dtpEffectiveDate.SelectAll();
             }
         }
 
