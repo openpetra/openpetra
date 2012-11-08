@@ -234,12 +234,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     modules.Add("PTNRUSER");
                     modules.Add("FINANCE-1");
 
-                    // the first user must have access to the System Manager module
-                    if (SUserAccess.CountAll(Transaction) == 0)
-                    {
-                        modules.Add("SYSMAN");
-                    }
-
                     ALedgerTable theLedgers = ALedgerAccess.LoadAll(Transaction);
 
                     foreach (ALedgerRow ledger in theLedgers.Rows)

@@ -269,11 +269,11 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 // one transaction to import the user table and user permissions. otherwise logging in will not be possible if other import fails?
                 bool success = true;
-                LoadTable("s_user", ymlParser, Transaction);
+                success = success && LoadTable("s_user", ymlParser, Transaction);
                 success = success && LoadTable("s_module", ymlParser, Transaction);
-                LoadTable("s_user_module_access_permission", ymlParser, Transaction);
+                success = success && LoadTable("s_user_module_access_permission", ymlParser, Transaction);
                 success = success && LoadTable("s_system_defaults", ymlParser, Transaction);
-                LoadTable("s_system_status", ymlParser, Transaction);
+                success = success && LoadTable("s_system_status", ymlParser, Transaction);
 
                 // make sure we have the correct database version
                 TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
