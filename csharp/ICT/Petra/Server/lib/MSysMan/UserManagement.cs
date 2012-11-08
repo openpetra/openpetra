@@ -200,11 +200,19 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
             else
             {
-                IUserAuthentication auth = TUserManagerWebConnector.LoadAuthAssembly(UserAuthenticationMethod);
-
-                if (!auth.CreateUser(AUsername, APassword))
+                try
                 {
-                    newUser = null;
+                    IUserAuthentication auth = TUserManagerWebConnector.LoadAuthAssembly(UserAuthenticationMethod);
+
+                    if (!auth.CreateUser(AUsername, APassword))
+                    {
+                        newUser = null;
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log("Problem loading user authentication method " + UserAuthenticationMethod + ": " + e.ToString());
+                    return false;
                 }
             }
 
