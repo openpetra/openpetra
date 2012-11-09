@@ -65,9 +65,14 @@ namespace Ict.Petra.Shared.MCommon.Validation
         }
 
         /// <summary>
-        /// TODO
+        /// Checks wheter a given DateTime is an invalid date. A check whether it is an undefined DateTime is always performed.
+        /// If Delegate <see cref="SharedGetDateVerificationResultDelegate" /> is set up and Argument 
+        /// <paramref name="AResultControl" /> isn't null, the 'DateVerificationResult' of the TtxtPetraDate Control is 
+        /// returned by this Method through this Method if it isn't null. That way the Data Validation Framework can
+        /// use the detailed Data Verification error that is held by the Control.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
+        /// returned that contains details about the problem.</returns>
         public static TVerificationResult IsNotInvalidDate(DateTime? ADate, String ADescription,
             TVerificationResultCollection AVerificationResultCollection, bool ATreatNullAsInvalid = false, 
             object AResultContext = null, System.Data.DataColumn AResultColumn = null,
