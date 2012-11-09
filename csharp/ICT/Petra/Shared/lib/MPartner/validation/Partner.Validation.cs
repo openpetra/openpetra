@@ -28,6 +28,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -122,6 +123,93 @@ namespace Ict.Petra.Shared.MPartner.Validation
                     // Handle addition/removal to/from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Validates the Partner Detail data of a Partner of PartnerClass PERSON.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidatePartnerPersonManual(object AContext, PPersonRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // 'Date of Birth' must be valid
+            ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnDateOfBirthId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.DateOfBirth,
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, false,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'MaritalStatusSince' must be valid
+            ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnMaritalStatusSinceId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.MaritalStatusSince,
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, false,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the Partner Detail data of a Partner of PartnerClass FAMILY.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidatePartnerFamilyManual(object AContext, PFamilyRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // 'MaritalStatusSince' must be valid
+            ValidationColumn = ARow.Table.Columns[PFamilyTable.ColumnMaritalStatusSinceId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.MaritalStatusSince,
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, false,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
 
@@ -507,9 +595,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.MailingDate,
-                    ValidationControlsData.ValidationControlLabel,
-                    true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.MailingDate,
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);

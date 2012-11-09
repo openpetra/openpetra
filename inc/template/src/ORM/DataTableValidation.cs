@@ -15,6 +15,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Validation;
 using {#DATATABLENAMESPACE};
 
 namespace {#NAMESPACE}
@@ -129,8 +130,8 @@ VerificationResult = TNumericalChecks.IsNumberPrecisionNotExceeded(ARow.{#COLUMN
     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
 {##CHECKEMPTYDATE}
-VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.{#COLUMNNAME},
-    ValidationControlsData.ValidationControlLabel, true,
+VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.{#COLUMNNAME},
+    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
 {##CHECKGENERALNOTNULL}

@@ -29,6 +29,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MConference.Data;
 
 namespace Ict.Petra.Shared.MConference.Validation
@@ -67,9 +68,9 @@ namespace Ict.Petra.Shared.MConference.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection

@@ -87,6 +87,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             return ctrl.controlName + ".Date = (DateTime)" + AFieldOrNull + ";";
         }
+
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            writer.SetControlProperty(ctrl, "Description", "\"" + ctrl.Label + "\"");
+
+            return writer.FTemplate;
+        }
     }
 
     /// <summary>
