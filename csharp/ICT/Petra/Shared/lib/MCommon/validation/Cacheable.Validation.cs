@@ -357,9 +357,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -442,9 +442,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -481,9 +481,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -520,9 +520,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -559,9 +559,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -598,9 +598,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -637,9 +637,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -676,9 +676,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -715,9 +715,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.QualificationFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.QualificationDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.QualificationDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -754,9 +754,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -793,9 +793,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -832,9 +832,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);                   
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -871,9 +871,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -910,9 +910,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -949,9 +949,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -988,9 +988,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -1027,9 +1027,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -1095,9 +1095,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -1134,9 +1134,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -1173,9 +1173,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -1212,9 +1212,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -1251,9 +1251,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -1284,9 +1284,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection

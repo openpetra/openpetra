@@ -28,6 +28,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
@@ -168,9 +169,9 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.FromDate,
-                    ValidationControlsData.ValidationControlLabel, true, AContext, ValidationColumn,
-                    ValidationControlsData.ValidationControl);
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.FromDate,
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -717,9 +718,9 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.EvaluationDate,
-                    ValidationControlsData.ValidationControlLabel, true, AContext, ValidationColumn,
-                    ValidationControlsData.ValidationControl);
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.EvaluationDate,
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -733,10 +734,10 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 VerificationResult = null;
 
                 if (ARow.EvaluationType != "Leaving")
-                {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.NextEvaluationDate,
-                        ValidationControlsData.ValidationControlLabel, true, AContext, ValidationColumn,
-                        ValidationControlsData.ValidationControl);
+                {                    
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.NextEvaluationDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
