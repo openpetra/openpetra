@@ -884,7 +884,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             // ask if the user really wants to post the batch
-            if (MessageBox.Show(Catalog.GetString("Do you really want to post this gift batch?"), Catalog.GetString("Confirm posting of Gift Batch"),
+            if (MessageBox.Show(String.Format(Catalog.GetString("Do you really want to post gift batch {0}?"),
+                        FPreviouslySelectedDetailRow.BatchNumber),
+                    Catalog.GetString("Confirm posting of Gift Batch"),
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
             {
                 return;
@@ -893,9 +895,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Verifications = new TVerificationResultCollection();
 
             Thread postingThread = new Thread(() => PostGiftBatch(out Verifications));
-            postingThread.Start();
 
-            TProgressDialog dialog = new TProgressDialog();
+            TProgressDialog dialog = new TProgressDialog(postingThread);
 
             dialog.ShowDialog();
 
@@ -1135,7 +1136,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                     else
                     {
-                        //hashTotal = hashTotal.Insert(hashNumericPart.Length, " ");
                         correctHashValue = hashDecimalVal;
                     }
                 }
@@ -1145,8 +1145,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
-            ARow.HashTotal = correctHashValue;
+            if (txtDetailHashTotal.NumberValueDecimal != correctHashValue)
+            {
+                txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            }
+
+            if (ARow.HashTotal != correctHashValue)
+            {
+                ARow.HashTotal = correctHashValue;
+            }
         }
     }
 }

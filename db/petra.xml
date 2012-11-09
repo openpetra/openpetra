@@ -3915,6 +3915,13 @@
                 descr="This is the name of the file that this statement was read from; this can be used to prevent duplicate import of bank statements"
                 format="X(20)"
                 label="filename of statement"/>
+    <tablefield name="a_start_balance_n"
+                type="number"
+                length="24"
+                decimals="10"
+                descr="The start balance of the bank account at the beginning of the statement"
+                format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
+                label="Start balance"/>
     <tablefield name="a_end_balance_n"
                 type="number"
                 length="24"

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,6 +34,7 @@ using Ict.Testing.NUnitTools;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.CallForwarding;
 
 namespace Ict.Testing.NUnitPetraServer
 {
@@ -111,6 +112,8 @@ namespace Ict.Testing.NUnitPetraServer
                 new TCacheableTablesManager(null),
                 UserInfo);
             FDomain.InitAppDomain(TSrvSetting.ServerSettings);
+
+            new TCallForwarding();
 
             // we don't need to establish the database connection anymore
             // FDomain.EstablishDBConnection();

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Drawing;
 using System.Collections;
 using System.IO;
 using System.Windows.Forms;
@@ -32,6 +33,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -56,6 +58,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FBatchNumber;
         private ARecurringGiftBatchRow batchRow;
 
+        private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
+
         /// Batch number for the recurring batch to be submitted
         public ARecurringGiftBatchRow BatchRow
 
@@ -64,12 +68,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 batchRow = value;
                 FBatchNumber = batchRow.BatchNumber;
-                txtExchangeRateToBase.Text = "1"; //1.0M;
+                txtExchangeRateToBase.Text = TExchangeRateCache.GetDailyExchangeRate(
+                    FMainDS.ALedger[0].BaseCurrency,
+                    batchRow.CurrencyCode,
+                    DateTime.Now).ToString();
                 txtCurrencyCodeFrom.Text = batchRow.CurrencyCode;
+
+                if (batchRow.CurrencyCode == FMainDS.ALedger[0].BaseCurrency)
+                {
+                    txtExchangeRateToBase.Enabled = false;
+                    txtExchangeRateToBase.BackColor = Color.LightPink;
+                }
+                else
+                {
+                    txtExchangeRateToBase.Enabled = true;
+                    txtExchangeRateToBase.BackColor = Color.Empty;
+                }
             }
         }
-        DateTime StartDateCurrentPeriod;
-        DateTime EndDateLastForwardingPeriod;
+
+        DateTime FStartDateCurrentPeriod;
+        DateTime FEndDateLastForwardingPeriod;
         /// dataset for the whole screen
         public GiftBatchTDS MainDS
         {
@@ -82,11 +101,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 DateTime DefaultDate;
                 TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
-                    out StartDateCurrentPeriod,
-                    out EndDateLastForwardingPeriod,
+                    out FStartDateCurrentPeriod,
+                    out FEndDateLastForwardingPeriod,
                     out DefaultDate);
                 lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
-                    StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
+                    FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
             }
         }
 
@@ -97,19 +116,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void SubmitBatch(object sender, EventArgs e)
         {
-            //check the gift batch date
-            if (dtpEffectiveDate.Date < StartDateCurrentPeriod)
+            bool validGiftDetailFound = false;
+            decimal exchRateToBase = 0;
+
+            if (!(Decimal.TryParse(txtExchangeRateToBase.Text, out exchRateToBase) && (exchRateToBase > 0)))
             {
-                dtpEffectiveDate.Date = StartDateCurrentPeriod;
-                MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
+                MessageBox.Show(Catalog.GetString("The exchange rate must be a number greater than 0."));
+                txtExchangeRateToBase.Focus();
+                txtExchangeRateToBase.SelectAll();
                 return;
             }
 
-            if (dtpEffectiveDate.Date > EndDateLastForwardingPeriod)
+            //check the gift batch date
+            if (dtpEffectiveDate.Date < FStartDateCurrentPeriod)
             {
-                dtpEffectiveDate.Date = EndDateLastForwardingPeriod;
-                MessageBox.Show(Catalog.GetString("Your Date was outside the allowed posting period."));
+                MessageBox.Show(Catalog.GetString("Your date was before the allowed posting period start date: " +
+                        FStartDateCurrentPeriod.ToShortDateString()));
+                dtpEffectiveDate.Focus();
+                dtpEffectiveDate.SelectAll();
                 return;
+            }
+
+            if (dtpEffectiveDate.Date > FEndDateLastForwardingPeriod)
+            {
+                MessageBox.Show(Catalog.GetString("Your date was later than the allowed posting period end date: " +
+                        FEndDateLastForwardingPeriod.ToShortDateString()));
+                dtpEffectiveDate.Focus();
+                dtpEffectiveDate.SelectAll();
+                return;
+            }
+
+            //Check if any details have been loaded yet
+            FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = ARecurringGiftDetailTable.GetBatchNumberDBName() + "=" + FBatchNumber.ToString();
+
+            if (FMainDS.ARecurringGiftDetail.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, FBatchNumber));
             }
 
             foreach (ARecurringGiftRow gift in FMainDS.ARecurringGift.Rows)
@@ -120,45 +162,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     foreach (ARecurringGiftDetailRow giftDetail in FMainDS.ARecurringGiftDetail.Rows)
                     {
                         if ((giftDetail.BatchNumber == FBatchNumber)
-
                             && (giftDetail.LedgerNumber == FLedgerNumber)
                             && (giftDetail.GiftTransactionNumber == gift.GiftTransactionNumber)
-                            && ((giftDetail.StartDonations == null) || (giftDetail.StartDonations <= DateTime.Today))
-                            && ((giftDetail.EndDonations == null) || (giftDetail.EndDonations >= DateTime.Today)))
+                            && ((giftDetail.StartDonations == null) || (giftDetail.StartDonations <= dtpEffectiveDate.Date))
+                            && ((giftDetail.EndDonations == null) || (giftDetail.EndDonations >= dtpEffectiveDate.Date)))
                         {
-                            goto Found;
+                            validGiftDetailFound = true;
+                            break;
                         }
                     }
                 }
             }
 
-            MessageBox.Show(Catalog.GetString("There are no gifts in this batch that are active or ") + Environment.NewLine +
-                Catalog.GetString("where today's date falls within the Donation Period."));
-            Close();
-            return;
-Found:
-            Hashtable requestParams = new Hashtable();
-            requestParams.Add("ALedgerNumber", FLedgerNumber);
-            requestParams.Add("ABatchNumber", FBatchNumber);
-            requestParams.Add("AExchangeRateToBase", Convert.ToDecimal(txtExchangeRateToBase.Text));
-            requestParams.Add("AEffectiveDate", dtpEffectiveDate.Date);
-            TVerificationResultCollection AMessages;
-            Boolean submitOK = TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch(requestParams, out AMessages);
-
-            if (submitOK)
+            if (!validGiftDetailFound)
             {
-                MessageBox.Show(Catalog.GetString("Your recurring batch  was submitted successfully!"),
-                    Catalog.GetString("Success"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                MessageBox.Show(Catalog.GetString("There are no gifts in this batch that are active or ") + Environment.NewLine +
+                    Catalog.GetString("where the entered Gift Batch date falls within the Donation Period."));
+
+                dtpEffectiveDate.Focus();
+                dtpEffectiveDate.SelectAll();
             }
             else
             {
-                MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Submitting the batch failed!") + Environment.NewLine +
-                        Catalog.GetString("Reasons:"), AMessages));
-            }
+                Hashtable requestParams = new Hashtable();
+                requestParams.Add("ALedgerNumber", FLedgerNumber);
+                requestParams.Add("ABatchNumber", FBatchNumber);
+                requestParams.Add("AExchangeRateToBase", Convert.ToDecimal(txtExchangeRateToBase.Text));
+                requestParams.Add("AEffectiveDate", dtpEffectiveDate.Date.Value);
+                TVerificationResultCollection AMessages;
 
-            Close();
+                Boolean submitOK = TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch(requestParams, out AMessages);
+
+                if (submitOK)
+                {
+                    MessageBox.Show(Catalog.GetString("Your recurring batch was submitted successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Submitting the batch failed!") +
+                            Environment.NewLine +
+                            Catalog.GetString("Reasons:"), AMessages));
+                }
+
+                Close();
+            }
         }
 
         void BtnCloseClick(object sender, EventArgs e)
@@ -169,6 +219,47 @@ Found:
         void BtnHelpClick(object sender, EventArgs e)
         {
             // TODO
+        }
+
+        private void CheckBatchEffectiveDate(object sender, EventArgs e)
+        {
+            DateTime dateValue;
+            string aDate = dtpEffectiveDate.Text;
+
+            if (DateTime.TryParse(aDate, out dateValue))
+            {
+                txtExchangeRateToBase.Text = TExchangeRateCache.GetDailyExchangeRate(
+                    txtCurrencyCodeTo.Text,
+                    txtCurrencyCodeFrom.Text,
+                    dateValue).ToString();
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("Invalid date entered!"));
+                dtpEffectiveDate.Focus();
+                dtpEffectiveDate.SelectAll();
+            }
+        }
+
+        private void SetExchangeRateValue(Object sender, EventArgs e)
+        {
+            TFrmSetupDailyExchangeRate setupDailyExchangeRate =
+                new TFrmSetupDailyExchangeRate(FPetraUtilsObject.GetForm());
+
+            if (setupDailyExchangeRate.ShowDialog(FLedgerNumber, dtpEffectiveDate.Date.Value,
+                    txtCurrencyCodeFrom.Text,
+                    DEFAULT_CURRENCY_EXCHANGE) == DialogResult.Cancel)
+            {
+                return;
+            }
+
+//            if (FPreviouslySelectedDetailRow.ExchangeRateToBase != setupDailyExchangeRate.CurrencyExchangeRate)
+//            {
+//                //Enforce save needed condition
+//                FPetraUtilsObject.SetChangedFlag();
+//            }
+
+            txtExchangeRateToBase.Text = setupDailyExchangeRate.CurrencyExchangeRate.ToString();
         }
     }
 }

@@ -108,6 +108,19 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                     // find the donor for this transaction, by his bank account number
                     Int64 DonorKey = GetDonorByBankAccountNumber(MainDS, transaction.BranchCode, transaction.BankAccountNumber);
 
+                    if (transaction.BankAccountNumber.Length == 0)
+                    {
+                        // useful for NUnit testing for csv import: partnerkey in description
+                        try
+                        {
+                            DonorKey = Convert.ToInt64(transaction.Description);
+                        }
+                        catch (Exception)
+                        {
+                            DonorKey = -1;
+                        }
+                    }
+
                     if (DonorKey == -1)
                     {
                         continue;
@@ -425,6 +438,19 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 {
                     // problem: what if bank account is used by several donors?
                     Int64 DonorKey = GetDonorByBankAccountNumber(AMainDS, transaction.BranchCode, transaction.BankAccountNumber);
+
+                    if (transaction.BankAccountNumber.Length == 0)
+                    {
+                        // useful for NUnit testing for csv import: partnerkey in description
+                        try
+                        {
+                            DonorKey = Convert.ToInt64(transaction.Description);
+                        }
+                        catch (Exception)
+                        {
+                            DonorKey = -1;
+                        }
+                    }
 
                     // look for gifts that match the donor (identified by account number) and the transaction amount
                     DataRowView[] GiftDetailsWithAmount = GiftDetailWithAmountView.FindRows(

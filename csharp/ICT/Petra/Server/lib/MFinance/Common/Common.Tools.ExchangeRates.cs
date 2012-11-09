@@ -415,7 +415,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ACurrencyFrom"></param>
         /// <param name="ACurrencyTo"></param>
         /// <param name="ADateEffective"></param>
-        /// <returns></returns>
+        /// <returns>Zero if no exchange rate found</returns>
         public static decimal GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
         {
             if (ACurrencyFrom == ACurrencyTo)
@@ -496,7 +496,9 @@ namespace Ict.Petra.Server.MFinance.Common
 
             TLogging.Log("Cannot find exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
 
-            return 1.0M;
+            //return 1.0M;
+            //Instead, cause a validation error to force the user to select an exchange rate
+            return 0M;
         }
 
         /// <summary>

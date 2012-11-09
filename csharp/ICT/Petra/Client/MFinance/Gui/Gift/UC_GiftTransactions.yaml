@@ -77,7 +77,7 @@ RootNode:
             Dock: Fill
             Scrollbars: true
             # TODO: split gifts
-            Controls: {TabOrder=Horizontal}
+            Controls:
                 Row0: [txtDetailDonorKey]
                 Row1: [cmbDetailMethodOfGivingCode, cmbDetailMethodOfPaymentCode]
                 Row2: [txtDetailReference,cmbDetailReceiptLetterCode]

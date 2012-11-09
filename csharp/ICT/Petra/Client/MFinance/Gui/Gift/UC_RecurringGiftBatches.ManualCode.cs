@@ -75,6 +75,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FMainDS.AcceptChanges();
 
+            FMainDS.ARecurringGiftBatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
+                AGiftBatchTable.GetLedgerNumberDBName(),
+                AGiftBatchTable.GetBatchNumberDBName()
+                );
+
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
@@ -350,6 +355,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 ((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
             }
         }
@@ -466,8 +472,78 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
+            if (ARow == null)
+            {
+                return;
+            }
+
+            //Hash total special case in view of the textbox handling
+            ParseHashTotal(ARow);
+
             TSharedFinanceValidation_Gift.ValidateRecurringGiftBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
+        }
+
+        private void ParseHashTotal(ARecurringGiftBatchRow ARow)
+        {
+            decimal correctHashValue;
+            string hashTotal = txtDetailHashTotal.Text.Trim();
+            string hashNumericPart = string.Empty;
+            decimal hashDecimalVal;
+            Int32 hashTotalIndexOfLastNumeric = -1;
+            bool isNumericVal;
+
+            if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+            {
+                correctHashValue = 0m;
+            }
+            else if (hashTotal.Contains(" "))
+            {
+                hashNumericPart = hashTotal.Substring(0, hashTotal.IndexOf(' '));
+
+                if (!Decimal.TryParse(hashNumericPart, out hashDecimalVal))
+                {
+                    correctHashValue = 0m;
+                }
+                else
+                {
+                    correctHashValue = hashDecimalVal;
+                }
+            }
+            else
+            {
+                hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+
+                if (hashTotalIndexOfLastNumeric > -1)
+                {
+                    hashNumericPart = hashTotal.Substring(0, hashTotalIndexOfLastNumeric + 1);
+                    isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
+
+                    if (!isNumericVal)
+                    {
+                        correctHashValue = 0m;
+                    }
+                    else
+                    {
+                        //hashTotal = hashTotal.Insert(hashNumericPart.Length, " ");
+                        correctHashValue = hashDecimalVal;
+                    }
+                }
+                else
+                {
+                    correctHashValue = 0m;
+                }
+            }
+
+            if (txtDetailHashTotal.NumberValueDecimal != correctHashValue)
+            {
+                txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            }
+
+            if (ARow.HashTotal != correctHashValue)
+            {
+                ARow.HashTotal = correctHashValue;
+            }
         }
     }
 }
