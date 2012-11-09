@@ -302,6 +302,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = null;
+            DateTime ADateEffective;
             try
             {
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
@@ -310,7 +311,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (!batchSelected)
                 {
-                    DateTime ADateEffective = (DateTime)requestParams["GlEffectiveDate"];
+                    ADateEffective = (DateTime)requestParams["GlEffectiveDate"];
                     AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
                     AGiftBatchRow oldGiftBatch = MainDS.AGiftBatch[0];
                     TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
@@ -344,6 +345,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ANewBatchNumber, Transaction);
                     giftBatch = MainDS.AGiftBatch[0];
+                    ADateEffective = giftBatch.GlEffectiveDate;
                 }
 
                 if (Function.Equals("ReverseGiftBatch"))
@@ -389,6 +391,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             DataUtilities.CopyAllColumnValuesWithoutPK(oldGift, gift);
                             gift.LedgerNumber = giftBatch.LedgerNumber;
                             gift.BatchNumber = giftBatch.BatchNumber;
+                            gift.DateEntered = ADateEffective;
                             gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
                             giftBatch.LastGiftNumber++;
                             gift.LastDetailNumber = 1;
@@ -431,7 +434,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     if ((cycle == 0) && oldGiftDetail.ModifiedDetail)
                                     {
                                         AMessages.Add(new TVerificationResult(
-                                                String.Format(Catalog.GetString("Cannot revert or adjust Gift{0} with Detail {1} in Batch {2}"),
+                                                String.Format(Catalog.GetString("Cannot reverse or adjust Gift {0} with Detail {1} in Batch {2}"),
                                                     oldGiftDetail.GiftTransactionNumber, oldGiftDetail.DetailNumber, oldGiftDetail.BatchNumber),
                                                 String.Format(Catalog.GetString("It was already adjusted or reverted.")),
                                                 TResultSeverity.Resv_Critical));
@@ -537,7 +540,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
 
-                throw new Exception(Catalog.GetString("Gift Revert/Adjust failed."), ex);
+                throw new Exception(Catalog.GetString("Gift Reverse/Adjust failed."), ex);
             }
         }
     }

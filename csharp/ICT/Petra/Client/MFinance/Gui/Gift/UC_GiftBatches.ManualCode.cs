@@ -858,7 +858,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             // ask if the user really wants to post the batch
-            if (MessageBox.Show(Catalog.GetString("Do you really want to post this gift batch?"), Catalog.GetString("Confirm posting of Gift Batch"),
+            if (MessageBox.Show(String.Format(Catalog.GetString("Do you really want to post gift batch {0}?"),
+                        FPreviouslySelectedDetailRow.BatchNumber),
+                    Catalog.GetString("Confirm posting of Gift Batch"),
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
             {
                 return;
@@ -922,6 +924,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ReverseGiftBatch(System.Object sender, System.EventArgs e)
         {
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ShowRevertAdjustForm("ReverseGiftBatch");
+        }
+
+        /// <summary>
+        /// Update the Batch total from the transactions values
+        /// </summary>
+        /// <param name="ABatchTotal"></param>
+        /// <param name="ABatchNumber"></param>
+        public void UpdateBatchTotal(decimal ABatchTotal, Int32 ABatchNumber)
+        {
+            if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+            else if (FPreviouslySelectedDetailRow.BatchNumber == ABatchNumber)
+            {
+                FPreviouslySelectedDetailRow.BatchTotal = ABatchTotal;
+                FPetraUtilsObject.HasChanges = true;
+            }
         }
 
         /// <summary>
@@ -1108,7 +1128,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                     else
                     {
-                        //hashTotal = hashTotal.Insert(hashNumericPart.Length, " ");
                         correctHashValue = hashDecimalVal;
                     }
                 }
@@ -1118,8 +1137,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
-            ARow.HashTotal = correctHashValue;
+            if (txtDetailHashTotal.NumberValueDecimal != correctHashValue)
+            {
+                txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            }
+
+            if (ARow.HashTotal != correctHashValue)
+            {
+                ARow.HashTotal = correctHashValue;
+            }
         }
     }
 }

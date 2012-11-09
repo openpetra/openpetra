@@ -75,6 +75,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FMainDS.AcceptChanges();
 
+            FMainDS.ARecurringGiftBatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
+                AGiftBatchTable.GetLedgerNumberDBName(),
+                AGiftBatchTable.GetBatchNumberDBName()
+                );
+
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
@@ -350,6 +355,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 ((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
             }
         }
@@ -390,6 +396,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         Catalog.GetString("Please first save the batch, and then submit it!"));
                     return;
                 }
+            }
+
+            if ((FPreviouslySelectedDetailRow.HashTotal != 0) && (FPreviouslySelectedDetailRow.BatchTotal != FPreviouslySelectedDetailRow.HashTotal))
+            {
+                MessageBox.Show(String.Format(Catalog.GetString(
+                            "The recurring gift batch total ({0}) for batch {1} does not equal the hash total ({2})."),
+                        FPreviouslySelectedDetailRow.BatchTotal.ToString("C"),
+                        FPreviouslySelectedDetailRow.BatchNumber,
+                        FPreviouslySelectedDetailRow.HashTotal.ToString("C")), "Submit Recurring Gift Batch");
+
+                txtDetailHashTotal.Focus();
+                txtDetailHashTotal.SelectAll();
+                return;
             }
 
             TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(FPetraUtilsObject.GetForm());
@@ -529,8 +548,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
-            ARow.HashTotal = correctHashValue;
+            if (txtDetailHashTotal.NumberValueDecimal != correctHashValue)
+            {
+                txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            }
+
+            if (ARow.HashTotal != correctHashValue)
+            {
+                ARow.HashTotal = correctHashValue;
+            }
         }
     }
 }

@@ -105,7 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (chkSelect.Checked && (FPreviouslySelectedDetailRow == null))
             {
                 // nothing seleted
-                MessageBox.Show(Catalog.GetString("Please select a Batch!."));
+                MessageBox.Show(Catalog.GetString("Please select a batch."));
                 return;
             }
 
@@ -115,9 +115,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            if (dtpEffectiveDate.Enabled && (dtpEffectiveDate.Text.Trim().Length == 0))
+            {
+                MessageBox.Show(Catalog.GetString("Please enter a valid batch date."));
+                dtpEffectiveDate.Focus();
+                return;
+            }
+
             Boolean ok;
             TVerificationResultCollection AMessages;
-
 
             AddParam("NewBatchSelected", chkSelect.Checked);
 
@@ -140,7 +146,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    AddParam("GlEffectiveDate", dtpEffectiveDate.Date);
+                    AddParam("GlEffectiveDate", dtpEffectiveDate.Date.Value);
                 }
             }
 
@@ -316,6 +322,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (ErrorMessages.Length > 0)
             {
                 System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void CheckBatchEffectiveDate(object sender, EventArgs e)
+        {
+            DateTime dateValue;
+            string aDate = dtpEffectiveDate.Text.Trim();
+
+            if ((aDate.Length > 0) && !DateTime.TryParse(aDate, out dateValue))
+            {
+                MessageBox.Show(Catalog.GetString("Invalid date entered!"));
+                dtpEffectiveDate.Focus();
+                dtpEffectiveDate.SelectAll();
             }
         }
     }
