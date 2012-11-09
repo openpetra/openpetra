@@ -927,6 +927,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// Update the Batch total from the transactions values
+        /// </summary>
+        /// <param name="ABatchTotal"></param>
+        /// <param name="ABatchNumber"></param>
+        public void UpdateBatchTotal(decimal ABatchTotal, Int32 ABatchNumber)
+        {
+            if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+            else if (FPreviouslySelectedDetailRow.BatchNumber == ABatchNumber)
+            {
+                FPreviouslySelectedDetailRow.BatchTotal = ABatchTotal;
+                FPetraUtilsObject.HasChanges = true;
+            }
+        }
+
+        /// <summary>
         /// enable or disable the buttons
         /// </summary>
         public void UpdateChangeableStatus()

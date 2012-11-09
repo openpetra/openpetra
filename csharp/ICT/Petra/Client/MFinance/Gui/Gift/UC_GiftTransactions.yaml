@@ -96,7 +96,7 @@ RootNode:
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Help: This date is used for receipt printing, Unbound=true, Validation=true}
         txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=yes, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=2, Unbound=true, OnChange=DonorKeyChanged}
-        txtDetailReference: {Label=Reference}
+        txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
