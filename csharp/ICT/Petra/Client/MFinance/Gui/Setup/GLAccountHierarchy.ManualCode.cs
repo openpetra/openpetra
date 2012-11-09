@@ -59,6 +59,50 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         string oldAccountCodeName;
 
 
+
+        private class AccountNodeDetails
+        {
+
+            /// <summary>
+            /// This will be true for Summary accounts, initially Unknown for existing posting accounts.
+            /// On newly created accounts, this will be true.
+            /// On a "need to know" basis, it will be set false for posting accounts that already have transactions posted to them.
+            /// </summary>
+            /// 
+            public Boolean? CanHaveChildren;
+
+            /// <summary>
+            /// This will be initially false for Summary accounts that have children, unknown for existing posting accounts.
+            /// On newly created accounts, this will be true.
+            /// On a "need to know" basis, it will be set false for posting accounts that already have transactions posted to them.
+            /// </summary>
+            public Boolean? CanDelete;
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public AAccountRow AccountRow;
+            public AAccountHierarchyDetailRow DetailRow;
+        };
+
+        private void InitializeManualCode()
+        {
+            txtDetailEngAccountCodeLongDesc.LostFocus += new EventHandler(AutoFillDescriptions);
+        }
+
+        private void AutoFillDescriptions (object sender, EventArgs e)
+        {
+            String NewText = txtDetailEngAccountCodeLongDesc.Text;
+            if (txtDetailEngAccountCodeShortDesc.Text == "")
+                txtDetailEngAccountCodeShortDesc.Text = NewText;
+
+            if (txtDetailAccountCodeLongDesc.Text == "")
+                txtDetailAccountCodeLongDesc.Text = NewText;
+
+            if (txtDetailAccountCodeShortDesc.Text == "")
+                txtDetailAccountCodeShortDesc.Text = NewText;
+        }
+
         /// <summary>
         /// Setup the account hierarchy of this ledger
         /// </summary>
@@ -124,19 +168,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             TreeNode newNode = AParentNodes.Add(nodeLabel);
 
-            newNode.Tag = ADetailRow;
+            AccountNodeDetails NodeTag = new AccountNodeDetails();
+            if (currentAccount.PostingStatus) // A "Posting account" that's not been used may yet be promoted to a "Summary account".
+            {
+                NodeTag.CanHaveChildren = null;
+            }
+            else      // A "Summary account" can have children.
+            {
+                NodeTag.CanHaveChildren = true;
+            }
+            NodeTag.AccountRow = currentAccount;
+            NodeTag.DetailRow = ADetailRow;
+            newNode.Tag = NodeTag;
+
             newNode.Name = nodeLabel;
 
+            // Now add the children of this node:
             DataView view = new DataView(FMainDS.AAccountHierarchyDetail);
             view.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName();
             view.RowFilter =
                 AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + ADetailRow.AccountHierarchyCode + "' AND " +
                 AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + ADetailRow.ReportingAccountCode + "'";
 
-            foreach (DataRowView rowView in view)
+            if (view.Count > 0)
             {
-                AAccountHierarchyDetailRow accountDetail = (AAccountHierarchyDetailRow)rowView.Row;
-                InsertNodeIntoTreeView(newNode.Nodes, accountDetail);
+                // A "Summary account" cannot be deleted if it has children.
+                NodeTag.CanDelete = false;
+                foreach (DataRowView rowView in view)
+                {
+                    AAccountHierarchyDetailRow accountDetail = (AAccountHierarchyDetailRow)rowView.Row;
+                    InsertNodeIntoTreeView(newNode.Nodes, accountDetail);
+                }
             }
         }
 
@@ -148,8 +210,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // store current detail values
                 if ((FCurrentNode != null) && (FCurrentNode != treeViewCancelEventArgs.Node))
                 {
+                    AccountNodeDetails NodeDetails = (AccountNodeDetails) FCurrentNode.Tag;
+                    String CurrentReportingAccountCode = NodeDetails.DetailRow.ReportingAccountCode;
+
                     currentAccount = (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
-                        new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
+                        new object[] { FLedgerNumber, CurrentReportingAccountCode });
                     oldAccountCodeName = currentAccount.AccountCode;
                     GetDetailsFromControls(currentAccount);
                 }
@@ -175,12 +240,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     // there are no references to this new row yet, apart from children nodes
 
                     // change name in the account hierarchy
-                    ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode = currentAccount.AccountCode;
+                    ((AccountNodeDetails)FCurrentNode.Tag).DetailRow.ReportingAccountCode = currentAccount.AccountCode;
 
                     // fix children nodes, account hierarchy
                     foreach (TreeNode childnode in FCurrentNode.Nodes)
                     {
-                        ((AAccountHierarchyDetailRow)childnode.Tag).AccountCodeToReportTo = currentAccount.AccountCode;
+                        ((AccountNodeDetails)childnode.Tag).DetailRow.AccountCodeToReportTo = currentAccount.AccountCode;
                     }
                 }
 
@@ -197,19 +262,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             FCurrentNode = treeViewEventArgs.Node;
 
+            AccountNodeDetails NodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
             // update detail panel
             ShowDetails((GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(new object[] {
                         FLedgerNumber,
-                        ((AAccountHierarchyDetailRow)FCurrentNode.Tag).
-                        ReportingAccountCode
+                        NodeDetails.DetailRow.ReportingAccountCode
                     }));
+
+            if (!NodeDetails.CanHaveChildren.HasValue || !NodeDetails.CanDelete.HasValue)
+            {
+                bool RemoteCanBeParent = false;
+                bool RemoteCanDelete = false;
+
+                if (TRemote.MFinance.Setup.WebConnectors.GetAccountCodeAttributes(FLedgerNumber, NodeDetails.DetailRow.ReportingAccountCode, out RemoteCanBeParent, out RemoteCanDelete))
+                {
+                    NodeDetails.CanHaveChildren = RemoteCanBeParent;
+                    NodeDetails.CanDelete = RemoteCanDelete;
+                }
+            }
+            tbbAddNewAccount.Enabled = (NodeDetails.CanHaveChildren.HasValue ? NodeDetails.CanHaveChildren.Value : false);
+            tbbDeleteUnusedAccount.Enabled = (NodeDetails.CanDelete.HasValue ? NodeDetails.CanDelete.Value : false);
 
             if (!hasChanges)
             {
                 FPetraUtilsObject.DisableSaveButton();
             }
-
-            ;
         }
 
         private void ShowDetailsManual(GLSetupTDSAAccountRow ARow)
@@ -247,7 +324,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             AAccountRow parentAccount =
                 (AAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber,
-                                                                       ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
+                                                                       ((AccountNodeDetails)FCurrentNode.Tag).DetailRow.ReportingAccountCode });
 
             AAccountRow newAccount = FMainDS.AAccount.NewRowTyped();
             newAccount.AccountCode = newName;
@@ -273,7 +350,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
-                AAccountHierarchyDetailRow siblingRow = (AAccountHierarchyDetailRow)FCurrentNode.Nodes[FCurrentNode.Nodes.Count - 1].Tag;
+                AAccountHierarchyDetailRow siblingRow = ((AccountNodeDetails)FCurrentNode.Nodes[FCurrentNode.Nodes.Count - 1].Tag).DetailRow;
 
                 if (siblingRow.IsReportOrderNull())
                 {
@@ -287,7 +364,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             trvAccounts.BeginUpdate();
             TreeNode newNode = FCurrentNode.Nodes.Add(newName);
-            newNode.Tag = hierarchyDetailRow;
+
+            AccountNodeDetails NodeDetails = new AccountNodeDetails();
+            NodeDetails.CanHaveChildren = true;
+            NodeDetails.DetailRow = hierarchyDetailRow;
+            NodeDetails.AccountRow = newAccount;
+            newNode.Tag = NodeDetails;
+
             trvAccounts.EndUpdate();
 
             trvAccounts.SelectedNode = newNode;
@@ -366,10 +449,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void DeleteUnusedAccount(Object sender, EventArgs ev)
         {
-            string AccountCode = ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode;
+            AccountNodeDetails NodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
+            string AccountCode = NodeDetails.DetailRow.ReportingAccountCode;
 
-            if (!TRemote.MFinance.Setup.WebConnectors.CanDeleteAccount(FLedgerNumber,
-                    AccountCode))
+            if (!NodeDetails.CanDelete.HasValue)
+            {
+                MessageBox.Show("Fault: CanDelete status is unknown.");
+                return;
+            }
+            if (!NodeDetails.CanDelete.Value)
             {
                 MessageBox.Show(
                     String.Format(Catalog.GetString(
@@ -401,7 +489,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (trvAccounts.SelectedNode.Nodes.Count == 0)
                 {
                     AAccountRow AccountParent = (AAccountRow)FMainDS.AAccount.Rows.Find(
-                        new object[] { FLedgerNumber, ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
+                        new object[] { FLedgerNumber, ((AccountNodeDetails)FCurrentNode.Tag).DetailRow.ReportingAccountCode });
                     AccountParent.PostingStatus = true;
                 }
             }
@@ -433,7 +521,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             return (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
                 new object[] { FLedgerNumber,
-                               ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
+                               ((AccountNodeDetails)FCurrentNode.Tag).DetailRow.ReportingAccountCode });
         }
 
         /// <summary>
@@ -459,7 +547,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// the field is left. This is normally done by the
         /// ChangeAccountCodeValue(object sender, EventArgs e).
         ///
-        /// But if the user invokes an other event - i.E. FileSave the FileSave-Event runs first.
+        /// But if the user invokes an other event - i.e. FileSave the FileSave-Event runs first.
         /// </summary>
 
         public bool ChangeAccountCodeValue()

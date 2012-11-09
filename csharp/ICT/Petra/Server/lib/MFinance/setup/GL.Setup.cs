@@ -289,6 +289,76 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return ReturnValue;
         }
 
+        private static bool AccountCodeHasBeenUsed(Int32 ALedgerNumber, string AAccountCode, TDBTransaction Transaction)
+        {
+            // TODO: enhance sql statement to check for more references to a_account
+
+            String QuerySql = 
+                "SELECT COUNT (*) FROM PUB_a_transaction WHERE " + 
+                "a_ledger_number_i=" + ALedgerNumber + " AND " +
+                "a_account_code_c = '" + AAccountCode + "';";
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
+            return Convert.ToInt32(SqlResult) > 0;
+        }
+
+        private static bool AccountHasChildren(Int32 ALedgerNumber, string AAccountCode, TDBTransaction Transaction)
+        {
+            String QuerySql =
+                "SELECT COUNT (*) FROM PUB_a_account_hierarchy_detail WHERE " + 
+                "a_ledger_number_i=" + ALedgerNumber + " AND " +
+                "a_account_code_to_report_to_c = '" + AAccountCode + "';";
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
+            return Convert.ToInt32(SqlResult) > 0;
+        }
+
+
+
+        /// <summary>I can add child accounts to this account if it's a summary account,
+        ///          or if there have never been transactions posted to it.
+        ///          
+        ///          (If children are added to this account, it will be promoted to a summary account.)
+        ///          
+        ///          I can delete this account if it has no transactions posted as above,
+        ///          AND it has no children.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="ACanBeParent"></param>
+        /// <param name="ACanDelete"></param>
+        /// <returns></returns>
+[RequireModulePermission("FINANCE-1")]
+        public static Boolean GetAccountCodeAttributes(Int32 ALedgerNumber, String AAccountCode, out bool ACanBeParent, out bool ACanDelete)
+//        public static Boolean AccountCodeCanHaveChildren(Int32 ALedgerNumber, String AAccountCode)
+        {
+            ACanBeParent = true;
+            ACanDelete = true;
+            bool DbSuccess = true;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AAccountCode, Transaction);
+
+            if (AccountTbl.Rows.Count < 1)  // This shouldn't happen..
+            {
+                DbSuccess = false;
+            }
+            else
+            {
+                bool IsParent = AccountHasChildren(ALedgerNumber, AAccountCode, Transaction);
+                AAccountRow AccountRow = AccountTbl[0];
+                ACanBeParent = IsParent; // If it's a summary account, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
+                ACanDelete = !IsParent;
+
+                if (!ACanBeParent || ACanDelete) 
+                {
+                    bool IsInUse = AccountCodeHasBeenUsed(ALedgerNumber, AAccountCode, Transaction);
+                    ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
+                    ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
+                }
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return DbSuccess;
+        }
+
         #region Data Validation
 
         static partial void ValidateAAnalysisType(TValidationControlsDict ValidationControlsDict,
@@ -726,27 +796,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // create/modify motivation details
 
             return false;
-        }
-
-        /// <summary>
-        /// check if it is possible to delete the account (has no transactions)
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AAccountCode"></param>
-        /// <returns>false if account cannot be deleted</returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool CanDeleteAccount(Int32 ALedgerNumber, string AAccountCode)
-        {
-            // TODO: enhance sql statement to check for more references to a_account
-            string SqlStmt = TDataBase.ReadSqlFile("GL.Setup.CheckAccountReferences.sql");
-
-            OdbcParameter[] parameters = new OdbcParameter[2];
-            parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
-            parameters[0].Value = ALedgerNumber;
-            parameters[1] = new OdbcParameter("AccountCode", OdbcType.VarChar);
-            parameters[1].Value = AAccountCode;
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(SqlStmt, null, false, parameters);
-            return Convert.ToInt32(SqlResult) == 0;
         }
 
         /// import a new Account hierarchy into an empty new ledger
