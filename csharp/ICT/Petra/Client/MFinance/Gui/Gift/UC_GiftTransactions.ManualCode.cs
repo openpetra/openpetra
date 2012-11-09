@@ -58,6 +58,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private AGiftBatchRow FBatchRow = null;
         private bool FGLEffectivePeriodChanged = false;
 
+        private void InitialiseControls()
+        {
+            txtDetailReference.MaxLength = 20;
+        }
+
         /// <summary>
         /// load the gifts into the grid
         /// </summary>
@@ -71,6 +76,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AFromTabClick = true)
         {
             bool firstLoad = (FLedgerNumber == -1);
+
+            if (firstLoad)
+            {
+                InitialiseControls();
+            }
 
             //Enable buttons accordingly
             btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
@@ -520,7 +530,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //If all details have been deleted
                 if ((FLedgerNumber != -1) && (grdDetails.Rows.Count == 1))
                 {
-                    FBatchRow.BatchTotal = 0;
+                    ((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(0, FBatchRow.BatchNumber);
                 }
             }
             else
@@ -554,13 +564,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
+//christiank: when you have a moFBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED &&
                 txtGiftTotal.NumberValueDecimal = sum;
                 txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
                 txtGiftTotal.ReadOnly = true;
                 //this is here because at the moment the generator does not generate this
                 txtBatchTotal.NumberValueDecimal = sumBatch;
                 //Now we look at the batch and update the batch data
-                FBatchRow.BatchTotal = sumBatch;
+                ((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(sumBatch, FBatchRow.BatchNumber);
             }
 
             if (disableSaveButton && FPetraUtilsObject.HasChanges)

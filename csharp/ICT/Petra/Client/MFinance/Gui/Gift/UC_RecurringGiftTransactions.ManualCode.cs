@@ -50,6 +50,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FActiveOnly = true;
         private ARecurringGiftBatchRow FBatchRow = null;
 
+
+        private void InitialiseControls()
+        {
+            txtDetailReference.MaxLength = 20;
+        }
+
         /// <summary>
         /// load the gifts into the grid
         /// </summary>
@@ -59,6 +65,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, bool AFromTabClick = true)
         {
             bool firstLoad = (FLedgerNumber == -1);
+
+            if (firstLoad)
+            {
+                InitialiseControls();
+            }
 
             //Enable buttons accordingly
             btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
@@ -443,6 +454,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 txtGiftTotal.Text = "";
                 txtBatchTotal.NumberValueDecimal = 0;
+
+                //If all details have been deleted
+                if ((FLedgerNumber != -1) && (grdDetails.Rows.Count == 1))
+                {
+                    if ((FBatchRow != null) && (FBatchRow.BatchTotal != 0))
+                    {
+                        FBatchRow.BeginEdit();
+                        FBatchRow.BatchTotal = 0;
+                        FBatchRow.EndEdit();
+                    }
+                }
+
                 return;
             }
 
@@ -684,6 +707,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 txtBatchTotal.NumberValueDecimal = 0;
                 txtDetailDonorKey.Text = string.Empty;
+                chkDetailActive.Checked = false;
                 txtDetailReference.Clear();
                 txtGiftTotal.NumberValueDecimal = 0;
                 txtDetailGiftAmount.NumberValueDecimal = 0;
@@ -1076,6 +1100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool firstIsEnabled = (ARow != null) && (ARow.DetailNumber == 1);
 
+            chkDetailActive.Enabled = firstIsEnabled;
             txtDetailDonorKey.Enabled = firstIsEnabled;
             cmbDetailMethodOfGivingCode.Enabled = firstIsEnabled;
 
@@ -1117,6 +1142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (giftRow != null)
             {
                 giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
+                giftRow.Active = chkDetailActive.Checked;
 
                 GiftBatchTDSARecurringGiftDetailRow giftDetailRow = GetGiftDetailRow(ARow.GiftTransactionNumber, ARow.DetailNumber);
                 giftDetailRow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);
