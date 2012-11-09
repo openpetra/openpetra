@@ -89,7 +89,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
                     if(VerificationResult == null)
                     {
                         VerificationResult = TDateChecks.IsNotUndefinedDateTime(ADate,
-                            ADescription, true, AResultContext, AResultColumn, AResultControl);
+                            ADescription, ATreatNullAsInvalid, AResultContext, AResultColumn, AResultControl);
                     }
                     else
                     {
@@ -100,7 +100,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 else
                 {
                     VerificationResult = TDateChecks.IsNotUndefinedDateTime(ADate,
-                        ADescription, true, AResultContext, AResultColumn, AResultControl);
+                        ADescription, ATreatNullAsInvalid, AResultContext, AResultColumn, AResultControl);
                 }
                 
                 // Remove Verification Result that would have been recorded earlier for the same DataColumn
@@ -114,7 +114,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             else
             {                
                 VerificationResult = TDateChecks.IsNotUndefinedDateTime(ADate,
-                    ADescription, true, AResultContext, AResultColumn, AResultControl);
+                    ADescription, ATreatNullAsInvalid, AResultContext, AResultColumn, AResultControl);
             }
             
             return VerificationResult;
