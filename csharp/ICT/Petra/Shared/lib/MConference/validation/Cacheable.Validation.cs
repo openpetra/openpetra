@@ -69,7 +69,7 @@ namespace Ict.Petra.Shared.MConference.Validation
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 

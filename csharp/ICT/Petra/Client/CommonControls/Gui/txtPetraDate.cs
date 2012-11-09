@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.CommonControls
 
         private DateTime minimalDateValue;
         private DateTime maximalDateValue;
-        
+
         private TVerificationResult FDateVerificationResult = null;
 
         /// <summary>
@@ -282,7 +282,7 @@ namespace Ict.Petra.Client.CommonControls
                 return FDateVerificationResult;
             }
         }
-        
+
         /// <summary>
         /// This Event is thrown when the Date has changed.
         /// </summary>
@@ -401,7 +401,7 @@ namespace Ict.Petra.Client.CommonControls
         private Boolean VerifyDate(string AValueText, Boolean AShowVerificationError)
         {
             TVerificationResult DateVerificationResult = null;
-            
+
             if (!FAllowVerification)
             {
                 return true;
@@ -532,11 +532,11 @@ namespace Ict.Petra.Client.CommonControls
             finally
             {
                 FDateVerificationResult = DateVerificationResult;
-                
+
                 CountVerifyDateRunningInstances--;
             }
         }
-        
+
         /// <summary>
         /// Returns the value of the DateVerificationResult of a <see cref="TtxtPetraDate" /> Control.
         /// </summary>
@@ -548,16 +548,16 @@ namespace Ict.Petra.Client.CommonControls
         /// <throws>ArgumentException if <paramref name="APetraDateControl" /> is not of Type TtxtPetraDate.</throws>
         public static TVerificationResult GetDateVerificationResult(Control APetraDateControl)
         {
-            if (APetraDateControl == null) 
+            if (APetraDateControl == null)
             {
                 throw new ArgumentNullException("APetraDateControl must not be null");
             }
-            
-            if (!(APetraDateControl is TtxtPetraDate)) 
+
+            if (!(APetraDateControl is TtxtPetraDate))
             {
                 throw new ArgumentException("APetraDateControl must be of Type TtxtPetraDate");
             }
-            
+
             return ((TtxtPetraDate)APetraDateControl).DateVerificationResult;
         }
     }

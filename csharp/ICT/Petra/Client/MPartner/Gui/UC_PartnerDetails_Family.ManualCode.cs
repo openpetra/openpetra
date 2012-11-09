@@ -53,13 +53,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
-        
+
         private void ValidateDataManual(PFamilyRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedPartnerValidation_Partner.ValidatePartnerFamilyManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
-        }        
+        }
     }
 }

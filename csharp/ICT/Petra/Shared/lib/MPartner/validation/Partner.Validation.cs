@@ -175,7 +175,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
-        
+
         /// <summary>
         /// Validates the Partner Detail data of a Partner of PartnerClass FAMILY.
         /// </summary>
@@ -212,7 +212,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
-        
+
         /// <summary>
         /// Validates the Partner data of a Partner.
         /// </summary>
@@ -596,7 +596,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.MailingDate,
-                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection

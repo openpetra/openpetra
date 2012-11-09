@@ -84,8 +84,8 @@ namespace Ict.Common.Verification
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
-        /// <remarks>Usage in the Data Validation Framework: rather than using this Method, use Method 
-        /// 'TSharedValidationControlHelper.IsNotInvalidDate' for checking the validity of dates as the latter can deal not only with 
+        /// <remarks>Usage in the Data Validation Framework: rather than using this Method, use Method
+        /// 'TSharedValidationControlHelper.IsNotInvalidDate' for checking the validity of dates as the latter can deal not only with
         /// empty dates, but dates that are invalid in other respects (e.g. exceeding a valid date range)!!!</remarks>
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem.</returns>

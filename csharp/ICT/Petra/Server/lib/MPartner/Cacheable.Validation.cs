@@ -56,6 +56,6 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         ValidationControlsDict);
                 }
             }
-        }        
+        }
     }
 }

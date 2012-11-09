@@ -170,7 +170,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.FromDate,
-                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -719,7 +719,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.EvaluationDate,
-                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
@@ -734,9 +734,9 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 VerificationResult = null;
 
                 if (ARow.EvaluationType != "Leaving")
-                {                    
+                {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.NextEvaluationDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 

@@ -301,7 +301,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             SetControlProperty(AControlName, APropertyName,
                 "this." + AControlName + "." + APropertyName + " = " + APropertyValue);
 
-            if (ACreateTranslationForLabel) 
+            if (ACreateTranslationForLabel)
             {
                 if (APropertyName.EndsWith("Text"))
                 {
@@ -311,11 +311,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" + APropertyValue + ");" + Environment.NewLine);
                     }
                 }
-                else if (AControlName.StartsWith("dtp") 
-                    && (APropertyName == "Description"))
+                else if (AControlName.StartsWith("dtp")
+                         && (APropertyName == "Description"))
                 {
-                        FTemplate.AddToCodelet("CATALOGI18N",
-                            "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" + APropertyValue + ");" + Environment.NewLine);                    
+                    FTemplate.AddToCodelet("CATALOGI18N",
+                        "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" + APropertyValue + ");" + Environment.NewLine);
                 }
             }
         }

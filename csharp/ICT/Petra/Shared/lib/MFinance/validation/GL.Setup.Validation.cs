@@ -79,7 +79,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.DateEffectiveFrom,
-                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true, 
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection

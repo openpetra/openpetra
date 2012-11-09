@@ -66,27 +66,27 @@ namespace Ict.Petra.Shared.MCommon.Validation
 
         /// <summary>
         /// Checks wheter a given DateTime is an invalid date. A check whether it is an undefined DateTime is always performed.
-        /// If Delegate <see cref="SharedGetDateVerificationResultDelegate" /> is set up and Argument 
-        /// <paramref name="AResultControl" /> isn't null, the 'DateVerificationResult' of the TtxtPetraDate Control is 
+        /// If Delegate <see cref="SharedGetDateVerificationResultDelegate" /> is set up and Argument
+        /// <paramref name="AResultControl" /> isn't null, the 'DateVerificationResult' of the TtxtPetraDate Control is
         /// returned by this Method through this Method if it isn't null. That way the Data Validation Framework can
         /// use the detailed Data Verification error that is held by the Control.
         /// </summary>
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem.</returns>
         public static TVerificationResult IsNotInvalidDate(DateTime? ADate, String ADescription,
-            TVerificationResultCollection AVerificationResultCollection, bool ATreatNullAsInvalid = false, 
+            TVerificationResultCollection AVerificationResultCollection, bool ATreatNullAsInvalid = false,
             object AResultContext = null, System.Data.DataColumn AResultColumn = null,
             Control AResultControl = null)
         {
             TVerificationResult VerificationResult;
-            
+
             if (FDelegateSharedGetDateVerificationResult != null)
             {
-                if ((AResultControl != null)) 
+                if ((AResultControl != null))
                 {
                     VerificationResult = FDelegateSharedGetDateVerificationResult(AResultControl);
-                    
-                    if(VerificationResult == null)
+
+                    if (VerificationResult == null)
                     {
                         VerificationResult = TDateChecks.IsNotUndefinedDateTime(ADate,
                             ADescription, ATreatNullAsInvalid, AResultContext, AResultColumn, AResultControl);
@@ -102,21 +102,21 @@ namespace Ict.Petra.Shared.MCommon.Validation
                     VerificationResult = TDateChecks.IsNotUndefinedDateTime(ADate,
                         ADescription, ATreatNullAsInvalid, AResultContext, AResultColumn, AResultControl);
                 }
-                
+
                 // Remove Verification Result that would have been recorded earlier for the same DataColumn
                 TVerificationResult OtherRecordedVerificationResult = AVerificationResultCollection.FindBy(AResultColumn);
-                
-                if (OtherRecordedVerificationResult != null) 
+
+                if (OtherRecordedVerificationResult != null)
                 {
-                    AVerificationResultCollection.Remove(OtherRecordedVerificationResult);    
+                    AVerificationResultCollection.Remove(OtherRecordedVerificationResult);
                 }
             }
             else
-            {                
+            {
                 VerificationResult = TDateChecks.IsNotUndefinedDateTime(ADate,
                     ADescription, ATreatNullAsInvalid, AResultContext, AResultColumn, AResultControl);
             }
-            
+
             return VerificationResult;
         }
     }
