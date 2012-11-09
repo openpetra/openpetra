@@ -43,6 +43,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
 using Ict.Petra.Client.MReporting.Gui.MPersonnel;
+using Ict.Petra.Client.MReporting.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
@@ -372,6 +373,126 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
 
             ExtractPurgingDialog.Dispose();
+        }
+
+        /// <summary>
+        /// Combine Extracts (open a screen to select extracts to combine)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CombineExtracts(System.Object sender, EventArgs e)
+        {
+            TFrmExtractCombineIntersectDialog ExtractCombineDialog = new TFrmExtractCombineIntersectDialog(this.ParentForm);
+            List<Int32> ACombineExtractIdList;
+            TVerificationResultCollection VerificationResult;
+
+            // initialize dialog
+            ExtractCombineDialog.SetCombineOrIntersect(true);
+                
+            // combining/intersecting of extracts happens in the dialog
+            ExtractCombineDialog.ShowDialog();
+
+            if (ExtractCombineDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                ExtractCombineDialog.GetReturnedParameters(out ACombineExtractIdList);
+                
+                // now first the user needs to give the new combined extract a name
+                TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this);
+                int NewExtractId = 0;
+                string NewExtractName;
+                string NewExtractDescription;
+    
+                ExtractNameDialog.ShowDialog();
+    
+                if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                {
+                    /* Get values from the Dialog */
+                    ExtractNameDialog.GetReturnedParameters(out NewExtractName, out NewExtractDescription);
+                }
+                else
+                {
+                    // dialog was cancelled, do not continue with extract generation
+                    return;
+                }
+    
+                ExtractNameDialog.Dispose();
+                
+                
+                if (TRemote.MPartner.Partner.WebConnectors.CombineExtracts
+                                    (NewExtractName, NewExtractDescription, ACombineExtractIdList, 
+                                     out NewExtractId,out VerificationResult))
+                {
+                    ucoExtractMasterList.RefreshExtractList(sender, e);
+                }
+            }
+
+            ExtractCombineDialog.Dispose();
+        }
+
+        /// <summary>
+        /// Intersect Extracts (open a screen to select extracts to intersect)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void IntersectExtracts(System.Object sender, EventArgs e)
+        {
+            TFrmExtractCombineIntersectDialog ExtractIntersectDialog = new TFrmExtractCombineIntersectDialog(this.ParentForm);
+            List<Int32> AIntersectExtractIdList;
+            TVerificationResultCollection VerificationResult;
+
+            // initialize dialog
+            ExtractIntersectDialog.SetCombineOrIntersect(false);
+                
+            // combining/intersecting of extracts happens in the dialog
+            ExtractIntersectDialog.ShowDialog();
+
+            if (ExtractIntersectDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                ExtractIntersectDialog.GetReturnedParameters(out AIntersectExtractIdList);
+                
+                // now first the user needs to give the new intersected extract a name
+                TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this);
+                int NewExtractId = 0;
+                string NewExtractName;
+                string NewExtractDescription;
+    
+                ExtractNameDialog.ShowDialog();
+    
+                if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                {
+                    /* Get values from the Dialog */
+                    ExtractNameDialog.GetReturnedParameters(out NewExtractName, out NewExtractDescription);
+                }
+                else
+                {
+                    // dialog was cancelled, do not continue with extract generation
+                    return;
+                }
+    
+                ExtractNameDialog.Dispose();
+                
+                
+                if (TRemote.MPartner.Partner.WebConnectors.IntersectExtracts
+                                    (NewExtractName, NewExtractDescription, AIntersectExtractIdList, 
+                                     out NewExtractId,out VerificationResult))
+                {
+                    ucoExtractMasterList.RefreshExtractList(sender, e);
+                }
+            }
+
+            ExtractIntersectDialog.Dispose();
+        }
+        
+        /// <summary>
+        /// Subtract Extracts (open a screen to select extracts to subtract from each other)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SubtractExtracts(System.Object sender, EventArgs e)
+        {
+            // TODO
         }
 
         /// <summary>

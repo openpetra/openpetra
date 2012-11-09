@@ -50,6 +50,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private int FExtractId;
         private String FExtractName;
         private String FExtractDescription;
+        private String FExtractCreatedBy;
+        private DateTime FExtractDateCreated;
 
         private MExtractMasterTable FExtractMasterTable;
 
@@ -64,6 +66,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             FExtractId = -1;
             FExtractName = "";
             FExtractDescription = "";
+            FExtractCreatedBy = "";
 
             // now show the actual dialog
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -110,6 +113,29 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             return FExtractId >= 0;
         }
 
+        /// <summary>
+        /// Called by the instantiator of this Dialog to retrieve the result of the dialog
+        ///
+        /// </summary>
+        /// <param name="AExtractId"></param>
+        /// <param name="AExtractName"></param>
+        /// <param name="AExtractDescription"></param>
+        /// <param name="AExtractCreatedBy"></param>
+        /// <param name="AExtractDateCreated"></param>
+        /// <returns>information which button was pressed
+        /// </returns>
+        public bool GetResult(out int AExtractId, out String AExtractName, out String AExtractDescription,
+                              out String AExtractCreatedBy, out DateTime AExtractDateCreated)
+        {
+            AExtractId = FExtractId;
+            AExtractName = FExtractName;
+            AExtractDescription = FExtractDescription;
+            AExtractCreatedBy = FExtractCreatedBy;
+            AExtractDateCreated = FExtractDateCreated;
+
+            return FExtractId >= 0;
+        }
+        
         #endregion
 
         #region Private Methods
@@ -216,6 +242,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 FExtractId = SelectedRow.ExtractId;
                 FExtractName = SelectedRow.ExtractName;
                 FExtractDescription = SelectedRow.ExtractDesc;
+                FExtractCreatedBy = SelectedRow.CreatedBy;
+                FExtractDateCreated = (DateTime)SelectedRow.DateCreated;
             }
 
             Close();
@@ -231,6 +259,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             FExtractId = -1;
             FExtractName = "";
             FExtractDescription = "";
+            FExtractCreatedBy = "";
             Close();
         }
 

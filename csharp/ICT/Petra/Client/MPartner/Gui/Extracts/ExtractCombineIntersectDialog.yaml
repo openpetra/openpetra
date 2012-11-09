@@ -1,0 +1,53 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Combine Extracts
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    FormType: dialog
+    Template: window
+    WindowWidth: 600
+    WindowHeight: 500
+    Actions:
+        actAddToList: {ActionClick=AddExtractToList}      
+        actRemoveFromList: {ActionClick=RemoveExtractFromList}     
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent:
+            Controls:
+                Row0: [pnlTop]
+                Row2: [pnlGrid]
+                
+        pnlTop:
+            Dock: Top
+            Controls:
+                Row0: [lblExplanation]
+                Row1: [Empty]
+
+        lblExplanation:
+            Width: 500
+        
+        Empty:
+        
+        pnlGrid:
+            Dock: Fill
+            Controls:
+                Row0: [grdExtracts, pnlGridButtons]
+
+        grdExtracts:
+            Dock: Fill
+
+        pnlGridButtons:
+            Dock: Right
+            Controls:
+                Row0: [btnAdd]
+                Row1: [btnRemove]
+
+        btnAdd: {Stretch=horizontally}
+            Label: Add to List...
+            Action: actAddToList
+            
+        btnRemove: {Stretch=horizontally}
+            Label: Remove from List
+            Action: actRemoveFromList
