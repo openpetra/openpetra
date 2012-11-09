@@ -318,9 +318,9 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 if (!ARow.AssignableFlag)
                 {
-                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.AssignableDate,
-                        ValidationControlsData.ValidationControlLabel,
-                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.AssignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection

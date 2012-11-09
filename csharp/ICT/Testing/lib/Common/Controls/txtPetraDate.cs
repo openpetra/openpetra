@@ -34,6 +34,7 @@ using System.Windows.Forms;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Testing.NUnitForms;
 
 namespace Tests.Common.Controls
@@ -178,7 +179,8 @@ namespace Tests.Common.Controls
             tester.Properties.Text = "30";
 
             Assert.AreEqual(1, NumberOfMessageBoxes, "entering an invalid date should only show a messagebox once");
-
+            Assert.IsTrue(TVerificationHelper.AreVerificationResultsIdentical(tester.Properties.DateVerificationResult, Ict.Common.Verification.TDateChecks.GetInvalidDateVerificationResult("Date", null), false, false));
+            
             TextChangedCalled = 0;
             DateChangedCalled = 0;
             NumberOfMessageBoxes = 0;
@@ -188,6 +190,22 @@ namespace Tests.Common.Controls
 
             Assert.AreEqual(1, NumberOfMessageBoxes, "entering an invalid date should only show a messagebox once: year 10000");
 
+            DialogBoxHandler = null;
+            
+            NumberOfMessageBoxes = 0;
+            
+            DialogBoxHandler = HandleMessageBox;
+            
+            tester.Properties.AllowEmpty = false;
+            tester.Properties.Text = "01-JAN-2010";
+            tester.Properties.Text = "";
+            
+            Assert.AreEqual(1, NumberOfMessageBoxes, "entering an invalid date should only show a messagebox once: year 10000");
+            Assert.IsTrue(TVerificationHelper.AreVerificationResultsIdentical(tester.Properties.DateVerificationResult, 
+                new TVerificationResult(null, ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
+                            CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                            "{0} may not be empty.", new string[] { "'Date'" }))));
+            
             DialogBoxHandler = null;
         }
     }

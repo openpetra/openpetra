@@ -301,12 +301,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             SetControlProperty(AControlName, APropertyName,
                 "this." + AControlName + "." + APropertyName + " = " + APropertyValue);
 
-            if (APropertyName.EndsWith("Text") && ACreateTranslationForLabel)
+            if (ACreateTranslationForLabel) 
             {
-                if (ProperI18NCatalogGetString(StringHelper.TrimQuotes(APropertyValue)))
+                if (APropertyName.EndsWith("Text"))
                 {
-                    FTemplate.AddToCodelet("CATALOGI18N",
-                        "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" + APropertyValue + ");" + Environment.NewLine);
+                    if (ProperI18NCatalogGetString(StringHelper.TrimQuotes(APropertyValue)))
+                    {
+                        FTemplate.AddToCodelet("CATALOGI18N",
+                            "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" + APropertyValue + ");" + Environment.NewLine);
+                    }
+                }
+                else if (AControlName.StartsWith("dtp") 
+                    && (APropertyName == "Description"))
+                {
+                        FTemplate.AddToCodelet("CATALOGI18N",
+                            "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" + APropertyValue + ");" + Environment.NewLine);                    
                 }
             }
         }

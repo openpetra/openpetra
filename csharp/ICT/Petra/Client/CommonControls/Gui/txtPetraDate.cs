@@ -67,6 +67,8 @@ namespace Ict.Petra.Client.CommonControls
 
         private DateTime minimalDateValue;
         private DateTime maximalDateValue;
+        
+        private TVerificationResult FDateVerificationResult = null;
 
         /// <summary>
         /// This property determines the Text that the Control should display.
@@ -271,6 +273,17 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// Provides details about the date parsing validation error. Not null only if last date validation failed!
+        /// </summary>
+        public TVerificationResult DateVerificationResult
+        {
+            get
+            {
+                return FDateVerificationResult;
+            }
+        }
+        
+        /// <summary>
         /// This Event is thrown when the Date has changed.
         /// </summary>
         public event TPetraDateChangedEventHandler DateChanged;
@@ -387,6 +400,8 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns>true if the Control has a valid date</returns>
         private Boolean VerifyDate(string AValueText, Boolean AShowVerificationError)
         {
+            TVerificationResult DateVerificationResult = null;
+            
             if (!FAllowVerification)
             {
                 return true;
@@ -402,7 +417,6 @@ namespace Ict.Petra.Client.CommonControls
 
             try
             {
-                TVerificationResult DateVerificationResult;
                 // Convert TextBox's Text to Date
                 DateTime Text2Date = DataBinding.LongDateStringToDateTime2(
                     AValueText,
@@ -517,8 +531,34 @@ namespace Ict.Petra.Client.CommonControls
             }
             finally
             {
+                FDateVerificationResult = DateVerificationResult;
+                
                 CountVerifyDateRunningInstances--;
             }
+        }
+        
+        /// <summary>
+        /// Returns the value of the DateVerificationResult of a <see cref="TtxtPetraDate" /> Control.
+        /// </summary>
+        /// <param name="APetraDateControl">An instance of the <see cref="TtxtPetraDate" /> Control.</param>
+        /// <returns>Value of the DateVerificationResult of the <see cref="TtxtPetraDate" /> Control
+        /// passed in with <paramref name="APetraDateControl" /></returns>
+        /// <remarks>Used by Method 'TSharedValidationControlHelper.IsNotInvalidDate' through a Delegate that points to this static Method.</remarks>
+        /// <throws>ArgumentNullException if <paramref name="APetraDateControl" /> is null.</throws>
+        /// <throws>ArgumentException if <paramref name="APetraDateControl" /> is not of Type TtxtPetraDate.</throws>
+        public static TVerificationResult GetDateVerificationResult(Control APetraDateControl)
+        {
+            if (APetraDateControl == null) 
+            {
+                throw new ArgumentNullException("APetraDateControl must not be null");
+            }
+            
+            if (!(APetraDateControl is TtxtPetraDate)) 
+            {
+                throw new ArgumentException("APetraDateControl must be of Type TtxtPetraDate");
+            }
+            
+            return ((TtxtPetraDate)APetraDateControl).DateVerificationResult;
         }
     }
 
