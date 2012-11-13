@@ -12,8 +12,9 @@ RootNode:
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail}
         actDeleteDetail: {Label=&Delete Detail, ActionClick=DeleteDetail}
         actAdjustGift: {Label=&Adjust Gift, ActionClick=AdjustGift}
-        actReverseGift: {Label=&Reverse Gift, ActionClick=ReverseGift}
+        actReverseGift: {Label=Reverse &Gift, ActionClick=ReverseGift}
         actReverseGiftDetail: {Label=&Reverse Gift Detail, ActionClick=ReverseGiftDetail}
+        actReverseGiftBatch: {Label=Reverse Gift &Batch, ActionClick=ReverseGiftBatch}
     Controls:
         pnlContent:
             Controls: [pnlInfo, sptTransactions]
@@ -137,3 +138,4 @@ RootNode:
             mniAdjustGift: {Action=actAdjustGift}
             mniReverseGift: {Action=actReverseGift}
             mniReverseGiftDetail: {Action=actReverseGiftDetail}
+            mniReverseGiftBatch: {Action=actReverseGiftBatch}

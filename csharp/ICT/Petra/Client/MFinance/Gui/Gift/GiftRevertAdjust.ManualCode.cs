@@ -42,11 +42,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Hashtable requestParams = new Hashtable();
+		private GiftBatchTDS giftMainDS = null;
+        private AGiftBatchRow giftBatchRow = null;
         private AGiftDetailRow giftDetailRow = null;
         private Boolean ok = false;
         DateTime StartDateCurrentPeriod;
         DateTime EndDateLastForwardingPeriod;
-
+        
         /// <summary>
         /// Return if the revert/adjust action was Ok (then a refresh is needed; otherwise rollback was done)
         /// </summary>
@@ -56,6 +58,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return ok;
             }
         }
+        
+		/// <summary>
+		/// A gift DS is injected if needed
+		/// </summary>
+		public GiftBatchTDS GiftMainDS {
+        	set
+        	{
+        		giftMainDS = value;
+        	}
+        }
+        
+        /// <summary>
+        /// A Gift Batch Row is injected
+        /// </summary>
+        public AGiftBatchRow GiftBatchRow {
+            set
+            {
+                giftBatchRow = value;
+            }
+        }
+
         /// <summary>
         /// A Gift Detail Row is injected
         /// </summary>
@@ -63,14 +86,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 giftDetailRow = value;
-                txtReversalCommentOne.Text = giftDetailRow.GiftCommentOne;
-                txtReversalCommentTwo.Text = giftDetailRow.GiftCommentTwo;
-                txtReversalCommentThree.Text = giftDetailRow.GiftCommentThree;
-                cmbReversalCommentOneType.Text = giftDetailRow.CommentOneType;
-                cmbReversalCommentTwoType.Text = giftDetailRow.CommentTwoType;
-                cmbReversalCommentThreeType.Text = giftDetailRow.CommentThreeType;
+                if (giftDetailRow.GiftCommentOne != null && giftDetailRow.GiftCommentOne.Length > 0)
+                {
+                	txtReversalCommentOne.Text = giftDetailRow.GiftCommentOne;
+                	cmbReversalCommentOneType.Text = giftDetailRow.CommentOneType;
+                }
+                if (giftDetailRow.GiftCommentTwo != null && giftDetailRow.GiftCommentTwo.Length > 0)
+                {
+                	txtReversalCommentTwo.Text = giftDetailRow.GiftCommentTwo;
+                	cmbReversalCommentTwoType.Text = giftDetailRow.CommentTwoType;
+                }
+                if (giftDetailRow.GiftCommentThree != null && giftDetailRow.GiftCommentThree.Length > 0)
+                {
+                	txtReversalCommentThree.Text = giftDetailRow.GiftCommentThree;
+                	cmbReversalCommentThreeType.Text = giftDetailRow.CommentThreeType;
+                }
             }
         }
+
         /// <summary>
         /// Ledger Number is injected
         /// </summary>
@@ -102,7 +135,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RevertAdjust(System.Object sender, System.EventArgs e)
         {
-            if (chkSelect.Checked && (FPreviouslySelectedDetailRow == null))
+        	bool reverseWholeBatch = (giftMainDS != null);
+        	
+        	if (chkSelect.Checked && (FPreviouslySelectedDetailRow == null))
             {
                 // nothing seleted
                 MessageBox.Show(Catalog.GetString("Please select a batch."));
@@ -180,7 +215,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AddParam("BatchNumber", giftDetailRow.BatchNumber);
             AddParam("GiftNumber", giftDetailRow.GiftTransactionNumber);
             AddParam("GiftDetailNumber", giftDetailRow.DetailNumber);
-            //AddParam("CostCentre", giftDetailRow.CostCentreCode);
+            AddParam("CostCentre", giftDetailRow.CostCentreCode);
             AddParam("ReversalCommentOne", txtReversalCommentOne.Text);
             AddParam("ReversalCommentTwo", txtReversalCommentTwo.Text);
             AddParam("ReversalCommentThree", txtReversalCommentThree.Text);
@@ -188,8 +223,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AddParam("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
             AddParam("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
 
-
-            ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AMessages);
+            try
+            {
+	            this.Cursor = Cursors.WaitCursor;
+            	ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AMessages);
+            }
+            finally
+            {
+	            this.Cursor = Cursors.Default;
+            }
 
             if (ok)
             {
@@ -229,7 +271,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitializeManualCode()
         {
-            grdDetails.Visible = false;
+        	grdDetails.Visible = false;
 
             //FLedger is still zero at this point
             FMainDS.AGiftBatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
@@ -251,6 +293,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.Visible = true;
             dtpEffectiveDate.Focus();
             this.btnOK.Enter -= new System.EventHandler(this.OKFocussed);
+            chkSelect.Enabled = (giftMainDS == null);
         }
 
         private void SelectBatchChanged(System.Object sender, EventArgs e)

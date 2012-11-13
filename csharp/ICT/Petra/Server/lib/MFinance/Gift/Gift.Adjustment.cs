@@ -321,8 +321,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftBatch.CurrencyCode = oldGiftBatch.CurrencyCode;
                     giftBatch.ExchangeRateToBase = oldGiftBatch.ExchangeRateToBase;
                     giftBatch.MethodOfPaymentCode = oldGiftBatch.MethodOfPaymentCode;
-                    giftBatch.HashTotal = -oldGiftBatch.HashTotal;
-                    giftBatch.BatchTotal = -oldGiftBatch.BatchTotal;
+                    //giftBatch.HashTotal = -oldGiftBatch.HashTotal;
+                    //giftBatch.BatchTotal = -oldGiftBatch.BatchTotal;
 
                     if (giftBatch.MethodOfPaymentCode.Length == 0)
                     {
@@ -346,6 +346,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ANewBatchNumber, Transaction);
                     giftBatch = MainDS.AGiftBatch[0];
                     ADateEffective = giftBatch.GlEffectiveDate;
+					//If into an existing batch, then retrive the existing batch total
+                    batchGiftTotal = giftBatch.BatchTotal;
                 }
 
                 if (Function.Equals("ReverseGiftBatch"))
@@ -436,7 +438,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         AMessages.Add(new TVerificationResult(
                                                 String.Format(Catalog.GetString("Cannot reverse or adjust Gift {0} with Detail {1} in Batch {2}"),
                                                     oldGiftDetail.GiftTransactionNumber, oldGiftDetail.DetailNumber, oldGiftDetail.BatchNumber),
-                                                String.Format(Catalog.GetString("It was already adjusted or reverted.")),
+                                                String.Format(Catalog.GetString("It was already adjusted or reversed.")),
                                                 TResultSeverity.Resv_Critical));
                                         DBAccess.GDBAccessObj.RollbackTransaction();
                                         return false;
@@ -500,10 +502,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     cycle++;
                 } while ((cycle < 2) && Function.Equals("AdjustGift"));
 
-                //When reversing into an existing batch, calculate batch total
-                if (batchSelected && !Function.Equals("AdjustGift"))
+                //When reversing into a new or existing batch, set batch total
+                if (!Function.Equals("AdjustGift"))
                 {
-                    giftBatch.BatchTotal = batchGiftTotal;
+               		giftBatch.BatchTotal = batchGiftTotal;
                 }
 
                 // save everything at the end
