@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
         private Hashtable requestParams = new Hashtable();
         private GiftBatchTDS giftMainDS = null;
-        private AGiftBatchRow giftBatchRow = null;
+//        private AGiftBatchRow giftBatchRow = null;   // TODO Decide whether to remove altogether
         private AGiftDetailRow giftDetailRow = null;
         private Boolean ok = false;
         DateTime StartDateCurrentPeriod;
@@ -68,16 +68,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 giftMainDS = value;
             }
         }
-
-        /// <summary>
-        /// A Gift Batch Row is injected
-        /// </summary>
-        public AGiftBatchRow GiftBatchRow {
-            set
-            {
-                giftBatchRow = value;
-            }
-        }
+        
+// TODO Decide whether to remove altogether
+//        /// <summary>
+//        /// A Gift Batch Row is injected
+//        /// </summary>
+//        public AGiftBatchRow GiftBatchRow {
+//            set
+//            {
+//                giftBatchRow = value;
+//            }
+//        }
 
         /// <summary>
         /// A Gift Detail Row is injected
@@ -138,8 +139,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RevertAdjust(System.Object sender, System.EventArgs e)
         {
-            bool reverseWholeBatch = (giftMainDS != null);
-
             if (chkSelect.Checked && (FPreviouslySelectedDetailRow == null))
             {
                 // nothing seleted
