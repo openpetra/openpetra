@@ -273,9 +273,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     FPreviouslySelectedDetailRow.Delete();
                     FPetraUtilsObject.SetChangedFlag();
 
-                    // temporarily reset selected row to avoid interference with validation
-                    FPreviouslySelectedDetailRow = null;
-                    grdDetails.SelectRowInGrid(rowIndex, true);
+                    grdDetails.SelectRowInGrid(rowIndex);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                     ShowDetails(FPreviouslySelectedDetailRow);
                 }
@@ -310,9 +308,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                     FPetraUtilsObject.SetChangedFlag();
 
-                    // temporarily reset selected row to avoid interference with validation
-                    FPreviouslySelectedDetailRow = null;
-                    grdDetails.SelectRowInGrid(rowIndex, true);
+                    grdDetails.SelectRowInGrid(rowIndex);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                     ShowDetails(FPreviouslySelectedDetailRow);
                 }
@@ -860,13 +856,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 // hide details part and disable buttons if no record in grid (first row for headings)
                 btnMaintain.Enabled = false;
-                btnDelete.Enabled = false;
+                btnDeleteExtract.Enabled = false;
                 pnlDetails.Visible = false;
             }
             else
             {
                 btnMaintain.Enabled = true;
-                btnDelete.Enabled = true;
+                btnDeleteExtract.Enabled = true;
                 pnlDetails.Visible = true;
             }
         }

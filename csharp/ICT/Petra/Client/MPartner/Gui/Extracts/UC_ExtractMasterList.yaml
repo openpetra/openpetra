@@ -20,10 +20,10 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnMaintain, btnDelete, btnRefreshGrid]
+            Controls: [btnMaintain, btnDeleteExtract, btnRefreshGrid]
         btnMaintain: {Stretch=horizontally}
             Action: actMaintain
-        btnDelete: {Stretch=horizontally}
+        btnDeleteExtract: {Stretch=horizontally}
             Action: actDelete
         btnRefreshGrid: {NoLabel=true, Stretch=horizontally}
             Action: actRefreshGrid
