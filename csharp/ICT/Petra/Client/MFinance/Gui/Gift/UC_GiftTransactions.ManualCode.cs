@@ -892,7 +892,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     revertForm.GiftMainDS = FMainDS;
                 }
 
-                revertForm.GiftBatchRow = giftBatch;
+//                revertForm.GiftBatchRow = giftBatch;   // TODO Decide whether to remove altogether
                 revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
 
                 if (revertForm.ShowDialog() == DialogResult.OK)
