@@ -48,7 +48,7 @@ RootNode:
             Label: Select Batch to Add Reversal/Adjustment into?
             OnChange: SelectBatchChanged
         lblValidDateRange:
-        dtpEffectiveDate: {Label=Enter the Gift Batch Date to use}
+        dtpEffectiveDate: {Label=Enter the Gift Batch Date to use, OnLeave=CheckBatchEffectiveDate}
         txtReversalCommentOne: {Label=Comment 1 for Reversal,Width=250}
         txtReversalCommentTwo: {Label=Comment 2 for Reversal,Width=250}
         txtReversalCommentThree: {Label=Comment 3 for Reversal,Width=250}

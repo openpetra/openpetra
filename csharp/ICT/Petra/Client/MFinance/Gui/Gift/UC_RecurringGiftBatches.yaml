@@ -51,7 +51,7 @@ RootNode:
         cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged, Validation=true}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
-        cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList,OnChange=MethodOfPaymentChanged}
+        cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList, OnChange=MethodOfPaymentChanged}
         rgrDetailGiftType:
             OptionalValues: [=Gift,Gift In Kind,Other]
             ControlsOrientation: Horizontal

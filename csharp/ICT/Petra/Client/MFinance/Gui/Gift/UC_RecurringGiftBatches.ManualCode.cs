@@ -398,6 +398,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
+            if ((FPreviouslySelectedDetailRow.HashTotal != 0) && (FPreviouslySelectedDetailRow.BatchTotal != FPreviouslySelectedDetailRow.HashTotal))
+            {
+                MessageBox.Show(String.Format(Catalog.GetString(
+                            "The recurring gift batch total ({0}) for batch {1} does not equal the hash total ({2})."),
+                        FPreviouslySelectedDetailRow.BatchTotal.ToString("C"),
+                        FPreviouslySelectedDetailRow.BatchNumber,
+                        FPreviouslySelectedDetailRow.HashTotal.ToString("C")), "Submit Recurring Gift Batch");
+
+                txtDetailHashTotal.Focus();
+                txtDetailHashTotal.SelectAll();
+                return;
+            }
+
             TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(FPetraUtilsObject.GetForm());
             try
             {
