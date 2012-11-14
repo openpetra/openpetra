@@ -23,6 +23,10 @@
 //
 using System;
 
+using Ict.Common.Verification;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Validation;
+
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_PartnerDetails_Person
@@ -49,5 +53,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
+
+        private void ValidateDataManual(PPersonRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidatePartnerPersonManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+        }
     }
 }

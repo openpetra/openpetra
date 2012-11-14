@@ -33,11 +33,11 @@ RootNode:
                 Row5: [cmbAcquisitionCode]
                 Row6: [txtOccupationCode]
 
-        dtpDateOfBirth:
+        dtpDateOfBirth: {Validation=true}
         txtDecorations:
         cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, Width:200}
         txtAcademicTitle:
-        dtpMaritalStatusSince:
+        dtpMaritalStatusSince: {Validation=true}
         txtMaritalStatusComment:
             ColSpan: 2
             Height: 46

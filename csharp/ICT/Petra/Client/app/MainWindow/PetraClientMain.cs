@@ -47,6 +47,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MCommon.Gui;
@@ -645,6 +646,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
+            TSharedValidationControlHelper.SharedGetDateVerificationResultDelegate = @TtxtPetraDate.GetDateVerificationResult;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TServerLookup.TMPartner.VerifyPartner;
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TServerLookup.TMFinance.GetCurrentPostingRangeDates;
             TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TServerLookup.TMFinance.GetCurrentPeriodDates;
