@@ -134,7 +134,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AContext"></param>
         /// <param name="ARow"></param>
@@ -184,7 +184,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AContext"></param>
         /// <param name="ARow"></param>

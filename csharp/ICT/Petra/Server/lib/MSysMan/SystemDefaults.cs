@@ -129,6 +129,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             Boolean TransactionIsOk = false;
+
             try
             {
                 SSystemDefaultsTable tbl = SSystemDefaultsAccess.LoadByPrimaryKey(AKey, Transaction);
@@ -141,15 +142,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
                 }
                 else
                 {
-
                     DataRow Row = tbl.NewRowTyped(true);
                     ((SSystemDefaultsRow)Row).DefaultCode = AKey;
                     ((SSystemDefaultsRow)Row).DefaultDescription = "Created in OpenPetra";
                     ((SSystemDefaultsRow)Row).DefaultValue = AValue;
                     tbl.Rows.Add(Row);
                 }
-                TransactionIsOk = SSystemDefaultsAccess.SubmitChanges(tbl, Transaction, out Results);
 
+                TransactionIsOk = SSystemDefaultsAccess.SubmitChanges(tbl, Transaction, out Results);
             }
             finally
             {

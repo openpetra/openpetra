@@ -65,16 +65,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         string oldAccountCodeName;
 
 
-
         private class AccountNodeDetails
         {
-
             /// <summary>
             /// This will be true for Summary accounts, initially Unknown for existing posting accounts.
             /// On newly created accounts, this will be true.
             /// On a "need to know" basis, it will be set false for posting accounts that already have transactions posted to them.
             /// </summary>
-            /// 
+            ///
             public Boolean? CanHaveChildren;
 
             /// <summary>
@@ -93,7 +91,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             txtDetailEngAccountCodeLongDesc.LostFocus += new EventHandler(AutoFillDescriptions);
         }
-
 
         //
         // Drag and drop methods
@@ -160,8 +157,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (!CantDropHere)
             {
-                AccountNodeDetails NodeDetails = (AccountNodeDetails) FDragTarget.Tag;
-                GetAccountCodeAttributes (ref NodeDetails);
+                AccountNodeDetails NodeDetails = (AccountNodeDetails)FDragTarget.Tag;
+                GetAccountCodeAttributes(ref NodeDetails);
 
                 if (!NodeDetails.CanHaveChildren.Value)
                 {
@@ -234,7 +231,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         // End of (mostly copied) drag-drop functions
 
-        
+
         /// <summary>
         /// Make this account of child of the selected one in the hierarchy (from drag-drop).
         /// </summary>
@@ -270,17 +267,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             trvAccounts.AllowDrop = true;
         }
 
-        private void AutoFillDescriptions (object sender, EventArgs e)
+        private void AutoFillDescriptions(object sender, EventArgs e)
         {
             String NewText = txtDetailEngAccountCodeLongDesc.Text;
+
             if (txtDetailEngAccountCodeShortDesc.Text == "")
+            {
                 txtDetailEngAccountCodeShortDesc.Text = NewText;
+            }
 
             if (txtDetailAccountCodeLongDesc.Text == "")
+            {
                 txtDetailAccountCodeLongDesc.Text = NewText;
+            }
 
             if (txtDetailAccountCodeShortDesc.Text == "")
+            {
                 txtDetailAccountCodeShortDesc.Text = NewText;
+            }
         }
 
         /// <summary>
@@ -349,6 +353,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TreeNode newNode = AParentNodes.Add(nodeLabel);
 
             AccountNodeDetails NodeTag = new AccountNodeDetails();
+
             if (AccountRow.PostingStatus) // A "Posting account" that's not been used may yet be promoted to a "Summary account".
             {
                 NodeTag.CanHaveChildren = null;
@@ -357,6 +362,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 NodeTag.CanHaveChildren = true;
             }
+
             NodeTag.IsNew = false;
             NodeTag.AccountRow = AccountRow;
             NodeTag.DetailRow = ADetailRow;
@@ -375,6 +381,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // A "Summary account" cannot be deleted if it has children.
                 NodeTag.CanDelete = false;
+
                 foreach (DataRowView rowView in view)
                 {
                     AAccountHierarchyDetailRow accountDetail = (AAccountHierarchyDetailRow)rowView.Row;
@@ -391,7 +398,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // store current detail values
                 if ((FCurrentNode != null) && (FCurrentNode != treeViewCancelEventArgs.Node))
                 {
-                    AccountNodeDetails NodeDetails = (AccountNodeDetails) FCurrentNode.Tag;
+                    AccountNodeDetails NodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
                     String CurrentReportingAccountCode = NodeDetails.DetailRow.ReportingAccountCode;
 
                     FSelectedAccountRow = (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
@@ -407,15 +414,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
-        private void GetAccountCodeAttributes (ref AccountNodeDetails ANodeDetails)
+        private void GetAccountCodeAttributes(ref AccountNodeDetails ANodeDetails)
         {
-
             if (!ANodeDetails.CanHaveChildren.HasValue || !ANodeDetails.CanDelete.HasValue)
             {
                 bool RemoteCanBeParent = false;
                 bool RemoteCanDelete = false;
 
-                if (TRemote.MFinance.Setup.WebConnectors.GetAccountCodeAttributes(FLedgerNumber, ANodeDetails.DetailRow.ReportingAccountCode, out RemoteCanBeParent, out RemoteCanDelete))
+                if (TRemote.MFinance.Setup.WebConnectors.GetAccountCodeAttributes(FLedgerNumber, ANodeDetails.DetailRow.ReportingAccountCode,
+                        out RemoteCanBeParent, out RemoteCanDelete))
                 {
                     ANodeDetails.CanHaveChildren = RemoteCanBeParent;
                     ANodeDetails.CanDelete = RemoteCanDelete;
@@ -452,7 +459,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         NodeDetails.DetailRow.ReportingAccountCode
                     }));
 
-            GetAccountCodeAttributes (ref NodeDetails);
+            GetAccountCodeAttributes(ref NodeDetails);
             tbbAddNewAccount.Enabled = (NodeDetails.CanHaveChildren.HasValue ? NodeDetails.CanHaveChildren.Value : false);
             tbbDeleteUnusedAccount.Enabled = (NodeDetails.CanDelete.HasValue ? NodeDetails.CanDelete.Value : false);
             FPetraUtilsObject.SuppressChangeDetection = false;
@@ -494,7 +501,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 bool ICanEditAccountCode = ((AccountNodeDetails)FCurrentNode.Tag).IsNew || !FPetraUtilsObject.HasChanges;
                 SetPrimaryKeyReadOnly(!ICanEditAccountCode);
             }
-        }                                                          
+        }
 
         private void AddNewAccount(Object sender, EventArgs e)
         {
@@ -656,6 +663,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 MessageBox.Show("Fault: CanDelete status is unknown.");
                 return;
             }
+
             if (!NodeDetails.CanDelete.Value)
             {
                 MessageBox.Show(
@@ -723,13 +731,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 return null;
             }
+
             return (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
                 new object[] { FLedgerNumber,
                                ((AccountNodeDetails)FCurrentNode.Tag).DetailRow.ReportingAccountCode });
         }
 
         /// <summary>
-        /// Event that invokes ChangeAccountCodeValue(). 
+        /// Event that invokes ChangeAccountCodeValue().
         /// For details see the description of ChangeAccountCodeValue()
         /// </summary>
         /// <param name="sender">Actually it is only txtDetailAccountCode</param>
@@ -765,13 +774,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 txtStatus.Text = FStatus;
 
                 if (MessageBox.Show(String.Format(Catalog.GetString("You have changed {0} to {1}. Confirm that you want to re-name this account."),
-                    strOldDetailAccountCode, strNewDetailAccountCode), Catalog.GetString("Rename Account"), MessageBoxButtons.OKCancel) != DialogResult.OK)
+                            strOldDetailAccountCode,
+                            strNewDetailAccountCode), Catalog.GetString("Rename Account"), MessageBoxButtons.OKCancel) != DialogResult.OK)
                 {
                     txtDetailAccountCode.Text = strOldDetailAccountCode;
                     return false;
                 }
 
-                AccountNodeDetails NodeDetails = (AccountNodeDetails) trvAccounts.SelectedNode.Tag;
+                AccountNodeDetails NodeDetails = (AccountNodeDetails)trvAccounts.SelectedNode.Tag;
 
                 try
                 {
@@ -803,18 +813,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         ((AccountNodeDetails)childnode.Tag).DetailRow.AccountCodeToReportTo = strNewDetailAccountCode;
                     }
+
                     strOldDetailAccountCode = strNewDetailAccountCode;
                     FPetraUtilsObject.HasChanges = true;
                 }
                 else
                 {
-                    FStatus += Catalog.GetString ("Updating AccountCode change - please wait.\r\n");
+                    FStatus += Catalog.GetString("Updating AccountCode change - please wait.\r\n");
                     txtStatus.Text = FStatus;
 
                     // If this code was previously in the DB, I need to assume that there may be transactions posted to it.
                     // There's a server call I need to use, and after the call I need to re-load this page.
                     // (No other changes will be lost, because the txtDetailAccountCode will have been ReadOnly if there were already changes.)
-                    bool Success = TRemote.MFinance.Setup.WebConnectors.RenameAccountCode(strOldDetailAccountCode, strNewDetailAccountCode, FLedgerNumber);
+                    bool Success = TRemote.MFinance.Setup.WebConnectors.RenameAccountCode(strOldDetailAccountCode,
+                        strNewDetailAccountCode,
+                        FLedgerNumber);
 
                     FMainDS.Clear();
                     FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
@@ -826,11 +839,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FStatus = "";
                     txtStatus.Text = FStatus;
                 }
-
             } // if changed
 
             return changeAccepted;
         }
-
     }
 }
