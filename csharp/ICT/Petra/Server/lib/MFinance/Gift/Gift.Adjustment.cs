@@ -345,7 +345,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ANewBatchNumber, Transaction);
                     giftBatch = MainDS.AGiftBatch[0];
                     ADateEffective = giftBatch.GlEffectiveDate;
-					//If into an existing batch, then retrive the existing batch total
+                    //If into an existing batch, then retrive the existing batch total
                     batchGiftTotal = giftBatch.BatchTotal;
                 }
 
@@ -377,18 +377,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 int cycle = 0;
 
                 MainDS.AGift.DefaultView.Sort = string.Format("{0}, {1}",
-                                                              AGiftTable.GetBatchNumberDBName(),
-                                                              AGiftTable.GetGiftTransactionNumberDBName());
-                
+                    AGiftTable.GetBatchNumberDBName(),
+                    AGiftTable.GetGiftTransactionNumberDBName());
+
                 MainDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}, {2}",
-                                                              AGiftDetailTable.GetBatchNumberDBName(),
-                                                              AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                                                              AGiftDetailTable.GetDetailNumberDBName());
+                    AGiftDetailTable.GetBatchNumberDBName(),
+                    AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                    AGiftDetailTable.GetDetailNumberDBName());
+
                 do
                 {
                     foreach (DataRowView giftRow in MainDS.AGift.DefaultView)
                     {
-                    	AGiftRow oldGift = (AGiftRow)giftRow.Row;
+                        AGiftRow oldGift = (AGiftRow)giftRow.Row;
 
                         if ((oldGift.BatchNumber == ABatchNumber) && (oldGift.LedgerNumber == ALedgerNumber)
                             && (Function.Equals("ReverseGiftBatch") || (oldGift.GiftTransactionNumber == AGiftNumber)))
@@ -404,9 +405,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             MainDS.AGift.Rows.Add(gift);
 
-		                    foreach (DataRowView giftDetailRow in MainDS.AGiftDetail.DefaultView)
-		                    {
-		                    	AGiftDetailRow oldGiftDetail = (AGiftDetailRow)giftDetailRow.Row;
+                            foreach (DataRowView giftDetailRow in MainDS.AGiftDetail.DefaultView)
+                            {
+                                AGiftDetailRow oldGiftDetail = (AGiftDetailRow)giftDetailRow.Row;
 
                                 if ((oldGiftDetail.GiftTransactionNumber == oldGift.GiftTransactionNumber)
                                     && (oldGiftDetail.BatchNumber == ABatchNumber)
@@ -451,7 +452,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     MainDS.AGiftDetail.Rows.Add(giftDetail);
                                 }
                             }
-                    	}
+                        }
                     }
 
                     cycle++;
@@ -460,7 +461,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //When reversing into a new or existing batch, set batch total
                 if (!Function.Equals("AdjustGift"))
                 {
-               		giftBatch.BatchTotal = batchGiftTotal;
+                    giftBatch.BatchTotal = batchGiftTotal;
                 }
 
                 // save everything at the end

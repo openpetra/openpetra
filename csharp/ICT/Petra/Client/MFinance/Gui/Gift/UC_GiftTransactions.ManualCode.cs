@@ -60,9 +60,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitialiseControls()
         {
-			//Fix to length of field
-        	txtDetailReference.MaxLength = 20;
-			
+            //Fix to length of field
+            txtDetailReference.MaxLength = 20;
+
             //Changing this will stop taborder issues
             sptTransactions.TabStop = false;
         }
@@ -845,9 +845,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFunctionName">Which function shall be called on the server</param>
         public void ShowRevertAdjustForm(String AFunctionName)
         {
-        	bool reverseWholeBatch = (AFunctionName == "Reverse Gift Batch");
-        	
-        	AGiftBatchRow giftBatch = ((TFrmGiftBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
+            bool reverseWholeBatch = (AFunctionName == "Reverse Gift Batch");
+
+            AGiftBatchRow giftBatch = ((TFrmGiftBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
 
             if (giftBatch == null)
             {
@@ -861,9 +861,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (!reverseWholeBatch && FPreviouslySelectedDetailRow == null)
+            if (!reverseWholeBatch && (FPreviouslySelectedDetailRow == null))
             {
-            	MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
+                MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
                 return;
             }
 
@@ -873,25 +873,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (reverseWholeBatch && FBatchNumber != giftBatch.BatchNumber)
+            if (reverseWholeBatch && (FBatchNumber != giftBatch.BatchNumber))
             {
-            	LoadGifts(giftBatch.LedgerNumber, giftBatch.BatchNumber, MFinanceConstants.BATCH_POSTED, false);
+                LoadGifts(giftBatch.LedgerNumber, giftBatch.BatchNumber, MFinanceConstants.BATCH_POSTED, false);
             }
-            
+
             TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
             try
             {
                 ParentForm.ShowInTaskbar = false;
                 revertForm.LedgerNumber = FLedgerNumber;
                 revertForm.Text = AFunctionName;
-                
+
                 revertForm.AddParam("Function", AFunctionName.Replace(" ", string.Empty));
+
                 if (reverseWholeBatch)
                 {
-	                revertForm.GiftMainDS = FMainDS;
+                    revertForm.GiftMainDS = FMainDS;
                 }
+
                 revertForm.GiftBatchRow = giftBatch;
-               	revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
+                revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
 
                 if (revertForm.ShowDialog() == DialogResult.OK)
                 {
@@ -904,7 +906,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ParentForm.ShowInTaskbar = true;
             }
         }
-
 
         /// <summary>
         /// Reverse the whole gift batch
