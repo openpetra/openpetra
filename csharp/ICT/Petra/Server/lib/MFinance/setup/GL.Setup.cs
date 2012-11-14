@@ -75,7 +75,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            AAnalysisTypeAccess.LoadAll(MainDS, null);
             AAnalysisAttributeAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
 
             // set Account BankAccountFlag if there exists a property
             foreach (AAccountPropertyRow accProp in MainDS.AAccountProperty.Rows)
@@ -298,7 +300,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 "a_ledger_number_i=" + ALedgerNumber + " AND " +
                 "a_account_code_c = '" + AAccountCode + "';";
             object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-            return Convert.ToInt32(SqlResult) > 0;
+            bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
+
+            if (!IsInUse)
+            {
+                QuerySql =
+                    "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " + 
+                    "a_ledger_number_i=" + ALedgerNumber + " AND " +
+                    "a_account_code_c = '" + AAccountCode + "';";
+                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
+                IsInUse = (Convert.ToInt32(SqlResult) > 0);
+            }
+
+            return IsInUse;
         }
 
         private static bool AccountHasChildren(Int32 ALedgerNumber, string AAccountCode, TDBTransaction Transaction)
@@ -1423,5 +1437,170 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             return AAnalysisAttributeAccess.CountViaAAnalysisType(ATypeCode, null);
         }
+
+        //
+        //    Rename Account: to rename an AccountCode, we need to update lots of values all over the database:
+
+        private static void UpdateAccountField(String ATblName, String AFldName, String AOldName, String ANewName, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        {
+            String QuerySql =
+                "UPDATE PUB_" + ATblName +
+                " SET " + AFldName + "='" + ANewName +
+                "' WHERE " + AFldName + "='" + AOldName + "'"; 
+            if (ALedgerNumber >= 0)
+            {
+                QuerySql += (" AND a_ledger_number_i=" + ALedgerNumber);
+            }
+            DBAccess.GDBAccessObj.ExecuteNonQuery(QuerySql, ATransaction);
+        }
+
+        /// <summary>
+        /// Use this new account code instead of that old one.
+        /// THIS RENAMES THE FIELD IN LOTS OF PLACES!
+        /// </summary>
+        /// <param name="AOldCode"></param>
+        /// <param name="ANewCode"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool RenameAccountCode(String AOldCode, String ANewCode, Int32 ALedgerNumber)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            Boolean RenameComplete = false;
+            TVerificationResultCollection VerificationResults;
+
+            try
+            {
+                //
+                // First check whether this new code is available for use!
+                //
+                AAccountTable TempAccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, ANewCode, Transaction);
+                if (TempAccountTbl.Rows.Count > 0)
+                {
+                    return false;
+                }
+
+                TempAccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AOldCode, Transaction);
+                if (TempAccountTbl.Rows.Count != 1)
+                {
+                    return false;
+                }
+
+                AAccountRow PrevAccountRow = TempAccountTbl[0];
+                AAccountRow NewAccountRow = TempAccountTbl.NewRowTyped();
+                DataUtilities.CopyAllColumnValues(PrevAccountRow, NewAccountRow);
+                NewAccountRow.AccountCode = ANewCode;
+                TempAccountTbl.Rows.Add(NewAccountRow);
+
+                if (!AAccountAccess.SubmitChanges(TempAccountTbl, Transaction, out VerificationResults))
+                {
+                    return false;
+                }
+                TempAccountTbl.AcceptChanges();
+
+                UpdateAccountField ("a_ledger","a_creditor_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_debtor_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_fa_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_ilt_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_po_accrual_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_profit_loss_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_purchase_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_sales_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_so_accrual_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_stock_adj_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_stock_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_tax_input_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_tax_output_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_cost_of_sales_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_forex_gains_losses_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_ret_earnings_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_ledger","a_stock_accrual_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_transaction","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_transaction","a_primary_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+/*
+                UpdateAccountField ("a_this_year_old_transaction","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_this_year_old_transaction","a_primary_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_previous_year_transaction","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_previous_year_transaction","a_primary_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+ */
+                UpdateAccountField ("a_fees_receivable","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_fees_receivable","a_dr_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_fees_payable","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_fees_payable","a_dr_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_transaction_type","a_balancing_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_transaction_type","a_credit_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField ("a_transaction_type","a_debit_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+
+                AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
+                foreach (AAnalysisAttributeRow OldAnalAttribRow in TempAnalAttrTbl.Rows)
+                {
+
+                    // "a_analysis_attribute"  is the referrent in foreign keys, so I can't just go changing it - I need to make a copy?
+                    AAnalysisAttributeRow NewAnalAttribRow = TempAnalAttrTbl.NewRowTyped();
+                    DataUtilities.CopyAllColumnValues(OldAnalAttribRow, NewAnalAttribRow);
+                    NewAnalAttribRow.AccountCode = ANewCode;
+                    TempAnalAttrTbl.Rows.Add(NewAnalAttribRow);
+                    if (!AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction, out VerificationResults))
+                    {
+                        return false;
+                    }
+                    TempAnalAttrTbl.AcceptChanges();
+
+                    UpdateAccountField("a_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                    UpdateAccountField("a_recurring_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                    UpdateAccountField("a_thisyearold_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                    UpdateAccountField("a_prev_year_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                    UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+
+                    OldAnalAttribRow.Delete();
+                    if (!AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction, out VerificationResults))
+                    {
+                        return false;
+                    }
+                }
+
+                UpdateAccountField("a_suspense_account", "a_suspense_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_motivation_detail","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_recurring_transaction","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_gift_batch","a_bank_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_recurring_gift_batch","a_bank_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_ap_document_detail","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_ap_document","a_ap_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_ap_payment","a_bank_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_ep_payment","a_bank_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+
+                UpdateAccountField("a_ap_supplier","a_default_ap_account_c", AOldCode, ANewCode, -1, Transaction); // There's no Ledger associated with this field.
+
+                UpdateAccountField("a_budget","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_general_ledger_master","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_account_hierarchy_detail","a_reporting_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_account_hierarchy_detail","a_account_code_to_report_to_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_account_hierarchy","a_root_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_account_property","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+//              UpdateAccountField("a_fin_statement_group","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+
+                PrevAccountRow.Delete();
+                if (!AAccountAccess.SubmitChanges(TempAccountTbl, Transaction, out VerificationResults))
+                {
+                    return false;
+                }
+
+                RenameComplete = true;
+            }
+
+            finally
+            {
+                if (RenameComplete)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            return RenameComplete;
+        }
+
     }
 }

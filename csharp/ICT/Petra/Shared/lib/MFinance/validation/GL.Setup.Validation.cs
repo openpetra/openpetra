@@ -132,6 +132,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="AContext"></param>
+        /// <param name="ARow"></param>
+        /// <param name="AVerificationResultCollection"></param>
+        /// <param name="AValidationControlsDict"></param>
         public static void ValidateAdminGrantPayable(object AContext, AFeesPayableRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
@@ -175,6 +182,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="AContext"></param>
+        /// <param name="ARow"></param>
+        /// <param name="AVerificationResultCollection"></param>
+        /// <param name="AValidationControlsDict"></param>
         public static void ValidateAdminGrantReceivable(object AContext, AFeesReceivableRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
