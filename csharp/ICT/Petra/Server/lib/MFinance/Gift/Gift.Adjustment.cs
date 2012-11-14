@@ -321,8 +321,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftBatch.CurrencyCode = oldGiftBatch.CurrencyCode;
                     giftBatch.ExchangeRateToBase = oldGiftBatch.ExchangeRateToBase;
                     giftBatch.MethodOfPaymentCode = oldGiftBatch.MethodOfPaymentCode;
-                    //giftBatch.HashTotal = -oldGiftBatch.HashTotal;
-                    //giftBatch.BatchTotal = -oldGiftBatch.BatchTotal;
+                    giftBatch.HashTotal = 0;
 
                     if (giftBatch.MethodOfPaymentCode.Length == 0)
                     {
@@ -373,18 +372,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 }
 
-                int countGifts = MainDS.AGift.Rows.Count;
-                int countGiftsDetail = MainDS.AGiftDetail.Rows.Count;
-
                 //assuming new elements are added after these static borders
 
                 int cycle = 0;
 
+                MainDS.AGift.DefaultView.Sort = string.Format("{0}, {1}",
+                                                              AGiftTable.GetBatchNumberDBName(),
+                                                              AGiftTable.GetGiftTransactionNumberDBName());
+                
+                MainDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}, {2}",
+                                                              AGiftDetailTable.GetBatchNumberDBName(),
+                                                              AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                                                              AGiftDetailTable.GetDetailNumberDBName());
                 do
                 {
-                    for (int i = 0; (i < countGifts); i++)
+                    foreach (DataRowView giftRow in MainDS.AGift.DefaultView)
                     {
-                        AGiftRow oldGift = MainDS.AGift[i];
+                    	AGiftRow oldGift = (AGiftRow)giftRow.Row;
 
                         if ((oldGift.BatchNumber == ABatchNumber) && (oldGift.LedgerNumber == ALedgerNumber)
                             && (Function.Equals("ReverseGiftBatch") || (oldGift.GiftTransactionNumber == AGiftNumber)))
@@ -398,35 +402,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             giftBatch.LastGiftNumber++;
                             gift.LastDetailNumber = 1;
 
-                            /*
-                             * gift.MethodOfGivingCode = oldGift.MethodOfGivingCode;
-                             *
-                             * if (gift.MethodOfGivingCode.Length == 0)
-                             * {
-                             *  gift.SetMethodOfGivingCodeNull();
-                             * }
-                             *
-                             * gift.MethodOfPaymentCode = oldGift.MethodOfPaymentCode;
-                             *
-                             * if (gift.MethodOfPaymentCode.Length == 0)
-                             * {
-                             *  gift.SetMethodOfPaymentCodeNull();
-                             * }
-                             *
-                             * gift.AdminCharge = oldGift.AdminCharge;
-                             * gift.DonorKey = oldGift.DonorKey;
-                             * gift.ReceiptLetterCode = oldGift.ReceiptLetterCode;
-                             * gift.Reference = oldGift.Reference;
-                             * gift.BankingDetailsKey = oldGift.BankingDetailsKey;
-                             * gift.Restricted = oldGift.Restricted;
-                             * gift.FirstTimeGift = oldGift.FirstTimeGift;
-                             * gift.GiftStatus = oldGift.GiftStatus;         // unknown status is copied?
-                             */
                             MainDS.AGift.Rows.Add(gift);
 
-                            for (int j = 0; (j < countGiftsDetail); j++)
-                            {
-                                AGiftDetailRow oldGiftDetail = MainDS.AGiftDetail[j];
+		                    foreach (DataRowView giftDetailRow in MainDS.AGiftDetail.DefaultView)
+		                    {
+		                    	AGiftDetailRow oldGiftDetail = (AGiftDetailRow)giftDetailRow.Row;
 
                                 if ((oldGiftDetail.GiftTransactionNumber == oldGift.GiftTransactionNumber)
                                     && (oldGiftDetail.BatchNumber == ABatchNumber)
@@ -457,31 +437,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     batchGiftTotal += giftDetail.GiftAmount;
                                     giftDetail.GiftAmountIntl = signum * oldGiftDetail.GiftAmountIntl;
 
-                                    /*
-                                     * giftDetail.RecipientLedgerNumber = oldGiftDetail.RecipientLedgerNumber;
-                                     * giftDetail.MotivationGroupCode = oldGiftDetail.MotivationGroupCode;
-                                     * giftDetail.MotivationDetailCode = oldGiftDetail.MotivationDetailCode;
-                                     * giftDetail.ConfidentialGiftFlag = oldGiftDetail.ConfidentialGiftFlag;
-                                     * giftDetail.TaxDeductable = oldGiftDetail.TaxDeductable;
-                                     * giftDetail.RecipientKey = oldGiftDetail.RecipientKey;
-                                     *
-                                     * giftDetail.ChargeFlag = oldGiftDetail.ChargeFlag;
-                                     * giftDetail.CostCentreCode = oldGiftDetail.CostCentreCode;
-                                     *
-                                     * if (giftDetail.CostCentreCode.Length == 0)
-                                     * {
-                                     *  giftDetail.SetCostCentreCodeNull();
-                                     * }
-                                     *
-                                     * giftDetail.IchNumber = oldGiftDetail.IchNumber;
-                                     *
-                                     * giftDetail.MailingCode = oldGiftDetail.MailingCode;
-                                     *
-                                     * if (giftDetail.MailingCode.Length == 0)
-                                     * {
-                                     *  giftDetail.SetMailingCodeNull();
-                                     * }
-                                     */
                                     giftDetail.GiftCommentOne = (String)requestParams["ReversalCommentOne"];
                                     giftDetail.GiftCommentTwo = (String)requestParams["ReversalCommentTwo"];
                                     giftDetail.GiftCommentThree = (String)requestParams["ReversalCommentThree"];
@@ -496,7 +451,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     MainDS.AGiftDetail.Rows.Add(giftDetail);
                                 }
                             }
-                        }
+                    	}
                     }
 
                     cycle++;
