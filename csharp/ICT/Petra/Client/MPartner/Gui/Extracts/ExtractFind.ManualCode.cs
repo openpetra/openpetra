@@ -50,6 +50,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private int FExtractId;
         private String FExtractName;
         private String FExtractDescription;
+        private int FKeyCount;
         private String FExtractCreatedBy;
         private DateTime FExtractDateCreated;
 
@@ -66,6 +67,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             FExtractId = -1;
             FExtractName = "";
             FExtractDescription = "";
+            FKeyCount = 0;
             FExtractCreatedBy = "";
 
             // now show the actual dialog
@@ -120,16 +122,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="AExtractId"></param>
         /// <param name="AExtractName"></param>
         /// <param name="AExtractDescription"></param>
+        /// <param name="AKeyCount"></param>
         /// <param name="AExtractCreatedBy"></param>
         /// <param name="AExtractDateCreated"></param>
         /// <returns>information which button was pressed
         /// </returns>
         public bool GetResult(out int AExtractId, out String AExtractName, out String AExtractDescription,
-                              out String AExtractCreatedBy, out DateTime AExtractDateCreated)
+                              out int AKeyCount, out String AExtractCreatedBy, out DateTime AExtractDateCreated)
         {
             AExtractId = FExtractId;
             AExtractName = FExtractName;
             AExtractDescription = FExtractDescription;
+            AKeyCount = FKeyCount;
             AExtractCreatedBy = FExtractCreatedBy;
             AExtractDateCreated = FExtractDateCreated;
 
@@ -242,6 +246,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 FExtractId = SelectedRow.ExtractId;
                 FExtractName = SelectedRow.ExtractName;
                 FExtractDescription = SelectedRow.ExtractDesc;
+                FKeyCount = SelectedRow.KeyCount;
                 FExtractCreatedBy = SelectedRow.CreatedBy;
                 FExtractDateCreated = (DateTime)SelectedRow.DateCreated;
             }
@@ -259,6 +264,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             FExtractId = -1;
             FExtractName = "";
             FExtractDescription = "";
+            FKeyCount = 0;
             FExtractCreatedBy = "";
             Close();
         }

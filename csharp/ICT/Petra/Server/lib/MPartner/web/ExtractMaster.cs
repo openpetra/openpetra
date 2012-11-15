@@ -1267,5 +1267,116 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return ResultValue;
         }
+
+        /// <summary>
+        /// Creates a new extract by subractin a list of given extracts from a base extract.
+        /// </summary>
+        /// <param name="ANewExtractName">Name of the Extract to be created.</param>
+        /// <param name="ANewExtractDescription">Description of the Extract to be created.</param>
+        /// <param name="ABaseExtractName">Base extract to subtract other extracts from.</param>
+        /// <param name="ASubtractExtractIdList">List of Ids of extracts to be subtracted from base extract.</param>
+        /// <param name="ANewExtractId">Extract Id of the created Extract, or -1 if the
+        /// creation of the Extract was not successful.</param>
+        /// <param name="AVerificationResults">Nil if all verifications are OK and all DB calls
+        /// succeded, otherwise filled with 1..n TVerificationResult objects
+        /// (can also contain DB call exceptions).</param>
+        /// <returns>True if the new intersected Extract was created, otherwise false.</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean SubtractExtracts(String ANewExtractName,
+            String ANewExtractDescription,
+            String ABaseExtractName,
+            List<Int32> ASubtractExtractIdList,
+            out Int32 ANewExtractId,
+            out TVerificationResultCollection AVerificationResults)
+        {
+            Boolean ResultValue = true;
+            Boolean ExtractAlreadyExists = false;
+            MExtractTable ExtractTable;
+            MExtractMasterTable BaseExtractMasterTable;
+            MExtractTable BaseExtractTable;
+            MExtractTable SubtractedExtractTable = new MExtractTable();
+            MExtractRow TemplateRow;
+            Boolean NewTransaction;
+            List<Int64> SubtractPartnerKeyList = new List<Int64>();
+ 
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            
+            ANewExtractId = -1;
+            AVerificationResults = null;
+
+
+            ResultValue = MPartner.Extracts.TExtractsHandling.CreateNewExtract(ANewExtractName, 
+                           ANewExtractDescription, out ANewExtractId, out ExtractAlreadyExists, out AVerificationResults);
+
+            if (ResultValue && !ExtractAlreadyExists)
+            {
+                // first create a table that contains all partners to be subtracted
+                foreach (Int32 ExtractId in ASubtractExtractIdList)
+                {
+                    ExtractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, WriteTransaction);
+    
+                    foreach (DataRow ExtractRow in ExtractTable.Rows)
+                    {
+                        if (!SubtractPartnerKeyList.Exists(item => item == ((MExtractRow)ExtractRow).PartnerKey))
+                        {
+                            SubtractPartnerKeyList.Add(((MExtractRow)ExtractRow).PartnerKey);
+                        }
+                    }
+                }
+                
+
+                if (ASubtractExtractIdList.Count > 0)
+                {
+                    BaseExtractMasterTable = MExtractMasterAccess.LoadByUniqueKey(ABaseExtractName, WriteTransaction);
+                    BaseExtractTable = MExtractAccess.LoadViaMExtractMaster(((MExtractMasterRow)BaseExtractMasterTable.Rows[0]).ExtractId, WriteTransaction);
+                    
+                    // iterate through all partners in base extract and check if this record also exists in extracts to be subtracted
+                    foreach (DataRow ExtractRow in BaseExtractTable.Rows)
+                    {
+                        if (!SubtractPartnerKeyList.Exists(item => item == ((MExtractRow)ExtractRow).PartnerKey))
+                        {
+                            // if partner key does not exist in list to subtract then add it to result extract
+                            TemplateRow = (MExtractRow)SubtractedExtractTable.NewRowTyped(true);
+                            TemplateRow.ExtractId = ANewExtractId;
+                            TemplateRow.PartnerKey = ((MExtractRow)ExtractRow).PartnerKey;
+                            TemplateRow.SiteKey = ((MExtractRow)ExtractRow).SiteKey;
+                            TemplateRow.LocationKey = ((MExtractRow)ExtractRow).LocationKey;
+        
+                            SubtractedExtractTable.Rows.Add(TemplateRow);
+                        }
+                    }
+                }
+                
+                try
+                {
+                    // update key count in master table
+                    MExtractMasterTable IntersectedExtractMaster = MExtractMasterAccess.LoadByPrimaryKey(ANewExtractId, WriteTransaction);
+                    IntersectedExtractMaster[0].KeyCount = SubtractedExtractTable.Rows.Count;
+
+                    // submit changes in master and then in extract content table which refers to it
+                    if (MExtractAccess.SubmitChanges(SubtractedExtractTable, WriteTransaction, out AVerificationResults))
+                    {
+                        ResultValue = MExtractMasterAccess.SubmitChanges(IntersectedExtractMaster, WriteTransaction, out AVerificationResults);
+                    }
+                }
+                catch (Exception)
+                {
+                    ResultValue = false;
+                }
+                
+            }
+            
+            if (ResultValue && NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return ResultValue;
+        }
     }
 }

@@ -17,13 +17,19 @@ RootNode:
         pnlDialogContent:
             Controls:
                 Row0: [pnlTop]
-                Row2: [pnlGrid]
+                Row1: [pnlGrid]
                 
         pnlTop:
             Dock: Top
             Controls:
-                Row0: [lblExplanation]
-                Row1: [Empty]
+                Row0: [txtBaseExtract]
+                Row1: [lblExplanation]
+                Row2: [Empty]
+
+        txtBaseExtract:
+            Width: 400
+            Label: Extract to subtract from
+            Type: Extract
 
         lblExplanation:
             Width: 500

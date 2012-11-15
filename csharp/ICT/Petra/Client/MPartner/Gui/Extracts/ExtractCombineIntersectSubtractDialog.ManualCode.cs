@@ -44,12 +44,25 @@ using Ict.Petra.Client.CommonControls;
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
     /// manual methods for the generated window
-    public partial class TFrmExtractCombineIntersectDialog : System.Windows.Forms.Form
+    public partial class TFrmExtractCombineIntersectSubtractDialog : System.Windows.Forms.Form
     {
+        /// <summary>Mode to be used for this dialog</summary>
+        public enum TMode
+        {
+            /// <summary>show dialog for combining extract</summary>
+            ecisCombineMode,
+
+            /// <summary>show dialog for intersecting extract</summary>
+            ecisIntersectMode,
+
+            /// <summary>show dialog for subtracting extract</summary>
+            ecisSubtractMode
+        }
+
         /// <summary>
-        /// if true then dialog used for combining, if false then used for intersection
+        /// enum to remember which mode to be used for dialog
         /// </summary>
-        private Boolean FCombine;
+        private TMode FMode;
         
         /// <summary>
         /// return true if dialog action (combine or intersect) was successful
@@ -57,22 +70,42 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private MExtractMasterTable FExtractMasterTable;
         
         /// <summary>
-        /// set dialog mode (combine or intersect)
+        /// set dialog mode (combine, intersect or subtract)
         /// </summary>
-        /// <param name="ACombine"></param>
-        public void SetCombineOrIntersect(bool ACombine)
+        /// <param name="AMode"></param>
+        public void SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode AMode)
         {
-            FCombine = ACombine;
-            
-            if (FCombine)
+            FMode = AMode;
+
+            // hide field for base extract if not in subtraction mode
+            if (FMode != TMode.ecisSubtractMode)
             {
-                lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to combine and then click OK:");
-                FindForm().Text = "Combine Extracts";
+                int ReducedHeight = txtBaseExtract.Height;
+                txtBaseExtract.Height = 0;
+                lblBaseExtract.Height = 0;
+                txtBaseExtract.Hide();
+                lblBaseExtract.Hide();
+                
+                pnlTop.Height = pnlTop.Height - ReducedHeight;
+                lblExplanation.Location = new System.Drawing.Point(lblExplanation.Location.X, lblExplanation.Location.Y - ReducedHeight);
             }
-            else
+
+            switch (FMode)
             {
-                lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to intersect and then click OK:");
-                FindForm().Text = "Intersect Extracts";
+                case TMode.ecisCombineMode:
+                    lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to combine and then click OK:");
+                    FindForm().Text = "Combine Extracts";
+                    break;
+
+                case TMode.ecisIntersectMode:
+                    lblExplanation.Text = Catalog.GetString("Please add extracts to the list that you want to intersect and then click OK:");
+                    FindForm().Text = "Intersect Extracts";
+                    break;
+
+                case TMode.ecisSubtractMode:
+                    lblExplanation.Text = Catalog.GetString("Please add extracts to the list to be subtracted from the one above:");
+                    FindForm().Text = "Subtract Extracts";
+                    break;
             }
         }
 
@@ -113,6 +146,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             int ExtractId = 0;
             string ExtractName;
             string ExtractDescription;
+            int KeyCount;
             string ExtractCreatedBy;
             DateTime ExtractDateCreated;
 
@@ -121,7 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             // get data for selected base extract
             ExtractFindDialog.GetResult(out ExtractId, out ExtractName, out ExtractDescription,
-                                        out ExtractCreatedBy, out ExtractDateCreated);
+                                        out KeyCount, out ExtractCreatedBy, out ExtractDateCreated);
             ExtractFindDialog.Dispose();
 
             // only continue if an extract was selected
@@ -133,6 +167,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 Row.ExtractId = ExtractId;
                 Row.ExtractName = ExtractName;
                 Row.ExtractDesc = ExtractDescription;
+                Row.KeyCount = KeyCount;
                 Row.CreatedBy = ExtractCreatedBy;
                 Row.DateCreated = ExtractDateCreated;
                 
@@ -203,45 +238,76 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// Called by the instantiator of this Dialog to retrieve the values of Fields
         /// on the screen.
         /// </summary>
-        /// <param name="ACombineExtractIdList"></param>
+        /// <param name="AExtractIdList"></param>
         /// <returns>Boolean</returns>
-        public Boolean GetReturnedParameters(out List<Int32> ACombineExtractIdList)
+        public Boolean GetReturnedParameters(out List<Int32> AExtractIdList)
         {
             Boolean ReturnValue = true;
 
-            ACombineExtractIdList = new List<Int32>();
+            AExtractIdList = new List<Int32>();
 
             foreach (DataRow ExtractMasterRow in FExtractMasterTable.Rows)
             {
-                ACombineExtractIdList.Add(((MExtractMasterRow)ExtractMasterRow).ExtractId);
+                AExtractIdList.Add(((MExtractMasterRow)ExtractMasterRow).ExtractId);
             }
 
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Called by the instantiator of this Dialog to retrieve the values of Fields
+        /// on the screen.
+        /// </summary>
+        /// <param name="ABaseExtractName"></param>
+        /// <param name="AExtractIdList"></param>
+        /// <returns>Boolean</returns>
+        public Boolean GetReturnedParameters(out String ABaseExtractName, out List<Int32> AExtractIdList)
+        {
+            Boolean ReturnValue = true;
+
+            GetReturnedParameters(out AExtractIdList);
+
+            ABaseExtractName = txtBaseExtract.Text;
+            
+            return ReturnValue;
+        }
+        
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            String MessageText;
-            String TitleText;
+            String MessageText = "";
+            String TitleText = "";
 
-            if (FCombine)
-            {
-                TitleText = Catalog.GetString("Combine Extracts");
-            }
-            else
-            {
-                TitleText = Catalog.GetString("Intersect Extracts");
-            }
             
+            switch (FMode)
+            {
+                case TMode.ecisCombineMode:
+                    TitleText = Catalog.GetString("Combine Extracts");
+                    break;
+
+                case TMode.ecisIntersectMode:
+                    TitleText = Catalog.GetString("Intersect Extracts");
+                    break;
+
+                case TMode.ecisSubtractMode:
+                    TitleText = Catalog.GetString("Subtract Extracts");
+                    break;
+            }
+
             if (FExtractMasterTable.Rows.Count > 0)
             {
-                if (FCombine)
+                switch (FMode)
                 {
-                    MessageText = Catalog.GetString("Are you sure that you want to combine the extracts in the list?");
-                }
-                else
-                {
-                    MessageText = Catalog.GetString("Are you sure that you want to intersect the extracts in the list?");
+                    case TMode.ecisCombineMode:
+                        MessageText = Catalog.GetString("Are you sure that you want to combine the extracts in the list?");
+                        break;
+    
+                    case TMode.ecisIntersectMode:
+                        MessageText = Catalog.GetString("Are you sure that you want to intersect the extracts in the list?");
+                        break;
+    
+                    case TMode.ecisSubtractMode:
+                        MessageText = Catalog.GetString("Are you sure that you want to subtract the extracts in the list from the one at the top?");
+                        break;
                 }
                 
                 if (MessageBox.Show(MessageText,

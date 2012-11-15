@@ -114,7 +114,7 @@ RootNode:
             mniSeparator:
             mniCombineExtracts: {Label=Combine Extracts, Action=actCombineExtracts}
             mniIntersectExtracts: {Label=Intersect Extracts, Action=actIntersectExtracts}
-            mniSubtractExtracts: {Label=Extract Difference, Action=actSubtractExtracts}
+            mniSubtractExtracts: {Label=Subtract Extracts, Action=actSubtractExtracts}
         mniUpdatePartners:
             Label: &Update Partners
             mniAddSubscription: {Label=Add Subscription, Action=actAddSubscription}
