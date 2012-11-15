@@ -298,11 +298,11 @@ namespace Ict.Petra.Server.MFinance.Common
                             ABatchToPost.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
-            else if (ABatchToPost.BatchCreditTotal == 0)
+            else if ((ABatchToPost.BatchCreditTotal == 0) && ((ADataSet.AJournal.Rows.Count == 0) || (ADataSet.ATransaction.Rows.Count == 0)))
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
-                        Catalog.GetString("It has no monetary value. Please cancel it or add meaningful transactions."),
+                        Catalog.GetString("The batch has no monetary value. Please cancel it or add transactions."),
                         TResultSeverity.Resv_Critical));
             }
             else if ((ABatchToPost.BatchControlTotal != 0)

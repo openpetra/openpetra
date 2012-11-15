@@ -993,7 +993,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.AGift.Rows.Add(giftRow);
 
                 newRow = FMainDS.AGiftDetail.NewRowTyped(true);
-                
+
                 newRow.LedgerNumber = FBatchRow.LedgerNumber;
                 newRow.BatchNumber = FBatchRow.BatchNumber;
                 newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
@@ -1082,7 +1082,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 UpdateControlsProtection(ARow);
             }
 
-            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0 && cmbDetailMotivationGroupCode.SelectedIndex == -1)
+            if ((Convert.ToInt64(txtDetailRecipientKey.Text) == 0) && (cmbDetailMotivationGroupCode.SelectedIndex == -1))
             {
                 txtDetailCostCentreCode.Text = string.Empty;
             }
@@ -1122,9 +1122,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailDonorKey.Text = ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey.ToString();
             }
 
-            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0 && cmbDetailMotivationGroupCode.SelectedIndex == -1)
+            if ((Convert.ToInt64(txtDetailRecipientKey.Text) == 0) && (cmbDetailMotivationGroupCode.SelectedIndex == -1))
             {
-               	txtDetailCostCentreCode.Text = string.Empty;
+                txtDetailCostCentreCode.Text = string.Empty;
             }
 
             UpdateControlsProtection(ARow);
