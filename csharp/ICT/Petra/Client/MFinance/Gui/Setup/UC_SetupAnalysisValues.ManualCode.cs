@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
         private void NewRow(System.Object sender, EventArgs e)
         {
-            ((TFrmSetupAnalysisTypes)ParentForm).FreezeTypeCode();
+            TypeCode = ((TFrmSetupAnalysisTypes)ParentForm).FreezeTypeCode();
             this.CreateNewAFreeformAnalysis();
         }
 

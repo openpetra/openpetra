@@ -25,6 +25,7 @@ using System;
 using System.Threading;
 using System.Globalization;
 using GNU.Gettext;
+using System.IO;
 
 namespace Ict.Common
 {
@@ -63,7 +64,13 @@ namespace Ict.Common
             // modify current locale for the given language
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(ALanguageCode);
 
-            catalog = new GettextResourceManager("OpenPetra");
+            string ResourceDllFname = TAppSettingsManager.ApplicationDirectory +
+                                      "\\" + Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName + "\\OpenPetra.resources.dll";
+
+            if (File.Exists(ResourceDllFname))
+            {
+                catalog = new GettextResourceManager("OpenPetra");
+            }
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo(ACultureCode);
         }

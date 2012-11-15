@@ -68,7 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 giftMainDS = value;
             }
         }
-        
+
 // TODO Decide whether to remove altogether
 //        /// <summary>
 //        /// A Gift Batch Row is injected
