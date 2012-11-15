@@ -50,11 +50,11 @@ namespace Ict.Common.Remoting.Server
         private String FHostIPAddresses;
         private TFileVersionInfo FApplicationVersion;
         private System.Int16 FIPBasePort;
-        private System.Int16 FClientIdleStatusAfterXMinutes;
-        private System.Int16 FClientKeepAliveCheckIntervalInSeconds;
-        private System.Int16 FClientKeepAliveTimeoutAfterXSecondsLAN;
-        private System.Int16 FClientKeepAliveTimeoutAfterXSecondsRemote;
-        private System.Int16 FClientConnectionTimeoutAfterXSeconds;
+        private System.Int32 FClientIdleStatusAfterXMinutes;
+        private System.Int32 FClientKeepAliveCheckIntervalInSeconds;
+        private System.Int32 FClientKeepAliveTimeoutAfterXSecondsLAN;
+        private System.Int32 FClientKeepAliveTimeoutAfterXSecondsRemote;
+        private System.Int32 FClientConnectionTimeoutAfterXSeconds;
         private bool FClientAppDomainShutdownAfterKeepAliveTimeout;
         private TExecutingOSEnum FExecutingOS;
         private string FSMTPServer;
@@ -166,7 +166,7 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// <summary>The amount of time in minutes after which a Client's status is set to 'Idle' when no activity occurs</summary>
-        public static System.Int16 ClientIdleStatusAfterXMinutes
+        public static System.Int32 ClientIdleStatusAfterXMinutes
         {
             get
             {
@@ -175,7 +175,7 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// <summary>The interval in seconds in which the PetraServer checks whether the Client made contact</summary>
-        public static System.Int16 ClientKeepAliveCheckIntervalInSeconds
+        public static System.Int32 ClientKeepAliveCheckIntervalInSeconds
         {
             get
             {
@@ -184,7 +184,7 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// <summary>The amount of time in seconds after which a Client's AppDomain is teared down when no KeepAlive signal was received (LAN connection)</summary>
-        public static System.Int16 ClientKeepAliveTimeoutAfterXSecondsLAN
+        public static System.Int32 ClientKeepAliveTimeoutAfterXSecondsLAN
         {
             get
             {
@@ -193,7 +193,7 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// <summary>The amount of time in seconds after which a Client's AppDomain is teared down when no KeepAlive signal was received (Remote connection)</summary>
-        public static System.Int16 ClientKeepAliveTimeoutAfterXSecondsRemote
+        public static System.Int32 ClientKeepAliveTimeoutAfterXSecondsRemote
         {
             get
             {
@@ -202,7 +202,7 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// <summary>The amount of time in seconds after which a Client's attempt to connect to the Server times out</summary>
-        public static System.Int16 ClientConnectionTimeoutAfterXSeconds
+        public static System.Int32 ClientConnectionTimeoutAfterXSeconds
         {
             get
             {
@@ -413,20 +413,20 @@ namespace Ict.Common.Remoting.Server
             FRunAsStandalone = TAppSettingsManager.GetBoolean("Server.RunAsStandalone", false);
 
             // Server.ClientIdleStatusAfterXMinutes
-            FClientIdleStatusAfterXMinutes = TAppSettingsManager.GetInt16("Server.ClientIdleStatusAfterXMinutes", 5);
+            FClientIdleStatusAfterXMinutes = TAppSettingsManager.GetInt32("Server.ClientIdleStatusAfterXMinutes", 5);
 
             // Server.ClientKeepAliveCheckIntervalInSeconds
-            FClientKeepAliveCheckIntervalInSeconds = TAppSettingsManager.GetInt16("Server.ClientKeepAliveCheckIntervalInSeconds", 60);
+            FClientKeepAliveCheckIntervalInSeconds = TAppSettingsManager.GetInt32("Server.ClientKeepAliveCheckIntervalInSeconds", 60);
 
             // Server.ClientKeepAliveTimeoutAfterXSeconds_LAN
-            FClientKeepAliveTimeoutAfterXSecondsLAN = TAppSettingsManager.GetInt16("Server.ClientKeepAliveTimeoutAfterXSeconds_LAN", 60);
+            FClientKeepAliveTimeoutAfterXSecondsLAN = TAppSettingsManager.GetInt32("Server.ClientKeepAliveTimeoutAfterXSeconds_LAN", 60);
 
             // Server.ClientKeepAliveTimeoutAfterXSeconds_Remote
             FClientKeepAliveTimeoutAfterXSecondsRemote =
-                TAppSettingsManager.GetInt16("Server.ClientKeepAliveTimeoutAfterXSeconds_Remote", (short)(ClientKeepAliveTimeoutAfterXSecondsLAN * 2));
+                TAppSettingsManager.GetInt32("Server.ClientKeepAliveTimeoutAfterXSeconds_Remote", (ClientKeepAliveTimeoutAfterXSecondsLAN * 2));
 
             // Server.ClientConnectionTimeoutAfterXSeconds
-            FClientConnectionTimeoutAfterXSeconds = TAppSettingsManager.GetInt16("Server.ClientConnectionTimeoutAfterXSeconds", 20);
+            FClientConnectionTimeoutAfterXSeconds = TAppSettingsManager.GetInt32("Server.ClientConnectionTimeoutAfterXSeconds", 20);
 
             // Server.ClientAppDomainShutdownAfterKeepAliveTimeout
             FClientAppDomainShutdownAfterKeepAliveTimeout = TAppSettingsManager.GetBoolean("Server.ClientAppDomainShutdownAfterKeepAliveTimeout",

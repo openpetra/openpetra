@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowTDS
     WindowWidth: 680
-    WindowHeight: 700
+    WindowHeight: 650
     Actions:
         actAddNewAccount: {Label=Add Account, ActionClick=AddNewAccount}
         actDeleteUnusedAccount: {Label=Delete Account, Help=This only works for accounts that have not been used yet; otherwise deactivate the account, ActionClick=DeleteUnusedAccount}
@@ -26,7 +26,7 @@ RootNode:
             Dock: Fill
         trvAccounts: {Dock=Fill}
         pnlDetails: {Dock=Fill}
-            Controls: [pnlDetailTop, ucoAccountAnalysisAttributes]
+            Controls: [pnlDetailTop, ucoAccountAnalysisAttributes, pnlStatus]
         pnlDetailTop:
             Dock: Top
             Controls: 
@@ -62,7 +62,17 @@ RootNode:
         cmbDetailForeignCurrencyCode: {Label=Foreign Currency, List=CurrencyCodeList}		
         ucoAccountAnalysisAttributes:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes
+            Dock: Top
+            Height:200
+        pnlStatus:
             Dock: Fill
+            Controls: [txtStatus]
+        txtStatus:
+            Dock: Fill
+            Multiline:true
+            ScrollBars:Vertical
+            ReadOnly:true
+
     Menu:
         mniAccounts:
             mniAddNewAccount:

@@ -43,6 +43,8 @@ using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using System.Collections.Generic;
 using Ict.Petra.Shared.MPartner;
+using Ict.Common.Data;
+using Ict.Common.Printing;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -745,7 +747,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Print a receipt for each gift (ideally each donor) in the batch
+        /// Print a receipt for each gift (one page for each donor) in the batch
         /// </summary>
         /// <param name="AGiftTDS"></param>
         private void PrintGiftBatchReceipts(GiftBatchTDS AGiftTDS)
@@ -757,6 +759,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftTable.GetBatchNumberDBName(), GiftBatchRow.BatchNumber);
             String ReceiptedDonorsList = "";
             List <Int32>ReceiptedGiftTransactions = new List <Int32>();
+            SortedList <Int64, AGiftTable>GiftsPerDonor = new SortedList <Int64, AGiftTable>();
 
             foreach (DataRowView rv in AGiftTDS.AGift.DefaultView)
             {
@@ -773,36 +776,59 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     out EmailGiftStatement,
                     out AnonymousDonor);
 
-                String DonorShortName;
-                TPartnerClass DonorClass;
-                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(GiftRow.DonorKey, out DonorShortName, out DonorClass);
-                DonorShortName = Calculations.FormatShortName(DonorShortName, eShortNameFormat.eReverseShortname);
-
                 if (ReceiptEachGift)
                 {
-                    string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintGiftReceipt(
-                        GiftBatchRow.LedgerNumber,
-                        GiftBatchRow.BatchNumber,
-                        GiftRow.GiftTransactionNumber,
-                        DonorShortName,
-                        GiftRow.DonorKey,
-                        DonorClass,
-                        GiftRow.Reference,
-                        GiftBatchRow.CurrencyCode,
-                        GiftBatchRow.DateCreated.Value);
+                    // I want to print a receipt for this gift,
+                    // but if there's already one queued for this donor,
+                    // I'll add this gift onto the existing receipt.
 
-                    TFrmReceiptControl.PrintSinglePageLetter(HtmlDoc);
-                    ReceiptedDonorsList += (DonorShortName + "\r\n");
-                    ReceiptedGiftTransactions.Add(GiftRow.GiftTransactionNumber);
+                    if (!GiftsPerDonor.ContainsKey(GiftRow.DonorKey))
+                    {
+                        GiftsPerDonor.Add(GiftRow.DonorKey, new AGiftTable());
+                    }
+
+                    AGiftRow NewRow = GiftsPerDonor[GiftRow.DonorKey].NewRowTyped();
+                    DataUtilities.CopyAllColumnValues(GiftRow, NewRow);
+                    GiftsPerDonor[GiftRow.DonorKey].Rows.Add(NewRow);
                 }  // if receipt required
 
             } // foreach gift
+
+            String HtmlDoc = "";
+
+            foreach (Int64 DonorKey in GiftsPerDonor.Keys)
+            {
+                String DonorShortName;
+                TPartnerClass DonorClass;
+                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(DonorKey, out DonorShortName, out DonorClass);
+                DonorShortName = Calculations.FormatShortName(DonorShortName, eShortNameFormat.eReverseShortname);
+
+                string HtmlPage = TRemote.MFinance.Gift.WebConnectors.PrintGiftReceipt(
+                    GiftBatchRow.CurrencyCode,
+                    GiftBatchRow.DateCreated.Value,
+                    DonorShortName,
+                    DonorKey,
+                    DonorClass,
+                    GiftsPerDonor[DonorKey]
+                    );
+
+                TFormLettersTools.AttachNextPage(ref HtmlDoc, HtmlPage);
+                ReceiptedDonorsList += (DonorShortName + "\r\n");
+
+                foreach (AGiftRow GiftRow in GiftsPerDonor[DonorKey].Rows)
+                {
+                    ReceiptedGiftTransactions.Add(GiftRow.GiftTransactionNumber);
+                }
+            }
+
+            TFormLettersTools.CloseDocument(ref HtmlDoc);
+            TFrmReceiptControl.PreviewOrPrint(HtmlDoc);
 
             if (ReceiptedGiftTransactions.Count > 0)
             {
                 if (MessageBox.Show(
                         Catalog.GetString(
-                            "Please check that receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +
+                            "Press OK if receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +
                         ReceiptedDonorsList,
 
                         Catalog.GetString("Receipt Printing"),
