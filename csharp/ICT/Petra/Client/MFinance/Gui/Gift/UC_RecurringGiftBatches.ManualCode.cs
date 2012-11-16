@@ -558,5 +558,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ARow.HashTotal = correctHashValue;
             }
         }
+
+        /// <summary>
+        /// Focus on grid
+        /// </summary>
+        public void FocusGrid()
+        {
+            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            {
+                grdDetails.Focus();
+            }
+        }
     }
 }

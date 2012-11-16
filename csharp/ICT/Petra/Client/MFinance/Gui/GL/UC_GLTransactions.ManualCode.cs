@@ -561,5 +561,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 //			TSharedFinanceValidation_GL.ValidateGLDetailManual(this, ARow, ref VerificationResultCollection,
 //                FValidationControlsDict);
         }
+
+        /// <summary>
+        /// Set focus to the gid controltab
+        /// </summary>
+        public void FocusGrid()
+        {
+            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            {
+                grdDetails.Focus();
+            }
+        }
     }
 }

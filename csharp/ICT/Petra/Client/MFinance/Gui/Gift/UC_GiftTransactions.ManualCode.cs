@@ -1569,5 +1569,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ref VerificationResultCollection,
                 FValidationControlsDict);
         }
+
+        /// <summary>
+        /// Focus on grid
+        /// </summary>
+        public void FocusGrid()
+        {
+            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            {
+                grdDetails.Focus();
+            }
+        }
     }
 }
