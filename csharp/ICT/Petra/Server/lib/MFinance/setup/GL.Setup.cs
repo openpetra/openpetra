@@ -1445,8 +1445,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             String AOldName,
             String ANewName,
             Int32 ALedgerNumber,
-            TDBTransaction ATransaction)
+            TDBTransaction ATransaction,
+            ref String AttemptedOperation)
         {
+            AttemptedOperation = "Rename " + AFldName + " in " + ATblName;
             String QuerySql =
                 "UPDATE PUB_" + ATblName +
                 " SET " + AFldName + "='" + ANewName +
@@ -1467,15 +1469,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="AOldCode"></param>
         /// <param name="ANewCode"></param>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="VerificationResults"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool RenameAccountCode(String AOldCode, String ANewCode, Int32 ALedgerNumber)
+        public static bool RenameAccountCode(String AOldCode, String ANewCode, Int32 ALedgerNumber, out TVerificationResultCollection VerificationResults)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             Boolean RenameComplete = false;
-            TVerificationResultCollection VerificationResults;
-
-            try
+            String VerificationContext = "Rename Account Code";
+            String AttemptedOperation = "";
+            VerificationResults = new TVerificationResultCollection();
+           try
             {
                 //
                 // First check whether this new code is available for use!
@@ -1484,6 +1488,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 if (TempAccountTbl.Rows.Count > 0)
                 {
+                    VerificationResults.Add(new TVerificationResult(VerificationContext, "Target name is already present",TResultSeverity.Resv_Critical));
                     return false;
                 }
 
@@ -1491,6 +1496,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 if (TempAccountTbl.Rows.Count != 1)
                 {
+                    VerificationResults.Add(new TVerificationResult(VerificationContext, "Existing name not accessible",TResultSeverity.Resv_Critical));
                     return false;
                 }
 
@@ -1507,39 +1513,39 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 TempAccountTbl.AcceptChanges();
 
-                UpdateAccountField("a_ledger", "a_creditor_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_debtor_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_fa_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_ilt_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_po_accrual_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_profit_loss_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_purchase_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_sales_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_so_accrual_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_stock_adj_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_stock_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_tax_input_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_tax_output_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_cost_of_sales_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_forex_gains_losses_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_ret_earnings_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ledger", "a_stock_accrual_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_transaction", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_transaction", "a_primary_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_ledger", "a_creditor_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_debtor_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_fa_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_ilt_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_po_accrual_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_profit_loss_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_purchase_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_sales_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_so_accrual_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_stock_adj_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_stock_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_tax_input_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_tax_output_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_cost_of_sales_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_forex_gains_losses_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_ret_earnings_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ledger", "a_stock_accrual_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_transaction", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_transaction", "a_primary_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
 /*
- *              UpdateAccountField ("a_this_year_old_transaction","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
- *              UpdateAccountField ("a_this_year_old_transaction","a_primary_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
- *              UpdateAccountField ("a_previous_year_transaction","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
- *              UpdateAccountField ("a_previous_year_transaction","a_primary_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+ *              UpdateAccountField ("a_this_year_old_transaction","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+ *              UpdateAccountField ("a_this_year_old_transaction","a_primary_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+ *              UpdateAccountField ("a_previous_year_transaction","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+ *              UpdateAccountField ("a_previous_year_transaction","a_primary_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
  */
-                UpdateAccountField("a_fees_receivable", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_fees_receivable", "a_dr_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_fees_payable", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_fees_payable", "a_dr_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_transaction_type", "a_balancing_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_transaction_type", "a_credit_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_transaction_type", "a_debit_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_fees_receivable", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_fees_receivable", "a_dr_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_fees_payable", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_fees_payable", "a_dr_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_transaction_type", "a_balancing_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_transaction_type", "a_credit_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_transaction_type", "a_debit_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                 AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
 
@@ -1558,11 +1564,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     TempAnalAttrTbl.AcceptChanges();
 
-                    UpdateAccountField("a_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                    UpdateAccountField("a_recurring_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                    UpdateAccountField("a_thisyearold_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                    UpdateAccountField("a_prev_year_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                    UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                    UpdateAccountField("a_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                    UpdateAccountField("a_recurring_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                    UpdateAccountField("a_thisyearold_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                    UpdateAccountField("a_prev_year_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                    UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                     OldAnalAttribRow.Delete();
 
@@ -1572,25 +1578,25 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     }
                 }
 
-                UpdateAccountField("a_suspense_account", "a_suspense_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_motivation_detail", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_recurring_transaction", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_gift_batch", "a_bank_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_recurring_gift_batch", "a_bank_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ap_document_detail", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ap_document", "a_ap_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ap_payment", "a_bank_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_ep_payment", "a_bank_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_suspense_account", "a_suspense_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_motivation_detail", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_recurring_transaction", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_gift_batch", "a_bank_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_recurring_gift_batch", "a_bank_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ap_document_detail", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ap_document", "a_ap_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ap_payment", "a_bank_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ep_payment", "a_bank_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
-                UpdateAccountField("a_ap_supplier", "a_default_ap_account_c", AOldCode, ANewCode, -1, Transaction); // There's no Ledger associated with this field.
+                UpdateAccountField("a_ap_supplier", "a_default_ap_account_c", AOldCode, ANewCode, -1, Transaction, ref AttemptedOperation); // There's no Ledger associated with this field.
 
-                UpdateAccountField("a_budget", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_general_ledger_master", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_account_hierarchy_detail", "a_reporting_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_account_hierarchy_detail", "a_account_code_to_report_to_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_account_hierarchy", "a_root_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-                UpdateAccountField("a_account_property", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
-//              UpdateAccountField("a_fin_statement_group","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction);
+                UpdateAccountField("a_budget", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_general_ledger_master", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_account_hierarchy_detail", "a_reporting_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_account_hierarchy_detail", "a_account_code_to_report_to_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_account_hierarchy", "a_root_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_account_property", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                //              UpdateAccountField("a_fin_statement_group","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                 PrevAccountRow.Delete();
 
@@ -1601,6 +1607,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 RenameComplete = true;
             }
+               //
+               // There's no "catch" - if any of the calls above fails (with an SQL problem),
+               // the server task will fail, and cause a descriptive exception on the client.
+               // (And the VerificationResults might also contain a useful string because of "finally" below.)
+               //
             finally
             {
                 if (RenameComplete)
@@ -1609,6 +1620,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
                 else
                 {
+                    if (AttemptedOperation != "")
+                    {
+                        VerificationResults.Add(new TVerificationResult(VerificationContext, "Problem " + AttemptedOperation, TResultSeverity.Resv_Critical));
+                    }
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }

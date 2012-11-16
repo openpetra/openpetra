@@ -325,20 +325,20 @@ public class {#TABLENAME}Access : TTypedDataAccess
             
             if (ADoNotOverwrite)
             {
-                TLogging.Log("Ignoring differences for {#TABLENAME} " + {#ACTUALPARAMETERSPRIMARYKEYTOSTRING});
+                TLogging.LogAtLevel(5, "Ignoring differences for {#TABLENAME} " + {#ACTUALPARAMETERSPRIMARYKEYTOSTRING});
                 foreach (DataUtilities.TColumnDifference diff in Differences)
                 {
-                    TLogging.Log("  " + diff.FColumnName + " value: " + diff.FDestinationValue + " ignored new value: " + diff.FSourceValue);
+                    TLogging.LogAtLevel(5, "  " + diff.FColumnName + " value: " + diff.FDestinationValue + " ignored new value: " + diff.FSourceValue);
                 } 
             }
             else
             {
                 if (Differences.Count > 0)
                 {
-                    TLogging.Log("Overwriting {#TABLENAME} " + {#ACTUALPARAMETERSPRIMARYKEYTOSTRING});
+                    TLogging.LogAtLevel(5, "Overwriting {#TABLENAME} " + {#ACTUALPARAMETERSPRIMARYKEYTOSTRING});
                     foreach (DataUtilities.TColumnDifference diff in Differences)
                     {
-                        TLogging.Log("  " + diff.FColumnName + ": " + diff.FDestinationValue + " -> " + diff.FSourceValue);
+                        TLogging.LogAtLevel(5, "  " + diff.FColumnName + ": " + diff.FDestinationValue + " -> " + diff.FSourceValue);
                     }
                 }
                 DataUtilities.CopyAllColumnValues(ANewRow, ExistingRecord[0]);

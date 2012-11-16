@@ -62,8 +62,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         // TreeView Select will be split into a part Before Select and a part
         // after select. Those parameters are for common use
         GLSetupTDSAAccountRow FSelectedAccountRow;
-        string oldAccountCodeName;
-
 
         private class AccountNodeDetails
         {
@@ -403,7 +401,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                     FSelectedAccountRow = (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
                         new object[] { FLedgerNumber, CurrentReportingAccountCode });
-                    oldAccountCodeName = FSelectedAccountRow.AccountCode;
                     GetDetailsFromControls(FSelectedAccountRow);
                 }
             }
@@ -798,8 +795,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 catch (System.Data.ConstraintException)
                 {
                     MessageBox.Show(
-                        Catalog.GetString("Sorry but this account already exists: ") + strNewDetailAccountCode,
-                        Catalog.GetString("You cannot use an account name twice!"));
+                        Catalog.GetString("Sorry but this account already exists: ") + strNewDetailAccountCode
+                        + "\r\n" + Catalog.GetString("You cannot use an account name twice!"),
+                        Catalog.GetString("Rename Account"));
                     throw new CancelSaveException();
                 }
 
@@ -821,23 +819,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     FStatus += Catalog.GetString("Updating AccountCode change - please wait.\r\n");
                     txtStatus.Text = FStatus;
-
+                    TVerificationResultCollection VerificationResults;
+    
                     // If this code was previously in the DB, I need to assume that there may be transactions posted to it.
                     // There's a server call I need to use, and after the call I need to re-load this page.
                     // (No other changes will be lost, because the txtDetailAccountCode will have been ReadOnly if there were already changes.)
                     bool Success = TRemote.MFinance.Setup.WebConnectors.RenameAccountCode(strOldDetailAccountCode,
                         strNewDetailAccountCode,
-                        FLedgerNumber);
+                        FLedgerNumber,
+                        out VerificationResults);
 
-                    FMainDS.Clear();
-                    FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
-                    strOldDetailAccountCode = "";
-                    FPetraUtilsObject.HasChanges = false;
-                    // I am in an event handler - perhaps I can't do this from here?
-                    PopulateTreeView();
-                    ShowDetailsManual(null);
-                    FStatus = "";
-                    txtStatus.Text = FStatus;
+                    if (Success)
+                    {
+                        FMainDS.Clear();
+                        FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
+                        strOldDetailAccountCode = "";
+                        FPetraUtilsObject.HasChanges = false;
+                        PopulateTreeView();
+                        ShowDetailsManual(null);
+                        FStatus = "";
+                        txtStatus.Text = FStatus;
+                    }
+                    else
+                    {
+                        MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Account"));
+                    }
                 }
             } // if changed
 
