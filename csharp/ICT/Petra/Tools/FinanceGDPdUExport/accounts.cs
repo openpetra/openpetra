@@ -25,17 +25,65 @@ using System;
 using System.Data;
 using System.Configuration;
 using System.IO;
+using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 
 namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 {
     /// This will export the accounts and costcentres involved
     public class TGDPdUExportAccountsAndCostCentres
     {
+        private static ACostCentreRow GetDepartmentCostCentre(ACostCentreTable ACostCentres,
+            ACostCentreRow ACostCentreToInvestigate,
+            StringCollection ADepartmentCodes)
+        {
+            if (ADepartmentCodes.Contains(ACostCentreToInvestigate.CostCentreCode))
+            {
+                return ACostCentreToInvestigate;
+            }
+
+            ACostCentreRow row = (ACostCentreRow)ACostCentres.DefaultView.FindRows(ACostCentreToInvestigate.CostCentreToReportTo)[0].Row;
+
+            return GetDepartmentCostCentre(ACostCentres, row, ADepartmentCodes);
+        }
+
+        /// <summary>
+        /// return a list of costcentres that does not contail any costcentre linked to a person
+        /// </summary>
+        public static string WithoutPersonCostCentres(int ALedgerNumber, String ACostCentreList)
+        {
+            // remove all costcentres that report to a costcentre which name ends with Personalkosten
+            ACostCentreTable costcentres = ACostCentreAccess.LoadViaALedger(ALedgerNumber, null);
+
+            costcentres.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+
+            string[] costcentresList = ACostCentreList.Split(new char[] { ',' });
+
+            List <string>newList = new List <string>();
+
+            foreach (string cc in costcentresList)
+            {
+                ACostCentreRow costcentre = (ACostCentreRow)costcentres.DefaultView.FindRows(cc)[0].Row;
+                ACostCentreRow parentCC = (ACostCentreRow)costcentres.DefaultView.FindRows(costcentre.CostCentreToReportTo)[0].Row;
+
+                if (!parentCC.CostCentreName.EndsWith("Personalkosten"))
+                {
+                    newList.Add(cc);
+                }
+            }
+
+            return String.Join(",", newList.ToArray());
+        }
+
         /// <summary>
         /// Export the cost centres
         /// </summary>
@@ -43,7 +91,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             char ACSVSeparator,
             string ANewLine,
             Int32 ALedgerNumber,
-            string ACostCentres)
+            List <string>ACostCentres)
         {
             string filename = Path.GetFullPath(Path.Combine(AOutputPath, "costcentre.csv"));
 
@@ -51,25 +99,22 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             StringBuilder sb = new StringBuilder();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            ACostCentreTable costcentres = ACostCentreAccess.LoadViaALedger(ALedgerNumber, null);
 
-            string sql =
-                String.Format("SELECT {0}, {1} from PUB_{2} WHERE {4} = {5} AND {0} IN ({3}) ORDER BY {0}",
-                    ACostCentreTable.GetCostCentreCodeDBName(),
-                    ACostCentreTable.GetCostCentreNameDBName(),
-                    ACostCentreTable.GetTableDBName(),
-                    "'" + ACostCentres.Replace(",", "','") + "'",
-                    ACostCentreTable.GetLedgerNumberDBName(),
-                    ALedgerNumber);
+            costcentres.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
 
-            DataTable costcentres = DBAccess.GDBAccessObj.SelectDT(sql, "costcentres", Transaction);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
-            foreach (DataRow row in costcentres.Rows)
+            foreach (ACostCentreRow row in costcentres.Rows)
             {
-                sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString() }, ACSVSeparator));
-                sb.Append(ANewLine);
+                if (ACostCentres.Contains(row.CostCentreCode))
+                {
+                    ACostCentreRow departmentRow = GetDepartmentCostCentre(costcentres,
+                        row,
+                        StringHelper.StrSplit(TAppSettingsManager.GetValue("SummaryCostCentres", "4300S"), ","));
+
+                    sb.Append(StringHelper.StrMerge(new string[] { row.CostCentreCode, row.CostCentreName,
+                                                                   departmentRow.CostCentreName }, ACSVSeparator));
+                    sb.Append(ANewLine);
+                }
             }
 
             StreamWriter sw = new StreamWriter(filename, false, Encoding.GetEncoding(1252));
@@ -84,7 +129,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
             char ACSVSeparator,
             string ANewLine,
             Int32 ALedgerNumber,
-            string ACostCentres)
+            List <string>AAccounts)
         {
             string filename = Path.GetFullPath(Path.Combine(AOutputPath, "account.csv"));
 
@@ -96,19 +141,15 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             // only export accounts that are actually used with these cost centres
             string sql =
-                String.Format("SELECT {0}, {1}, {8} from PUB_{2} AS A WHERE {3} = {4} AND " +
-                    " {8}=true AND " +
-                    "EXISTS (SELECT * FROM PUB_{5} AS GLM WHERE GLM.{0} = A.{0} AND GLM.{6} IN ({7})) ORDER BY {0}",
+                String.Format("SELECT {0}, {1}, {2} from PUB_{3} WHERE {4} = {5} AND " +
+                    " {6}=true ORDER BY {0}",
                     AAccountTable.GetAccountCodeDBName(),
                     AAccountTable.GetAccountCodeLongDescDBName(),
+                    AAccountTable.GetDebitCreditIndicatorDBName(),
                     AAccountTable.GetTableDBName(),
                     AAccountTable.GetLedgerNumberDBName(),
                     ALedgerNumber,
-                    AGeneralLedgerMasterTable.GetTableDBName(),
-                    AGeneralLedgerMasterTable.GetCostCentreCodeDBName(),
-                    "'" + ACostCentres.Replace(",", "','") + "'",
-                    AAccountTable.GetPostingStatusDBName(),
-                    AAccountTable.GetDebitCreditIndicatorDBName());
+                    AAccountTable.GetPostingStatusDBName());
 
             DataTable accounts = DBAccess.GDBAccessObj.SelectDT(sql, "accounts", Transaction);
 
@@ -116,9 +157,12 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             foreach (DataRow row in accounts.Rows)
             {
-                sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString(),
-                                                               Convert.ToBoolean(row[2]) ? "Debit" : "Credit" }, ACSVSeparator));
-                sb.Append(ANewLine);
+                if (AAccounts.Contains(row[0].ToString()))
+                {
+                    sb.Append(StringHelper.StrMerge(new string[] { row[0].ToString(), row[1].ToString(),
+                                                                   Convert.ToBoolean(row[2]) ? "Soll" : "Haben" }, ACSVSeparator));
+                    sb.Append(ANewLine);
+                }
             }
 
             StreamWriter sw = new StreamWriter(filename, false, Encoding.GetEncoding(1252));

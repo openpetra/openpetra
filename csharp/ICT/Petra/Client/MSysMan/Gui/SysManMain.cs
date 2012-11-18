@@ -79,9 +79,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 if (zippedYml != null)
                 {
                     Thread t = new Thread(() => ResetDatabaseInThread(zippedYml));
-                    t.Start();
 
-                    TProgressDialog dialog = new TProgressDialog();
+                    TProgressDialog dialog = new TProgressDialog(t);
 
                     if (dialog.ShowDialog() == DialogResult.Cancel)
                     {

@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -311,7 +311,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             string SelectedCostCentres = clbCostCentres.GetCheckedStringList();
 
             SelectedCostCentres = StringHelper.ConcatCSV(SelectedCostCentres,
-                TRemote.MFinance.Reporting.WebConnectors.GetReportingCostCentres(FLedgerNumber, cmbSummaryCostCentres.GetSelectedString()));
+                TRemote.MFinance.Reporting.WebConnectors.GetReportingCostCentres(
+                    FLedgerNumber,
+                    cmbSummaryCostCentres.GetSelectedString(),
+                    string.Empty));
             clbCostCentres.SetCheckedStringList(SelectedCostCentres);
         }
 

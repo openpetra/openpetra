@@ -355,13 +355,20 @@ namespace Ict.Common.Controls
 
             // MessageBox.Show('FTotalRecords: ' + FTotalRecords.ToString + '; FPageSize: ' + FPageSize.ToString);
             // Add empty rows if needed (these allow scrolling in the DataGrid!)
-            if (FTotalRecords > FPageSize)
+            try
             {
-                for (int Counter = 0; Counter <= (FTotalRecords - FPageSize - 1); Counter += 1)
+                if (FTotalRecords > FPageSize)
                 {
-                    EmptyRow = FPagedDataTable.NewRow();
-                    FPagedDataTable.Rows.Add(EmptyRow);
+                    for (int Counter = 0; Counter <= (FTotalRecords - FPageSize - 1); Counter += 1)
+                    {
+                        EmptyRow = FPagedDataTable.NewRow();
+                        FPagedDataTable.Rows.Add(EmptyRow);
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Empty rows cannot be added to the grid (because of DB constraints)", "Exception");
             }
 
             FDataTransferDone = true;

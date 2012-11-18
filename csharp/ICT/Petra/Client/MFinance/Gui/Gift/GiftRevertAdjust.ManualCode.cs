@@ -42,6 +42,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Hashtable requestParams = new Hashtable();
+        private GiftBatchTDS giftMainDS = null;
+//        private AGiftBatchRow giftBatchRow = null;   // TODO Decide whether to remove altogether
         private AGiftDetailRow giftDetailRow = null;
         private Boolean ok = false;
         DateTime StartDateCurrentPeriod;
@@ -56,6 +58,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return ok;
             }
         }
+
+        /// <summary>
+        /// A gift DS is injected if needed
+        /// </summary>
+        public GiftBatchTDS GiftMainDS {
+            set
+            {
+                giftMainDS = value;
+            }
+        }
+
+// TODO Decide whether to remove altogether
+//        /// <summary>
+//        /// A Gift Batch Row is injected
+//        /// </summary>
+//        public AGiftBatchRow GiftBatchRow {
+//            set
+//            {
+//                giftBatchRow = value;
+//            }
+//        }
+
         /// <summary>
         /// A Gift Detail Row is injected
         /// </summary>
@@ -63,14 +87,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 giftDetailRow = value;
-                txtReversalCommentOne.Text = giftDetailRow.GiftCommentOne;
-                txtReversalCommentTwo.Text = giftDetailRow.GiftCommentTwo;
-                txtReversalCommentThree.Text = giftDetailRow.GiftCommentThree;
-                cmbReversalCommentOneType.Text = giftDetailRow.CommentOneType;
-                cmbReversalCommentTwoType.Text = giftDetailRow.CommentTwoType;
-                cmbReversalCommentThreeType.Text = giftDetailRow.CommentThreeType;
+
+                if ((giftDetailRow.GiftCommentOne != null) && (giftDetailRow.GiftCommentOne.Length > 0))
+                {
+                    txtReversalCommentOne.Text = giftDetailRow.GiftCommentOne;
+                    cmbReversalCommentOneType.Text = giftDetailRow.CommentOneType;
+                }
+
+                if ((giftDetailRow.GiftCommentTwo != null) && (giftDetailRow.GiftCommentTwo.Length > 0))
+                {
+                    txtReversalCommentTwo.Text = giftDetailRow.GiftCommentTwo;
+                    cmbReversalCommentTwoType.Text = giftDetailRow.CommentTwoType;
+                }
+
+                if ((giftDetailRow.GiftCommentThree != null) && (giftDetailRow.GiftCommentThree.Length > 0))
+                {
+                    txtReversalCommentThree.Text = giftDetailRow.GiftCommentThree;
+                    cmbReversalCommentThreeType.Text = giftDetailRow.CommentThreeType;
+                }
             }
         }
+
         /// <summary>
         /// Ledger Number is injected
         /// </summary>
@@ -105,7 +142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (chkSelect.Checked && (FPreviouslySelectedDetailRow == null))
             {
                 // nothing seleted
-                MessageBox.Show(Catalog.GetString("Please select a Batch!."));
+                MessageBox.Show(Catalog.GetString("Please select a batch."));
                 return;
             }
 
@@ -115,9 +152,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            if (dtpEffectiveDate.Enabled && (dtpEffectiveDate.Text.Trim().Length == 0))
+            {
+                MessageBox.Show(Catalog.GetString("Please enter a valid batch date."));
+                dtpEffectiveDate.Focus();
+                return;
+            }
+
             Boolean ok;
             TVerificationResultCollection AMessages;
-
 
             AddParam("NewBatchSelected", chkSelect.Checked);
 
@@ -140,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    AddParam("GlEffectiveDate", dtpEffectiveDate.Date);
+                    AddParam("GlEffectiveDate", dtpEffectiveDate.Date.Value);
                 }
             }
 
@@ -174,7 +217,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AddParam("BatchNumber", giftDetailRow.BatchNumber);
             AddParam("GiftNumber", giftDetailRow.GiftTransactionNumber);
             AddParam("GiftDetailNumber", giftDetailRow.DetailNumber);
-            //AddParam("CostCentre", giftDetailRow.CostCentreCode);
+            AddParam("CostCentre", giftDetailRow.CostCentreCode);
             AddParam("ReversalCommentOne", txtReversalCommentOne.Text);
             AddParam("ReversalCommentTwo", txtReversalCommentTwo.Text);
             AddParam("ReversalCommentThree", txtReversalCommentThree.Text);
@@ -182,8 +225,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AddParam("ReversalCommentTwoType", cmbReversalCommentTwoType.Text);
             AddParam("ReversalCommentThreeType", cmbReversalCommentThreeType.Text);
 
-
-            ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AMessages);
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                ok = TRemote.MFinance.Gift.WebConnectors.GiftRevertAdjust(requestParams, out AMessages);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
 
             if (ok)
             {
@@ -245,6 +295,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.Visible = true;
             dtpEffectiveDate.Focus();
             this.btnOK.Enter -= new System.EventHandler(this.OKFocussed);
+            chkSelect.Enabled = (giftMainDS == null);
         }
 
         private void SelectBatchChanged(System.Object sender, EventArgs e)
@@ -316,6 +367,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (ErrorMessages.Length > 0)
             {
                 System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void CheckBatchEffectiveDate(object sender, EventArgs e)
+        {
+            DateTime dateValue;
+            string aDate = dtpEffectiveDate.Text.Trim();
+
+            if ((aDate.Length > 0) && !DateTime.TryParse(aDate, out dateValue))
+            {
+                MessageBox.Show(Catalog.GetString("Invalid date entered!"));
+                dtpEffectiveDate.Focus();
+                dtpEffectiveDate.SelectAll();
             }
         }
     }

@@ -58,6 +58,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private AGiftBatchRow FBatchRow = null;
         private bool FGLEffectivePeriodChanged = false;
 
+        private void InitialiseControls()
+        {
+            //Fix to length of field
+            txtDetailReference.MaxLength = 20;
+
+            //Changing this will stop taborder issues
+            sptTransactions.TabStop = false;
+        }
+
         /// <summary>
         /// load the gifts into the grid
         /// </summary>
@@ -71,6 +80,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AFromTabClick = true)
         {
             bool firstLoad = (FLedgerNumber == -1);
+
+            if (firstLoad)
+            {
+                InitialiseControls();
+            }
 
             //Enable buttons accordingly
             btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
@@ -469,14 +483,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (motivationDetail != null)
             {
                 RetrieveMotivationDetailAccountCode();
-
-                // TODO: calculation of cost centre also depends on the recipient partner key; can be a field key or ministry key, or determined by pm_staff_data: foreign cost centre
-                if (motivationDetail.CostCentreCode.EndsWith("S"))
-                {
-                    // work around if we have selected the cost centre already in bank import
-                    // TODO: allow to select the cost centre here, which reports to the motivation cost centre
-                    //txtDetailCostCentreCode.Text =
-                }
             }
 
             long PartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
@@ -528,7 +534,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //If all details have been deleted
                 if ((FLedgerNumber != -1) && (grdDetails.Rows.Count == 1))
                 {
-                    FBatchRow.BatchTotal = 0;
+                    ((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(0, FBatchRow.BatchNumber);
                 }
             }
             else
@@ -562,13 +568,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
+//christiank: when you have a moFBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED &&
                 txtGiftTotal.NumberValueDecimal = sum;
                 txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
                 txtGiftTotal.ReadOnly = true;
                 //this is here because at the moment the generator does not generate this
                 txtBatchTotal.NumberValueDecimal = sumBatch;
                 //Now we look at the batch and update the batch data
-                FBatchRow.BatchTotal = sumBatch;
+                ((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(sumBatch, FBatchRow.BatchNumber);
             }
 
             if (disableSaveButton && FPetraUtilsObject.HasChanges)
@@ -829,15 +836,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ReverseGift(System.Object sender, System.EventArgs e)
         {
-            ShowRevertAdjustForm("ReverseGift");
+            ShowRevertAdjustForm("Reverse Gift");
         }
 
         /// <summary>
         /// show the form for the gift reversal/adjustment
         /// </summary>
-        /// <param name="functionname">Which function shall be called on the server</param>
-        public void ShowRevertAdjustForm(String functionname)
+        /// <param name="AFunctionName">Which function shall be called on the server</param>
+        public void ShowRevertAdjustForm(String AFunctionName)
         {
+            bool reverseWholeBatch = (AFunctionName == "Reverse Gift Batch");
+
             AGiftBatchRow giftBatch = ((TFrmGiftBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
 
             if (giftBatch == null)
@@ -852,7 +861,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (FPreviouslySelectedDetailRow == null)
+            if (!reverseWholeBatch && (FPreviouslySelectedDetailRow == null))
             {
                 MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
                 return;
@@ -864,12 +873,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            if (reverseWholeBatch && (FBatchNumber != giftBatch.BatchNumber))
+            {
+                LoadGifts(giftBatch.LedgerNumber, giftBatch.BatchNumber, MFinanceConstants.BATCH_POSTED, false);
+            }
+
             TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
             try
             {
                 ParentForm.ShowInTaskbar = false;
                 revertForm.LedgerNumber = FLedgerNumber;
-                revertForm.AddParam("Function", functionname);
+                revertForm.Text = AFunctionName;
+
+                revertForm.AddParam("Function", AFunctionName.Replace(" ", string.Empty));
+
+                if (reverseWholeBatch)
+                {
+                    revertForm.GiftMainDS = FMainDS;
+                }
+
+//                revertForm.GiftBatchRow = giftBatch;   // TODO Decide whether to remove altogether
                 revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
 
                 if (revertForm.ShowDialog() == DialogResult.OK)
@@ -884,14 +907,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// Reverse the whole gift batch
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ReverseGiftBatch(System.Object sender, System.EventArgs e)
+        {
+            ShowRevertAdjustForm("Reverse Gift Batch");
+        }
+
         private void ReverseGiftDetail(System.Object sender, System.EventArgs e)
         {
-            ShowRevertAdjustForm("ReverseGiftDetail");
+            ShowRevertAdjustForm("Reverse Gift Detail");
         }
 
         private void AdjustGift(System.Object sender, System.EventArgs e)
         {
-            ShowRevertAdjustForm("AdjustGift");
+            ShowRevertAdjustForm("Adjust Gift");
         }
 
         /// <summary>

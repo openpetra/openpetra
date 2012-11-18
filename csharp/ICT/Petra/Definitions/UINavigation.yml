@@ -81,48 +81,48 @@ OpenPetra:
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     Partner-related:           
-                        ContactAttributes: {Label=Setup Contact Attributes, Description=Maintain Contact Attributes, ActionOpenScreen=TFrmContactAttributeSetup}
-                        Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup Countries, Description=Maintain Countries, ActionOpenScreen=TFrmCountrySetup}              
-                        Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup Language Codes, Description=Maintain Language Codes, ActionOpenScreen=TFrmLanguageCodeSetup}              
-                        Frequency:     {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup Frequencies, Description=Maintain Frequencies, ActionOpenScreen=TFrmFrequencySetup}              
-                        PartnerStatus: {Label=Setup Partner Statuses, Description=Maintain Partner Statuses, ActionOpenScreen=TFrmPartnerStatusSetup}
-                        Acquisition:   {Label=Setup Acquisition Codes, Description=Maintain Acquisition Codes, ActionOpenScreen=TFrmAcquisitionCodeSetup}                  
-                        SpecialTypes:  {Label=Setup Special Types, Description=Maintain Special Types, ActionOpenScreen=TFrmPartnerTypeSetup}
-                        Denomination:  {Label=Setup Denomination Codes, Description=Maintain Denomination Codes, ActionOpenScreen=TFrmDenominationCodeSetup} 
-                        Business:      {Label=Setup Business Codes, Description=Maintain Business Codes, ActionOpenScreen=TFrmBusinessCodeSetup}
-                        Occupation:    {Label=Setup Occupation Codes, Description=Maintain Occupation Codes, ActionOpenScreen=TFrmOccupationCodeSetup}   
-                        MaritalStatus: {Label=Setup Marital Statuses, Description=Maintain Marital Statuses, ActionOpenScreen=TFrmMaritalStatusSetup}   
-                        RelationshipCategory: {Label=Setup Relationship Categories, Description=Maintain Relationship Categories, ActionOpenScreen=TFrmRelationCategorySetup}   
-                        Relationship:  {Label=Setup Relationships, Description=Maintain Relationships, ActionOpenScreen=TFrmRelationshipSetup} 
-                        ContactMethod: {Label=Setup Contact Methods, Description=Maintain Contact Methods, ActionOpenScreen=TFrmContactMethodSetup}   
-                        InterestCategory: {Label=Setup Interest Categories, Description=Maintain Interest Categories, ActionOpenScreen=TFrmInterestCategorySetup}   
-                        Interest: {Label=Setup Partner Interests, Description=Maintain Partner Interests, ActionOpenScreen=TFrmInterestSetup}   
+                        ContactAttributes: {Label=Contact Attributes, Description=Maintain Contact Attributes, ActionOpenScreen=TFrmContactAttributeSetup}
+                        Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Countries, Description=Maintain Countries, ActionOpenScreen=TFrmCountrySetup}              
+                        Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Language Codes, Description=Maintain Language Codes, ActionOpenScreen=TFrmLanguageCodeSetup}              
+                        Frequency:     {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Frequencies, Description=Maintain Frequencies, ActionOpenScreen=TFrmFrequencySetup}              
+                        PartnerStatus: {Label=Partner Statuses, Description=Maintain Partner Statuses, ActionOpenScreen=TFrmPartnerStatusSetup}
+                        Acquisition:   {Label=Acquisition Codes, Description=Maintain Acquisition Codes, ActionOpenScreen=TFrmAcquisitionCodeSetup}                  
+                        SpecialTypes:  {Label=Special Types, Description=Maintain Special Types, ActionOpenScreen=TFrmPartnerTypeSetup}
+                        Denomination:  {Label=Denomination Codes, Description=Maintain Denomination Codes, ActionOpenScreen=TFrmDenominationCodeSetup} 
+                        Business:      {Label=Business Codes, Description=Maintain Business Codes, ActionOpenScreen=TFrmBusinessCodeSetup}
+                        Occupation:    {Label=Occupation Codes, Description=Maintain Occupation Codes, ActionOpenScreen=TFrmOccupationCodeSetup}   
+                        MaritalStatus: {Label=Marital Statuses, Description=Maintain Marital Statuses, ActionOpenScreen=TFrmMaritalStatusSetup}   
+                        RelationshipCategory: {Label=Relationship Categories, Description=Maintain Relationship Categories, ActionOpenScreen=TFrmRelationCategorySetup}   
+                        Relationship:  {Label=Relationships, Description=Maintain Relationships, ActionOpenScreen=TFrmRelationshipSetup} 
+                        ContactMethod: {Label=Contact Methods, Description=Maintain Contact Methods, ActionOpenScreen=TFrmContactMethodSetup}   
+                        InterestCategory: {Label=Interest Categories, Description=Maintain Interest Categories, ActionOpenScreen=TFrmInterestCategorySetup}   
+                        Interest: {Label=Partner Interests, Description=Maintain Partner Interests, ActionOpenScreen=TFrmInterestSetup}   
                                                 
                     Subscription-related: 
-                        Publications: {Label=Setup Publications, Description=Maintain Publications, ActionOpenScreen=TFrmPublicationSetup}
-                        PublicationCosts: {Label=Setup Publication Costs, Description=Maintain Publication Costs, ActionOpenScreen=TFrmPublicationCostSetup}
-                        ReasonSubscriptionGiven: {Label=Setup Reason Subscription Given List, Description=Maintain Reason Subscription Given List, ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}   
-                        ReasonSubscriptionCancelled: {Label=Setup Reason Subscription Cancelled List, Description=Maintain Reason Subscription Cancelled List, ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}   
+                        Publications: {Label=Publications, Description=Maintain Publications, ActionOpenScreen=TFrmPublicationSetup}
+                        PublicationCosts: {Label=Publication Costs, Description=Maintain Publication Costs, ActionOpenScreen=TFrmPublicationCostSetup}
+                        ReasonSubscriptionGiven: {Label=Reason Subscription Given List, Description=Maintain Reason Subscription Given List, ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}   
+                        ReasonSubscriptionCancelled: {Label=Reason Subscription Cancelled List, Description=Maintain Reason Subscription Cancelled List, ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}   
                                                  
                     Address-related:  
-                        AddreseeTypes: {Label=Setup Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}
-                        LocationTypes: {Label=Setup Location Types, Description=Maintain Location Types, ActionOpenScreen=TFrmLocationTypeSetup}
-                        InternationalPostalTypes: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Setup International Postal Types, Description=Maintain International Postal Types, ActionOpenScreen=TFrmInternationalPostalTypeSetup}
+                        AddreseeTypes: {Label=Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}
+                        LocationTypes: {Label=Location Types, Description=Maintain Location Types, ActionOpenScreen=TFrmLocationTypeSetup}
+                        InternationalPostalTypes: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=International Postal Types, Description=Maintain International Postal Types, ActionOpenScreen=TFrmInternationalPostalTypeSetup}
                     
                     LocalDataRelated: {Label=Local Data-related}
-                        LocalDataOptionListNames: {Label=Setup Local Data Option List Names, Description=Maintain Local Data Option List names, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
-                        LocalDataOptions: {Label=Setup Local Data Options, Description=Maintain Local Data Options, ActionOpenScreen=TFrmLocalDataOptionsSetup}
-                        LocalDataFields: {Label=Setup Local Partner Data Fields, Description=Maintain Local Partner Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPartnerDataFieldSetup}
-                        LocalDataFieldOrderBank: {Label=Setup Field Order for Bank, Description=Maintain Field Order for Bank, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Bank}
-                        LocalDataFieldOrderChurch: {Label=Setup Field Order for Church, Description=Maintain Field Order for Church, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Church}
-                        LocalDataFieldOrderFamily: {Label=Setup Field Order for Family, Description=Maintain Field Order for Family, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Family}
-                        LocalDataFieldOrderPerson: {Label=Setup Field Order for Person, Description=Maintain Field Order for Person, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Person}
-                        LocalDataFieldOrderOrganisation: {Label=Setup Field Order for Organisation, Description=Maintain Field Order for Organisation, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Organisation}
-                        LocalDataFieldOrderUnit: {Label=Setup Field Order for Unit, Description=Maintain Field Order for Unit, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Unit}
-                        LocalDataFieldOrderVenue: {Label=Setup Field Order for Venue, Description=Maintain Field Order for Venue, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Venue}
+                        LocalDataOptionListNames: {Label=Local Data Option List Names, Description=Maintain Local Data Option List names, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
+                        LocalDataOptions: {Label=Local Data Options, Description=Maintain Local Data Options, ActionOpenScreen=TFrmLocalDataOptionsSetup}
+                        LocalDataFields: {Label=Local Partner Data Fields, Description=Maintain Local Partner Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPartnerDataFieldSetup}
+                        LocalDataFieldOrderBank: {Label=Field Order for Bank, Description=Maintain Field Order for Bank, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Bank}
+                        LocalDataFieldOrderChurch: {Label=Field Order for Church, Description=Maintain Field Order for Church, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Church}
+                        LocalDataFieldOrderFamily: {Label=Field Order for Family, Description=Maintain Field Order for Family, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Family}
+                        LocalDataFieldOrderPerson: {Label=Field Order for Person, Description=Maintain Field Order for Person, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Person}
+                        LocalDataFieldOrderOrganisation: {Label=Field Order for Organisation, Description=Maintain Field Order for Organisation, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Organisation}
+                        LocalDataFieldOrderUnit: {Label=Field Order for Unit, Description=Maintain Field Order for Unit, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Unit}
+                        LocalDataFieldOrderVenue: {Label=Field Order for Venue, Description=Maintain Field Order for Venue, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Venue}
 
                     Mailing-related:
-                        Mailings: {Label=Setup Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup}
+                        Mailings: {Label=Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup}
 						
             #MoreFunctions:
                 #SetupPartnerModule:
@@ -297,37 +297,37 @@ OpenPetra:
 
                 Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     General:
-                        AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}
-                        AbilityLevel: {Label=Setup Ability Levels, Description=Maintain Ability Levels, ActionOpenScreen=TFrmAbilityLevelSetup}
-                        DocumentTypeCategory: {Label=Setup Document Type Categories, Description=Maintain Document Type Categories, ActionOpenScreen=TFrmDocumentTypeCategorySetup}
-                        DocumentType: {Label=Setup Document Types, Description=Maintain Document Types, ActionOpenScreen=TFrmDocumentTypeSetup}
-                        DriverStatus: {Label=Setup Driver Status, Description=Maintain Driver Status, ActionOpenScreen=TFrmDriverStatusSetup}
-                        JobAssignmentType: {Label=Setup Job Assignment Types, Description=Maintain Job Assignment Types, ActionOpenScreen=TFrmJobAssignmentTypeSetup}
-                        LanguageLevel: {Label=Setup Language Levels, Description=Maintain Language Levels, ActionOpenScreen=TFrmLanguageLevelSetup}
-                        LeadershipRating: {Label=Setup Leadership Ratings, Description=Maintain Leadership Ratings, ActionOpenScreen=TFrmLeadershipRatingSetup}
-                        LeavingCode: {Label=Setup Leaving Codes, Description=Maintain Leaving Codes, ActionOpenScreen=TFrmLeavingCodeSetup}
-                        PassportType: {Label=Setup Passport Types, Description=Maintain Passport Types, ActionOpenScreen=TFrmPassportTypeSetup}
-                        Position: {Label=Setup Positions, Description=Maintain Positions, ActionOpenScreen=TFrmPositionSetup}
-                        ProfessionalArea: {Label=Setup Professional Areas, Description=Maintain Professional Areas, ActionOpenScreen=TFrmProfessionalAreaSetup}
-                        QualificationLevel: {Label=Setup Qualification Levels, Description=Maintain Qualification Levels, ActionOpenScreen=TFrmQualificationLevelSetup}
-                        SkillCategory: {Label=Setup Skill Categories, Description=Maintain Skill Categories, ActionOpenScreen=TFrmSkillCategorySetup}
-                        SkillLevel: {Label=Setup Skill Levels, Description=Maintain Skill Levels, ActionOpenScreen=TFrmSkillLevelSetup}
-                        UnitHierarchy: {Label=Unit Hierarchy, Description=Arrange Units in a tree, ActionOpenScreen=TFrmUnitHierarchy}
+                        AbilityArea: {Label=Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}
+                        AbilityLevel: {Label=Ability Levels, Description=Maintain Ability Levels, ActionOpenScreen=TFrmAbilityLevelSetup}
+                        DocumentTypeCategory: {Label=Document Type Categories, Description=Maintain Document Type Categories, ActionOpenScreen=TFrmDocumentTypeCategorySetup}
+                        DocumentType: {Label=Document Types, Description=Maintain Document Types, ActionOpenScreen=TFrmDocumentTypeSetup}
+                        DriverStatus: {Label=Driver Status, Description=Maintain Driver Status, ActionOpenScreen=TFrmDriverStatusSetup}
+                        JobAssignmentType: {Label=Job Assignment Types, Description=Maintain Job Assignment Types, ActionOpenScreen=TFrmJobAssignmentTypeSetup}
+                        LanguageLevel: {Label=Language Levels, Description=Maintain Language Levels, ActionOpenScreen=TFrmLanguageLevelSetup}
+                        LeadershipRating: {Label=Leadership Ratings, Description=Maintain Leadership Ratings, ActionOpenScreen=TFrmLeadershipRatingSetup}
+                        LeavingCode: {Label=Leaving Codes, Description=Maintain Leaving Codes, ActionOpenScreen=TFrmLeavingCodeSetup}
+                        PassportType: {Label=Passport Types, Description=Maintain Passport Types, ActionOpenScreen=TFrmPassportTypeSetup}
+                        Position: {Label=Positions, Description=Maintain Positions, ActionOpenScreen=TFrmPositionSetup}
+                        ProfessionalArea: {Label=Professional Areas, Description=Maintain Professional Areas, ActionOpenScreen=TFrmProfessionalAreaSetup}
+                        QualificationLevel: {Label=Qualification Levels, Description=Maintain Qualification Levels, ActionOpenScreen=TFrmQualificationLevelSetup}
+                        SkillCategory: {Label=Skill Categories, Description=Maintain Skill Categories, ActionOpenScreen=TFrmSkillCategorySetup}
+                        SkillLevel: {Label=Skill Levels, Description=Maintain Skill Levels, ActionOpenScreen=TFrmSkillLevelSetup}
+                        UnitHierarchy: {Label=Unit Hierarchy, Description=Maintain Unit Hierarchy, ActionOpenScreen=TFrmUnitHierarchy}
                     Application-related:
-                        ApplicantStatus: {Label=Setup Applicant Statuses, Description=Maintain Applicant Statuses, ActionOpenScreen=TFrmApplicantStatusSetup} 						
-                        ApplicationType: {Label=Setup Application Types, Description=Maintain Application Types, ActionOpenScreen=TFrmApplicationTypeSetup}
-                        ArrivalDeparturePoint: {Label=Setup Arrival and Departure Points, Description=Maintain Arrival and Departure Points, ActionOpenScreen=TFrmArrivalDeparturePointSetup}
-                        Country_EventPreferenceLevel: {Label=Setup Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}
-                        EventRole: {Label=Setup Event Roles, Description=Maintain Event Roles, ActionOpenScreen=TFrmEventRoleSetup}
-                        OrganisationContact: {Label=Setup Organisation Contacts, Description=Maintain Organisation Contacts, ActionOpenScreen=TFrmOrganisationContactSetup}
-                        TransportType: {Label=Setup Transport Types, Description=Maintain Transport Types, ActionOpenScreen=TFrmTransportTypeSetup}
+                        ApplicantStatus: {Label=Applicant Statuses, Description=Maintain Applicant Statuses, ActionOpenScreen=TFrmApplicantStatusSetup} 						
+                        ApplicationType: {Label=Application Types, Description=Maintain Application Types, ActionOpenScreen=TFrmApplicationTypeSetup}
+                        ArrivalDeparturePoint: {Label=Arrival and Departure Points, Description=Maintain Arrival and Departure Points, ActionOpenScreen=TFrmArrivalDeparturePointSetup}
+                        Country_EventPreferenceLevel: {Label=Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}
+                        EventRole: {Label=Event Roles, Description=Maintain Event Roles, ActionOpenScreen=TFrmEventRoleSetup}
+                        OrganisationContact: {Label=Organisation Contacts, Description=Maintain Organisation Contacts, ActionOpenScreen=TFrmOrganisationContactSetup}
+                        TransportType: {Label=Transport Types, Description=Maintain Transport Types, ActionOpenScreen=TFrmTransportTypeSetup}
                     LocalDataRelated: {Label=Local Data-related}
-                        LocalDataOptionListNames: {Label=Setup Local Data Option List Names, Description=Maintain Local Data Option List names, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
-                        #LocalApplicationDataFields: {Label=Setup Local Application Data Fields, Description=Maintain Local Application Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalApplicationDataFieldSetup}
-                        LocalPersonnelDataFields: {Label=Setup Local Personnel Data Fields, Description=Maintain Local Personnel Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPersonnelDataFieldSetup}
-                        #LocalDataFieldOrderLongTermApp: {Label=Setup Field Order for Long Term Applications, Description=Maintain Field Order for Long Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=LongTermApp}
-                        #LocalDataFieldOrderShortTermApp: {Label=Setup Field Order for Short Term Applications, Description=Maintain Field Order for Short Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=ShortTermApp}
-                        LocalDataFieldOrderPersonnel: {Label=Setup Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}
+                        LocalDataOptionListNames: {Label=Local Data Option List Names, Description=Maintain Local Data Option List Names, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
+                        #LocalApplicationDataFields: {Label=Local Application Data Fields, Description=Maintain Local Application Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalApplicationDataFieldSetup}
+                        LocalPersonnelDataFields: {Label=Local Personnel Data Fields, Description=Maintain Local Personnel Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPersonnelDataFieldSetup}
+                        #LocalDataFieldOrderLongTermApp: {Label=Field Order for Long Term Applications, Description=Maintain Field Order for Long Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=LongTermApp}
+                        #LocalDataFieldOrderShortTermApp: {Label=Field Order for Short Term Applications, Description=Maintain Field Order for Short Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=ShortTermApp}
+                        LocalDataFieldOrderPersonnel: {Label=Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}
                         
         ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE}
             Main: {SkipThisLevel=true}
@@ -360,7 +360,7 @@ OpenPetra:
                         OutreachReport: {ActionOpenScreen=TFrmOutreachReport}
                 Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     General:
-                        ConferenceCostType: {Label= Setup Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
+                        ConferenceCostType: {Label= Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
         FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Financial Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}
             Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}  # Icon=Print.ico
                 GeneralReports: {DontShowNestedTasksAsLinks=true}
@@ -383,7 +383,7 @@ OpenPetra:
                     SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
                 Language: {DontShowNestedTasksAsLinks=true}
                     SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
-                Export: {DontShowNestedTasksAsLinks=true}
+                Export: {DontShowNestedTasksAsLinks=true, PermissionsRequired=FINANCE-1,PERSONNEL}
                     ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExport}
 
         SystemManager: {Icon=sysman.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN, ShowAsCollapsiblePanels=true}
@@ -399,7 +399,7 @@ OpenPetra:
                         #ViewLoginLog:
                 Setup: {DontShowNestedTasksAsLinks=true}
                     Security-related:
-                        Groups: {Label=Setup Groups, Description=Maintain Security-related Groups, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmSecurityGroupSetup}
+                        Groups: {Label=Groups, Description=Maintain Security-related Groups, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmSecurityGroupSetup}
             Database:
                 ImportExport: {DontShowNestedTasksAsLinks=true}
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}
@@ -416,5 +416,5 @@ OpenPetra:
                     #Sites
                     #Purging
                     General:
-                        LanguageSpecifics: {Label=Setup Language Specifics, Description=Maintain Month Names for Different Languages, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmLanguageSpecificSetup}
+                        LanguageSpecifics: {Label=Language Specifics, Description=Maintain Month Names for Different Languages, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmLanguageSpecificSetup}
                 

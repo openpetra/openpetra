@@ -48,10 +48,10 @@ RootNode:
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate, cmbDetailKeyMinistryKey, pnlDetailAmounts]
         cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList}
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
-        txtDetailNarrative: {Label=Narrative}
+        txtDetailNarrative: {Label=Narrative, Width=537}
         txtDetailReference: {Label=Reference}
         dtpDetailTransactionDate: {Label=Transaction Date}
-        cmbDetailKeyMinistryKey: {Label=Key Ministry, TODOSELECTPARTNERKEYMIN}
+        cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=363, TODOSELECTPARTNERKEYMIN}
         pnlDetailAmounts:
             Controls:
                 Row0: [lblTransactionCurrency, lblBaseCurrency]

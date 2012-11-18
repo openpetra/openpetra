@@ -41,13 +41,15 @@ RootNode:
             #TODO: support split gifts, and deal with gift details properly
             Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, ConfidentialGiftFlag, GiftAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, MethodOfGivingCode, MethodOfPaymentCode, MailingCode]
             CustomColumns:
+                GiftTransactionNumber: {Label=Gift No., Type=Int32}
+                DetailNumber: {Label=Split No., Type=Int32}
                 Confidential: {Label=C, Type=Boolean}
                 DonorKey: {Label=Donor Key, Type=PartnerKey}
                 DonorName: {Label=Donor Name, Type=String}
                 DonorClass: {Label=Class, Type=String}
                 RecipientDescription: {Label=Recipient, Type=String}
-                RecipientField: {Label=Field, type=Int64}
-                GiftAmount: {Label=Gift Amount, Type=Decimal}
+                RecipientField: {Label=Field, Type=Int64}
+                GiftAmount: {Label=Amount, Type=Currency}
                 MethodOfGivingCode: {Label=Method of Giving, Type=String}
                 MethodOfPaymentCode: {Label=Method of Payment, Type=String}
             ActionFocusRow: FocusedRowChanged
@@ -57,10 +59,10 @@ RootNode:
             Dock: Bottom
             # TODO: split gifts
             Controls:
-                Row0: [lblReceipt,chkDetailActive]
+                Row0: [lblReceipt, chkDetailActive]
                 Row1: [txtDetailDonorKey]
-                Row2: [cmbDetailMethodOfGivingCode,cmbDetailMethodOfPaymentCode]
-                Row3: [txtDetailReference,cmbDetailReceiptLetterCode]
+                Row2: [cmbDetailMethodOfGivingCode, cmbDetailMethodOfPaymentCode]
+                Row3: [txtDetailReference, cmbDetailReceiptLetterCode]
                 Row4: [txtGiftTotal]
                 Row5: [txtDetailGiftAmount, chkDetailConfidentialGiftFlag]
                 Row6: [dtpStartDonations, dtpEndDonations]
@@ -79,7 +81,7 @@ RootNode:
         chkDetailActive: {Label=Active Gift}
         txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=yes, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=2, Unbound=true, OnChange=DonorKeyChanged}
-        txtDetailReference: {Label=Reference}
+        txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
