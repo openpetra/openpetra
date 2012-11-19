@@ -48,6 +48,7 @@ RootNode:
             Columns: [ABatch.BatchNumber, ABatch.BatchStatus, ABatch.DateEffective, ABatch.BatchDebitTotal, ABatch.BatchCreditTotal, ABatch.BatchControlTotal, ABatch.BatchDescription]
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowJournalTab
+            ActionEnterKeyPressed: ShowJournalTab
             SortOrder: ABatch.BatchNumber DESC
             SortableHeaders: false
         pnlDetails:

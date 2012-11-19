@@ -157,6 +157,18 @@ namespace Ict.Common
         /// <returns>the translation, or <c>null</c> if none is found</returns>
         public static string GetPluralString(String msgid, String msgidPlural, long n)
         {
+            if (catalog == null)
+            {
+                if (n > 1)
+                {
+                    return msgidPlural;
+                }
+                else
+                {
+                    return msgid;
+                }
+            }
+
             return catalog.GetPluralString(msgid, msgidPlural, n);
         }
     }

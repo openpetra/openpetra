@@ -1248,5 +1248,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TSharedFinanceValidation_Gift.ValidateRecurringGiftDetailManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
         }
+
+        /// <summary>
+        /// Focus on grid
+        /// </summary>
+        public void FocusGrid()
+        {
+            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            {
+                grdDetails.Focus();
+            }
+        }
     }
 }

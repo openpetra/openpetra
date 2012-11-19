@@ -104,6 +104,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ABatchTable.GetLedgerNumberDBName(),
                 ABatchTable.GetBatchNumberDBName()
                 );
+
+            grdDetails.Focus();
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -342,7 +344,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
-            txtDetailBatchDescription.Text = "Please enter description";
+            txtDetailBatchDescription.Text = "Please enter a batch description";
             txtDetailBatchDescription.Focus();
 
             ((TFrmGLBatch)ParentForm).SaveChanges();
@@ -1233,6 +1235,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             gl.LedgerNumber = FLedgerNumber;
             gl.MainDS = FMainDS;
             gl.Show();
+        }
+
+        /// <summary>
+        /// Set focus to the gid controltab
+        /// </summary>
+        public void FocusGrid()
+        {
+            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            {
+                grdDetails.Focus();
+            }
         }
     }
 }

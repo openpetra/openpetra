@@ -116,7 +116,8 @@ namespace Ict.Common.Data
             DB.TDBTransaction ATransaction,
             out DateTime AModificationID,
             out String AModifiedBy,
-            out System.DateTime AModifiedDate)
+            out System.DateTime AModifiedDate,
+            bool ATreatRowAsAdded = false)
         {
             Int32 Counter;
             Boolean First;
@@ -148,7 +149,8 @@ namespace Ict.Common.Data
 
             DataRowVersion WhichVersion = DataRowVersion.Original;
 
-            if (ADataRow.RowState == DataRowState.Added)
+            if ((ADataRow.RowState == DataRowState.Added)
+                || (ATreatRowAsAdded))
             {
                 WhichVersion = DataRowVersion.Current;
             }
@@ -230,7 +232,8 @@ namespace Ict.Common.Data
             short ATableId,
             ref DataRow ADataRow,
             DB.TDBTransaction ATransaction,
-            String ACurrentUser)
+            String ACurrentUser,
+            bool ATreatRowAsAdded)
         {
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
             string query = GenerateInsertClause("PUB_" +
@@ -257,7 +260,8 @@ namespace Ict.Common.Data
                 ATransaction,
                 out LastModificationId,
                 out LastModifiedBy,
-                out LastModifiedDate);
+                out LastModifiedDate,
+                ATreatRowAsAdded);
 
             ADataRow[MODIFICATION_ID] = LastModificationId;
         }
@@ -2092,6 +2096,7 @@ namespace Ict.Common.Data
         {
             bool ResultValue = true;
             bool ExceptionReported = false;
+            bool TreatRowAsAdded = false;
             DataRow TheRow = null;
 
             AVerificationResult = new TVerificationResultCollection();
@@ -2133,6 +2138,7 @@ namespace Ict.Common.Data
                                 // accept changes for the row, so that we can update the dataset on the client and still know the negative temp sequence number
                                 TheRow.AcceptChanges();
                                 TheRow[ASequenceField] = (System.Object)DBAccess.GDBAccessObj.GetNextSequenceValue(ASequenceName, ATransaction);
+                                TreatRowAsAdded = true;   // setting this variable to 'true' is *vital* for the retrieval of the s_modification_id_t for that record once it is saved!
                             }
                         }
 
@@ -2142,7 +2148,7 @@ namespace Ict.Common.Data
                         }
                         else
                         {
-                            TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId);
+                            TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, TreatRowAsAdded);
                         }
                     }
                     else

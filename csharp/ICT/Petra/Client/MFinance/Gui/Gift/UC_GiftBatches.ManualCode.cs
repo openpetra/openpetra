@@ -554,7 +554,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
-            ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, false);
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, false);
+            }
         }
 
         /// <summary>
@@ -1171,6 +1174,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (ARow.HashTotal != correctHashValue)
             {
                 ARow.HashTotal = correctHashValue;
+            }
+        }
+
+        /// <summary>
+        /// Focus on grid
+        /// </summary>
+        public void FocusGrid()
+        {
+            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            {
+                grdDetails.Focus();
             }
         }
     }
