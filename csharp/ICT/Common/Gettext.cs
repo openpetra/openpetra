@@ -159,7 +159,7 @@ namespace Ict.Common
         {
             if (catalog == null)
             {
-                if (n > 1) 
+                if (n > 1)
                 {
                     return msgidPlural;
                 }
@@ -168,7 +168,7 @@ namespace Ict.Common
                     return msgid;
                 }
             }
-            
+
             return catalog.GetPluralString(msgid, msgidPlural, n);
         }
     }

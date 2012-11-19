@@ -281,6 +281,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ctrl.GetAttribute("ActionFocusRow"));
             }
 
+            if (ctrl.HasAttribute("ActionEnterKeyPressed"))
+            {
+                AssignEventHandlerToControl(writer, ctrl, "EnterKeyPressed", "TKeyPressedEventHandler",
+                    ctrl.GetAttribute("ActionEnterKeyPressed"));
+            }
+
             if (ctrl.HasAttribute("SortableHeaders"))
             {
                 string trueOrFalse = ctrl.GetAttribute("SortableHeaders");

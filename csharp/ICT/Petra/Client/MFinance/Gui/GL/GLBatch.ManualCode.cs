@@ -57,6 +57,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        private int standardTabIndex = 0;
+
+        private void TFrmGLBatch_Load(object sender, EventArgs e)
+        {
+            FPetraUtilsObject.TFrmPetra_Load(sender, e);
+
+            tabGLBatch.SelectedIndex = standardTabIndex;
+            TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+
+            //Need this to give focus to the grid. Cannot do it using Focus()
+            SendKeys.Send("{TAB}");
+        }
+
         private void InitializeManualCode()
         {
             tabGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
@@ -202,6 +215,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.tpgTransactions.Enabled = false;
                 this.tpgAttributes.Enabled = false;
+
+                this.ucoBatches.FocusGrid();
             }
             else if (ATab == eGLTabs.Journals)
             {
@@ -215,6 +230,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     this.tpgTransactions.Enabled = (ucoJournals.GetSelectedDetailRow() != null);
                     this.tpgAttributes.Enabled = false;
+
+                    this.ucoJournals.FocusGrid();
                 }
             }
             else if (ATab == eGLTabs.Transactions)
@@ -233,6 +250,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoJournals.GetSelectedDetailRow().JournalStatus);
 
                     this.tpgAttributes.Enabled = (ucoTransactions.GetSelectedDetailRow() != null);
+
+                    this.ucoTransactions.FocusGrid();
                 }
             }
             else if (ATab == eGLTabs.Attributes)

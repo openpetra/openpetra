@@ -8,6 +8,10 @@ RootNode:
     WindowWidth: 760
     WindowHeight: 700
     UsingNamespaces: [Ict.Petra.Shared.Interfaces.MFinance]
+
+    Events:
+        Load: {class=System.EventHandler, method=TFrmGLBatch_Load}    
+
     Controls:
         pnlContent:
             Controls: [tabGLBatch]

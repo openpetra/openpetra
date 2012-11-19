@@ -1161,7 +1161,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                      ToString() + "(); Modification TimeStamp: " +
                                                      AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
                                                                                                                           GetModificationIdDBName()].
-                                                    ToString() + "\r\n";
+                                                     ToString() + "\r\n";
                                 }
                             }
 
@@ -1210,7 +1210,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                      ToString() + "(); Modification TimeStamp: " +
                                                      AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
                                                                                                                           GetModificationIdDBName()].
-                                                    ToString() + "\r\n";                                                                        
+                                                     ToString() + "\r\n";
                                 }
                             }
 
