@@ -839,6 +839,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         ShowDetailsManual(null);
                         FStatus = "";
                         txtStatus.Text = FStatus;
+                        FPetraUtilsObject.HasChanges = false;
+                        FPetraUtilsObject.DisableSaveButton();
                     }
                     else
                     {
