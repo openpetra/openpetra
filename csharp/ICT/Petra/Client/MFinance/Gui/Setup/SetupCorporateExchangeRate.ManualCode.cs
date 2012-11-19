@@ -37,6 +37,8 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core;
+using Ict.Common.Verification;
+using Ict.Petra.Shared.MFinance.Validation;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -88,6 +90,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FMainDS.ACorporateExchangeRate.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
                                                               ACorporateExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
             FMainDS.ACorporateExchangeRate.DefaultView.RowFilter = "";
+            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+        }
+
+        void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        {
+            // The user has clicked Save. I just want to check it's all OK?
+            ValidateAllData(false, true);
+        }
+
+        private void ValidateDataDetailsManual(ACorporateExchangeRateRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_GLSetup.ValidateCorporateExchangeRate(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
 
         /// <summary>

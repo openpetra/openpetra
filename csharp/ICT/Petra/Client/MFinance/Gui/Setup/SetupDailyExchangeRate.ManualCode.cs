@@ -659,7 +659,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TSharedFinanceValidation_GLSetup.ValidateDailyExchangeRates(this, ARow, ref VerificationResultCollection,
+            TSharedFinanceValidation_GLSetup.ValidateDailyExchangeRate(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
 
@@ -676,7 +676,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
             // The user has clicked Save.  We need to consider if we need to make any Inverse currency additions...
-            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            if (!ValidateAllData(false, true))
+            {
+                return;
+            }
+
+//          GetDetailsFromControls(FPreviouslySelectedDetailRow);
 
             // Now go through all the grid rows (view) checking all the added rows.  Keep a list of inverses
             List <tInverseItem>lstInverses = new List <tInverseItem>();

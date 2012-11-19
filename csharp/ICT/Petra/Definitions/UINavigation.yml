@@ -383,7 +383,7 @@ OpenPetra:
                     SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
                 Language: {DontShowNestedTasksAsLinks=true}
                     SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
-                Export: {DontShowNestedTasksAsLinks=true}
+                Export: {DontShowNestedTasksAsLinks=true, PermissionsRequired=FINANCE-1,PERSONNEL}
                     ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExport}
 
         SystemManager: {Icon=sysman.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN, ShowAsCollapsiblePanels=true}

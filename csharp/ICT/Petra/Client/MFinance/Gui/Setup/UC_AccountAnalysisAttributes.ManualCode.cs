@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             cmbDetailAnalTypeCode.Items.Clear();
 
-            foreach (AAnalysisAttributeRow Row in FMainDS.AAnalysisAttribute.Rows)
+            foreach (AAnalysisTypeRow Row in FMainDS.AAnalysisType.Rows)
             {
                 if (Row.RowState != DataRowState.Deleted)
                 {
@@ -89,10 +89,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void NewRow(System.Object sender, EventArgs e)
         {
-            /*
-             *          // reload analysis types from cache table
-             *          cmbDetailAnalTypeCode.InitialiseUserControl();
-             */
             if (cmbDetailAnalTypeCode.Items.Count == 0)
             {
                 MessageBox.Show(Catalog.GetString("Please create an analysis type first"), Catalog.GetString("Error"),

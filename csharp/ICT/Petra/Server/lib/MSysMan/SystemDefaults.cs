@@ -32,6 +32,7 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Common.DB;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Common.Verification;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
 {
@@ -122,31 +123,46 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="AValue"></param>
-        /// <returns>true if the System Default was saved successfully</returns>
+        /// <returns>true if I believe the System Default was saved successfully</returns>
         [RequireModulePermission("NONE")]
         public static Boolean SetSystemDefault(String AKey, String AValue)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            SSystemDefaultsTable tbl = SSystemDefaultsAccess.LoadByPrimaryKey(AKey, Transaction);
-            String UserName = UserInfo.GUserInfo.UserID;
+            Boolean TransactionIsOk = false;
 
-            if (tbl.Rows.Count > 0) // I already have this. (I expect this is the case usually!)
+            try
             {
-                DataRow Row = tbl[0];
-                ((SSystemDefaultsRow)Row).DefaultValue = AValue;
-                SSystemDefaultsAccess.UpdateRow(SSystemDefaultsTable.TableId, true, ref Row, Transaction, UserName);
-            }
-            else
-            {
-                DataRow Row = tbl.NewRowTyped(true);
-                ((SSystemDefaultsRow)Row).DefaultCode = AValue;
-                ((SSystemDefaultsRow)Row).DefaultDescription = "Created in OpenPetra";
-                ((SSystemDefaultsRow)Row).DefaultValue = AValue;
-                SSystemDefaultsAccess.InsertRow(SSystemDefaultsTable.TableId, ref Row, Transaction, UserName);
-            }
+                SSystemDefaultsTable tbl = SSystemDefaultsAccess.LoadByPrimaryKey(AKey, Transaction);
+                TVerificationResultCollection Results;
 
-            DBAccess.GDBAccessObj.CommitTransaction();
-            return true;
+                if (tbl.Rows.Count > 0) // I already have this. (I expect this is the case usually!)
+                {
+                    DataRow Row = tbl[0];
+                    ((SSystemDefaultsRow)Row).DefaultValue = AValue;
+                }
+                else
+                {
+                    DataRow Row = tbl.NewRowTyped(true);
+                    ((SSystemDefaultsRow)Row).DefaultCode = AKey;
+                    ((SSystemDefaultsRow)Row).DefaultDescription = "Created in OpenPetra";
+                    ((SSystemDefaultsRow)Row).DefaultValue = AValue;
+                    tbl.Rows.Add(Row);
+                }
+
+                TransactionIsOk = SSystemDefaultsAccess.SubmitChanges(tbl, Transaction, out Results);
+            }
+            finally
+            {
+                if (TransactionIsOk)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            return TransactionIsOk;
         }
     }
 }

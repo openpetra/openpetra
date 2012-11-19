@@ -343,7 +343,8 @@ namespace Ict.Common
             ReturnValue = ADefaultValue;
             try
             {
-                ReturnValue = Convert.ToInt16(GetValue(AKey, (ADefaultValue == -1)));
+                string str = GetValue(AKey, (ADefaultValue == -1));
+                ReturnValue = Convert.ToInt16(str);
             }
             catch (Exception)
             {

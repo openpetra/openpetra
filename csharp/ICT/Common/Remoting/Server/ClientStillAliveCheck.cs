@@ -50,8 +50,8 @@ namespace Ict.Common.Remoting.Server
         private static String UTearDownAppDomainToken;
         private static Thread UClientStillAliveCheckThread;
         private static Boolean UKeepServerAliveCheck;
-        private static Int16 UClientStillAliveTimeout;
-        private static Int16 UClientStillAliveCheckInterval;
+        private static Int32 UClientStillAliveTimeout;
+        private static Int32 UClientStillAliveCheckInterval;
 
 
         /**
@@ -80,7 +80,7 @@ namespace Ict.Common.Remoting.Server
                 TDelegateTearDownAppDomain ATearDownAppDomain,
                 String ATearDownAppDomainToken)
             {
-                Int16 ClientStillAliveTimeout;
+                Int32 ClientStillAliveTimeout;
 
                 if (TLogging.DL >= 10)
                 {

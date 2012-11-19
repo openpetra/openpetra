@@ -33,6 +33,8 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Common;
+using Ict.Common.Verification;
+using Ict.Petra.Shared.MFinance.Validation;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -83,6 +85,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.FeeCode = newName;
             ARow.AccountCode = MFinanceConstants.ADMIN_FEE_INCOME_ACCT.ToString();
             ARow.DrAccountCode = MFinanceConstants.ADMIN_FEE_EXPENSE_ACCT.ToString();
+        }
+
+        private void ValidateDataDetailsManual(AFeesReceivableRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_GLSetup.ValidateAdminGrantReceivable(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
 
         private void ChargeOptionChanged(object sender, EventArgs e)
