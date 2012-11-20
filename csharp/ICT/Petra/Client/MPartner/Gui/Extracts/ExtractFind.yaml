@@ -32,7 +32,7 @@ RootNode:
             Controls: [btnSearch, btnClear]
         pnlExtractMasterList:
             Dock: Fill
-            Controls: [grdDetails]
+            Controls: [clbDetails]
         pnlButtons: {ControlsOrientation=horizontal}
             NoLabel: true
             Dock: Bottom
@@ -54,11 +54,9 @@ RootNode:
             Label: Clear
             Action: actClear
 
-        grdDetails:
+        clbDetails:
             Dock: Fill
             Columns: []
-            ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: actAccept
 
         btnAccept:
             Label: Accept
