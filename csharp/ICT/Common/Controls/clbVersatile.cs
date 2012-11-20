@@ -102,21 +102,30 @@ namespace Ict.Common.Controls
         {
             Int32 Row = e.CellContext.Position.Row;
 
-            FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            if (FDataView[Row][FCheckedColumn].GetType() != typeof(System.DBNull))
+            {
+                FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            }
         }
 
         private void Clb_EnterKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
             Int32 Row = e.Row;
 
-            FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            if (FDataView[Row][FCheckedColumn].GetType() != typeof(System.DBNull))
+            {
+                FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            }
         }
 
         private void Clb_SpaceKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
             Int32 Row = e.Row;
 
-            FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            if (FDataView[Row][FCheckedColumn].GetType() != typeof(System.DBNull))
+            {
+                FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            }
         }
 
         /// <summary>
