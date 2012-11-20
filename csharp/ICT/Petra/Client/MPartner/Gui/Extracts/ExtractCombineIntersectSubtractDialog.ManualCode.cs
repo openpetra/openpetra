@@ -143,37 +143,34 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void AddExtractToList(System.Object sender, EventArgs e)
         {
             TFrmExtractFind ExtractFindDialog = new TFrmExtractFind(this.ParentForm);
-            int ExtractId = 0;
-            string ExtractName;
-            string ExtractDescription;
-            int KeyCount;
-            string ExtractCreatedBy;
-            DateTime ExtractDateCreated;
+            MExtractMasterTable ExtractMasterTable = new MExtractMasterTable();
+            MExtractMasterRow NewRow;
 
             // let the user select base extract
+            ExtractFindDialog.AllowMultipleSelect = true;
             ExtractFindDialog.ShowDialog(true);
 
             // get data for selected base extract
-            ExtractFindDialog.GetResult(out ExtractId, out ExtractName, out ExtractDescription,
-                                        out KeyCount, out ExtractCreatedBy, out ExtractDateCreated);
+            ExtractFindDialog.GetResult(ref ExtractMasterTable);
             ExtractFindDialog.Dispose();
 
             // only continue if an extract was selected
-            if (ExtractId >= 0)
+            foreach (MExtractMasterRow Row in ExtractMasterTable.Rows)
             {
-                MExtractMasterRow Row;
-                
-                Row = FExtractMasterTable.NewRowTyped();
-                Row.ExtractId = ExtractId;
-                Row.ExtractName = ExtractName;
-                Row.ExtractDesc = ExtractDescription;
-                Row.KeyCount = KeyCount;
-                Row.CreatedBy = ExtractCreatedBy;
-                Row.DateCreated = ExtractDateCreated;
-                
-                FExtractMasterTable.Rows.Add(Row);
-
-                btnRemove.Enabled = true;
+                if (!FExtractMasterTable.Rows.Contains (new object[] { Row.ExtractId }))
+                {
+                    NewRow = FExtractMasterTable.NewRowTyped();
+                    NewRow.ExtractId = Row.ExtractId;
+                    NewRow.ExtractName = Row.ExtractName;
+                    NewRow.ExtractDesc = Row.ExtractDesc;
+                    NewRow.KeyCount = Row.KeyCount;
+                    NewRow.CreatedBy = Row.CreatedBy;
+                    NewRow.DateCreated = Row.DateCreated;
+                    
+                    FExtractMasterTable.Rows.Add(NewRow);
+                    
+                    btnRemove.Enabled = true;
+                }
             }
         }
 
@@ -293,6 +290,23 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     break;
             }
 
+            // check if user tries to subtract extract from itself
+            if (FMode == TMode.ecisSubtractMode)
+            {
+                foreach (DataRow ExtractRow in FExtractMasterTable.Rows)
+                {
+                    if (((MExtractMasterRow)ExtractRow).ExtractName == txtBaseExtract.Text)
+                    {
+                        MessageBox.Show(Catalog.GetString("You cannot subtract an extract from itself"),
+                                TitleText,
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                
+            }
+            
             if (FExtractMasterTable.Rows.Count > 0)
             {
                 switch (FMode)
