@@ -12,6 +12,9 @@ RootNode:
         actMaintainExtract: {ActionClick=MaintainExtract}      
         actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}     
         actPurgeExtracts: {ActionClick=PurgeExtracts}     
+        actCombineExtracts: {ActionClick=CombineExtracts}     
+        actIntersectExtracts: {ActionClick=IntersectExtracts}     
+        actSubtractExtracts: {ActionClick=SubtractExtracts}     
         actActivateFilter: {ActionClick=FilterExtracts}     
         actClearFilter: {ActionClick=ClearFilterExtracts}     
         actUserFilterSelectionChanged: {ActionClick=FilterExtracts}     
@@ -108,6 +111,10 @@ RootNode:
             mniMaintainExtract: {Label=Maintain Extract, Action=actMaintainExtract}
             mniVerifyExtract: {Label=Verify and Update Extract, Action=actVerifyAndUpdateExtract}
             mniPurgeExtracts: {Label=Purge Extracts, Action=actPurgeExtracts}
+            mniSeparator:
+            mniCombineExtracts: {Label=Combine Extracts, Action=actCombineExtracts}
+            mniIntersectExtracts: {Label=Intersect Extracts, Action=actIntersectExtracts}
+            mniSubtractExtracts: {Label=Subtract Extracts, Action=actSubtractExtracts}
         mniUpdatePartners:
             Label: &Update Partners
             mniAddSubscription: {Label=Add Subscription, Action=actAddSubscription}

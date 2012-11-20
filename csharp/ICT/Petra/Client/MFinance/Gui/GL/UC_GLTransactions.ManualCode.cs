@@ -390,7 +390,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (!DateTime.TryParse(aDate, out dateValue))
                 {
-                	dtpDetailTransactionDate.Date = GetBatchRow().DateEffective;
+                    dtpDetailTransactionDate.Date = GetBatchRow().DateEffective;
                 }
             }
             catch
@@ -569,25 +569,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ValidateDataDetailsManual(ATransactionRow ARow)
         {
-        	if ((ARow == null) || (GetBatchRow() == null) || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            if ((ARow == null) || (GetBatchRow() == null) || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
                 return;
             }
 
-        	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-			//Local validation
-			if (txtDebitAmount.NumberValueDecimal == 0 && txtCreditAmount.NumberValueDecimal == 0)
-			{
-	            TSharedFinanceValidation_GL.ValidateGLDetailManual(this, GetBatchRow(), ARow, txtDebitAmount, ref VerificationResultCollection,
-	                FValidationControlsDict);
-			}
-			else
-			{
-	            TSharedFinanceValidation_GL.ValidateGLDetailManual(this, GetBatchRow(), ARow, null, ref VerificationResultCollection,
-	                FValidationControlsDict);
-			}
-				
+            //Local validation
+            if ((txtDebitAmount.NumberValueDecimal == 0) && (txtCreditAmount.NumberValueDecimal == 0))
+            {
+                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, GetBatchRow(), ARow, txtDebitAmount, ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+            else
+            {
+                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, GetBatchRow(), ARow, null, ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
         }
 
         /// <summary>

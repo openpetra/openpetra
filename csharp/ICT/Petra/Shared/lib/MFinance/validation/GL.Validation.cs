@@ -177,18 +177,18 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.JournalNumber);
 
             //TransactionAmount is not in the dictionary so had to pass the control directly
-        	if (AControl != null)
-        	{
-	            VerificationResult = TNumericalChecks.IsNonZeroDecimal(ARow.TransactionAmount,
-	                "Amount of " + ValidationContext,
-	                AContext, ValidationColumn, AControl);
-	
-	            // Handle addition/removal to/from TVerificationResultCollection
-	            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-	            {
-	                VerifResultCollAddedCount++;
-	            }
-        	}
+            if (AControl != null)
+            {
+                VerificationResult = TNumericalChecks.IsNonZeroDecimal(ARow.TransactionAmount,
+                    "Amount of " + ValidationContext,
+                    AContext, ValidationColumn, AControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
 
             // 'Entered From Date' must be valid
             ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnTransactionDateId];
@@ -211,7 +211,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 TDateBetweenDatesCheckType.dbdctUnspecific,
                 AContext,
                 ValidationColumn,
-            	ValidationControlsData.ValidationControl);
+                ValidationControlsData.ValidationControl);
 
             // Handle addition/removal to/from TVerificationResultCollection
             if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))

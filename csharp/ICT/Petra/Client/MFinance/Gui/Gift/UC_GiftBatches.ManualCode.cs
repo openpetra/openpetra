@@ -707,7 +707,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
-            	UpdateChangeableStatus();
+                UpdateChangeableStatus();
             }
             else if (!AAllowDeletion)
             {
