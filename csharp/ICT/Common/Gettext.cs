@@ -25,6 +25,7 @@ using System;
 using System.Threading;
 using System.Globalization;
 using GNU.Gettext;
+using System.IO;
 
 namespace Ict.Common
 {
@@ -63,7 +64,13 @@ namespace Ict.Common
             // modify current locale for the given language
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(ALanguageCode);
 
-            catalog = new GettextResourceManager("OpenPetra");
+            string ResourceDllFname = TAppSettingsManager.ApplicationDirectory +
+                                      "\\" + Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName + "\\OpenPetra.resources.dll";
+
+            if (File.Exists(ResourceDllFname))
+            {
+                catalog = new GettextResourceManager("OpenPetra");
+            }
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo(ACultureCode);
         }
@@ -150,6 +157,18 @@ namespace Ict.Common
         /// <returns>the translation, or <c>null</c> if none is found</returns>
         public static string GetPluralString(String msgid, String msgidPlural, long n)
         {
+            if (catalog == null)
+            {
+                if (n > 1)
+                {
+                    return msgidPlural;
+                }
+                else
+                {
+                    return msgid;
+                }
+            }
+
             return catalog.GetPluralString(msgid, msgidPlural, n);
         }
     }

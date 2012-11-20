@@ -664,13 +664,16 @@ namespace Ict.Petra.Client.MCommon
             FDataGrid.AddTextColumn("City", ASourceTable.ColumnCity);
 
             // p_location_key_i (for testing purposes only...)
-            // FDataGrid.AddTextColumn('Location Key', ASourceTable.ColumnLocationKey);
+            // FDataGrid.AddTextColumn("Location Key", ASourceTable.ColumnLocationKey);
 
             // p_location_key_i (for testing purposes only...)
-            // FDataGrid.AddTextColumn('PartnerLocation Key', ASourceTable.Columns['Parent_' + PPartnerLocationTable.GetLocationKeyDBName()]);
+            // FDataGrid.AddTextColumn("PartnerLocation Key", ASourceTable.Columns["Parent_" + PPartnerLocationTable.GetLocationKeyDBName()]);
 
             // Location Type
             FDataGrid.AddTextColumn("Location Type", ASourceTable.Columns["Parent_" + PPartnerLocationTable.GetLocationTypeDBName()]);
+
+            // Modification TimeStamp (for testing purposes only...)
+            // FDataGrid.AddTextColumn("Modification TimeStamp", ASourceTable.ColumnModificationId);
         }
 
         #region Editing

@@ -47,6 +47,8 @@ namespace Ict.Tools.DataDumpPetra2
                 Console.Error.WriteLine(
                     "usage: Ict.Tools.DataDumpPetra2 -debuglevel:<0..10> -table:<single table or all> -oldpetraxml:<path and filename of old petra.xml> -newpetraxml:<path and filename of petra.xml>");
                 Console.Error.WriteLine("will default to processing all tables, and using petra23.xml and petra.xml from the current directory");
+                Console.Error.WriteLine(
+                    "usage for creating fulldump23.p: Ict.Tools.DataDumpPetra2 -operation:createProgressCode");
                 Console.Error.WriteLine("");
             }
 

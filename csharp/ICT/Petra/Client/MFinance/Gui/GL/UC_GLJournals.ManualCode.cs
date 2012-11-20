@@ -29,11 +29,13 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MFinance.Gui.Setup;
@@ -122,9 +124,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //This will update Batch totals
             UpdateTotals(GetBatchRow());
+
+            grdDetails.Focus();
         }
 
-        private void RefreshCurrencyAndExchangeRate()
+        private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)
         {
             txtDetailExchangeRateToBase.Text = FPreviouslySelectedDetailRow.ExchangeRateToBase.ToString("0.00000000");
             txtDetailExchangeRateToBase.BackColor =
@@ -134,6 +138,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTotals();
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
+
+            if (AFromUserAction && btnGetSetExchangeRate.Enabled)
+            {
+                btnGetSetExchangeRate.Focus();
+            }
         }
 
         private void ResetCurrencyExchangeRate(object sender, EventArgs e)
@@ -150,7 +159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPreviouslySelectedDetailRow.TransactionCurrency,
                     batchrow.DateEffective);
 
-                RefreshCurrencyAndExchangeRate();
+                RefreshCurrencyAndExchangeRate(true);
             }
         }
 
@@ -306,6 +315,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmGLBatch) this.ParentForm).EnableTransactions();
+
+                txtDetailJournalDescription.Text = "Please enter a journal description";
+                txtDetailJournalDescription.SelectAll();
             }
         }
 
@@ -443,6 +455,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void ClearCurrentSelection()
         {
             this.FPreviouslySelectedDetailRow = null;
+        }
+
+        private void ValidateDataDetailsManual(AJournalRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_GL.ValidateGLJournalManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+        }
+
+        /// <summary>
+        /// Set focus to the gid controltab
+        /// </summary>
+        public void FocusGrid()
+        {
+            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            {
+                grdDetails.Focus();
+            }
         }
     }
 }

@@ -99,9 +99,8 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                 }
 
                 Thread t = new Thread(() => ProcessStatementsOnServer(MainDS));
-                t.Start();
 
-                TProgressDialog dialog = new TProgressDialog();
+                TProgressDialog dialog = new TProgressDialog(t);
 
                 if (dialog.ShowDialog() == DialogResult.Cancel)
                 {
@@ -203,6 +202,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                 epstmt.CurrencyCode = stmt.currency;
                 epstmt.Filename = AFilename;
                 epstmt.BankAccountCode = ABankAccountCode;
+                epstmt.IdFromBank = stmt.id;
 
                 if (AFilename.Length > AEpStatementTable.GetFilenameLength())
                 {
@@ -211,6 +211,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                             stmt.bankCode + "/" + stmt.accountCode, true);
                 }
 
+                epstmt.StartBalance = stmt.startBalance;
                 epstmt.EndBalance = stmt.endBalance;
 
                 AMainDS.AEpStatement.Rows.Add(epstmt);

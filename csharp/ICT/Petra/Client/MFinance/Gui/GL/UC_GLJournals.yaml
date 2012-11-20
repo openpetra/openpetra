@@ -41,6 +41,7 @@ RootNode:
             Columns: [AJournal.JournalNumber, AJournal.JournalStatus, AJournal.JournalDebitTotal, AJournal.JournalCreditTotal, AJournal.TransactionCurrency, AJournal.JournalDescription, AJournal.SubSystemCode, AJournal.TransactionTypeCode]
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
+            ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: AJournal.JournalNumber ASC
             RowFilter: AJournal.BatchNumber
             SortableHeaders: false
@@ -60,5 +61,5 @@ RootNode:
         cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList}
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
-        txtDetailExchangeRateToBase: {Label= Exchange Rate to Base}
+        txtDetailExchangeRateToBase: {Label= Exchange Rate to Base, Validation=true}
         btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}

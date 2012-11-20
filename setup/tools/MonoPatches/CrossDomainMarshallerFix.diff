@@ -1,61 +1,61 @@
-diff -uNr orig/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting/Identity.cs openpetra/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting/Identity.cs
---- orig/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting/Identity.cs	2012-04-12 13:49:11.000000000 +0100
-+++ openpetra/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting/Identity.cs	2012-08-20 08:23:57.885046208 +0100
+diff -uNr orig/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting/Identity.cs patched/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting/Identity.cs
+--- orig/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting/Identity.cs       2012-04-12 16:49:11.000000000 +0400
++++ patched/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting/Identity.cs    2012-10-18 14:07:43.000000000 +0400
 @@ -36,6 +36,7 @@
- 
+
  namespace System.Runtime.Remoting
  {
-+	[Serializable]
- 	internal abstract class Identity
- 	{
- 		// An Identity object holds remoting information about
-diff -uNr orig/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/ArgInfo.cs openpetra/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/ArgInfo.cs
---- orig/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/ArgInfo.cs	2012-04-12 13:49:11.000000000 +0100
-+++ openpetra/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/ArgInfo.cs	2012-08-20 08:24:27.709045214 +0100
++       [Serializable]
+        internal abstract class Identity
+        {
+                // An Identity object holds remoting information about
+diff -uNr orig/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/ArgInfo.cs patched/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/ArgInfo.cs
+--- orig/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/ArgInfo.cs      2012-04-12 16:49:11.000000000 +0400
++++ patched/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/ArgInfo.cs   2012-10-18 14:07:43.000000000 +0400
 @@ -36,6 +36,7 @@
  {
- 	internal enum ArgInfoType : byte { In, Out };
- 
-+	[Serializable]
- 	internal class ArgInfo
- 	{
- 		int[] _paramMap;
-diff -uNr orig/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodCall.cs openpetra/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodCall.cs
---- orig/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodCall.cs	2012-04-12 13:49:11.000000000 +0100
-+++ openpetra/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodCall.cs	2012-08-20 08:10:22.561073372 +0100
+        internal enum ArgInfoType : byte { In, Out };
+
++       [Serializable]
+        internal class ArgInfo
+        {
+                int[] _paramMap;
+diff -uNr orig/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodCall.cs patched/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodCall.cs
+--- orig/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodCall.cs   2012-04-12 16:49:11.000000000 +0400
++++ patched/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodCall.cs        2012-10-18 14:07:43.000000000 +0400
 @@ -312,6 +312,13 @@
- 				}
- 
- 				Type requestType = CastTo (_typeName, type);
-+				// Special behaviour for OpenPetra: need this for cross domain marshalling
-+				if ((requestType == null) && type.FullName.EndsWith("CrossDomainMarshaller")) {
-+					requestType = Type.GetType(_typeName);
-+					_methodBase = RemotingServices.GetMethodBaseFromName (requestType, _methodName, _methodSignature);
-+					return;
-+				}
+                                }
+
+                                Type requestType = CastTo (_typeName, type);
++                               // Special behaviour for OpenPetra: need this for cross domain marshalling
++                               if ((requestType == null) && type.FullName.EndsWith("CrossDomainMarshaller")) {
++                                       requestType = Type.GetType(_typeName);
++                                       _methodBase = RemotingServices.GetMethodBaseFromName (requestType, _methodName, _methodSignature);
++                                       return;
++                               }
 +
- 				if (requestType == null)
- 					throw new RemotingException ("Cannot cast from client type '" + _typeName + "' to server type '" + type.FullName + "'");
- 
-diff -uNr orig/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodReturnDictionary.cs openpetra/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodReturnDictionary.cs
---- orig/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodReturnDictionary.cs	2012-04-12 13:49:11.000000000 +0100
-+++ openpetra/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodReturnDictionary.cs	2012-08-20 08:02:22.721089362 +0100
+                                if (requestType == null)
+                                        throw new RemotingException ("Cannot cast from client type '" + _typeName + "' to server type '" + type.FullName + "'");
+
+diff -uNr orig/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodReturnDictionary.cs patched/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodReturnDictionary.cs
+--- orig/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodReturnDictionary.cs       2012-04-12 16:49:11.000000000 +0400
++++ patched/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/MethodReturnDictionary.cs    2012-10-18 14:09:21.000000000 +0400
 @@ -33,6 +33,7 @@
- 
+
  namespace System.Runtime.Remoting.Messaging
  {
-+	[Serializable]
- 	internal class MethodReturnDictionary : MethodDictionary
- 	{
- 		public static string[] InternalReturnKeys = new string[] {"__Uri", "__MethodName", "__TypeName", "__MethodSignature", "__OutArgs", "__Return", "__CallContext"};
-diff -uNr orig/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/ReturnMessage.cs openpetra/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/ReturnMessage.cs
---- orig/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/ReturnMessage.cs	2012-04-12 13:49:11.000000000 +0100
-+++ openpetra/mono-2.11.3/mcs/class/corlib/System.Runtime.Remoting.Messaging/ReturnMessage.cs	2012-08-20 08:13:33.453067013 +0100
++[Serializable]
+        internal class MethodReturnDictionary : MethodDictionary
+        {
+                public static string[] InternalReturnKeys = new string[] {"__Uri", "__MethodName", "__TypeName", "__MethodSignature", "__OutArgs", "__Return", "__CallContext"};
+diff -uNr orig/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/ReturnMessage.cs patched/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/ReturnMessage.cs
+--- orig/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/ReturnMessage.cs        2012-04-12 16:49:11.000000000 +0400
++++ patched/mono-2.11.4/mcs/class/corlib/System.Runtime.Remoting.Messaging/ReturnMessage.cs     2012-10-18 14:07:43.000000000 +0400
 @@ -38,6 +38,7 @@
- namespace System.Runtime.Remoting.Messaging 
+ namespace System.Runtime.Remoting.Messaging
  {
- 	[System.Runtime.InteropServices.ComVisible (true)]
-+	[Serializable]
- 	public class ReturnMessage : IMethodReturnMessage, IMethodMessage, IMessage, IInternalMessage 
- 	{
- 		object[] _outArgs;
+        [System.Runtime.InteropServices.ComVisible (true)]
++       [Serializable]
+        public class ReturnMessage : IMethodReturnMessage, IMethodMessage, IMessage, IInternalMessage
+        {
+                object[] _outArgs;

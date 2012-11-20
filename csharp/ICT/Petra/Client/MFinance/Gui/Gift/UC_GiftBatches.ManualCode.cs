@@ -43,6 +43,8 @@ using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using System.Collections.Generic;
 using Ict.Petra.Shared.MPartner;
+using Ict.Common.Data;
+using Ict.Common.Printing;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -552,7 +554,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
-            ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, false);
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, false);
+            }
         }
 
         /// <summary>
@@ -745,7 +750,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Print a receipt for each gift (ideally each donor) in the batch
+        /// Print a receipt for each gift (one page for each donor) in the batch
         /// </summary>
         /// <param name="AGiftTDS"></param>
         private void PrintGiftBatchReceipts(GiftBatchTDS AGiftTDS)
@@ -757,6 +762,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftTable.GetBatchNumberDBName(), GiftBatchRow.BatchNumber);
             String ReceiptedDonorsList = "";
             List <Int32>ReceiptedGiftTransactions = new List <Int32>();
+            SortedList <Int64, AGiftTable>GiftsPerDonor = new SortedList <Int64, AGiftTable>();
 
             foreach (DataRowView rv in AGiftTDS.AGift.DefaultView)
             {
@@ -773,36 +779,59 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     out EmailGiftStatement,
                     out AnonymousDonor);
 
-                String DonorShortName;
-                TPartnerClass DonorClass;
-                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(GiftRow.DonorKey, out DonorShortName, out DonorClass);
-                DonorShortName = Calculations.FormatShortName(DonorShortName, eShortNameFormat.eReverseShortname);
-
                 if (ReceiptEachGift)
                 {
-                    string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintGiftReceipt(
-                        GiftBatchRow.LedgerNumber,
-                        GiftBatchRow.BatchNumber,
-                        GiftRow.GiftTransactionNumber,
-                        DonorShortName,
-                        GiftRow.DonorKey,
-                        DonorClass,
-                        GiftRow.Reference,
-                        GiftBatchRow.CurrencyCode,
-                        GiftBatchRow.DateCreated.Value);
+                    // I want to print a receipt for this gift,
+                    // but if there's already one queued for this donor,
+                    // I'll add this gift onto the existing receipt.
 
-                    TFrmReceiptControl.PrintSinglePageLetter(HtmlDoc);
-                    ReceiptedDonorsList += (DonorShortName + "\r\n");
-                    ReceiptedGiftTransactions.Add(GiftRow.GiftTransactionNumber);
+                    if (!GiftsPerDonor.ContainsKey(GiftRow.DonorKey))
+                    {
+                        GiftsPerDonor.Add(GiftRow.DonorKey, new AGiftTable());
+                    }
+
+                    AGiftRow NewRow = GiftsPerDonor[GiftRow.DonorKey].NewRowTyped();
+                    DataUtilities.CopyAllColumnValues(GiftRow, NewRow);
+                    GiftsPerDonor[GiftRow.DonorKey].Rows.Add(NewRow);
                 }  // if receipt required
 
             } // foreach gift
+
+            String HtmlDoc = "";
+
+            foreach (Int64 DonorKey in GiftsPerDonor.Keys)
+            {
+                String DonorShortName;
+                TPartnerClass DonorClass;
+                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(DonorKey, out DonorShortName, out DonorClass);
+                DonorShortName = Calculations.FormatShortName(DonorShortName, eShortNameFormat.eReverseShortname);
+
+                string HtmlPage = TRemote.MFinance.Gift.WebConnectors.PrintGiftReceipt(
+                    GiftBatchRow.CurrencyCode,
+                    GiftBatchRow.DateCreated.Value,
+                    DonorShortName,
+                    DonorKey,
+                    DonorClass,
+                    GiftsPerDonor[DonorKey]
+                    );
+
+                TFormLettersTools.AttachNextPage(ref HtmlDoc, HtmlPage);
+                ReceiptedDonorsList += (DonorShortName + "\r\n");
+
+                foreach (AGiftRow GiftRow in GiftsPerDonor[DonorKey].Rows)
+                {
+                    ReceiptedGiftTransactions.Add(GiftRow.GiftTransactionNumber);
+                }
+            }
+
+            TFormLettersTools.CloseDocument(ref HtmlDoc);
+            TFrmReceiptControl.PreviewOrPrint(HtmlDoc);
 
             if (ReceiptedGiftTransactions.Count > 0)
             {
                 if (MessageBox.Show(
                         Catalog.GetString(
-                            "Please check that receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +
+                            "Press OK if receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +
                         ReceiptedDonorsList,
 
                         Catalog.GetString("Receipt Printing"),
@@ -830,6 +859,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void PostBatch(System.Object sender, EventArgs e)
         {
+            if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+
             TVerificationResultCollection Verifications;
 
             if (FPetraUtilsObject.HasChanges)
@@ -853,7 +887,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             // ask if the user really wants to post the batch
-            if (MessageBox.Show(Catalog.GetString("Do you really want to post this gift batch?"), Catalog.GetString("Confirm posting of Gift Batch"),
+            if (MessageBox.Show(String.Format(Catalog.GetString("Do you really want to post gift batch {0}?"),
+                        FPreviouslySelectedDetailRow.BatchNumber),
+                    Catalog.GetString("Confirm posting of Gift Batch"),
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
             {
                 return;
@@ -862,9 +898,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Verifications = new TVerificationResultCollection();
 
             Thread postingThread = new Thread(() => PostGiftBatch(out Verifications));
-            postingThread.Start();
 
-            TProgressDialog dialog = new TProgressDialog();
+            TProgressDialog dialog = new TProgressDialog(postingThread);
 
             dialog.ShowDialog();
 
@@ -917,7 +952,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ReverseGiftBatch(System.Object sender, System.EventArgs e)
         {
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ShowRevertAdjustForm("ReverseGiftBatch");
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ReverseGiftBatch(null, null);     //.ShowRevertAdjustForm("ReverseGiftBatch");
+        }
+
+        /// <summary>
+        /// Update the Batch total from the transactions values
+        /// </summary>
+        /// <param name="ABatchTotal"></param>
+        /// <param name="ABatchNumber"></param>
+        public void UpdateBatchTotal(decimal ABatchTotal, Int32 ABatchNumber)
+        {
+            if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+            else if (FPreviouslySelectedDetailRow.BatchNumber == ABatchNumber)
+            {
+                FPreviouslySelectedDetailRow.BatchTotal = ABatchTotal;
+                FPetraUtilsObject.HasChanges = true;
+            }
         }
 
         /// <summary>
@@ -977,17 +1030,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPreviouslySelectedDetailRow.CurrencyCode,
                     FPreviouslySelectedDetailRow.GlEffectiveDate);
 
-                RefreshCurrencyAndExchangeRate();
+                RefreshCurrencyAndExchangeRate(true);
             }
         }
 
-        private void RefreshCurrencyAndExchangeRate()
+        private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)
         {
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
+
+            if (AFromUserAction && btnGetSetExchangeRate.Enabled)
+            {
+                btnGetSetExchangeRate.Focus();
+            }
         }
 
         private void SetExchangeRateValue(Object sender, EventArgs e)
@@ -1051,14 +1109,83 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
-            {
-                txtDetailHashTotal.NumberValueDecimal = 0m;
-                ARow.HashTotal = 0m;
-            }
+            //Hash total special case in view of the textbox handling
+            ParseHashTotal(ARow);
 
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
+        }
+
+        private void ParseHashTotal(AGiftBatchRow ARow)
+        {
+            decimal correctHashValue;
+            string hashTotal = txtDetailHashTotal.Text.Trim();
+            string hashNumericPart = string.Empty;
+            decimal hashDecimalVal;
+            Int32 hashTotalIndexOfLastNumeric = -1;
+            bool isNumericVal;
+
+            if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+            {
+                correctHashValue = 0m;
+            }
+            else if (hashTotal.Contains(" "))
+            {
+                hashNumericPart = hashTotal.Substring(0, hashTotal.IndexOf(' '));
+
+                if (!Decimal.TryParse(hashNumericPart, out hashDecimalVal))
+                {
+                    correctHashValue = 0m;
+                }
+                else
+                {
+                    correctHashValue = hashDecimalVal;
+                }
+            }
+            else
+            {
+                hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+
+                if (hashTotalIndexOfLastNumeric > -1)
+                {
+                    hashNumericPart = hashTotal.Substring(0, hashTotalIndexOfLastNumeric + 1);
+                    isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
+
+                    if (!isNumericVal)
+                    {
+                        correctHashValue = 0m;
+                    }
+                    else
+                    {
+                        correctHashValue = hashDecimalVal;
+                    }
+                }
+                else
+                {
+                    correctHashValue = 0m;
+                }
+            }
+
+            if (txtDetailHashTotal.NumberValueDecimal != correctHashValue)
+            {
+                txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            }
+
+            if (ARow.HashTotal != correctHashValue)
+            {
+                ARow.HashTotal = correctHashValue;
+            }
+        }
+
+        /// <summary>
+        /// Focus on grid
+        /// </summary>
+        public void FocusGrid()
+        {
+            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            {
+                grdDetails.Focus();
+            }
         }
     }
 }

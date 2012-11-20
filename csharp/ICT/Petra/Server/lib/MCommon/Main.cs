@@ -272,7 +272,7 @@ namespace Ict.Petra.Server.MCommon
         DataTable FPageDataTable;
 
         /// <summary>Last retrieved page</summary>
-        System.Int16 FLastRetrievedPage;
+        System.Int32 FLastRetrievedPage = -1;
 
         /// <summary>Property value.</summary>
         System.Int32 FTotalRecords = -1;
@@ -427,7 +427,7 @@ namespace Ict.Petra.Server.MCommon
  *          }
  */
             // use temp table
-            FTmpDataTable.TableName = FFindParameters.FPagedTable + "_for_paging";
+            FTmpDataTable.TableName = FFindParameters.FSearchName;
             try
             {
                 // Fill temporary table with query results (all records)
@@ -453,11 +453,12 @@ namespace Ict.Petra.Server.MCommon
 //                }
             }
 
-            if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
-            {
-                PerformColumnNameMapping();
-            }
-
+/*
+ *          if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
+ *          {
+ *              PerformColumnNameMapping();
+ *          }
+ */
             try
             {
 //              FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
@@ -489,7 +490,7 @@ namespace Ict.Petra.Server.MCommon
 
             TLogging.LogAtLevel(7, "TPagedDataSet  FDataAdapter.Fill finished. FTotalRecords: " + FTotalRecords.ToString());
             FPageDataTable = FTmpDataTable.Clone();
-            FPageDataTable.TableName = "PagedTable";
+            FPageDataTable.TableName = FFindParameters.FSearchName;
             FAsyncExecProgress.ProgressInformation = "Query executed.";
             FAsyncExecProgress.ProgressPercentage = 100;
             FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Finished;
@@ -515,7 +516,7 @@ namespace Ict.Petra.Server.MCommon
                 System.Threading.Thread.Sleep(500);
             }
 
-            if (((APage != FLastRetrievedPage) || (APage == 0)) && (APage >= 0))
+            if (APage != FLastRetrievedPage)
             {
                 FLastRetrievedPage = APage;
 
@@ -610,26 +611,27 @@ namespace Ict.Petra.Server.MCommon
             }
         }
 
-        /// <summary>
-        /// Creates a mapping between the names of the fields in the DB and how they
-        /// should be named in the resulting DataTable.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private void PerformColumnNameMapping()
-        {
-            DataTableMapping AliasNames;
-            IDictionaryEnumerator ColumNameMappingEnumerator;
-
-            AliasNames = FDataAdapter.TableMappings.Add(FFindParameters.FPagedTable + "_for_paging", FFindParameters.FPagedTable + "_for_paging");
-            ColumNameMappingEnumerator = FFindParameters.FColumNameMapping.GetEnumerator();
-
-            while (ColumNameMappingEnumerator.MoveNext())
-            {
-                AliasNames.ColumnMappings.Add(ColumNameMappingEnumerator.Key.ToString(), ColumNameMappingEnumerator.Value.ToString());
-            }
-        }
-
+/*
+ *      /// <summary>
+ *      /// Creates a mapping between the names of the fields in the DB and how they
+ *      /// should be named in the resulting DataTable.
+ *      ///
+ *      /// </summary>
+ *      /// <returns>void</returns>
+ *      private void PerformColumnNameMapping()
+ *      {
+ *          DataTableMapping AliasNames;
+ *          IDictionaryEnumerator ColumNameMappingEnumerator;
+ *
+ *          AliasNames = FDataAdapter.TableMappings.Add(FTmpDataTable.TableName, FTmpDataTable.TableName);
+ *          ColumNameMappingEnumerator = FFindParameters.FColumNameMapping.GetEnumerator();
+ *
+ *          while (ColumNameMappingEnumerator.MoveNext())
+ *          {
+ *              AliasNames.ColumnMappings.Add(ColumNameMappingEnumerator.Key.ToString(), ColumNameMappingEnumerator.Value.ToString());
+ *          }
+ *      }
+ */
         /// <summary>
         /// Cancels an asynchronously executing query. This might take some time;
         /// therefore always execute this procedure in a separate Thread!
@@ -677,6 +679,9 @@ namespace Ict.Petra.Server.MCommon
 
             /// Table part of the SQL SELECT statement
             internal String FPagedTable;
+
+            /// Set this to the name of the search
+            public String FSearchName;
 
             /// WHERE part of the SQL SELECT statement
             internal String FPagedTableWhereCriteria;

@@ -176,6 +176,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             //A list of table columns that should contain the word Detail (separated by a |)
             //  Just add accordingly
             TableFields.Add("AGiftDetail|DetailNumber");
+            TableFields.Add("ARecurringGiftDetail|DetailNumber");
 
             return TableFields.Contains(ATableName + "|" + AFieldName);
         }
@@ -278,6 +279,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 AssignEventHandlerToControl(writer, ctrl, "Selection.FocusRowEntered", "SourceGrid.RowEventHandler",
                     ctrl.GetAttribute("ActionFocusRow"));
+            }
+
+            if (ctrl.HasAttribute("ActionEnterKeyPressed"))
+            {
+                AssignEventHandlerToControl(writer, ctrl, "EnterKeyPressed", "TKeyPressedEventHandler",
+                    ctrl.GetAttribute("ActionEnterKeyPressed"));
             }
 
             if (ctrl.HasAttribute("SortableHeaders"))

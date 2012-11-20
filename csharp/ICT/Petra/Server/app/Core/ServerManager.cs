@@ -65,6 +65,8 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>System wide defaults</summary>
         private TSystemDefaultsCache FSystemDefaultsCache;
 
+        private IUserManager FUserManager;
+
         /// <summary>
         /// Initialises Logging and parses Server settings from different sources.
         /// </summary>
@@ -80,13 +82,6 @@ namespace Ict.Petra.Server.App.Core
             TCacheableTablesManager.InitializeUnit();
             TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
 
-            TClientManager.InitializeStaticVariables(FSystemDefaultsCache,
-                TCacheableTablesManager.GCacheableTablesManager,
-                new TUserManager(),
-                new TErrorLog(),
-                new TMaintenanceLogonMessage(),
-                new TClientAppDomainConnection());
-
             Assembly SysManAssembly = Assembly.Load("Ict.Petra.Server.lib.MSysMan");
             Type ImportExportType = SysManAssembly.GetType("Ict.Petra.Server.MSysMan.ImportExport.TImportExportManager");
             FImportExportManager = (IImportExportManager)Activator.CreateInstance(ImportExportType,
@@ -94,6 +89,20 @@ namespace Ict.Petra.Server.App.Core
                 null,
                 null,
                 null);
+
+            Type UserManagement = SysManAssembly.GetType("Ict.Petra.Server.MSysMan.Maintenance.UserManagement.TUserManager");
+            FUserManager = (IUserManager)Activator.CreateInstance(UserManagement,
+                (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
+                null,
+                null,
+                null);
+
+            TClientManager.InitializeStaticVariables(FSystemDefaultsCache,
+                TCacheableTablesManager.GCacheableTablesManager,
+                FUserManager,
+                new TErrorLog(),
+                new TMaintenanceLogonMessage(),
+                new TClientAppDomainConnection());
         }
 
         private List <TDataBase>FDBConnections = new List <TDataBase>();
@@ -188,6 +197,14 @@ namespace Ict.Petra.Server.App.Core
         public override bool RestoreDatabaseFromYmlGZ(string AYmlGzData)
         {
             return FImportExportManager.RestoreDatabaseFromYmlGZ(AYmlGzData);
+        }
+
+        /// <summary>
+        /// AddUser
+        /// </summary>
+        public override bool AddUser(string AUserID)
+        {
+            return FUserManager.AddUser(AUserID);
         }
     }
 }

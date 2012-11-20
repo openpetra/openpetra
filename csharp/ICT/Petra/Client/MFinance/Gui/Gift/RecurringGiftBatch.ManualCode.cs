@@ -203,6 +203,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
+                this.ucoBatches.FocusGrid();
             }
             else if (ATab == eGiftTabs.Transactions)
             {
@@ -217,6 +218,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         this.tabGiftBatch.SelectedTab = this.tpgTransactions;
                     }
+
+                    this.ucoTransactions.FocusGrid();
                 }
             }
         }

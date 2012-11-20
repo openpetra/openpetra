@@ -25,10 +25,10 @@ RootNode:
             Controls: [pnlTaskArea, lstFolders]
             BackColor: System.Drawing.Color.FromArgb(94, 136, 194)
             Dock: Fill
-            Padding: 3,3,3,3
+            Padding: 2,3,2,2
         pnlTaskArea:
             Controls: [pnlTop, dsbContent]
-            Padding: 4,0,1,1
+            Padding: 3,0,1,1
             Dock: Fill
         pnlTop:
             Height: 27

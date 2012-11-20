@@ -843,7 +843,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool AddressesOrRelationsChanged = false;
             System.Int32 ChangedColumns;
 #if SHOWCHANGES
-            System.Int32 Counter;
             String DebugMessage;
 #endif
 #if DATASETDEBUGGING
@@ -953,13 +952,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                                         DebugMessage = DebugMessage + " --- inserted Row. Column contents:" + Environment.NewLine;
                                     }
 
-                                    for (Counter = 0; Counter <= MaxColumn - 1; Counter += 1)
+                                    for (int Counter1 = 0; Counter1 <= MaxColumn - 1; Counter1 += 1)
                                     {
-                                        if ((InspectDR.RowState == DataRowState.Added) || (InspectDR != InspectDR[Counter, DataRowVersion.Current]))
+                                        if ((InspectDR.RowState == DataRowState.Added) || (InspectDR != InspectDR[Counter1, DataRowVersion.Current]))
                                         {
                                             ChangedColumns = ChangedColumns + 1;
-                                            DebugMessage = DebugMessage + "  " + (InspectDT.Columns[Counter].ColumnName).ToString() + ": " +
-                                                           InspectDR[Counter, DataRowVersion.Current].ToString() + Environment.NewLine;
+                                            DebugMessage = DebugMessage + "  " + (InspectDT.Columns[Counter1].ColumnName).ToString() + ": " +
+                                                           InspectDR[Counter1, DataRowVersion.Current].ToString() + Environment.NewLine;
                                         }
                                     }
 
@@ -1106,7 +1105,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 #if DATASETDEBUGGING
                             MessageBox.Show("After CleanupAddressesBeforeMerge");
 
-                            if (SubmitDS.PLocation.Rows.Count > 0)
+                            if ((SubmitDS.PLocation != null)
+                                && (SubmitDS.PLocation.Rows.Count > 0))
                             {
                                 MessageBox.Show(
                                     "Location[0] LocationKey: " + SubmitDS.PLocation[0].LocationKey.ToString() +
@@ -1158,6 +1158,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                      ToString() + "(); PSiteKey: " +
                                                      AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
                                                                                                                           GetSiteKeyDBName()].
+                                                     ToString() + "(); Modification TimeStamp: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetModificationIdDBName()].
                                                      ToString() + "\r\n";
                                 }
                             }
@@ -1177,7 +1180,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                      AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
                                         PPartnerLocationTable.GetSiteKeyDBName()].ToString() + "(); PPartnerKey: " +
                                                      AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
-                                        PPartnerLocationTable.GetPartnerKeyDBName()].ToString() + "\r\n";
+                                        PPartnerLocationTable.GetPartnerKeyDBName()].ToString() + "(); Modification TimeStamp: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetModificationIdDBName()].ToString() + "\r\n";
                                 }
 
                                 MessageBox.Show(TmpDebugString, "DEBUG: PLocation / PPartnerLocation local contents  [#1]");
@@ -1202,6 +1207,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                      ToString() + "(); PSiteKey: " +
                                                      AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
                                                                                                                           GetSiteKeyDBName()].
+                                                     ToString() + "(); Modification TimeStamp: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetModificationIdDBName()].
                                                      ToString() + "\r\n";
                                 }
                             }
@@ -1221,10 +1229,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                      AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
                                         PPartnerLocationTable.GetSiteKeyDBName()].ToString() + "(); PPartnerKey: " +
                                                      AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
-                                        PPartnerLocationTable.GetPartnerKeyDBName()].ToString() + "(); RowError: " +
-                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowError.ToString()
-                                                     +
-                                                     "\r\n";
+                                        PPartnerLocationTable.GetPartnerKeyDBName()].ToString() + "(); Modification TimeStamp: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetModificationIdDBName()].ToString() + "\r\n";
                                 }
 
                                 MessageBox.Show(TmpDebugString, "DEBUG: PLocation / PPartnerLocation local contents  [#2]");
@@ -1318,12 +1325,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                         case TSubmitChangesResult.scrInfoNeeded:
                             this.Cursor = Cursors.Default;
 #if DATASETDEBUGGING
-                            for (int Counter = 0; Counter < FResponseDS.Tables.Count; Counter++)
+                            for (int Counter2 = 0; Counter2 < FResponseDS.Tables.Count; Counter2++)
                             {
                                 MessageBox.Show(
-                                    "Table #" + Counter.ToString() + "'s name is " + FResponseDS.Tables[Counter].TableName + ". It has " +
-                                    FResponseDS.Tables[Counter].Rows.Count.ToString() + " Rows. Type: " +
-                                    FResponseDS.Tables[Counter].GetType().ToString());
+                                    "Table #" + Counter2.ToString() + "'s name is " + FResponseDS.Tables[Counter2].TableName + ". It has " +
+                                    FResponseDS.Tables[Counter2].Rows.Count.ToString() + " Rows. Type: " +
+                                    FResponseDS.Tables[Counter2].GetType().ToString());
                             }
 
                             if (FResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))

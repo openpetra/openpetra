@@ -1695,6 +1695,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
         private static Int64 GetRecipientLedgerNumber(GiftBatchTDS AMainDS, Int64 partnerKey)
         {
+            if (partnerKey == 0)
+            {
+                return 0;
+            }
+
             // TODO check pm_staff_data for commitments
 
             PFamilyRow familyRow;

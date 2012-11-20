@@ -49,7 +49,7 @@ namespace Ict.Petra.Client.CommonDialogs
         /// <summary>
         /// constructor
         /// </summary>
-        public TProgressDialog() : base()
+        public TProgressDialog(Thread t) : base()
         {
             //
             // Required for Windows Form Designer support
@@ -61,6 +61,9 @@ namespace Ict.Petra.Client.CommonDialogs
             this.btnCancel.Text = Catalog.GetString("Cancel");
             this.Text = Catalog.GetString("Progress Dialog");
             #endregion
+
+            TRemote.MCommon.WebConnectors.Reset();
+            t.Start();
             timer1.Start();
         }
 

@@ -56,51 +56,76 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                 }
 
                 string SummaryCostCentres = TAppSettingsManager.GetValue("SummaryCostCentres", "4300S");
-                int FinancialYear = TAppSettingsManager.GetInt32("FinancialYearNumber", 0);
+                string IgnoreCostCentres = TAppSettingsManager.GetValue("IgnoreCostCentres", "xyz");
+                string IgnoreAccounts = TAppSettingsManager.GetValue("IgnoreAccounts", "4300S,GIFT");
+                string IncludeAccounts = TAppSettingsManager.GetValue("IncludeAccounts", "4310");
+                string FinancialYears = TAppSettingsManager.GetValue("FinancialYearNumber", "0");
+                string IgnoreTransactionsByReference = TAppSettingsManager.GetValue("IgnoreReference", "L1,L2,L3,L4,L5,L6,L7,L8,L9,L10,L11,L12");
                 int FirstFinancialYear = TAppSettingsManager.GetInt32("FirstFinancialYear", DateTime.Now.Year);
                 int LedgerNumber = TAppSettingsManager.GetInt32("LedgerNumber", 43);
                 char CSVSeparator = TAppSettingsManager.GetValue("CSVSeparator", ";")[0];
                 string NewLine = "\r\n";
                 string culture = TAppSettingsManager.GetValue("culture", "de-DE");
-                string operation = TAppSettingsManager.GetValue("operation", "all");
 
                 string ReportingCostCentres =
-                    TFinanceReportingWebConnector.GetReportingCostCentres(LedgerNumber, SummaryCostCentres);
+                    TFinanceReportingWebConnector.GetReportingCostCentres(LedgerNumber, SummaryCostCentres, IgnoreCostCentres);
+
+                if (TAppSettingsManager.GetBoolean("IgnorePersonCostCentres", true))
+                {
+                    ReportingCostCentres = TGDPdUExportAccountsAndCostCentres.WithoutPersonCostCentres(LedgerNumber, ReportingCostCentres);
+                }
+
+                IgnoreAccounts =
+                    TFinanceReportingWebConnector.GetReportingAccounts(LedgerNumber, IgnoreAccounts, IncludeAccounts);
 
                 // set decimal separator, and thousands separator
                 Ict.Common.Catalog.SetCulture(culture);
 
-                string OutputPathForYear = Path.Combine(OutputPath, (FirstFinancialYear + FinancialYear).ToString());
+                List <string>CostCentresInvolved = new List <string>();
+                List <string>AccountsInvolved = new List <string>();
 
-                if (!Directory.Exists(OutputPathForYear))
-                {
-                    Directory.CreateDirectory(OutputPathForYear);
-                }
+                SortedList <string, string>TaxAnalysisAttributes = TGDPdUExportTransactions.GetTaxAnalysisAttributes();
 
-                if ((operation == "all") || (operation == "costcentre"))
+                foreach (string FinancialYearString in FinancialYears.Split(new char[] { ',' }))
                 {
-                    TGDPdUExportAccountsAndCostCentres.ExportCostCentres(OutputPath, CSVSeparator, NewLine, LedgerNumber, ReportingCostCentres);
-                }
+                    Int32 FinancialYear = Convert.ToInt32(FinancialYearString);
 
-                if ((operation == "all") || (operation == "account"))
-                {
-                    TGDPdUExportAccountsAndCostCentres.ExportAccounts(OutputPath, CSVSeparator, NewLine, LedgerNumber, ReportingCostCentres);
-                }
+                    string OutputPathForYear = Path.Combine(OutputPath, (FirstFinancialYear + FinancialYear).ToString());
 
-                if ((operation == "all") || (operation == "transaction"))
-                {
+                    if (!Directory.Exists(OutputPathForYear))
+                    {
+                        Directory.CreateDirectory(OutputPathForYear);
+                    }
+
                     TGDPdUExportTransactions.ExportGLTransactions(OutputPathForYear,
                         CSVSeparator,
                         NewLine,
                         LedgerNumber,
                         FinancialYear,
+                        ReportingCostCentres,
+                        IgnoreAccounts,
+                        IgnoreTransactionsByReference,
+                        TaxAnalysisAttributes,
+                        ref CostCentresInvolved,
+                        ref AccountsInvolved);
+
+                    TGDPdUExportBalances.ExportGLBalances(OutputPathForYear, CSVSeparator, NewLine, LedgerNumber,
+                        FinancialYear, ReportingCostCentres,
+                        IgnoreAccounts);
+
+                    TGDPdUExportAccountsPayable.Export(OutputPathForYear, CSVSeparator, NewLine, LedgerNumber, FinancialYear, ReportingCostCentres);
+                    TGDPdUExportParticipants.Export(OutputPathForYear, CSVSeparator, NewLine,
+                        LedgerNumber, FinancialYear,
                         ReportingCostCentres);
                 }
 
-                if ((operation == "all") || (operation == "balance"))
-                {
-                    TGDPdUExportBalances.ExportGLBalances(OutputPathForYear, CSVSeparator, NewLine, LedgerNumber, FinancialYear, ReportingCostCentres);
-                }
+                TGDPdUExportAccountsAndCostCentres.ExportCostCentres(OutputPath, CSVSeparator, NewLine, LedgerNumber,
+                    CostCentresInvolved);
+
+                TGDPdUExportAccountsAndCostCentres.ExportAccounts(OutputPath, CSVSeparator, NewLine, LedgerNumber,
+                    AccountsInvolved);
+
+                TGDPdUExportTransactions.ExportTaxAnalysisAttributes(OutputPath, CSVSeparator, NewLine, TaxAnalysisAttributes);
             }
             catch (Exception e)
             {

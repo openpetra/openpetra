@@ -42,8 +42,8 @@ namespace Ict.Common.Remoting.Client
         private static Boolean UDelayedDataLoading = false;
         private static String UReportingPathReportSettings = "";
         private static String UReportingPathReportUserSettings = "";
-        private static Int16 UServerPollIntervalInSeconds = 0;
-        private static Int16 UServerObjectKeepAliveIntervalInSeconds = 0;
+        private static Int32 UServerPollIntervalInSeconds = 0;
+        private static Int32 UServerObjectKeepAliveIntervalInSeconds = 0;
         private static String URemoteDataDirectory = "";
         private static String URemoteTmpDirectory = "";
         private static Boolean URunAsStandalone = false;
@@ -134,7 +134,7 @@ namespace Ict.Common.Remoting.Client
         }
 
         /// <summary>The interval in seconds in which the PetraClient checks for ClientTasks</summary>
-        public static System.Int16 ServerPollIntervalInSeconds
+        public static System.Int32 ServerPollIntervalInSeconds
         {
             get
             {
@@ -143,7 +143,7 @@ namespace Ict.Common.Remoting.Client
         }
 
         /// <summary>The interval in seconds in which the PetraClient keeps the remoted Objects on the PetraServer alive</summary>
-        public static System.Int16 ServerObjectKeepAliveIntervalInSeconds
+        public static System.Int32 ServerObjectKeepAliveIntervalInSeconds
         {
             get
             {
@@ -403,8 +403,8 @@ namespace Ict.Common.Remoting.Client
             UReportingPathReportSettings = GetUserPath("Reporting.PathReportSettings", "");
             UReportingPathReportUserSettings = GetUserPath("Reporting.PathReportUserSettings", "");
 
-            UServerPollIntervalInSeconds = TAppSettingsManager.GetInt16("ServerPollIntervalInSeconds", 5);
-            UServerObjectKeepAliveIntervalInSeconds = TAppSettingsManager.GetInt16("ServerObjectKeepAliveIntervalInSeconds", 10);
+            UServerPollIntervalInSeconds = TAppSettingsManager.GetInt32("ServerPollIntervalInSeconds", 5);
+            UServerObjectKeepAliveIntervalInSeconds = TAppSettingsManager.GetInt32("ServerObjectKeepAliveIntervalInSeconds", 10);
 
             URemoteDataDirectory = TAppSettingsManager.GetValue("RemoteDataDirectory");
             URemoteTmpDirectory = TAppSettingsManager.GetValue("RemoteTmpDirectory");
