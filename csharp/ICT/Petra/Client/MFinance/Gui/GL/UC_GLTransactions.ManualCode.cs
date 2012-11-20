@@ -375,6 +375,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        private void TransDateChanged(object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            try
+            {
+                DateTime dateValue;
+
+                string aDate = dtpDetailTransactionDate.Date.ToString();
+
+                if (!DateTime.TryParse(aDate, out dateValue))
+                {
+                	dtpDetailTransactionDate.Date = GetBatchRow().DateEffective;
+                }
+            }
+            catch
+            {
+                //Do nothing
+            }
+        }
+
         /// <summary>
         /// update amount in other currencies (optional) and recalculate all totals for current batch and journal
         /// </summary>
@@ -545,21 +569,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ValidateDataDetailsManual(ATransactionRow ARow)
         {
-            //TODO: Code for manual data validation. Change below as needed
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+        	if ((ARow == null) || (GetBatchRow() == null) || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
 
-//            if (ARow != null)
-//            {
-//				//some local validation e.g.
-//              if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
-//                {
-//                    txtDetailHashTotal.NumberValueDecimal = 0m;
-//                    ARow.HashTotal = 0m;
-//                }
-//            }
+        	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-//			TSharedFinanceValidation_GL.ValidateGLDetailManual(this, ARow, ref VerificationResultCollection,
-//                FValidationControlsDict);
+			//Local validation
+			if (txtDebitAmount.NumberValueDecimal == 0 && txtCreditAmount.NumberValueDecimal == 0)
+			{
+	            TSharedFinanceValidation_GL.ValidateGLDetailManual(this, GetBatchRow(), ARow, txtDebitAmount, ref VerificationResultCollection,
+	                FValidationControlsDict);
+			}
+			else
+			{
+	            TSharedFinanceValidation_GL.ValidateGLDetailManual(this, GetBatchRow(), ARow, null, ref VerificationResultCollection,
+	                FValidationControlsDict);
+			}
+				
         }
 
         /// <summary>
