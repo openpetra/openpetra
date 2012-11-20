@@ -63,12 +63,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// enum to remember which mode to be used for dialog
         /// </summary>
         private TMode FMode;
-        
+
         /// <summary>
         /// return true if dialog action (combine or intersect) was successful
         /// </summary>
         private MExtractMasterTable FExtractMasterTable;
-        
+
         /// <summary>
         /// set dialog mode (combine, intersect or subtract)
         /// </summary>
@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 lblBaseExtract.Height = 0;
                 txtBaseExtract.Hide();
                 lblBaseExtract.Hide();
-                
+
                 pnlTop.Height = pnlTop.Height - ReducedHeight;
                 lblExplanation.Location = new System.Drawing.Point(lblExplanation.Location.X, lblExplanation.Location.Y - ReducedHeight);
             }
@@ -117,9 +117,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // enable grid to react to insert and delete keyboard keys
             grdExtracts.InsertKeyPressed += new TKeyPressedEventHandler(grdExtracts_InsertKeyPressed);
             grdExtracts.DeleteKeyPressed += new TKeyPressedEventHandler(grdExtracts_DeleteKeyPressed);
-            
+
             FExtractMasterTable = new MExtractMasterTable();
-            
+
             grdExtracts.Columns.Clear();
 
             grdExtracts.AddTextColumn("Extract Name", FExtractMasterTable.ColumnExtractName);
@@ -131,7 +131,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             DataView myDataView = FExtractMasterTable.DefaultView;
             myDataView.AllowNew = false;
             grdExtracts.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-            
+
             btnRemove.Enabled = false;
         }
 
@@ -157,7 +157,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // only continue if an extract was selected
             foreach (MExtractMasterRow Row in ExtractMasterTable.Rows)
             {
-                if (!FExtractMasterTable.Rows.Contains (new object[] { Row.ExtractId }))
+                if (!FExtractMasterTable.Rows.Contains(new object[] { Row.ExtractId }))
                 {
                     NewRow = FExtractMasterTable.NewRowTyped();
                     NewRow.ExtractId = Row.ExtractId;
@@ -166,9 +166,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     NewRow.KeyCount = Row.KeyCount;
                     NewRow.CreatedBy = Row.CreatedBy;
                     NewRow.DateCreated = Row.DateCreated;
-                    
+
                     FExtractMasterTable.Rows.Add(NewRow);
-                    
+
                     btnRemove.Enabled = true;
                 }
             }
@@ -186,12 +186,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             if (grdExtracts.SelectedRowIndex() < 0)
             {
                 MessageBox.Show(Catalog.GetString("You need to select an Extract to be removed from the list"),
-                         Catalog.GetString("Remove from List"),
-                         MessageBoxButtons.OK,
-                         MessageBoxIcon.Warning);
+                    Catalog.GetString("Remove from List"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 return;
             }
-            
+
             if ((MessageBox.Show(Catalog.GetString("Do you want to remove the selected Extract from this list?"),
                      Catalog.GetString("Confirm Remove"),
                      MessageBoxButtons.YesNo,
@@ -202,7 +202,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 RowToDelete.Delete();
                 grdExtracts.SelectRowInGrid(nSelectedRow, true);
 
-                // enable/disable "remove button" depending on number of rows in list                
+                // enable/disable "remove button" depending on number of rows in list
                 if (FExtractMasterTable.Rows.Count == 0)
                 {
                     btnRemove.Enabled = false;
@@ -212,9 +212,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     btnRemove.Enabled = true;
                 }
             }
-
         }
-        
+
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (!CanClose())
@@ -237,11 +236,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         /// <param name="AExtractIdList"></param>
         /// <returns>Boolean</returns>
-        public Boolean GetReturnedParameters(out List<Int32> AExtractIdList)
+        public Boolean GetReturnedParameters(out List <Int32>AExtractIdList)
         {
             Boolean ReturnValue = true;
 
-            AExtractIdList = new List<Int32>();
+            AExtractIdList = new List <Int32>();
 
             foreach (DataRow ExtractMasterRow in FExtractMasterTable.Rows)
             {
@@ -258,23 +257,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="ABaseExtractName"></param>
         /// <param name="AExtractIdList"></param>
         /// <returns>Boolean</returns>
-        public Boolean GetReturnedParameters(out String ABaseExtractName, out List<Int32> AExtractIdList)
+        public Boolean GetReturnedParameters(out String ABaseExtractName, out List <Int32>AExtractIdList)
         {
             Boolean ReturnValue = true;
 
             GetReturnedParameters(out AExtractIdList);
 
             ABaseExtractName = txtBaseExtract.Text;
-            
+
             return ReturnValue;
         }
-        
+
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
             String MessageText = "";
             String TitleText = "";
 
-            
             switch (FMode)
             {
                 case TMode.ecisCombineMode:
@@ -298,15 +296,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     if (((MExtractMasterRow)ExtractRow).ExtractName == txtBaseExtract.Text)
                     {
                         MessageBox.Show(Catalog.GetString("You cannot subtract an extract from itself"),
-                                TitleText,
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
+                            TitleText,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                         return;
                     }
                 }
-                
             }
-            
+
             if (FExtractMasterTable.Rows.Count > 0)
             {
                 switch (FMode)
@@ -314,16 +311,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     case TMode.ecisCombineMode:
                         MessageText = Catalog.GetString("Are you sure that you want to combine the extracts in the list?");
                         break;
-    
+
                     case TMode.ecisIntersectMode:
                         MessageText = Catalog.GetString("Are you sure that you want to intersect the extracts in the list?");
                         break;
-    
+
                     case TMode.ecisSubtractMode:
                         MessageText = Catalog.GetString("Are you sure that you want to subtract the extracts in the list from the one at the top?");
                         break;
                 }
-                
+
                 if (MessageBox.Show(MessageText,
                         TitleText,
                         MessageBoxButtons.YesNo,
@@ -337,15 +334,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 // list is empty: nothing to be done
                 MessageText = Catalog.GetString("You have not added any extracts to the list!");
-                
+
                 MessageBox.Show(MessageText,
-                        TitleText,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
+                    TitleText,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
-            
         }
- 
+
         /// <summary>
         /// Event Handler for Grid Event
         /// </summary>

@@ -68,7 +68,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 FAllowMultipleSelect = value;
             }
         }
-        
+
         /// <summary>
         /// show form as dialog with given parameters
         /// </summary>
@@ -82,13 +82,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             clbDetails.ValueChanged += new System.EventHandler(this.GridValueChanged);
             clbDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
-             
+
             // only allow select and close with double click when dialog is single select
             if (!AllowMultipleSelect)
             {
                 this.clbDetails.DoubleClick += new System.EventHandler(this.AcceptExtract);
             }
-            
+
             this.ShowDialog();
 
             return true;
@@ -105,8 +105,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </returns>
         public bool GetResult(out int AExtractId, out String AExtractName, out String AExtractDescription)
         {
-            if (   FResultTable != null
-                && FResultTable.Count > 0)
+            if ((FResultTable != null)
+                && (FResultTable.Count > 0))
             {
                 // use first row (this method should normally only be called for single select dialog)
                 MExtractMasterRow Row = (MExtractMasterRow)FResultTable.Rows[0];
@@ -138,10 +138,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <returns>true if a row was selected
         /// </returns>
         public bool GetResult(out int AExtractId, out String AExtractName, out String AExtractDescription,
-                              out int AKeyCount, out String AExtractCreatedBy, out DateTime AExtractDateCreated)
+            out int AKeyCount, out String AExtractCreatedBy, out DateTime AExtractDateCreated)
         {
-            if (   FResultTable != null
-                && FResultTable.Count > 0)
+            if ((FResultTable != null)
+                && (FResultTable.Count > 0))
             {
                 // use first row (this method should normally only be called for single select dialog)
                 MExtractMasterRow Row = (MExtractMasterRow)FResultTable.Rows[0];
@@ -164,7 +164,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
 
             return AExtractId >= 0;
-
         }
 
         /// <summary>
@@ -184,7 +183,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 return false;
             }
-            
+
             foreach (MExtractMasterRow Row in FResultTable.Rows)
             {
                 NewRow = AExtractMasterTable.NewRowTyped();
@@ -194,13 +193,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 NewRow.KeyCount = Row.KeyCount;
                 NewRow.CreatedBy = Row.CreatedBy;
                 NewRow.DateCreated = Row.DateCreated;
-                
+
                 AExtractMasterTable.Rows.Add(NewRow);
             }
-            
+
             return AExtractMasterTable.Count >= 0;
         }
-        
+
         #endregion
 
         #region Private Methods
@@ -228,7 +227,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             string KeyCountMember = MExtractMasterTable.GetKeyCountDBName();
             string CreatedByMember = MExtractMasterTable.GetCreatedByDBName();
             string DateCreatedMember = MExtractMasterTable.GetDateCreatedDBName();
-            
+
             if (cmbUserCreated.GetSelectedString().Length > 0)
             {
                 AllUsers = false;
@@ -268,20 +267,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             if (FExtractMasterTable != null)
             {
                 DataView view = new DataView(FExtractMasterTable);
-    
-                FDataTable = view.ToTable(true, new string[] { IdMember, NameMember, DescriptionMember, DeletableMember, KeyCountMember, CreatedByMember, DateCreatedMember });
+
+                FDataTable = view.ToTable(true,
+                    new string[] { IdMember, NameMember, DescriptionMember, DeletableMember, KeyCountMember, CreatedByMember, DateCreatedMember });
                 FDataTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
                 clbDetails.Columns.Clear();
-                
+
                 if (FAllowMultipleSelect)
                 {
                     clbDetails.AddCheckBoxColumn("Select", FDataTable.Columns[FCheckedColumnName], 17, false);
                 }
-                clbDetails.AddTextColumn("Extract Name", FDataTable.Columns[NameMember],200);
+
+                clbDetails.AddTextColumn("Extract Name", FDataTable.Columns[NameMember], 200);
                 clbDetails.AddCheckBoxColumn("Deletable", FDataTable.Columns[DeletableMember], 120);
                 clbDetails.AddTextColumn("Key Count", FDataTable.Columns[KeyCountMember], 80);
                 clbDetails.AddTextColumn("Description", FDataTable.Columns[DescriptionMember], 300);
-                
+
                 clbDetails.DataBindGrid(FDataTable, NameMember, CheckedMember, NameMember, DescriptionMember, false, true, false);
                 clbDetails.SetCheckedStringList("");
             }
@@ -321,7 +322,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void AcceptExtract(System.Object sender, EventArgs e)
         {
             MExtractMasterRow ExtractMasterRow;
-                
+
             FResultTable = new MExtractMasterTable();
             //MExtractMasterRow SelectedRow = null;
             DataRow SelectedRow = null;
@@ -343,17 +344,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         FResultTable.Rows.Add(ExtractMasterRow);
                     }
                 }
-                
             }
             else
             {
                 // just one row can be selected
                 DataRowView[] SelectedGridRow = clbDetails.SelectedDataRowsAsDataRowView;
-                
+
                 if (SelectedGridRow.Length >= 1)
                 {
                     SelectedRow = SelectedGridRow[0].Row;
-                    
+
                     ExtractMasterRow = FResultTable.NewRowTyped();
                     ExtractMasterRow.ExtractId = (int)SelectedRow[MExtractMasterTable.GetExtractIdDBName()];
                     ExtractMasterRow.ExtractName = SelectedRow[MExtractMasterTable.GetExtractNameDBName()].ToString();
@@ -364,7 +364,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     FResultTable.Rows.Add(ExtractMasterRow);
                 }
             }
-            
+
             Close();
         }
 
@@ -387,19 +387,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             this.PrepareButtons();
         }
-    
+
         private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
         {
             this.PrepareButtons();
         }
-            
+
         /// <summary>
         /// enable/disable screen buttons
         /// </summary>
         private void PrepareButtons()
         {
             btnAccept.Enabled = false;
-            
+
             // "Accept" button needs to be disabled if no row is selected
             if (AllowMultipleSelect)
             {

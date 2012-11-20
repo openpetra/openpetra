@@ -1069,7 +1069,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return ResultValue;
         }
-        
+
         /// <summary>
         /// Creates a new extract by combining a list of given extracts.
         /// </summary>
@@ -1085,7 +1085,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean CombineExtracts(String ANewExtractName,
             String ANewExtractDescription,
-            List<Int32> ACombineExtractIdList,
+            List <Int32>ACombineExtractIdList,
             out Int32 ANewExtractId,
             out TVerificationResultCollection AVerificationResults)
         {
@@ -1095,28 +1095,29 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             MExtractTable CombinedExtractTable = new MExtractTable();
             MExtractRow TemplateRow;
             Boolean NewTransaction;
- 
+
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-            
+
             ANewExtractId = -1;
             AVerificationResults = null;
 
 
-            ResultValue = MPartner.Extracts.TExtractsHandling.CreateNewExtract(ANewExtractName, 
-                           ANewExtractDescription, out ANewExtractId, out ExtractAlreadyExists, out AVerificationResults);
-            
+            ResultValue = MPartner.Extracts.TExtractsHandling.CreateNewExtract(ANewExtractName,
+                ANewExtractDescription, out ANewExtractId, out ExtractAlreadyExists, out AVerificationResults);
+
             if (ResultValue && !ExtractAlreadyExists)
             {
-                // loop through each extract and combine them            
+                // loop through each extract and combine them
                 foreach (Int32 ExtractId in ACombineExtractIdList)
                 {
                     ExtractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, WriteTransaction);
-    
+
                     foreach (DataRow ExtractRow in ExtractTable.Rows)
                     {
-                        if (CombinedExtractTable.Rows.Find(new object[] { ANewExtractId, 
-                               ((MExtractRow)ExtractRow).PartnerKey, ((MExtractRow)ExtractRow).SiteKey }) == null)
+                        if (CombinedExtractTable.Rows.Find(new object[] { ANewExtractId,
+                                                                          ((MExtractRow)ExtractRow).PartnerKey,
+                                                                          ((MExtractRow)ExtractRow).SiteKey }) == null)
                         {
                             // create and add row to combined extract as it does not exist yet
                             TemplateRow = (MExtractRow)CombinedExtractTable.NewRowTyped(true);
@@ -1124,12 +1125,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             TemplateRow.PartnerKey = ((MExtractRow)ExtractRow).PartnerKey;
                             TemplateRow.SiteKey = ((MExtractRow)ExtractRow).SiteKey;
                             TemplateRow.LocationKey = ((MExtractRow)ExtractRow).LocationKey;
-        
+
                             CombinedExtractTable.Rows.Add(TemplateRow);
                         }
                     }
                 }
-                
+
                 try
                 {
                     // update key count in master table
@@ -1146,9 +1147,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 {
                     ResultValue = false;
                 }
-                
             }
-            
+
             if (ResultValue && NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
@@ -1176,7 +1176,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean IntersectExtracts(String ANewExtractName,
             String ANewExtractDescription,
-            List<Int32> AIntersectExtractIdList,
+            List <Int32>AIntersectExtractIdList,
             out Int32 ANewExtractId,
             out TVerificationResultCollection AVerificationResults)
         {
@@ -1188,35 +1188,35 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             MExtractRow TemplateRow;
             Boolean NewTransaction;
             Boolean PartnerExistsInAllExtracts;
- 
+
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-            
+
             ANewExtractId = -1;
             AVerificationResults = null;
 
 
-            ResultValue = MPartner.Extracts.TExtractsHandling.CreateNewExtract(ANewExtractName, 
-                           ANewExtractDescription, out ANewExtractId, out ExtractAlreadyExists, out AVerificationResults);
+            ResultValue = MPartner.Extracts.TExtractsHandling.CreateNewExtract(ANewExtractName,
+                ANewExtractDescription, out ANewExtractId, out ExtractAlreadyExists, out AVerificationResults);
 
             if (ResultValue && !ExtractAlreadyExists)
             {
                 if (AIntersectExtractIdList.Count > 0)
                 {
                     FirstExtractTable = MExtractAccess.LoadViaMExtractMaster(AIntersectExtractIdList[0], WriteTransaction);
-                    
+
                     // iterate through all partners in first extract and check if this record also exists in all other extracts
                     foreach (DataRow ExtractRow in FirstExtractTable.Rows)
                     {
                         PartnerExistsInAllExtracts = true;
 
                         // now check if this partner record exists in all other extracts as well
-                        for (ExtractIndex = 1; 
-                             ExtractIndex < AIntersectExtractIdList.Count && PartnerExistsInAllExtracts; 
+                        for (ExtractIndex = 1;
+                             ExtractIndex < AIntersectExtractIdList.Count && PartnerExistsInAllExtracts;
                              ExtractIndex++)
                         {
-                            if (!MExtractAccess.Exists(AIntersectExtractIdList[ExtractIndex], ((MExtractRow)ExtractRow).PartnerKey, 
-                                                       ((MExtractRow)ExtractRow).SiteKey, WriteTransaction))
+                            if (!MExtractAccess.Exists(AIntersectExtractIdList[ExtractIndex], ((MExtractRow)ExtractRow).PartnerKey,
+                                    ((MExtractRow)ExtractRow).SiteKey, WriteTransaction))
                             {
                                 // can stop here as there is at least one extract where partner does not exist
                                 PartnerExistsInAllExtracts = false;
@@ -1231,12 +1231,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             TemplateRow.PartnerKey = ((MExtractRow)ExtractRow).PartnerKey;
                             TemplateRow.SiteKey = ((MExtractRow)ExtractRow).SiteKey;
                             TemplateRow.LocationKey = ((MExtractRow)ExtractRow).LocationKey;
-        
+
                             IntersectedExtractTable.Rows.Add(TemplateRow);
                         }
                     }
                 }
-                
+
                 try
                 {
                     // update key count in master table
@@ -1253,9 +1253,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 {
                     ResultValue = false;
                 }
-                
             }
-            
+
             if (ResultValue && NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
@@ -1285,7 +1284,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static Boolean SubtractExtracts(String ANewExtractName,
             String ANewExtractDescription,
             String ABaseExtractName,
-            List<Int32> ASubtractExtractIdList,
+            List <Int32>ASubtractExtractIdList,
             out Int32 ANewExtractId,
             out TVerificationResultCollection AVerificationResults)
         {
@@ -1297,17 +1296,18 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             MExtractTable SubtractedExtractTable = new MExtractTable();
             MExtractRow TemplateRow;
             Boolean NewTransaction;
-            List<Int64> SubtractPartnerKeyList = new List<Int64>();
- 
+
+            List <Int64>SubtractPartnerKeyList = new List <Int64>();
+
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-            
+
             ANewExtractId = -1;
             AVerificationResults = null;
 
 
-            ResultValue = MPartner.Extracts.TExtractsHandling.CreateNewExtract(ANewExtractName, 
-                           ANewExtractDescription, out ANewExtractId, out ExtractAlreadyExists, out AVerificationResults);
+            ResultValue = MPartner.Extracts.TExtractsHandling.CreateNewExtract(ANewExtractName,
+                ANewExtractDescription, out ANewExtractId, out ExtractAlreadyExists, out AVerificationResults);
 
             if (ResultValue && !ExtractAlreadyExists)
             {
@@ -1315,7 +1315,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 foreach (Int32 ExtractId in ASubtractExtractIdList)
                 {
                     ExtractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, WriteTransaction);
-    
+
                     foreach (DataRow ExtractRow in ExtractTable.Rows)
                     {
                         if (!SubtractPartnerKeyList.Exists(item => item == ((MExtractRow)ExtractRow).PartnerKey))
@@ -1324,13 +1324,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         }
                     }
                 }
-                
 
                 if (ASubtractExtractIdList.Count > 0)
                 {
                     BaseExtractMasterTable = MExtractMasterAccess.LoadByUniqueKey(ABaseExtractName, WriteTransaction);
-                    BaseExtractTable = MExtractAccess.LoadViaMExtractMaster(((MExtractMasterRow)BaseExtractMasterTable.Rows[0]).ExtractId, WriteTransaction);
-                    
+                    BaseExtractTable = MExtractAccess.LoadViaMExtractMaster(((MExtractMasterRow)BaseExtractMasterTable.Rows[0]).ExtractId,
+                        WriteTransaction);
+
                     // iterate through all partners in base extract and check if this record also exists in extracts to be subtracted
                     foreach (DataRow ExtractRow in BaseExtractTable.Rows)
                     {
@@ -1342,12 +1342,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             TemplateRow.PartnerKey = ((MExtractRow)ExtractRow).PartnerKey;
                             TemplateRow.SiteKey = ((MExtractRow)ExtractRow).SiteKey;
                             TemplateRow.LocationKey = ((MExtractRow)ExtractRow).LocationKey;
-        
+
                             SubtractedExtractTable.Rows.Add(TemplateRow);
                         }
                     }
                 }
-                
+
                 try
                 {
                     // update key count in master table
@@ -1364,9 +1364,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 {
                     ResultValue = false;
                 }
-                
             }
-            
+
             if (ResultValue && NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
