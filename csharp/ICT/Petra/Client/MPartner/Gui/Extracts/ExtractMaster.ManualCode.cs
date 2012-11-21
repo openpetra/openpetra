@@ -838,6 +838,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Add Partner Type for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddPartnerType(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.AddPartnerType(sender, e);
+        }
+
+        /// <summary>
+        /// Delete Partner Type for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeletePartnerType(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.DeletePartnerType(sender, e);
+        }
+
+        /// <summary>
         /// Update Solicitation Flag for Partners in selected extract
         /// </summary>
         /// <param name="sender"></param>

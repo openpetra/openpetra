@@ -39,6 +39,8 @@ RootNode:
         actAddSubscription: {ActionClick=AddSubscription}     
         actDeleteSubscription: {ActionClick=DeleteSubscription}     
         actChangeSubscription: {ActionClick=ChangeSubscription}     
+        actAddPartnerType: {ActionClick=AddPartnerType}     
+        actDeletePartnerType: {ActionClick=DeletePartnerType}     
         actUpdateSolicitationFlag: {ActionClick=UpdateSolicitationFlag}     
         actUpdateReceiptFrequency: {ActionClick=UpdateReceiptFrequency}     
         actUpdateEmailGiftStatement: {ActionClick=UpdateEmailGiftStatement}     
@@ -121,6 +123,8 @@ RootNode:
             mniDeleteSubscription: {Label=Delete Subscription, Action=actDeleteSubscription}
             mniChangeSubscription: {Label=Change Subscription, Action=actChangeSubscription}
             mniSeparator:
+            mniAddPartnerType: {Label=Add Partner Type, Action=actAddPartnerType}
+            mniDeletePartnerType: {Label=Delete Partner Type, Action=actDeletePartnerType}
             mniUpdateSolicitationFlag: {Label=No Solicitations Flag, Action=actUpdateSolicitationFlag}
             mniSeparator:
             mniUpdateReceiptFrequency: {Label=Receipt Frequency, Action=actUpdateReceiptFrequency}
