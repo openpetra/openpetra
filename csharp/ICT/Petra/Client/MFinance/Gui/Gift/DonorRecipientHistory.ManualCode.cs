@@ -32,6 +32,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -41,7 +42,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TFrmDonorRecipientHistory
     {
         private DataView FFilteredDataView = null;
-        private Int32 FLedgerNumber;
+        private Int32 FLedgerNumber = -1;
 
         /// the Donor
         public long Donor
@@ -68,7 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FLedgerNumber = value;
-                txtLedger.Text = Convert.ToString(FLedgerNumber);
+                cmbLedger.SetSelectedInt32(FLedgerNumber);
             }
         }
 
@@ -76,6 +77,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
 //            txtLedger.Text = "" + Ict.Petra.Client.MFinance.Logic.TLedgerSelection.DetermineDefaultLedger();
             btnView.Enabled = false;
+        }
+
+        private void OnCmbLedgerChange (System.Object sender, EventArgs e)
+        {
+            FLedgerNumber = cmbLedger.GetSelectedInt32();
+        }
+
+        private void EnalbeLedgerDropdown()
+        {
+            cmbLedger.Enabled = true;
+            Int16 DefaultLedger = TUserDefaults.GetInt16Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER, -1);
+            if (DefaultLedger > 0)
+            {
+                cmbLedger.SetSelectedInt32(DefaultLedger);
+            }
+
+            if (cmbLedger.Count == 1)
+            {
+                cmbLedger.SelectedIndex = 0;
+            }
         }
 
         /// <summary>
@@ -91,6 +112,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((donor == 0) && (recipient == 0))
             {
                 MessageBox.Show(Catalog.GetString("You have to restrict via donor or via recipient"));
+                return;
+            }
+
+            if (FLedgerNumber < 0)
+            {
+                MessageBox.Show(Catalog.GetString("Select Ledger then press 'Browse'."));
                 return;
             }
 
@@ -236,6 +263,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     frmDRH.Recipient = PartnerKey;
                 }
 
+                frmDRH.EnalbeLedgerDropdown();
                 frmDRH.Browse(true);
                 frmDRH.Show();
             }

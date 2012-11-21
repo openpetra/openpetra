@@ -20,12 +20,12 @@ RootNode:
         pnlSelect:
             Dock: Top
             Controls:
-                Row0: [txtLedger]
+                Row0: [cmbLedger]
                 Row1: [txtDonor]
                 Row2: [txtRecipient]
                 Row3: [dtpDateFrom,dtpDateTo]
                 Row4: [txtMotivationGroup, txtMotivationDetail, btnBrowse]
-        txtLedger: {Label=Ledger, ReadOnly=true}
+        cmbLedger: {Label=Ledger, ReadOnly=true, List=LedgerNameList, OnChange=OnCmbLedgerChange}
         txtDonor: {Label=Donor, Type=PartnerKey, PartnerClass=FAMILY}
         txtRecipient: {Label=Recipient, Type=PartnerKey}
         dtpDateFrom: {Label=Date from}
