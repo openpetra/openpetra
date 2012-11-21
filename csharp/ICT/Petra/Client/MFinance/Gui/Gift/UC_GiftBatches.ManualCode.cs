@@ -707,10 +707,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
-                if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
-                {
-                    ClearControls();
-                }
+                UpdateChangeableStatus();
             }
             else if (!AAllowDeletion)
             {
@@ -728,6 +725,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 ((TFrmGiftBatch)ParentForm).DisableTransactions();
+                ClearControls();
             }
         }
 
