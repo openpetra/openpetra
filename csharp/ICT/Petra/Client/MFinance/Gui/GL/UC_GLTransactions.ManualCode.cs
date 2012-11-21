@@ -362,6 +362,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (ARow.DebitCreditIndicator)
             {
                 ARow.TransactionAmount = Math.Abs(txtDebitAmount.NumberValueDecimal.Value);
+
+                if (txtCreditAmount.NumberValueDecimal.Value != 0)
+                {
+                    txtCreditAmount.NumberValueDecimal = 0;
+                }
             }
             else
             {
@@ -372,6 +377,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 || (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
             {
                 UpdateTotals();
+            }
+        }
+
+        private void TransDateChanged(object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            try
+            {
+                DateTime dateValue;
+
+                string aDate = dtpDetailTransactionDate.Date.ToString();
+
+                if (!DateTime.TryParse(aDate, out dateValue))
+                {
+                    dtpDetailTransactionDate.Date = GetBatchRow().DateEffective;
+                }
+            }
+            catch
+            {
+                //Do nothing
             }
         }
 
@@ -399,6 +428,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtDebitTotalAmount.NumberValueDecimal = journal.JournalDebitTotal;
                 txtCreditTotalAmountBase.NumberValueDecimal = journal.JournalCreditTotalBase;
                 txtDebitTotalAmountBase.NumberValueDecimal = journal.JournalDebitTotalBase;
+
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    if (FPreviouslySelectedDetailRow.DebitCreditIndicator)
+                    {
+                        txtDebitAmountBase.NumberValueDecimal = FPreviouslySelectedDetailRow.AmountInBaseCurrency;
+                        txtCreditAmountBase.NumberValueDecimal = 0;
+                        txtDebitAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TransactionAmount;
+                        txtCreditAmount.NumberValueDecimal = 0;
+                    }
+                    else
+                    {
+                        txtDebitAmountBase.NumberValueDecimal = 0;
+                        txtCreditAmountBase.NumberValueDecimal = FPreviouslySelectedDetailRow.AmountInBaseCurrency;
+                        txtDebitAmount.NumberValueDecimal = 0;
+                        txtCreditAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TransactionAmount;
+                    }
+                }
 
                 if (!alreadyChanged)
                 {
@@ -545,21 +592,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ValidateDataDetailsManual(ATransactionRow ARow)
         {
-            //TODO: Code for manual data validation. Change below as needed
+            if ((ARow == null) || (GetBatchRow() == null) || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-//            if (ARow != null)
-//            {
-//				//some local validation e.g.
-//              if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
-//                {
-//                    txtDetailHashTotal.NumberValueDecimal = 0m;
-//                    ARow.HashTotal = 0m;
-//                }
-//            }
-
-//			TSharedFinanceValidation_GL.ValidateGLDetailManual(this, ARow, ref VerificationResultCollection,
-//                FValidationControlsDict);
+            //Local validation
+            if ((txtDebitAmount.NumberValueDecimal == 0) && (txtCreditAmount.NumberValueDecimal == 0))
+            {
+                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, GetBatchRow(), ARow, txtDebitAmount, ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+            else
+            {
+                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, GetBatchRow(), ARow, null, ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
         }
 
         /// <summary>

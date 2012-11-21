@@ -1248,7 +1248,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// update the transaction method payment from outside
+        /// update the transaction DateEntered from outside
         /// </summary>
         /// <param name="ABatchRow"></param>
         public void UpdateDateEntered(AGiftBatchRow ABatchRow)
