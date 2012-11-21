@@ -901,6 +901,82 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// update solicitations flag for all partners in given extract
         /// </summary>
         /// <param name="AExtractId"></param>
+        /// <param name="AAdd">if true then add type, otherwise delete it</param>
+        /// <param name="ATypeCode"></param>
+        /// <returns>true if update was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean UpdatePartnerType(int AExtractId, Boolean AAdd, String ATypeCode)
+        {
+            Boolean ResultValue = true;
+            PPartnerTypeTable PartnerTypeTable;
+            PPartnerTypeRow PartnerTypeRow;
+            MExtractTable ExtractTable;
+            TVerificationResultCollection VerificationResultCollection;
+
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            string SqlStmt = "";
+
+            try
+            {
+                if (AAdd)
+                {
+                    PartnerTypeTable = new PPartnerTypeTable();
+                    
+                    ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
+    
+                    // query all rows of given extract
+                    foreach (MExtractRow ExtractRow in ExtractTable.Rows)
+                    {
+                        if (!PPartnerTypeAccess.Exists(ExtractRow.PartnerKey, ATypeCode, Transaction))
+                        {
+                            // create record if this type does not exist for this partner yet
+                            PartnerTypeRow = PartnerTypeTable.NewRowTyped();
+                            PartnerTypeRow.PartnerKey = ExtractRow.PartnerKey;
+                            PartnerTypeRow.TypeCode = ATypeCode;
+                            PartnerTypeTable.Rows.Add(PartnerTypeRow);
+                        }
+                    }
+                    
+                    if (PPartnerTypeAccess.SubmitChanges(PartnerTypeTable, Transaction, out VerificationResultCollection))
+                    {
+                        ResultValue = true;
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        ResultValue = false;
+                        return ResultValue;
+                    }
+                    
+                }
+                else
+                {
+                    SqlStmt = "DELETE FROM pub_" + PPartnerTypeTable.GetTableDBName() +
+                              " WHERE " + PPartnerTypeTable.GetPartnerKeyDBName() +
+                              " IN (SELECT " + MExtractTable.GetPartnerKeyDBName() + " FROM pub_" + MExtractTable.GetTableDBName() +
+                              " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")" +
+                              " AND " + PPartnerTypeTable.GetTypeCodeDBName() + " = '" + ATypeCode + "'";
+                    
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                }
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during update of partner type for an extract: " + e.Message);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                ResultValue = false;
+            }
+
+            return ResultValue;
+        }
+
+        /// <summary>
+        /// update solicitations flag for all partners in given extract
+        /// </summary>
+        /// <param name="AExtractId"></param>
         /// <param name="ANoSolicitations"></param>
         /// <returns>true if update was successful</returns>
         [RequireModulePermission("PTNRUSER")]

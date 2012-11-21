@@ -627,6 +627,102 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Add Partner Type for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void AddPartnerType(System.Object sender, EventArgs e)
+        {
+            String TypeCode;
+            String Message;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Add Partner Type"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractPartnerTypeDialog dialog = new TFrmUpdateExtractPartnerTypeDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+                dialog.SetMode(true);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    if (dialog.GetReturnedParameters(out TypeCode))
+                    {
+                        // perform update of extract data on server side
+                        if (TRemote.MPartner.Partner.WebConnectors.UpdatePartnerType
+                                (GetSelectedDetailRow().ExtractId, true, TypeCode))
+                        {
+                            Message = String.Format(Catalog.GetString("Partner Type {0} successfully added for all Partners in Extract {1}"),
+                                                    TypeCode, GetSelectedDetailRow().ExtractName);
+                            
+                            MessageBox.Show(Message,
+                                Catalog.GetString("Add Partner Type"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            Message = String.Format(Catalog.GetString("Error while adding Partner Type {0} for Partners in Extract {1}"),
+                                                    TypeCode, GetSelectedDetailRow().ExtractName);
+                            
+                            MessageBox.Show(Message,
+                                Catalog.GetString("Add Partner Type"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Delete Partner Type for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void DeletePartnerType(System.Object sender, EventArgs e)
+        {
+            String TypeCode;
+            String Message;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Delete Partner Type"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractPartnerTypeDialog dialog = new TFrmUpdateExtractPartnerTypeDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+                dialog.SetMode(false);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    if (dialog.GetReturnedParameters(out TypeCode))
+                    {
+                        // perform update of extract data on server side
+                        if (TRemote.MPartner.Partner.WebConnectors.UpdatePartnerType
+                                (GetSelectedDetailRow().ExtractId, false, TypeCode))
+                        {
+                            Message = String.Format(Catalog.GetString("Partner Type {0} successfully deleted for all Partners in Extract {1}"),
+                                                    TypeCode, GetSelectedDetailRow().ExtractName);
+                            
+                            MessageBox.Show(Message,
+                                Catalog.GetString("Delete Partner Type"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            Message = String.Format(Catalog.GetString("Error while deleting Partner Type {0} for Partners in Extract {1}"),
+                                                    TypeCode, GetSelectedDetailRow().ExtractName);
+                            
+                            MessageBox.Show(Message,
+                                Catalog.GetString("Delete Partner Type"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
         /// Update 'No Solicitations' flag for Partners in selected extract
         /// </summary>
         /// <param name="sender"></param>
