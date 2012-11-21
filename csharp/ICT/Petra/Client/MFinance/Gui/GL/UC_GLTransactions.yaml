@@ -50,7 +50,7 @@ RootNode:
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
         txtDetailNarrative: {Label=Narrative, Width=537}
         txtDetailReference: {Label=Reference}
-        dtpDetailTransactionDate: {Label=Transaction Date}
+        dtpDetailTransactionDate: {Label=Transaction Date, OnChange=TransDateChanged, Validation=true}
         cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=363, TODOSELECTPARTNERKEYMIN}
         pnlDetailAmounts:
             Controls:
