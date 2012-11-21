@@ -362,9 +362,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (ARow.DebitCreditIndicator)
             {
                 ARow.TransactionAmount = Math.Abs(txtDebitAmount.NumberValueDecimal.Value);
+
                 if (txtCreditAmount.NumberValueDecimal.Value != 0)
                 {
-                	txtCreditAmount.NumberValueDecimal = 0;
+                    txtCreditAmount.NumberValueDecimal = 0;
                 }
             }
             else
@@ -423,31 +424,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPetraUtilsObject.DisableDataChangedEvent();
                 }
 
-                
                 txtCreditTotalAmount.NumberValueDecimal = journal.JournalCreditTotal;
                 txtDebitTotalAmount.NumberValueDecimal = journal.JournalDebitTotal;
                 txtCreditTotalAmountBase.NumberValueDecimal = journal.JournalCreditTotalBase;
                 txtDebitTotalAmountBase.NumberValueDecimal = journal.JournalDebitTotalBase;
 
-	            if (FPreviouslySelectedDetailRow != null)
-	            {
-	                if (FPreviouslySelectedDetailRow.DebitCreditIndicator)
-		            {
-		                txtDebitAmountBase.NumberValueDecimal = FPreviouslySelectedDetailRow.AmountInBaseCurrency;
-		                txtCreditAmountBase.NumberValueDecimal = 0;
-		                txtDebitAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TransactionAmount;
-		                txtCreditAmount.NumberValueDecimal = 0;
-		            }
-		            else
-		            {
-		                txtDebitAmountBase.NumberValueDecimal = 0;
-		                txtCreditAmountBase.NumberValueDecimal = FPreviouslySelectedDetailRow.AmountInBaseCurrency;
-		                txtDebitAmount.NumberValueDecimal = 0;
-		                txtCreditAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TransactionAmount;
-		            }
-	            }
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    if (FPreviouslySelectedDetailRow.DebitCreditIndicator)
+                    {
+                        txtDebitAmountBase.NumberValueDecimal = FPreviouslySelectedDetailRow.AmountInBaseCurrency;
+                        txtCreditAmountBase.NumberValueDecimal = 0;
+                        txtDebitAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TransactionAmount;
+                        txtCreditAmount.NumberValueDecimal = 0;
+                    }
+                    else
+                    {
+                        txtDebitAmountBase.NumberValueDecimal = 0;
+                        txtCreditAmountBase.NumberValueDecimal = FPreviouslySelectedDetailRow.AmountInBaseCurrency;
+                        txtDebitAmount.NumberValueDecimal = 0;
+                        txtCreditAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TransactionAmount;
+                    }
+                }
 
-	            if (!alreadyChanged)
+                if (!alreadyChanged)
                 {
                     FPetraUtilsObject.EnableDataChangedEvent();
                 }
