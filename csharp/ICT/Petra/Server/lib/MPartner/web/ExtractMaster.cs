@@ -913,7 +913,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             MExtractTable ExtractTable;
             TVerificationResultCollection VerificationResultCollection;
 
-            
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             string SqlStmt = "";
 
@@ -922,9 +922,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 if (AAdd)
                 {
                     PartnerTypeTable = new PPartnerTypeTable();
-                    
+
                     ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
-    
+
                     // query all rows of given extract
                     foreach (MExtractRow ExtractRow in ExtractTable.Rows)
                     {
@@ -937,7 +937,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             PartnerTypeTable.Rows.Add(PartnerTypeRow);
                         }
                     }
-                    
+
                     if (PPartnerTypeAccess.SubmitChanges(PartnerTypeTable, Transaction, out VerificationResultCollection))
                     {
                         ResultValue = true;
@@ -948,7 +948,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         ResultValue = false;
                         return ResultValue;
                     }
-                    
                 }
                 else
                 {
@@ -957,7 +956,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " IN (SELECT " + MExtractTable.GetPartnerKeyDBName() + " FROM pub_" + MExtractTable.GetTableDBName() +
                               " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")" +
                               " AND " + PPartnerTypeTable.GetTypeCodeDBName() + " = '" + ATypeCode + "'";
-                    
+
                     DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
                 }
 

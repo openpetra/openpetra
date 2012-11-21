@@ -54,14 +54,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// set extract name that action is taken for
         /// </summary>
         String FExtractName;
-        
+
         /// <summary>
         /// type code selected before dialog was closed with OK button or double click
         /// </summary>
         String FTypeCode;
-        
+
         PTypeTable FTypeTable;
-            
+
         /// <summary>
         /// set the initial value for passport name in the dialog
         /// </summary>
@@ -91,14 +91,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 FindForm().Text = Catalog.GetString("Delete Partner Type");
             }
         }
-        
+
         private void InitializeManualCode()
         {
             // show this dialog in center of screen
             this.StartPosition = FormStartPosition.CenterScreen;
 
             FTypeTable = (PTypeTable)TDataCache.TMPartner.GetCacheablePartnerTable(
-                            TCacheablePartnerTablesEnum.PartnerTypeList);
+                TCacheablePartnerTablesEnum.PartnerTypeList);
             grdTypes.AddTextColumn(Catalog.GetString("Type Code"), FTypeTable.Columns[PTypeTable.GetTypeCodeDBName()]);
             grdTypes.AddTextColumn(Catalog.GetString("Description"), FTypeTable.Columns[PTypeTable.GetTypeDescriptionDBName()]);
 
@@ -150,20 +150,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 FTypeCode = ((PTypeRow)SelectedGridRow[0].Row).TypeCode;
             }
-            
+
             if (FAdd)
             {
                 Message = String.Format(Catalog.GetString("Are you sure that you want to add type '{0}' " +
-                                                          "for all partners in extract '{1}'?"), FTypeCode, FExtractName);
+                        "for all partners in extract '{1}'?"), FTypeCode, FExtractName);
                 Title = Catalog.GetString("Add Partner Type");
             }
             else
             {
                 Message = String.Format(Catalog.GetString("Are you sure that you want to delete type '{0}' " +
-                                                          "from all partners in extract '{1}'?"), FTypeCode, FExtractName);
+                        "from all partners in extract '{1}'?"), FTypeCode, FExtractName);
                 Title = Catalog.GetString("Delete Partner Type");
             }
-            
+
             if (MessageBox.Show(Message,
                     Title,
                     MessageBoxButtons.YesNo,

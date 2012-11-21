@@ -652,8 +652,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                 (GetSelectedDetailRow().ExtractId, true, TypeCode))
                         {
                             Message = String.Format(Catalog.GetString("Partner Type {0} successfully added for all Partners in Extract {1}"),
-                                                    TypeCode, GetSelectedDetailRow().ExtractName);
-                            
+                                TypeCode, GetSelectedDetailRow().ExtractName);
+
                             MessageBox.Show(Message,
                                 Catalog.GetString("Add Partner Type"),
                                 MessageBoxButtons.OK,
@@ -662,8 +662,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         else
                         {
                             Message = String.Format(Catalog.GetString("Error while adding Partner Type {0} for Partners in Extract {1}"),
-                                                    TypeCode, GetSelectedDetailRow().ExtractName);
-                            
+                                TypeCode, GetSelectedDetailRow().ExtractName);
+
                             MessageBox.Show(Message,
                                 Catalog.GetString("Add Partner Type"),
                                 MessageBoxButtons.OK,
@@ -700,8 +700,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                 (GetSelectedDetailRow().ExtractId, false, TypeCode))
                         {
                             Message = String.Format(Catalog.GetString("Partner Type {0} successfully deleted for all Partners in Extract {1}"),
-                                                    TypeCode, GetSelectedDetailRow().ExtractName);
-                            
+                                TypeCode, GetSelectedDetailRow().ExtractName);
+
                             MessageBox.Show(Message,
                                 Catalog.GetString("Delete Partner Type"),
                                 MessageBoxButtons.OK,
@@ -710,8 +710,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         else
                         {
                             Message = String.Format(Catalog.GetString("Error while deleting Partner Type {0} for Partners in Extract {1}"),
-                                                    TypeCode, GetSelectedDetailRow().ExtractName);
-                            
+                                TypeCode, GetSelectedDetailRow().ExtractName);
+
                             MessageBox.Show(Message,
                                 Catalog.GetString("Delete Partner Type"),
                                 MessageBoxButtons.OK,
@@ -721,7 +721,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
             }
         }
-        
+
         /// <summary>
         /// Update 'No Solicitations' flag for Partners in selected extract
         /// </summary>
