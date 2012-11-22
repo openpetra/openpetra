@@ -12,6 +12,9 @@ RootNode:
         actMaintainExtract: {ActionClick=MaintainExtract}      
         actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}     
         actPurgeExtracts: {ActionClick=PurgeExtracts}     
+        actCombineExtracts: {ActionClick=CombineExtracts}     
+        actIntersectExtracts: {ActionClick=IntersectExtracts}     
+        actSubtractExtracts: {ActionClick=SubtractExtracts}     
         actActivateFilter: {ActionClick=FilterExtracts}     
         actClearFilter: {ActionClick=ClearFilterExtracts}     
         actUserFilterSelectionChanged: {ActionClick=FilterExtracts}     
@@ -36,6 +39,8 @@ RootNode:
         actAddSubscription: {ActionClick=AddSubscription}     
         actDeleteSubscription: {ActionClick=DeleteSubscription}     
         actChangeSubscription: {ActionClick=ChangeSubscription}     
+        actAddPartnerType: {ActionClick=AddPartnerType}     
+        actDeletePartnerType: {ActionClick=DeletePartnerType}     
         actUpdateSolicitationFlag: {ActionClick=UpdateSolicitationFlag}     
         actUpdateReceiptFrequency: {ActionClick=UpdateReceiptFrequency}     
         actUpdateEmailGiftStatement: {ActionClick=UpdateEmailGiftStatement}     
@@ -108,12 +113,18 @@ RootNode:
             mniMaintainExtract: {Label=Maintain Extract, Action=actMaintainExtract}
             mniVerifyExtract: {Label=Verify and Update Extract, Action=actVerifyAndUpdateExtract}
             mniPurgeExtracts: {Label=Purge Extracts, Action=actPurgeExtracts}
+            mniSeparator:
+            mniCombineExtracts: {Label=Combine Extracts, Action=actCombineExtracts}
+            mniIntersectExtracts: {Label=Intersect Extracts, Action=actIntersectExtracts}
+            mniSubtractExtracts: {Label=Subtract Extracts, Action=actSubtractExtracts}
         mniUpdatePartners:
             Label: &Update Partners
             mniAddSubscription: {Label=Add Subscription, Action=actAddSubscription}
             mniDeleteSubscription: {Label=Delete Subscription, Action=actDeleteSubscription}
             mniChangeSubscription: {Label=Change Subscription, Action=actChangeSubscription}
             mniSeparator:
+            mniAddPartnerType: {Label=Add Partner Type, Action=actAddPartnerType}
+            mniDeletePartnerType: {Label=Delete Partner Type, Action=actDeletePartnerType}
             mniUpdateSolicitationFlag: {Label=No Solicitations Flag, Action=actUpdateSolicitationFlag}
             mniSeparator:
             mniUpdateReceiptFrequency: {Label=Receipt Frequency, Action=actUpdateReceiptFrequency}

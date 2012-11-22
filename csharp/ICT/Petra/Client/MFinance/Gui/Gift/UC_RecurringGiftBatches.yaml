@@ -36,6 +36,7 @@ RootNode:
             Columns: [BatchNumber, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType, DateModified]
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
+            ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: BatchNumber DESC
         pnlDetails:
             Dock: Bottom

@@ -124,6 +124,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //This will update Batch totals
             UpdateTotals(GetBatchRow());
+
+            grdDetails.Focus();
         }
 
         private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)
@@ -313,6 +315,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmGLBatch) this.ParentForm).EnableTransactions();
+
+                txtDetailJournalDescription.Text = "Please enter a journal description";
+                txtDetailJournalDescription.SelectAll();
             }
         }
 
@@ -458,6 +463,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             TSharedFinanceValidation_GL.ValidateGLJournalManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
+        }
+
+        /// <summary>
+        /// Set focus to the gid controltab
+        /// </summary>
+        public void FocusGrid()
+        {
+            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            {
+                grdDetails.Focus();
+            }
         }
     }
 }

@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 
+using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
@@ -145,13 +146,15 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// Validates the GL Detail data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ABatchRow">Manually added to bring over some GL Batch fields</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AControl"></param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
-        public static bool ValidateGLDetailManual(object AContext, ATransactionRow ARow,
+        public static bool ValidateGLDetailManual(object AContext, ABatchRow ABatchRow, ATransactionRow ARow, Control AControl,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
@@ -168,16 +171,17 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             // 'GL amount must be non-zero
             ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnTransactionAmountId];
-            ValidationContext = String.Format("Batch Number {0} (journal:{1} transaction:{2})",
+            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                ARow.TransactionNumber,
                 ARow.BatchNumber,
-                ARow.JournalNumber,
-                ARow.TransactionNumber);
+                ARow.JournalNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            //TransactionAmount is not in the dictionary so had to pass the control directly
+            if (AControl != null)
             {
                 VerificationResult = TNumericalChecks.IsNonZeroDecimal(ARow.TransactionAmount,
-                    ValidationControlsData.ValidationControlLabel + " of " + ValidationContext,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    "Amount of " + ValidationContext,
+                    AContext, ValidationColumn, AControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
@@ -186,29 +190,34 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-//            // Detail comments type 1 must not be null if associated comment is not null
-//            ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnCommentOneTypeId];
-//            ValidationContext = String.Format("Batch Number {0} (journal:{1} transaction:{2})",
-//                ARow.BatchNumber,
-//                ARow.JournalNumber,
-//                ARow.TransactionNumber);
-//
-//            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-//            {
-//                if (!ARow.IsGLCommentOneNull() && (ARow.GLCommentOne != String.Empty))
-//                {
-//                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentOneType,
-//                        "Comment 1 type " + ValidationContext,
-//                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-//
-//                    // Handle addition/removal to/from TVerificationResultCollection
-//                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-//                    {
-//                        VerifResultCollAddedCount++;
-//                    }
-//                }
-//            }
-//
+            // 'Entered From Date' must be valid
+            ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnTransactionDateId];
+            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                ARow.TransactionNumber,
+                ARow.BatchNumber,
+                ARow.JournalNumber);
+
+            DateTime StartDatePeriod;
+            DateTime EndDatePeriod;
+            TSharedFinanceValidationHelper.GetValidPeriodDates(ARow.LedgerNumber, ABatchRow.BatchYear, 0, ABatchRow.BatchPeriod,
+                out StartDatePeriod,
+                out EndDatePeriod);
+
+            VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.TransactionDate,
+                StartDatePeriod,
+                EndDatePeriod,
+                "Transaction Date for " + ValidationContext.ToString(),
+                TDateBetweenDatesCheckType.dbdctUnspecific,
+                TDateBetweenDatesCheckType.dbdctUnspecific,
+                AContext,
+                ValidationColumn,
+                ValidationControlsData.ValidationControl);
+
+            // Handle addition/removal to/from TVerificationResultCollection
+            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+            {
+                VerifResultCollAddedCount++;
+            }
 
             return VerifResultCollAddedCount == 0;
         }
