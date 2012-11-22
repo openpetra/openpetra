@@ -698,14 +698,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, out string ACompletionMessage)
         {
             bool deleteSuccessful = false;
-
+            string originatingDetailRef = string.Empty;
+			
             ACompletionMessage = string.Empty;
 
             int selectedDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
 
             try
             {
-                FPreviouslySelectedDetailRow.Delete();
+                //TODO: update to new field
+            	originatingDetailRef = FPreviouslySelectedDetailRow.ModifiedDetailKey;
+            	FPreviouslySelectedDetailRow.Delete();
                 FPreviouslySelectedDetailRow = null;
 
                 if (FGiftDetailView.Count == 0)
@@ -750,6 +753,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FGift.LastDetailNumber--;
                 }
 
+				//Check if deleting a reversed gift detail
+                if (originatingDetailRef.StartsWith("|"))
+                {
+                	bool ok = TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, originatingDetailRef);
+					if (!ok)
+					{
+						MessageBox.Show("Error in trying to reset Modified Detail field of the originating gift detail.");
+					}      
+                }
+                
                 ACompletionMessage = Catalog.GetString("Gift row deleted successfully!");
                 deleteSuccessful = true;
             }
@@ -1468,6 +1481,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)
         {
             ARow.CostCentreCode = txtDetailCostCentreCode.Text;
+            ARow.ModifiedDetailKey = string.Empty;
 
             if (ARow.DetailNumber != 1)
             {
@@ -1580,5 +1594,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.Focus();
             }
         }
+        
+        private void ShowMessages(TVerificationResultCollection AMessages)
+        {
+            string ErrorMessages = String.Empty;
+
+            if (AMessages.Count > 0)
+            {
+                foreach (TVerificationResult message in AMessages)
+                {
+                    ErrorMessages += "[" + message.ResultContext + "] " + message.ResultTextCaption + ": " + message.ResultText + Environment.NewLine;
+                }
+            }
+
+            if (ErrorMessages.Length > 0)
+            {
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        
+        
     }
 }
