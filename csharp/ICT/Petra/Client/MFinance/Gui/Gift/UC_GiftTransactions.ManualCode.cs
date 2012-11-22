@@ -185,8 +185,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FBatchRow = GetBatchRow();
-
-            LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus);
+            if (FBatchRow != null)
+            {
+                LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus);
+            }
         }
 
         bool FinRecipientKeyChanging = false;
