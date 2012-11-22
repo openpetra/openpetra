@@ -26,6 +26,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using DevAge.ComponentModel;
@@ -1359,14 +1360,14 @@ namespace Ict.Common.Controls
             return rowIndex;
         }
 
-        /// select a row in the grid, and invoke the event for FocusedRowChanged
+        /// select a row in the grid without checking the bounds
         public void SelectRowInGrid(Int32 ARowNumberInGrid)
         {
             SelectRowInGrid(ARowNumberInGrid, false);
         }
 
         /// select a row in the grid.  By default generate the event(s) for focus changes.
-        public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit, Boolean ASuppressEvents = false)
+        public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit)
         {
             if (Rows.Count <= 1)
             {
@@ -1386,37 +1387,66 @@ namespace Ict.Common.Controls
                 }
             }
 
-            if (ASuppressEvents)
+            // These two calls will generate rowLeaving events ONLY WHEN the grid is the current focussed control.
+            // Normally when this is called from manual code the grid will not have the focus.  Instead the control
+            // whose click event you are responding to will be focussed, so these calls will simply select the desired row without
+            // any consequent events.
+            // When events are fired they will probably result in updating a details panel
+            // When events are not fired you may need to update the details manually
+            this.Selection.ResetSelection(false);
+            this.Selection.SelectRow(ARowNumberInGrid, true);
+
+            // scroll to the row
+            ShowCell(ARowNumberInGrid);
+        }
+
+        /// <summary>
+        /// This is the OpenPetra override.  It scrolls the window so that the specified row is shown.
+        /// The standard grid behaviour would be simply to ensure the selected row is within the grid.
+        /// With this method, where possible there is always one unselected row above or one row below.
+        /// </summary>
+        /// <param name="ARowNumberInGrid">The grid row number that needs to be inside the viewport</param>
+        /// <returns>False if the grid scrolls to a new position.  True if the specified row is already in the view port</returns>
+        public bool ShowCell(int ARowNumberInGrid)
+        {
+            // Assume we will show the specified row
+            int rowToShow = ARowNumberInGrid;
+            
+            // Get the list of displayed rows, not including partial rows
+            Rectangle displayRectangle = this.DisplayRectangle;
+            List<int> displayedRows = this.Rows.RowsInsideRegion(displayRectangle.Y, displayRectangle.Height, false, false);
+
+            if (displayedRows.Count >= 3)
             {
-                // This chain of calls does not give rise to any focus events
-                // Use this option carefully.  Normally events are a good thing.  Missed events may give unexpected behaviour at the next event.
-                this.Selection.FocusStyle = FocusStyle.None;
-                this.Selection.Focus(Position.Empty, true);                         // ensure the current cell is un-highlighted first
-                this.Selection.SelectRow(ARowNumberInGrid, true);                   // move the row selection
-
-                // scroll to the row
-                this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
-
-                // Turn on selection events again
-                this.Selection.FocusStyle = FocusStyle.Default;
+                // If the row to show is the current top row or above, we ensure that we show the row above the selected one
+                // If the row to show is the current bottom row or below, we ensure we show the row below the selected one 
+                if (rowToShow <= displayedRows[0])
+                {
+                    rowToShow = Math.Max(rowToShow - 1, 1);
+                }
+                else if (rowToShow >= displayedRows[displayedRows.Count - 1])
+                {
+                    rowToShow = Math.Min(rowToShow + 1, Rows.Count - 1);
+                }
+                else
+                {
+                    // It is in the view port already
+                    return true;
+                }
             }
-            else
-            {
-                // This chain of calls will generate rowLeaving events.  Normally it is important that these events get fired.
-                this.Selection.ResetSelection(false);
-                this.Selection.Focus(new SourceGrid.Position(ARowNumberInGrid, 0), true);   // to prevent the Cell into which the user had previously clicked from staying highlighted (overcome buggy behaviour of SourceGrid)
-                this.Selection.SelectRow(ARowNumberInGrid, true);
 
-                // scroll to the row
-                this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
-            }
+            // So use the standard grid call to show the row we have come up with.
+            // Note: this call is misleading!  Intellisense has the boolean as 'ignorePartial', but actually the parameter is passed direct to
+            //  the call to list all rows in the viewport and INCLUDE partial!!  Having got this list, the decision is made whether to scroll.
+            //  So we pass false so as not to include partial rows in this decision.
+            return this.ShowCell(new SourceGrid.Position(rowToShow, 0), false);
         }
 
         /// make sure the grid scrolls to the selected row to have it in the visible area
         public void ViewSelectedRow()
         {
             // scroll to the row
-            this.ShowCell(new SourceGrid.Position(this.SelectedRowIndex(), 0), true);
+            ShowCell(this.SelectedRowIndex());
         }
 
         /// <summary>
@@ -1552,8 +1582,8 @@ namespace Ict.Common.Controls
                 if (NewSelectedItemRow != -1)
                 {
                     // A matching Row was found after the currently selected row, so select it
-                    // Scroll grid to line where the new record is now displayed
-                    this.ShowCell(new Position(NewSelectedItemRow + 1, 0), false);
+                    // Scroll grid to line where the new record is now displayed and keep the focus on the grid
+                    this.ShowCell(NewSelectedItemRow + 1);
                     this.Selection.Focus(new Position(NewSelectedItemRow + 1, 0), true);
                 }
                 else
@@ -1573,8 +1603,8 @@ namespace Ict.Common.Controls
 
                     //                  MessageBox.Show("Only found Row above CurrentGridRow! NewSelectedItemRow: " + NewSelectedItemRow.ToString());
 
-                    // Scroll grid to line where the new record is now displayed
-                    this.ShowCell(new Position(NewSelectedItemRow + 1, 0), false);
+                    // Scroll grid to line where the new record is now displayed and keep the focus on the grid
+                    this.ShowCell(NewSelectedItemRow + 1);
                     this.Selection.Focus(new Position(NewSelectedItemRow + 1, 0), true);
                 }
             }
@@ -1597,29 +1627,19 @@ namespace Ict.Common.Controls
             {
                 // Key for scrolling to and selecting the first row in the Grid
                 // MessageBox.Show('Home pressed!');
-                this.Selection.ResetSelection(false);
-                this.Selection.Focus(Position.Empty, false);
-                this.Selection.SelectRow(1, true);
+                SelectRowInGrid(1);
 
-                // Scroll grid to line where the selection is now displayed
-                this.ShowCell(new Position(1, 0), false);
-
-                // Give focus to the rows so that Cursor keys, PageUp/PageDown, etc. work
-                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 1), false);
+                // keep the focus on the grid
+                this.Selection.Focus(new Position(1, 0), true);
             }
             // Key for scrolling to and selecting the last row in the Grid
             else if (AKeyEventArgs.KeyCode == Keys.End)
             {
                 // MessageBox.Show('End pressed!  Rows: ' + this.Rows.Count.ToString);
-                this.Selection.ResetSelection(false);
-                this.Selection.Focus(Position.Empty, false);
-                this.Selection.SelectRow(this.Rows.Count - 1, true);
+                SelectRowInGrid(this.Rows.Count - 1);
 
-                // Scroll grid to line where the selection is now displayed
-                this.ShowCell(new Position(this.Rows.Count - 1, 0), false);
-
-                // Give focus to the rows so that Cursor keys, PageUp/PageDown, etc. work
-                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 1), false);
+                // keep the focus on the grid
+                this.Selection.Focus(new Position(this.Rows.Count - 1, 0), true);
             }
             // Key for firing OnInsertKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Insert)

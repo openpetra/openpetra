@@ -267,7 +267,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             grdRecordList.Selection.SelectRow(BestAddressRowNumber, true);
 
             // Scroll grid to line where the 'Best Address' is displayed
-            grdRecordList.ShowCell(new Position(BestAddressRowNumber, 0), true);
+            grdRecordList.ShowCell(BestAddressRowNumber);
 
             if (APerformDataBinding)
             {
