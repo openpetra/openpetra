@@ -171,7 +171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             ParseHashTotal(ARow);
-            
+
             TSharedFinanceValidation_GL.ValidateGLBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
         }
@@ -183,13 +183,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string hashNumericPart = string.Empty;
             decimal hashDecimalVal;
 
-            if (hashTotal == null || hashTotal.Length == 0)
+            if ((hashTotal == null) || (hashTotal.Length == 0))
             {
-            	correctHashValue = 0m;
+                correctHashValue = 0m;
             }
             else
             {
-            	if (!Decimal.TryParse(hashTotal, out hashDecimalVal))
+                if (!Decimal.TryParse(hashTotal, out hashDecimalVal))
                 {
                     correctHashValue = 0m;
                 }
