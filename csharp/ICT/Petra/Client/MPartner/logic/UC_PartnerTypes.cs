@@ -244,7 +244,7 @@ namespace Ict.Petra.Client.MPartner
                     FDataGrid.Selection.SelectRow(TmpRowIndex + 1, true);
 
                     // Scroll grid to line where the new record is now displayed
-                    FDataGrid.ShowCell(new Position(TmpRowIndex + 1, 0), true);
+                    FDataGrid.ShowCell(TmpRowIndex + 1);
                 }
             }
             else

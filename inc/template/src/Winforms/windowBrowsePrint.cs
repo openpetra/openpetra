@@ -92,7 +92,7 @@ namespace {#NAMESPACE}
         grdDetails.Selection.ResetSelection(false);
         grdDetails.Selection.SelectRow(RowNumberGrid, true);
         // scroll to the row
-        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
+        grdDetails.ShowCell(RowNumberGrid);
 
         FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
     }

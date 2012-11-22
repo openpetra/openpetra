@@ -1550,12 +1550,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if ((myViewGiftNumber == AGiftNumber) && (myViewGiftDetailNumber == AGiftDetailNumber))
                 {
-                    grdDetails.Selection.ResetSelection(false);
-                    grdDetails.Selection.SelectRow(counter + 1, true);
-                    // scroll to the row
-                    grdDetails.ShowCell(new SourceGrid.Position(counter + 1, 0), true);
-
-                    FocusedRowChanged(this, new SourceGrid.RowEventArgs(counter + 1));
+                    SelectRowInGrid(counter + 1);
                     break;
                 }
             }
