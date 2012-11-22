@@ -463,15 +463,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TFrmSetupDailyExchangeRate frmExchangeRate =
                     new TFrmSetupDailyExchangeRate(mainForm);
 
-                if (frmExchangeRate.ShowDialog(mainForm.FLedgerNumber, dteStart, dteEnd,
+                decimal selectedExchangeRate;
+                DateTime selectedEffectiveDate;
+                int selectedEffectiveTime;
+                if (frmExchangeRate.ShowDialog(
+                        mainForm.FLedgerNumber,
+                        dteStart,
+                        dteEnd,
                         currencyExchangeList[iRow].Currency,
-                        currencyExchangeList[iRow].ExchangeRate) == DialogResult.Cancel)
+                        currencyExchangeList[iRow].ExchangeRate,
+                        out selectedExchangeRate,
+                        out selectedEffectiveDate,
+                        out selectedEffectiveTime) == DialogResult.Cancel)
                 {
                     return;
                 }
 
-                currencyExchangeList[iRow].updateExchangeRate(
-                    frmExchangeRate.CurrencyExchangeRate);
+                currencyExchangeList[iRow].updateExchangeRate(selectedExchangeRate);
             }
 
             public void InitFrmData(TGLRevaluation AMain, DateTime ADateStart, DateTime ADateEnd)
