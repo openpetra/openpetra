@@ -180,7 +180,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             decimal correctHashValue = 0;
             string hashTotal = txtDetailBatchControlTotal.Text.Trim();
-            string hashNumericPart = string.Empty;
             decimal hashDecimalVal;
 
             if ((hashTotal == null) || (hashTotal.Length == 0))
