@@ -823,10 +823,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFormLettersTools.CloseDocument(ref HtmlDoc);
-            TFrmReceiptControl.PreviewOrPrint(HtmlDoc);
 
             if (ReceiptedGiftTransactions.Count > 0)
             {
+                TFrmReceiptControl.PreviewOrPrint(HtmlDoc);
+
                 if (MessageBox.Show(
                         Catalog.GetString(
                             "Press OK if receipts to these recipients were printed correctly.\r\nThe gifts will be marked as receipted.\r\n") +

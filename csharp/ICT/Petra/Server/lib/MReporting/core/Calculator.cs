@@ -87,7 +87,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
         /// <summary>
         /// this is where all the calculations take place
         /// </summary>
-        /// <returns>s true if the report was successfully generated
+        /// <returns>true if the report was successfully generated
         /// </returns>
         public Boolean GenerateResult(ref TParameterList parameterlist, ref TResultList resultlist, ref String AErrorMessage)
         {

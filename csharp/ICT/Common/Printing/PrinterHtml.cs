@@ -65,11 +65,18 @@ namespace Ict.Common.Printing
             FPrinter = APrinter;
             FPath = APath;
 
-            AHtmlDocument = AHtmlDocument.Replace("<pagebreak/>", "</body><body>");
-            AHtmlDocument = AHtmlDocument.Replace("<pagebreak>", "</body><body>");
-            AHtmlDocument = RemoveElement(AHtmlDocument, "div", "class", "PageHeader", out FPageHeader);
+            if (AHtmlDocument != "")
+            {
+                AHtmlDocument = AHtmlDocument.Replace("<pagebreak/>", "</body><body>");
+                AHtmlDocument = AHtmlDocument.Replace("<pagebreak>", "</body><body>");
+                AHtmlDocument = RemoveElement(AHtmlDocument, "div", "class", "PageHeader", out FPageHeader);
 
-            FHtmlDoc = ParseHtml(AHtmlDocument);
+                FHtmlDoc = ParseHtml(AHtmlDocument);
+            }
+            else
+            {
+                FHtmlDoc = new XmlDocument();
+            }
         }
 
         /// <summary>

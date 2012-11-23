@@ -569,29 +569,32 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 PPartnerLocationRow ImportPartnerLocationRow = (PPartnerLocationRow)MainDS.PPartnerLocation[ImportPartnerLocationRowIdx];
                 MainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1}",
                     PLocationTable.GetLocationKeyDBName(), ImportPartnerLocationRow.LocationKey);
-                PLocationRow ImportLocationRow = (PLocationRow)MainDS.PLocation.DefaultView[0].Row;
-
                 bool RowRemoved = false;
 
-                // Now I want to find out whether this row exists in my database.
-                foreach (PLocationRow DbLocationRow in LocationTable.Rows)
+                if (MainDS.PLocation.DefaultView.Count > 0)
                 {
-                    if (
-                        (DbLocationRow.StreetName == ImportLocationRow.StreetName)
-                        && (DbLocationRow.Locality == ImportLocationRow.Locality)
-                        && (DbLocationRow.City == ImportLocationRow.City)
-                        && (DbLocationRow.PostalCode == ImportLocationRow.PostalCode)
-                        )
+                    PLocationRow ImportLocationRow = (PLocationRow)MainDS.PLocation.DefaultView[0].Row;
+
+                    // Now I want to find out whether this row exists in my database.
+                    foreach (PLocationRow DbLocationRow in LocationTable.Rows)
                     {
-                        String ExistingAddress = Calculations.DetermineLocationString(DbLocationRow,
-                            Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+                        if (
+                            (DbLocationRow.StreetName == ImportLocationRow.StreetName)
+                            && (DbLocationRow.Locality == ImportLocationRow.Locality)
+                            && (DbLocationRow.City == ImportLocationRow.City)
+                            && (DbLocationRow.PostalCode == ImportLocationRow.PostalCode)
+                            )
+                        {
+                            String ExistingAddress = Calculations.DetermineLocationString(DbLocationRow,
+                                Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
 
-                        MainDS.PLocation.Rows.Remove(ImportLocationRow);
-                        MainDS.PPartnerLocation.Rows.RemoveAt(ImportPartnerLocationRowIdx);
+                            MainDS.PLocation.Rows.Remove(ImportLocationRow);
+                            MainDS.PPartnerLocation.Rows.RemoveAt(ImportPartnerLocationRowIdx);
 
-                        AddVerificationResult(ref ReferenceResults, "Existing address used: " + ExistingAddress, TResultSeverity.Resv_Status);
-                        RowRemoved = true;
-                        break;  // If there's already a duplicate in the database, I can't fix that here...
+                            AddVerificationResult(ref ReferenceResults, "Existing address used: " + ExistingAddress, TResultSeverity.Resv_Status);
+                            RowRemoved = true;
+                            break;  // If there's already a duplicate in the database, I can't fix that here...
+                        }
                     }
                 }
 
@@ -1498,12 +1501,21 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 Res = PartnerImportExportTDSAccess.SubmitChanges(MainDS, out SubmitResults);
             }
 
-            AddVerificationResult(ref ReferenceResults, String.Format("Import of {0} {1}\r\n {2}",
-                    ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass,
-                    ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerShortName,
-                    Res == 0 ? "Successful" : "Error"
-                    ),
-                TResultSeverity.Resv_Status);
+            if (((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass == "")
+            {
+                AddVerificationResult(ref ReferenceResults, "Partner has no CLASS!", TResultSeverity.Resv_Critical);
+                Res = TSubmitChangesResult.scrInfoNeeded;
+            }
+            else
+            {
+                AddVerificationResult(ref ReferenceResults, String.Format("Import of {0} {1}\r\n {2}",
+                        ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass,
+                        ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerShortName,
+                        Res == 0 ? "Successful" : "Error"
+                        ),
+                    TResultSeverity.Resv_Status);
+            }
+
             AVerificationResult = ReferenceResults;
             AVerificationResult.AddCollection(SubmitResults);
 
