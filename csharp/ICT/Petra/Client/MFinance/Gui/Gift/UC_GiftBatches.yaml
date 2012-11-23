@@ -51,7 +51,6 @@ RootNode:
             ActionDoubleClick: ShowTransactionTab
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: BatchNumber DESC
-            SortableHeaders: false
         pnlDetails:
             Dock: Bottom
             Controls:

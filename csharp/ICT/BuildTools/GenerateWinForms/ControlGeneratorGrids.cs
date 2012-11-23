@@ -203,6 +203,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Clear();" + Environment.NewLine);
 
+				//This needs to come immediately after the Columns.Clear() and before the creation of the columns
+                if (ctrl.HasAttribute("SortableHeaders"))
+	            {
+	                string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
+	                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
+	            }
+
                 foreach (string ColumnFieldName in Columns)
                 {
                     bool IsDetailNotMaster;
@@ -285,12 +292,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 AssignEventHandlerToControl(writer, ctrl, "EnterKeyPressed", "TKeyPressedEventHandler",
                     ctrl.GetAttribute("ActionEnterKeyPressed"));
-            }
-
-            if (ctrl.HasAttribute("SortableHeaders"))
-            {
-                string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
-                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
             }
 
             if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable")
