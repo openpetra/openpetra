@@ -110,13 +110,13 @@ RootNode:
         txtField: {Label=Field, Type=PartnerKey, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
-        cmbMinistry: {Label=Key Ministry, ColSpan=2, Width=250, List=UserDefinedList, OnChange=KeyMinistryChanged}
-        txtDetailGiftTransactionAmount: {Label=Amount,Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
+        cmbMinistry: {Label=Key Ministry, ColSpan=2, List=UserDefinedList, OnChange=KeyMinistryChanged}
+        txtDetailGiftTransactionAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?}
         chkDetailTaxDeductable: {Label=Tax deductable?}
-        txtDetailGiftCommentOne: {Label=Comment 1,Width=250, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentTwo: {Label=Comment 2,Width=250, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentThree: {Label=Comment 3,Width=250, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentOne: {Label=Comment 1,Width=450, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentTwo: {Label=Comment 2,Width=450, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentThree: {Label=Comment 3,Width=450, Validation=true, OnLeave=DetailCommentChanged}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         cmbDetailCommentOneType:
             Label: for
@@ -136,6 +136,6 @@ RootNode:
         mniTransactions:
             Label: &Gift Transaction
             mniAdjustGift: {Action=actAdjustGift}
+            mniReverseGiftBatch: {Action=actReverseGiftBatch}
             mniReverseGift: {Action=actReverseGift}
             mniReverseGiftDetail: {Action=actReverseGiftDetail}
-            mniReverseGiftBatch: {Action=actReverseGiftBatch}

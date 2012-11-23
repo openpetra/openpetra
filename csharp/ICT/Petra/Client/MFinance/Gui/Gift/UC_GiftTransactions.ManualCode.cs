@@ -700,6 +700,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, out string ACompletionMessage)
         {
             bool deleteSuccessful = false;
+            string originatingDetailRef = string.Empty;
 
             ACompletionMessage = string.Empty;
 
@@ -707,6 +708,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+                //TODO: update to new field
+                originatingDetailRef = FPreviouslySelectedDetailRow.ModifiedDetailKey;
                 FPreviouslySelectedDetailRow.Delete();
                 FPreviouslySelectedDetailRow = null;
 
@@ -750,6 +753,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     FGift.LastDetailNumber--;
+                }
+
+                //Check if deleting a reversed gift detail
+                if (originatingDetailRef.StartsWith("|"))
+                {
+                    bool ok = TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, originatingDetailRef);
+
+                    if (!ok)
+                    {
+                        MessageBox.Show("Error in trying to reset Modified Detail field of the originating gift detail.");
+                    }
                 }
 
                 ACompletionMessage = Catalog.GetString("Gift row deleted successfully!");
@@ -1470,6 +1484,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)
         {
             ARow.CostCentreCode = txtDetailCostCentreCode.Text;
+            ARow.ModifiedDetailKey = string.Empty;
 
             if (ARow.DetailNumber != 1)
             {

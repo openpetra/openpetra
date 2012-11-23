@@ -1411,15 +1411,16 @@ namespace Ict.Common.Controls
         {
             // Assume we will show the specified row
             int rowToShow = ARowNumberInGrid;
-            
+
             // Get the list of displayed rows, not including partial rows
             Rectangle displayRectangle = this.DisplayRectangle;
-            List<int> displayedRows = this.Rows.RowsInsideRegion(displayRectangle.Y, displayRectangle.Height, false, false);
+
+            List <int>displayedRows = this.Rows.RowsInsideRegion(displayRectangle.Y, displayRectangle.Height, false, false);
 
             if (displayedRows.Count >= 3)
             {
                 // If the row to show is the current top row or above, we ensure that we show the row above the selected one
-                // If the row to show is the current bottom row or below, we ensure we show the row below the selected one 
+                // If the row to show is the current bottom row or below, we ensure we show the row below the selected one
                 if (rowToShow <= displayedRows[0])
                 {
                     rowToShow = Math.Max(rowToShow - 1, 1);
