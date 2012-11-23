@@ -11376,10 +11376,9 @@
                 initial="no"/>
     <tablefield name="a_modified_detail_key_c"
                 type="varchar"
-                descr="This is a demarked concatenation of the primary keys of the originating gift detail, of which this record is the inverse."
+                descr="Stores the concatenated primary key fields of the originating gift detail, of which this gift detail is the inverse."
                 format="X(24)"
                 label="Modified Detail Key"
-                help="Enter the concatenation of the primary keys of the originating detail record, separated by |"
                 notnull="yes"
   				initial=""/>
     <tablefield name="a_gift_transaction_amount_n"
