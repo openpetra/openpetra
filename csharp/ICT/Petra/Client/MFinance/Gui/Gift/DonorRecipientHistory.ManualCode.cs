@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             btnView.Enabled = false;
         }
 
-        private void OnCmbLedgerChange (System.Object sender, EventArgs e)
+        private void OnCmbLedgerChange(System.Object sender, EventArgs e)
         {
             FLedgerNumber = cmbLedger.GetSelectedInt32();
         }
@@ -88,6 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             cmbLedger.Enabled = true;
             Int16 DefaultLedger = TUserDefaults.GetInt16Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER, -1);
+
             if (DefaultLedger > 0)
             {
                 cmbLedger.SetSelectedInt32(DefaultLedger);

@@ -79,6 +79,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     if (TYml2Xml.HasAttribute(LocalNode, "PartnerKey"))
                     {
                         PartnerRow.PartnerKey = Convert.ToInt64(TYml2Xml.GetAttribute(LocalNode, "PartnerKey"));
+
                         if (PPartnerAccess.Exists(PartnerRow.PartnerKey, null))
                         {
                             AMainDS.Merge(PPartnerAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, null));
@@ -93,7 +94,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         {
                             AMainDS.PPartner.Rows.Add(PartnerRow);
                         }
-
                     }
                     else
                     {
@@ -108,16 +108,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         "PartnerKey=" + PartnerRow.PartnerKey
                         );
 
-                    if (IsExistingPartner && PartnerClass != PartnerRow.PartnerClass)
+                    if (IsExistingPartner && (PartnerClass != PartnerRow.PartnerClass))
                     {
-                        throw new Exception(String.Format ("Error: Yml contains Existing Partner {0} with a different partner class {1}!", 
-                            PartnerRow.PartnerKey, PartnerClass));
+                        throw new Exception(String.Format("Error: Yml contains Existing Partner {0} with a different partner class {1}!",
+                                PartnerRow.PartnerKey, PartnerClass));
                     }
+
                     PartnerRow.PartnerClass = PartnerClass;
 
                     if (PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
                     {
                         PFamilyRow FamilyRow;
+
                         if (IsExistingPartner)
                         {
                             AMainDS.Merge(PFamilyAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, null));
@@ -134,6 +136,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
                             AMainDS.PFamily.Rows.Add(FamilyRow);
                         }
+
                         FamilyRow.FamilyName = TYml2Xml.GetAttributeRecursive(LocalNode, "LastName");
                         FamilyRow.FirstName = TYml2Xml.GetAttribute(LocalNode, "FirstName");
                         FamilyRow.Title = TYml2Xml.GetAttribute(LocalNode, "Title");
@@ -142,7 +145,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         {
                             FamilyRow.DateCreated = Convert.ToDateTime(TYml2Xml.GetAttribute(LocalNode, "CreatedAt"));
                         }
-
 
                         PartnerRow.AddresseeTypeCode = MPartnerConstants.PARTNERCLASS_FAMILY;
 
@@ -153,6 +155,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     if (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
                         PPersonRow PersonRow;
+
                         if (IsExistingPartner)
                         {
                             AMainDS.Merge(PPersonAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, null));
@@ -168,13 +171,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             PersonRow.PartnerKey = PartnerRow.PartnerKey;
                             AMainDS.PPerson.Rows.Add(PersonRow);
                         }
+
                         PersonRow.FamilyName = TYml2Xml.GetAttributeRecursive(LocalNode, "LastName");
                         PersonRow.FirstName = TYml2Xml.GetAttribute(LocalNode, "FirstName");
                         PersonRow.Title = TYml2Xml.GetAttribute(LocalNode, "Title");
+
                         if (TYml2Xml.HasAttribute(LocalNode, "CreatedAt"))
                         {
                             PersonRow.DateCreated = Convert.ToDateTime(TYml2Xml.GetAttribute(LocalNode, "CreatedAt"));
                         }
+
                         // PersonRow.Sp
                         PartnerRow.PartnerShortName =
                             Calculations.DeterminePartnerShortName(PersonRow.FamilyName, PersonRow.Title, PersonRow.FirstName);
@@ -182,6 +188,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     else if (PartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
                     {
                         POrganisationRow OrganisationRow;
+
                         if (IsExistingPartner)
                         {
                             AMainDS.Merge(POrganisationAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, null));
@@ -221,6 +228,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             UnitRow.PartnerKey = PartnerRow.PartnerKey;
                             AMainDS.PUnit.Rows.Add(UnitRow);
                         }
+
                         UnitRow.UnitTypeCode = TYml2Xml.GetAttributeRecursive(LocalNode, "UnitTypeCode");
                         UnitRow.UnitName = TYml2Xml.GetAttributeRecursive(LocalNode, "Name");
 
@@ -238,7 +246,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             // ...to here: throws Exception in case of a illegal import file?
                             // The above code must have a glitch
                         }
-
 
                         if (!TYml2Xml.HasAttribute(LocalNode, "ParentUnitKey"))
                         {
@@ -260,7 +267,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                                 PartnerRow.PartnerKey);
                             UnitStructureRow = (UmUnitStructureRow)AMainDS.UmUnitStructure.DefaultView[0].Row;
                             UnitStructureRow.ParentUnitKey = ParentKey;
-                       }
+                        }
                         else
                         {
                             UnitStructureRow = AMainDS.UmUnitStructure.NewRowTyped();
@@ -274,6 +281,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     else if (PartnerClass == MPartnerConstants.PARTNERCLASS_BANK)
                     {
                         PBankRow BankRow;
+
                         if (IsExistingPartner)
                         {
                             AMainDS.Merge(PBankAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, null));
@@ -290,9 +298,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             AMainDS.PBank.Rows.Add(BankRow);
                         }
 
-                        BankRow.BranchName = TYml2Xml.GetAttribute(LocalNode, "BranchName");  
-                        BankRow.BranchCode = TYml2Xml.GetAttribute(LocalNode, "BranchCode");  
-                        BankRow.Bic = TYml2Xml.GetAttribute(LocalNode, "BranchBic");   
+                        BankRow.BranchName = TYml2Xml.GetAttribute(LocalNode, "BranchName");
+                        BankRow.BranchCode = TYml2Xml.GetAttribute(LocalNode, "BranchCode");
+                        BankRow.Bic = TYml2Xml.GetAttribute(LocalNode, "BranchBic");
                         BankRow.EpFormatFile = TYml2Xml.GetAttribute(LocalNode, "EpFormatFile");
 
                         if (TYml2Xml.HasAttribute(LocalNode, "CreatedAt"))
@@ -329,6 +337,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             PPartnerTypeTable.GetTypeCodeDBName(),
                             SpecialType
                             );
+
                         if (AMainDS.PPartnerType.DefaultView.Count > 0)
                         {
                             PartnerTypeRow = (PPartnerTypeRow)AMainDS.PPartnerType.DefaultView[0].Row;
@@ -343,9 +352,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         // Check Partner type exists, or create it
                         bool TypeIsKnown = PTypeAccess.Exists(PartnerTypeRow.TypeCode, null);
+
                         if (!TypeIsKnown)
                         {
                             Int32 RowIdx = AMainDS.PType.DefaultView.Find(PartnerTypeRow.TypeCode); // I might have created it a second ago..
+
                             if (RowIdx < 0)
                             {
                                 PTypeRow TypeRow = AMainDS.PType.NewRowTyped();
@@ -775,12 +786,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         }
 
                         PBankRow BankRow = null;
+
                         if (partnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_BANK)
                         {
                             MainDS.PBank.DefaultView.RowFilter = PBankTable.GetPartnerKeyDBName() + "=" + partnerKey.ToString();
                             BankRow = (PBankRow)MainDS.PBank.DefaultView[0].Row;
                         }
-
 
                         partnerCounter++;
                         XmlElement partnerNode = PartnerData.CreateElement("Partner" + partnerCounter.ToString());

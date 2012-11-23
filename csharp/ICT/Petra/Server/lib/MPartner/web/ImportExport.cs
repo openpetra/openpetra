@@ -575,7 +575,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 {
                     PLocationRow ImportLocationRow = (PLocationRow)MainDS.PLocation.DefaultView[0].Row;
 
-
                     // Now I want to find out whether this row exists in my database.
                     foreach (PLocationRow DbLocationRow in LocationTable.Rows)
                     {
@@ -1516,6 +1515,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         ),
                     TResultSeverity.Resv_Status);
             }
+
             AVerificationResult = ReferenceResults;
             AVerificationResult.AddCollection(SubmitResults);
 

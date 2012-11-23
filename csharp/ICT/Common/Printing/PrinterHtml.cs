@@ -64,6 +64,7 @@ namespace Ict.Common.Printing
         {
             FPrinter = APrinter;
             FPath = APath;
+
             if (AHtmlDocument != "")
             {
                 AHtmlDocument = AHtmlDocument.Replace("<pagebreak/>", "</body><body>");

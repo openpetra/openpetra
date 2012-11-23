@@ -139,17 +139,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (!printerInstalled)
             {
                 MessageBox.Show(Catalog.GetString("No printer is installed, so printing is not possible"),
-                                            Catalog.GetString("Receipt Printing"));
+                    Catalog.GetString("Receipt Printing"));
                 return;
             }
 
             //
             // The HTML string returned here may be several complete HTML documents, with <body>...</body> for each page.
             string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintReceipts(FGiftTbl);
+
             if (HtmlDoc == "")
             {
                 MessageBox.Show(Catalog.GetString("The server returned no pages to print."),
-                                            Catalog.GetString("Receipt Printing"));
+                    Catalog.GetString("Receipt Printing"));
                 return;
             }
 

@@ -949,6 +949,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     ALocationKey);
 
             Boolean FirstAddressWritten = false;
+
             if (AMainDS.PLocation.DefaultView.Count > 0)
             {
                 WriteLocation((PLocationRow)AMainDS.PLocation.DefaultView[0].Row,

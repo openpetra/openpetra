@@ -185,6 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FBatchRow = GetBatchRow();
+
             if (FBatchRow != null)
             {
                 LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus);
