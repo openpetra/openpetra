@@ -1590,23 +1590,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.Focus();
             }
         }
-
-        private void ShowMessages(TVerificationResultCollection AMessages)
-        {
-            string ErrorMessages = String.Empty;
-
-            if (AMessages.Count > 0)
-            {
-                foreach (TVerificationResult message in AMessages)
-                {
-                    ErrorMessages += "[" + message.ResultContext + "] " + message.ResultTextCaption + ": " + message.ResultText + Environment.NewLine;
-                }
-            }
-
-            if (ErrorMessages.Length > 0)
-            {
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
     }
 }
