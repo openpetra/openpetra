@@ -186,7 +186,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FBatchRow = GetBatchRow();
 
-            LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus);
+            if (FBatchRow != null)
+            {
+                LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus);
+            }
         }
 
         bool FinRecipientKeyChanging = false;
@@ -706,10 +709,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-            	if (ARowToDelete.ModifiedDetailKey != null)
+                if (ARowToDelete.ModifiedDetailKey != null)
                 {
-                	originatingDetailRef = ARowToDelete.ModifiedDetailKey;
+                    originatingDetailRef = ARowToDelete.ModifiedDetailKey;
                 }
+
                 ARowToDelete.Delete();
                 ARowToDelete = null;
 

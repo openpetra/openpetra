@@ -203,12 +203,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Clear();" + Environment.NewLine);
 
-				//This needs to come immediately after the Columns.Clear() and before the creation of the columns
+                //This needs to come immediately after the Columns.Clear() and before the creation of the columns
                 if (ctrl.HasAttribute("SortableHeaders"))
-	            {
-	                string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
-	                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
-	            }
+                {
+                    string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
+                    writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
+                }
 
                 foreach (string ColumnFieldName in Columns)
                 {
@@ -277,12 +277,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else
             {
-				//If no columns, but the user is able to add columns dynamically during the running of the form, then need this here.
+                //If no columns, but the user is able to add columns dynamically during the running of the form, then need this here.
                 if (ctrl.HasAttribute("SortableHeaders"))
-	            {
-	                string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
-	                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
-	            }
+                {
+                    string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
+                    writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
+                }
             }
 
             if (ctrl.HasAttribute("ActionLeavingRow"))
