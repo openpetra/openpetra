@@ -22,14 +22,66 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TFrmSetupCostCentreTypes
     {
+        private Int32 FLedgerNumber;
+
+        /// <summary>
+        /// Only see Cost Centre Types for this ledger
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            set
+            {
+                FLedgerNumber = value;
+                FMainDS.ACostCentreTypes.DefaultView.RowFilter = String.Format("{0}={1}",
+                    ACostCentreTable.GetLedgerNumberDBName(),
+                    FLedgerNumber
+                );
+                FMainDS.ACostCentreTypes.DefaultView.Sort = ACostCentreTypesTable.GetCostCentreTypeDBName();
+            }
+        }
+
+        private String UniqueNewKey()
+        {
+            Int32 KeyIdx = 1;
+            String NewKey = "New Type ";
+            FMainDS.ACostCentreTypes.DefaultView.Sort = ACostCentreTypesTable.GetCostCentreTypeDBName();
+            while (FMainDS.ACostCentreTypes.DefaultView.Find(NewKey + KeyIdx) >= 0)
+            {
+                KeyIdx++;
+            }
+            return NewKey + KeyIdx;
+        }
+
         private void NewRow(System.Object sender, EventArgs e)
         {
-            CreateNewACostCentreTypes();
+            // This code derived from the auto-generated CreateNewACostCentreTypes(), because that doesn't cope with LedgerNumber.
+            if (ValidateAllData(true, true))
+            {
+                ACostCentreTypesRow NewRow = FMainDS.ACostCentreTypes.NewRowTyped();
+                NewRow.LedgerNumber = FLedgerNumber;
+                NewRow.CostCentreType = UniqueNewKey();
+                NewRow.CcDescription = "PLEASE ENTER DESCRIPTION";
+                FMainDS.ACostCentreTypes.Rows.Add(NewRow);
+
+                FPetraUtilsObject.SetChangedFlag();
+
+                grdDetails.DataSource = null;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ACostCentreTypes.DefaultView);
+
+                SelectDetailRowByDataTableIndex(FMainDS.ACostCentreTypes.Rows.Count - 1);
+                ValidateAllData(true, false);
+                txtDetailCostCentreType.Focus();
+            }
+        }
+
+        private void ShowDetailsManual(ACostCentreTypesRow ARow)
+        {
         }
     }
 }

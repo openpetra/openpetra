@@ -36,7 +36,7 @@ RootNode:
             Controls:
                 Row0: [txtDetailCostCentreType, txtDetailCcDescription]
                 Row1: [chkDetailDeletable]
-        txtDetailCostCentreType: {Label=Cost Centre Type, CharacterCasing=Upper}
+        txtDetailCostCentreType: {Label=Cost Centre Type}
         txtDetailCcDescription: {Label=Description, Width=319}
         chkDetailDeletable: {Label=Deletable}
     Toolbar:

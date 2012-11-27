@@ -39,8 +39,8 @@ OpenPetra:
                     Contacts:
                         FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Partner Contacts}
                     ImportExport: {Label=Import and Export}
-                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description="Export to YAML file for importing into other OpenPetra database"}
-                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from file or satellite database}
+                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
+                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
