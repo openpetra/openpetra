@@ -50,7 +50,6 @@ RootNode:
             ActionDoubleClick: ShowJournalTab
             ActionEnterKeyPressed: ShowJournalTab
             SortOrder: ABatch.BatchNumber DESC
-            SortableHeaders: false
         pnlDetails:
             Dock: Bottom
             Controls:

@@ -63,11 +63,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
+            //Need this to allow focus to go to the grid.
+            tabGLBatch.TabStop = false;
+
             tabGLBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
-            //Need this to give focus to the grid. Cannot do it using Focus()
-            SendKeys.Send("{TAB}");
+            this.ucoBatches.FocusGrid();
         }
 
         private void InitializeManualCode()

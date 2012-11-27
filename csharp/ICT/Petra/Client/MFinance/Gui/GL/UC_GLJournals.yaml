@@ -44,7 +44,6 @@ RootNode:
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: AJournal.JournalNumber ASC
             RowFilter: AJournal.BatchNumber
-            SortableHeaders: false
         pnlDetails:
             Dock: Bottom
             Controls: 
