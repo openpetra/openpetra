@@ -140,14 +140,14 @@ namespace Ict.Testing.IctCommonRemoting.Client
             catch (EServerConnectionGeneralException exp)
             {
                 TLogging.Log(
-                    "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(), TLoggingType.ToLogfile);
+                    Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(), TLoggingType.ToLogfile);
 
                 return false;
             }
             catch (Exception exp)
             {
                 TLogging.Log(
-                    "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(), TLoggingType.ToLogfile);
+                    Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(), TLoggingType.ToLogfile);
 
                 return false;
             }
