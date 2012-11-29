@@ -133,6 +133,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateChangeableStatus();
             FPetraUtilsObject.HasChanges = false;
             FPetraUtilsObject.SuppressChangeDetection = false;
+            FBatchLoaded = true;
         }
 
         /// <summary>
@@ -211,7 +212,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ShowData();
             ShowDetails(GetCurrentBatchRow());
-
             FBatchLoaded = true;
         }
 
