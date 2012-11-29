@@ -140,7 +140,6 @@ namespace Ict.Common.Controls
         public Bitmap GetIcon(string AFileName, TIconSize AIconSize)
         {
             Icon TheItem;
-            Size IconSize = GetIconSize(AIconSize);
 
             if (AFileName == null)
             {
