@@ -34,7 +34,7 @@ namespace Ict.Common.Controls
     /// </summary>
     /// <remarks>A single Icon file can hold an Icon in multiple sizes (e.g. 16x16 pixels
     /// and 32x32 pixels) and this Cache can return the Icon in the desired sizes from the Cache.</remarks>
-    public class TIconCache : ConcurrentDictionary <string, MemoryStream>
+    public class TIconCache : Dictionary <string, MemoryStream>
     {
         /// <summary>
         /// Size of Icon.
@@ -89,6 +89,7 @@ namespace Ict.Common.Controls
         public void AddIcon(string AFileName)
         {
             MemoryStream ms;
+            MemoryStream existingms;
 
             if (AFileName == null)
             {
@@ -101,19 +102,35 @@ namespace Ict.Common.Controls
                    IconFile = new FileStream(AFileName, FileMode.Open, FileAccess.Read))
             {
                 IconFile.CopyTo(ms);
-                this.AddOrUpdate(AFileName, ms, (AKey, AExistingValue) =>
-                    {
-                        // If this delegate is invoked, then the key already exists.
+                
+                if (TryGetValue(AFileName, out existingms))
+                {
                         // Here we make sure the MemoryStream really is the same MemoryStream we already have.
-                        if (ms != AExistingValue)
+                        if (ms != existingms)
                         {
                             throw new ArgumentException("Duplicate MemoryStream names are not allowed: {0}.", AFileName);
                         }
 
-                        // The only updatable fields are the temerature array and lastQueryDate.
-                        AExistingValue = ms;
-                        return AExistingValue;
-                    });
+                        Add(AFileName, ms);
+                }
+                else
+                {
+                    Add(AFileName, ms);
+                }
+                    
+// More elegant version of this code, should we switch back to deriving this Class from 'ConcurrentDirectory' (once that doesn't cause Exceptions on mono anymore...):                
+//                this.AddOrUpdate(AFileName, ms, (AKey, AExistingValue) =>
+//                    {
+//                        // If this delegate is invoked, then the key already exists.
+//                        // Here we make sure the MemoryStream really is the same MemoryStream we already have.
+//                        if (ms != AExistingValue)
+//                        {
+//                            throw new ArgumentException("Duplicate MemoryStream names are not allowed: {0}.", AFileName);
+//                        }
+//
+//                        AExistingValue = ms;
+//                        return AExistingValue;
+//                    });
             }
         }
 

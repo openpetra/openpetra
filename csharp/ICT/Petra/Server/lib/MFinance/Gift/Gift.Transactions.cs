@@ -772,10 +772,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             ABatchRow batch = GLDataset.ABatch[0];
 
-            AGiftBatchRow giftbatch = AGiftDataset.AGiftBatch[0];
+            AGiftBatchRow giftBatch = AGiftDataset.AGiftBatch[0];
 
-            batch.BatchDescription = Catalog.GetString("Gift Batch " + giftbatch.BatchNumber.ToString());
-            batch.DateEffective = giftbatch.GlEffectiveDate;
+            batch.BatchDescription = Catalog.GetString("Gift Batch " + giftBatch.BatchNumber.ToString());
+            batch.DateEffective = giftBatch.GlEffectiveDate;
+            batch.GiftBatchNumber = giftBatch.BatchNumber;
 
             // TODO batchperiod depending on date effective; or fix that when posting?
             // batch.BatchPeriod =
@@ -787,8 +788,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             journal.BatchNumber = batch.BatchNumber;
             journal.JournalNumber = 1;
             journal.DateEffective = batch.DateEffective;
-            journal.JournalPeriod = giftbatch.BatchPeriod;
-            journal.TransactionCurrency = giftbatch.CurrencyCode;
+            journal.JournalPeriod = giftBatch.BatchPeriod;
+            journal.TransactionCurrency = giftBatch.CurrencyCode;
             journal.JournalDescription = batch.BatchDescription;
             journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
             journal.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
@@ -819,12 +820,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     transaction.TransactionNumber = ++journal.LastTransactionNumber;
                     transaction.AccountCode = giftdetail.AccountCode;
                     transaction.CostCentreCode = giftdetail.CostCentreCode;
-                    transaction.Narrative = "GB - Gift Batch " + giftbatch.BatchNumber.ToString();
-                    transaction.Reference = "GB" + giftbatch.BatchNumber.ToString();
+                    transaction.Narrative = "GB - Gift Batch " + giftBatch.BatchNumber.ToString();
+                    transaction.Reference = "GB" + giftBatch.BatchNumber.ToString();
                     transaction.DebitCreditIndicator = false;
                     transaction.TransactionAmount = 0;
                     transaction.AmountInBaseCurrency = 0;
-                    transaction.TransactionDate = giftbatch.GlEffectiveDate;
+                    transaction.TransactionDate = giftBatch.GlEffectiveDate;
 
                     GLDataset.ATransaction.Rows.Add(transaction);
                 }
@@ -847,7 +848,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             transactionForTotals.JournalNumber = journal.JournalNumber;
             transactionForTotals.TransactionNumber = ++journal.LastTransactionNumber;
             transactionForTotals.TransactionAmount = 0;
-            transactionForTotals.TransactionDate = giftbatch.GlEffectiveDate;
+            transactionForTotals.TransactionDate = giftBatch.GlEffectiveDate;
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
@@ -863,12 +864,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // if motivation cost centre is a summary cost centre, make sure the transaction costcentre is reporting to that summary cost centre
             // Careful: modify gift cost centre and account and recipient field only when the amount is positive.
             // adjustments and reversals must remain on the original value
-            transactionForTotals.AccountCode = giftbatch.BankAccountCode;
+            transactionForTotals.AccountCode = giftBatch.BankAccountCode;
             transactionForTotals.CostCentreCode =
                 TGLTransactionWebConnector.GetStandardCostCentre(
                     ALedgerNumber);
-            transactionForTotals.Narrative = "Deposit from receipts - Gift Batch " + giftbatch.BatchNumber.ToString();
-            transactionForTotals.Reference = "GB" + giftbatch.BatchNumber.ToString();
+            transactionForTotals.Narrative = "Deposit from receipts - Gift Batch " + giftBatch.BatchNumber.ToString();
+            transactionForTotals.Reference = "GB" + giftBatch.BatchNumber.ToString();
 
             GLDataset.ATransaction.Rows.Add(transactionForTotals);
 

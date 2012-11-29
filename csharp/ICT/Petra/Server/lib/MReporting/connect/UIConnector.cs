@@ -148,7 +148,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             }
             catch (Exception e)
             {
-                TLogging.Log("problem when calculating report: " + e.Message);
+                TLogging.Log("problem calculating report: " + e.Message);
                 TLogging.Log(e.StackTrace, TLoggingType.ToLogfile);
             }
             DBAccess.GDBAccessObj.RollbackTransaction();

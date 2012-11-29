@@ -170,58 +170,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
+            ParseHashTotal(ARow);
+
             TSharedFinanceValidation_GL.ValidateGLBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
         }
 
         private void ParseHashTotal(ABatchRow ARow)
         {
-            decimal correctHashValue;
+            decimal correctHashValue = 0;
             string hashTotal = txtDetailBatchControlTotal.Text.Trim();
-            string hashNumericPart = string.Empty;
             decimal hashDecimalVal;
-            Int32 hashTotalIndexOfLastNumeric = -1;
-            bool isNumericVal;
 
-            if (!txtDetailBatchControlTotal.NumberValueDecimal.HasValue)
+            if ((hashTotal == null) || (hashTotal.Length == 0))
             {
                 correctHashValue = 0m;
             }
-            else if (hashTotal.Contains(" "))
+            else
             {
-                hashNumericPart = hashTotal.Substring(0, hashTotal.IndexOf(' '));
-
-                if (!Decimal.TryParse(hashNumericPart, out hashDecimalVal))
+                if (!Decimal.TryParse(hashTotal, out hashDecimalVal))
                 {
                     correctHashValue = 0m;
                 }
                 else
                 {
                     correctHashValue = hashDecimalVal;
-                }
-            }
-            else
-            {
-                hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
-
-                if (hashTotalIndexOfLastNumeric > -1)
-                {
-                    hashNumericPart = hashTotal.Substring(0, hashTotalIndexOfLastNumeric + 1);
-                    isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
-
-                    if (!isNumericVal)
-                    {
-                        correctHashValue = 0m;
-                    }
-                    else
-                    {
-                        //hashTotal = hashTotal.Insert(hashNumericPart.Length, " ");
-                        correctHashValue = hashDecimalVal;
-                    }
-                }
-                else
-                {
-                    correctHashValue = 0m;
                 }
             }
 

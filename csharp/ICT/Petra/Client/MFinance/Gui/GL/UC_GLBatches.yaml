@@ -50,7 +50,6 @@ RootNode:
             ActionDoubleClick: ShowJournalTab
             ActionEnterKeyPressed: ShowJournalTab
             SortOrder: ABatch.BatchNumber DESC
-            SortableHeaders: false
         pnlDetails:
             Dock: Bottom
             Controls:
@@ -58,7 +57,7 @@ RootNode:
                 Row1: [txtDetailBatchControlTotal]
                 Row2: [dtpDetailDateEffective, lblValidDateRange]
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
-        txtDetailBatchControlTotal: {Label=Batch Hash Total, Type=Currency, Format=Currency, NullValueAllowed=false}
+        txtDetailBatchControlTotal: {Label=Batch Hash Total, Format=Decimal, Width=115, NullValueAllowed=false}
         lblValidDateRange: {Width=300}
         dtpDetailDateEffective: {Label=Effective Date, OnChange=UpdateBatchPeriod, Validation = true}
         tbrTabPage: {NoAttribute=true}
