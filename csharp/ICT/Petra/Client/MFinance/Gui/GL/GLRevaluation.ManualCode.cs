@@ -466,6 +466,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 decimal selectedExchangeRate;
                 DateTime selectedEffectiveDate;
                 int selectedEffectiveTime;
+
                 if (frmExchangeRate.ShowDialog(
                         mainForm.FLedgerNumber,
                         dteStart,

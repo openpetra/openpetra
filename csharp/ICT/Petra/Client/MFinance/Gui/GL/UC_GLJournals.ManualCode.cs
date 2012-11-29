@@ -181,6 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             decimal selectedExchangeRate;
             DateTime selectedEffectiveDate;
             int selectedEffectiveTime;
+
             if (setupDailyExchangeRate.ShowDialog(
                     FLedgerNumber,
                     dtpDetailDateEffective.Date.HasValue ? dtpDetailDateEffective.Date.Value : DateTime.Today,
