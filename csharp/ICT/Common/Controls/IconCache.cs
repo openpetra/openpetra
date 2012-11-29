@@ -150,7 +150,7 @@ namespace Ict.Common.Controls
             {
                 try
                 {
-                    TheItem = (Icon) this[AFileName + IconSize.ToString()];
+                    TheItem = (Icon) this[AFileName + AIconSize.ToString()];
                 }
                 catch (KeyNotFoundException)
                 {
