@@ -275,7 +275,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 MessageBox.Show(Catalog.GetString(
-                        "Revaluation properly done!"));
+                        "GL Revaluation complete."));
             }
 
             SaveUserDefaults();
