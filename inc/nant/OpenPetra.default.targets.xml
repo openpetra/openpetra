@@ -88,7 +88,7 @@
 
   <if test="${not platform::is-windows()}">
      <!-- TODO: Open a xterm with OpenPetra Server? -->
-    <exec program="${framework::get-runtime-engine(framework::get-target-framework())}" 
+    <exec program="${MonoExecutable.file}" 
           workingdir="${dir.bin}"
           commandline="PetraServerConsole.exe -RunWithoutMenu:true -C:${ServerConfigFile}"
           spawn="true">
@@ -109,7 +109,7 @@
             commandline="-Command:Stop -C:${ServerAdminConfigFile}"/>
   </if>
   <if test="${not platform::is-windows()}">
-      <exec program="${framework::get-runtime-engine(framework::get-target-framework())}" 
+      <exec program="${MonoExecutable.file}" 
               workingdir="${dir.bin}"
               commandline="PetraServerAdminConsole.exe -Command:Stop -C:${ServerAdminConfigFile}"
               spawn="false">
@@ -137,7 +137,7 @@
 
   <if test="${not platform::is-windows()}">
    <!-- Open a xterm with OpenPetra Server? -->
-   <exec program="${framework::get-runtime-engine(framework::get-target-framework())}" 
+   <exec program="${MonoExecutable.file}" 
               workingdir="${dir.bin}"
               commandline="PetraClient.exe -C:${ClientConfigFile}"
               spawn="true">
