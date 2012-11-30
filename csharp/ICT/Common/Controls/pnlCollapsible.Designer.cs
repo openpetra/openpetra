@@ -90,7 +90,6 @@ namespace Ict.Common.Controls
             //
             // pnlCollapsedInfoText
             //
-            this.pnlCollapsedInfoText.AutoSize = true;
             this.pnlCollapsedInfoText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(216)))), ((int)(((byte)(228)))), ((int)(((byte)(248)))));
             this.pnlCollapsedInfoText.Controls.Add(this.otlCollapsedInfoText);
             this.pnlCollapsedInfoText.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -108,7 +107,7 @@ namespace Ict.Common.Controls
             // otlCollapsedInfoText
             //
             this.otlCollapsedInfoText.BackColor = System.Drawing.Color.Transparent;
-            this.otlCollapsedInfoText.Dock = System.Windows.Forms.DockStyle.Left;
+            this.otlCollapsedInfoText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.otlCollapsedInfoText.Font = new System.Drawing.Font("Verdana",
                 12.75F,
                 System.Drawing.FontStyle.Bold,
