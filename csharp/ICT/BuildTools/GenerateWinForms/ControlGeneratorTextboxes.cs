@@ -166,12 +166,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 else if (ctrl.GetAttribute("Type") == "ShortTime")
                 {
                     // for seconds to short time
-                    return ctrl.controlName + ".Text = new Ict.Common.TypeConverter.TShortTimeConverter().ConvertTo(" + AFieldOrNull + ", typeof(string)).ToString();";
+                    return ctrl.controlName + ".Text = new Ict.Common.TypeConverter.TShortTimeConverter().ConvertTo(" + AFieldOrNull +
+                           ", typeof(string)).ToString();";
                 }
                 else if (ctrl.GetAttribute("Type") == "LongTime")
                 {
                     // for seconds to long time
-                    return ctrl.controlName + ".Text = new Ict.Common.TypeConverter.TLongTimeConverter().ConvertTo(" + AFieldOrNull + ", typeof(string)).ToString();";
+                    return ctrl.controlName + ".Text = new Ict.Common.TypeConverter.TLongTimeConverter().ConvertTo(" + AFieldOrNull +
+                           ", typeof(string)).ToString();";
                 }
 
                 return ctrl.controlName + ".Text = " + AFieldOrNull + ".ToString();";

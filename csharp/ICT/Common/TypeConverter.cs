@@ -187,7 +187,6 @@ namespace Ict.Common
                 : base()
             {
             }
-
         }
 
         /// <summary>
@@ -249,7 +248,6 @@ namespace Ict.Common
                 : base()
             {
             }
-
         }
 
         private class TTimeConverterInternal
@@ -266,12 +264,13 @@ namespace Ict.Common
                     case "System.Double":
                         return true;
                 }
+
                 return false;
             }
 
             public static bool CanConvertTo(Type DestinationType)
             {
-                return (DestinationType == typeof(int) || DestinationType == typeof(string));
+                return DestinationType == typeof(int) || DestinationType == typeof(string);
             }
 
             /// <summary>
@@ -286,6 +285,7 @@ namespace Ict.Common
             public static object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value, bool bAsLongTimeString)
             {
                 DateTime dt = new DateTime();
+
                 switch (value.GetType().FullName)
                 {
                     case "System.Int32":
@@ -295,19 +295,25 @@ namespace Ict.Common
                     case "System.Double":
                         // Number to string
                         double dblValue = Convert.ToDouble(value);
-                        if (dblValue >= 0.0 && dblValue < 86400.0)
+
+                        if ((dblValue >= 0.0) && (dblValue < 86400.0))
                         {
                             dt = dt.AddMilliseconds(dblValue * 1000);
                             return (bAsLongTimeString) ? dt.ToLongTimeString() : dt.ToShortTimeString();
                         }
+
                         break;
+
                     case "System.String":
+
                         // String to string
                         if (DateTime.TryParse(value.ToString(), out dt))
                         {
                             return (bAsLongTimeString) ? dt.ToLongTimeString() : dt.ToShortTimeString();
                         }
+
                         break;
+
                     default:
                         break;
                 }
@@ -325,13 +331,21 @@ namespace Ict.Common
             /// <param name="destinationType"></param>
             /// <param name="bAsLongTimeString"></param>
             /// <returns></returns>
-            public static object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType, bool bAsLongTimeString)
+            public static object ConvertTo(ITypeDescriptorContext context,
+                CultureInfo culture,
+                object value,
+                Type destinationType,
+                bool bAsLongTimeString)
             {
-                if (value == null) return null;
+                if (value == null)
+                {
+                    return null;
+                }
 
                 if (destinationType == typeof(string))
                 {
                     DateTime dt = new DateTime();
+
                     switch (value.GetType().FullName)
                     {
                         case "System.Int32":
@@ -341,19 +355,25 @@ namespace Ict.Common
                         case "System.Double":
                             // Number to string
                             double dblValue = Convert.ToDouble(value);
-                            if (dblValue >= 0.0 && dblValue < 86400.0)
+
+                            if ((dblValue >= 0.0) && (dblValue < 86400.0))
                             {
                                 dt = dt.AddMilliseconds(dblValue * 1000);
                                 return (bAsLongTimeString) ? dt.ToLongTimeString() : dt.ToShortTimeString();
                             }
+
                             break;
+
                         case "System.String":
+
                             // String to string
                             if (DateTime.TryParse(value.ToString(), out dt))
                             {
                                 return (bAsLongTimeString) ? dt.ToLongTimeString() : dt.ToShortTimeString();
                             }
+
                             break;
+
                         default:
                             break;
                     }
@@ -367,14 +387,18 @@ namespace Ict.Common
                         case "System.String":
                             // String to int
                             DateTime dt = new DateTime();
+
                             if (DateTime.TryParse(value.ToString(), out dt))
                             {
                                 return (int)((dt.Hour * 3600) + (dt.Minute * 60) + dt.Second);
                             }
+
                             break;
+
                         default:
                             break;
                     }
+
                     return -1;      // negative numbers are failures
                 }
 

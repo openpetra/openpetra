@@ -732,10 +732,11 @@ namespace Ict.Common.Verification
             }
 
             // Check
-            if (AValue.Value < 0 || AValue.Value >= 86400)
+            if ((AValue.Value < 0) || (AValue.Value >= 86400))
             {
                 ReturnValue = new TVerificationResult(AResultContext,
-                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDINTEGERTIME, CommonResourcestrings.StrInvalidStringEntered + Environment.NewLine +
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDINTEGERTIME, CommonResourcestrings.StrInvalidStringEntered +
+                        Environment.NewLine +
                         StrMustBeTime, new string[] { Description }));
 
                 if (AResultColumn != null)

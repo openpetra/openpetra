@@ -102,23 +102,23 @@ namespace Ict.Common.Controls
                    IconFile = new FileStream(AFileName, FileMode.Open, FileAccess.Read))
             {
                 IconFile.CopyTo(ms);
-                
+
                 if (TryGetValue(AFileName, out existingms))
                 {
-                        // Here we make sure the MemoryStream really is the same MemoryStream we already have.
-                        if (ms != existingms)
-                        {
-                            throw new ArgumentException("Duplicate MemoryStream names are not allowed: {0}.", AFileName);
-                        }
+                    // Here we make sure the MemoryStream really is the same MemoryStream we already have.
+                    if (ms != existingms)
+                    {
+                        throw new ArgumentException("Duplicate MemoryStream names are not allowed: {0}.", AFileName);
+                    }
 
-                        Add(AFileName, ms);
+                    Add(AFileName, ms);
                 }
                 else
                 {
                     Add(AFileName, ms);
                 }
-                    
-// More elegant version of this code, should we switch back to deriving this Class from 'ConcurrentDirectory' (once that doesn't cause Exceptions on mono anymore...):                
+
+// More elegant version of this code, should we switch back to deriving this Class from 'ConcurrentDirectory' (once that doesn't cause Exceptions on mono anymore...):
 //                this.AddOrUpdate(AFileName, ms, (AKey, AExistingValue) =>
 //                    {
 //                        // If this delegate is invoked, then the key already exists.

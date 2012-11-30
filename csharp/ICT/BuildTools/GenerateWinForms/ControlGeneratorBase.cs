@@ -1095,7 +1095,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 helpText = AField.strDescription;
             }
 
-            if (helpText.Length > 0 && ctrl.GetAttribute("Tooltip").Length == 0)
+            if ((helpText.Length > 0) && (ctrl.GetAttribute("Tooltip").Length == 0))
             {
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
                     ", Catalog.GetString(\"" +
