@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,7 +90,6 @@ namespace Ict.Common.Controls
             //
             // pnlCollapsedInfoText
             //
-            this.pnlCollapsedInfoText.AutoSize = true;
             this.pnlCollapsedInfoText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(216)))), ((int)(((byte)(228)))), ((int)(((byte)(248)))));
             this.pnlCollapsedInfoText.Controls.Add(this.otlCollapsedInfoText);
             this.pnlCollapsedInfoText.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -108,7 +107,7 @@ namespace Ict.Common.Controls
             // otlCollapsedInfoText
             //
             this.otlCollapsedInfoText.BackColor = System.Drawing.Color.Transparent;
-            this.otlCollapsedInfoText.Dock = System.Windows.Forms.DockStyle.Left;
+            this.otlCollapsedInfoText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.otlCollapsedInfoText.Font = new System.Drawing.Font("Verdana",
                 12.75F,
                 System.Drawing.FontStyle.Bold,
@@ -228,8 +227,10 @@ namespace Ict.Common.Controls
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            // AutoSize causes problems on Mono
+            // this.AutoSize = true;
+            // this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Controls.Add(this.pnlTitle);
             this.BackColor = System.Drawing.Color.FromArgb(150, 184, 228);
             this.Margin = new System.Windows.Forms.Padding(1);
