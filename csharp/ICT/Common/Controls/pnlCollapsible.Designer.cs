@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -228,8 +228,10 @@ namespace Ict.Common.Controls
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            // AutoSize causes problems on Mono
+            // this.AutoSize = true;
+            // this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Controls.Add(this.pnlTitle);
             this.BackColor = System.Drawing.Color.FromArgb(150, 184, 228);
             this.Margin = new System.Windows.Forms.Padding(1);
