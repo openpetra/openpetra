@@ -1053,6 +1053,34 @@ namespace Ict.Common.Controls
             AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, PartnerKeyEditor, null, null, null);
         }
 
+        /// <summary>
+        /// Add a column that shows a time value in localised short string format.  Data should be in the form of a numeric seconds, or a parsable HH:MM:SS string.
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        public void AddShortTimeColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+            SourceGrid.Cells.Editors.TextBoxUITypeEditor TimeEditor = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(DateTime));
+            TimeEditor.EditableMode = EditableMode.None;
+            TimeEditor.TypeConverter = new Ict.Common.TypeConverter.TShortTimeConverter();
+
+            AddTextColumn(AColumnTitle, ADataColumn, -1, TimeEditor);
+        }
+
+        /// <summary>
+        /// Add a column that shows a time value in localised long string format.  Data should be in the form of a numeric seconds, or a parsable HH:MM string.
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        public void AddLongTimeColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+            SourceGrid.Cells.Editors.TextBoxUITypeEditor TimeEditor = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(DateTime));
+            TimeEditor.EditableMode = EditableMode.None;
+            TimeEditor.TypeConverter = new Ict.Common.TypeConverter.TLongTimeConverter();
+
+            AddTextColumn(AColumnTitle, ADataColumn, -1, TimeEditor);
+        }
+
         #endregion
 
         #region Overridden Events

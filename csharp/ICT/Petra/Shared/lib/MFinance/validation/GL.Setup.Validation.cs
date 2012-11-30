@@ -85,10 +85,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
+
+            // Time must not be negative (indicating an error)
+            ValidationColumn = ARow.Table.Columns[ADailyExchangeRateTable.ColumnTimeEffectiveFromId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TTimeChecks.IsValidIntegerTime(ARow.TimeEffectiveFrom,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
         }
 
         /// <summary>
-        /// Validates the Daily Exchange Rates screen data.
+        /// Validates the Corporate Exchange Rates screen data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>

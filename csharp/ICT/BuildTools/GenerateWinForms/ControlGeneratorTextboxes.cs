@@ -163,6 +163,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     // for readonly text box
                     return ctrl.controlName + ".Text = String.Format(\"{0:0000000000}\", " + AFieldOrNull + ");";
                 }
+                else if (ctrl.GetAttribute("Type") == "ShortTime")
+                {
+                    // for seconds to short time
+                    return ctrl.controlName + ".Text = new Ict.Common.TypeConverter.TShortTimeConverter().ConvertTo(" + AFieldOrNull + ", typeof(string)).ToString();";
+                }
+                else if (ctrl.GetAttribute("Type") == "LongTime")
+                {
+                    // for seconds to long time
+                    return ctrl.controlName + ".Text = new Ict.Common.TypeConverter.TLongTimeConverter().ConvertTo(" + AFieldOrNull + ", typeof(string)).ToString();";
+                }
 
                 return ctrl.controlName + ".Text = " + AFieldOrNull + ".ToString();";
             }
@@ -180,7 +190,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".Text.Length == 0";
             }
 
-            if (AFieldTypeDotNet.ToLower().Contains("int64"))
+            if (ctrl.GetAttribute("Type") == "ShortTime")
+            {
+                return "(int)new Ict.Common.TypeConverter.TShortTimeConverter().ConvertTo(" + ctrl.controlName + ".Text, typeof(int))";
+            }
+            else if (ctrl.GetAttribute("Type") == "LongTime")
+            {
+                return "(int)new Ict.Common.TypeConverter.TLongTimeConverter().ConvertTo(" + ctrl.controlName + ".Text, typeof(int))";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("int64"))
             {
                 return "Convert.ToInt64(" + ctrl.controlName + ".Text)";
             }

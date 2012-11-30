@@ -127,6 +127,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 ColumnType = "PartnerKey";
             }
+            else if (AColumnType.Contains("Time"))
+            {
+                ColumnType = AColumnType;
+            }
 
             if (ColumnType == "Boolean")
             {

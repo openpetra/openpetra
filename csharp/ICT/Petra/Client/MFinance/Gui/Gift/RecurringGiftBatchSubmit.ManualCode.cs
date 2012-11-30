@@ -246,9 +246,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFrmSetupDailyExchangeRate setupDailyExchangeRate =
                 new TFrmSetupDailyExchangeRate(FPetraUtilsObject.GetForm());
 
-            if (setupDailyExchangeRate.ShowDialog(FLedgerNumber, dtpEffectiveDate.Date.Value,
+            decimal selectedExchangeRate;
+            DateTime selectedEffectiveDate;
+            int selectedEffectiveTime;
+
+            if (setupDailyExchangeRate.ShowDialog(
+                    FLedgerNumber,
+                    dtpEffectiveDate.Date.Value,
                     txtCurrencyCodeFrom.Text,
-                    DEFAULT_CURRENCY_EXCHANGE) == DialogResult.Cancel)
+                    DEFAULT_CURRENCY_EXCHANGE,
+                    out selectedExchangeRate,
+                    out selectedEffectiveDate,
+                    out selectedEffectiveTime) == DialogResult.Cancel)
             {
                 return;
             }
@@ -259,7 +268,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 //                FPetraUtilsObject.SetChangedFlag();
 //            }
 
-            txtExchangeRateToBase.Text = setupDailyExchangeRate.CurrencyExchangeRate.ToString();
+            txtExchangeRateToBase.Text = selectedExchangeRate.ToString();
         }
     }
 }
