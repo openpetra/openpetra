@@ -716,7 +716,7 @@ namespace Ict.Common.Verification
         /// message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AValue" /> contains a valid integer number or is null,
         /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
         /// with a message that uses <paramref name="ADescription" />.</returns>
