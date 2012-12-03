@@ -142,8 +142,10 @@ namespace Ict.Common.Remoting.Sinks.Encryption
 
                 return ClientGuid;
             }
-
-            return string.Empty;
+            else
+            {
+                throw new Exception("EncryptionServerSink: We cannot allow non encrypted traffic");
+            }
         }
 
         /// <summary>
