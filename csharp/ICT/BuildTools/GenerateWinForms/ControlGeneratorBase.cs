@@ -783,6 +783,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ctrl.GetAttribute("Tooltip") +
                     "\"));" + Environment.NewLine);
             }
+            else if (ctrl.controlName == "grdDetails")
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
+                    ", Catalog.GetString(\"Use the mouse or navigation keys to select a data row to view or edit\"));" + Environment.NewLine);
+            }
+            else if (ctrl.controlName == "btnNew")
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
+                    ", Catalog.GetString(\"Click to create a new record\"));" + Environment.NewLine);
+            }
+            else if (ctrl.controlName == "btnDelete")
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
+                    ", Catalog.GetString(\"Click to delete the highlighted record(s)\"));" + Environment.NewLine);
+            }
 
             //TODO: CT
 //            if (ctrl.HasAttribute("DefaultValue"))
@@ -1080,7 +1095,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 helpText = AField.strDescription;
             }
 
-            if (helpText.Length > 0)
+            if ((helpText.Length > 0) && (ctrl.GetAttribute("Tooltip").Length == 0))
             {
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
                     ", Catalog.GetString(\"" +

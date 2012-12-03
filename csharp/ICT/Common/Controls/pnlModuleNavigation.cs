@@ -131,8 +131,9 @@ namespace Ict.Common.Controls
             this.FDashboard = ADashboard;
             this.Dock = DockStyle.Top;
 
-            FCollapsibleNavigation.AutoSize = true;
-            FCollapsibleNavigation.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            // AutoSize causes trouble on Mono
+            // FCollapsibleNavigation.AutoSize = true;
+            // FCollapsibleNavigation.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             FCollapsibleNavigation.CollapseDirection = Ict.Common.Controls.TCollapseDirection.cdHorizontal;
             FCollapsibleNavigation.Dock = System.Windows.Forms.DockStyle.Left;
             FCollapsibleNavigation.ExpandedSize = AExpandedWidth;

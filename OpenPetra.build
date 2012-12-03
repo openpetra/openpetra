@@ -19,6 +19,8 @@ list of available commands:
       nant quickCompile                    will compile the OpenPetra.sln
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
+  compileProject: compile a single project file
+      nant compileProject -D:file=delivery/projects/sharpdevelop4/Ict.Testing.ControlTestBench.csproj 
   start: start both the local server and client
   startPetraServer: run a local Petra Server
   stopPetraServer: stop the local Petra Server
@@ -264,6 +266,11 @@ useful parameters
   <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
 
   <CompileSolution SolutionFile="${solution.file}"/>
+</target>
+
+<target name="compileProject">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <CompileProject CSProjFile="${path::get-full-path(file)}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
 </target>
 
 <target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess">
