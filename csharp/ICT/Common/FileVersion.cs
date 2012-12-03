@@ -174,6 +174,46 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// compare two file versions, while ignoring the private part
+        /// </summary>
+        /// <returns>-1 if this &lt; ACmp, 1 if this &gt; ACmp, and 0 if equals</returns>
+        public Int16 CompareWithoutPrivatePart(TFileVersionInfo ACmp)
+        {
+            Int16 ReturnValue;
+
+            if (FileMajorPart > ACmp.FileMajorPart)
+            {
+                ReturnValue = 1;
+            }
+            else if (FileMajorPart < ACmp.FileMajorPart)
+            {
+                ReturnValue = -1;
+            }
+            else if (FileMinorPart > ACmp.FileMinorPart)
+            {
+                ReturnValue = 1;
+            }
+            else if (FileMinorPart < ACmp.FileMinorPart)
+            {
+                ReturnValue = -1;
+            }
+            else if (FileBuildPart > ACmp.FileBuildPart)
+            {
+                ReturnValue = 1;
+            }
+            else if (FileBuildPart < ACmp.FileBuildPart)
+            {
+                ReturnValue = -1;
+            }
+            else
+            {
+                ReturnValue = 0;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// print file version to string
         /// </summary>
         /// <returns></returns>
