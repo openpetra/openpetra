@@ -23,6 +23,7 @@ RootNode:
             Dock: Fill
         sptTransactions:
             SplitterOrientation: Horizontal
+            SplitterDistance: 285 # This doesn't seem to work here, but the same instruction in ManualCode does...
             Dock: Fill
             Panel1: pnlDetailGrid
             Panel2: pnlDetails1
@@ -62,6 +63,7 @@ RootNode:
                 DonorKey: {Label=Donor Key, Type=PartnerKey}
                 DonorName: {Label=Donor Name, Type=String}
                 DonorClass: {Label=Class, Type=String}
+                ConfidentialGiftFlag: {Label=C, Type=Boolean}
                 GiftTransactionAmount: {Label=Amount, Type=Currency}
                 RecipientDescription: {Label=Recipient, Type=String}
                 RecipientField: {Label=Field, Type=Int64}
@@ -84,15 +86,14 @@ RootNode:
                 Row2: [txtDetailReference,cmbDetailReceiptLetterCode]
                 Row3: [dtpDateEntered, txtGiftTotal]
                 Row4: [txtDetailGiftTransactionAmount, chkDetailConfidentialGiftFlag]
-                Row5: [txtDetailRecipientKey]
-                Row6: [txtField,chkDetailChargeFlag]
-                Row7: [cmbMinistry]
-                Row8: [cmbDetailMailingCode, chkDetailTaxDeductable]
-                Row9: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
-                Row10: [txtDetailCostCentreCode, txtDetailAccountCode]
-                Row11: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
-                Row12: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
-                Row13: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
+                Row5: [txtDetailRecipientKey, chkDetailChargeFlag]
+                Row6: [txtField, chkDetailTaxDeductable]
+                Row7: [cmbMinistry, cmbDetailMailingCode]
+                Row8: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
+                Row9: [txtDetailCostCentreCode, txtDetailAccountCode]
+                Row10: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
+                Row11: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
+                Row12: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Help: This date is used for receipt printing, Unbound=true, Validation=true}
         txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=yes, Unbound=true}
@@ -101,7 +102,7 @@ RootNode:
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
-        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, ColSpan=2, OnChange=RecipientKeyChanged}
+        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, OnChange=RecipientKeyChanged}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}
@@ -110,13 +111,13 @@ RootNode:
         txtField: {Label=Field, Type=PartnerKey, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
-        cmbMinistry: {Label=Key Ministry, ColSpan=2, List=UserDefinedList, OnChange=KeyMinistryChanged}
+        cmbMinistry: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged}
         txtDetailGiftTransactionAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?}
         chkDetailTaxDeductable: {Label=Tax deductable?}
-        txtDetailGiftCommentOne: {Label=Comment 1,Width=450, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentTwo: {Label=Comment 2,Width=450, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentThree: {Label=Comment 3,Width=450, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentOne: {Label=Comment 1,Width=400, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentTwo: {Label=Comment 2,Width=400, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentThree: {Label=Comment 3,Width=400, Validation=true, OnLeave=DetailCommentChanged}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         cmbDetailCommentOneType:
             Label: for
