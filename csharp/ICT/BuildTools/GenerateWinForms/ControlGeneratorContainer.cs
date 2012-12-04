@@ -653,7 +653,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.GenerateLabel(ctrl);
 
-            if ((base.FPrefix == "pnl") && (TXMLParser.GetAttribute(ctrl.xmlNode, "Label").Length > 0))
+            if ((base.FPrefix == "pnl") && (TYml2Xml.GetAttribute(ctrl.xmlNode, "Label").Length > 0))
             {
                 ctrl.hasLabel = true;
             }

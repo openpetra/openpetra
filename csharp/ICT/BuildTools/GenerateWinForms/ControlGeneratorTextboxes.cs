@@ -125,17 +125,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (TYml2Xml.GetAttribute(curNode, "ReadOnly").ToLower() == "true")
                 {
-                    if ((TXMLParser.GetAttribute(curNode, "Type") != "PartnerKey"))
+                    if ((TYml2Xml.GetAttribute(curNode, "Type") != "PartnerKey"))
                     {
                         return true;
                     }
                 }
 
-                if ((TXMLParser.GetAttribute(curNode, "Type") == "PartnerKey")
-                    || (TXMLParser.GetAttribute(curNode, "Type") == "Extract")
-                    || (TXMLParser.GetAttribute(curNode, "Type") == "Occupation")
-                    || (TXMLParser.GetAttribute(curNode, "Type") == "Conference")
-                    || (TXMLParser.GetAttribute(curNode, "Type") == "Event"))
+                if ((TYml2Xml.GetAttribute(curNode, "Type") == "PartnerKey")
+                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Extract")
+                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Occupation")
+                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Conference")
+                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Event"))
                 {
                     return false;
                 }
@@ -225,36 +225,36 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.SetControlProperty(ctrl,
                     "Text",
-                    "\"" + TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue") + "\"");
+                    "\"" + TYml2Xml.GetAttribute(ctrl.xmlNode, "DefaultValue") + "\"");
             }
 
-            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "Multiline")) && (TXMLParser.GetAttribute(ctrl.xmlNode, "Multiline") == "true"))
+            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "Multiline")) && (TYml2Xml.GetAttribute(ctrl.xmlNode, "Multiline") == "true"))
             {
                 writer.SetControlProperty(ctrl, "Multiline", "true");
 
-                if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "WordWrap")) && (TXMLParser.GetAttribute(ctrl.xmlNode, "WordWrap") == "false"))
+                if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "WordWrap")) && (TYml2Xml.GetAttribute(ctrl.xmlNode, "WordWrap") == "false"))
                 {
                     writer.SetControlProperty(ctrl, "WordWrap", "false");
                 }
 
                 if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ScrollBars"))
                 {
-                    writer.SetControlProperty(ctrl, "ScrollBars", "ScrollBars." + TXMLParser.GetAttribute(ctrl.xmlNode, "ScrollBars"));
+                    writer.SetControlProperty(ctrl, "ScrollBars", "ScrollBars." + TYml2Xml.GetAttribute(ctrl.xmlNode, "ScrollBars"));
                 }
             }
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "TextAlign"))
             {
-                writer.SetControlProperty(ctrl, "TextAlign", "HorizontalAlignment." + TXMLParser.GetAttribute(ctrl.xmlNode, "TextAlign"));
+                writer.SetControlProperty(ctrl, "TextAlign", "HorizontalAlignment." + TYml2Xml.GetAttribute(ctrl.xmlNode, "TextAlign"));
             }
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "CharacterCasing"))
             {
                 writer.SetControlProperty(ctrl, "CharacterCasing", "CharacterCasing." +
-                    TXMLParser.GetAttribute(ctrl.xmlNode, "CharacterCasing"));
+                    TYml2Xml.GetAttribute(ctrl.xmlNode, "CharacterCasing"));
             }
 
-            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "PasswordEntry")) && (TXMLParser.GetAttribute(ctrl.xmlNode, "PasswordEntry") == "true"))
+            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "PasswordEntry")) && (TYml2Xml.GetAttribute(ctrl.xmlNode, "PasswordEntry") == "true"))
             {
                 writer.SetControlProperty(ctrl, "UseSystemPasswordChar", "true");
             }
@@ -452,7 +452,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.SetControlProperty(ctrl,
                     "Text",
-                    "\"" + TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue") + "\"");
+                    "\"" + TYml2Xml.GetAttribute(ctrl.xmlNode, "DefaultValue") + "\"");
             }
 
             return writer.FTemplate;
