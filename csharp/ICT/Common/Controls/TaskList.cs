@@ -422,15 +422,13 @@ namespace Ict.Common.Controls
                 TaskNode = TaskNode.NextSibling;
             }
 
+            FTaskListMaxHeight = tPnlGradient1.GetPreferredSize(new Size()).Height;
             this.ResumeLayout();
         }
 
         void TTaskList_Resize(object sender, EventArgs e)
         {
-            if (FTaskListMaxHeight < this.tPnlGradient1.Height)
-            {
-                FTaskListMaxHeight = this.tPnlGradient1.Height;
-            }
+            // was setting FTaskListMaxHeight, but this is now set when the tasks are loaded
         }
 
         void SetCommonActivatedLinkAppearance(LinkLabel ALinkLabel)
