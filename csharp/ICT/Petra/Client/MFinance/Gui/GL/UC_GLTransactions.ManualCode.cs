@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
-                && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus))
+                && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus) && (FMainDS.ATransaction.DefaultView.Count > 0))
             {
                 //Same as previously selected
                 if ((GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
@@ -151,6 +151,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Unload the currently loaded transactions
+        /// </summary>
+        public void UnloadTransactions()
+        {
+            if (FMainDS.ATransaction.DefaultView.Count > 0)
+            {
+            	FPreviouslySelectedDetailRow = null;
+            	FMainDS.ATransaction.Clear();
+            	//ClearControls();
+            }
+        }
+        
+        /// <summary>
         /// get the details of the current journal
         /// </summary>
         /// <returns></returns>
@@ -164,6 +177,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
         }
 
+        /// <summary>
+        /// Cancel any changes made to this form
+        /// </summary>
+        public void CancelChangesToFixedBatches()
+        {
+        	if (GetBatchRow() != null && GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+        	{
+        		FMainDS.ATransaction.RejectChanges();
+        	}
+        }
+        
         /// <summary>
         /// add a new transactions
         /// </summary>
@@ -344,7 +368,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void GetDetailDataFromControlsManual(ATransactionRow ARow)
         {
-            Decimal oldTransactionAmount = ARow.TransactionAmount;
+            if (ARow == null)
+            {
+            	return;
+            }
+            
+        	Decimal oldTransactionAmount = ARow.TransactionAmount;
             bool oldDebitCreditIndicator = ARow.DebitCreditIndicator;
 
             if (txtDebitAmount.Text.Length == 0)
@@ -404,6 +433,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        
         /// <summary>
         /// update amount in other currencies (optional) and recalculate all totals for current batch and journal
         /// </summary>
