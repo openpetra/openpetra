@@ -307,8 +307,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     if (ProperI18NCatalogGetString(StringHelper.TrimQuotes(APropertyValue)))
                     {
-                        FTemplate.AddToCodelet("CATALOGI18N",
-                            "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" + APropertyValue + ");" + Environment.NewLine);
+                        if (APropertyValue.EndsWith(":\""))
+                        {
+                            FTemplate.AddToCodelet("CATALOGI18N",
+                                "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" +
+                                APropertyValue.Substring(0, APropertyValue.Length - 2) + "\") + \":\";" + Environment.NewLine);
+                        }
+                        else
+                        {
+                            FTemplate.AddToCodelet("CATALOGI18N",
+                                "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" + APropertyValue + ");" + Environment.NewLine);
+                        }
                     }
                 }
                 else if (AControlName.StartsWith("dtp")
