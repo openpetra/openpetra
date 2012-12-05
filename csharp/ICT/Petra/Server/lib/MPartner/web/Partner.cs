@@ -219,7 +219,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 && Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
                         "SELECT COUNT(*) FROM PUB_" + ALedgerTable.GetTableDBName() +
                         " WHERE " + ALedgerTable.GetLedgerNumberDBName() + " * 1000000 = " + APartnerKey.ToString(), 
-                        IsolationLevel.ReadCommitted)) > 0)
+                        Transaction, false)) > 0)
             {
                 ResultValue = false;
                 ADisplayMessage = Catalog.GetString("Unable to delete an active ledger.");
@@ -308,14 +308,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// collect information to be displayed so user can confirm if this partner record should be deleted
         /// </summary>
         /// <param name="APartnerKey"></param>
+        /// <param name="APartnerShortName"></param>
         /// <param name="ADisplayMessage"></param>
         /// <returns>true if partner was found</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool GetPartnerStatisticsForDeletion(Int64 APartnerKey, out String ADisplayMessage)
+        public static bool GetPartnerStatisticsForDeletion(Int64 APartnerKey, out String APartnerShortName, out String ADisplayMessage)
         {
             TDBTransaction Transaction;
             Boolean NewTransaction;
-            string ShortName;
             TPartnerClass PartnerClass;
             TStdPartnerStatusCode PartnerStatusCode;
             string Linebreak = "\r\n";
@@ -328,10 +328,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
-            if (MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, Transaction))
+            if (MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out PartnerClass, out PartnerStatusCode, Transaction))
             {
                 ADisplayMessage = Catalog.GetString(String.Format("Are you sure you want to delete {0} {1} ?", 
-                                                                  SharedTypes.PartnerClassEnumToString(PartnerClass), ShortName));
+                                                                  SharedTypes.PartnerClassEnumToString(PartnerClass), APartnerShortName));
                 ADisplayMessage += Linebreak + Linebreak;
 
                 // count active subscription records
@@ -339,7 +339,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         "SELECT COUNT(*) FROM PUB_" + PSubscriptionTable.GetTableDBName() +
                         " WHERE " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
                         " AND " + PSubscriptionTable.GetSubscriptionStatusDBName() + " NOT IN (\"CANCELLED\",\"EXPIRED\")", 
-                        IsolationLevel.ReadCommitted));
+                        Transaction, false));
                 ADisplayMessage += Catalog.GetString(String.Format("{0} active Subscriptions", Count.ToString())) + Linebreak;
 
                 // count contact records
@@ -370,6 +370,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             else
             {
                 // Partner not found
+                APartnerShortName = "";
                 ResultValue = false;
             }
             
@@ -407,7 +408,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             ResultValue = MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, Transaction);
             
             /* s_user - delete not allowed by CanPartnerBeDeleted */
-
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PRecentPartnersTable.GetTableDBName(), 
@@ -448,7 +448,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                             APartnerKey, Transaction);
             }
             
-
             // Delete Partner Location. If locations were only used by this partner then also delete location record.
             if (ResultValue)
             {
@@ -487,7 +486,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 }
             }
             
-
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PPartnerAttributeTable.GetTableDBName(), 
@@ -560,15 +558,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 }
             }
 
-
-
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PPartnerTypeTable.GetTableDBName(), 
                                             PPartnerTypeTable.GetPartnerKeyDBName(), 
                                             APartnerKey, Transaction);
             }
-            
+
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PPartnerRelationshipTable.GetTableDBName(), 
@@ -745,7 +741,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                           PFoundationProposalTable.GetPartnerSubmittedByDBName(), 
                                           APartnerKey, Transaction);
             }
-
 
             // now delete partner class specific information
             if (ResultValue)

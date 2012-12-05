@@ -90,14 +90,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// delete partner selected with the Partner Find Screen
         /// </summary>
-        public static void DeletePartner(Form AParentForm)
+        public static Boolean DeletePartner(Form AParentForm)
         {
+            Boolean ResultValue = false;
             Int64 PartnerKey = -1;
             String ShortName;
             TLocationPK ResultLocationPK;
-            String Message;
-            TVerificationResultCollection VerificationResult;
-            
             
             // the user has to select an existing partner to make that partner a supplier
             if (TPartnerFindScreenManager.OpenModalForm("",
@@ -106,45 +104,64 @@ namespace Ict.Petra.Client.MPartner.Gui
                     out ResultLocationPK,
                     AParentForm))
             {
-                if (TRemote.MPartner.Partner.WebConnectors.CanPartnerBeDeleted(PartnerKey, out Message))
-                {
-                    // Partner can be deleted -> let user confirm
-                    TRemote.MPartner.Partner.WebConnectors.GetPartnerStatisticsForDeletion(PartnerKey, out Message);
-                    
-                    if (MessageBox.Show(Message,
-                        Catalog.GetString("Delete Partner"),
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Information) == System.Windows.Forms.DialogResult.Yes)
-                    {
-                        if (TRemote.MPartner.Partner.WebConnectors.DeletePartner(PartnerKey, out VerificationResult))
-                        {
-                            MessageBox.Show(Catalog.GetString(String.Format("Partner {0} {1} successfully deleted", PartnerKey, ShortName)),
-                                            Catalog.GetString("Delete Partner"),
-                                            MessageBoxButtons.OK,
-                                            MessageBoxIcon.Information);
-                        }
-                        else
-                        {
-                            // display delete error to user
-                            MessageBox.Show(Messages.BuildMessageFromVerificationResult("Deletion of Partner failed!" + 
-                                Environment.NewLine + "Reasons:", VerificationResult),
-                                Catalog.GetString("Delete Partner"),
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                        }
-                    }
-                }
-                else
-                {
-                    // Partner cannot be deleted: show message to user with reasons
-                    MessageBox.Show(Message,
-                        Catalog.GetString("Delete Partner"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
+                ResultValue = DeletePartner(PartnerKey);
             }
+            
+            return ResultValue;
         }
 
+        /// <summary>
+        /// delete partner with given partner key
+        /// </summary>
+        public static Boolean DeletePartner(Int64 APartnerKey)
+        {
+            Boolean ResultValue = false;
+            String ShortName;
+            String Message;
+            TVerificationResultCollection VerificationResult;
+            
+            
+            if (TRemote.MPartner.Partner.WebConnectors.CanPartnerBeDeleted(APartnerKey, out Message))
+            {
+                // Partner can be deleted -> let user confirm
+                TRemote.MPartner.Partner.WebConnectors.GetPartnerStatisticsForDeletion(APartnerKey, out ShortName, out Message);
+                
+                if (MessageBox.Show(Message,
+                    Catalog.GetString("Delete Partner"),
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Information) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    if (TRemote.MPartner.Partner.WebConnectors.DeletePartner(APartnerKey, out VerificationResult))
+                    {
+                        ResultValue = true;
+                        MessageBox.Show(Catalog.GetString(String.Format("Partner {0} {1} successfully deleted", APartnerKey, ShortName)),
+                                        Catalog.GetString("Delete Partner"),
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        // display delete error to user
+                        MessageBox.Show(Messages.BuildMessageFromVerificationResult("Deletion of Partner failed!" + 
+                            Environment.NewLine + "Reasons:", VerificationResult),
+                            Catalog.GetString("Delete Partner"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
+            else
+            {
+                // Partner cannot be deleted: show message to user with reasons
+                MessageBox.Show(Message,
+                    Catalog.GetString("Delete Partner"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            
+            return ResultValue;
+        }
+        
         /// <summary>
         /// create a new partner (default to family ie. household)
         /// </summary>
