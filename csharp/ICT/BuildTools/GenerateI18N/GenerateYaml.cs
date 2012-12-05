@@ -23,10 +23,13 @@
 //
 using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
@@ -47,10 +50,9 @@ public class GenerateYamlFiles
     /// <param name="APoFilePath"></param>
     public static void WriteYamlFiles(string ALanguageCode, string AYamlFilePath, string APoFilePath)
     {
-        // TODO parse po file, and use for the labels
-
         string[] yamlfiles = System.IO.Directory.GetFiles(AYamlFilePath, "*.yaml", SearchOption.AllDirectories);
 
+        // load (compiled) po file, and use for the labels
         Catalog.SetLanguage(ALanguageCode);
         Catalog.Init();
 
@@ -64,7 +66,11 @@ public class GenerateYamlFiles
 
             CreateLocalisedYamlFile(ALanguageCode, yamlfile);
         }
+
+        TPoFileParser.WriteUpdatedPoFile(APoFilePath, NewTranslations);
     }
+
+    private static SortedList <string, string>NewTranslations = new SortedList <string, string>();
 
     private static void ProcessRadioGroupLabels(XmlNode node)
     {
@@ -90,12 +96,22 @@ public class GenerateYamlFiles
         }
     }
 
-    private static void AdjustLabel(XmlNode node, TCodeStorage CodeStorage)
+    private static void AdjustLabel(XmlNode node, TCodeStorage CodeStorage, XmlDocument AOrigLocalisedYaml)
     {
+        XmlNode TranslatedNode = TXMLParser.FindNodeRecursive(AOrigLocalisedYaml, node.Name);
+        string TranslatedLabel = string.Empty;
+
+        if (TranslatedNode != null)
+        {
+            TranslatedLabel = TXMLParser.GetAttribute(TranslatedNode, "Label");
+        }
+
         TControlDef ctrlDef = new TControlDef(node, CodeStorage);
         string Label = ctrlDef.Label;
 
-        if ((ctrlDef.GetAttribute("NoLabel") == "true") || (ctrlDef.controlTypePrefix == "pnl"))
+        if ((ctrlDef.GetAttribute("NoLabel") == "true") || (ctrlDef.controlTypePrefix == "pnl")
+            || (TXMLParser.FindNodeRecursive(node.OwnerDocument, "act" + ctrlDef.controlName.Substring(ctrlDef.controlTypePrefix.Length)) != null)
+            || ctrlDef.GetAttribute("Action").StartsWith("act"))
         {
             Label = string.Empty;
         }
@@ -111,7 +127,7 @@ public class GenerateYamlFiles
 
             foreach (XmlNode menu in node.ChildNodes)
             {
-                AdjustLabel(menu, CodeStorage);
+                AdjustLabel(menu, CodeStorage, AOrigLocalisedYaml);
             }
         }
         else
@@ -122,7 +138,20 @@ public class GenerateYamlFiles
 
         if (Label.Length > 0)
         {
-            TXMLParser.SetAttribute(node, "Label", Catalog.GetString(Label));
+            if ((TranslatedLabel != Label) && (TranslatedLabel != Catalog.GetString(Label)))
+            {
+                // add to po file
+                if (!NewTranslations.ContainsKey(Label))
+                {
+                    NewTranslations.Add(Label, TranslatedLabel);
+                }
+
+                TXMLParser.SetAttribute(node, "Label", TranslatedLabel);
+            }
+            else
+            {
+                TXMLParser.SetAttribute(node, "Label", Catalog.GetString(Label));
+            }
         }
     }
 
@@ -160,7 +189,7 @@ public class GenerateYamlFiles
         {
             foreach (XmlNode control in Controls)
             {
-                AdjustLabel(control, CodeStorage);
+                AdjustLabel(control, CodeStorage, localisedYamlFileDoc);
             }
         }
 
@@ -171,7 +200,7 @@ public class GenerateYamlFiles
         {
             foreach (XmlNode action in Actions)
             {
-                AdjustLabel(action, CodeStorage);
+                AdjustLabel(action, CodeStorage, localisedYamlFileDoc);
             }
         }
 
@@ -182,7 +211,7 @@ public class GenerateYamlFiles
         {
             foreach (XmlNode menu in menuitems)
             {
-                AdjustLabel(menu, CodeStorage);
+                AdjustLabel(menu, CodeStorage, localisedYamlFileDoc);
             }
         }
 
@@ -193,7 +222,7 @@ public class GenerateYamlFiles
         {
             foreach (XmlNode tbb in tbbuttons)
             {
-                AdjustLabel(tbb, CodeStorage);
+                AdjustLabel(tbb, CodeStorage, localisedYamlFileDoc);
             }
         }
 
