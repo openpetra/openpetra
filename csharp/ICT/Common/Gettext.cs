@@ -65,11 +65,15 @@ namespace Ict.Common
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(ALanguageCode);
 
             string ResourceDllFname = TAppSettingsManager.ApplicationDirectory +
-                                      "\\" + Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName + "\\OpenPetra.resources.dll";
+                                      "\\" + Thread.CurrentThread.CurrentUICulture.IetfLanguageTag + "\\OpenPetra.resources.dll";
 
             if (File.Exists(ResourceDllFname))
             {
                 catalog = new GettextResourceManager("OpenPetra");
+            }
+            else
+            {
+                TLogging.LogAtLevel(1, "cannot find " + ResourceDllFname);
             }
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo(ACultureCode);
