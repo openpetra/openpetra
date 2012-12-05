@@ -182,10 +182,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string hashTotal = txtDetailBatchControlTotal.Text.Trim();
             decimal hashDecimalVal;
 
-			if (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-			{
-				return;
-			}
+            if (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+                return;
+            }
 
             if ((hashTotal == null) || (hashTotal.Length == 0))
             {
@@ -214,7 +214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (ARow == null)
             {
-            	return;
+                return;
             }
 
             FPetraUtilsObject.DetailProtectedMode =
@@ -229,7 +229,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateBatchPeriod(null, null);
 
             UpdateChangeableStatus();
-
         }
 
         /// <summary>
@@ -323,7 +322,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
 
-			FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
+            FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
             dtpDetailDateEffective.Date = FDefaultDate;
 
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
@@ -341,47 +340,43 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void UpdateJournalTransEffectiveDate()
         {
             DateTime batchEffectiveDate = dtpDetailDateEffective.Date.Value;
-        	
-			//Stop any current row issues
-        	//((TFrmGLBatch) this.ParentForm).UnloadJournals();
-        	
-        	//Load Journals in the background
-        	((TFrmGLBatch) this.ParentForm).UnloadJournals();
-        	((TFrmGLBatch) this.ParentForm).UnloadTransactions();
-        	
-        	FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber));
 
-        	foreach (DataRowView v in FMainDS.AJournal.DefaultView)
+            //Stop any current row issues
+            //((TFrmGLBatch) this.ParentForm).UnloadJournals();
+
+            //Load Journals in the background
+            ((TFrmGLBatch) this.ParentForm).UnloadJournals();
+            ((TFrmGLBatch) this.ParentForm).UnloadTransactions();
+
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber));
+
+            foreach (DataRowView v in FMainDS.AJournal.DefaultView)
             {
-	            AJournalRow r = (AJournalRow)v.Row;
+                AJournalRow r = (AJournalRow)v.Row;
 
-	            TLogging.Log("Journal: " + r.JournalNumber.ToString());
-	            
-	            r.BeginEdit();
-	            r.DateEffective = batchEffectiveDate;
-	            r.EndEdit();
-                
+                r.BeginEdit();
+                r.DateEffective = batchEffectiveDate;
+                r.EndEdit();
+
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(FLedgerNumber, r.BatchNumber, r.JournalNumber));
-                
+
                 FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
-	                ATransactionTable.GetBatchNumberDBName(),
-	                r.BatchNumber,
-	                ATransactionTable.GetJournalNumberDBName(),
-	                r.JournalNumber);
-                
+                    ATransactionTable.GetBatchNumberDBName(),
+                    r.BatchNumber,
+                    ATransactionTable.GetJournalNumberDBName(),
+                    r.JournalNumber);
+
                 foreach (DataRowView w in FMainDS.ATransaction.DefaultView)
                 {
-                	ATransactionRow t = (ATransactionRow)w.Row;
-                	
-		            TLogging.Log("Transaction: " + t.TransactionNumber.ToString());
+                    ATransactionRow t = (ATransactionRow)w.Row;
 
-		            t.BeginEdit();
-                	t.TransactionDate = batchEffectiveDate;
-                	t.EndEdit();
+                    t.BeginEdit();
+                    t.TransactionDate = batchEffectiveDate;
+                    t.EndEdit();
                 }
             }
-        	
-			FPetraUtilsObject.HasChanges = true;        	
+
+            FPetraUtilsObject.HasChanges = true;
         }
 
         private void UpdateBatchPeriod(object sender, EventArgs e)
@@ -400,35 +395,35 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
-	                if (FPreviouslySelectedDetailRow.DateEffective != dateValue)
-	                {
-	                    FPreviouslySelectedDetailRow.DateEffective = dateValue;
-	                }
+                    if (FPreviouslySelectedDetailRow.DateEffective != dateValue)
+                    {
+                        FPreviouslySelectedDetailRow.DateEffective = dateValue;
+                    }
 
-	                if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
-	                {
-	                    if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
-	                    {
-	                        FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
-	
-		                    //Update the Journal and Transaction effective dates
-	                        UpdateJournalTransEffectiveDate();
+                    if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
+                    {
+                        if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+                        {
+                            FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
 
-		                    if (cmbYearFilter.SelectedIndex != 0)
-	                        {
-	                            cmbYearFilter.SelectedIndex = 0;
-	                        }
-	                        else if (cmbPeriodFilter.SelectedIndex != 0)
-	                        {
-	                            cmbPeriodFilter.SelectedIndex = 0;
-	                        }
-	                    }
-	                }
+                            //Update the Journal and Transaction effective dates
+                            UpdateJournalTransEffectiveDate();
+
+                            if (cmbYearFilter.SelectedIndex != 0)
+                            {
+                                cmbYearFilter.SelectedIndex = 0;
+                            }
+                            else if (cmbPeriodFilter.SelectedIndex != 0)
+                            {
+                                cmbPeriodFilter.SelectedIndex = 0;
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
-            	MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message);
             }
         }
 

@@ -351,7 +351,6 @@ namespace Tests.MFinance.GLBatches
             frmBatchExport.Close();
         }
 
-        
         /// <summary>
         /// simple test to view the transactions of a posted batch and then add a new batch
         /// </summary>
@@ -359,12 +358,12 @@ namespace Tests.MFinance.GLBatches
         public void TestViewPostedBatchTransactionsAndAddBatch()
         {
             //This test adds a new batch, saves and posts it, then views it and then tries to add a new batch
-            
-        	TFrmGLBatch frmBatch = new TFrmGLBatch(null);
+
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
 
             frmBatch.LedgerNumber = FLedgerNumber;
             frmBatch.Show();
-            
+
             // create a new batch and save
             ButtonTester btnNewBatch = new ButtonTester("ucoBatches.btnNew");
             btnNewBatch.Click();
@@ -447,23 +446,22 @@ namespace Tests.MFinance.GLBatches
             //This will then select the first batch in the grid which needs to be posted
             RadioButtonTester rbtAll = new RadioButtonTester("rbtAll");
             rbtAll.Properties.Checked = true;
-            
+
             //TabControlTester tabGLBatch = new TabControlTester("tabGLBatch");
 
             // go to Journal tab
             tabGLBatch.SelectTab(1);
 
             // go to Transaction Tab
-			tabGLBatch.SelectTab(2);
+            tabGLBatch.SelectTab(2);
 
-			// go to Batch Tab
-			tabGLBatch.SelectTab(0);
+            // go to Batch Tab
+            tabGLBatch.SelectTab(0);
 
             //ButtonTester btnNewBatch = new ButtonTester("ucoBatches.btnNew");
             btnNewBatch.Click();
         }
-        
-        
+
         /// <summary>
         /// simple test to create a batch and save it
         /// </summary>

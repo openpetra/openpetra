@@ -73,7 +73,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Check if same Journals as previously selected
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus) && (FMainDS.AJournal.DefaultView.Count > 0))
+            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus)
+                && (FMainDS.AJournal.DefaultView.Count > 0))
             {
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                 {
@@ -135,9 +136,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (FMainDS.AJournal.DefaultView.Count > 0)
             {
-            	FPreviouslySelectedDetailRow = null;
-            	FMainDS.AJournal.Clear();
-            	//ClearControls();
+                FPreviouslySelectedDetailRow = null;
+                FMainDS.AJournal.Clear();
+                //ClearControls();
             }
         }
 
@@ -146,12 +147,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void CancelChangesToFixedBatches()
         {
-        	if (GetBatchRow() != null && GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-        	{
-        		FMainDS.AJournal.RejectChanges();
-        	}
+            if ((GetBatchRow() != null) && (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                FMainDS.AJournal.RejectChanges();
+            }
         }
-        
+
         private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)
         {
             txtDetailExchangeRateToBase.Text = FPreviouslySelectedDetailRow.ExchangeRateToBase.ToString("0.00000000");
