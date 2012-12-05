@@ -884,7 +884,7 @@ namespace Ict.Tools.CodeGeneration
 
                 string controlName = xmlNode.Name.Substring(3);
 
-                if (controlName.StartsWith("Detail"))
+                if (controlName.StartsWith("Detail") && (controlName.Length > "Detail".Length) && char.IsUpper(controlName["Detail".Length]))
                 {
                     // this is for controls that belong to the detail table by convention
                     controlName = controlName.Substring("Detail".Length);
