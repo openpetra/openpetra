@@ -401,10 +401,24 @@ namespace Ict.Common.IO
             Int32 i;
             byte[] header = new byte[32];
 
+            string bsdiffPath = "csharp/ThirdParty/bsdiff/bsdiff";
+
+            if (Utilities.DetermineExecutingOS().ToString().StartsWith("eosWin"))
+            {
+                bsdiffPath += ".exe";
+            }
+
+            bsdiffPath = Path.GetFullPath(bsdiffPath);
+
+            if (!File.Exists(bsdiffPath))
+            {
+                bsdiffPath = "bsdiff";
+            }
+
             // make an external call to bsdiff, it will create a BSDIFF4.0 patch file
             BSDIFFProcess = new System.Diagnostics.Process();
             BSDIFFProcess.EnableRaisingEvents = false;
-            BSDIFFProcess.StartInfo.FileName = "bsdiff"; // TODO bsdiff should be on the PATH
+            BSDIFFProcess.StartInfo.FileName = bsdiffPath; // TODO bsdiff should be on the PATH
             BSDIFFProcess.StartInfo.Arguments = '"' + AFileName1 + "\" \"" + AFileName2 + "\" temp.patch";
             BSDIFFProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             BSDIFFProcess.EnableRaisingEvents = true;

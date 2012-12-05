@@ -235,6 +235,15 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             AProcessID = -1;
             ASystemEnabled = true;
 
+            string EmailAddress = AUserID;
+
+            if (AUserID.Contains("@"))
+            {
+                AUserID = AUserID.Substring(0, AUserID.IndexOf("@")).
+                          Replace(".", string.Empty).
+                          Replace("_", string.Empty).ToUpper();
+            }
+
             try
             {
                 SUserRow UserDR = LoadUser(AUserID, out PetraPrincipal);
@@ -335,7 +344,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
                     string ErrorMessage;
 
-                    if (!auth.AuthenticateUser(AUserID, APassword, out ErrorMessage))
+                    if (!auth.AuthenticateUser(EmailAddress, APassword, out ErrorMessage))
                     {
                         UserDR.FailedLogins++;
                         LoginDateTime = DateTime.Now;

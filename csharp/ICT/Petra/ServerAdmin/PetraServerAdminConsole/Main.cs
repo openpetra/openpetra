@@ -187,11 +187,22 @@ public class TAdminConsole
             return false;
         }
 
-        FileStream fs = new FileStream(restoreFile, FileMode.Open);
-        byte[] buffer = new byte[fs.Length];
-        fs.Read(buffer, 0, buffer.Length);
-        fs.Close();
-        string YmlGZData = Convert.ToBase64String(buffer);
+        string YmlGZData = string.Empty;
+
+        try
+        {
+            FileStream fs = new FileStream(restoreFile, FileMode.Open, FileAccess.Read);
+            byte[] buffer = new byte[fs.Length];
+            fs.Read(buffer, 0, buffer.Length);
+            fs.Close();
+            YmlGZData = Convert.ToBase64String(buffer);
+        }
+        catch (Exception e)
+        {
+            TLogging.Log("cannot open file " + restoreFile);
+            TLogging.Log(e.ToString());
+            return false;
+        }
 
         if (TRemote.RestoreDatabaseFromYmlGZ(YmlGZData))
         {
