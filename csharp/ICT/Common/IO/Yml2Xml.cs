@@ -170,14 +170,7 @@ namespace Ict.Common.IO
             }
             else
             {
-                if ((ANode.Name == XMLELEMENT) && TXMLParser.HasAttribute(ANode, "name"))
-                {
-                    AYmlDocument.Append(Indent + TXMLParser.GetAttribute(ANode, "name") + ":");
-                }
-                else
-                {
-                    AYmlDocument.Append(Indent + ANode.Name + ":");
-                }
+                AYmlDocument.Append(Indent + ANode.Name + ":");
             }
 
             // only write attributes if they are different from the parent node;
@@ -260,6 +253,25 @@ namespace Ict.Common.IO
 
             foreach (XmlNode childNode in ANode.ChildNodes)
             {
+                if (childNode.HasChildNodes && (childNode.FirstChild.Name == XMLELEMENT))
+                {
+                    // write a list of values, eg: mylist: [test1, test2, test3]
+                    AYmlDocument.Append("".PadLeft(ACurrentIndent + DEFAULTINDENT) + childNode.Name + ": [");
+
+                    foreach (XmlNode elementNode in childNode.ChildNodes)
+                    {
+                        if (elementNode != childNode.FirstChild)
+                        {
+                            AYmlDocument.Append(", ");
+                        }
+
+                        AYmlDocument.Append(TXMLParser.GetAttribute(elementNode, "name"));
+                    }
+
+                    AYmlDocument.Append("]" + Environment.NewLine);
+                    continue;
+                }
+
                 // make a deep copy of the sorted list, so that we don't modify the original list
                 SortedList <string, string>NewAttributesList = new SortedList <string, string>();
 

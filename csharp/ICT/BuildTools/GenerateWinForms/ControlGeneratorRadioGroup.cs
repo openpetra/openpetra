@@ -223,7 +223,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            StringCollection optionalValuesLabels =
+                TYml2Xml.GetElements(TYml2Xml.GetChild(ctrl.xmlNode, "LabelsForOptionalValues"));
+
             // add the radiobuttons on the fly
+            int count = 0;
 
             foreach (string optionalValue in optionalValues)
             {
@@ -232,7 +236,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         "_").Replace("&",
                         ""), false, false);
                 TControlDef newCtrl = writer.CodeStorage.FindOrCreateControl(radioButtonName, ctrl.controlName);
-                newCtrl.Label = optionalValue;
+                newCtrl.Label = optionalValuesLabels.Count > 0 ? optionalValuesLabels[count] : optionalValue;
 
                 if (StringHelper.IsSame(DefaultValue, optionalValue))
                 {
@@ -251,6 +255,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 ctrl.Children.Add(newCtrl);
+                count++;
             }
 
             base.ProcessChildren(writer, ctrl);

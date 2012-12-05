@@ -26,6 +26,7 @@ using System.IO;
 using System.Xml;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
@@ -65,6 +66,30 @@ public class GenerateYamlFiles
         }
     }
 
+    private static void ProcessRadioGroupLabels(XmlNode node)
+    {
+        StringCollection optionalValues =
+            TYml2Xml.GetElements(TXMLParser.GetChild(node, "OptionalValues"));
+
+        node.RemoveAll();
+        XmlNode OptionalValuesLabel = node.OwnerDocument.CreateElement("LabelsForOptionalValues");
+        node.AppendChild(OptionalValuesLabel);
+
+        foreach (string s in optionalValues)
+        {
+            string label = s;
+
+            if (label.StartsWith("="))
+            {
+                label = label.Substring(1).Trim();
+            }
+
+            XmlNode LabelNode = node.OwnerDocument.CreateElement(TYml2Xml.XMLELEMENT);
+            OptionalValuesLabel.AppendChild(LabelNode);
+            TXMLParser.SetAttribute(LabelNode, "name", Catalog.GetString(label));
+        }
+    }
+
     private static void AdjustLabel(XmlNode node, TCodeStorage CodeStorage)
     {
         TControlDef ctrlDef = new TControlDef(node, CodeStorage);
@@ -75,7 +100,11 @@ public class GenerateYamlFiles
             Label = string.Empty;
         }
 
-        if (ctrlDef.controlTypePrefix == "mni")
+        if ((ctrlDef.controlTypePrefix == "rgr") && (TXMLParser.GetChild(node, "OptionalValues") != null))
+        {
+            ProcessRadioGroupLabels(node);
+        }
+        else if (ctrlDef.controlTypePrefix == "mni")
         {
             // drop all attributes
             node.Attributes.RemoveAll();
