@@ -56,7 +56,14 @@ public class TGenerateCatalogStrings
         }
 
         if (File.Exists(Path.GetDirectoryName(AMainFilename) + Path.DirectorySeparatorChar +
-                System.IO.Path.GetFileNameWithoutExtension(AMainFilename) + ".yaml"))
+                System.IO.Path.GetFileNameWithoutExtension(AMainFilename.Replace("-generated", string.Empty)) + ".yaml"))
+        {
+            // do not generate translation code for already generated files;
+            // but still let gettext parse this file for Catalog.GetString
+            return true;
+        }
+
+        if (AMainFilename.Contains("-generated."))
         {
             // do not generate translation code for already generated files
             return false;
@@ -77,20 +84,6 @@ public class TGenerateCatalogStrings
         while (!readerMainFile.EndOfStream && !line.Contains("InitializeComponent();"))
         {
             line = readerMainFile.ReadLine();
-
-            if (line.ToLower() == "// auto generated with nant generateorm")
-            {
-                // those files don't contain any translatable strings
-                // and they are too big to parse
-                readerMainFile.Close();
-
-                if (writer != null)
-                {
-                    writer.Close();
-                }
-
-                return false;
-            }
 
             CheckLineAndAddDBHelp(line, ADataDefinitionStore, ADbHelpTranslationWriter);
 
