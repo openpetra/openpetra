@@ -71,9 +71,13 @@ namespace Ict.Common
         {
             get
             {
-                if (FApplicationDirectory.StartsWith("file:\\") || FApplicationDirectory.StartsWith("file:/"))
+                if (FApplicationDirectory.StartsWith("file:\\"))
                 {
                     FApplicationDirectory = FApplicationDirectory.Substring("file:\\".Length);
+                }
+                else if (FApplicationDirectory.StartsWith("file:/"))
+                {
+                    FApplicationDirectory = FApplicationDirectory.Substring("file:".Length);
                 }
 
                 return FApplicationDirectory;
