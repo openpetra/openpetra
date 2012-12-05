@@ -307,8 +307,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     if (ProperI18NCatalogGetString(StringHelper.TrimQuotes(APropertyValue)))
                     {
-                        FTemplate.AddToCodelet("CATALOGI18N",
-                            "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" + APropertyValue + ");" + Environment.NewLine);
+                        if (APropertyValue.EndsWith(":\""))
+                        {
+                            FTemplate.AddToCodelet("CATALOGI18N",
+                                "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" +
+                                APropertyValue.Substring(0, APropertyValue.Length - 2) + "\") + \":\";" + Environment.NewLine);
+                        }
+                        else
+                        {
+                            FTemplate.AddToCodelet("CATALOGI18N",
+                                "this." + AControlName + "." + APropertyName + " = Catalog.GetString(" + APropertyValue + ");" + Environment.NewLine);
+                        }
                     }
                 }
                 else if (AControlName.StartsWith("dtp")
@@ -545,7 +554,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             while (child != null)
             {
-                if ((child.Name == "data") && (TXMLParser.GetAttribute(child, "name") == AImageFileName))
+                if ((child.Name == "data") && (TYml2Xml.GetAttribute(child, "name") == AImageFileName))
                 {
                     return child.InnerText;
                 }
@@ -595,7 +604,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 while (OrigDataNode != null && !(OrigDataNode.Name == "data"
-                                                 && TXMLParser.GetAttribute(OrigDataNode, "name") == TXMLParser.GetAttribute(ChildNode, "name")))
+                                                 && TYml2Xml.GetAttribute(OrigDataNode, "name") == TYml2Xml.GetAttribute(ChildNode, "name")))
                 {
                     OrigDataNode = OrigDataNode.NextSibling;
                 }

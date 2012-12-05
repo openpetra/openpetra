@@ -195,8 +195,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"));
             string DefaultValue;
 
-            if ((TXMLParser.HasAttribute(ctrl.xmlNode, "NoDefaultValue")
-                 && ((TXMLParser.GetAttribute(ctrl.xmlNode, "NoDefaultValue")) == "true")))
+            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "NoDefaultValue")
+                 && ((TYml2Xml.GetAttribute(ctrl.xmlNode, "NoDefaultValue")) == "true")))
             {
                 DefaultValue = String.Empty;
                 FNoDefaultValue = true;
@@ -206,9 +206,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 DefaultValue = optionalValues[0];
             }
 
-            if (TXMLParser.HasAttribute(ctrl.xmlNode, "DefaultValue"))
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
             {
-                DefaultValue = TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue");
+                DefaultValue = TYml2Xml.GetAttribute(ctrl.xmlNode, "DefaultValue");
             }
             else
             {
@@ -223,7 +223,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            StringCollection optionalValuesLabels =
+                TYml2Xml.GetElements(TYml2Xml.GetChild(ctrl.xmlNode, "LabelsForOptionalValues"));
+
             // add the radiobuttons on the fly
+            int count = 0;
 
             foreach (string optionalValue in optionalValues)
             {
@@ -232,7 +236,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         "_").Replace("&",
                         ""), false, false);
                 TControlDef newCtrl = writer.CodeStorage.FindOrCreateControl(radioButtonName, ctrl.controlName);
-                newCtrl.Label = optionalValue;
+                newCtrl.Label = optionalValuesLabels.Count > 0 ? optionalValuesLabels[count] : optionalValue;
 
                 if (StringHelper.IsSame(DefaultValue, optionalValue))
                 {
@@ -251,6 +255,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 ctrl.Children.Add(newCtrl);
+                count++;
             }
 
             base.ProcessChildren(writer, ctrl);
@@ -315,9 +320,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "Controls"));
             string DefaultValue = Controls[0];
 
-            if (TXMLParser.HasAttribute(ctrl.xmlNode, "DefaultValue"))
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
             {
-                DefaultValue = TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue");
+                DefaultValue = TYml2Xml.GetAttribute(ctrl.xmlNode, "DefaultValue");
             }
 
             foreach (string controlName in Controls)

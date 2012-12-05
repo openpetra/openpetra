@@ -63,3 +63,6 @@ csharp/ICT/Petra/Shared/lib/data/*.cs
 *lang-template.js
 inc/cfg/benerator/benerator.log
 i18n/template.pot.withallsources
+*.de-DE.yaml
+*.da-DK.yaml
+*.es-ES.yaml

@@ -159,18 +159,18 @@ namespace Ict.Common.IO
 
             if (ACurrentIndent == 0)
             {
-                AYmlDocument.Append(ROOTNODEINTERNAL + ":");
-            }
-            else
-            {
-                if ((ANode.Name == XMLELEMENT) && TXMLParser.HasAttribute(ANode, "name"))
+                if (ROOTNODEINTERNAL.StartsWith(ANode.Name))
                 {
-                    AYmlDocument.Append(Indent + TXMLParser.GetAttribute(ANode, "name") + ":");
+                    AYmlDocument.Append(ANode.Name + ":");
                 }
                 else
                 {
-                    AYmlDocument.Append(Indent + ANode.Name + ":");
+                    AYmlDocument.Append(ROOTNODEINTERNAL + ":");
                 }
+            }
+            else
+            {
+                AYmlDocument.Append(Indent + ANode.Name + ":");
             }
 
             // only write attributes if they are different from the parent node;
@@ -190,45 +190,88 @@ namespace Ict.Common.IO
                 }
             }
 
-            StringBuilder attributesYml = new StringBuilder(400);
-            bool firstAttribute = true;
-
-            foreach (XmlAttribute attrToWrite in attributesToWrite)
+            if (ACurrentIndent == 0)
             {
-                if (!firstAttribute)
+                AYmlDocument.Append(Environment.NewLine);
+
+                // for the root node, write all attributes into a separate line
+                foreach (XmlAttribute attrToWrite in attributesToWrite)
                 {
-                    attributesYml.Append(", ");
+                    attrToWrite.Value = attrToWrite.Value.Replace("\\", "\\\\");
+                    attrToWrite.Value = attrToWrite.Value.Replace("\r", "").Replace("\n", "\\\\n");
+
+                    string value = attrToWrite.Value;
+
+                    if (value.Contains(",") || value.Contains(":") || value.Contains("=")
+                        || value.Contains("\"") || value.Contains("#"))
+                    {
+                        value = "\"" + value.Replace("\"", "\\\"") + "\"";
+                    }
+
+                    AYmlDocument.Append("".PadLeft(ACurrentIndent + DEFAULTINDENT) + attrToWrite.Name + ":" + value + Environment.NewLine);
                 }
-
-                firstAttribute = false;
-
-                attributesYml.Append(attrToWrite.Name + "=");
-
-                attrToWrite.Value = attrToWrite.Value.Replace("\\", "\\\\");
-                attrToWrite.Value = attrToWrite.Value.Replace("\r", "").Replace("\n", "\\\\n");
-
-                if (attrToWrite.Value.Contains(",") || attrToWrite.Value.Contains(":") || attrToWrite.Value.Contains("=")
-                    || attrToWrite.Value.Contains("\"") || attrToWrite.Value.Contains("#"))
-                {
-                    attributesYml.Append("\"" + attrToWrite.Value.Replace("\"", "\\\"") + "\"");
-                }
-                else
-                {
-                    attributesYml.Append(attrToWrite.Value);
-                }
-            }
-
-            if (!firstAttribute)
-            {
-                AYmlDocument.Append("{" + attributesYml.ToString() + "}" + Environment.NewLine);
             }
             else
             {
-                AYmlDocument.Append(Environment.NewLine);
+                StringBuilder attributesYml = new StringBuilder(400);
+                bool firstAttribute = true;
+
+                foreach (XmlAttribute attrToWrite in attributesToWrite)
+                {
+                    if (!firstAttribute)
+                    {
+                        attributesYml.Append(", ");
+                    }
+
+                    firstAttribute = false;
+
+                    attributesYml.Append(attrToWrite.Name + "=");
+
+                    attrToWrite.Value = attrToWrite.Value.Replace("\\", "\\\\");
+                    attrToWrite.Value = attrToWrite.Value.Replace("\r", "").Replace("\n", "\\\\n");
+
+                    if (attrToWrite.Value.Contains(",") || attrToWrite.Value.Contains(":") || attrToWrite.Value.Contains("=")
+                        || attrToWrite.Value.Contains("\"") || attrToWrite.Value.Contains("#"))
+                    {
+                        attributesYml.Append("\"" + attrToWrite.Value.Replace("\"", "\\\"") + "\"");
+                    }
+                    else
+                    {
+                        attributesYml.Append(attrToWrite.Value);
+                    }
+                }
+
+                if (!firstAttribute)
+                {
+                    AYmlDocument.Append("{" + attributesYml.ToString() + "}" + Environment.NewLine);
+                }
+                else
+                {
+                    AYmlDocument.Append(Environment.NewLine);
+                }
             }
 
             foreach (XmlNode childNode in ANode.ChildNodes)
             {
+                if (childNode.HasChildNodes && (childNode.FirstChild.Name == XMLELEMENT))
+                {
+                    // write a list of values, eg: mylist: [test1, test2, test3]
+                    AYmlDocument.Append("".PadLeft(ACurrentIndent + DEFAULTINDENT) + childNode.Name + ": [");
+
+                    foreach (XmlNode elementNode in childNode.ChildNodes)
+                    {
+                        if (elementNode != childNode.FirstChild)
+                        {
+                            AYmlDocument.Append(", ");
+                        }
+
+                        AYmlDocument.Append(TXMLParser.GetAttribute(elementNode, "name"));
+                    }
+
+                    AYmlDocument.Append("]" + Environment.NewLine);
+                    continue;
+                }
+
                 // make a deep copy of the sorted list, so that we don't modify the original list
                 SortedList <string, string>NewAttributesList = new SortedList <string, string>();
 
@@ -273,7 +316,14 @@ namespace Ict.Common.IO
         {
             StringBuilder sb = new StringBuilder(1024 * 1024 * 5);
 
-            WriteXmlNode2Yml(sb, 0, ADoc.DocumentElement, new SortedList <string, string>());
+            if (ADoc.DocumentElement.Name == "RootNodeInternal")
+            {
+                WriteXmlNode2Yml(sb, 0, ADoc.DocumentElement.FirstChild, new SortedList <string, string>());
+            }
+            else
+            {
+                WriteXmlNode2Yml(sb, 0, ADoc.DocumentElement, new SortedList <string, string>());
+            }
 
             StreamWriter sw = new StreamWriter(AOutYMLFile, false, System.Text.Encoding.UTF8);
 
@@ -709,7 +759,14 @@ namespace Ict.Common.IO
 
                 foreach (XmlNode element in ANewNode.ChildNodes)
                 {
-                    if (baseElements.Contains(element.Attributes["name"].Value)
+                    string elementName = element.Name;
+
+                    if (element.Attributes["name"] != null)
+                    {
+                        elementName = element.Attributes["name"].Value;
+                    }
+
+                    if (baseElements.Contains(elementName)
                         && (element.Attributes["negated"] == null))
                     {
                         baseElements.Clear();
@@ -721,7 +778,12 @@ namespace Ict.Common.IO
                 // add elements
                 foreach (XmlNode element in ANewNode.ChildNodes)
                 {
-                    string elementName = element.Attributes["name"].Value;
+                    string elementName = element.Name;
+
+                    if (element.Attributes["name"] != null)
+                    {
+                        elementName = element.Attributes["name"].Value;
+                    }
 
                     // remove negated element from the list
                     if (element.Attributes["negated"] != null)

@@ -606,7 +606,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (controlsNode != null)
             {
-                FTabOrder = TXMLParser.GetAttribute(controlsNode, "TabOrder");
+                FTabOrder = TYml2Xml.GetAttribute(controlsNode, "TabOrder");
             }
 
             List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
