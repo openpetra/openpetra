@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-30 09:31+0100\n"
+"POT-Creation-Date: 2012-10-31 08:52+0100\n"
 "PO-Revision-Date: 2012-10-04 07:01+0000\n"
 "Last-Translator: Timotheus Pokorra <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2012-10-31 04:51+0000\n"
+"X-Launchpad-Export-Date: 2012-11-01 04:49+0000\n"
 "X-Generator: Launchpad (build 16218)\n"
 "Language: de\n"
 
@@ -404,30 +404,38 @@ msgstr ""
 "({2}). Deshalb wird ein Verlust der Präzision eintreten, weil die Zahl ab "
 "der Dezimalstelle {3} gerundet wird."
 
+#. / Generic indication of invalid data.
+#. / Shown when invalid data was entered.
 #: csharp\ICT\Common\Verification\Resourcestrings.cs:34 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Invalid Data"
 msgstr "Ungültige Eingabe"
 
+#. / Generic indication of missing data.
 #: csharp\ICT\Common\Verification\Resourcestrings.cs:37
 msgid "Information Missing"
 msgstr "Information fehlend"
 
+#. / Generic indication of an invalid number.
 #: csharp\ICT\Common\Verification\Resourcestrings.cs:40
 msgid "Invalid number entered."
 msgstr "Es wurde keine gültige Zahl eingegeben."
 
+#. / Generic indication of a precision loss due to rounding.
 #: csharp\ICT\Common\Verification\Resourcestrings.cs:43
 msgid "Precision loss due to rounding."
 msgstr "Präzisionsverlust wegen Rundung."
 
+#. / Generic indication of invalid numbers.
 #: csharp\ICT\Common\Verification\Resourcestrings.cs:46
 msgid "Invalid numbers entered."
 msgstr "Ungültige Zahlen eingeben."
 
+#. / Generic indication of an invalid date.
 #: csharp\ICT\Common\Verification\Resourcestrings.cs:49
 msgid "Invalid date entered."
 msgstr "Ein ungültiges Datum wurde eingegeben."
 
+#. / Generic indication of an invalid string.
 #: csharp\ICT\Common\Verification\Resourcestrings.cs:52
 msgid "Invalid value entered."
 msgstr "Ungültige Werte eingeben."
@@ -666,26 +674,32 @@ msgstr ""
 "({0}) \r\n"
 "ist nicht verfügbar!"
 
+#. / This resourcestring needs to be public as it is referenced from outside this Class as well.
 #: csharp\ICT\Petra\Client\app\Gui\LocalisedStrings.cs:41 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "County/St&ate:"
 msgstr "Bundesland:"
 
+#. / Message Number
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:50
 msgid "Message Number: "
 msgstr "Nachrichtennummer: "
 
+#. / Context
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:53
 msgid "Context: "
 msgstr "Kontext: "
 
+#. / Release
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:56
 msgid "Release: "
 msgstr "Release: "
 
+#. / Shown when the Form contains invalid data.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:59
 msgid "Form Contains Invalid Data!"
 msgstr "Formular zeigt ungültige Daten!"
 
+#. / Shown when there are Warnings associated with a Form's data.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:62
 msgid "Form Data Warning"
 msgstr ""
@@ -706,10 +720,12 @@ msgstr ""
 msgid "The currently edited record contains invalid data:"
 msgstr ""
 
+#. / Shown when the Form contains invalid data at the point of saving data.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:80
 msgid "Record Contains Invalid Data!"
 msgstr ""
 
+#. / Database Concurrency Message Title.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:91
 msgid "Unable to Save - Concurrent Activity Detected"
 msgstr ""
@@ -734,6 +750,7 @@ msgid ""
 "\r\n"
 msgstr ""
 
+#. / Part of a Database Concurrency Message.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:109
 msgid ""
 "Actions required:\r\n"
@@ -742,38 +759,47 @@ msgid ""
 "  * You will need to repeat your changes and save them again."
 msgstr ""
 
+#. / Part of a Database Concurrency Message.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:114
 msgid "modified"
 msgstr "verändert"
 
+#. / Part of a Database Concurrency Message.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:117
 msgid "modified and saved"
 msgstr "verändert und gespeichert"
 
+#. / Part of a Database Concurrency Message.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:120
 msgid "modify and save"
 msgstr "ändern und speichern"
 
+#. / Part of a Database Concurrency Message.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:123
 msgid "opened and before you deleted"
 msgstr ""
 
+#. / Part of a Database Concurrency Message.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:126
 msgid "deleted it somewhere else"
 msgstr ""
 
+#. / Part of a Database Concurrency Message.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:129
 msgid "deleted"
 msgstr "gelöscht"
 
+#. / Part of a Database Concurrency Message.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:132
 msgid "delete"
 msgstr "löschen"
 
+#. / Part of a Database Concurrency Message.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:135
 msgid " The other user has done this on {0}."
 msgstr " Ein anderer Benutzer hat dies am {0} getan."
 
+#. / Part of a Database Concurrency Message.
 #: csharp\ICT\Petra\Client\app\Gui\Messages.cs:138
 msgid " it in another place on {0}"
 msgstr ""
@@ -814,15 +840,19 @@ msgstr ""
 msgid "Date underrun ..."
 msgstr "Datumsfehler"
 
-#: csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:37 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#. / <summary>String for the title</summary>
+#: csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:37
+#: csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind.ManualCode.cs:79 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Partner"
 msgstr "Partner"
 
-#: csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:40 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:40
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup.ManualCode.cs:164
 msgid "Partner Class"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:43 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:43
+#: csharp\ICT\Petra\Client\MCommon\Gui\FieldOfService.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "PartnerKey"
 msgstr "PartnerSchlüssel"
 
@@ -839,40 +869,40 @@ msgid "&File"
 msgstr "&Datei"
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:71 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Tiles"
+msgid "Tiles"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:72 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&List"
+msgid "List"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Large"
+msgid "Large"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:74 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Medium"
+msgid "Medium"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Small"
+msgid "Small"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Task &Size"
+msgid "Task Size"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Single-&click to open an item"
+msgid "Single-click to open an item"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:78 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Tasks"
+msgid "Tasks"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:79 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&View"
-msgstr ""
+msgid "View"
+msgstr "Betrachten"
 
 #: csharp\ICT\Petra\Client\app\MainWindow\MainWindowNew-generated.cs:80 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&Petra Help"
@@ -979,10 +1009,12 @@ msgstr "Enthält Suchbegriff *--"
 msgid "Exactly matches search term ---"
 msgstr "Suchbegriff wird exakt gesucht ---"
 
+#. / Error message
 #: csharp\ICT\Petra\Client\CommonControls\Gui\txtAutoPopulatedButtonLabel.cs:109
 msgid "NOT A VALID VALUE!"
 msgstr ""
 
+#. / Error message
 #: csharp\ICT\Petra\Client\CommonControls\Gui\txtAutoPopulatedButtonLabel.cs:112
 msgid "NOT A VALID OCCUPATION CODE!"
 msgstr ""
@@ -1029,7 +1061,8 @@ msgstr ""
 msgid "No valid Extract selected"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\CommonControls\Gui\txtAutoPopulatedButtonLabel.cs:1186 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\CommonControls\Gui\txtAutoPopulatedButtonLabel.cs:1186
+#: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:43 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Error"
 msgstr "Fehler"
 
@@ -1475,11 +1508,13 @@ msgstr "Anzahl Stunden"
 msgid "Number Of Minutes"
 msgstr "Anzahl Minuten"
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:139 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:139
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:138 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&New"
 msgstr "&Neu"
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:140 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:140
+#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:139 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&Delete"
 msgstr "Löschen"
 
@@ -1856,7 +1891,8 @@ msgstr ""
 msgid "Opening of Field Of Service screen got cancelled by user."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\FieldOfService.cs:55 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\FieldOfService.cs:55
+#: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:92
 msgid "Screen opening cancelled"
 msgstr ""
 
@@ -1924,7 +1960,8 @@ msgstr ""
 msgid "Reset Search"
 msgstr "Suche zurücksetzen"
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\UC_CollapsibleSearchPane.cs:484 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\Gui\UC_CollapsibleSearchPane.cs:484
+#: csharp\ICT\Petra\Client\MFinance\Gui\AP\APMain-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&Search"
 msgstr "&Suchen"
 
@@ -2158,7 +2195,8 @@ msgid ""
 "abort."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MCommon\logic\FieldOfService.cs:50 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\logic\FieldOfService.cs:50
+#: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:86
 msgid "OpenPetra Server Too Busy"
 msgstr ""
 
@@ -2166,19 +2204,23 @@ msgstr ""
 msgid "Information"
 msgstr "Information"
 
-#: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:40 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:40
+#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftRevertAdjust.ManualCode.cs:318 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Warning"
 msgstr "Warnung"
 
-#: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:46 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:46
+#: csharp\ICT\Petra\Client\MReporting\Gui\PrintPreview.cs:99 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Ready"
 msgstr "Fertig"
 
-#: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:49 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:49
+#: csharp\ICT\Petra\Client\MPartner\logic\PartnerFind.cs:540
 msgid "Details: "
 msgstr "Details: "
 
-#: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:52 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:52
+#: csharp\ICT\Petra\Client\MPartner\logic\UC_PartnerSubscriptions.cs:66
 msgid " (inactive)"
 msgstr " (inaktiv)"
 
@@ -2194,14 +2236,17 @@ msgstr "Dieses Fenster enthät ungesicherte Änderungen."
 msgid "Save changes before closing?"
 msgstr "Sollen Änderungen vor dem Schließen gespeichert werden?"
 
+#. / Shown while data is being saved.
 #: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:64
 msgid "Saving data..."
 msgstr "Speichere Daten..."
 
+#. / Shown when data was saved successfully.
 #: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:67
 msgid "Data successfully saved."
 msgstr "Daten erfolgreich gespeichert."
 
+#. / Shown when saving of data failed.
 #: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:70
 msgid "Data could not be saved because an unexpected error occured!"
 msgstr ""
@@ -2216,6 +2261,7 @@ msgstr "Die Daten konnten aufgrund eines Fehlers nicht gesichert werden!"
 msgid "Saving of data cancelled by user!"
 msgstr "Speichern der Daten durch Benutzer abgebrochen!"
 
+#. / Shown when no data needs saving.
 #: csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:79
 msgid "There was nothing to be saved."
 msgstr "Es gab nichts zu speichern."
@@ -3957,10 +4003,6 @@ msgstr "Datum von:"
 msgid "Detail:"
 msgstr "Detail:"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\Gift\DonorRecipientHistory-generated.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "View"
-msgstr "Betrachten"
-
 #: csharp\ICT\Petra\Client\MFinance\Gui\Gift\DonorRecipientHistory-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Total:"
 msgstr "Gesamt:"
@@ -4690,6 +4732,7 @@ msgstr "Kommentar angeben"
 msgid "Confidential?"
 msgstr ""
 
+#. / String for the title
 #: csharp\ICT\Petra\Client\MFinance\Gui\Gift\UC_GiftTransactions-generated.cs:1133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Recipient"
 msgstr ""
@@ -6766,186 +6809,6 @@ msgid ""
 "for all partners in the extract?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "PERMANENT"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Pub&lication Code:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "S&ubscription Status:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:78 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Free Subscri&ption:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:81 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Complimentar&y:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:82 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Copies:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:83 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Reason &Given:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Reason Ended:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Gift Given By:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:86 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Change Miscellaneous"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:87 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "S&tart Date:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:88 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "E&xpiry Date:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Date Rene&wed:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:90 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Not&ice Sent:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:91 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Date E&nded:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:92 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Change Dates"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:93 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Issues Received:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:94 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Fi&rst Issue Sent:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:95 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "L&ast Issue Sent:"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:96 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Change Issues"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:102 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter a publication code"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:104 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Select the current status of the subscription"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:105 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Select if this a free subscription (no dates updated)"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:106 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter the number of Complimentary issues to be given"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:107 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter the number of subscription issues"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:108 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter a reason subscription was given"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:110 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter a reason subscription was cancelled"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:112 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Who gave this subscription as a gift"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:113 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter the subscription start date"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:114 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter the date this subscription discontinues (if necessary)"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:115 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter the projected renewal date (if necessary)"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:116 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter the date a notice was sent (if necessary)"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:117 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter the date subscription was cancelled (if necessary)"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:118 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Enter the number of Issues Received"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:119 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Date the first issue was sent to the Partner"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:120 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Date the most recent issue was sent to this Partner"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:726 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Pub&lication Code"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:731 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "S&ubscription Status"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:736 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Free Subscri&ption"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:741 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Complimentar&y"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:746 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Reason &Given"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:751 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Reason Ended"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:756 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Gift Given By"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:761 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "S&tart Date"
-msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog-generated.cs:766 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Issues Received"
-msgstr ""
-
 #: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:454
 msgid "Subscription Status"
 msgstr ""
@@ -6958,7 +6821,8 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:468 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:468
+#: csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:198
 msgid "No"
 msgstr ""
 
@@ -6972,6 +6836,14 @@ msgstr "Kopien"
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:488
 msgid "Reason Given"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:494 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Reason Ended"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:500 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Gift Given By"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:507 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -6992,6 +6864,10 @@ msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:531
 msgid "Date Ended"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:538 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Issues Received"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\UpdateExtractChangeSubscriptionDialog.ManualCode.cs:544
@@ -7623,6 +7499,10 @@ msgstr ""
 msgid "Maintain Publication Costs"
 msgstr ""
 
+#: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:156 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Enter a publication code"
+msgstr ""
+
 #: csharp\ICT\Petra\Client\MPartner\Gui\Setup\PublicationCostSetup-generated.cs:158
 msgid "The effective date of the publication cost"
 msgstr ""
@@ -8234,7 +8114,8 @@ msgstr ""
 msgid "&Worker Field..."
 msgstr "Feld des Arbeiters..."
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind-generated.cs:114 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind-generated.cs:114
+#: csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:237 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&Personnel/Individual Data..."
 msgstr ""
 
@@ -8310,6 +8191,7 @@ msgstr ""
 msgid "Partner Find OpenPetra.org"
 msgstr "Finde Partner OpenPetra.org"
 
+#. / String for the title
 #: csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind.ManualCode.cs:82
 msgid " Find"
 msgstr ""
@@ -8765,6 +8647,14 @@ msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\SubscriptionsCancelAllDialog-generated.cs:73 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "==Will be set in the dialog initialization=="
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\SubscriptionsCancelAllDialog-generated.cs:74 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Reason Ended:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\SubscriptionsCancelAllDialog-generated.cs:75 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Date E&nded:"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\SubscriptionsCancelAllDialog-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -9285,7 +9175,8 @@ msgstr ""
 msgid " to "
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_FamilyMembers.ManualCode.cs:57 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_FamilyMembers.ManualCode.cs:57
+#: csharp\ICT\Petra\Client\MPartner\logic\UC_FamilyMembers.cs:62
 msgid "Family ID Change Done"
 msgstr ""
 
@@ -10965,11 +10856,13 @@ msgstr "Suchkriterien"
 msgid "Custom Criteria Demo"
 msgstr "Demo Kundenkriterien"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_ByPartnerDetails.cs:243 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_ByPartnerDetails.cs:243
+#: csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:166 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Fin&d Result"
 msgstr "Ergebnis der Suche"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_ByPartnerDetails.cs:244 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_ByPartnerDetails.cs:244
+#: csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:157 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Searching..."
 msgstr "Suche läuft …"
 
@@ -11248,6 +11141,54 @@ msgstr ""
 msgid "Are you sure you want to delete Relationship record: '{0}'?"
 msgstr ""
 
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:76 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "PERMANENT"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:77 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Pub&lication Code:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:78 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "S&ubscription Status:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:79 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Free Subscri&ption:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:83 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Complimentar&y:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "&Copies:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Reason &Given:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:87 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Gift Given By:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:89 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "S&tart Date:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:90 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "E&xpiry Date:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:91 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Date Rene&wed:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:92 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Not&ice Sent:"
+msgstr ""
+
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:94 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Dates"
 msgstr ""
@@ -11256,8 +11197,104 @@ msgstr ""
 msgid "Edit Issues"
 msgstr ""
 
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:96 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Issues Received:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:97 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Fi&rst Issue Sent:"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:98 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "L&ast Issue Sent:"
+msgstr ""
+
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:99 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Issues"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:156
+msgid "Select the current status of the subscription"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:157
+msgid "Select if this a free subscription (no dates updated)"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:158
+msgid "Enter the number of Complimentary issues to be given"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:159
+msgid "Enter the number of subscription issues"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:160
+msgid "Enter a reason subscription was given"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:162
+msgid "Enter a reason subscription was cancelled"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:164
+msgid "Who gave this subscription as a gift"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:165
+msgid "Enter the subscription start date"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:166
+msgid "Enter the date this subscription discontinues (if necessary)"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:167
+msgid "Enter the projected renewal date (if necessary)"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:168
+msgid "Enter the date a notice was sent (if necessary)"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:169
+msgid "Enter the date subscription was cancelled (if necessary)"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:170
+msgid "Enter the number of Issues Received"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:171
+msgid "Date the first issue was sent to the Partner"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:172
+msgid "Date the most recent issue was sent to this Partner"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:702
+msgid "Pub&lication Code"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:707
+msgid "S&ubscription Status"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:712
+msgid "Free Subscri&ption"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:717
+msgid "Complimentar&y"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:722
+msgid "Reason &Given"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription-generated.cs:737
+msgid "S&tart Date"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_Subscription.ManualCode.cs:317
@@ -11299,7 +11336,8 @@ msgstr ""
 "Keine e-mail Adresse für diesen Partner in der ausgewählten "
 "Adressaufzeichnung."
 
-#: csharp\ICT\Petra\Client\MPartner\logic\PartnerFind.cs:531 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\logic\PartnerFind.cs:531
+#: csharp\ICT\Petra\Client\MPartner\logic\PartnerFind.cs:543 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Cannot Send E-mail To Partner"
 msgstr "Kann keine Email an diesen Partner schicken"
 
@@ -11449,7 +11487,8 @@ msgstr ""
 msgid "Enter an international postal/zip code"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:132 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:132
+#: - This item was created automatically from a designer file
 msgid "Enter a county/province/state/district/canton"
 msgstr "Geben Sie den Landkreis/Bundesstaat/Bezirk/Provinz/Kanton ein"
 
@@ -11634,6 +11673,7 @@ msgstr ""
 msgid "Fund Name change has been undone."
 msgstr ""
 
+#. / Resourcetext: 'Missing Approval'
 #: csharp\ICT\Petra\Client\MPartner\verification\UC_PartnerEdit_CollapsiblePart.cs:53
 msgid "Missing Approval"
 msgstr ""
@@ -15597,6 +15637,9 @@ msgstr ""
 msgid "Please enter recurring batch description"
 msgstr ""
 
+#. /
+#. / constant for split gifts
+#. /
 #: csharp\ICT\Petra\Server\lib\MFinance\Gift\Gift.cs:56
 msgid "Split Gift"
 msgstr ""
@@ -16531,6 +16574,9 @@ msgstr ""
 msgid " or "
 msgstr ""
 
+#. /
+#. / message for when no information is available
+#. /
 #: csharp\ICT\Petra\Shared\lib\MPartner\Calculations.cs:49
 msgid "  No name information available"
 msgstr ""
@@ -16598,6 +16644,7 @@ msgid ""
 "Do you want to continue?"
 msgstr ""
 
+#. / Shown when Warnings are brought to the attention of the user.
 #: csharp\ICT\Petra\Shared\Messages.cs:36
 msgid "The following warnings are brought to your attention:"
 msgstr ""
