@@ -73,6 +73,8 @@ public class TPoFileParser
     /// </summary>
     public static void WriteUpdatedPoFile(string APoFilePath, SortedList <string, string>ANewTranslations)
     {
+        List <string>pofile = new List <string>();
+
         if (ANewTranslations.Keys.Count > 0)
         {
             TLogging.Log("updating " + APoFilePath);
@@ -90,6 +92,18 @@ public class TPoFileParser
                 {
                     StringCollection OriginalLines;
                     string messageId = TPoFileParser.ParsePoLine(sr, ref line, out OriginalLines);
+
+                    if (pofile.Contains(messageId))
+                    {
+                        // ignore this instance
+                        TPoFileParser.ParsePoLine(sr, ref line, out OriginalLines);
+
+                        TLogging.Log("duplicate messageid: " + messageId);
+                    }
+                    else
+                    {
+                        pofile.Add(messageId);
+                    }
 
                     foreach (string s in OriginalLines)
                     {
