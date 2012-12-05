@@ -160,6 +160,13 @@ ENDLOCAL
 
 </target>
 
+<target name="createI18NYamlFiles" depends="translation">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>  
+  <property name="path" value="${dir.csharp}/ICT/Petra/Client" overwrite="false"/>
+  <property name="language" value="de-DE" overwrite="false"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" 
+    commandline="-do:yamlfiles -language:${language} -path:&quot;${path}&quot; -pofile:&quot;${dir.root}/i18n/${language}.po&quot;" />
+</target>
 
 <target name="guidedTrans">
   <echo>start guided Translation</echo>
