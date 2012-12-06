@@ -43,6 +43,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.App.Core;
 
 //using Ict.Petra.Server.MFinance.Account.Data.Access;
 //using Ict.Petra.Shared.MFinance.Account.Data;
@@ -113,7 +114,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             decimal totalBatchAmount = 0;
             FImportMessage = Catalog.GetString("Parsing first line");
             Int32 RowNumber = 0;
+            Int32 BatchDetailCounter = 1;
             bool ok = false;
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Parsing first line"),
+                5);
 
             try
             {
@@ -143,6 +149,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     {
                                         DBAccess.GDBAccessObj.RollbackTransaction();
                                     }
+
+                                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
                                     sr.Close();
                                     return false;
@@ -181,11 +189,18 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
                                 sr.Close();
                                 return false;
                             }
 
                             FMainDS.AGiftBatch.AcceptChanges();
+
+                            BatchDetailCounter = 2;
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                BatchDescription,
+                                10);
                         }
                         else if (RowType == "T")
                         {
@@ -303,6 +318,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
                                 sr.Close();
                                 return false;
                             }
@@ -317,11 +334,18 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
                                 sr.Close();
                                 return false;
                             }
 
                             FMainDS.AGiftDetail.AcceptChanges();
+
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), 
+                                "TODO Add Importing Gift Detail to Catalog", 
+                                BatchDetailCounter * 5 >= 90 ? 90 : BatchDetailCounter++ * 5);
+
                         }
                         else
                         {
@@ -349,6 +373,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                     }
                 }
 
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
                 sr.Close();
             }
             catch (Exception ex)
@@ -365,6 +391,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
+
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
                 sr.Close();
                 return false;
@@ -383,6 +411,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (ok && NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    "TODO Add gift batch import successful msg to catalog",
+                    100);
             }
             else
             {
@@ -394,7 +426,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                         Catalog.GetString("Data could not be saved."),
                         TResultSeverity.Resv_Critical));
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Data could not be saved."),
+                    0);
             }
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             return true;
         }
