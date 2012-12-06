@@ -1309,7 +1309,7 @@ namespace Ict.Common.IO
         {
             XmlNode newElement = TXMLParser.GetChild(parent, nodeName);
 
-            if (nodeName.Contains("Separator") || nodeName.Contains(TYml2Xml.XMLLIST))
+            if (nodeName.Contains("Separator") || nodeName.Contains(TYml2Xml.XMLELEMENT))
             {
                 // special case: separators have the same name
                 newElement = null;
