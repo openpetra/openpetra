@@ -94,14 +94,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     TVerificationResultCollection AMessages = new TVerificationResultCollection();
 
                     Thread ImportThread = new Thread(() => ImportGiftBatches(
-                                                                requestParams, 
-                                                                importString, 
-                                                                out AMessages, 
-                                                                out ok));
+                            requestParams,
+                            importString,
+                            out AMessages,
+                            out ok));
 
                     TProgressDialog ImportDialog = new TProgressDialog(ImportThread);
                     ImportDialog.ShowDialog();
-                    
+
                     ShowMessages(AMessages);
                 }
 
@@ -126,15 +126,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AImportString"></param>
         /// <param name="AMessages"></param>
         /// <param name="ok"></param>
-        private void ImportGiftBatches(Hashtable ARequestParams, string AImportString, 
-                                        out TVerificationResultCollection AMessages, out bool ok)
+        private void ImportGiftBatches(Hashtable ARequestParams, string AImportString,
+            out TVerificationResultCollection AMessages, out bool ok)
         {
             TVerificationResultCollection AResultMessages;
             bool ImportIsSuccessful;
 
             ImportIsSuccessful = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatches(
-                ARequestParams, 
-                AImportString, 
+                ARequestParams,
+                AImportString,
                 out AResultMessages);
 
             ok = ImportIsSuccessful;

@@ -342,10 +342,9 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             FMainDS.AGiftDetail.AcceptChanges();
 
-                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), 
-                                "TODO Add Importing Gift Detail to Catalog", 
-                                BatchDetailCounter * 5 >= 90 ? 90 : BatchDetailCounter++ * 5);
-
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                "TODO Add Importing Gift Detail to Catalog",
+                                BatchDetailCounter * 5 >= 90 ? 90 : BatchDetailCounter++ *5);
                         }
                         else
                         {
