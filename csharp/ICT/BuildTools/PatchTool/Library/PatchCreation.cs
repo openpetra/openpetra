@@ -246,9 +246,10 @@ namespace Ict.Tools.PatchTool.Library
 
             // clear the diff directory
             PreparePatchTmpDirectory(DiffDirectory);
+            Directory.CreateDirectory(DiffDirectory + Path.DirectorySeparatorChar + "openpetraorg-" + newPatch);
 
             CreateDiffFiles(ATmpDirectory,
-                DiffDirectory,
+                DiffDirectory + Path.DirectorySeparatorChar + "openpetraorg-" + newPatch,
                 ATmpDirectory + Path.DirectorySeparatorChar + oldPatch + Path.DirectorySeparatorChar + "openpetraorg-" + oldPatch,
                 ATmpDirectory + Path.DirectorySeparatorChar + newPatch + Path.DirectorySeparatorChar + "openpetraorg-" + newPatch,
                 string.Empty);
