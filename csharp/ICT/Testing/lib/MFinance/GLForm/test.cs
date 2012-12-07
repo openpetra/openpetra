@@ -352,6 +352,117 @@ namespace Tests.MFinance.GLBatches
         }
 
         /// <summary>
+        /// simple test to view the transactions of a posted batch and then add a new batch
+        /// </summary>
+        [Test]
+        public void TestViewPostedBatchTransactionsAndAddBatch()
+        {
+            //This test adds a new batch, saves and posts it, then views it and then tries to add a new batch
+
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
+
+            frmBatch.LedgerNumber = FLedgerNumber;
+            frmBatch.Show();
+
+            // create a new batch and save
+            ButtonTester btnNewBatch = new ButtonTester("ucoBatches.btnNew");
+            btnNewBatch.Click();
+            TextBoxTester txtDetailBatchDescription = new TextBoxTester("txtDetailBatchDescription");
+            txtDetailBatchDescription.Properties.Text = "Created by test TestExportGLBatch";
+
+            TabControlTester tabGLBatch = new TabControlTester("tabGLBatch");
+
+            // go to Journal tab
+            tabGLBatch.SelectTab(1);
+
+            ButtonTester btnNewJournal = new ButtonTester("ucoJournals.btnAdd");
+            btnNewJournal.Click();
+
+            // go to transaction tab
+            tabGLBatch.SelectTab(2);
+
+            ButtonTester btnNewTransaction = new ButtonTester("ucoTransactions.btnNew");
+            btnNewTransaction.Click();
+
+            TextBoxTester txtDetailNarrative = new TextBoxTester("txtDetailNarrative");
+            txtDetailNarrative.Properties.Text = "test";
+            TextBoxTester txtDetailReference = new TextBoxTester("txtDetailReference");
+            txtDetailReference.Properties.Text = "test";
+
+            TTxtNumericTextBoxTester txtDebitAmount = new TTxtNumericTextBoxTester("txtDebitAmount");
+            decimal Amount = 1111.44M;
+            txtDebitAmount.Properties.NumberValueDecimal = Amount;
+
+            TCmbAutoPopulatedTester cmbDetailAccountCode = new TCmbAutoPopulatedTester("cmbDetailAccountCode");
+            cmbDetailAccountCode.Properties.SetSelectedString("6000");
+
+            TCmbAutoPopulatedTester cmbDetailCostCentreCode = new TCmbAutoPopulatedTester("cmbDetailCostCentreCode");
+            cmbDetailCostCentreCode.Properties.SetSelectedString(FLedgerNumber.ToString("00") + "00");
+
+            btnNewTransaction.Click();
+            txtDetailNarrative.Properties.Text = "test";
+            txtDetailReference.Properties.Text = "test";
+            TTxtNumericTextBoxTester txtCreditAmount = new TTxtNumericTextBoxTester("txtCreditAmount");
+            txtCreditAmount.Properties.NumberValueDecimal = Amount;
+
+            cmbDetailAccountCode.Properties.SetSelectedString("0200");
+            cmbDetailCostCentreCode.Properties.SetSelectedString(FLedgerNumber.ToString("00") + "00");
+
+            ToolStripButtonTester btnSave = new ToolStripButtonTester("tbbSave");
+            //btnSave.Click();
+
+            // post this batch
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                Assert.IsTrue(tester.Text.StartsWith(
+                        "Are you sure you want to post batch"),
+                    "Should start with 'are you sure you want to post batch', but is '" +
+                    tester.Text + "'");
+
+                // there is a second message box after posting, telling the user about success.
+                // because the ModalFormHandler is reset after handling the first message box, we need to set up a new handler.
+                ModalFormHandler = delegate(string name2, IntPtr hWnd2, Form form2)
+                {
+                    MessageBoxTester tester2 = new MessageBoxTester(hWnd2);
+                    Assert.AreEqual("Success", tester2.Title);
+                    tester2.SendCommand(MessageBoxTester.Command.Yes);
+                };
+
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+
+            // and now try to create a new batch, bug https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=1058
+            // go to Batch tab
+            tabGLBatch.SelectTab(0);
+
+            ButtonTester btnPostBatch = new ButtonTester("ucoBatches.btnPostBatch");
+            btnPostBatch.Click();
+
+            //Make sure the grid is clear
+            RadioButtonTester rbtPosting = new RadioButtonTester("rbtPosting");
+            rbtPosting.Properties.Checked = true;
+
+            //This will then select the first batch in the grid which needs to be posted
+            RadioButtonTester rbtAll = new RadioButtonTester("rbtAll");
+            rbtAll.Properties.Checked = true;
+
+            //TabControlTester tabGLBatch = new TabControlTester("tabGLBatch");
+
+            // go to Journal tab
+            tabGLBatch.SelectTab(1);
+
+            // go to Transaction Tab
+            tabGLBatch.SelectTab(2);
+
+            // go to Batch Tab
+            tabGLBatch.SelectTab(0);
+
+            //ButtonTester btnNewBatch = new ButtonTester("ucoBatches.btnNew");
+            btnNewBatch.Click();
+        }
+
+        /// <summary>
         /// simple test to create a batch and save it
         /// </summary>
         [Test]
