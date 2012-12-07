@@ -50,6 +50,11 @@ public class GenerateYamlFiles
     /// <param name="APoFilePath"></param>
     public static void WriteYamlFiles(string ALanguageCode, string AYamlFilePath, string APoFilePath)
     {
+        if (ALanguageCode == "en-EN")
+        {
+            return;
+        }
+
         string[] yamlfiles = System.IO.Directory.GetFiles(AYamlFilePath, "*.yaml", SearchOption.AllDirectories);
 
         // load (compiled) po file, and use for the labels

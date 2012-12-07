@@ -133,12 +133,20 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <!-- *************** Adjust Remote Client Config file ******************** -->
     <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config.my"/>
     <if test="${file::exists(Config.file)}">
-        <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote.config" overwrite="true"/>
+        <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote_temp.config" overwrite="true"/>
     </if>
     <if test="${not file::exists(Config.file)}">
         <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config"/>
-        <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote.config" overwrite="true"/>
+        <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote_temp.config" overwrite="true"/>
     </if>
+    <copy file="${tempdir}/PetraClientRemote_temp.config"
+              tofile="${tempdir}/PetraClientRemote.config">
+        <filterchain>
+            <expandproperties />
+        </filterchain>
+    </copy>
+    <delete file="${tempdir}/PetraClientRemote_temp.config"/>
+
     <property name="Config.file" value="${tempdir}/PetraClientRemote.config"/>
     <property name="result" value="${script::ReplaceInFile(Config.file, '{#WEBSITE}', PublisherUrl)}"/>
     <property name="result" value="${script::ReplaceInFile(Config.file, '{#ORGNAME}', OrgNameWithoutSpace)}"/>
@@ -190,6 +198,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\demodata\*.*', script::InsertRecursiveAllFilesFromSubdirectories('demodata/', '*.*', 'demo30'))}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\demo30\*.*&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('demodata/', '*.*', 'demo30\'))}"/>
 
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#GUILocalisation}', GUILocalisation)}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEVERSION}', ReleaseVersion)}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEID}', ReleaseID)}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#PATCHVERSION}', ReleaseID)}"/>
@@ -266,7 +275,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 </target>
 
 <target name="createRemoteClientPatch" depends="init">
-    <ExecDotNet program="${dir.bin}/Ict.Tools.PatchTool.exe" commandline="-action:create -OpenPetra.PathTemp:${tempdir} -deliverypath:${dir.delivery} -appname:openpetraorg -zipname:openpetraorg-client-backup-${OrgNameWithoutSpace} -oldversion:${OldVersion} -newversion:${NewVersion}"/>
+    <property name="OutputZipFilename" value="Patch_win_${GUILocalisation}-${OldVersion}_${NewVersion}.zip" overwrite="false"/>
+    <ExecDotNet program="${dir.bin}/Ict.Tools.PatchTool.exe" commandline="-action:create -OpenPetra.PathTemp:${tempdir} -deliverypath:${dir.delivery} -appname:openpetranow-${GUILocalisation} -zipname:openpetraorg-client-backup-${GUILocalisation} -oldversion:${OldVersion} -newversion:${NewVersion} -OutputZipFilename:${OutputZipFilename}"/>
 </target>
 
 <!-- Linux -->

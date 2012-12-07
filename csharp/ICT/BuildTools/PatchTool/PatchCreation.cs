@@ -74,12 +74,12 @@ namespace Ict.Tools.PatchTool
 
         private static void CreateDiffFiles(String ATmpDirectory,
             String ARootPatchDirectory,
-            String oldPatch,
-            String newPatch,
+            String AOldDirectory,
+            String ANewDirectory,
             String ARecursiveSubDir)
         {
-            string OldDirectory = ATmpDirectory + '/' + oldPatch + '/' + ARecursiveSubDir;
-            string NewDirectory = ATmpDirectory + '/' + newPatch + '/' + ARecursiveSubDir;
+            string OldDirectory = AOldDirectory + '/' + ARecursiveSubDir;
+            string NewDirectory = ANewDirectory + '/' + ARecursiveSubDir;
             string PatchDirectory = ARootPatchDirectory + '/' + ARecursiveSubDir;
 
             if (!Directory.Exists(PatchDirectory))
@@ -98,7 +98,7 @@ namespace Ict.Tools.PatchTool
             {
                 CreateDiffFiles(ATmpDirectory,
                     ARootPatchDirectory,
-                    oldPatch, newPatch, dir.Substring((ATmpDirectory + "/" + newPatch).Length + 1));
+                    AOldDirectory, ANewDirectory, dir.Substring(ANewDirectory.Length + 1));
             }
 
             // compare the files file by file
@@ -215,17 +215,20 @@ namespace Ict.Tools.PatchTool
             String AZipName,
             String oldPatch, String newPatch)
         {
-            if (!System.IO.Directory.Exists(ATmpDirectory + Path.DirectorySeparatorChar + oldPatch))
+            if (Directory.Exists(ATmpDirectory + Path.DirectorySeparatorChar + oldPatch))
             {
-                string OldTarFile = ADeliveryDirectory + Path.DirectorySeparatorChar +
-                                    AZipName + "-" + oldPatch + ".tar.gz";
+                // never reuse an unzipped tar file, because it might be from a different language
+                Directory.Delete(ATmpDirectory + Path.DirectorySeparatorChar + oldPatch, true);
+            }
 
-                if (File.Exists(OldTarFile))
-                {
-                    UnzipTarFile(ATmpDirectory + Path.DirectorySeparatorChar + oldPatch,
-                        OldTarFile,
-                        AAppName);
-                }
+            string OldTarFile = ADeliveryDirectory + Path.DirectorySeparatorChar +
+                                AZipName + "-" + oldPatch + ".tar.gz";
+
+            if (File.Exists(OldTarFile))
+            {
+                UnzipTarFile(ATmpDirectory + Path.DirectorySeparatorChar + oldPatch,
+                    OldTarFile,
+                    AAppName);
             }
 
             if (Directory.Exists(ATmpDirectory + Path.DirectorySeparatorChar + newPatch))
@@ -244,15 +247,20 @@ namespace Ict.Tools.PatchTool
             // clear the diff directory
             PreparePatchTmpDirectory(DiffDirectory);
 
-            CreateDiffFiles(ATmpDirectory, DiffDirectory, oldPatch, newPatch, "");
+            CreateDiffFiles(ATmpDirectory,
+                DiffDirectory,
+                ATmpDirectory + Path.DirectorySeparatorChar + oldPatch + Path.DirectorySeparatorChar + "openpetraorg-" + oldPatch,
+                ATmpDirectory + Path.DirectorySeparatorChar + newPatch + Path.DirectorySeparatorChar + "openpetraorg-" + newPatch,
+                string.Empty);
 
             // put it all into a zip file
-            PackTools.ZipDirectory(DiffDirectory);
+            string ZipFileName = TAppSettingsManager.GetValue("OutputZipFilename");
+            PackTools.ZipDirectory(DiffDirectory, DiffDirectory + "/../" + ZipFileName);
 
             // copy that file to the delivery directory
-            System.IO.File.Copy(DiffDirectory + ".zip", ADeliveryDirectory + Path.DirectorySeparatorChar + Path.GetFileName(
-                    DiffDirectory) + ".zip", true);
-            TLogging.Log("Successfully created file " + ADeliveryDirectory + Path.DirectorySeparatorChar + Path.GetFileName(DiffDirectory) + ".zip");
+            System.IO.File.Copy(DiffDirectory + "/../" + ZipFileName,
+                ADeliveryDirectory + Path.DirectorySeparatorChar + ZipFileName, true);
+            TLogging.Log("Successfully created file " + ADeliveryDirectory + Path.DirectorySeparatorChar + ZipFileName);
         }
     }
 }

@@ -401,7 +401,7 @@ namespace Ict.Common.IO
             Int32 i;
             byte[] header = new byte[32];
 
-            string bsdiffPath = "csharp/ThirdParty/bsdiff/bsdiff";
+            string bsdiffPath = TAppSettingsManager.ApplicationDirectory + "/../../csharp/ThirdParty/bsdiff/bsdiff";
 
             if (Utilities.DetermineExecutingOS().ToString().StartsWith("eosWin"))
             {
