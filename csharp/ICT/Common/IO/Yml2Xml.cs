@@ -170,7 +170,14 @@ namespace Ict.Common.IO
             }
             else
             {
-                AYmlDocument.Append(Indent + ANode.Name + ":");
+                if ((ANode.Name == XMLELEMENT) && TXMLParser.HasAttribute(ANode, "name"))
+                {
+                    AYmlDocument.Append(Indent + TXMLParser.GetAttribute(ANode, "name") + ":");
+                }
+                else
+                {
+                    AYmlDocument.Append(Indent + ANode.Name + ":");
+                }
             }
 
             // only write attributes if they are different from the parent node;
@@ -253,7 +260,7 @@ namespace Ict.Common.IO
 
             foreach (XmlNode childNode in ANode.ChildNodes)
             {
-                if (childNode.HasChildNodes && (childNode.FirstChild.Name == XMLELEMENT))
+                if (childNode.HasChildNodes && (childNode.FirstChild.Name == XMLLIST))
                 {
                     // write a list of values, eg: mylist: [test1, test2, test3]
                     AYmlDocument.Append("".PadLeft(ACurrentIndent + DEFAULTINDENT) + childNode.Name + ": [");
@@ -316,7 +323,7 @@ namespace Ict.Common.IO
         {
             StringBuilder sb = new StringBuilder(1024 * 1024 * 5);
 
-            if (ADoc.DocumentElement.Name == "RootNodeInternal")
+            if ((ADoc.DocumentElement.Name == ROOTNODEINTERNAL) && ROOTNODEINTERNAL.StartsWith(ADoc.DocumentElement.FirstChild.Name))
             {
                 WriteXmlNode2Yml(sb, 0, ADoc.DocumentElement.FirstChild, new SortedList <string, string>());
             }
@@ -679,7 +686,7 @@ namespace Ict.Common.IO
                                         value = value.Substring(1);
                                     }
 
-                                    XmlElement sequenceElement = parent.OwnerDocument.CreateElement("", TYml2Xml.XMLELEMENT, "");
+                                    XmlElement sequenceElement = parent.OwnerDocument.CreateElement("", TYml2Xml.XMLLIST, "");
                                     newElement.AppendChild(sequenceElement);
                                     ((XmlElement)sequenceElement).SetAttribute("name", value);
 
@@ -805,7 +812,7 @@ namespace Ict.Common.IO
                     }
                     else
                     {
-                        XmlElement sequenceElement = parent.OwnerDocument.CreateElement("", TYml2Xml.XMLELEMENT, "");
+                        XmlElement sequenceElement = parent.OwnerDocument.CreateElement("", TYml2Xml.XMLLIST, "");
                         newElement.AppendChild(sequenceElement);
                         ((XmlElement)sequenceElement).SetAttribute("name", elementName);
                     }
@@ -861,6 +868,9 @@ namespace Ict.Common.IO
             AddToSortedList(ref xmlNodes, xmlnode.NextSibling);
             return xmlNodes;
         }
+
+        /// the name used for elements in a list
+        public static string XMLLIST = "XmlList";
 
         /// the name used for elements in generated xml code
         public static string XMLELEMENT = "XmlElement";
@@ -1260,7 +1270,7 @@ namespace Ict.Common.IO
                     child = child.NextSibling;
                 }
 
-                while ((child != null) && (child.Name == TYml2Xml.XMLELEMENT))
+                while ((child != null) && (child.Name == TYml2Xml.XMLLIST))
                 {
                     string value = child.Attributes["name"].Value;
 
