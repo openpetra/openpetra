@@ -130,9 +130,22 @@ public class GenerateYamlFiles
             // drop all attributes
             node.Attributes.RemoveAll();
 
+            List <XmlNode>NodesToDelete = new List <XmlNode>();
+
             foreach (XmlNode menu in node.ChildNodes)
             {
+                if (menu.Name.Contains("Separator"))
+                {
+                    NodesToDelete.Add(menu);
+                    continue;
+                }
+
                 AdjustLabel(menu, CodeStorage, AOrigLocalisedYaml);
+            }
+
+            foreach (XmlNode menu in NodesToDelete)
+            {
+                node.RemoveChild(menu);
             }
         }
         else
@@ -214,9 +227,22 @@ public class GenerateYamlFiles
 
         if (menuitems != null)
         {
+            List <XmlNode>NodesToDelete = new List <XmlNode>();
+
             foreach (XmlNode menu in menuitems)
             {
+                if (menu.Name.Contains("Separator"))
+                {
+                    NodesToDelete.Add(menu);
+                    continue;
+                }
+
                 AdjustLabel(menu, CodeStorage, localisedYamlFileDoc);
+            }
+
+            foreach (XmlNode menu in NodesToDelete)
+            {
+                menuitems.RemoveChild(menu);
             }
         }
 
@@ -225,9 +251,22 @@ public class GenerateYamlFiles
 
         if (tbbuttons != null)
         {
+            List <XmlNode>NodesToDelete = new List <XmlNode>();
+
             foreach (XmlNode tbb in tbbuttons)
             {
+                if (tbb.Name.Contains("Separator"))
+                {
+                    NodesToDelete.Add(tbb);
+                    continue;
+                }
+
                 AdjustLabel(tbb, CodeStorage, localisedYamlFileDoc);
+            }
+
+            foreach (XmlNode tbb in NodesToDelete)
+            {
+                tbbuttons.RemoveChild(tbb);
             }
         }
 
