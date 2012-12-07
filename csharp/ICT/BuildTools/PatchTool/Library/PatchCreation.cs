@@ -28,7 +28,7 @@ using System.IO;
 using Ict.Common;
 using Ict.Common.IO;
 
-namespace Ict.Tools.PatchTool
+namespace Ict.Tools.PatchTool.Library
 {
     /// <summary>
     /// create a patch file between 2 tar gz files

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,7 @@ using System.Windows.Forms;
 using System.Data;
 using System.Resources;
 
-namespace Ict.Tools.PatchTool
+namespace Ict.Tools.PatchTool.Library
 {
 /// <summary>
 /// Window to display the patching process progress
