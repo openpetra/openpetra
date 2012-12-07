@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -408,7 +408,7 @@ namespace Tests.MFinance.GLBatches
             cmbDetailAccountCode.Properties.SetSelectedString("0200");
             cmbDetailCostCentreCode.Properties.SetSelectedString(FLedgerNumber.ToString("00") + "00");
 
-            ToolStripButtonTester btnSave = new ToolStripButtonTester("tbbSave");
+            //ToolStripButtonTester btnSave = new ToolStripButtonTester("tbbSave");
             //btnSave.Click();
 
             // post this batch
