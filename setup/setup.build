@@ -133,12 +133,20 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <!-- *************** Adjust Remote Client Config file ******************** -->
     <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config.my"/>
     <if test="${file::exists(Config.file)}">
-        <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote.config" overwrite="true"/>
+        <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote_temp.config" overwrite="true"/>
     </if>
     <if test="${not file::exists(Config.file)}">
         <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config"/>
-        <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote.config" overwrite="true"/>
+        <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote_temp.config" overwrite="true"/>
     </if>
+    <copy file="${tempdir}/PetraClientRemote_temp.config"
+              tofile="${tempdir}/PetraClientRemote.config">
+        <filterchain>
+            <expandproperties />
+        </filterchain>
+    </copy>
+    <delete file="${tempdir}/PetraClientRemote_temp.config"/>
+
     <property name="Config.file" value="${tempdir}/PetraClientRemote.config"/>
     <property name="result" value="${script::ReplaceInFile(Config.file, '{#WEBSITE}', PublisherUrl)}"/>
     <property name="result" value="${script::ReplaceInFile(Config.file, '{#ORGNAME}', OrgNameWithoutSpace)}"/>
@@ -161,7 +169,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     </tar>
 
     <!-- ************ create a patch file that does not depend on an earlier patch. needs to be renamed though ********* -->
-    <property name="OldVersion" value="0.0.9-99"/>
+    <property name="OldRelease" value="${string::substring(ReleaseVersion, 0, string::last-index-of(ReleaseVersion,'.'))}"/>
+    <property name="OldBuild" value="${int::parse(string::substring(ReleaseVersion, string::last-index-of(ReleaseVersion,'.') + 1, string::get-length(ReleaseVersion) - string::last-index-of(ReleaseVersion,'.') - 1)) - 1}"/>
+    <property name="OldVersion" value="${OldRelease}.${OldBuild}" overwrite="false"/>
     <property name="NewVersion" value="${ReleaseVersion}"/>
     <call target="createRemoteClientPatch"/>
 </target>
@@ -188,6 +198,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\demodata\*.*', script::InsertRecursiveAllFilesFromSubdirectories('demodata/', '*.*', 'demo30'))}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\demo30\*.*&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('demodata/', '*.*', 'demo30\'))}"/>
 
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#GUILocalisation}', GUILocalisation)}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEVERSION}', ReleaseVersion)}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEID}', ReleaseID)}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#PATCHVERSION}', ReleaseID)}"/>
@@ -264,7 +275,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 </target>
 
 <target name="createRemoteClientPatch" depends="init">
-    <ExecDotNet program="${dir.bin}/Ict.Tools.PatchTool.exe" commandline="-action:create -OpenPetra.PathTemp:${tempdir} -deliverypath:${dir.delivery} -appname:openpetraorg -zipname:openpetraorg-client-backup-${OrgNameWithoutSpace} -oldversion:${OldVersion} -newversion:${NewVersion}"/>
+    <property name="OutputZipFilename" value="Patch-win_${OldVersion}_${NewVersion}.zip" overwrite="false"/>
+    <ExecDotNet program="${dir.bin}/Ict.Tools.PatchTool.Console.exe" commandline="-action:create -OpenPetra.PathTemp:${tempdir} -deliverypath:${dir.delivery} -appname:openpetranow-${GUILocalisation} -zipname:openpetraorg-client-backup-${OrgNameWithoutSpace} -oldversion:${OldVersion} -newversion:${NewVersion} -OutputZipFilename:${OutputZipFilename}"/>
 </target>
 
 <!-- Linux -->

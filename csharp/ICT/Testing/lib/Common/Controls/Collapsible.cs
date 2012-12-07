@@ -444,7 +444,7 @@ namespace Tests.Common.Controls
         }
 
         /// <summary>
-        /// set a new task list, and check if the new tasks have been loaded
+        /// set a new task list, and check if the new tasks have been loaded, and the panel resizes
         /// </summary>
         [Test]
         public void TestSetter_TaskListInstance()
@@ -461,8 +461,7 @@ namespace Tests.Common.Controls
 
             Assert.AreNotEqual(TLst1, FPnl.TaskListInstance, "FPnl.TaskListInstance");
 
-            // the control height does not change depending on the tasklist anymore, due to AutoSize problems on mono
-            // Assert.AreNotEqual(ExpandedSize, FPnl.ExpandedSize, "ExpandedSize");
+            Assert.AreNotEqual(ExpandedSize, FPnl.ExpandedSize, "ExpandedSize");
 
             assertIsStable2(FPnl);
         }

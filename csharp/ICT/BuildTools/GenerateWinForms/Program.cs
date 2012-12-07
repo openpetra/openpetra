@@ -192,12 +192,14 @@ namespace Ict.Tools.GenerateWinForms
 
                         foreach (string file in yamlFilesSorted)
                         {
-                            // only look for main files, not language specific files (*.XY.yaml)
-                            if (file[file.Length - 8] != '.')
+                            // only look for main files, not language specific files (*.xy-XY.yaml or *.xy.yaml)
+                            if (((file[file.Length - 11] == '.') && (file[file.Length - 8] == '-')) || (file[file.Length - 8] == '.'))
                             {
-                                Console.WriteLine("working on " + file);
-                                ProcessFile(file, SelectedLocalisation);
+                                continue;
                             }
+
+                            Console.WriteLine("working on " + file);
+                            ProcessFile(file, SelectedLocalisation);
                         }
                     }
                     else

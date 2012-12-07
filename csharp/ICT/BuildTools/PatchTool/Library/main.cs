@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,17 +32,17 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 
-namespace Ict.Tools.PatchTool
+namespace Ict.Tools.PatchTool.Library
 {
 /// <summary>
-/// Main program
+/// Main function for patch tool, can be called from gui or console
 /// </summary>
-    public class Program
+    public class PatchToolLibrary
     {
         /// <summary>
-        /// static main function
+        /// static run function
         /// </summary>
-        public static void Main(string[] args)
+        public static bool Run()
         {
             try
             {
@@ -84,7 +84,7 @@ namespace Ict.Tools.PatchTool
                     else
                     {
                         System.Console.WriteLine(Catalog.GetString("There is no new patch to be installed."));
-                        System.Environment.Exit(-1);
+                        return false;
                     }
                 }
                 else if (action.Equals("patchRemote"))
@@ -110,7 +110,7 @@ namespace Ict.Tools.PatchTool
                         if (!patchTools.PatchTheFiles())
                         {
                             System.Console.WriteLine(Catalog.GetString("There was a problem installing the patch."));
-                            System.Environment.Exit(-1);
+                            return false;
                         }
                     }
                     else
@@ -119,12 +119,12 @@ namespace Ict.Tools.PatchTool
                         {
                             System.Console.WriteLine(Catalog.GetString(
                                     "You don't have all patches that are necessary for patching to the latest patch."));
-                            System.Environment.Exit(-1);
+                            return false;
                         }
                         else
                         {
                             System.Console.WriteLine(Catalog.GetString("There is no new patch to be installed."));
-                            System.Environment.Exit(-1);
+                            return false;
                         }
                     }
                 }
@@ -151,7 +151,7 @@ namespace Ict.Tools.PatchTool
                     //-OpenPetra.PathTemp:u:/tmp/patch -diffzip:u:/tmp/patch/Patch2.2.3-5_2.2.4-3.zip -apppath:c:/Programme/OpenPetra.org -datpath:c:/Programme/OpenPetra.org/data30");
                     System.Console.WriteLine(
                         "patch application: patchtool -action:patchRemote -C:\"C:\\Program Files (x86)\\OpenPetra\\etc30\\PetraClientRemote.config\" -OpenPetra.Path:\"C:\\Program Files (x86)\\OpenPetra\"");
-                    return;
+                    return false;
                 }
             }
             catch (Exception e)
@@ -160,7 +160,10 @@ namespace Ict.Tools.PatchTool
                 Console.WriteLine(e.StackTrace);
                 TLogging.Log(e.Message, TLoggingType.ToLogfile);
                 TLogging.Log(e.StackTrace, TLoggingType.ToLogfile);
+                return false;
             }
+
+            return true;
         }
     }
 }

@@ -1,0 +1,18 @@
+RootNode:
+    BaseYaml:../../../CommonForms/PetraForm.yaml
+    FormTitle:Donor Recipient History
+    Namespace:Ict.Petra.Client.MFinance.Gui.Gift
+    DatasetType:Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
+    DetailTable:AGiftDetail
+    FormType:browse
+    Template:windowSingleTable
+    WindowWidth:1000
+    WindowHeight:800
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
+    Actions:
+        actClose:{Label=Close, ActionClick=BtnCloseClick}
+        actView:{Label=View, ActionClick=BtnViewClick}
+        actBrowse:{Label=Browse, ActionClick=BtnBrowseClick}
+    Controls:
+        pnlContent:{Dock=Fill}
+            Controls: [pnlSelect, pnlGrid, pnlDetails, pnlButtons]
