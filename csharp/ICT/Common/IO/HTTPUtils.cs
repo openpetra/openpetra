@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -102,7 +102,7 @@ namespace Ict.Common.IO
                     urlWithParameters += "&";
                 }
 
-                urlWithParameters += parameterName + "=" + Uri.EscapeUriString(AParameters[parameterName]);
+                urlWithParameters += parameterName + "=" + Uri.EscapeDataString(AParameters[parameterName]);
             }
 
             return ReadWebsite(urlWithParameters);
