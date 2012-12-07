@@ -48,6 +48,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
 
+        private ABatchRow FBatchRow = null;
+
         /// <summary>
         /// load the transactions into the grid
         /// </summary>
@@ -64,13 +66,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
             string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
+            FBatchRow = GetBatchRow();
+
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
                 && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus)
                 && (FMainDS.ATransaction.DefaultView.Count > 0))
             {
                 //Same as previously selected
-                if ((GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
+                if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
                 }
@@ -163,6 +167,75 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //ClearControls();
             }
         }
+
+        /// <summary>
+        /// Update the effective date from outside
+        /// </summary>
+        /// <param name="AEffectiveDate"></param>
+        public void UpdateEffectiveDateForCurrentRow(DateTime AEffectiveDate)
+        {
+            if ((GetSelectedDetailRow() != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            {
+                GetSelectedDetailRow().TransactionDate = AEffectiveDate;
+                dtpDetailTransactionDate.Date = AEffectiveDate;
+                GetDetailsFromControls(GetSelectedDetailRow());
+            }
+        }
+
+        /// <summary>
+        /// Return the active transaction number and sets the Journal number
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        public Int32 ActiveTransactionNumber(Int32 ALedgerNumber, Int32 ABatchNumber, ref Int32 AJournalNumber)
+        {
+            Int32 activeTrans = 0;
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                activeTrans = FPreviouslySelectedDetailRow.TransactionNumber;
+                AJournalNumber = FPreviouslySelectedDetailRow.JournalNumber;
+            }
+
+            return activeTrans;
+        }
+
+//            Int32 ledgerNumber;
+//            Int32 batchNumber;
+//            Int32 journalNumber;
+//            DateTime batchEffectiveDate;
+//
+//            ledgerNumber = AGLBatchRow.LedgerNumber;
+//            batchNumber = AGLBatchRow.BatchNumber;
+//            journalNumber = AGLJournalRow.JournalNumber;
+//            batchEffectiveDate = AGLBatchRow.DateEffective;
+//
+//            if (FMainDS.ATransaction.Rows.Count == 0)
+//            {
+//                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(ledgerNumber, batchNumber, journalNumber));
+//            }
+//            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber && FJournalNumber == journalNumber))
+//            {
+//                FGLEffectivePeriodChanged = true;
+//                //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
+//                GetSelectedDetailRow().TransactionDate = batchEffectiveDate;
+//            }
+//
+//            //Update all transactions
+//            foreach (ATransactionRow transRow in FMainDS.ATransaction.Rows)
+//            {
+//              if (transRow.BatchNumber.Equals(batchNumber) && transRow.JournalNumber.Equals(journalNumber) && transRow.LedgerNumber.Equals(ledgerNumber))
+//                {
+//                    transRow.TransactionDate = batchEffectiveDate;
+//                }
+//            }
+//
+//            if (FGLEffectivePeriodChanged)
+//            {
+//                ShowDetails();
+//            }
 
         /// <summary>
         /// get the details of the current journal
@@ -632,12 +705,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Local validation
             if ((txtDebitAmount.NumberValueDecimal == 0) && (txtCreditAmount.NumberValueDecimal == 0))
             {
-                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, GetBatchRow(), ARow, txtDebitAmount, ref VerificationResultCollection,
+                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, txtDebitAmount, ref VerificationResultCollection,
                     FValidationControlsDict);
             }
             else
             {
-                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, GetBatchRow(), ARow, null, ref VerificationResultCollection,
+                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, null, ref VerificationResultCollection,
                     FValidationControlsDict);
             }
         }

@@ -299,7 +299,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 cmbPeriodFilter.SelectedIndex = 0;
             }
 
-            FPreviouslySelectedDetailRow = null;
+            //FPreviouslySelectedDetailRow = null;
 
             pnlDetails.Enabled = true;
 
@@ -337,42 +337,77 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).EnableJournals();
         }
 
-        private void UpdateJournalTransEffectiveDate()
+        private void UpdateJournalTransEffectiveDate(bool ASetJournalDateOnly)
         {
             DateTime batchEffectiveDate = dtpDetailDateEffective.Date.Value;
+            Int32 activeJournalNumber = 0;
+            Int32 activeTransNumber = 0;
+            Int32 activeTransJournalNumber = 0;
 
-            //Stop any current row issues
-            //((TFrmGLBatch) this.ParentForm).UnloadJournals();
+            bool activeJournalUpdated = false;
+            bool activeTransUpdated = false;
 
-            //Load Journals in the background
-            ((TFrmGLBatch) this.ParentForm).UnloadJournals();
-            ((TFrmGLBatch) this.ParentForm).UnloadTransactions();
+            //Current Batch number
+            Int32 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber));
+            FMainDS.AJournal.DefaultView.RowFilter = String.Format("{0}={1}",
+                ATransactionTable.GetBatchNumberDBName(),
+                batchNumber);
+
+            if (FMainDS.AJournal.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
+            }
+
+            activeJournalNumber = ((TFrmGLBatch) this.ParentForm).GetJournalsControl().ActiveJournalNumber(FLedgerNumber, batchNumber);
+            activeTransNumber = ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().ActiveTransactionNumber(FLedgerNumber,
+                batchNumber,
+                ref activeTransJournalNumber);
 
             foreach (DataRowView v in FMainDS.AJournal.DefaultView)
             {
                 AJournalRow r = (AJournalRow)v.Row;
 
-                r.BeginEdit();
-                r.DateEffective = batchEffectiveDate;
-                r.EndEdit();
-
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(FLedgerNumber, r.BatchNumber, r.JournalNumber));
-
-                FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
-                    ATransactionTable.GetBatchNumberDBName(),
-                    r.BatchNumber,
-                    ATransactionTable.GetJournalNumberDBName(),
-                    r.JournalNumber);
-
-                foreach (DataRowView w in FMainDS.ATransaction.DefaultView)
+                if (ASetJournalDateOnly)
                 {
-                    ATransactionRow t = (ATransactionRow)w.Row;
+                    if ((activeJournalNumber > 0) && !activeJournalUpdated && (r.JournalNumber == activeJournalNumber))
+                    {
+                        ((TFrmGLBatch) this.ParentForm).GetJournalsControl().UpdateEffectiveDateForCurrentRow(batchEffectiveDate);
+                        activeJournalUpdated = true;
+                    }
 
-                    t.BeginEdit();
-                    t.TransactionDate = batchEffectiveDate;
-                    t.EndEdit();
+                    r.BeginEdit();
+                    r.DateEffective = batchEffectiveDate;
+                    r.EndEdit();
+                }
+                else
+                {
+                    FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                        ATransactionTable.GetBatchNumberDBName(),
+                        batchNumber,
+                        ATransactionTable.GetJournalNumberDBName(),
+                        r.JournalNumber);
+
+                    if (FMainDS.ATransaction.DefaultView.Count == 0)
+                    {
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(FLedgerNumber, batchNumber, r.JournalNumber));
+                    }
+
+                    foreach (DataRowView w in FMainDS.ATransaction.DefaultView)
+                    {
+                        ATransactionRow t = (ATransactionRow)w.Row;
+
+                        if ((activeTransNumber > 0) && !activeTransUpdated && (r.JournalNumber == activeTransJournalNumber)
+                            && (t.TransactionNumber == activeTransNumber))
+                        {
+                            ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().UpdateEffectiveDateForCurrentRow(batchEffectiveDate);
+                            activeTransUpdated = true;
+                        }
+
+                        t.BeginEdit();
+                        t.TransactionDate = batchEffectiveDate;
+                        t.EndEdit();
+                    }
                 }
             }
 
@@ -398,6 +433,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (FPreviouslySelectedDetailRow.DateEffective != dateValue)
                     {
                         FPreviouslySelectedDetailRow.DateEffective = dateValue;
+                        //Update the Transaction effective dates
+                        UpdateJournalTransEffectiveDate(true);
                     }
 
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
@@ -406,8 +443,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
 
-                            //Update the Journal and Transaction effective dates
-                            UpdateJournalTransEffectiveDate();
+                            //Update the Transaction effective dates
+                            UpdateJournalTransEffectiveDate(false);
 
                             if (cmbYearFilter.SelectedIndex != 0)
                             {
