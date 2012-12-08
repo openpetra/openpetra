@@ -93,9 +93,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnMoveToLeftColumn.Text = Catalog.GetString("Move To &Left");
             this.btnMoveToRightColumn.Text = Catalog.GetString("Move To &Right");
             this.grpDisplayedSearchCriteria.Text = Catalog.GetString("Displayed Find Criteria");
-            this.Label1.Text = Catalog.GetString("&Partner Find Criteria") + ":" +;
-            this.Label2.Text = Catalog.GetString("&Address Find Criteria") + ":" +;
-            this.Label3.Text = Catalog.GetString("O&ther Find Criteria") + ":" +;
+            this.Label1.Text = Catalog.GetString("&Partner Find Criteria") + ":";
+            this.Label2.Text = Catalog.GetString("&Address Find Criteria") + ":";
+            this.Label3.Text = Catalog.GetString("O&ther Find Criteria") + ":";
             this.chkShowMatchButtons.Text = Catalog.GetString("Sho&w \'Matching Pattern\' buttons");
             this.chkExactPartnerKeyMatchSearch.Text = Catalog.GetString("Exact Partner &Key Match");
             this.btnReset.Text = Catalog.GetString("&Reset");

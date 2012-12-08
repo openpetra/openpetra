@@ -158,7 +158,7 @@ public class TGenerateCatalogStrings
                     {
                         writer.WriteLine(identation +
                             designerLine.Substring(0, designerLine.IndexOf(" = ")).Trim() +
-                            " = Catalog.GetString(\"" + content + "\")" + (trailingColon ? " + \":\" + " : string.Empty) + ";");
+                            " = Catalog.GetString(\"" + content + "\")" + (trailingColon ? " + \":\"" : string.Empty) + ";");
 
                         ADbHelpTranslationWriter.WriteLine("Catalog.GetString(\"" + content + "\");");
                     }

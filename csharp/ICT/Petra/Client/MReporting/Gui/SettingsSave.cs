@@ -57,10 +57,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.Label1.Text = Catalog.GetString("Existing stored Settings") + ":" +;
+            this.Label1.Text = Catalog.GetString("Existing stored Settings") + ":";
             this.Btn_Cancel.Text = Catalog.GetString("Cancel");
             this.Btn_SaveFile.Text = Catalog.GetString("Save");
-            this.Lbl_SavedFileName.Text = Catalog.GetString("Please enter a name") + ":" +;
+            this.Lbl_SavedFileName.Text = Catalog.GetString("Please enter a name") + ":";
             this.Text = Catalog.GetString("Save Report Settings");
             #endregion
             FStoredSettings = AStoredSettings;

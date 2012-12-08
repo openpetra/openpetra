@@ -54,8 +54,8 @@ namespace Ict.Petra.Client.CommonDialogs
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.btnCreateExtract.Text = Catalog.GetString("Create Extract");
-            this.lblExtractName.Text = Catalog.GetString("Extract Name") + ":" +;
-            this.lblDescription.Text = Catalog.GetString("Description") + ":" +;
+            this.lblExtractName.Text = Catalog.GetString("Extract Name") + ":";
+            this.lblDescription.Text = Catalog.GetString("Description") + ":";
             this.btnCancel.Text = Catalog.GetString("Cancel");
             this.Text = Catalog.GetString("Create Extract");
             #endregion

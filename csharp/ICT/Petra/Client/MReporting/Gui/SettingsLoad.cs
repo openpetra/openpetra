@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.Label1.Text = Catalog.GetString("Existing stored Settings") + ":" +;
+            this.Label1.Text = Catalog.GetString("Existing stored Settings") + ":";
             this.Btn_Cancel.Text = Catalog.GetString("Cancel");
             this.Btn_LoadFile.Text = Catalog.GetString("Load");
             this.Text = Catalog.GetString("Load Report Settings");
