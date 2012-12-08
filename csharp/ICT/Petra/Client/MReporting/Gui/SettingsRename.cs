@@ -82,8 +82,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblNewName.Text = Catalog.GetString("New Name:");
-            this.lblOldName.Text = Catalog.GetString("Old Name:");
+            this.lblNewName.Text = Catalog.GetString("New Name") + ":" +;
+            this.lblOldName.Text = Catalog.GetString("Old Name") + ":" +;
             this.txtNewName.Text = Catalog.GetString("New Name");
             this.txtOldName.Text = Catalog.GetString("OldName");
             this.BtnOk.Text = Catalog.GetString("&Ok");

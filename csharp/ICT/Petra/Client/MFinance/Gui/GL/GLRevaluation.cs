@@ -45,7 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblName.Text = Catalog.GetString("Select cost center:");
+            this.lblName.Text = Catalog.GetString("Select cost center") + ":" +;
             this.btnRevaluate.Text = Catalog.GetString("Revaluate");
             this.btnCancel.Text = Catalog.GetString("Cancel");
             this.Text = Catalog.GetString("Revaluation ...");

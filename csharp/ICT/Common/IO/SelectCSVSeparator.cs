@@ -126,12 +126,12 @@ namespace Ict.Common.IO
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.rbtComma.Text = Catalog.GetString("Comma");
             this.rbtTabulator.Text = Catalog.GetString("Tabulator");
-            this.rbtOther.Text = Catalog.GetString("Other Separator:");
+            this.rbtOther.Text = Catalog.GetString("Other Separator") + ":" +;
             this.rbtSemicolon.Text = Catalog.GetString("Semicolon");
             this.btnCancel.Text = Catalog.GetString("Cancel");
             this.btnOK.Text = Catalog.GetString("OK");
-            this.lblDateFormat.Text = Catalog.GetString("Date format:");
-            this.lblNumberFormat.Text = Catalog.GetString("Number format:");
+            this.lblDateFormat.Text = Catalog.GetString("Date format") + ":" +;
+            this.lblNumberFormat.Text = Catalog.GetString("Number format") + ":" +;
             this.Text = Catalog.GetString("Select CSV Separator");
             #endregion
 

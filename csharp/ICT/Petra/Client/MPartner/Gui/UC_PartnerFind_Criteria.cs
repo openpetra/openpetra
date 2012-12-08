@@ -324,27 +324,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.btnLocationKey.Text = Catalog.GetString("Location Key");
             this.chkWorkerFamOnly.Text = Catalog.GetString("Worker Families O&nly");
-            this.lblPartnerClass.Text = Catalog.GetString("Partner C&lass:");
+            this.lblPartnerClass.Text = Catalog.GetString("Partner C&lass") + ":" +;
             this.txtPartnerKey.Text = Catalog.GetString("0000000000");
-            this.lblPartnerKey.Text = Catalog.GetString("Partner &Key:");
+            this.lblPartnerKey.Text = Catalog.GetString("Partner &Key") + ":" +;
             this.lblPartnerKeyNonExactMatch.Text = Catalog.GetString("(trailing 0 = --*)");
             this.rbtPrivate.Text = Catalog.GetString("Private");
             this.rbtStatusActive.Text = Catalog.GetString("Acti&ve");
             this.rbtStatusAll.Text = Catalog.GetString("All");
-            this.lblPartnerStatus.Text = Catalog.GetString("Status:");
-            this.lblPhoneNumber.Text = Catalog.GetString("Phone Number:");
-            this.lblAddress3.Text = Catalog.GetString("Address &3:");
-            this.lblAddress2.Text = Catalog.GetString("Address &2:");
-            this.lblEmail.Text = Catalog.GetString("&Email:");
-            this.lblPartnerName.Text = Catalog.GetString("Partner &Name:");
-            this.lblPersonalName.Text = Catalog.GetString("Personal &(First) Name:");
-            this.lblPreviousName.Text = Catalog.GetString("Previous Name:");
-            this.lblAddress1.Text = Catalog.GetString("Address &1:");
-            this.lblPostCode.Text = Catalog.GetString("P&ost Code:");
-            this.lblCity.Text = Catalog.GetString("Cit&y/Town:");
-            this.lblCounty.Text = Catalog.GetString("Co&unty:");
-            this.lblCountry.Text = Catalog.GetString("Co&untry:");
-            this.lblMailingAddressOnly.Text = Catalog.GetString("Mailin&g Addresses Only:");
+            this.lblPartnerStatus.Text = Catalog.GetString("Status") + ":" +;
+            this.lblPhoneNumber.Text = Catalog.GetString("Phone Number") + ":" +;
+            this.lblAddress3.Text = Catalog.GetString("Address &3") + ":" +;
+            this.lblAddress2.Text = Catalog.GetString("Address &2") + ":" +;
+            this.lblEmail.Text = Catalog.GetString("&Email") + ":" +;
+            this.lblPartnerName.Text = Catalog.GetString("Partner &Name") + ":" +;
+            this.lblPersonalName.Text = Catalog.GetString("Personal &(First) Name") + ":" +;
+            this.lblPreviousName.Text = Catalog.GetString("Previous Name") + ":" +;
+            this.lblAddress1.Text = Catalog.GetString("Address &1") + ":" +;
+            this.lblPostCode.Text = Catalog.GetString("P&ost Code") + ":" +;
+            this.lblCity.Text = Catalog.GetString("Cit&y/Town") + ":" +;
+            this.lblCounty.Text = Catalog.GetString("Co&unty") + ":" +;
+            this.lblCountry.Text = Catalog.GetString("Co&untry") + ":" +;
+            this.lblMailingAddressOnly.Text = Catalog.GetString("Mailin&g Addresses Only") + ":" +;
             #endregion
         }
 

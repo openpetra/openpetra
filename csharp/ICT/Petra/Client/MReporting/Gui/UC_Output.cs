@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.grpCSVOutput.Text = Catalog.GetString("Export to CSV");
             this.Label2.Text = Catalog.GetString("Hint: If you don\'t want quotes around your values, please choose a delimiter that");
             this.Label1.Text = Catalog.GetString("(e.g. , or ; or : or Space; or type TAB for tabulator)");
-            this.lblCSVSeparator.Text = Catalog.GetString("Delimiter:");
+            this.lblCSVSeparator.Text = Catalog.GetString("Delimiter") + ":" +;
             this.chbExportToCSVOnly.Text = Catalog.GetString("Only save as CSV, don\'t print Report");
             this.BtnCSVDestination.Text = Catalog.GetString("...");
             this.lblCSVDestination.Text = Catalog.GetString("Destination file");

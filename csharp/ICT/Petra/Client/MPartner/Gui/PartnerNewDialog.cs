@@ -170,11 +170,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblSitesAvailable.Text = Catalog.GetString("S&ites Available:");
-            this.lblPartnerKey.Text = Catalog.GetString("Partner &Key:");
-            this.lblPartnerClass.Text = Catalog.GetString("Partner C&lass:");
-            this.Label1.Text = Catalog.GetString("&Acquisition Code:");
-            this.chkPrivatePartner.Text = Catalog.GetString("&Private Partner:");
+            this.lblSitesAvailable.Text = Catalog.GetString("S&ites Available") + ":" +;
+            this.lblPartnerKey.Text = Catalog.GetString("Partner &Key") + ":" +;
+            this.lblPartnerClass.Text = Catalog.GetString("Partner C&lass") + ":" +;
+            this.Label1.Text = Catalog.GetString("&Acquisition Code") + ":" +;
+            this.chkPrivatePartner.Text = Catalog.GetString("&Private Partner") + ":" +;
             this.txtPartnerKey.LabelText = Catalog.GetString("Partner Key");
             this.txtFamilyPartnerBox.ButtonText = Catalog.GetString("&Family...");
             this.btnOK.Text = Catalog.GetString("&OK");
