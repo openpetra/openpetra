@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -262,14 +263,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 requestParams.Add("BatchDateTo", dtpDateTo.Date);
             }
 
-            String exportString;
-            TVerificationResultCollection AMessages;
+            TVerificationResultCollection AMessages = new TVerificationResultCollection();
+            String exportString = null;
+            Int32 BatchCount = 0;
 
-
-            Int32 BatchCount = TRemote.MFinance.Gift.WebConnectors.ExportAllGiftBatchData(
+            Thread ExportThread = new Thread(() => ExportAllGiftBatchData(
                 requestParams,
                 out exportString,
-                out AMessages);
+                out AMessages,
+                out BatchCount));
+
+            TProgressDialog ExportDialog = new TProgressDialog(ExportThread);
+            ExportDialog.ShowDialog();
 
             if (AMessages.Count > 0)
             {
@@ -322,6 +327,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 MessageBoxIcon.Information);
 
             SaveUserDefaults();
+        }
+
+        /// <summary>
+        /// Wrapper method to handle returned BatchCount value from remoting call to ExportAllGiftBatchData
+        /// </summary>
+        /// <param name="ARequestParams"></param>
+        /// <param name="exportString"></param>
+        /// <param name="AMessages"></param>
+        /// <param name="BatchCount"></param>
+        private void ExportAllGiftBatchData(
+            Hashtable ARequestParams, 
+            out string exportString, 
+            out TVerificationResultCollection AMessages, 
+            out Int32 BatchCount)
+        {
+            TVerificationResultCollection AResultMessages;
+            string AExportString;
+            Int32 ABatchCount;
+
+            ABatchCount = TRemote.MFinance.Gift.WebConnectors.ExportAllGiftBatchData(
+                ARequestParams,
+                out AExportString,
+                out AResultMessages);
+
+            AMessages = AResultMessages;
+            BatchCount = ABatchCount;
+            exportString = AExportString;
+
         }
 
         void BtnBrowseClick(object sender, EventArgs e)
