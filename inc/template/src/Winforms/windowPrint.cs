@@ -52,10 +52,10 @@ namespace {#NAMESPACE}
       FMainDS = new {#DATASETTYPE}();
 {#ENDIF DATASETTYPE}
       {#INITUSERCONTROLS}
-      {#INITMANUALCODE}
 {#IFDEF ACTIONENABLING}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
+      {#INITMANUALCODE}
 
       {#INITACTIONSTATE}
     }

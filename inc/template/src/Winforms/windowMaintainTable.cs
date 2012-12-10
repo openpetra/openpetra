@@ -85,8 +85,8 @@ namespace {#NAMESPACE}
       Ict.Common.Data.TTypedDataTable TypedTable;
       TRemote.MCommon.DataReader.WebConnectors.GetData({#DETAILTABLE}Table.GetTableDBName(), ASearchCriteria, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
-      {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+      {#INITMANUALCODE}
 {#IFDEF SAVEDETAILS}
       grdDetails.Enter += new EventHandler(grdDetails_Enter);
       grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);

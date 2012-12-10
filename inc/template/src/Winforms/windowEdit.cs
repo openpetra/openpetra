@@ -56,8 +56,8 @@ namespace {#NAMESPACE}
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
       FMainDS = new {#DATASETTYPE}();
       {#INITUSERCONTROLS}
-      {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+      {#INITMANUALCODE}
 {#IFDEF SAVEDETAILS}
       grdDetails.Enter += new EventHandler(grdDetails_Enter);
       grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
