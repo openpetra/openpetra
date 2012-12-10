@@ -44,6 +44,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.Gift
 {
@@ -97,6 +98,9 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Exporting Gift Batches"), 5);
+
             try
             {
                 ALedgerAccess.LoadByPrimaryKey(MainDS, FLedgerNumber, FTransaction);
@@ -137,6 +141,10 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
 
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Gathering Records"),
+                    10);
+
                 DBAccess.GDBAccessObj.Select(MainDS,
                     "SELECT DISTINCT PUB_a_gift_batch.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName(),
                     MainDS.AGiftBatch.TableName,
@@ -164,6 +172,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             SortedDictionary <String, AGiftSummaryRow>sdSummary = new SortedDictionary <String, AGiftSummaryRow>();
 
             UInt32 counter = 0;
+
+            // TProgressTracker Variables
+            UInt32 BatchCounter = 0;
+            UInt32 GiftCounter = 0;
+
             AGiftSummaryRow giftSummary = null;
 
             MainDS.AGiftDetail.DefaultView.Sort =
@@ -174,6 +187,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             foreach (AGiftBatchRow giftBatch in MainDS.AGiftBatch.Rows)
             {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    string.Format("Batch {0}", BatchCounter++),
+                    15);
+                GiftCounter = 0;
+                        
                 if (!FTransactionsOnly & !Summary)
                 {
                     WriteGiftBatchLine(giftBatch);
@@ -185,6 +203,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                     if (gift.BatchNumber.Equals(giftBatch.BatchNumber) && gift.LedgerNumber.Equals(giftBatch.LedgerNumber))
                     {
+                        // Update progress tracker every 50 records
+                        if (GiftCounter++ % 50 == 0)
+                        {
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                string.Format("Batch {0} {1}", BatchCounter, Catalog.GetString("Exporting Gifts")),
+                                (GiftCounter / 50 + 3) * 5 > 90 ? 90 : (GiftCounter / 50 + 3) * 5);
+                        }
                         for (int detailNumber = 1; detailNumber <= gift.LastDetailNumber; detailNumber++)
                         {
                             AGiftDetailRow giftDetail = (AGiftDetailRow)MainDS.AGiftDetail.DefaultView.FindRows(
@@ -243,6 +268,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (Summary)
             {
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Export Summary"),
+                    95);
+
                 bool first = true;
 
                 foreach (KeyValuePair <string, AGiftSummaryRow>kvp in sdSummary)
@@ -256,6 +286,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                     WriteGiftSummaryLine(kvp.Value);
                 }
             }
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             exportString = FStringWriter.ToString();
             AMessages = FMessages;
