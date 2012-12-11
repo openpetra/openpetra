@@ -119,7 +119,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Parsing first line"),
-                5);
+                100);
 
             try
             {
@@ -149,6 +149,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     {
                                         DBAccess.GDBAccessObj.RollbackTransaction();
                                     }
+
+                                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                        Catalog.GetString("Database I/O Failure"),
+                                        0);
 
                                     TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
@@ -189,6 +193,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
+                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                    Catalog.GetString("Database I/O Failure"),
+                                    0);
+
                                 TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
                                 sr.Close();
@@ -199,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             BatchDetailCounter = 0;
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                string.Format("Batch {0}",BatchDescription),
+                                string.Format(Catalog.GetString("Batch {0}"), giftBatch.BatchNumber),
                                 10);
                         }
                         else if (RowType == "T")
@@ -318,6 +326,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
+                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                    Catalog.GetString("Database I/O Failure"),
+                                    0);
+
                                 TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
                                 sr.Close();
@@ -334,6 +346,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
+                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                    Catalog.GetString("Database I/O Failure"),
+                                    0);
+
                                 TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
                                 sr.Close();
@@ -343,11 +359,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                             FMainDS.AGiftDetail.AcceptChanges();
 
                             // Update progress tracker every 50 records
-                            if (BatchDetailCounter++ % 50 == 0)
+                            if (++BatchDetailCounter % 50 == 0)
                             {
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Importing gift detail"),
-                                    (BatchDetailCounter / 50 + 3) * 5 > 90 ? 90 : (BatchDetailCounter / 50 + 3) * 5);
+                                    string.Format(Catalog.GetString("Batch {0} - Importing gift detail"), giftBatch.BatchNumber),
+                                    (BatchDetailCounter / 50 + 2) * 10 > 90 ? 90 : (BatchDetailCounter / 50 + 2) * 10);
                             }
                         }
                         else
@@ -399,7 +415,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 }
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    Catalog.GetString("Data could not be saved."),
+                    Catalog.GetString("Exception Occurred"),
                     0);
 
                 TProgressTracker.FinishJob(DomainManager.GClientID.ToString());

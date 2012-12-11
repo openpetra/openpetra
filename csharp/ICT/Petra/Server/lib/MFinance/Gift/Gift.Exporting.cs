@@ -191,7 +191,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                     string.Format("Batch {0}", BatchCounter++),
                     15);
                 GiftCounter = 0;
-                        
+
                 if (!FTransactionsOnly & !Summary)
                 {
                     WriteGiftBatchLine(giftBatch);
@@ -208,8 +208,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 string.Format("Batch {0} {1}", BatchCounter, Catalog.GetString("Exporting Gifts")),
-                                (GiftCounter / 50 + 3) * 5 > 90 ? 90 : (GiftCounter / 50 + 3) * 5);
+                                (GiftCounter / 50 + 2) * 10 > 90 ? 90 : (GiftCounter / 50 + 2) * 10);
                         }
+
                         for (int detailNumber = 1; detailNumber <= gift.LastDetailNumber; detailNumber++)
                         {
                             AGiftDetailRow giftDetail = (AGiftDetailRow)MainDS.AGiftDetail.DefaultView.FindRows(
@@ -268,7 +269,6 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (Summary)
             {
-
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                     Catalog.GetString("Export Summary"),
                     95);
