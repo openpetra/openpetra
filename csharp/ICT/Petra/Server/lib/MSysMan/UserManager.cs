@@ -524,7 +524,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
         /// </summary>
         public bool AddUser(string AUserID)
         {
-            return TMaintenanceWebConnector.CreateUser(AUserID, string.Empty, string.Empty);
+            return TMaintenanceWebConnector.CreateUser(AUserID,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                TMaintenanceWebConnector.DEMOMODULEPERMISSIONS);
         }
 
         /// <summary>
