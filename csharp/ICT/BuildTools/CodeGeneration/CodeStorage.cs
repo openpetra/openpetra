@@ -497,7 +497,7 @@ namespace Ict.Tools.CodeGeneration
                     parentNode.AppendChild(controls);
                 }
 
-                XmlNode element = FXmlDocument.CreateElement(TYml2Xml.XMLELEMENT);
+                XmlNode element = FXmlDocument.CreateElement(TYml2Xml.XMLLIST);
                 XmlAttribute attr = FXmlDocument.CreateAttribute("name");
                 attr.Value = AControlName;
                 element.Attributes.Append(attr);

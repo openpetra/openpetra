@@ -401,7 +401,7 @@ namespace Ict.Common.IO
             Int32 i;
             byte[] header = new byte[32];
 
-            string bsdiffPath = "csharp/ThirdParty/bsdiff/bsdiff";
+            string bsdiffPath = TAppSettingsManager.ApplicationDirectory + "/../../csharp/ThirdParty/bsdiff/bsdiff";
 
             if (Utilities.DetermineExecutingOS().ToString().StartsWith("eosWin"))
             {
@@ -1254,6 +1254,7 @@ namespace Ict.Common.IO
             PatchExecutableFiles.Add(binPath + "Ict.Common.IO.dll");
             PatchExecutableFiles.Add(binPath + "ICSharpCode.SharpZipLib.dll");
             PatchExecutableFiles.Add(binPath + "Ict.Tools.PatchTool.exe");
+            PatchExecutableFiles.Add(binPath + "Ict.Tools.PatchTool.Library.dll");
             PatchExecutableFiles.Add(binPath + "GNU.Gettext.dll");
 
             // copy the PatchTool.exe and required files from the currently installed application to a temp directory

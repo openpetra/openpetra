@@ -141,9 +141,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void UpdateChangeableStatus(bool batchRowIsSelected)
+        private void UpdateChangeableStatus()
         {
-            Boolean postable = batchRowIsSelected
+            Boolean postable = (FPreviouslySelectedDetailRow != null)
                                && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
 
             FPetraUtilsObject.EnableAction("actPostBatch", postable);
@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             pnlDetails.Enabled = postable;
             pnlDetailsProtected = !postable;
 
-            if (!batchRowIsSelected)
+            if (FPreviouslySelectedDetailRow == null)
             {
                 // in the very first run ParentForm is null. Therefore
                 // the exception handler has been included.
@@ -182,6 +182,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string hashTotal = txtDetailBatchControlTotal.Text.Trim();
             decimal hashDecimalVal;
 
+            if (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+                return;
+            }
+
             if ((hashTotal == null) || (hashTotal.Length == 0))
             {
                 correctHashValue = 0m;
@@ -198,27 +203,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
-            ARow.BatchControlTotal = correctHashValue;
+            if (ARow.BatchControlTotal != correctHashValue)
+            {
+                ARow.BatchControlTotal = correctHashValue;
+                txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
+            }
         }
 
         private void ShowDetailsManual(ABatchRow ARow)
         {
-            UpdateChangeableStatus(ARow != null);
-
-            if (ARow != null)
+            if (ARow == null)
             {
-                FPetraUtilsObject.DetailProtectedMode =
-                    (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED)
-                     || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
-
-                dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
-
-                FSelectedBatchNumber = ARow.BatchNumber;
-
-                //Update the batch period if necessary
-                UpdateBatchPeriod(null, null);
+                return;
             }
+
+            FPetraUtilsObject.DetailProtectedMode =
+                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED)
+                 || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
+
+            dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
+
+            FSelectedBatchNumber = ARow.BatchNumber;
+
+            //Update the batch period if necessary
+            UpdateBatchPeriod(null, null);
+
+            UpdateChangeableStatus();
         }
 
         /// <summary>
@@ -289,11 +299,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 cmbPeriodFilter.SelectedIndex = 0;
             }
 
-            ClearDetailControls();
+            //FPreviouslySelectedDetailRow = null;
+
+            pnlDetails.Enabled = true;
+
+            //ClearDetailControls();
 
             EnableButtonControl(true);
 
-            grdDetails.DataSource = null;
+            //grdDetails.DataSource = null;
 
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
 
@@ -306,17 +320,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 newBatchRow.BatchPeriod = periodNumber;
             }
 
-            //FPetraUtilsObject.SetChangedFlag();
-
-            // BoundDataView bdv = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
-            //bdv
-
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
-
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+
+            FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
+            dtpDetailDateEffective.Date = FDefaultDate;
 
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
+            FPreviouslySelectedDetailRow.BatchDescription = "Please enter a batch description";
             txtDetailBatchDescription.Text = "Please enter a batch description";
             txtDetailBatchDescription.Focus();
 
@@ -326,17 +337,81 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).EnableJournals();
         }
 
-        private void UpdateJournalEffectiveDate()
+        private void UpdateJournalTransEffectiveDate(bool ASetJournalDateOnly)
         {
-            //Load Journals in the background
-            ((TFrmGLBatch) this.ParentForm).LoadJournals();
+            DateTime batchEffectiveDate = dtpDetailDateEffective.Date.Value;
+            Int32 activeJournalNumber = 0;
+            Int32 activeTransNumber = 0;
+            Int32 activeTransJournalNumber = 0;
+
+            bool activeJournalUpdated = false;
+            bool activeTransUpdated = false;
+
+            //Current Batch number
+            Int32 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+
+            FMainDS.AJournal.DefaultView.RowFilter = String.Format("{0}={1}",
+                ATransactionTable.GetBatchNumberDBName(),
+                batchNumber);
+
+            if (FMainDS.AJournal.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
+            }
+
+            activeJournalNumber = ((TFrmGLBatch) this.ParentForm).GetJournalsControl().ActiveJournalNumber(FLedgerNumber, batchNumber);
+            activeTransNumber = ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().ActiveTransactionNumber(FLedgerNumber,
+                batchNumber,
+                ref activeTransJournalNumber);
 
             foreach (DataRowView v in FMainDS.AJournal.DefaultView)
             {
                 AJournalRow r = (AJournalRow)v.Row;
 
-                r.DateEffective = (DateTime)dtpDetailDateEffective.Date;
+                if (ASetJournalDateOnly)
+                {
+                    if ((activeJournalNumber > 0) && !activeJournalUpdated && (r.JournalNumber == activeJournalNumber))
+                    {
+                        ((TFrmGLBatch) this.ParentForm).GetJournalsControl().UpdateEffectiveDateForCurrentRow(batchEffectiveDate);
+                        activeJournalUpdated = true;
+                    }
+
+                    r.BeginEdit();
+                    r.DateEffective = batchEffectiveDate;
+                    r.EndEdit();
+                }
+                else
+                {
+                    FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                        ATransactionTable.GetBatchNumberDBName(),
+                        batchNumber,
+                        ATransactionTable.GetJournalNumberDBName(),
+                        r.JournalNumber);
+
+                    if (FMainDS.ATransaction.DefaultView.Count == 0)
+                    {
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(FLedgerNumber, batchNumber, r.JournalNumber));
+                    }
+
+                    foreach (DataRowView w in FMainDS.ATransaction.DefaultView)
+                    {
+                        ATransactionRow t = (ATransactionRow)w.Row;
+
+                        if ((activeTransNumber > 0) && !activeTransUpdated && (r.JournalNumber == activeTransJournalNumber)
+                            && (t.TransactionNumber == activeTransNumber))
+                        {
+                            ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().UpdateEffectiveDateForCurrentRow(batchEffectiveDate);
+                            activeTransUpdated = true;
+                        }
+
+                        t.BeginEdit();
+                        t.TransactionDate = batchEffectiveDate;
+                        t.EndEdit();
+                    }
+                }
             }
+
+            FPetraUtilsObject.HasChanges = true;
         }
 
         private void UpdateBatchPeriod(object sender, EventArgs e)
@@ -351,23 +426,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 Int32 periodNumber = 0;
                 Int32 yearNumber = 0;
                 DateTime dateValue;
-
                 string aDate = dtpDetailDateEffective.Date.ToString();
-
-                //If the effective date has changed, then update all journals
-                if (FPreviouslySelectedDetailRow.DateEffective != dtpDetailDateEffective.Date)
-                {
-                    FPreviouslySelectedDetailRow.DateEffective = dtpDetailDateEffective.Date.Value;
-                    UpdateJournalEffectiveDate();
-                }
 
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
+                    if (FPreviouslySelectedDetailRow.DateEffective != dateValue)
+                    {
+                        FPreviouslySelectedDetailRow.DateEffective = dateValue;
+                        //Update the Transaction effective dates
+                        UpdateJournalTransEffectiveDate(true);
+                    }
+
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
                     {
                         if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
                         {
                             FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+
+                            //Update the Transaction effective dates
+                            UpdateJournalTransEffectiveDate(false);
 
                             if (cmbYearFilter.SelectedIndex != 0)
                             {
@@ -381,9 +458,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //Leave BatchPeriod as it is
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -916,7 +993,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 SelectRowInGrid(newRowToSelectAfterFilter);
 
-                UpdateChangeableStatus(true);
+                UpdateChangeableStatus();
                 ((TFrmGLBatch) this.ParentForm).EnableJournals();
             }
         }

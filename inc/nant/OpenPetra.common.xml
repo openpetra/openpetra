@@ -346,7 +346,7 @@
 
 <!-- generateWinforms -->
 <property name="tool-generateWinForms" value="${dir.bin}/Ict.Tools.GenerateWinForms.exe" overwrite="false" />
-<property name="GUILocalisation" value="" overwrite="false"/> 
+<property name="GUILocalisation" value="en-EN" overwrite="false"/>
 
 <property name="tool-generateEncryptionKey" value="${dir.bin}/Ict.Tools.GenerateEncryptionKey.exe" overwrite="false" />
 

@@ -73,7 +73,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Check if same Journals as previously selected
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
+            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus)
+                && (FMainDS.AJournal.DefaultView.Count > 0))
             {
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                 {
@@ -126,6 +127,60 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateTotals(GetBatchRow());
 
             grdDetails.Focus();
+        }
+
+        /// <summary>
+        /// Load the journals for the current batch in the background
+        /// </summary>
+        public void UnloadJournals()
+        {
+            if (FMainDS.AJournal.DefaultView.Count > 0)
+            {
+                FPreviouslySelectedDetailRow = null;
+                FMainDS.AJournal.Clear();
+                //ClearControls();
+            }
+        }
+
+        /// <summary>
+        /// Update the effective date from outside
+        /// </summary>
+        /// <param name="AEffectiveDate"></param>
+        public void UpdateEffectiveDateForCurrentRow(DateTime AEffectiveDate)
+        {
+            if ((GetSelectedDetailRow() != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            {
+                GetSelectedDetailRow().DateEffective = AEffectiveDate;
+                dtpDetailDateEffective.Date = AEffectiveDate;
+                GetDetailsFromControls(GetSelectedDetailRow());
+            }
+        }
+
+        /// <summary>
+        /// Return the active journal number
+        /// </summary>
+        /// <returns></returns>
+        public Int32 ActiveJournalNumber(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            Int32 activeJournal = 0;
+
+            if ((FPreviouslySelectedDetailRow != null) && (FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber))
+            {
+                activeJournal = FPreviouslySelectedDetailRow.JournalNumber;
+            }
+
+            return activeJournal;
+        }
+
+        /// <summary>
+        /// Cancel any changes made to this form
+        /// </summary>
+        public void CancelChangesToFixedBatches()
+        {
+            if ((GetBatchRow() != null) && (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                FMainDS.AJournal.RejectChanges();
+            }
         }
 
         private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)

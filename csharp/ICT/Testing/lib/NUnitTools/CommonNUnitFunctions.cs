@@ -75,8 +75,6 @@ namespace Ict.Testing.NUnitTools
                     rootPath += strArr[i] + "/";
                 }
             }
-
-            TLogging.Log("rootPath: " + rootPath);
         }
 
         /// <summary>
