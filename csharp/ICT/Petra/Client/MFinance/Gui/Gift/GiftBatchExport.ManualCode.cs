@@ -268,10 +268,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 BatchCount = 0;
 
             Thread ExportThread = new Thread(() => ExportAllGiftBatchData(
-                requestParams,
-                out exportString,
-                out AMessages,
-                out BatchCount));
+                    requestParams,
+                    out exportString,
+                    out AMessages,
+                    out BatchCount));
 
             TProgressDialog ExportDialog = new TProgressDialog(ExportThread);
             ExportDialog.ShowDialog();
@@ -337,9 +337,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AMessages"></param>
         /// <param name="BatchCount"></param>
         private void ExportAllGiftBatchData(
-            Hashtable ARequestParams, 
-            out string exportString, 
-            out TVerificationResultCollection AMessages, 
+            Hashtable ARequestParams,
+            out string exportString,
+            out TVerificationResultCollection AMessages,
             out Int32 BatchCount)
         {
             TVerificationResultCollection AResultMessages;
@@ -354,7 +354,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AMessages = AResultMessages;
             BatchCount = ABatchCount;
             exportString = AExportString;
-
         }
 
         void BtnBrowseClick(object sender, EventArgs e)
