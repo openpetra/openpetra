@@ -1216,6 +1216,20 @@ namespace Ict.Common.IO
 
             if (FLatestAvailablePatch.Compare(testPatchVersion) != 0)
             {
+                // check for a generic patch file, starting from version 0.0.99.99
+                foreach (string patch in AOrderedListOfAllPatches.GetValueList())
+                {
+                    if (patch.Contains("0.0.99.99"))
+                    {
+                        testPatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch);
+                        ResultPatchList.Clear();
+                        ResultPatchList.Add(patch, patch);
+                    }
+                }
+            }
+
+            if (FLatestAvailablePatch.Compare(testPatchVersion) != 0)
+            {
                 TLogging.Log("missing patchfile from version " + testPatchVersion.ToString() + " to " + FLatestAvailablePatch.ToString());
                 return new SortedList();
             }
