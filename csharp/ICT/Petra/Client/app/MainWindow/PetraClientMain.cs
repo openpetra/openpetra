@@ -296,10 +296,17 @@ namespace Ict.Petra.Client.App.PetraClient
                     // check for newer patchtool
                     patchTools.CopyLatestPatchProgram(TempPath);
 
+                    string PatchToolExe = TempPath + Path.DirectorySeparatorChar + "Ict.Tools.PatchTool.exe";
+
+                    if (!File.Exists(PatchToolExe))
+                    {
+                        TLogging.Log("cannot find file " + PatchToolExe);
+                    }
+
                     // need to stop petra client, start the patch in temppath, restart Petra client
                     Process PatchProcess = new System.Diagnostics.Process();
                     PatchProcess.EnableRaisingEvents = false;
-                    PatchProcess.StartInfo.FileName = TempPath + Path.DirectorySeparatorChar + "Ict.Tools.PatchTool.exe";
+                    PatchProcess.StartInfo.FileName = PatchToolExe;
                     PatchProcess.StartInfo.Arguments = "-action:patchRemote" + " -C:\"" + Path.GetFullPath(TAppSettingsManager.ConfigFileName) +
                                                        "\" -OpenPetra.Path:\"" + Path.GetFullPath(
                         TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..") +
