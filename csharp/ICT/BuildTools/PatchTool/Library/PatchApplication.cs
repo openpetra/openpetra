@@ -35,7 +35,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
 
-namespace Ict.Tools.PatchTool
+namespace Ict.Tools.PatchTool.Library
 {
     /// there is a patch between each build and the previous build.
     /// when we send out a patch, we include all the latest builds. they are all copied to netpatches,

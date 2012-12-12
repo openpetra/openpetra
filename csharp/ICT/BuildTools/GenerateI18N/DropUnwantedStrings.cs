@@ -38,38 +38,6 @@ namespace GenerateI18N
 public class TDropUnwantedStrings
 {
     /// <summary>
-    /// a line in a po translation file starts with either msgid or msgstr, and can cover several lines.
-    /// the text is in quotes.
-    /// </summary>
-    private static string ParsePoLine(StreamReader sr, ref string ALine, out StringCollection AOriginalLines)
-    {
-        AOriginalLines = new StringCollection();
-        AOriginalLines.Add(ALine);
-
-        string messageId = String.Empty;
-        StringHelper.GetNextCSV(ref ALine, " ");
-        string quotedMessage = StringHelper.GetNextCSV(ref ALine, " ");
-
-        if (quotedMessage.StartsWith("\""))
-        {
-            quotedMessage = quotedMessage.Substring(1, quotedMessage.Length - 2);
-        }
-
-        messageId += quotedMessage;
-
-        ALine = sr.ReadLine();
-
-        while (ALine.StartsWith("\""))
-        {
-            AOriginalLines.Add(ALine);
-            messageId += ALine.Substring(1, ALine.Length - 2);
-            ALine = sr.ReadLine();
-        }
-
-        return messageId;
-    }
-
-    /// <summary>
     /// collect all message ids of strings that should not be translated
     /// </summary>
     /// <param name="ADoNotTranslatePath"></param>
@@ -86,7 +54,7 @@ public class TDropUnwantedStrings
         {
             if (line.StartsWith("msgid"))
             {
-                string messageId = ParsePoLine(sr, ref line, out OriginalLines);
+                string messageId = TPoFileParser.ParsePoLine(sr, ref line, out OriginalLines);
 
                 result.Add(messageId);
             }
@@ -192,7 +160,7 @@ public class TDropUnwantedStrings
                 }
 
                 StringCollection OriginalLines;
-                string messageId = ParsePoLine(sr, ref line, out OriginalLines);
+                string messageId = TPoFileParser.ParsePoLine(sr, ref line, out OriginalLines);
 
                 if (DoNotTranslate.Contains(messageId))
                 {
@@ -201,7 +169,7 @@ public class TDropUnwantedStrings
                         throw new Exception("did expect msgstr in the line");
                     }
 
-                    ParsePoLine(sr, ref line, out OriginalLines);
+                    TPoFileParser.ParsePoLine(sr, ref line, out OriginalLines);
                 }
                 else
                 {

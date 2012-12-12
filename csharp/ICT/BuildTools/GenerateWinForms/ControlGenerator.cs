@@ -97,9 +97,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             string labelText = "";
 
-            if (TXMLParser.HasAttribute(ctrl.xmlNode, "Text"))
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "Text"))
             {
-                labelText = TXMLParser.GetAttribute(ctrl.xmlNode, "Text");
+                labelText = TYml2Xml.GetAttribute(ctrl.xmlNode, "Text");
             }
             else
             {
@@ -270,11 +270,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             FGenerateLabel = false;
 
-            if (TXMLParser.HasAttribute(ctrl.xmlNode, "RadioChecked"))
+            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "RadioChecked"))
             {
                 writer.SetControlProperty(ctrl,
                     "Checked",
-                    TXMLParser.GetAttribute(ctrl.xmlNode, "RadioChecked"));
+                    TYml2Xml.GetAttribute(ctrl.xmlNode, "RadioChecked"));
             }
 
             return writer.FTemplate;

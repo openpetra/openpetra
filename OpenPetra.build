@@ -56,6 +56,8 @@ compat:
   translation: download new language files, and create the dlls required to be delivered with a new release
   buildTranslationTemplate: extracts string in winforms, creates and updates the .po files
   generateGuidedTranslations: Simplifies the translation of the .po files
+  createI18NYamlFiles: create localised yaml files
+    createI18NYamlFiles -language=de-DE -path=...
 
 releases:
   buildWindowsStandalone: will build the standalone installer for Windows. Only works on Windows with InnoSetup.
@@ -102,6 +104,11 @@ useful parameters
 <target name="generateGuidedTranslations" description="simplifies the translation of the .po files" >
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="guidedTrans" 
+        buildfile="i18n/i18n.build" />
+</target>
+
+<target name="createI18NYamlFiles" description="create localised yaml files" >
+  <nant inheritall="true" target="createI18NYamlFiles" 
         buildfile="i18n/i18n.build" />
 </target>
 
@@ -288,8 +295,8 @@ useful parameters
 </target>
 
 <target name="generateWinforms">
-  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
-  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraClient/PetraClient.build')}" verbose="${verbose}"/>
+  <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+  <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraClient/PetraClient.build')}" verbose="${verbose}"/>
 </target>
 
 <target name="generateWinform">

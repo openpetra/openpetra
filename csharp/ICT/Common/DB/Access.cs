@@ -561,7 +561,7 @@ namespace Ict.Common.DB
             TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
             TFileVersionInfo serverExeInfo = new TFileVersionInfo(TFileVersionInfo.GetApplicationVersion());
 
-            if (dbversion.Compare(serverExeInfo) < 0)
+            if (dbversion.CompareWithoutPrivatePart(serverExeInfo) < 0)
             {
                 // for a proper server, the patchtool should have already updated the database
 

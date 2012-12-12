@@ -200,11 +200,19 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
             else
             {
-                IUserAuthentication auth = TUserManagerWebConnector.LoadAuthAssembly(UserAuthenticationMethod);
-
-                if (!auth.CreateUser(AUsername, APassword))
+                try
                 {
-                    newUser = null;
+                    IUserAuthentication auth = TUserManagerWebConnector.LoadAuthAssembly(UserAuthenticationMethod);
+
+                    if (!auth.CreateUser(AUsername, APassword))
+                    {
+                        newUser = null;
+                    }
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log("Problem loading user authentication method " + UserAuthenticationMethod + ": " + e.ToString());
+                    return false;
                 }
             }
 
@@ -225,12 +233,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     List <string>modules = new List <string>();
                     modules.Add("PTNRUSER");
                     modules.Add("FINANCE-1");
-
-                    // the first user must have access to the System Manager module
-                    if (SUserAccess.CountAll(Transaction) == 0)
-                    {
-                        modules.Add("SYSMAN");
-                    }
 
                     ALedgerTable theLedgers = ALedgerAccess.LoadAll(Transaction);
 

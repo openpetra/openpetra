@@ -81,8 +81,8 @@ namespace Ict.Petra.Client.MCommon.Gui
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.lblPartnerKey.Text = Catalog.GetString("PartnerKey");
             this.lblPartnerName.Text = Catalog.GetString("Partner Name");
-            this.Label3.Text = Catalog.GetString("Partner Name:");
-            this.Label4.Text = Catalog.GetString("PartnerKey:");
+            this.Label3.Text = Catalog.GetString("Partner Name") + ":";
+            this.Label4.Text = Catalog.GetString("PartnerKey") + ":";
             this.Text = Catalog.GetString("Field Of Service");
             #endregion
 

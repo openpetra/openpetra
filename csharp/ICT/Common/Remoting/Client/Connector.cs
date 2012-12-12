@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
@@ -29,6 +30,7 @@ using System.Runtime.Remoting.Lifetime;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Remoting.Sinks.Encryption;
 
 namespace Ict.Common.Remoting.Client
 {
@@ -59,7 +61,7 @@ namespace Ict.Common.Remoting.Client
         /// if you want to overwrite GetRemoteServerConnection, you need to be able to set this variable.
         /// can only connect once.
         /// </summary>
-        protected Boolean FRemotingConfigurationSetup;
+        protected Boolean FRemotingConfigurationSetup = false;
 
         /// <summary>
         /// initialize connection parameters
@@ -99,6 +101,20 @@ namespace Ict.Common.Remoting.Client
                         }
 
                         ChannelServices.RegisterChannel(new TcpChannel(0), false);
+                    }
+                    else if (TAppSettingsManager.HasValue("OpenPetra.ChannelEncryption.PublicKeyfile"))
+                    {
+                        IClientChannelSinkProvider TCPSink = new BinaryClientFormatterSinkProvider();
+
+                        Hashtable properties = new Hashtable();
+                        properties.Add("HttpsPublicKeyXml", TAppSettingsManager.GetValue("OpenPetra.ChannelEncryption.PublicKeyfile"));
+
+                        TCPSink.Next = new EncryptionClientSinkProvider(properties, null);
+
+                        Hashtable ChannelProperties = new Hashtable();
+
+                        TcpChannel Channel = new TcpChannel(ChannelProperties, TCPSink, null);
+                        ChannelServices.RegisterChannel(Channel, false);
                     }
                     else
                     {

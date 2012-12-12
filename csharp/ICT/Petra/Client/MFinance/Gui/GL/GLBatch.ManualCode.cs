@@ -107,6 +107,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Unload transactions from the form
+        /// </summary>
+        public void UnloadTransactions()
+        {
+            this.ucoTransactions.UnloadTransactions();
+        }
+
+        /// <summary>
         /// activate the attributes tab and load the attributes of the transaction
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -152,6 +160,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
             }
+        }
+
+        /// <summary>
+        /// Unload transactions from the form
+        /// </summary>
+        public void UnloadJournals()
+        {
+            this.ucoJournals.UnloadJournals();
         }
 
         /// <summary>
@@ -215,7 +231,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 this.tabGLBatch.SelectedTab = this.tpgBatches;
                 this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
-                this.tpgTransactions.Enabled = false;
+
+                if (this.tpgTransactions.Enabled)
+                {
+                    this.ucoTransactions.CancelChangesToFixedBatches();
+                    this.ucoJournals.CancelChangesToFixedBatches();
+                    SaveChanges();
+                    this.tpgTransactions.Enabled = false;
+                }
+
                 this.tpgAttributes.Enabled = false;
 
                 this.ucoBatches.FocusGrid();

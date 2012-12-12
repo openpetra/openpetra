@@ -340,39 +340,39 @@ namespace Ict.Petra.Client.MPartner.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblPartnerKey.Text = Catalog.GetString("Partner Key:");
-            this.lblAcquisitionCode.Text = Catalog.GetString("Acquired:");
-            this.lblStatusCode.Text = Catalog.GetString("Status:");
-            this.lblPartnerName.Text = Catalog.GetString("Name:");
+            this.lblPartnerKey.Text = Catalog.GetString("Partner Key") + ":";
+            this.lblAcquisitionCode.Text = Catalog.GetString("Acquired") + ":";
+            this.lblStatusCode.Text = Catalog.GetString("Status") + ":";
+            this.lblPartnerName.Text = Catalog.GetString("Name") + ":";
             this.tbpAddress.Text = Catalog.GetString("Address");
             this.tbpAddress.ToolTipText = Catalog.GetString("Details of the selected Address");
-            this.lblFax.Text = Catalog.GetString("Fax:");
-            this.lblTelephone.Text = Catalog.GetString("Telephone:");
-            this.lblAlternate.Text = Catalog.GetString("Alternate:");
-            this.lblMobile.Text = Catalog.GetString("Mobile:");
-            this.lblEmail.Text = Catalog.GetString("Email:");
-            this.lblLocationType.Text = Catalog.GetString("Location Type:");
-            this.lblMailingAddress.Text = Catalog.GetString("Mailing Addr.:");
-            this.lblUrl.Text = Catalog.GetString("URL:");
-            this.lblValidFrom.Text = Catalog.GetString("Valid From:");
-            this.lblValidTo.Text = Catalog.GetString("Valid To:");
+            this.lblFax.Text = Catalog.GetString("Fax") + ":";
+            this.lblTelephone.Text = Catalog.GetString("Telephone") + ":";
+            this.lblAlternate.Text = Catalog.GetString("Alternate") + ":";
+            this.lblMobile.Text = Catalog.GetString("Mobile") + ":";
+            this.lblEmail.Text = Catalog.GetString("Email") + ":";
+            this.lblLocationType.Text = Catalog.GetString("Location Type") + ":";
+            this.lblMailingAddress.Text = Catalog.GetString("Mailing Addr.") + ":";
+            this.lblUrl.Text = Catalog.GetString("URL") + ":";
+            this.lblValidFrom.Text = Catalog.GetString("Valid From") + ":";
+            this.lblValidTo.Text = Catalog.GetString("Valid To") + ":";
             this.tbpTypesSubscr.Text = Catalog.GetString("Types && Subscriptions");
             this.tbpTypesSubscr.ToolTipText = Catalog.GetString("Subscriptions and Special Types of the Partner");
-            this.lblSpecialTypes.Text = Catalog.GetString("Special Types:");
-            this.lblSubscriptions.Text = Catalog.GetString("Subscriptions:");
+            this.lblSpecialTypes.Text = Catalog.GetString("Special Types") + ":";
+            this.lblSubscriptions.Text = Catalog.GetString("Subscriptions") + ":";
             this.tbpOther.Text = Catalog.GetString("Other");
             this.tbpOther.ToolTipText = Catalog.GetString("Other details of the Partner");
-            this.pnlOtherInfo.Text = Catalog.GetString("Other Information:");
-            this.lblPreviousName.Text = Catalog.GetString("Previous Name:");
-            this.lblParentUnit.Text = Catalog.GetString("Parent Unit:");
-            this.lblField.Text = Catalog.GetString("Field:");
-            this.lblPartnerUpdated.Text = Catalog.GetString("Partner Updated:");
-            this.lblLanguages.Text = Catalog.GetString("Speaks (Languages):");
-            this.lblLastContact.Text = Catalog.GetString("Last Contact:");
+            this.pnlOtherInfo.Text = Catalog.GetString("Other Information") + ":";
+            this.lblPreviousName.Text = Catalog.GetString("Previous Name") + ":";
+            this.lblParentUnit.Text = Catalog.GetString("Parent Unit") + ":";
+            this.lblField.Text = Catalog.GetString("Field") + ":";
+            this.lblPartnerUpdated.Text = Catalog.GetString("Partner Updated") + ":";
+            this.lblLanguages.Text = Catalog.GetString("Speaks (Languages)") + ":";
+            this.lblLastContact.Text = Catalog.GetString("Last Contact") + ":";
             this.tbpPersonFamily.Text = Catalog.GetString("Person / Family");
-            this.lblFamily.Text = Catalog.GetString("Family:");
-            this.lblDateOfBirth.Text = Catalog.GetString("Date of Birth:");
-            this.lblFamilyMembers.Text = Catalog.GetString("Family Members:");
+            this.lblFamily.Text = Catalog.GetString("Family") + ":";
+            this.lblDateOfBirth.Text = Catalog.GetString("Date of Birth") + ":";
+            this.lblFamilyMembers.Text = Catalog.GetString("Family Members") + ":";
             this.lblNoPartner.Text = Catalog.GetString("No Partner to display.");
             #endregion
 
