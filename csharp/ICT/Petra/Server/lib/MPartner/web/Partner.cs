@@ -203,7 +203,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if (!MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, Transaction))
             {
                 ResultValue = false;
-                ADisplayMessage = Catalog.GetString(String.Format("Partner {0} does not exist.", APartnerKey.ToString()));
+                ADisplayMessage = String.Format(Catalog.GetString("Partner {0} does not exist."), APartnerKey.ToString());
             }
             
             // check if the partner is linked to a Petra user
@@ -330,8 +330,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             if (MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out PartnerClass, out PartnerStatusCode, Transaction))
             {
-                ADisplayMessage = Catalog.GetString(String.Format("Are you sure you want to delete {0} {1} ?", 
-                                                                  SharedTypes.PartnerClassEnumToString(PartnerClass), APartnerShortName));
+                ADisplayMessage = String.Format(Catalog.GetString("Are you sure you want to delete {0} {1} ?"),
+                                                                  SharedTypes.PartnerClassEnumToString(PartnerClass), APartnerShortName);
                 ADisplayMessage += Linebreak + Linebreak;
 
                 // count active subscription records
@@ -340,31 +340,31 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         " WHERE " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
                         " AND " + PSubscriptionTable.GetSubscriptionStatusDBName() + " NOT IN (\"CANCELLED\",\"EXPIRED\")", 
                         Transaction, false));
-                ADisplayMessage += Catalog.GetString(String.Format("{0} active Subscriptions", Count.ToString())) + Linebreak;
+                ADisplayMessage += String.Format(Catalog.GetString("{0} active Subscriptions"), Count.ToString()) + Linebreak;
 
                 // count contact records
                 Count = PPartnerContactAccess.CountViaPPartner(APartnerKey, Transaction);
-                ADisplayMessage += Catalog.GetString(String.Format("{0} Contacts", Count.ToString())) + Linebreak;
+                ADisplayMessage += String.Format(Catalog.GetString("{0} Contacts"), Count.ToString()) + Linebreak;
                 
                 // count relationships (consider both possible partner key fields in relationship table)
                 Count = 0;
                 Count = PPartnerRelationshipAccess.CountViaPPartnerPartnerKey(APartnerKey, Transaction);
                 Count += PPartnerRelationshipAccess.CountViaPPartnerRelationKey(APartnerKey, Transaction);
-                ADisplayMessage += Catalog.GetString(String.Format("{0} Relationships", Count.ToString())) + Linebreak;
+                ADisplayMessage += String.Format(Catalog.GetString("{0} Relationships"), Count.ToString()) + Linebreak;
     
                 if (PartnerClass == TPartnerClass.PERSON)
                 {
                     // count application records
                     Count = PmGeneralApplicationAccess.CountViaPPersonPartnerKey(APartnerKey, Transaction);
-                    ADisplayMessage += Catalog.GetString(String.Format("{0} Applications", Count.ToString())) + Linebreak;
+                    ADisplayMessage += String.Format(Catalog.GetString("{0} Applications"), Count.ToString()) + Linebreak;
 
                     // count commitment records
                     Count = PmStaffDataAccess.CountViaPPerson(APartnerKey, Transaction);
-                    ADisplayMessage += Catalog.GetString(String.Format("{0} Commitments", Count.ToString())) + Linebreak;
+                    ADisplayMessage += String.Format(Catalog.GetString("{0} Commitments"), Count.ToString()) + Linebreak;
                     
                     // count past experience records
                     Count = PmPastExperienceAccess.CountViaPPerson(APartnerKey, Transaction);
-                    ADisplayMessage += Catalog.GetString(String.Format("{0} Past Experience", Count.ToString())) + Linebreak;
+                    ADisplayMessage += String.Format(Catalog.GetString("{0} Past Experience"), Count.ToString()) + Linebreak;
                 }
             }
             else
@@ -901,7 +901,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     "SELECT COUNT(*) FROM PUB_" + PUnitTable.GetTableDBName() +
                     " WHERE " + PUnitTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
                     " AND " + PUnitTable.GetUnitTypeCodeDBName() + " = \"KEY-MIN\"", 
-                    IsolationLevel.ReadCommitted)) > 0)
+                    ATransaction)) > 0)
             {
                 ADisplayMessage = Catalog.GetString("Unable to delete a Key Ministry.");
                 return false;
@@ -1105,12 +1105,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PPartnerRelationshipRow PartnerRelationshipTemplateRow;
             StringCollection TemplateOperators;
             
-            PartnerRelationshipTemplateRow = PartnerRelationshipTemplateTable.NewRowTyped();
+            PartnerRelationshipTemplateRow = (PPartnerRelationshipRow)PartnerRelationshipTemplateTable.NewRow();
             PartnerRelationshipTemplateRow.PartnerKey = APartnerKey;
             PartnerRelationshipTemplateRow.RelationName = "SUPPCHURCH";
             TemplateOperators = new StringCollection();
             TemplateOperators.Add("=");
-    
+
             if (PPartnerRelationshipAccess.CountUsingTemplate(PartnerRelationshipTemplateRow, TemplateOperators, ATransaction) > 0)
             {
                 ADisplayMessage = Catalog.GetString("Unable to delete a supporting church.");
@@ -1133,7 +1133,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             ADisplayMessage = "";
  
             // make sure there are no accounts set up for this bank
-            if (PBankingDetailsAccess.CountViaPPartner(APartnerKey, ATransaction) > 0)
+            if (PBankingDetailsAccess.CountViaPBank(APartnerKey, ATransaction) > 0)
             {
                 ADisplayMessage = Catalog.GetString("Unable to delete a bank that has accounts set up.");
                 return false;

@@ -134,7 +134,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (TRemote.MPartner.Partner.WebConnectors.DeletePartner(APartnerKey, out VerificationResult))
                     {
                         ResultValue = true;
-                        MessageBox.Show(Catalog.GetString(String.Format("Partner {0} {1} successfully deleted", APartnerKey, ShortName)),
+                        MessageBox.Show(String.Format(Catalog.GetString("Partner {0} {1} successfully deleted"), APartnerKey, ShortName),
                                         Catalog.GetString("Delete Partner"),
                                         MessageBoxButtons.OK,
                                         MessageBoxIcon.Information);
