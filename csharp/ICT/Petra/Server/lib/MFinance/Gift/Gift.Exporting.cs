@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash, timop
+//       matthiash, timop, dougm
 //
 // Copyright 2004-2012 by OM International
 //
@@ -44,6 +44,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.Gift
 {
@@ -97,6 +98,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Exporting Gift Batches"), 100);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Retrieving records"),
+                5);
+
             try
             {
                 ALedgerAccess.LoadByPrimaryKey(MainDS, FLedgerNumber, FTransaction);
@@ -142,12 +150,22 @@ namespace Ict.Petra.Server.MFinance.Gift
                     MainDS.AGiftBatch.TableName,
                     FTransaction,
                     parameters.ToArray());
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Retrieving gift records"),
+                    10);
+
                 DBAccess.GDBAccessObj.Select(MainDS,
                     "SELECT DISTINCT PUB_a_gift.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName() + ", " +
                     AGiftTable.GetGiftTransactionNumberDBName(),
                     MainDS.AGift.TableName,
                     FTransaction,
                     parameters.ToArray());
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Retrieving gift detail records"),
+                    15);
+
                 DBAccess.GDBAccessObj.Select(MainDS,
                     "SELECT DISTINCT PUB_a_gift_detail.* " + sqlStatement,
                     MainDS.AGiftDetail.TableName,
@@ -164,6 +182,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             SortedDictionary <String, AGiftSummaryRow>sdSummary = new SortedDictionary <String, AGiftSummaryRow>();
 
             UInt32 counter = 0;
+
+            // TProgressTracker Variables
+            UInt32 GiftCounter = 0;
+
             AGiftSummaryRow giftSummary = null;
 
             MainDS.AGiftDetail.DefaultView.Sort =
@@ -174,6 +196,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             foreach (AGiftBatchRow giftBatch in MainDS.AGiftBatch.Rows)
             {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    string.Format(Catalog.GetString("Batch {0}"), giftBatch.BatchNumber),
+                    20);
+                GiftCounter = 0;
+
                 if (!FTransactionsOnly & !Summary)
                 {
                     WriteGiftBatchLine(giftBatch);
@@ -185,6 +212,14 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                     if (gift.BatchNumber.Equals(giftBatch.BatchNumber) && gift.LedgerNumber.Equals(giftBatch.LedgerNumber))
                     {
+                        // Update progress tracker every 25 records
+                        if (++GiftCounter % 25 == 0)
+                        {
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                string.Format(Catalog.GetString("Batch {0} - Exporting gifts"), giftBatch.BatchNumber),
+                                (GiftCounter / 25 + 4) * 5 > 90 ? 90 : (GiftCounter / 25 + 4) * 5);
+                        }
+
                         for (int detailNumber = 1; detailNumber <= gift.LastDetailNumber; detailNumber++)
                         {
                             AGiftDetailRow giftDetail = (AGiftDetailRow)MainDS.AGiftDetail.DefaultView.FindRows(
@@ -243,6 +278,10 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (Summary)
             {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Export Summary"),
+                    95);
+
                 bool first = true;
 
                 foreach (KeyValuePair <string, AGiftSummaryRow>kvp in sdSummary)
@@ -256,6 +295,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                     WriteGiftSummaryLine(kvp.Value);
                 }
             }
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Gift batch export successful"),
+                100);
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             exportString = FStringWriter.ToString();
             AMessages = FMessages;
