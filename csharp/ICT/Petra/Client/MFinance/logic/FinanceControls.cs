@@ -707,7 +707,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
 
             periods.DefaultView.Sort = ValueMember + " ASC";
-            
+
             AControl.InitialiseUserControl(periods,
                 ValueMember,
                 DisplayMember,
