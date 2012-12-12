@@ -86,7 +86,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             out TVerificationResultCollection AMessages
             )
         {
-
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Importing Gift Batches"),
                 100);
