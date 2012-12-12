@@ -560,7 +560,14 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <returns>the orderby clause</returns>
         private string BuildOrderByClause(DataRow ACriteriaRow)
         {
-            return PPartnerTable.GetPartnerShortNameDBName();
+            if (FSearchSupplierOrInvoice) // Find Suppliers
+            {
+                return "PartnerShortName";
+            }
+            else // Find invoices
+            {
+                return "ApNumber DESC";
+            }
         }
 
         /// <summary>

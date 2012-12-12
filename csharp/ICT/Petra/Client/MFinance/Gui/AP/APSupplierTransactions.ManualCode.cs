@@ -48,6 +48,7 @@ using System.Threading;
 using Ict.Common.Conversion;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
+using Ict.Petra.Client.MFinance.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -91,6 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FinishedCheckThread.Start();
 
             grdResult.MouseClick += new MouseEventHandler(grdResult_Click);
+            this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
         }
 
         private delegate void SimpleDelegate();

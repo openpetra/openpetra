@@ -206,6 +206,14 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>Set to true after the first page of data is loaded</summary>
+        public Boolean IsInitialised
+        {
+            get
+            {
+                return FGridInitialised;
+            }
+        }
         /**
          * This property gets hidden because it doesn't work with sgrdDataGridPaged!
          *
@@ -447,7 +455,10 @@ namespace Ict.Common.Controls
                 this.OnDataPageLoading(CustomEventArgs);
 
                 // MessageBox.Show('Retrieving Page ' + ANeededPage.ToString + '...');
-                PagedTable = FGetDataPagedResult((short)ANeededPage, FPageSize, out FTotalRecords, out FTotalPages);
+
+                Int32 CurrentTotalRecords;  // These two values should be the same as FTotalRecords
+                Int16 CurrentTotalPages;    // and FTotalPages, which were set when the first page was loaded.
+                PagedTable = FGetDataPagedResult((short)ANeededPage, FPageSize, out CurrentTotalRecords, out CurrentTotalPages);
 
                 if (PagedTable != null)
                 {
@@ -720,7 +731,7 @@ namespace Ict.Common.Controls
 
 //                    TLogging.Log("CheckPage: " + CheckPage.ToString());
 
-                    if (CheckPage != LastCheckedPage)
+                    if ((CheckPage != LastCheckedPage) && (CheckPage < FTotalPages))
                     {
 //                        TLogging.Log("Checking if Page #" + CheckPage.ToString() + " is already transfered...");
                         if (!FTransferredDataPages.Contains(CheckPage))
