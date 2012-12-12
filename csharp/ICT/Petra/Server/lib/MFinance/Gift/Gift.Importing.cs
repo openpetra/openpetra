@@ -86,6 +86,15 @@ namespace Ict.Petra.Server.MFinance.Gift
             out TVerificationResultCollection AMessages
             )
         {
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Importing Gift Batches"),
+                100);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Parsing first line"),
+                0);
+
             AMessages = new TVerificationResultCollection();
             FMainDS = new GiftBatchTDS();
             StringReader sr = new StringReader(importString);
@@ -116,10 +125,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             Int32 RowNumber = 0;
             Int32 BatchDetailCounter = 0;
             bool ok = false;
-
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Parsing first line"),
-                100);
 
             try
             {
