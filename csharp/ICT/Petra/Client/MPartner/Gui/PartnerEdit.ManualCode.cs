@@ -1762,7 +1762,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (CanClose())
                 {
                     /* Delete Partner; if OK, close the screen */
-                    if (TPartnerMain.DeletePartner (FPartnerKey))
+                    if (TPartnerMain.DeletePartner(FPartnerKey))
                     {
                         this.Close();
                     }
@@ -1770,7 +1770,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else
                 {
                     /* Tell user that he can't delete a Partner that has changes that weren't saved yet */
-                    MessageBox.Show(StrCannotDeletePartner, StrCannotDeletePartnerTitle, 
+                    MessageBox.Show(StrCannotDeletePartner, StrCannotDeletePartnerTitle,
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
                 }
