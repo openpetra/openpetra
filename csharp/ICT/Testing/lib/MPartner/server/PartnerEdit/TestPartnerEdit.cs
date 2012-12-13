@@ -563,6 +563,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             FamilyPartnerRow = CreateNewFamilyPartner(MainDS, connector);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Create family record");
 
             // check if Family partner can be deleted (still needs to be possible at this point)
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage);
@@ -579,12 +580,14 @@ namespace Tests.MPartner.Server.PartnerEdit
             FamilyRow.FamilyMembers = true;
             CreateNewLocation(FamilyPartnerRow.PartnerKey, MainDS);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create new location");
 
             PartnerEditTDS PersonDS = new PartnerEditTDS();
             PersonRow = CreateNewPerson(PersonDS, connector, FamilyPartnerRow.PartnerKey,
                 MainDS.PLocation[0].LocationKey, "Adam", "Mr", 0);
             PersonRow.FamilyKey = FamilyPartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref PersonDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create person record");
 
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage);
 
@@ -646,6 +649,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             MainDS.PSubscription.Rows.Add(SubscriptionRow);
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "add publication to family record");
 
             // this should now not be allowed since partner record has a subscription linked to it
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage);
@@ -661,6 +665,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             FamilyPartnerRow = CreateNewFamilyPartner(MainDS, connector);
             PartnerKey = FamilyPartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create family record");
 
             // check if Family record is being deleted
             Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
@@ -701,6 +706,7 @@ namespace Tests.MPartner.Server.PartnerEdit
                 0);
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create family and person record");
 
             // check if Family partner can be deleted (still needs to be possible at this point)
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(PersonRow.PartnerKey, out TextMessage);
@@ -726,6 +732,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             CommitmentTable.Rows.Add(CommitmentRow);
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create unit to be used in commitment");
             Assert.IsTrue(PmStaffDataAccess.SubmitChanges(CommitmentTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult));
 
             // this should now not be allowed since person record has a commitment linked to it
@@ -751,6 +758,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             PartnerKey = PersonRow.PartnerKey;
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create family and person record to be deleted");
 
             // check if Family record is being deleted
             Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
@@ -795,6 +803,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             UnitRow = (PUnitRow)MainDS.PUnit.Rows[0];
             UnitRow.UnitTypeCode = "KEY-MIN";
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "set unit type to KEY-MIN");
 
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(UnitPartnerRow.PartnerKey, out TextMessage);
 
@@ -809,6 +818,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             UnitPartnerRow = CreateNewUnitPartner(MainDS, connector);
             PartnerKey = UnitPartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create unit record for deletion");
 
             // check if Unit record is being deleted
             Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
@@ -838,6 +848,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             ChurchPartnerRow = CreateNewChurchPartner(MainDS, connector);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create church record");
 
             // check if church partner can be deleted (still needs to be possible at this point)
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(ChurchPartnerRow.PartnerKey, out TextMessage);
@@ -860,6 +871,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             MainDS.PPartnerRelationship.Rows.Add(RelationshipRow);
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "add relationship record to church record");
 
             if (VerificationResult.HasCriticalErrors)
             {
@@ -881,6 +893,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             ChurchPartnerRow = CreateNewChurchPartner(MainDS, connector);
             PartnerKey = ChurchPartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create church record for deletion");
 
             // check if church record is being deleted
             Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
@@ -948,6 +961,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             BankPartnerRow = CreateNewBankPartner(MainDS, connector);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create bank record");
 
             // check if Bank partner can be deleted (still needs to be possible at this point)
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(BankPartnerRow.PartnerKey, out TextMessage);
@@ -983,6 +997,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             BankPartnerRow = CreateNewBankPartner(MainDS, connector);
             PartnerKey = BankPartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create bank partner for deletion");
 
             // check if Venue record is being deleted
             Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
@@ -1011,6 +1026,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             VenuePartnerRow = CreateNewVenuePartner(MainDS, connector);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create venue record");
 
             // check if Venue partner can be deleted (still needs to be possible at this point)
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(VenuePartnerRow.PartnerKey, out TextMessage);
@@ -1045,6 +1061,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             VenuePartnerRow = CreateNewVenuePartner(MainDS, connector);
             PartnerKey = VenuePartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create venue record for deletion");
 
             // check if Venue record is being deleted
             Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
