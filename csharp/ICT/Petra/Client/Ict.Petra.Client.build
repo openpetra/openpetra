@@ -20,7 +20,8 @@
   <!-- Generate winforms -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
   <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -Server.DebugLevel:${Server.DebugLevel}"/>
-  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymlfile:${file} ${generateWinformsParameters}"/>
+  <property name="file_fullpath" value="${path::get-full-path(file)}"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymlfile:${file_fullpath} ${generateWinformsParameters}"/>
   
   <property name="file_fullpath" value="${path::get-full-path(file)}"/>
   <CompileProject CSFile="${string::replace(file_fullpath,'.yaml', '-generated.cs')}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
@@ -30,7 +31,8 @@
   <!-- Generate winforms -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
   <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -Server.DebugLevel:${Server.DebugLevel}"/>
-  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:preview -ymlfile:${file} ${generateWinformsParameters}"/>
+  <property name="file_fullpath" value="${path::get-full-path(file)}"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:preview -ymlfile:${file_fullpath} ${generateWinformsParameters}"/>
 </target>
 
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
