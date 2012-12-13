@@ -44,11 +44,13 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
+using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MHospitality.Data;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
@@ -189,18 +191,30 @@ namespace Tests.MPartner.Server.PartnerEdit
 
         private PPartnerRow CreateNewChurchPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
         {
+            TVerificationResultCollection VerificationResult;
+
             PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
 
+            // make sure denomation "UNKNOWN" exists as this is the default value
+            if (!PDenominationAccess.Exists("UNKNOWN", DBAccess.GDBAccessObj.Transaction))
+            {
+                PDenominationTable DenominationTable = new PDenominationTable();
+                PDenominationRow DenominationRow = DenominationTable.NewRowTyped();
+                DenominationRow.DenominationCode = "UNKNOWN";
+                DenominationRow.DenominationName = "Unknown";
+                DenominationTable.Rows.Add(DenominationRow);
+                PDenominationAccess.SubmitChanges(DenominationTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult);
+            }
+            
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_CHURCH;
             PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestChurch";
 
             PChurchRow ChurchRow = AMainDS.PChurch.NewRowTyped();
             ChurchRow.PartnerKey = PartnerRow.PartnerKey;
             ChurchRow.ChurchName = "TestChurch";
-            ChurchRow.SetDenominationCodeNull();
-            //ChurchRow.DenominationCode = "";
+            ChurchRow.DenominationCode = "UNKNOWN";
             AMainDS.PChurch.Rows.Add(ChurchRow);
-
+            
             return PartnerRow;
         }
 
@@ -656,7 +670,84 @@ namespace Tests.MPartner.Server.PartnerEdit
         [Test]
         public void TestDeletePerson()
         {
-            // TODO
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+            String TextMessage;
+            Boolean CanDeletePartner;
+            PPartnerRow FamilyPartnerRow;
+            PPartnerRow UnitPartnerRow;
+            PPersonRow PersonRow;
+            TSubmitChangesResult result;
+            Int64 PartnerKey;
+            
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // create new family, location and person
+            FamilyPartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            CreateNewLocation(FamilyPartnerRow.PartnerKey, MainDS);
+            PersonRow = CreateNewPerson(MainDS,
+                                        connector,
+                                        FamilyPartnerRow.PartnerKey,
+                                        MainDS.PLocation[0].LocationKey,
+                                        "Mike",
+                                        "Mr",
+                                        0);
+            
+            result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            
+            // check if Family partner can be deleted (still needs to be possible at this point)
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(PersonRow.PartnerKey, out TextMessage);
+            if (TextMessage.Length > 0)
+            {
+                TLogging.Log(TextMessage);
+            }
+            Assert.IsTrue(CanDeletePartner);
+            
+            // add a commitment for the person which means the person is not allowed to be deleted any longer
+            UnitPartnerRow = CreateNewUnitPartner(MainDS, connector);
+            PmStaffDataTable CommitmentTable = new PmStaffDataTable();
+            PmStaffDataRow CommitmentRow = CommitmentTable.NewRowTyped();
+            CommitmentRow.Key = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_staff_data));
+            CommitmentRow.PartnerKey = PersonRow.PartnerKey;
+            CommitmentRow.StartOfCommitment = DateTime.Today.Date;
+            CommitmentRow.EndOfCommitment = DateTime.Today.AddDays(90).Date;
+            CommitmentRow.OfficeRecruitedBy = UnitPartnerRow.PartnerKey;
+            CommitmentRow.HomeOffice = UnitPartnerRow.PartnerKey;
+            CommitmentRow.ReceivingField = UnitPartnerRow.PartnerKey;
+            CommitmentTable.Rows.Add(CommitmentRow);
+            
+            result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.IsTrue(PmStaffDataAccess.SubmitChanges(CommitmentTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult));
+
+            // this should now not be allowed since person record has a commitment linked to it
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(PersonRow.PartnerKey, out TextMessage);
+            if (TextMessage.Length > 0)
+            {
+                TLogging.Log(TextMessage);
+            }
+            Assert.IsTrue(!CanDeletePartner);
+
+            // now test actual deletion of Person partner
+            FamilyPartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            CreateNewLocation(FamilyPartnerRow.PartnerKey, MainDS);
+            PersonRow = CreateNewPerson(MainDS,
+                                        connector,
+                                        FamilyPartnerRow.PartnerKey,
+                                        MainDS.PLocation[0].LocationKey,
+                                        "Mary",
+                                        "Mrs",
+                                        0);
+            PartnerKey = PersonRow.PartnerKey;
+            
+            result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            
+            // check if Family record is being deleted
+            Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
+            
+            // check that Family record is really deleted
+            Assert.IsTrue(!TPartnerServerLookups.VerifyPartner(PartnerKey));
         }
 
         /// <summary>
