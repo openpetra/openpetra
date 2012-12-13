@@ -170,9 +170,6 @@ namespace Ict.Common
         {
             XmlDocument xml;
 
-            // need to switch back to the application directory, because the path names might be relative to the application
-            Environment.CurrentDirectory = ApplicationDirectory;
-
             if (!System.IO.File.Exists(FConfigFileName) && System.IO.File.Exists(FConfigFileName.Replace(".config", ".config.sample")))
             {
                 System.IO.File.Copy(FConfigFileName.Replace(".config", ".config.sample"), FConfigFileName);

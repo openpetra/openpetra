@@ -557,6 +557,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpAddresses);
             }
+            else if (AToolStripItem.Name == "mniFileDeletePartner")
+            {
+                TPartnerMain.DeletePartner(FLogic.PartnerKey);
+            }
             else if ((AToolStripItem.Name == "mniFileWorkWithLastPartner")
                      || (AToolStripItem.Name == "mniFileWorkWithLastPartner"))
             {
