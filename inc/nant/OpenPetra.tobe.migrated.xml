@@ -140,7 +140,12 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
     <property name="pgdump.exe" value="pg_dump" overwrite="false"/>
     <property name="MySQL.exe" value="mysql" overwrite="false"/>
     <property name="makensis.exe" value="makensis" overwrite="false"/>
-    <property name="MonoBinPath" value="/usr/bin" overwrite="false"/>     
+    <property name="MonoBinPath" value="/usr/bin" overwrite="false"/>
+
+    <property name="MonoExecutable.file" value="/opt/mono-openpetra/bin/mono" overwrite="false"/>
+    <if test="${not file::exists(MonoExecutable.file)}">
+        <property name="MonoExecutable.file" value="${framework::get-runtime-engine(framework::get-target-framework())}" overwrite="true"/>
+    </if>
   </if>
   <if test="${'unix'!=platform::get-name()}">
     <echo>Unknown platform!</echo>

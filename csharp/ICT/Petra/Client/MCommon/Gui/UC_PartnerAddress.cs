@@ -136,17 +136,17 @@ namespace Ict.Petra.Client.MCommon.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblDateGoodUntil.Text = Catalog.GetString("Valid To:");
-            this.lblDateEffective.Text = Catalog.GetString("Vali&d From:");
-            this.lblTelephoneNo.Text = Catalog.GetString("&Phone:");
-            this.lblLocationType.Text = Catalog.GetString("&Location Type:");
-            this.lblCounty.Text = Catalog.GetString("County/St&ate:");
-            this.lblCountry.Text = Catalog.GetString("Co&untry:");
-            this.lblPostalCode.Text = Catalog.GetString("Po&st Code:");
-            this.lblCity.Text = Catalog.GetString("Cit&y/Town:");
-            this.lblAddLine3.Text = Catalog.GetString("Addr&3:");
-            this.lblStreetName.Text = Catalog.GetString("Street-&2:");
-            this.lblLocality.Text = Catalog.GetString("Addr&1:");
+            this.lblDateGoodUntil.Text = Catalog.GetString("Valid To") + ":";
+            this.lblDateEffective.Text = Catalog.GetString("Vali&d From") + ":";
+            this.lblTelephoneNo.Text = Catalog.GetString("&Phone") + ":";
+            this.lblLocationType.Text = Catalog.GetString("&Location Type") + ":";
+            this.lblCounty.Text = Catalog.GetString("County/St&ate") + ":";
+            this.lblCountry.Text = Catalog.GetString("Co&untry") + ":";
+            this.lblPostalCode.Text = Catalog.GetString("Po&st Code") + ":";
+            this.lblCity.Text = Catalog.GetString("Cit&y/Town") + ":";
+            this.lblAddLine3.Text = Catalog.GetString("Addr&3") + ":";
+            this.lblStreetName.Text = Catalog.GetString("Street-&2") + ":";
+            this.lblLocality.Text = Catalog.GetString("Addr&1") + ":";
             this.txtTelephoneExt.Text = Catalog.GetString("TelExt");
             this.txtTelephoneNo.Text = Catalog.GetString("Phone No");
             this.txtPostalCode.Text = Catalog.GetString("Postal Code");
@@ -155,21 +155,21 @@ namespace Ict.Petra.Client.MCommon.Gui
             this.txtAddLine3.Text = Catalog.GetString("Address Line 3");
             this.txtStreetName.Text = Catalog.GetString("Street Name");
             this.txtLocality.Text = Catalog.GetString("Locality");
-            this.lblFaxNo.Text = Catalog.GetString("Fa&x:");
+            this.lblFaxNo.Text = Catalog.GetString("Fa&x") + ":";
             this.txtFaxNo.Text = Catalog.GetString("Fax No");
             this.txtFaxExt.Text = Catalog.GetString("FaxExt");
-            this.lblEmail.Text = Catalog.GetString("E&mail:");
+            this.lblEmail.Text = Catalog.GetString("E&mail") + ":";
             this.txtEmail.Text = Catalog.GetString("Email");
-            this.lblURL.Text = Catalog.GetString("Websi&te:");
+            this.lblURL.Text = Catalog.GetString("Websi&te") + ":";
             this.txtURL.Text = Catalog.GetString("Web URL");
-            this.lblAltTelephoneNo.Text = Catalog.GetString("Alte&rnate:");
+            this.lblAltTelephoneNo.Text = Catalog.GetString("Alte&rnate") + ":";
             this.txtAltTelephoneNo.Text = Catalog.GetString("Alternate Phone No");
             this.txtMobileTelephoneNo.Text = Catalog.GetString("Mobile Phone No");
-            this.lblMobileTelephoneNo.Text = Catalog.GetString("Mo&bile:");
+            this.lblMobileTelephoneNo.Text = Catalog.GetString("Mo&bile") + ":";
             this.grpAddress.Text = Catalog.GetString("Address");
             this.grpPartnerLocation.Text = Catalog.GetString("Partner-specific Data for this Address");
             this.txtValidFrom.Text = Catalog.GetString("Valid From");
-            this.lblMailingAddress.Text = Catalog.GetString("Mailin&g Address:");
+            this.lblMailingAddress.Text = Catalog.GetString("Mailin&g Address") + ":";
             this.txtValidTo.Text = Catalog.GetString("Valid To");
             #endregion
 

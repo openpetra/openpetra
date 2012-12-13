@@ -140,6 +140,11 @@ namespace Ict.Common
              ErrorMessageText = "'{0}' is not a possible value in this case")]
         public const String ERR_UNREALISTICDATE_ERROR = "GENC.00014V";
 
+        /// <summary>Integer time must be in range 0..86399.</summary>
+        [ErrCodeAttribute("Invalid values entered.",
+             FullDescription = "The text entered does not specify a valid time.")]
+        public const String ERR_INVALIDINTEGERTIME = "GENC.00015V";
+
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";
 

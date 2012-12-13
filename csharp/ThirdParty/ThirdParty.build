@@ -33,6 +33,8 @@
   <include name="ExcelLibrary.dll"/>
   <include name="Jayrock.Json.dll"/>
   <include name="ICSharpCode.NRefactory.dll"/> <!-- Winforms Generator -->
+  <include name="CustomControl.OrientedTextControls.dll"/>
+  <include name="Owf.Controls.A1Panel.dll"/>
 </patternset>
 
 <patternset id="NunitPattern">

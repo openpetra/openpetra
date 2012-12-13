@@ -6,13 +6,14 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: windowMaintainTable
-    WindowWidth: 660
+    WindowWidth: 700
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actImport: {ActionClick=Import}
         actClose:  {Label=Accept, ActionClick=CloseDialog}
         actCancel:  {Label=Cancel, ActionClick=CancelDialog}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -22,36 +23,43 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew, btnClose, btnCancel]
+            Controls: [btnNew, btnClose, btnCancel, btnDelete]
         btnNew:
             Action: actNew
         btnClose: 
             Action: actClose
         btnCancel: 
             Action: actCancel
+        btnDelete: 
+            Action: actDelete
         grdDetails:
             Dock: Fill
-            Columns: [DetailFromCurrencyCode, DetailToCurrencyCode, DetailDateEffectiveFrom, DetailRateOfExchange]
+            Columns: [DetailFromCurrencyCode, DetailToCurrencyCode, DetailDateEffectiveFrom, DetailTimeEffectiveFrom, DetailRateOfExchange]
             CustomColumns:
                 DetailRateOfExchange: {Label=Rate of Exchange, Type=Currency(10)}
+                DetailTimeEffectiveFrom: {Label=Time, Type=ShortTime}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: AcceptExchangeRate
+            ActionDoubleClick: CloseDialog
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [cmbDetailFromCurrencyCode]
-                Row1: [cmbDetailToCurrencyCode]
-                Row2: [dtpDetailDateEffectiveFrom]
+                Row0: [cmbDetailFromCurrencyCode, btnEnableEdit]
+                Row1: [cmbDetailToCurrencyCode, lblEnableEditDelete]
+                Row2: [dtpDetailDateEffectiveFrom, txtDetailTimeEffectiveFrom, Empty]
                 Row3: [txtDetailRateOfExchange, btnInvertExchangeRate]
                 Row4: [lblValueOneDirection]
                 Row5: [lblValueOtherDirection]
         cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList, ColSpan=2}
         cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, ColSpan=2}
-        dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate, Validation=true}
+        dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate Effective, Validation=true}
+        txtDetailTimeEffectiveFrom: {Label=Time Effective, Width=70, Type=ShortTime, Tooltip=The time the rate becomes effective on the specified date, Validation=true}
         txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100, Validation=true}
-        btnInvertExchangeRate: {Label=&Invert value}
+        btnInvertExchangeRate: {Label=&Invert value, Tooltip=Click to set the inverse of the displayed rate of exchange}
+        Empty:
         lblValueOneDirection: {ColSpan=2}
         lblValueOtherDirection: {ColSpan=2}
+        btnEnableEdit: {Label=Enable Edit/Delete, ActionClick=EnableEditDelete_Clicked, Tooltip=Click to activate editing or deletion of rates that have been used} 
+        lblEnableEditDelete: {Text=Edit/Delete is Enabled}
     Menu:
         mniExchangeRates:
             mniImport:

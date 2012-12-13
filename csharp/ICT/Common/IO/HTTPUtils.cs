@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,6 +44,10 @@ namespace Ict.Common.IO
         {
             string ReturnValue;
 
+            // see http://blogs.msdn.com/b/carloc/archive/2007/02/13/webclient-2-0-class-not-working-under-win2000-with-https.aspx
+            // it seems we need to specify SSL3 instead of TLS
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+
             byte[] buf;
             WebClient client;
             client = new WebClient();
@@ -59,8 +63,17 @@ namespace Ict.Common.IO
             }
             catch (System.Net.WebException e)
             {
-                TLogging.Log("Trying to download: " + url + Environment.NewLine +
-                    e.Message, TLoggingType.ToLogfile);
+                if (url.Contains("?"))
+                {
+                    // do not show passwords in the log file which could be encoded in the parameters
+                    TLogging.Log("Trying to download: " + url.Substring(0, url.IndexOf("?")) + "?..." + Environment.NewLine +
+                        e.Message, TLoggingType.ToLogfile);
+                }
+                else
+                {
+                    TLogging.Log("Trying to download: " + url + Environment.NewLine +
+                        e.Message, TLoggingType.ToLogfile);
+                }
             }
             finally
             {
@@ -89,7 +102,7 @@ namespace Ict.Common.IO
                     urlWithParameters += "&";
                 }
 
-                urlWithParameters += parameterName + "=" + Uri.EscapeUriString(AParameters[parameterName]);
+                urlWithParameters += parameterName + "=" + Uri.EscapeDataString(AParameters[parameterName]);
             }
 
             return ReadWebsite(urlWithParameters);
@@ -104,11 +117,13 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public static Boolean DownloadFile(string url, string filename)
         {
-            Boolean ReturnValue;
-            WebClient client;
+            // see http://blogs.msdn.com/b/carloc/archive/2007/02/13/webclient-2-0-class-not-working-under-win2000-with-https.aspx
+            // it seems we need to specify SSL3 instead of TLS
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
 
-            client = new WebClient();
-            ReturnValue = false;
+            Boolean ReturnValue = false;
+            WebClient client = new WebClient();
+
             try
             {
                 client.DownloadFile(url, filename);

@@ -34,7 +34,7 @@ namespace Ict.Common.Controls
     /// </summary>
     /// <remarks>A single Icon file can hold an Icon in multiple sizes (e.g. 16x16 pixels
     /// and 32x32 pixels) and this Cache can return the Icon in the desired sizes from the Cache.</remarks>
-    public class TIconCache : ConcurrentDictionary <string, MemoryStream>
+    public class TIconCache : ConcurrentDictionary <string, Icon>
     {
         /// <summary>
         /// Size of Icon.
@@ -86,35 +86,20 @@ namespace Ict.Common.Controls
         /// Adds an Icon into the Cache.
         /// </summary>
         /// <param name="AFileName">File name of the Icon incl. full path</param>
-        public void AddIcon(string AFileName)
+        /// <param name="AIconSize">define which size the icon should have</param>
+        public void AddIcon(string AFileName, TIconSize AIconSize)
         {
-            MemoryStream ms;
-
             if (AFileName == null)
             {
                 return;
             }
 
-            ms = new MemoryStream();
+            Icon icon = new Icon(AFileName, GetIconSize(AIconSize));
 
-            using (FileStream
-                   IconFile = new FileStream(AFileName, FileMode.Open, FileAccess.Read))
-            {
-                IconFile.CopyTo(ms);
-                this.AddOrUpdate(AFileName, ms, (AKey, AExistingValue) =>
-                    {
-                        // If this delegate is invoked, then the key already exists.
-                        // Here we make sure the MemoryStream really is the same MemoryStream we already have.
-                        if (ms != AExistingValue)
-                        {
-                            throw new ArgumentException("Duplicate MemoryStream names are not allowed: {0}.", AFileName);
-                        }
-
-                        // The only updatable fields are the temerature array and lastQueryDate.
-                        AExistingValue = ms;
-                        return AExistingValue;
-                    });
-            }
+            this.AddOrUpdate(AFileName + AIconSize.ToString(), icon, (AKey, AExistingValue) =>
+                {
+                    return AExistingValue;
+                });
         }
 
         /// <summary>
@@ -130,9 +115,9 @@ namespace Ict.Common.Controls
         {
             Bitmap ReturnValue = null;
 
-            if (!ContainsIcon(AFileName))
+            if (!ContainsIcon(AFileName, AIconSize))
             {
-                AddIcon(AFileName);
+                AddIcon(AFileName, AIconSize);
                 ReturnValue = GetIcon(AFileName, AIconSize);
 
                 FLastIconRequestedWasReturnedFromCache = false;
@@ -154,8 +139,7 @@ namespace Ict.Common.Controls
         /// <returns>Icon of the specified size or the closest matching size.</returns>
         public Bitmap GetIcon(string AFileName, TIconSize AIconSize)
         {
-            MemoryStream TheItem;
-            Size IconSize = GetIconSize(AIconSize);
+            Icon TheItem;
 
             if (AFileName == null)
             {
@@ -165,7 +149,7 @@ namespace Ict.Common.Controls
             {
                 try
                 {
-                    TheItem = (MemoryStream) this[AFileName];
+                    TheItem = (Icon) this[AFileName + AIconSize.ToString()];
                 }
                 catch (KeyNotFoundException)
                 {
@@ -175,11 +159,9 @@ namespace Ict.Common.Controls
                             "Icon with path {0} not yet loaded into cache; add it to the cache with AddIcon Method first", AFileName));
                 }
 
-                TheItem.Position = 0;  // ALL IMPORTANT - without that, the creation of the Icon from the Stream fails!
-
                 FLastIconRequestedWasReturnedFromCache = true;
 
-                return new System.Drawing.Icon(TheItem, IconSize).ToBitmap();
+                return TheItem.ToBitmap();
             }
         }
 
@@ -187,8 +169,9 @@ namespace Ict.Common.Controls
         /// Determines whether an Icon exists in the Cache.
         /// </summary>
         /// <param name="AFileName">File name of the Icon incl. full path</param>
+        /// <param name="AIconSize">size of the icon</param>
         /// <returns>True if the icon exists in the Cache, otherwise false.</returns>
-        public bool ContainsIcon(string AFileName)
+        public bool ContainsIcon(string AFileName, TIconSize AIconSize)
         {
             if (AFileName == null)
             {
@@ -196,7 +179,7 @@ namespace Ict.Common.Controls
             }
             else
             {
-                return ContainsKey(AFileName);
+                return ContainsKey(AFileName + AIconSize.ToString());
             }
         }
 

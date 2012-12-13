@@ -127,6 +127,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 ColumnType = "PartnerKey";
             }
+            else if (AColumnType.Contains("Time"))
+            {
+                ColumnType = AColumnType;
+            }
 
             if (ColumnType == "Boolean")
             {
@@ -203,6 +207,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Clear();" + Environment.NewLine);
 
+                //This needs to come immediately after the Columns.Clear() and before the creation of the columns
+                if (ctrl.HasAttribute("SortableHeaders"))
+                {
+                    string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
+                    writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
+                }
+
                 foreach (string ColumnFieldName in Columns)
                 {
                     bool IsDetailNotMaster;
@@ -268,6 +279,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
             }
+            else
+            {
+                //If no columns, but the user is able to add columns dynamically during the running of the form, then need this here.
+                if (ctrl.HasAttribute("SortableHeaders"))
+                {
+                    string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
+                    writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
+                }
+            }
 
             if (ctrl.HasAttribute("ActionLeavingRow"))
             {
@@ -285,12 +305,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 AssignEventHandlerToControl(writer, ctrl, "EnterKeyPressed", "TKeyPressedEventHandler",
                     ctrl.GetAttribute("ActionEnterKeyPressed"));
-            }
-
-            if (ctrl.HasAttribute("SortableHeaders"))
-            {
-                string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
-                writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
             }
 
             if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable")

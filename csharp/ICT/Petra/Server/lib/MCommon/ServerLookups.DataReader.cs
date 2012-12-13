@@ -123,6 +123,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                 {
                     tempTable = AGiftBatchAccess.LoadAll(ReadTransaction);
                 }
+                else if (ATablename == AJournalTable.GetTableDBName())
+                {
+                    tempTable = AJournalAccess.LoadAll(ReadTransaction);
+                }
                 else if (ATablename == MExtractMasterTable.GetTableDBName())
                 {
                     if (ASearchCriteria == null)

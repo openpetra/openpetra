@@ -948,11 +948,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     PPartnerLocationTable.GetLocationKeyDBName(),
                     ALocationKey);
 
-            // TODO: the view may be empty. Is this OK?
+            Boolean FirstAddressWritten = false;
+
             if (AMainDS.PLocation.DefaultView.Count > 0)
             {
                 WriteLocation((PLocationRow)AMainDS.PLocation.DefaultView[0].Row,
                     (PPartnerLocationRow)AMainDS.PPartnerLocation.DefaultView[0].Row);
+                FirstAddressWritten = true;
             }
 
             AMainDS.PPartnerLocation.DefaultView.RowFilter = String.Empty;
@@ -963,8 +965,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                       && (PartnerLocationRow.SiteKey == ASiteKey))
                     && (PartnerLocationRow.IsDateGoodUntilNull() || (PartnerLocationRow.DateGoodUntil >= DateTime.Today)))
                 {
-                    Write("ADDRESS");
-                    WriteLine();
+                    if (FirstAddressWritten)
+                    {
+                        Write("ADDRESS");
+                        WriteLine();
+                    }
 
                     AMainDS.PLocation.DefaultView.RowFilter =
                         String.Format("{0}={1} and {2}={3}",
@@ -974,6 +979,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             PartnerLocationRow.LocationKey);
 
                     WriteLocation((PLocationRow)AMainDS.PLocation.DefaultView[0].Row, PartnerLocationRow);
+                    FirstAddressWritten = true;
                 }
             }
 

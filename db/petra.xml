@@ -11374,6 +11374,11 @@
                 format="yes/no"
                 label="Part of a gift detail modification"
                 initial="no"/>
+    <tablefield name="a_modified_detail_key_c"
+                type="varchar"
+                descr="Stores the concatenated primary key fields of the originating gift detail, of which this gift detail is the inverse."
+                format="X(24)"
+                label="Modified Detail Key"/>
     <tablefield name="a_gift_transaction_amount_n"
                 type="number"
                 length="24"
@@ -11597,6 +11602,12 @@
                 help="Last number used for a journal."
                 notnull="yes"
                 initial="0"/>
+    <tablefield name="a_gift_batch_number_i"
+                type="integer"
+                descr="Number of the originating gift batch that generated this GL batch."
+                format="&gt;&gt;&gt;&gt;&gt;9"
+                label="Originating Gift Batch Number"
+                help="The number of the gift batch that generated this GL batch."/>
     <!-- Constraints on table a_batch -->
     <primarykey name="a_batch_pk"
                 descr=""

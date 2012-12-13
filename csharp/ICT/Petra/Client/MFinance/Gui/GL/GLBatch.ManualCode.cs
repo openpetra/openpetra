@@ -63,11 +63,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
+            //Need this to allow focus to go to the grid.
+            tabGLBatch.TabStop = false;
+
             tabGLBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
-            //Need this to give focus to the grid. Cannot do it using Focus()
-            SendKeys.Send("{TAB}");
+            this.ucoBatches.FocusGrid();
         }
 
         private void InitializeManualCode()
@@ -102,6 +104,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tpgTransactions.Enabled = true;
             this.ucoTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber, AForeignCurrencyName);
+        }
+
+        /// <summary>
+        /// Unload transactions from the form
+        /// </summary>
+        public void UnloadTransactions()
+        {
+            this.ucoTransactions.UnloadTransactions();
         }
 
         /// <summary>
@@ -150,6 +160,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
             }
+        }
+
+        /// <summary>
+        /// Unload transactions from the form
+        /// </summary>
+        public void UnloadJournals()
+        {
+            this.ucoJournals.UnloadJournals();
         }
 
         /// <summary>
@@ -213,7 +231,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 this.tabGLBatch.SelectedTab = this.tpgBatches;
                 this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
-                this.tpgTransactions.Enabled = false;
+
+                if (this.tpgTransactions.Enabled)
+                {
+                    this.ucoTransactions.CancelChangesToFixedBatches();
+                    this.ucoJournals.CancelChangesToFixedBatches();
+                    SaveChanges();
+                    this.tpgTransactions.Enabled = false;
+                }
+
                 this.tpgAttributes.Enabled = false;
 
                 this.ucoBatches.FocusGrid();

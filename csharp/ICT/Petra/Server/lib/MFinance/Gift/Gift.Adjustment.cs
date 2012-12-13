@@ -271,6 +271,91 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Identify the gift detail that needs to be reset as not reversed
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AReversalIdentification"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ReversedGiftReset(int ALedgerNumber, string AReversalIdentification)
+        {
+            bool success = false;
+            bool NewTransaction = false;
+
+            int BatchNo;
+            int GiftTransNo;
+            int DetailNo;
+
+            TVerificationResultCollection messages = new TVerificationResultCollection();
+
+            int positionFirstNumber = 1;
+            int positionSecondBar = AReversalIdentification.IndexOf('|', positionFirstNumber);
+            int positionThirdBar = AReversalIdentification.LastIndexOf('|');
+            int lenReversalDetails = AReversalIdentification.Length;
+
+            if (!Int32.TryParse(AReversalIdentification.Substring(positionFirstNumber, positionSecondBar - positionFirstNumber), out BatchNo)
+                || !Int32.TryParse(AReversalIdentification.Substring(positionSecondBar + 1,
+                        positionThirdBar - positionSecondBar - 1), out GiftTransNo)
+                || !Int32.TryParse(AReversalIdentification.Substring(positionThirdBar + 1, lenReversalDetails - positionThirdBar - 1), out DetailNo))
+            {
+                messages.Add(new TVerificationResult(
+                        String.Format(Catalog.GetString("Cannot parse the Modified Detail Key: '{0}'"),
+                            AReversalIdentification),
+                        String.Format(Catalog.GetString("Unexpected error.")),
+                        TResultSeverity.Resv_Critical));
+                return success;
+            }
+
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+                TLogging.Log(BatchNo.ToString());
+                TLogging.Log(GiftTransNo.ToString());
+                TLogging.Log(DetailNo.ToString());
+                AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, BatchNo, GiftTransNo, DetailNo, Transaction);
+
+                TLogging.Log("Count: " + MainDS.AGiftDetail.Count.ToString());
+
+                AGiftDetailRow giftDetailRow = (AGiftDetailRow)MainDS.AGiftDetail.Rows[0];
+                //Reset gift to not reversed
+                giftDetailRow.ModifiedDetail = false;
+
+                success = AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, Transaction, out messages);
+            }
+            catch
+            {
+                messages.Add(new TVerificationResult(
+                        String.Format(Catalog.GetString("Cannot reset ModifiedDetail for Gift {0} Detail {1} in Batch {2}"),
+                            GiftTransNo, DetailNo, BatchNo),
+                        String.Format(Catalog.GetString("Unexpected error.")),
+                        TResultSeverity.Resv_Critical));
+            }
+
+            if (success)
+            {
+                MainDS.AGiftBatch.AcceptChanges();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            else
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return success;
+        }
+
+        /// <summary>
         /// Revert or Adjust a Gift, revert a Gift Detail , revert a gift batch
         /// </summary>
         /// <param name="requestParams">Hashtable containing the given params </param>
@@ -431,6 +516,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     giftDetail.LedgerNumber = gift.LedgerNumber;
                                     giftDetail.BatchNumber = giftBatch.BatchNumber;
                                     giftDetail.GiftTransactionNumber = gift.GiftTransactionNumber;
+                                    //Identify the reversal source
+                                    giftDetail.ModifiedDetailKey = "|" + oldGiftDetail.BatchNumber.ToString() + "|" +
+                                                                   oldGiftDetail.GiftTransactionNumber.ToString() + "|" +
+                                                                   oldGiftDetail.DetailNumber.ToString();
 
                                     decimal signum = (cycle == 0) ? -1 : 1;
                                     giftDetail.GiftTransactionAmount = signum * oldGiftDetail.GiftTransactionAmount;

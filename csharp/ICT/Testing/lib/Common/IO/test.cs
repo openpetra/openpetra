@@ -121,6 +121,24 @@ namespace Ict.Common.IO.Testing
             System.IO.File.Delete(filename + ".new");
         }
 
+        /// <summary>
+        /// test reading and writing a yml file
+        /// </summary>
+        [Test]
+        public void TestReadAndWriteYaml()
+        {
+            // parse a winforms yaml file, write it again, check if the same
+
+            string filename = PathToTestData + "testReadWrite.yml";
+            TYml2Xml converterYml = new TYml2Xml(filename);
+            XmlDocument docFromYML = converterYml.ParseYML2XML();
+
+            TYml2Xml.Xml2Yml(docFromYML, filename + ".new");
+            Assert.AreEqual(true, TTextFile.SameContent(filename,
+                    filename + ".new"), "the files should be the same: " + filename);
+            System.IO.File.Delete(filename + ".new");
+        }
+
         /// test the csv writer
         [Test]
         public void TestCSVWriter()

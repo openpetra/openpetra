@@ -186,7 +186,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FBatchRow = GetBatchRow();
 
-            LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus);
+            if (FBatchRow != null)
+            {
+                LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus);
+            }
         }
 
         bool FinRecipientKeyChanging = false;
@@ -698,15 +701,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, out string ACompletionMessage)
         {
             bool deleteSuccessful = false;
+            string originatingDetailRef = string.Empty;
 
             ACompletionMessage = string.Empty;
 
-            int selectedDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
+            int selectedDetailNumber = ARowToDelete.DetailNumber;
 
             try
             {
-                FPreviouslySelectedDetailRow.Delete();
-                FPreviouslySelectedDetailRow = null;
+                if (ARowToDelete.ModifiedDetailKey != null)
+                {
+                    originatingDetailRef = ARowToDelete.ModifiedDetailKey;
+                }
+
+                ARowToDelete.Delete();
+                ARowToDelete = null;
 
                 if (FGiftDetailView.Count == 0)
                 {
@@ -748,6 +757,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     FGift.LastDetailNumber--;
+                }
+
+                //Check if deleting a reversed gift detail
+                if (originatingDetailRef.StartsWith("|"))
+                {
+                    bool ok = TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, originatingDetailRef);
+
+                    if (!ok)
+                    {
+                        MessageBox.Show("Error in trying to reset Modified Detail field of the originating gift detail.");
+                    }
                 }
 
                 ACompletionMessage = Catalog.GetString("Gift row deleted successfully!");
@@ -1535,12 +1555,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if ((myViewGiftNumber == AGiftNumber) && (myViewGiftDetailNumber == AGiftDetailNumber))
                 {
-                    grdDetails.Selection.ResetSelection(false);
-                    grdDetails.Selection.SelectRow(counter + 1, true);
-                    // scroll to the row
-                    grdDetails.ShowCell(new SourceGrid.Position(counter + 1, 0), true);
-
-                    FocusedRowChanged(this, new SourceGrid.RowEventArgs(counter + 1));
+                    SelectRowInGrid(counter + 1);
                     break;
                 }
             }

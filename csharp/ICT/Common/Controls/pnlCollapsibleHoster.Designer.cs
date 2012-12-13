@@ -61,7 +61,9 @@ namespace Ict.Common.Controls
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
+            // AutoSize causes problems on Mono:
+            // this.AutoSize = true;
+            this.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BackColor = System.Drawing.Color.Transparent;
             this.Padding = new System.Windows.Forms.Padding(1);
             this.Name = "TPnlCollapsibleHoster";

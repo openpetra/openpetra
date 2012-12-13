@@ -108,6 +108,7 @@ namespace {#NAMESPACE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
 {#IFDEF SAVEDETAILS}
+      grdDetails.Enter += new EventHandler(grdDetails_Enter);
       grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
 {#ENDIF SAVEDETAILS}
       
@@ -390,7 +391,7 @@ namespace {#NAMESPACE}
             }
             else
             {
-                grdDetails.SelectRowInGrid(FPrevRowChangedRow, true);
+                grdDetails.SelectRowInGrid(FPrevRowChangedRow);
                 //Console.WriteLine("{0}:    UC Validation: validated row is at {1}. Moved 'with events'.  ProcessErrors={2}", DateTime.Now.Millisecond, FPrevRowChangedRow, AProcessAnyDataValidationErrors.ToString());
             }
 {#ENDIF SHOWDETAILS}
@@ -480,6 +481,16 @@ namespace {#NAMESPACE}
     private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
 
 {#IFDEF SAVEDETAILS}
+    private void grdDetails_Enter(object sender, EventArgs e)
+    {
+        int nRow = grdDetails.SelectedRowIndex();       // should be the same as FPrevRowChangedRow
+        if (nRow > 0)
+        {
+            grdDetails.Selection.Focus(new SourceGrid.Position(nRow, 0), false);
+            //Console.WriteLine("{0}: GridFocus - setting Selection.Focus to {1},0", DateTime.Now.Millisecond, nRow);
+        }
+    }
+
     /// <summary>
     /// Used for determining the time elapsed between FocusRowLeaving Events.
     /// </summary>
