@@ -223,53 +223,59 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return ReturnValue;
             }
 
-            FMainDS.AApSupplier.Rows[0].BeginEdit();
-            GetDataFromControls(FMainDS.AApSupplier[0]);
+            // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+            FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (FMainDS.AApSupplier[0].IsDefaultApAccountNull())
+            if (ValidateAllData(false, null))
             {
-                MessageBox.Show(Catalog.GetString("Please select an AP account (eg. 9100)"));
-                FMainDS.AApSupplier.Rows[0].EndEdit();
+                FMainDS.AApSupplier.Rows[0].BeginEdit();
+                GetDataFromControls(FMainDS.AApSupplier[0]);
 
-                ReturnValue = false;
-                return ReturnValue;
-            }
-
-            // The account would usually be 9100-AP account.
-            if (FMainDS.AApSupplier[0].DefaultApAccount != "9100")
-            {
-                if (MessageBox.Show(Catalog.GetString("You are not using the standard AP account (9100) - is this OK?"),
-                        "Verification", MessageBoxButtons.YesNo)
-                    != System.Windows.Forms.DialogResult.Yes)
+                if (FMainDS.AApSupplier[0].IsDefaultApAccountNull())
                 {
+                    MessageBox.Show(Catalog.GetString("Please select an AP account (eg. 9100)"));
                     FMainDS.AApSupplier.Rows[0].EndEdit();
+
+                    ReturnValue = false;
+                    return ReturnValue;
+                }
+
+                // The account would usually be 9100-AP account.
+                if (FMainDS.AApSupplier[0].DefaultApAccount != "9100")
+                {
+                    if (MessageBox.Show(Catalog.GetString("You are not using the standard AP account (9100) - is this OK?"),
+                            "Verification", MessageBoxButtons.YesNo)
+                        != System.Windows.Forms.DialogResult.Yes)
+                    {
+                        FMainDS.AApSupplier.Rows[0].EndEdit();
+                        return false;
+                    }
+                }
+
+                // Don't store with invalid currency value.
+                //
+                if (FMainDS.AApSupplier[0].CurrencyCode == "")
+                {
+                    FMainDS.AApSupplier[0].CurrencyCode = FLedgerRow.BaseCurrency;
+                }
+
+                // If this is a foreign currency supplier, it must be linked to accounts in that currency.
+                // (And if it's not, it mustn't be!)
+                if (!ValidateAccountCurrency(FMainDS.AApSupplier[0].DefaultBankAccount, "Bank"))
+                {
                     return false;
                 }
-            }
 
-            // Don't store with invalid currency value.
-            //
-            if (FMainDS.AApSupplier[0].CurrencyCode == "")
-            {
-                FMainDS.AApSupplier[0].CurrencyCode = FLedgerRow.BaseCurrency;
+                /*
+                 * If we wanted to have only expense accounts in a single currency, we could have this,
+                 * but that's probably not what we want...
+                 *
+                 *          if (!ValidateAccountCurrency(FMainDS.AApSupplier[0].DefaultExpAccount, "Expense"))
+                 *          {
+                 *              return false;
+                 *          }
+                 */
             }
-
-            // If this is a foreign currency supplier, it must be linked to accounts in that currency.
-            // (And if it's not, it mustn't be!)
-            if (!ValidateAccountCurrency(FMainDS.AApSupplier[0].DefaultBankAccount, "Bank"))
-            {
-                return false;
-            }
-
-/*
- * If we wanted to have only expense accounts in a single currency, we could have this,
- * but that's probably not what we want...
- *
- *          if (!ValidateAccountCurrency(FMainDS.AApSupplier[0].DefaultExpAccount, "Expense"))
- *          {
- *              return false;
- *          }
- */
 
             ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
                 this.GetType());

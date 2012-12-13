@@ -67,6 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private String FTypeFilter = "";    // filter which types of transactions are shown
         private String FStatusFilter = "";  // filter the status of invoices
+        private int[] ColumnWidth = { 20, 70, 90, 90, 100, 110};
 
         /// <summary>
         /// Load the supplier and all the transactions (invoices and payments) that relate to it.
@@ -201,17 +202,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitialiseGrid()
         {
             grdResult.Columns.Clear();
-            grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], 25, false);
-            grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"], 50);
-            grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"], 90);
+            grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], 20, false);
+//          grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"], 50);
+            grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"], 70);
             grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"], 90);
             grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"], 2);
 //          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
             grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"], 100);
             grdResult.AddDateColumn("Date", FPagedDataTable.Columns["Date"]);
 
-            grdResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while they're being added. For these currency and date columns,
-            grdResult.Columns[6].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
+            // Although "Ordinary" text columns have had a width specified above, this loop overwrites
+            // the widths with values that survive the user pressing the "Reload" button.
+            for (int i = 0; i < ColumnWidth.Length; i++)
+            {
+                grdResult.Columns[i].Width = ColumnWidth[i];
+            }
         }
 
         private void UpdateDisplayedBalance()
@@ -299,6 +304,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void Reload()
         {
+            for (int i = 0; i < grdResult.Columns.Count; i++)
+            {
+                ColumnWidth[i] = grdResult.Columns[i].Width;
+            }
+
             LoadSupplier(FLedgerNumber, FPartnerKey);
         }
 

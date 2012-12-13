@@ -545,7 +545,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             }
             else    // Find Suppliers
             {
-                // TODO: add amount of outstanding invoices etc
                 return "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetPartnerKeyDBName() + " AS PartnerKey, " +
                        "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS PartnerShortName, " +
                        "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + " AS CurrencyCode, " +

@@ -240,7 +240,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdInvoiceResult.AddDateColumn("Due Date", FInvoiceTable.Columns["DateDue"]);
                 grdInvoiceResult.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"], 100);
                 grdInvoiceResult.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
-                grdInvoiceResult.AddTextColumn("Discount", FInvoiceTable.Columns["DiscountMsg"], 150);
+//              grdInvoiceResult.AddTextColumn("Discount", FInvoiceTable.Columns["DiscountMsg"], 150);
 
                 grdInvoiceResult.Columns[3].Width = 90;  // Only the text columns can have their widths set while
                 grdInvoiceResult.Columns[4].Width = 90;  // they're being added.
