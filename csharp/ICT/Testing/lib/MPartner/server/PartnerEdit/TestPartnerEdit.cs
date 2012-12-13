@@ -922,6 +922,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             OrganisationPartnerRow = CreateNewOrganisationPartner(MainDS, connector);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create organisation record");
 
             // check if organisation partner can be deleted (still needs to be possible at this point)
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(OrganisationPartnerRow.PartnerKey, out TextMessage);
