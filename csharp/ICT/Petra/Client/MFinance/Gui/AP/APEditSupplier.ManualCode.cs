@@ -226,7 +226,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (ValidateAllData(false, null))
+            if (ValidateAllData(false, true))
             {
                 FMainDS.AApSupplier.Rows[0].BeginEdit();
                 GetDataFromControls(FMainDS.AApSupplier[0]);
