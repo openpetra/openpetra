@@ -207,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 GLBatchNumber = NewBatchRow.BatchNumber;
 
                 //Run RUN gl1110o.p to create a batch
-                BatchDescription = "ICH Stewardship";
+                BatchDescription = Catalog.GetString("ICH Stewardship");
                 NewBatchRow.BatchDescription = BatchDescription;
                 NewBatchRow.DateEffective = PeriodEndDate;
 
@@ -256,7 +256,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
                 else
                 {
-                    ErrorContext = "Generating the ICH batch";
+                    ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
                         String.Format(Catalog.GetString("Income Account header: '{1}' does not appear in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
@@ -282,7 +282,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
                 else
                 {
-                    ErrorContext = "Generating the ICH batch";
+                    ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
                         String.Format(Catalog.GetString("Expense Account header: '{1}' does not appear in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
@@ -308,7 +308,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
                 else
                 {
-                    ErrorContext = "Generating the ICH batch";
+                    ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
                         String.Format(Catalog.GetString("Profit & Loss Account header: '{1}' does not appear in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
@@ -526,11 +526,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     //Create a transaction
                     if (SettlementAmount > 0)
                     {
-                        if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Monthly Clearing",
-                                MFinanceConstants.ICH_ACCT_SETTLEMENT, CostCentre, SettlementAmount, PeriodEndDate, DrCrIndicator, "ICH", true, 0,
+                        if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
+                                Catalog.GetString("ICH Monthly Clearing"),
+                                MFinanceConstants.ICH_ACCT_SETTLEMENT, CostCentre, SettlementAmount, PeriodEndDate, DrCrIndicator,
+                                Catalog.GetString("ICH"), true, 0,
                                 out GLTransactionNumber))
                         {
-                            ErrorContext = "Generating the ICH batch";
+                            ErrorContext = Catalog.GetString("Generating the ICH batch");
                             ErrorMessage =
                                 String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
                                     ALedgerNumber,
@@ -593,12 +595,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 if (ICHTotal != 0)
                 {
                     //Create a transaction
-                    if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Monthly Clearing",
-                            MFinanceConstants.ICH_ACCT_ICH, StandardCostCentre, ICHTotal, PeriodEndDate, DrCrIndicator, "ICH",
+                    if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
+                            Catalog.GetString("ICH Monthly Clearing"),
+                            MFinanceConstants.ICH_ACCT_ICH, StandardCostCentre, ICHTotal, PeriodEndDate, DrCrIndicator, Catalog.GetString("ICH"),
                             true, 0,
                             out GLTransactionNumber))
                     {
-                        ErrorContext = "Generating the ICH batch";
+                        ErrorContext = Catalog.GetString("Generating the ICH batch");
                         ErrorMessage =
                             String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
                                 ALedgerNumber,
@@ -643,7 +646,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             }
             catch (Exception ex)
             {
-                ErrorContext = "Calculate Admin Fee";
+                ErrorContext = Catalog.GetString("Calculate Admin Fee");
                 ErrorMessage = String.Format(Catalog.GetString("Unknown error while Generating the ICH batch for Ledger: {0} and Period: {1}" +
                         Environment.NewLine + Environment.NewLine + ex.ToString()),
                     ALedgerNumber,
@@ -683,7 +686,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             string AccountCode = AAccountRowFirst.AccountCode;
 
             //Error handling
-            string ErrorContext = "List Child Accounts";
+            string ErrorContext = Catalog.GetString("List Child Accounts");
             string ErrorMessage = String.Empty;
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
@@ -812,7 +815,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 if (LedgerRow.ProvisionalYearEndFlag)
                 {
                     //Petra ErrorCode = GL0071
-                    ErrorContext = "Generate Admin Fee Batch";
+                    ErrorContext = Catalog.GetString("Generate Admin Fee Batch");
                     ErrorMessage = String.Format(Catalog.GetString(
                             "Cannot progress as Ledger {0} is at the provisional year-end point"), ALedgerNumber);
                     ErrorType = TResultSeverity.Resv_Critical;
@@ -943,7 +946,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 else
                                 {
                                     //Petra error: X_0007
-                                    ErrorContext = "Generate Transactions";
+                                    ErrorContext = Catalog.GetString("Generate Transactions");
                                     ErrorMessage =
                                         String.Format(Catalog.GetString(
                                                 "Unable to access information for Fee Code '{1}' in either the Fees Payable & Receivable Tables for Ledger {0}"),
@@ -1019,7 +1022,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                                     0,
                                                     out GLTransactionNumber))
                                             {
-                                                ErrorContext = "Generating the Admin Fee batch";
+                                                ErrorContext = Catalog.GetString("Generating the Admin Fee batch");
                                                 ErrorMessage =
                                                     String.Format(Catalog.GetString(
                                                             "Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
@@ -1132,7 +1135,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     if ((Verification == null) || Verification.HasCriticalErrors)
                     {
                         //Petra error: GL0067
-                        ErrorContext = "Posting Admin Fee Batch";
+                        ErrorContext = Catalog.GetString("Posting Admin Fee Batch");
                         ErrorMessage = String.Format(Catalog.GetString("The posting of the admin fee batch failed."));
                         ErrorType = TResultSeverity.Resv_Noncritical;
                         throw new System.InvalidOperationException(ErrorMessage);
@@ -1154,7 +1157,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             }
             catch (Exception ex)
             {
-                ErrorContext = "Generate Admin Fee Batch";
+                ErrorContext = Catalog.GetString("Generate Admin Fee Batch");
                 ErrorMessage = String.Format(Catalog.GetString("Unknown error while generating admin fee batch for Ledger: {0}" +
                         Environment.NewLine + Environment.NewLine + ex.ToString()),
                     ALedgerNumber

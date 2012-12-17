@@ -97,12 +97,12 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
                         if (retVal)
                         {
-                            MessageBox.Show("Stewardship Calculation Completed Successfully");
+                            MessageBox.Show(Catalog.GetString("Stewardship Calculation Completed Successfully"));
                         }
                         else
                         {
                             MessageBox.Show(
-                                Messages.BuildMessageFromVerificationResult("Stewardship Calculation was UNSUCCESSFUL!",
+                                Messages.BuildMessageFromVerificationResult(Catalog.GetString("Stewardship Calculation was UNSUCCESSFUL!"),
                                     VerificationResult));
                         }
 
@@ -110,7 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
                     case TICHReportingPeriodSelectionModeEnum.rpsmICHStatement:
 
-                        throw new NotImplementedException("ICH Statement functionality is not yet implemented!");
+                        throw new NotImplementedException(Catalog.GetString("ICH Statement functionality is not yet implemented!"));
                 }
             }
             finally
