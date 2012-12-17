@@ -111,7 +111,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 List <OdbcParameter>parameters = new List <OdbcParameter>();
 
-                List <String, String>SQLCommandDefines = new List <string, string>();
+                SortedList <String, String>SQLCommandDefines = new SortedList <string, string>();
 
                 if ((bool)requestParams["IncludeUnposted"])
                 {
