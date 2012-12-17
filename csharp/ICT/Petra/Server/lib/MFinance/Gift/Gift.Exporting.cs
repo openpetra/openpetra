@@ -111,11 +111,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 List <OdbcParameter>parameters = new List <OdbcParameter>();
 
-                List <String>SQLCommandDefines = new List <string>();
+                List <String, String>SQLCommandDefines = new List <string, string>();
 
                 if ((bool)requestParams["IncludeUnposted"])
                 {
-                    SQLCommandDefines.Add("INCLUDEUNPOSTED");
+                    SQLCommandDefines.Add("INCLUDEUNPOSTED", string.Empty);
                 }
 
                 OdbcParameter param = new OdbcParameter("LedgerNumber", OdbcType.Int);
@@ -124,7 +124,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 if (requestParams.ContainsKey("BatchNumberStart"))
                 {
-                    SQLCommandDefines.Add("BYBATCHNUMBER");
+                    SQLCommandDefines.Add("BYBATCHNUMBER", string.Empty);
                     param = new OdbcParameter("BatchNumberStart", OdbcType.Int);
                     param.Value = (Int32)requestParams["BatchNumberStart"];
                     parameters.Add(param);
@@ -134,7 +134,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 }
                 else
                 {
-                    SQLCommandDefines.Add("BYDATERANGE");
+                    SQLCommandDefines.Add("BYDATERANGE", string.Empty);
                     param = new OdbcParameter("BatchDateFrom", OdbcType.DateTime);
                     param.Value = (DateTime)requestParams["BatchDateFrom"];
                     parameters.Add(param);
