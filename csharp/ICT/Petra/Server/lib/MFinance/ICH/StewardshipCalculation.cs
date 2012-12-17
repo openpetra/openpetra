@@ -526,7 +526,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     //Create a transaction
                     if (SettlementAmount > 0)
                     {
-                        if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Clearing Description",
+                        if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Monthly Clearing",
                                 MFinanceConstants.ICH_ACCT_SETTLEMENT, CostCentre, SettlementAmount, PeriodEndDate, DrCrIndicator, "ICH", true, 0,
                                 out GLTransactionNumber))
                         {
@@ -593,7 +593,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 if (ICHTotal != 0)
                 {
                     //Create a transaction
-                    if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Clearing Description",
+                    if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Monthly Clearing",
                             MFinanceConstants.ICH_ACCT_ICH, StandardCostCentre, ICHTotal, PeriodEndDate, DrCrIndicator, "ICH",
                             true, 0,
                             out GLTransactionNumber))

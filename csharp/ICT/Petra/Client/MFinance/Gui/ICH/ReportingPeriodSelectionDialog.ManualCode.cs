@@ -78,28 +78,44 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
+            bool retVal = false;
+
             TVerificationResultCollection VerificationResult = null;
 
-            switch (this.ReportingPeriodSelectionMode)
+            try
             {
-                case TICHReportingPeriodSelectionModeEnum.rpsmICHStewardshipCalc:
+                switch (this.ReportingPeriodSelectionMode)
+                {
+                    case TICHReportingPeriodSelectionModeEnum.rpsmICHStewardshipCalc:
 
-                    if (TRemote.MFinance.ICH.WebConnectors.PerformStewardshipCalculation(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
-                            out VerificationResult))
-                    {
-                        MessageBox.Show("PerformStewardshipCalculation ran successfully!");
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            Messages.BuildMessageFromVerificationResult("PerformStewardshipCalculation was UNSUCCESSFUL",
-                                VerificationResult));
-                    }
+                        Cursor = Cursors.WaitCursor;
 
-                    break;
+                        retVal = TRemote.MFinance.ICH.WebConnectors.PerformStewardshipCalculation(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
+                        out VerificationResult);
 
-                case TICHReportingPeriodSelectionModeEnum.rpsmICHStatement:
-                    throw new NotImplementedException("ICH Statement functionality is not yet implemented!");
+                        Cursor = Cursors.Default;
+
+                        if (retVal)
+                        {
+                            MessageBox.Show("Stewardship Calculation Completed Successfully");
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                Messages.BuildMessageFromVerificationResult("Stewardship Calculation was UNSUCCESSFUL!",
+                                    VerificationResult));
+                        }
+
+                        break;
+
+                    case TICHReportingPeriodSelectionModeEnum.rpsmICHStatement:
+
+                        throw new NotImplementedException("ICH Statement functionality is not yet implemented!");
+                }
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
             }
         }
 
