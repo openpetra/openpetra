@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -63,6 +64,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             tbxMessage.Text = verificationResult.BuildVerificationResultString();
             btnPeriodEnd.Visible = false;
             btnCancel.Text = Catalog.GetString("Done");
+            
+            // reset valid dates as they may have changed: next time this object is called values are refreshed from server
+            TLedgerSelection.ResetValidDates(FLedgerNumber);
         }
 
         private bool RunPeriodEnd(bool AInInfoMode)
