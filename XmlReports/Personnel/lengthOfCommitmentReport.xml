@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+	<report id="Length Of Commitment">      
+		<description>
+			Lists the length of commitment and optionally the anniversaries in commitment 
+			of all current staff at a certain date should be printed.
+			Optionally, a date range can be given (only month and day)
+
+			requires personnel.xml
+		</description>
+		<reportparameters>
+			<reportparameter name="param_dtpCurrentStaff"/>
+			<reportparameter name="param_dtpFromDate"/>
+			<reportparameter name="param_dtpToDate"/>
+			<reportparameter name="param_chkAnniversaries" />
+			<reportparameter name="param_txtAnniversaries" />
+			<reportparameter name="param_sortby"/>
+			<reportparameter name="param_sortby_readable"/>
+
+		</reportparameters>
+		
+		<reportheader/>
+		<pageheader>
+			<field whichfield="title1"><value text ="Length Of Commitment / Anniversaries" /></field>
+			<field whichfield="title2"><value function = "getSiteName()"/></field>
+			<field whichfield="descr1">
+				<fielddetail>
+					<value text = "All current Staff at date "/><value variable = "param_dtpCurrentStaff" format="formatteddate"/>
+				</fielddetail>
+			</field>
+			<field whichfield="descr2">
+				<fielddetail>
+					<value text="Sorted by: "/>
+					<value variable="param_sortby_readable"/>
+				</fielddetail>
+			</field>
+			<field whichfield="period1">
+				<fielddetail>
+					<value text = "Anniversaries From "/>
+					<value variable = "param_dtpFromDate" format="formatteddate"/>
+					<value text = " To "/>
+					<value variable = "param_dtpToDate" format="formatteddate"/>
+				</fielddetail>
+			</field>
+		</pageheader>
+
+		<calculations>
+        	<!-- Select Partners -->
+			<calculation id="Select Partners"
+					returns="automatic"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>Ict.Petra.Server.MPersonnel.queries.QueryLengthOfCommitmentReport.GetLengthOfCommitment</value></queryDetail>
+				</query>
+			</calculation> <!-- Select Partners -->
+
+			<calculation id="GetEmail" returnsFormat="internal"
+					returns="EmailAddress">
+				<query>
+					<queryDetail>
+						<value function="GetPartnerBestAddress({p_partner_key_n})"/>
+						<value function="assign(Telephone, concatenate({TelephoneNumber},{Extension}))"/>
+						<value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Partner Surname" returnsFormat="text" returns="text">
+				<caption><value text="Surname"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="Surname"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Partner Firstname" returnsFormat="text" returns="text">
+				<caption><value text="Firstname"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="FirstName"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Start Date of Commitment" returnsFormat="text" returns="formatteddate">
+				<caption><value text="Start Date of\nCommitment"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="StartOfCommitment" format="formatteddate"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation id="Length of Commitment" returnsFormat="number" returns="number">
+				<caption><value text="Commitment Length"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="TotalYears"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Date Of Anniversary" returnsFormat="text" returns="formatteddate">
+				<caption><value text="Date of Anniversary"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="AnniversaryDay"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Gender" returnsFormat="text" returns="text">
+				<caption><value text="Gender"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="Gender"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+			<calculation align="left" id="Address Fax" returns="text" returnsFormat="text">
+				<caption><value text="Fax Number"></value></caption>
+				<query>
+					<queryDetail>
+						<value variable="FaxNumber"></value>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+		</calculations>
+
+		<levels>
+		<level name="main">
+			<detail>
+                <lowerLevelReport level="Partner Detail" calculation ="Select Partners">
+                </lowerLevelReport>
+			</detail>
+		</level> <!-- main -->
+
+		<level name="Partner Detail" identification="p_partner_key_n">
+			<detail>
+				<field calculation="GetEmail" whichfield="columns" />
+			</detail>
+		</level>  <!-- Partner Detail -->
+		</levels>
+
+	</report><!-- Anniversaries -->
+
+</reports>

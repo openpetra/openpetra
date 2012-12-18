@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\lengthOfCommitmentReport.xml,Personnel\\personnel.xml" />
+  <Parameter id="currentReport" value="eString:Length Of Commitment" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:4" />
+  <Parameter id="param_chkAnniversaries" value="eBoolean:false" />
+  <Parameter id="param_txtAnniversaries" value="eString:" />
+  <Parameter id="orderby0" value="eString:Length of Commitment" />
+  <Parameter id="orderby1" value="eString:Date Of Anniversary" />
+  <Parameter id="orderby2" value="eString:Gender" />
+  <Parameter id="param_sortby_readable" value="eString:Length of Commitment, Date Of Anniversary, Gender" />
+  <Parameter id="param_sortby_columns" value="eString:0,1,2" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Surname" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4611686018427387904" />
+  <Parameter id="param_ytd" column="0" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Firstname" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4611686018427387904" />
+  <Parameter id="param_ytd" column="1" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Date Of Anniversary" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4611686018427387904" />
+  <Parameter id="param_ytd" column="2" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="3" value="eString:Length of Commitment" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="3" value="eBoolean:false" />
+</Parameters>
