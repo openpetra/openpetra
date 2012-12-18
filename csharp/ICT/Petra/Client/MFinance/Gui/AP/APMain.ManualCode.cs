@@ -437,15 +437,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if (FSupplierFindObject != null)
                 {
                     DataTable NewPage = FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
+
                     if (FSupplierTable == null)
                     {
                         FSupplierTable = NewPage;
                     }
+
 /*
-                    else
-                    {
-                        FSupplierTable.Merge(NewPage);
-                    }
+ *                  else
+ *                  {
+ *                      FSupplierTable.Merge(NewPage);
+ *                  }
  */
                     return NewPage;
                 }
@@ -455,15 +457,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if (FInvoiceFindObject != null)
                 {
                     DataTable NewPage = FInvoiceFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
+
                     if (FInvoiceTable == null)
                     {
                         FInvoiceTable = NewPage;
                     }
+
 /*
-                    else
-                    {
-                        FInvoiceTable.Merge(NewPage);
-                    }
+ *                  else
+ *                  {
+ *                      FInvoiceTable.Merge(NewPage);
+ *                  }
  */
                     return NewPage;
                 }

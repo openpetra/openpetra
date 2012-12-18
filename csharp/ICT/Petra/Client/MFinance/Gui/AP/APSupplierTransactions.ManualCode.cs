@@ -67,7 +67,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private String FTypeFilter = "";    // filter which types of transactions are shown
         private String FStatusFilter = "";  // filter the status of invoices
-        private int[] ColumnWidth = { 20, 70, 90, 90, 100, 110};
+        private int[] ColumnWidth =
+        {
+            20, 70, 90, 90, 100, 110
+        };
 
         /// <summary>
         /// Load the supplier and all the transactions (invoices and payments) that relate to it.

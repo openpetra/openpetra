@@ -265,6 +265,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             AMainDS.UmUnitStructure.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                                 UmUnitStructureTable.GetChildUnitKeyDBName(),
                                 PartnerRow.PartnerKey);
+
                             if (AMainDS.UmUnitStructure.DefaultView.Count > 0)
                             {
                                 UnitStructureRow = (UmUnitStructureRow)AMainDS.UmUnitStructure.DefaultView[0].Row;

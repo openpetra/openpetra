@@ -214,6 +214,7 @@ namespace Ict.Common.Controls
                 return FGridInitialised;
             }
         }
+
         /**
          * This property gets hidden because it doesn't work with sgrdDataGridPaged!
          *

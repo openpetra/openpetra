@@ -41,7 +41,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.ACostCentreTypes.DefaultView.RowFilter = String.Format("{0}={1}",
                     ACostCentreTable.GetLedgerNumberDBName(),
                     FLedgerNumber
-                );
+                    );
                 FMainDS.ACostCentreTypes.DefaultView.Sort = ACostCentreTypesTable.GetCostCentreTypeDBName();
             }
         }
@@ -50,11 +50,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             Int32 KeyIdx = 1;
             String NewKey = "New Type ";
+
             FMainDS.ACostCentreTypes.DefaultView.Sort = ACostCentreTypesTable.GetCostCentreTypeDBName();
+
             while (FMainDS.ACostCentreTypes.DefaultView.Find(NewKey + KeyIdx) >= 0)
             {
                 KeyIdx++;
             }
+
             return NewKey + KeyIdx;
         }
 

@@ -330,7 +330,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
                         TLogging.Log(
-                            Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
+                            Catalog.GetString(
+                                "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                             TLoggingType.ToLogfile);
                         MessageBox.Show(
                             Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine +

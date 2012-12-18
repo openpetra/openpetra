@@ -205,7 +205,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
                         this.Cursor = Cursors.Default;
                         TLogging.Log(
-                            Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
+                            Catalog.GetString(
+                                "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                             TLoggingType.ToLogfile);
                         MessageBox.Show(
                             Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine +
