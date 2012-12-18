@@ -76,7 +76,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void InitializeManualCode()
         {
 //            txtLedger.Text = "" + Ict.Petra.Client.MFinance.Logic.TLedgerSelection.DetermineDefaultLedger();
-            btnView.Enabled = false;
+            grdDetails.DoubleClick += new EventHandler(grdDetails_DoubleClick);
+        }
+
+        void grdDetails_DoubleClick(object sender, EventArgs e)
+        {
+            if ((FPreviouslySelectedDetailRow != null) && (FMainDS != null))
+            {
+                try
+                {
+                    this.Cursor = Cursors.WaitCursor;
+
+                    TFrmGiftBatch gb = new TFrmGiftBatch(this);
+                    gb.ViewMode = true;
+                    gb.ViewModeTDS = FMainDS;
+                    // When I call Gift Batch, it will want one row in a LedgerTable!
+                    gb.ViewModeTDS.ALedger.Merge(TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber));
+                    gb.ShowDetailsOfOneBatch(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber);
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
+            }
         }
 
         private void OnCmbLedgerChange(System.Object sender, EventArgs e)
@@ -103,7 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Browse: (Re)LoadTableContents, called after injection of parameters or manual via button
         /// </summary>
-        public void Browse(bool loading)
+        public void Search(bool loading)
         {
             TVerificationResultCollection AMessages;
             Hashtable requestParams = new Hashtable();
@@ -189,6 +211,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 SelectByIndex(0);
                 txtNumberOfGifts.Text = Convert.ToString(FFilteredDataView.Count);
                 UpdateTotals();
+                grdDetails.Columns[0].Width = 90; // Date
+                grdDetails.Columns[2].Width = 80; // Motiv. Detail
+                grdDetails.Columns[4].Width = 60; // Amount
+                grdDetails.Columns[8].Width = 160; // Recipient
             }
         }
 
@@ -208,31 +234,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Close();
         }
 
-        private void BtnBrowseClick(object sender, EventArgs e)
+        private void BtnSearchClick(object sender, EventArgs e)
         {
-            Browse(false);
-        }
-
-        private void BtnViewClick(object sender, EventArgs e)
-        {
-            if ((FPreviouslySelectedDetailRow != null) && (FMainDS != null))
-            {
-                try
-                {
-                    this.Cursor = Cursors.WaitCursor;
-
-                    TFrmGiftBatch gb = new TFrmGiftBatch(this);
-                    gb.ViewMode = true;
-                    gb.ViewModeTDS = FMainDS;
-                    // When I call Gift Batch, it will want one row in a LedgerTable!
-                    gb.ViewModeTDS.ALedger.Merge(TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber));
-                    gb.ShowDetailsOfOneBatch(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber);
-                }
-                finally
-                {
-                    this.Cursor = Cursors.Default;
-                }
-            }
+            Search(false);
         }
 
         /// <summary>
@@ -265,7 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 frmDRH.EnalbeLedgerDropdown();
-                frmDRH.Browse(true);
+                frmDRH.Search(true);
                 frmDRH.Show();
             }
             finally
@@ -314,13 +318,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 grdDetails.Selection.SelectRow(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                btnView.Enabled = true;
             }
             else
             {
                 grdDetails.Selection.ResetSelection(false);
                 FPreviouslySelectedDetailRow = null;
-                btnView.Enabled = false;
             }
         }
     }

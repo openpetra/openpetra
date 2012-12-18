@@ -45,16 +45,19 @@ RootNode:
         actFindInvoice:
             Label: &Find Invoice...
             ShortCut: Ctrl+F
-        actPostSelected:
+        actPostTagged:
             Enabled: cndCanPost
             ActionClick: PostAllTagged
-        actPaySelected:
+        actOpenTagged:
+            Enabled: cndCanOpen
+            ActionClick: OpenAllTagged
+        actPayTagged:
             Enabled: cndCanPay
             ActionClick: PayAllTagged
         actReverseTagged:
             Enabled: cndCanReverse
             ActionClick: ReverseAllTagged
-        actDeleteSelected:
+        actDeleteTagged:
             Enabled: cndCanDelete
             ActionClick: DeleteAllTagged
         actTagAllPostable:
@@ -143,8 +146,10 @@ RootNode:
         tbbSeparator: {Label=-}
         tbbCreateInvoice: {Action=actCreateInvoice}
         tbbCreateCreditNote: {Action=actCreateCreditNote}
-        tbbPost: {Action=actPostSelected}
-        tbbPay: {Action=actPaySelected}
+        tbbOpenTagged: {Action=actOpenTagged}
+        tbbPostTagged: {Action=actPostTagged}
+        tbbPayTagged: {Action=actPayTagged}
+        tbbReverseTagged: {Action=actReverseTagged}
     Menu:
         mniFile:
             mniReports: {Label=&Reports}
@@ -164,7 +169,8 @@ RootNode:
             mniCreateCreditNote: {Action=actCreateCreditNote}
         mniInvoice:
             mniFind: {Action=actFindInvoice}
-            mniPost: {Action=actPostSelected}
-            mniPay: {Action=actPaySelected}
-            mniReverse: {Action=actReverseTagged}
-            mniDelete: {Action=actDeleteSelected}
+            mniOpenTagged: {Action=actOpenTagged}
+            mniPostTagged: {Action=actPostTagged}
+            mniPayTagged: {Action=actPayTagged}
+            mniReverseTagged: {Action=actReverseTagged}
+            mniDeleteTagged: {Action=actDeleteTagged}

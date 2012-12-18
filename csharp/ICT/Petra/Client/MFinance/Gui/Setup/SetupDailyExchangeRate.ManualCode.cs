@@ -469,7 +469,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (myView.Count > 0)
             {
-                return Convert.ToDecimal(myView.ToTable().Rows[0][ADailyExchangeRateTable.ColumnRateOfExchangeId]);
+                return ((ADailyExchangeRateRow)(myView[0].Row)).RateOfExchange;
             }
             else
             {
