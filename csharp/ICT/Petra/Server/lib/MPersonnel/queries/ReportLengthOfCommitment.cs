@@ -76,11 +76,8 @@ namespace Ict.Petra.Server.MPersonnel.queries
         {
             DateTime ThisWorkerEndDate;
 
-            TLogging.Log(previousStartDate.ToString());
-
             if (!previousEndDate.HasValue)
             {
-                TLogging.Log("no end date: " + AReportEndDate.ToString() + " " + previousStartDate.ToString());
                 monthsServed += TotalMonths(AReportEndDate - previousStartDate);
 
                 ThisWorkerEndDate = AReportEndDate;
@@ -100,7 +97,6 @@ namespace Ict.Petra.Server.MPersonnel.queries
             }
 
             // we need the date where an anniversary happens, in the report time
-            TLogging.Log("months " + monthsServed.ToString());
             int TotalYears = Convert.ToInt32(monthsServed / 12);
 
             DateTime anniversaryDate = AnniversaryDate(monthsServed, ThisWorkerEndDate);
@@ -137,8 +133,6 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 newAnniversary.Surname = PreviousRow.Surname;
                 newAnniversary.Gender = PreviousRow.Gender;
                 Anniversaries.Rows.Add(newAnniversary);
-
-                TLogging.Log(PreviousRow.PartnerKey.ToString() + " " + TotalYears.ToString());
             }
         }
 
