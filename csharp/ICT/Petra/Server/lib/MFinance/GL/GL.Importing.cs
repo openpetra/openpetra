@@ -195,6 +195,14 @@ namespace Ict.Petra.Server.MFinance.GL
                             MainDS.AJournal.Rows.Add(NewJournal);
 
                             NewJournal.JournalDescription = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("description"));
+                            if (   NewJournal.JournalDescription == null
+                                || NewJournal.JournalDescription == "")
+                            {
+                                // raise error if empty journal description is imported
+                                FImportMessage = Catalog.GetString("The journal description must not be empty");
+                                throw new Exception();
+                            }
+
                             NewJournal.SubSystemCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("sub system code"));
                             NewJournal.TransactionTypeCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("transaction type"));
                             NewJournal.TransactionCurrency =
