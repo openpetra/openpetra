@@ -279,6 +279,7 @@ OpenPetra:
                         PreviousExperienceReport: {ActionOpenScreen=TFrmPreviousExperienceReport}
                         EndOfCommitmentReport: {ActionOpenScreen=TFrmEndOfCommitmentReport}
                         StartOfCommitmentReport: {ActionOpenScreen=TFrmStartOfCommitmentReport}
+                        LengthOfCommitmentReport: {ActionOpenScreen=TFrmLengthOfCommitmentReport}
                         JobAssignmentReport: {ActionOpenScreen=TFrmJobAssignmentReport}
                         BirthdayList: {ActionOpenScreen=TFrmBirthdayListReport}
                         EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactReportStaff}
