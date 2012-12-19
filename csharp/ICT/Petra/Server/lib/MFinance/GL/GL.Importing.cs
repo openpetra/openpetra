@@ -134,6 +134,14 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal = null;
 
                             NewBatch.BatchDescription = ImportString(Catalog.GetString("batch description"));
+                            if (   NewBatch.BatchDescription == null
+                                || NewBatch.BatchDescription == "")
+                            {
+                                // raise error if empty batch description is imported
+                                FImportMessage = Catalog.GetString("The batch description must not be empty");
+                                throw new Exception();
+                            }
+                            
                             NewBatch.BatchControlTotal = ImportDecimal(Catalog.GetString("batch hash value"));
                             NewBatch.DateEffective = ImportDate(Catalog.GetString("batch effective date"));
 
