@@ -84,7 +84,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="Start Date of Commitment" returnsFormat="text" returns="formatteddate">
+			<calculation id="Start Date of Commitment" returnsFormat="date" returns="formatteddate">
 				<caption><value text="Start Date of\nCommitment"/></caption>
 				<query>
 					<queryDetail>
@@ -102,7 +102,7 @@
 				</query>
 			</calculation>
 
-			<calculation id="Date Of Anniversary" returnsFormat="text" returns="formatteddate">
+			<calculation id="Date Of Anniversary" returnsFormat="date" returns="formatteddate">
 				<caption><value text="Date of Anniversary"/></caption>
 				<query>
 					<queryDetail>

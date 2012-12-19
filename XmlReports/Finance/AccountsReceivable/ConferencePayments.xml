@@ -77,7 +77,7 @@
 			</calculation>
 
 			<calculation id="DateRegistered" 
-					returnsFormat="formatteddate" returns="text">
+					returnsFormat="formatteddate" returns="date">
 				<caption><value text="Registration Date"/></caption>
 				<query>
 					<queryDetail>

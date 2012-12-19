@@ -342,7 +342,7 @@
 				</query>
 			</calculation>
 			<calculation id="Last Gift Date" 
-					returnsFormat="formatteddate" returns="text">
+					returnsFormat="formatteddate" returns="date">
 				<caption><value text="Last Gift Date"/></caption>
 				<query>
 					<queryDetail><value variable="LastGiftDate"/>
@@ -406,7 +406,7 @@
 				</query>
 			</calculation>
 			<calculation id="Last Gift Other Date" 
-					returnsFormat="formatteddate" returns="text">
+					returnsFormat="formatteddate" returns="date">
 				<caption><value text="Last Gift Other Date"/></caption>
 				<query>
 					<queryDetail><value variable="LastGiftOtherDate"/>
