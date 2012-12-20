@@ -368,7 +368,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         AmountInBaseCurrency = TransactionRow.AmountInBaseCurrency;
                         AmountInIntlCurrency = TransactionRow.AmountInIntlCurrency;
 
-                        WhereClause = AJournalTable.GetJournalNumberDBName() + " = " + TransactionRow.JournalNumber.ToString() +
+                        WhereClause = AJournalTable.GetLedgerNumberDBName() + " = " + TransactionRow.LedgerNumber.ToString() +
+                                      " AND " + AJournalTable.GetBatchNumberDBName() + " = " + TransactionRow.BatchNumber.ToString() +
+                                      " AND " + AJournalTable.GetJournalNumberDBName() + " = " + TransactionRow.JournalNumber.ToString() +
                                       " AND " + AJournalTable.GetJournalPeriodDBName() + " = " + APeriodNumber;
 
                         OrderBy = AJournalTable.GetBatchNumberDBName() + ", " + AJournalTable.GetJournalNumberDBName();
