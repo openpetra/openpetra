@@ -33,4 +33,7 @@
   <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
   <Parameter id="param_calculation" column="6" value="eString:Gender" />
   <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
+  <Parameter id="param_calculation" column="7" value="eString:Age" />
+  <Parameter id="ColumnWidth" column="7" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="7" value="eBoolean:false" />  
 </Parameters>

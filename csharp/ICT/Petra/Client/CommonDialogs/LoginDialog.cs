@@ -363,13 +363,14 @@ namespace Ict.Petra.Client.CommonDialogs
                 else
                 {
                     TLogging.Log(
-                        "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine + exp.ToString(),
+                        Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                         TLoggingType.ToLogfile);
 #if  TESTMODE
 #else
                     MessageBox.Show(
                         Catalog.GetString(
-                            "An error occured while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                            "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile +
+                        ": " +
                         TLogging.GetLogFileName(),
                         Catalog.GetString("Server Connection Error"),
                         MessageBoxButtons.OK,
@@ -442,12 +443,12 @@ namespace Ict.Petra.Client.CommonDialogs
             catch (EServerConnectionGeneralException exp)
             {
                 TLogging.Log(
-                    "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine + exp.ToString(),
+                    Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                     TLoggingType.ToLogfile);
 #if  TESTMODE
 #else
                 MessageBox.Show(Catalog.GetString(
-                        "An error occured while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                        "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
                     TLogging.GetLogFileName(),
                     "Server Connection Error",
                     MessageBoxButtons.OK,
@@ -458,13 +459,13 @@ namespace Ict.Petra.Client.CommonDialogs
             catch (Exception exp)
             {
                 TLogging.Log(
-                    "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine + exp.ToString(),
+                    Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                     TLoggingType.ToLogfile);
 #if  TESTMODE
 #else
                 MessageBox.Show(
                     Catalog.GetString(
-                        "An error occured while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                        "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
                     TLogging.GetLogFileName(),
                     Catalog.GetString("Server Connection Error"),
                     MessageBoxButtons.OK,

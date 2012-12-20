@@ -86,9 +86,9 @@ namespace Ict.Tools.CodeGeneration
         /// <summary>
         /// for special functionality specific to a control
         /// </summary>
-        public virtual void ApplyDerivedFunctionality(IControlGenerator generator, XmlNode curNode)
+        public virtual void ApplyDerivedFunctionality(IControlGenerator generator, TControlDef control)
         {
-            generator.ApplyDerivedFunctionality(this, curNode);
+            generator.ApplyDerivedFunctionality(this, control);
         }
 
         /// <summary>create code for calling a function from an event on the control</summary>

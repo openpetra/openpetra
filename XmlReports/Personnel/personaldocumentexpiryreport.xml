@@ -175,7 +175,7 @@
 				</query>
 			</calculation>
 
-			<calculation id="Expiry Date" returnsFormat="formatteddate" returns="text">
+			<calculation id="Expiry Date" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Expiry Date"/></caption>
 				<query>
 					<queryDetail>
@@ -202,7 +202,7 @@
 				</query>
 			</calculation>
 
-			<calculation id="Date of Issue" returnsFormat="formatteddate" returns="text">
+			<calculation id="Date of Issue" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Date of\nIssue"/></caption>
 				<query>
 					<queryDetail>
