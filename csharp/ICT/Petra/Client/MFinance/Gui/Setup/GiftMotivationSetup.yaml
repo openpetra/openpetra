@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowEdit
     WindowWidth: 660
-    WindowHeight: 700
+    WindowHeight: 550
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -26,6 +26,9 @@ RootNode:
             Dock: Fill
             Columns: [DetailMotivationGroupCode, DetailMotivationDetailCode, DetailMotivationDetailDesc, DetailAccountCode, DetailCostCentreCode, DetailMotivationStatus, DetailReceipt]
             CustomColumns:
+                DetailMotivationGroupCode: {Label=Group}
+                DetailMotivationDetailCode: {Label=Motivation Detail}
+                DetailMotivationDetailDesc: {Label=Description}
                 DetailMotivationStatus: {Label=Active, Type=Boolean}            
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
@@ -33,22 +36,30 @@ RootNode:
             Controls:
                 Row0: [cmbDetailMotivationGroupCode]
                 Row1: [txtDetailMotivationDetailCode, txtDetailMotivationDetailDesc]
-                Row3: [cmbDetailAccountCode]
-                Row4: [cmbDetailCostCentreCode]
-                Row5: [chkDetailMotivationStatus, chkDetailReceipt]
+                Row3: [cmbDetailAccountCode, chkDetailMotivationStatus]
+                Row4: [cmbDetailCostCentreCode, chkDetailReceipt]
+                Row5: [lblFeePayable, lblFeeReceivable]
                 Row6: [clbDetailFeesPayable, clbDetailFeesReceivable]
-            ColWidths: [1=Fixed:200]
+            ColWidths: [1=Fixed:200, 2=Fixed:120]
         cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
-        txtDetailMotivationDetailDesc: {Label=Description, Width=195}
-        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, ColSpan=2}
-        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
+        txtDetailMotivationDetailDesc: {Label=Description, Width=173}
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Width=200}
+        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Width=200}
         chkDetailMotivationStatus: {Label=Active}
         chkDetailReceipt: {Label=Print Receipt}
+        lblFeePayable:
+        lblFeeReceivable:
         clbDetailFeesPayable:
+            NoLabel: true
             List: UserDefinedList
+            Height:140
+            Width:298
         clbDetailFeesReceivable:
+            NoLabel: true
             List: UserDefinedList
+            Height:140
+            Width:298
     Toolbar:
         tbbNew:
             Label: New Motivation Detail

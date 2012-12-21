@@ -1,12 +1,12 @@
 RootNode:
     BaseYaml: PersonnelReportingForm.yaml
     FormType: report
-    FormTitle: Birthday List Report
+    FormTitle: Length Of Commitment Report
     Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
     TemplateParameters:
-        XMLFILES: [Personnel\\\\birthdaylist.xml,Personnel\\\\personnel.xml]
-        REPORTNAME: Birthday List
-        CURRENTREPORT: Birthday List
+        XMLFILES: [Personnel\\\\lengthOfCommitmentReport.xml,Personnel\\\\personnel.xml]
+        REPORTNAME: Length Of Commitment
+        CURRENTREPORT: Length Of Commitment
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
@@ -20,59 +20,30 @@ RootNode:
             Controls: [ucoReportSorting]
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [ucoPartnerSelection]
+            Controls: [dtpCurrentStaff, dtpFromDate, dtpToDate, chkAnniversaries]
             Order: AlwaysFirst
-        tpgAdditionalSettings:
-            Label: Additional Settings
-            Controls: [grpDate, grpOptions]
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
-        ucoPartnerSelection:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
-            Dock: Fill            
-        grpDate:
-            Label: Date
-            Dock: Top
-            Controls: [chkUseDate]
+        dtpCurrentStaff:
+            Label: All staff employed at this date
+        dtpFromDate:
+            Label: Anniversaries from
+        dtpToDate:
+            Label: To
         chkAnniversaries:
-            Label: Only print anniversaries
+            Label: Only print special anniversaries
             CheckBoxAttachedLabel: right
             Controls: [txtAnniversaries]
         txtAnniversaries:
-            Help: "Please enter comma separated list of anniversaries, eg. 40,50,75"
-        grpOptions:
-            Label: Options
-            Dock: Fill
-            Controls: [chkIncludeFamily, chkSelectTypes, grdTypes]           
-        chkUseDate:
-            Label: Use date range
-            Controls: [dtpFromDate, dtpToDate, chkAnniversaries]
-            CheckBoxAttachedLabel: right
-        dtpFromDate:
-            Label: From
-        dtpToDate:
-            Label: To        
-        chkIncludeFamily:
-            Label: Include families
-            CheckBoxAttachedLabel: right            
-        chkSelectTypes:
-            Label: Include only persons of selected type(s)
-            CheckBoxAttachedLabel: right
-            OnChange: SelectTypesChanged            
-        grdTypes:
-            Height: 200
-            Width: 320
+            Help: "Please enter comma separated list of anniversaries, eg. 5,10,25"
             
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
-        Para0:
-            Name: Date of Birth
-            Parameter: 2.5
-        Para0b:
-            Name: Age
+        Para1b:
+            Name: Length of Commitment
             Parameter: 1.5
-        Para1:
-            Name: End Date of Commitment
+        Para1c:
+            Name: Date Of Anniversary
             Parameter: 2.0
         Para2:
             Name: Gender
@@ -88,9 +59,6 @@ RootNode:
             Parameter: 4.0
         Para6:
             Name: Partner Surname
-            Parameter: 2.0
-        Para7:
-            Name: Partner Type
             Parameter: 2.0
         Para8:
             Name: Start Date of Commitment

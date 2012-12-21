@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -243,7 +243,7 @@ namespace Ict.Petra.Shared.MReporting
                         Convert.ToInt32(row["column"]), Convert.ToInt32(row["level"]), Convert.ToInt16(row["subreport"])));
             }
 
-            if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
+            if ((TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING) && (TSrvSetting.ServerLogFile.Length > 0))
             {
                 Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "param.xml");
             }

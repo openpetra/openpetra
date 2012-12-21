@@ -54,12 +54,12 @@ RootNode:
                 #Row9: [chkReplaceAddress]
                 Row10: [chkSemiAutomatic]
         lblTakeAction: 
-        btnSkip: {Label=Skip Partner}
+        btnSkip: {Label=Skip Partner, Enabled=false}
         #btnCreateNewFamilyAndPerson: {Label=Create new Family and Person, Enabled=false}
         btnUseSelectedPerson: {Label=Update Partner, Enabled=false}
         #btnCreateNewPersonForSelectedFamily: {Label=Add as new Person to selected Family in list below, Enabled=false}
         #btnCreateNewFamily: {Label=Create new Family Record only}
-        btnCreateNewPartner: {Label=Create Partner}
+        btnCreateNewPartner: {Label=Create Partner, Enabled=false}
         btnUseSelectedAddress: {Label=Re-use address, Enabled=false}
         btnUseSelectedFamily: {Label=Add to Family, Enabled=false}
         #btnFindOtherPerson: {Label=Find other Person to use for this Record..., Enabled=false}

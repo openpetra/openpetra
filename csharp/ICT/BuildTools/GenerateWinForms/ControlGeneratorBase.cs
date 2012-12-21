@@ -188,7 +188,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             SetControlProperties(writer, ctrl);
             OnChangeDataType(writer, ctrl.xmlNode, ctrl.controlName);
             writer.InitialiseDataSource(ctrl.xmlNode, ctrl.controlName);
-            writer.ApplyDerivedFunctionality(this, ctrl.xmlNode);
+            writer.ApplyDerivedFunctionality(this, ctrl);
             AddChildren(writer, ctrl);
         }
 
@@ -1341,7 +1341,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// e.g. used for controls on Reports (readparameter, etc)
-        public virtual void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public virtual void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
         }
     }

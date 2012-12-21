@@ -598,6 +598,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FNeedUserFeedback = true;
                 }
             }
+            else // if "auto" is not selected, I'll stop here and wait for user input.
+            {
+                btnCreateNewPartner.Enabled = true;
+                btnSkip.Enabled = true;
+            }
         }
 
         private void CancelImport(Object sender, EventArgs e)
@@ -1172,6 +1177,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void CreateNewPartner(Object sender, EventArgs e)
         {
+            if ((FCurrentNumberOfRecord < 1) || (FCurrentNumberOfRecord > FTotalNumberOfRecords))
+            {
+                MessageBox.Show(Catalog.GetString("Select 'Start Import' from toolbar."));
+                return;
+            }
+
             AddStatus("<Create New Partner>\r\n");
             CreateOrUpdatePartner(FCurrentPartner, true);
         }

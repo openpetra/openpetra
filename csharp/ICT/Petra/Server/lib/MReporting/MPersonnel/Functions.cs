@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -301,6 +301,12 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// <returns>returns the type code or an empty string</returns>
         private String GetType(Int64 APartnerKey, String ATypeList, String AMatch)
         {
+            if (ATypeList == "DEFAULTWORKERTYPES")
+            {
+                // allows ORGANIZATION SPECIFIC types
+                ATypeList = TAppSettingsManager.GetValue("DEFAULTWORKERTYPES_STARTINGWITH", "WORKER;EX-WORKER;ASSOC", false);
+            }
+
             PPartnerTypeTable PartnerType;
 
             String[] TypeList;

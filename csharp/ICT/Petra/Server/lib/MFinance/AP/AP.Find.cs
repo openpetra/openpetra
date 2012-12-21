@@ -545,7 +545,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             }
             else    // Find Suppliers
             {
-                // TODO: add amount of outstanding invoices etc
                 return "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetPartnerKeyDBName() + " AS PartnerKey, " +
                        "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS PartnerShortName, " +
                        "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + " AS CurrencyCode, " +
@@ -560,7 +559,14 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <returns>the orderby clause</returns>
         private string BuildOrderByClause(DataRow ACriteriaRow)
         {
-            return PPartnerTable.GetPartnerShortNameDBName();
+            if (FSearchSupplierOrInvoice) // Find Suppliers
+            {
+                return "PartnerShortName";
+            }
+            else // Find invoices
+            {
+                return "ApNumber DESC";
+            }
         }
 
         /// <summary>
