@@ -1445,14 +1445,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             bool HasAccountAnalysisAttributes = false;
-            
+
             HasAccountAnalysisAttributes = (AAnalysisAttributeAccess.CountViaAAccount(ALedgerNumber, AAccountCode, Transaction) > 0);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
-            
+
             return HasAccountAnalysisAttributes;
         }
-        
+
         //
         //    Rename Account: to rename an AccountCode, we need to update lots of values all over the database:
 

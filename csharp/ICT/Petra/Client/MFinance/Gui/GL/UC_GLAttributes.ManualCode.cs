@@ -103,7 +103,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber));
             }
 
-                
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             // bool ActiveOnly = this.Enabled;
             // TFinanceControls.InitialiseValuesList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
@@ -116,16 +115,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject.DisableDataChangedEvent();
             pnlDetails.Enabled = false;
             ShowDataManual();
+
             if (FMainDS.ATransAnalAttrib != null)
             {
                 // set a row filter to make sure only records belonging to this transaction are shown
                 view.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
-                                ATransAnalAttribTable.GetLedgerNumberDBName(), FLedgerNumber,
-                                ATransAnalAttribTable.GetBatchNumberDBName(), FBatchNumber,
-                                ATransAnalAttribTable.GetJournalNumberDBName(), FJournalNumber,
-                                ATransAnalAttribTable.GetTransactionNumberDBName(), FTransactionNumber);
+                    ATransAnalAttribTable.GetLedgerNumberDBName(), FLedgerNumber,
+                    ATransAnalAttribTable.GetBatchNumberDBName(), FBatchNumber,
+                    ATransAnalAttribTable.GetJournalNumberDBName(), FJournalNumber,
+                    ATransAnalAttribTable.GetTransactionNumberDBName(), FTransactionNumber);
                 view.AllowNew = false;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(view);
+
                 if (view.Count > 0)
                 {
                     SelectRowInGrid(1);
@@ -136,8 +137,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 //                    show
                 }
             }
+
             FPetraUtilsObject.EnableDataChangedEvent();
-            
         }
 
         /// <summary>
@@ -271,11 +272,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AJournalNumber"></param>
         /// <param name="ATransactionNumber"></param>
         /// <param name="AAccount">Account Number for AnalysisTable lookup</param>
-        public void CheckAnalysisAttributes(int ALedgerNumber, int ABatchNumber, int AJournalNumber, 
-                                            int ATransactionNumber, String AAccount)
+        public void CheckAnalysisAttributes(int ALedgerNumber, int ABatchNumber, int AJournalNumber,
+            int ATransactionNumber, String AAccount)
         {
             //grdDetails
             checkFCacheInitialised();
+
             if (FCacheDS == null)
             {
                 return;

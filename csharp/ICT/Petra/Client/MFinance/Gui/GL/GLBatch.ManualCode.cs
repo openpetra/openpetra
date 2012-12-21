@@ -283,7 +283,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoJournals.GetSelectedDetailRow().JournalStatus);
 
                     this.tpgAttributes.Enabled = ((ucoTransactions.GetSelectedDetailRow() != null)
-                                                  && TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, ucoTransactions.GetSelectedDetailRow().AccountCode));
+                                                  && TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber,
+                                                      ucoTransactions.GetSelectedDetailRow().AccountCode));
                 }
             }
             else if (ATab == eGLTabs.Attributes)
@@ -300,7 +301,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         );
                 }
             }
-            
+
             this.Refresh();
         }
 

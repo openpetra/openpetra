@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             tbxMessage.Text = verificationResult.BuildVerificationResultString();
             btnPeriodEnd.Visible = false;
             btnCancel.Text = Catalog.GetString("Done");
-            
+
             // reset valid dates as they may have changed: next time this object is called values are refreshed from server
             TLedgerSelection.ResetValidDates(FLedgerNumber);
         }

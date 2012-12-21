@@ -687,11 +687,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void AccountCodeDetailChanged(object sender, EventArgs e)
         {
             ProcessAnalysisAttributes();
+
             if (TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString()))
             {
                 ((TFrmGLBatch)ParentForm).EnableAttributes();
             }
-            else            
+            else
             {
                 ((TFrmGLBatch)ParentForm).DisableAttributes();
             }
@@ -701,11 +702,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (GetSelectedDetailRow() != null)
             {
-                ((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes(FLedgerNumber, 
-                                                                                         FBatchNumber,
-                                                                                         FJournalNumber, 
-                                                                                         GetSelectedDetailRow().TransactionNumber, 
-                                                                                         cmbDetailAccountCode.GetSelectedString());
+                ((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes(FLedgerNumber,
+                    FBatchNumber,
+                    FJournalNumber,
+                    GetSelectedDetailRow().TransactionNumber,
+                    cmbDetailAccountCode.GetSelectedString());
             }
         }
 

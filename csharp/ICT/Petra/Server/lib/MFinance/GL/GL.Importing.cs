@@ -134,14 +134,15 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal = null;
 
                             NewBatch.BatchDescription = ImportString(Catalog.GetString("batch description"));
-                            if (   NewBatch.BatchDescription == null
-                                || NewBatch.BatchDescription == "")
+
+                            if ((NewBatch.BatchDescription == null)
+                                || (NewBatch.BatchDescription == ""))
                             {
                                 // raise error if empty batch description is imported
                                 FImportMessage = Catalog.GetString("The batch description must not be empty");
                                 throw new Exception();
                             }
-                            
+
                             NewBatch.BatchControlTotal = ImportDecimal(Catalog.GetString("batch hash value"));
                             NewBatch.DateEffective = ImportDate(Catalog.GetString("batch effective date"));
 
@@ -195,8 +196,9 @@ namespace Ict.Petra.Server.MFinance.GL
                             MainDS.AJournal.Rows.Add(NewJournal);
 
                             NewJournal.JournalDescription = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("description"));
-                            if (   NewJournal.JournalDescription == null
-                                || NewJournal.JournalDescription == "")
+
+                            if ((NewJournal.JournalDescription == null)
+                                || (NewJournal.JournalDescription == ""))
                             {
                                 // raise error if empty journal description is imported
                                 FImportMessage = Catalog.GetString("The journal description must not be empty");
