@@ -131,6 +131,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     SelectRowInGrid(1);
                     pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
                 }
+                else
+                {
+//                    show
+                }
             }
             FPetraUtilsObject.EnableDataChangedEvent();
             
@@ -244,7 +248,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                cmbDetailAnalysisAttributeValue.SelectedIndex = -1;
+                cmbDetailAnalysisAttributeValue.SetSelectedString("", -1);
             }
 
             // If the batch has been posted, the Combobox can't be changed.
@@ -262,10 +266,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// check if the necessary rows for the given account are there, automatically add/delete rows, update account in my table
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="ATransactionNumber"></param>
         /// <param name="AAccount">Account Number for AnalysisTable lookup</param>
-        public void CheckAnalysisAttributes(String AAccount)
+        public void CheckAnalysisAttributes(int ALedgerNumber, int ABatchNumber, int AJournalNumber, 
+                                            int ATransactionNumber, String AAccount)
         {
             //grdDetails
+            checkFCacheInitialised();
             if (FCacheDS == null)
             {
                 return;
@@ -288,18 +298,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 String TypeCode = myRow.AnalysisTypeCode;
 
                 ATransAnalAttribRow myTableRow =
-                    (ATransAnalAttribRow)FMainDS.ATransAnalAttrib.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber,
-                                                                                           FTransactionNumber,
+                    (ATransAnalAttribRow)FMainDS.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber,
+                                                                                           ATransactionNumber,
                                                                                            TypeCode });
 
                 if (myTableRow == null)
                 {
                     //Create a new TypeCode for this account
                     ATransAnalAttribRow newRow = FMainDS.ATransAnalAttrib.NewRowTyped(true);
-                    newRow.LedgerNumber = FLedgerNumber;
-                    newRow.BatchNumber = FBatchNumber;
-                    newRow.JournalNumber = FJournalNumber;
-                    newRow.TransactionNumber = FTransactionNumber;
+                    newRow.LedgerNumber = ALedgerNumber;
+                    newRow.BatchNumber = ABatchNumber;
+                    newRow.JournalNumber = AJournalNumber;
+                    newRow.TransactionNumber = ATransactionNumber;
                     newRow.AnalysisTypeCode = TypeCode;
                     newRow.AccountCode = AAccount;
 

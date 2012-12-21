@@ -39,10 +39,10 @@ RootNode:
         pnlDetailButtons:
             Dock: Right
             Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]
-        btnNew: {Action=actNew}
-        btnCancel: {Action=actCancel}
-        btnPostBatch: {Action=actPostBatch}
-        btnTestPostBatch:
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnCancel: {Action=actCancel, Stretch=horizontally}
+        btnPostBatch: {Action=actPostBatch, Stretch=horizontally}
+        btnTestPostBatch: {Stretch=horizontally}
         grdDetails:
             Dock: Fill
             Columns: [ABatch.BatchNumber, ABatch.BatchStatus, ABatch.DateEffective, ABatch.BatchDebitTotal, ABatch.BatchCreditTotal, ABatch.BatchControlTotal, ABatch.BatchDescription]
