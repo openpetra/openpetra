@@ -103,11 +103,37 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber));
             }
 
+                
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             // bool ActiveOnly = this.Enabled;
             // TFinanceControls.InitialiseValuesList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
 
-            ShowData();
+            // do no longer call ShowData but instead use the code below
+            //ShowData();
+
+            // the following code represents what usually happens inside ShowData. Need manual code here since
+            // the view does not show all records but only filtered one (filter by transaction)
+            FPetraUtilsObject.DisableDataChangedEvent();
+            pnlDetails.Enabled = false;
+            ShowDataManual();
+            if (FMainDS.ATransAnalAttrib != null)
+            {
+                // set a row filter to make sure only records belonging to this transaction are shown
+                view.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
+                                ATransAnalAttribTable.GetLedgerNumberDBName(), FLedgerNumber,
+                                ATransAnalAttribTable.GetBatchNumberDBName(), FBatchNumber,
+                                ATransAnalAttribTable.GetJournalNumberDBName(), FJournalNumber,
+                                ATransAnalAttribTable.GetTransactionNumberDBName(), FTransactionNumber);
+                view.AllowNew = false;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(view);
+                if (view.Count > 0)
+                {
+                    SelectRowInGrid(1);
+                    pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
+                }
+            }
+            FPetraUtilsObject.EnableDataChangedEvent();
+            
         }
 
         /// <summary>

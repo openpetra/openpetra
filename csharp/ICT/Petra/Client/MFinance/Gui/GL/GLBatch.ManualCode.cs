@@ -104,6 +104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tpgTransactions.Enabled = true;
             this.ucoTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber, AForeignCurrencyName);
+            this.Refresh();
         }
 
         /// <summary>
@@ -133,6 +134,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void DisableTransactions()
         {
             this.tpgTransactions.Enabled = false;
+            this.Refresh();
         }
 
         /// <summary>
@@ -141,6 +143,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void EnableTransactions()
         {
             this.tpgTransactions.Enabled = true;
+            this.Refresh();
         }
 
         /// <summary>
@@ -176,6 +179,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void EnableAttributes()
         {
             this.tpgAttributes.Enabled = true;
+            this.Refresh();
         }
 
         /// <summary>
@@ -184,6 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void DisableAttributes()
         {
             this.tpgAttributes.Enabled = false;
+            this.Refresh();
         }
 
         /// <summary>
@@ -192,6 +197,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void DisableJournals()
         {
             this.tpgJournals.Enabled = false;
+            this.Refresh();
         }
 
         /// <summary>
@@ -202,6 +208,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (!this.tpgJournals.Enabled)
             {
                 this.tpgJournals.Enabled = true;
+                this.Refresh();
             }
         }
 
@@ -275,9 +282,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoBatches.GetSelectedDetailRow().BatchStatus,
                         ucoJournals.GetSelectedDetailRow().JournalStatus);
 
-                    this.tpgAttributes.Enabled = (ucoTransactions.GetSelectedDetailRow() != null);
-
-                    this.ucoTransactions.FocusGrid();
+                    this.tpgAttributes.Enabled = ((ucoTransactions.GetSelectedDetailRow() != null)
+                                                  && TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, ucoTransactions.GetSelectedDetailRow().AccountCode));
                 }
             }
             else if (ATab == eGLTabs.Attributes)
@@ -294,6 +300,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         );
                 }
             }
+            
+            this.Refresh();
         }
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)

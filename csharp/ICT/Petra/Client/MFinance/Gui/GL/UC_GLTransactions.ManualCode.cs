@@ -686,6 +686,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void AccountCodeDetailChanged(object sender, EventArgs e)
         {
             ProcessAnalysisAttributes();
+            if (TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString()))
+            {
+                ((TFrmGLBatch)ParentForm).EnableAttributes();
+            }
+            else            
+            {
+                ((TFrmGLBatch)ParentForm).DisableAttributes();
+            }
         }
 
         private void ProcessAnalysisAttributes()
