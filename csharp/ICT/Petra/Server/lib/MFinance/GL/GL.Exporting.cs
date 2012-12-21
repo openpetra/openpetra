@@ -225,11 +225,19 @@ namespace Ict.Petra.Server.MFinance.GL
             if (FSummary)
             {
                 //To simplify matters this is always written even if there are no batches
-                WriteBatchSummaryLine();
+                if (!FTransactionsOnly)
+                {
+                    // no batch summary line if only transactions are to be exported
+                    WriteBatchSummaryLine();
+                }
 
                 foreach (KeyValuePair <string, AJournalSummaryRow>kvp in sdSummary)
                 {
-                    WriteJournalSummaryLine(kvp.Value);
+                    if (!FTransactionsOnly)
+                    {
+                        // no journal summary line if only transactions are to be exported
+                        WriteJournalSummaryLine(kvp.Value);
+                    }
 
                     foreach (KeyValuePair <string, ATransactionSummaryRow>kvpt in kvp.Value.TransactionSummaries)
                     {
