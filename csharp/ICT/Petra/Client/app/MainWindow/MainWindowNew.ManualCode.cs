@@ -46,6 +46,16 @@ namespace Ict.Petra.Client.App.PetraClient
 {
     public partial class TFrmMainWindowNew
     {
+        #region Resource strings
+
+        private readonly string StrCannotClosePetra1stLine = Catalog.GetString("Cannot close Petra Main Menu.");
+        private readonly string StrCannotClosePetra2ndLine = Catalog.GetString("The following window(s) must be closed first:");
+        private readonly string StrCannotClosePetraChangeInfoLine = Catalog.GetString(
+            "Note: Windows with unsaved changes are marked with '(*)' in this list.");
+        private readonly string StrCannotClosePetraTitle = Catalog.GetString("Open Windows Must Be Closed");
+
+        #endregion
+
         private const string VIEWTASKS_TILES = "Tiles";
         private const string VIEWTASKS_LIST = "List";
 
@@ -504,10 +514,72 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private bool CanCloseManual()
         {
-            StringCollection NonClosableForms;
-            string FirstNonClosableFormKey;
+            Boolean ReturnValue;
+            const String INDENTATION = "   ";
+            StringCollection NonCloseableForms;
+            Boolean CanCloseAllForms;
+            String NonCloseableFormsList = "";
+            String FirstNonCloseableFormKey;
+            String ChangeInfo = "";
+            Int16 FormsCounter;
 
-            return TFormsList.GFormsList.CanCloseAll(out NonClosableForms, out FirstNonClosableFormKey);
+            ReturnValue = false;
+
+            //
+            // Check if any Forms are open that cannot be closed and process those
+            //
+            CanCloseAllForms = TFormsList.GFormsList.CanCloseAll(out NonCloseableForms, out FirstNonCloseableFormKey);
+
+            if (!CanCloseAllForms)
+            {
+                for (FormsCounter = 0; FormsCounter <= NonCloseableForms.Count - 1; FormsCounter += 1)
+                {
+                    NonCloseableFormsList = NonCloseableFormsList + INDENTATION + NonCloseableForms[FormsCounter] + "\r\n";
+                }
+
+                // Remove trailing Line Feed + Carriage Return
+                NonCloseableFormsList = NonCloseableFormsList.Substring(0, NonCloseableFormsList.Length - "\r\n".Length);
+            }
+
+            if (CanCloseAllForms)
+            {
+                //
+                // Any remaining Forms can be closed -> close all Forms, except for this Form.
+                //
+                TFormsList.GFormsList.CloseAllExceptOne(this);
+
+                ReturnValue = true;
+            }
+            else
+            {
+                //
+                // One or more remaining Forms cannot be closed.
+                //
+
+                // Check if any of the Forms in the list has the change indicator
+                if (NonCloseableFormsList.IndexOf(PetraEditForm.FORM_CHANGEDDATAINDICATOR) > 0)
+                {
+                    // Include info about the change indicator in the message
+                    ChangeInfo = "\r\n\r\n" + StrCannotClosePetraChangeInfoLine;
+                }
+
+                // Present list of Forms that still need to be closed to the user
+                MessageBox.Show(
+                    StrCannotClosePetra1stLine + "\r\n" + "\r\n" + StrCannotClosePetra2ndLine + "\r\n" + NonCloseableFormsList + ChangeInfo,
+                    StrCannotClosePetraTitle,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+
+            //
+            // Bring first Form that needs closing to the foreground
+            //
+            if (!CanCloseAllForms)
+            {
+                TFormsList.GFormsList.ShowForm(FirstNonCloseableFormKey);
+            }
+
+            return ReturnValue;
         }
 
         private void HelpImproveTranslations(object sender, EventArgs e)
