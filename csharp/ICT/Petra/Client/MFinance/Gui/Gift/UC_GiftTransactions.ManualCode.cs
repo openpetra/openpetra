@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Changing this will stop taborder issues
             sptTransactions.TabStop = false;
-            sptTransactions.SplitterDistance = 285; // It says this already in the YAML, but apparently it's ignored?
+            //sptTransactions.SplitterDistance = 285; // It says this already in the YAML, but apparently it's ignored?
         }
 
         /// <summary>
