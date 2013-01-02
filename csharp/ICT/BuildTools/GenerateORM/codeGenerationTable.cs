@@ -238,6 +238,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     tempTemplate = Template.GetSnippet("STATICCOLUMNPROPERTIES");
                     tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
                     tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
+                    tempTemplate.SetCodelet("COLUMNHELP", col.strHelp.Replace("\"", "\\\""));
                     tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
                     tempTemplate.SetCodelet("NEW", columnOverwrite);
                     snippet.InsertSnippet("STATICCOLUMNPROPERTIES", tempTemplate);
