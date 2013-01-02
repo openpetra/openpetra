@@ -1428,10 +1428,10 @@ namespace Ict.Common.Controls
                 }
                 catch (System.OverflowException)
                 {
-                    MessageBox.Show(Catalog.GetString(String.Format(
-                                "The value entered{0}{1}{2}exceeds the valid value range, i.e. is either too large or too small.{3}Please enter a value that is valid.",
-                                Environment.NewLine + Environment.NewLine, "    " + AValue, Environment.NewLine + Environment.NewLine,
-                                Environment.NewLine)),
+                    MessageBox.Show(String.Format(Catalog.GetString(
+                                "The value entered{0}{1}{2}exceeds the valid value range, i.e. is either too large or too small.{3}Please enter a value that is valid."),
+                            Environment.NewLine + Environment.NewLine, "    " + AValue, Environment.NewLine + Environment.NewLine,
+                            Environment.NewLine),
                         Catalog.GetString("Value Out of Range"), MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     base.Text = AValue;

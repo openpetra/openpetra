@@ -65,6 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Changing this will stop taborder issues
             sptTransactions.TabStop = false;
+            sptTransactions.SplitterDistance = 285; // It says this already in the YAML, but apparently it's ignored?
         }
 
         /// <summary>
@@ -705,14 +706,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ACompletionMessage = string.Empty;
 
-            int selectedDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
+            int selectedDetailNumber = ARowToDelete.DetailNumber;
 
             try
             {
-                //TODO: update to new field
-                originatingDetailRef = FPreviouslySelectedDetailRow.ModifiedDetailKey;
-                FPreviouslySelectedDetailRow.Delete();
-                FPreviouslySelectedDetailRow = null;
+                if (ARowToDelete.ModifiedDetailKey != null)
+                {
+                    originatingDetailRef = ARowToDelete.ModifiedDetailKey;
+                }
+
+                ARowToDelete.Delete();
+                ARowToDelete = null;
 
                 if (FGiftDetailView.Count == 0)
                 {
@@ -1485,7 +1489,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void GetDetailDataFromControlsManual(AGiftDetailRow ARow)
         {
             ARow.CostCentreCode = txtDetailCostCentreCode.Text;
-            ARow.ModifiedDetailKey = string.Empty;
 
             if (ARow.DetailNumber != 1)
             {

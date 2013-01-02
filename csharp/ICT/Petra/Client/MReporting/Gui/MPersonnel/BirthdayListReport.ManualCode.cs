@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       berndr, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,7 +41,7 @@ using Ict.Petra.Shared.MCommon.Data;
 namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
     /// <summary>
-    /// manual code for TFrmStartOfCommitmentReport class
+    /// manual code for birthday report
     /// </summary>
     public partial class TFrmBirthdayListReport
     {
@@ -64,10 +64,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 String TypeCode = (String)FTypesTable.Rows[Counter][PTypeTable.GetTypeCodeDBName()];
 
-                // TODO ORGANIZATION SPECIFIC TypeCode
-                if (!((TypeCode.StartsWith("OM"))
-                      || (TypeCode.StartsWith("EX-OMER"))
-                      || (TypeCode.StartsWith("ASSOC"))))
+                // allow ORGANIZATION SPECIFIC TypeCode
+                String[] DefaultWorkerTypes =
+                    TAppSettingsManager.GetValue("DEFAULTWORKERTYPES_STARTINGWITH", "WORKER;EX-WORKER;ASSOC", false).Split(new char[] { ';' });
+
+                bool typeInList = false;
+
+                foreach (string allowedType in DefaultWorkerTypes)
+                {
+                    if (TypeCode.StartsWith(allowedType))
+                    {
+                        typeInList = true;
+                    }
+                }
+
+                if (!typeInList)
                 {
                     FTypesTable.Rows.RemoveAt(Counter);
                 }
@@ -173,10 +184,30 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             }
         }
 
-        private void UseDateChanged(System.Object sender, EventArgs e)
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            dtpFromDate.Enabled = chkUseDate.Checked;
-            dtpToDate.Enabled = chkUseDate.Checked;
+            // validation: date range not longer than a year.
+            if (chkUseDate.Checked)
+            {
+                if (!dtpFromDate.Date.HasValue || !dtpToDate.Date.HasValue || !dtpFromDate.ValidDate(false) || !dtpToDate.ValidDate(false))
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("We need a valid start and end date."),
+                        Catalog.GetString("Please select a valid start date and a valid end date."),
+                        TResultSeverity.Resv_Critical);
+
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+                else if (dtpFromDate.Date.Value.AddYears(1).CompareTo(dtpToDate.Date) <= 0)
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("Not more than a year between start and end date"),
+                        Catalog.GetString("Please specify the end date not longer than one year from the start date."),
+                        TResultSeverity.Resv_Critical);
+
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+            }
         }
     }
 }

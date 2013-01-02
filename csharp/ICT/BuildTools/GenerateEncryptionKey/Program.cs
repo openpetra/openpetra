@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -59,6 +59,7 @@ namespace Ict.Tools.GenerateEncryptionKey
                 else
                 {
                     Console.WriteLine("public key only: ");
+                    Console.WriteLine(RSANew.ToXmlString(false));
                 }
 
                 string PrivateKeyFile = TAppSettingsManager.GetValue("PrivateKeyFile", "", false);
@@ -68,11 +69,12 @@ namespace Ict.Tools.GenerateEncryptionKey
                     StreamWriter sw = new StreamWriter(PrivateKeyFile);
                     sw.WriteLine(RSANew.ToXmlString(true));
                     sw.Close();
-                    Console.WriteLine("public key has been written to " + PrivateKeyFile);
+                    Console.WriteLine("private key has been written to " + PrivateKeyFile);
                 }
                 else
                 {
                     Console.WriteLine("Private key with public key: ");
+                    Console.WriteLine(RSANew.ToXmlString(true));
                 }
             }
             catch (Exception e)

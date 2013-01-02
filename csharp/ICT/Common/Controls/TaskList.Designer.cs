@@ -64,8 +64,8 @@ namespace Ict.Common.Controls
             // tPnlGradient1
             //
             this.tPnlGradient1.AutoScroll = true;
-            this.tPnlGradient1.AutoSize = true;
-            this.tPnlGradient1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+//            this.tPnlGradient1.AutoSize = true;
+//            this.tPnlGradient1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tPnlGradient1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.tPnlGradient1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tPnlGradient1.DontDrawBottomLine = false;
@@ -85,8 +85,9 @@ namespace Ict.Common.Controls
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Dock = System.Windows.Forms.DockStyle.Fill;
+//            this.AutoSize = false;
+//            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.tPnlGradient1);
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "TTaskList";

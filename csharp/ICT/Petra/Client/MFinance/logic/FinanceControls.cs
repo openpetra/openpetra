@@ -706,6 +706,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 periods.Rows.Add(period);
             }
 
+            periods.DefaultView.Sort = ValueMember + " ASC";
+
             AControl.InitialiseUserControl(periods,
                 ValueMember,
                 DisplayMember,

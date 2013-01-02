@@ -256,24 +256,33 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         }
 
                         Int64 ParentKey = Convert.ToInt64(TYml2Xml.GetAttributeRecursive(LocalNode, "ParentUnitKey"));
-                        UmUnitStructureRow UnitStructureRow;
+                        UmUnitStructureRow UnitStructureRow = null;
 
                         if (IsExistingPartner)
                         {
-                            AMainDS.Merge(UmUnitStructureAccess.LoadByPrimaryKey(ParentKey, PartnerRow.PartnerKey, null));
+                            AMainDS.Merge(UmUnitStructureAccess.LoadViaPUnitChildUnitKey(PartnerRow.PartnerKey, null));
 
                             AMainDS.UmUnitStructure.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                                 UmUnitStructureTable.GetChildUnitKeyDBName(),
                                 PartnerRow.PartnerKey);
-                            UnitStructureRow = (UmUnitStructureRow)AMainDS.UmUnitStructure.DefaultView[0].Row;
-                            UnitStructureRow.ParentUnitKey = ParentKey;
+
+                            if (AMainDS.UmUnitStructure.DefaultView.Count > 0)
+                            {
+                                UnitStructureRow = (UmUnitStructureRow)AMainDS.UmUnitStructure.DefaultView[0].Row;
+                            }
                         }
-                        else
+
+                        if (UnitStructureRow == null)
                         {
                             UnitStructureRow = AMainDS.UmUnitStructure.NewRowTyped();
                             UnitStructureRow.ParentUnitKey = ParentKey;
                             UnitStructureRow.ChildUnitKey = PartnerRow.PartnerKey;
                             AMainDS.UmUnitStructure.Rows.Add(UnitStructureRow);
+                        }
+                        else
+                        {
+                            UnitStructureRow.ParentUnitKey = ParentKey;
+                            UnitStructureRow.ChildUnitKey = PartnerRow.PartnerKey;
                         }
 
                         PartnerRow.PartnerShortName = UnitRow.UnitName;

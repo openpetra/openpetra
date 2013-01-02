@@ -204,6 +204,14 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         public override bool AddUser(string AUserID)
         {
+            // we need a GUserInfo object for submitting the changes to the database later on
+            TPetraIdentity PetraIdentity = new TPetraIdentity(
+                "SYSADMIN", "", "", "", "", DateTime.MinValue,
+                DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false,
+                false);
+
+            UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
+
             return FUserManager.AddUser(AUserID);
         }
     }

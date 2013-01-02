@@ -32,6 +32,7 @@ OpenPetra:
                         #MergePartners:
                         FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners}
                         WorkWithLastPartner: {Label=Work with Last Partner, Description=Open last Partner worked with, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
+                        DeletePartner: {Label=Delete Partner, Description=Delete a selected Partner, ActionClick=TPartnerMain.DeletePartnerRecord}
                     CreatePartner:
                         AddNewFamily: {ActionClick=TPartnerMain.NewPartner, Description=Create a new Partner of Class FAMILY}
                         AddNewPerson: {ActionClick=TPartnerMain.NewPerson, Description=Create a new Partner of Class PERSON}
@@ -39,8 +40,8 @@ OpenPetra:
                     Contacts:
                         FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Partner Contacts}
                     ImportExport: {Label=Import and Export}
-                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description="Export to YAML file for importing into other OpenPetra database"}
-                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from file or satellite database}
+                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
+                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
@@ -278,6 +279,7 @@ OpenPetra:
                         PreviousExperienceReport: {ActionOpenScreen=TFrmPreviousExperienceReport}
                         EndOfCommitmentReport: {ActionOpenScreen=TFrmEndOfCommitmentReport}
                         StartOfCommitmentReport: {ActionOpenScreen=TFrmStartOfCommitmentReport}
+                        LengthOfCommitmentReport: {ActionOpenScreen=TFrmLengthOfCommitmentReport}
                         JobAssignmentReport: {ActionOpenScreen=TFrmJobAssignmentReport}
                         BirthdayList: {ActionOpenScreen=TFrmBirthdayListReport}
                         EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactReportStaff}

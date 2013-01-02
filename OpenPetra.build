@@ -19,6 +19,8 @@ list of available commands:
       nant quickCompile                    will compile the OpenPetra.sln
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
+  compileProject: compile a single project file
+      nant compileProject -D:file=delivery/projects/sharpdevelop4/Ict.Testing.ControlTestBench.csproj 
   start: start both the local server and client
   startPetraServer: run a local Petra Server
   stopPetraServer: stop the local Petra Server
@@ -54,6 +56,8 @@ compat:
   translation: download new language files, and create the dlls required to be delivered with a new release
   buildTranslationTemplate: extracts string in winforms, creates and updates the .po files
   generateGuidedTranslations: Simplifies the translation of the .po files
+  createI18NYamlFiles: create localised yaml files
+    createI18NYamlFiles -language=de-DE -path=...
 
 releases:
   buildWindowsStandalone: will build the standalone installer for Windows. Only works on Windows with InnoSetup.
@@ -103,6 +107,11 @@ useful parameters
         buildfile="i18n/i18n.build" />
 </target>
 
+<target name="createI18NYamlFiles" description="create localised yaml files" >
+  <nant inheritall="true" target="createI18NYamlFiles" 
+        buildfile="i18n/i18n.build" />
+</target>
+
 <target name="custclean" description="Cleans the solution and project files">
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <delete>
@@ -147,6 +156,7 @@ useful parameters
       <include name="**/*-generated.resx" />
       <include name="**/*-generated.Designer.cs" />
       <include name="**/*.generated.refs" />
+      <include name="**/*.dll.xml" />
       <include name="tmp/**/AssemblyInfo.cs" />
     </fileset>
   </delete>
@@ -266,6 +276,11 @@ useful parameters
   <CompileSolution SolutionFile="${solution.file}"/>
 </target>
 
+<target name="compileProject">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <CompileProject CSProjFile="${path::get-full-path(file)}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
+</target>
+
 <target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess">
   <echo message="please compile the code after the files have been regenerated"/>
 </target>
@@ -281,8 +296,8 @@ useful parameters
 </target>
 
 <target name="generateWinforms">
-  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
-  <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraClient/PetraClient.build')}" verbose="${verbose}"/>
+  <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+  <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraClient/PetraClient.build')}" verbose="${verbose}"/>
 </target>
 
 <target name="generateWinform">

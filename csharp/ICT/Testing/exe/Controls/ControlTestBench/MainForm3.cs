@@ -65,7 +65,7 @@ public partial class MainForm3 : Form
         String yamlFile = txtYaml.Text.ToString();
 
         new TAppSettingsManager("../../csharp/ICT/Testing/exe/Controls/ControlTestBench/ControlTestBench.exe.config");
-        TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("YAMLDemodataPath") + '\\' + yamlFile);
+        TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("YAMLDemodataPath") + '/' + yamlFile);
 
         XmlDocument UINavigation = parser.ParseYML2XML();
 

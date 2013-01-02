@@ -91,6 +91,12 @@ namespace Ict.Common.Remoting.Server
         /// <returns>void</returns>
         public override System.Object InitializeLifetimeService()
         {
+            // this only is useful when debugging the program in the IDE, with breakpoints
+            if (TAppSettingsManager.GetValue("Server.DEBUGGING_Lifetime_Infinity", "false", false) == "true")
+            {
+                return null;
+            }
+
             ILease tmp;
             string myName = this.GetType().FullName;
 

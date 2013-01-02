@@ -33,7 +33,7 @@ namespace Ict.Tools.CodeGeneration
     public interface IControlGenerator
     {
         /// <summary>for implementing some functions specific to the control</summary>
-        void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode);
+        void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control);
         /// <summary>generate all code for the control</summary>
         void GenerateControl(TFormWriter writer, TControlDef ctrl);
         /// <summary>generate the code of the contained controls</summary>

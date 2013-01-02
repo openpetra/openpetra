@@ -108,6 +108,10 @@ namespace Ict.Tools.DevelopersAssistant
             /// Generate glue
             /// </summary>
             generateGlue,
+            /// <summary>
+            /// Generate all WinForms
+            /// </summary>
+            generateWinforms,
             // Compilation ----------------------------------------------------
             /// <summary>
             /// Clean the folders prior to new build
@@ -214,7 +218,7 @@ namespace Ict.Tools.DevelopersAssistant
         public static TaskItem LastCodeGenItem {
             get
             {
-                return TaskItem.generateGlue;
+                return TaskItem.generateWinforms;
             }
         }
         /// <summary>
@@ -340,7 +344,7 @@ namespace Ict.Tools.DevelopersAssistant
                 {
                     _taskItem = TaskItem.generateORMCachedTables;
                 }
-                else if (TaskName.IndexOf(" ORM Data ", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                else if (TaskName.IndexOf(" ORM Data", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     _taskItem = TaskItem.generateORMData;
                 }
@@ -355,6 +359,10 @@ namespace Ict.Tools.DevelopersAssistant
                 else if (TaskName.IndexOf("with full", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     _taskItem = TaskItem.generateSolution;
+                }
+                else if (TaskName.IndexOf("all the windows", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    _taskItem = TaskItem.generateWinforms;
                 }
                 else if (TaskName.IndexOf("dows form", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
@@ -444,6 +452,8 @@ namespace Ict.Tools.DevelopersAssistant
                             "Generating solution with a quick (minimal) compile.  This could take a minute or two ...";
 
                     case TaskItem.generateWinform: return "Generating Windows form from YAML ...";
+
+                    case TaskItem.generateWinforms: return "Generating all the Windows forms ...";
 
                     case TaskItem.previewWinform: return "Creating a preview of a Windows form ...";
 
@@ -535,6 +545,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.generateWinform: return "Starting generation of Windows form from YAML";
 
+                    case TaskItem.generateWinforms: return "Starting generation of all the Windows forms";
+
                     case TaskItem.previewWinform: return "Starting generation of Windows form preview";
 
                     case TaskItem.initConfigFiles: return "Starting initConfigFiles";
@@ -600,6 +612,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.generateSolutionNoCompile: return "Generate the solution with no compile";
 
                     case TaskItem.generateWinform: return "Generate a Windows form";
+
+                    case TaskItem.generateWinforms: return "Generate all the Windows forms";
 
                     case TaskItem.previewWinform: return "Preview a Windows form";
 
@@ -668,6 +682,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.generateSolutionNoCompile: return "Generate the solution with no compile";
 
                     case TaskItem.generateWinform: return "Generate a Windows form";
+
+                    case TaskItem.generateWinforms: return "Generate all the Windows forms";
 
                     case TaskItem.previewWinform: return "Preview a Windows form";
 

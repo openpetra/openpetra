@@ -24,6 +24,8 @@
 using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Reflection;
+using System.IO;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MReporting;
@@ -1173,6 +1175,71 @@ namespace Ict.Petra.Server.MReporting
             return ReturnValue;
         }
 
+        private SortedList <string, Assembly>FReportAssemblies = new SortedList <string, Assembly>();
+
+        /// <summary>
+        /// instead of executing an sql query, we can run a method that returns a DataTable
+        /// </summary>
+        /// <param name="ANamespaceClassAndMethodName"></param>
+        private DataTable CalculateFromMethod(string ANamespaceClassAndMethodName)
+        {
+            string methodName = ANamespaceClassAndMethodName.Substring(ANamespaceClassAndMethodName.LastIndexOf(".") + 1);
+
+            ANamespaceClassAndMethodName = ANamespaceClassAndMethodName.Substring(0, ANamespaceClassAndMethodName.LastIndexOf("."));
+            string className = ANamespaceClassAndMethodName.Substring(ANamespaceClassAndMethodName.LastIndexOf(".") + 1);
+            string namespaceName = ANamespaceClassAndMethodName.Substring(0, ANamespaceClassAndMethodName.LastIndexOf("."));
+
+            if (!FReportAssemblies.Keys.Contains(namespaceName))
+            {
+                // work around dlls containing several namespaces, eg Ict.Petra.Client.MFinance.Gui contains AR as well
+                string DllName = (TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + namespaceName).ToString().
+                                 Replace("Ict.Petra.Server.", "Ict.Petra.Server.lib.");
+
+                if (!System.IO.File.Exists(DllName + ".dll"))
+                {
+                    DllName = DllName.Substring(0, DllName.LastIndexOf("."));
+                }
+
+                try
+                {
+                    FReportAssemblies.Add(namespaceName, Assembly.LoadFrom(DllName + ".dll"));
+                }
+                catch (Exception exp)
+                {
+                    throw new Exception("error loading assembly " + namespaceName + ".dll: " + exp.Message);
+                }
+            }
+
+            Assembly asm = FReportAssemblies[namespaceName];
+
+            System.Type classType = asm.GetType(namespaceName + "." + className);
+
+            if (classType == null)
+            {
+                throw new Exception("cannot find class " + namespaceName + "." + className + " for method " + methodName);
+            }
+
+            MethodInfo method = classType.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
+
+            if (method != null)
+            {
+                try
+                {
+                    return (DataTable)method.Invoke(null, new object[] { this.Parameters, this.Results });
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log("problem while calling " + ANamespaceClassAndMethodName);
+                    TLogging.Log(e.ToString());
+                    return null;
+                }
+            }
+            else
+            {
+                throw new Exception("cannot find method " + className + "." + methodName);
+            }
+        }
+
         /// <summary>
         /// execute sql query, or do any other calculation to get the result
         /// </summary>
@@ -1218,6 +1285,41 @@ namespace Ict.Petra.Server.MReporting
                         TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
                         rptDataCalcLevel.Depth++;
                         rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
+                    }
+                }
+            }
+            else if (strSql.StartsWith("Ict.Petra.Server."))
+            {
+                DataTable tab = CalculateFromMethod(strSql);
+
+                if (tab == null)
+                {
+                    throw new Exception("Error in " + strSql);
+                }
+                else if (tab.Rows.Count > 0)
+                {
+                    string strReturns = rptCalculation.strReturns;
+
+                    if (strReturns.ToLower() == "automatic")
+                    {
+                        strReturns = string.Empty;
+
+                        foreach (DataColumn col in tab.Columns)
+                        {
+                            strReturns = StringHelper.AddCSV(strReturns, col.ColumnName);
+                        }
+                    }
+
+                    foreach (DataRow row in tab.Rows)
+                    {
+                        this.AddResultsToParameter(strReturns, rptCalculation.strReturnsFormat, row, StoreResultsAtDepth);
+
+                        if (strLowerLevel != String.Empty)
+                        {
+                            TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
+                            rptDataCalcLevel.Depth++;
+                            rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
+                        }
                     }
                 }
             }

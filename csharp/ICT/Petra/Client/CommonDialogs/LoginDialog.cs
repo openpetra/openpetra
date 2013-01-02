@@ -97,11 +97,11 @@ namespace Ict.Petra.Client.CommonDialogs
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblUserName.Text = Catalog.GetString("&User ID:");
-            this.lblPassword.Text = Catalog.GetString("&Password:");
+            this.lblUserName.Text = Catalog.GetString("&User ID") + ":";
+            this.lblPassword.Text = Catalog.GetString("&Password") + ":";
             this.btnLogin.Text = Catalog.GetString(" &Login");
             this.btnCancel.Text = Catalog.GetString(" &Cancel");
-            this.lblDatabase.Text = Catalog.GetString("Database:");
+            this.lblDatabase.Text = Catalog.GetString("Database") + ":";
             this.chkRememberUserName.Text = Catalog.GetString("Remember the username");
             this.label1.Text = Catalog.GetString("Initial Login: demo/demo or sysadmin/CHANGEME");
             this.label2.Text = Catalog.GetString("Please change the passwords immediately!");
@@ -363,13 +363,14 @@ namespace Ict.Petra.Client.CommonDialogs
                 else
                 {
                     TLogging.Log(
-                        "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine + exp.ToString(),
+                        Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                         TLoggingType.ToLogfile);
 #if  TESTMODE
 #else
                     MessageBox.Show(
                         Catalog.GetString(
-                            "An error occured while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                            "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile +
+                        ": " +
                         TLogging.GetLogFileName(),
                         Catalog.GetString("Server Connection Error"),
                         MessageBoxButtons.OK,
@@ -442,12 +443,12 @@ namespace Ict.Petra.Client.CommonDialogs
             catch (EServerConnectionGeneralException exp)
             {
                 TLogging.Log(
-                    "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine + exp.ToString(),
+                    Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                     TLoggingType.ToLogfile);
 #if  TESTMODE
 #else
                 MessageBox.Show(Catalog.GetString(
-                        "An error occured while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                        "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
                     TLogging.GetLogFileName(),
                     "Server Connection Error",
                     MessageBoxButtons.OK,
@@ -458,13 +459,13 @@ namespace Ict.Petra.Client.CommonDialogs
             catch (Exception exp)
             {
                 TLogging.Log(
-                    "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine + exp.ToString(),
+                    Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                     TLoggingType.ToLogfile);
 #if  TESTMODE
 #else
                 MessageBox.Show(
                     Catalog.GetString(
-                        "An error occured while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                        "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
                     TLogging.GetLogFileName(),
                     Catalog.GetString("Server Connection Error"),
                     MessageBoxButtons.OK,

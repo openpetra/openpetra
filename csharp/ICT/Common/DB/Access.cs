@@ -561,7 +561,7 @@ namespace Ict.Common.DB
             TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
             TFileVersionInfo serverExeInfo = new TFileVersionInfo(TFileVersionInfo.GetApplicationVersion());
 
-            if (dbversion.Compare(serverExeInfo) < 0)
+            if (dbversion.CompareWithoutPrivatePart(serverExeInfo) < 0)
             {
                 // for a proper server, the patchtool should have already updated the database
 
@@ -2172,7 +2172,7 @@ namespace Ict.Common.DB
         /// <param name="ASqlFilename"></param>
         /// <param name="ADefines">Defines to be set in the sql statement</param>
         /// <returns></returns>
-        public static string ReadSqlFile(string ASqlFilename, List <string>ADefines)
+        public static string ReadSqlFile(string ASqlFilename, SortedList <string, string>ADefines)
         {
             ASqlFilename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
                            Path.DirectorySeparatorChar +
@@ -2205,9 +2205,16 @@ namespace Ict.Common.DB
                 ProcessTemplate template = new ProcessTemplate(null);
                 template.FTemplateCode = new StringBuilder(stmt);
 
-                foreach (string define in ADefines)
+                foreach (string define in ADefines.Keys)
                 {
-                    template.SetCodelet(define, "enabled");
+                    string enabled = ADefines[define];
+
+                    if (enabled.Length == 0)
+                    {
+                        enabled = "enabled";
+                    }
+
+                    template.SetCodelet(define, enabled);
                 }
 
                 return template.FinishWriting(true).Replace(Environment.NewLine, " ");

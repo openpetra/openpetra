@@ -43,7 +43,8 @@ namespace Ict.Common
         public const String UNDEFINEDVALUE = "#UNDEFINED#";
 
         /// <summary>The path where the application is started from.</summary>
-        private static String FApplicationDirectory = Environment.CurrentDirectory;
+        private static String FApplicationDirectory = System.IO.Path.GetDirectoryName(
+            System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 
         /// <summary>The name of the Configuration File that should be read from; static so it can be manipulated manually once for all (remoting nunit etc.)</summary>
         private static String FConfigFileName = "";
@@ -70,6 +71,15 @@ namespace Ict.Common
         {
             get
             {
+                if (FApplicationDirectory.StartsWith("file:\\"))
+                {
+                    FApplicationDirectory = FApplicationDirectory.Substring("file:\\".Length);
+                }
+                else if (FApplicationDirectory.StartsWith("file:/"))
+                {
+                    FApplicationDirectory = FApplicationDirectory.Substring("file:".Length);
+                }
+
                 return FApplicationDirectory;
             }
         }
@@ -159,9 +169,6 @@ namespace Ict.Common
         private bool LoadCustomAppSettingFile(bool AFailOnMissingConfigFile)
         {
             XmlDocument xml;
-
-            // need to switch back to the application directory, because the path names might be relative to the application
-            Environment.CurrentDirectory = FApplicationDirectory;
 
             if (!System.IO.File.Exists(FConfigFileName) && System.IO.File.Exists(FConfigFileName.Replace(".config", ".config.sample")))
             {

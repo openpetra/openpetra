@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -125,8 +125,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             TVerificationException terminate = new TVerificationException(
-                Catalog.GetString(String.Format(
-                        "No Data for currency {0} found", ACurrencyCode)));
+                String.Format(Catalog.GetString(
+                        "No Data for currency {0} found"), ACurrencyCode));
             terminate.Context = "Common Accounting";
             terminate.ErrorCode = "TCurrencyInfo02";
             throw terminate;

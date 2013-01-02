@@ -34,15 +34,21 @@ RootNode:
         grpDate:
             Label: Date
             Dock: Top
-            Controls: [chkUseDate, dtpFromDate, dtpToDate]            
+            Controls: [chkUseDate]
+        chkAnniversaries:
+            Label: Only print anniversaries
+            CheckBoxAttachedLabel: right
+            Controls: [txtAnniversaries]
+        txtAnniversaries:
+            Help: "Please enter comma separated list of anniversaries, eg. 40,50,75"
         grpOptions:
             Label: Options
             Dock: Fill
             Controls: [chkIncludeFamily, chkSelectTypes, grdTypes]           
         chkUseDate:
             Label: Use date range
+            Controls: [dtpFromDate, dtpToDate, chkAnniversaries]
             CheckBoxAttachedLabel: right
-            OnChange: UseDateChanged
         dtpFromDate:
             Label: From
         dtpToDate:
@@ -62,6 +68,9 @@ RootNode:
         Para0:
             Name: Date of Birth
             Parameter: 2.5
+        Para0b:
+            Name: Age
+            Parameter: 1.5
         Para1:
             Name: End Date of Commitment
             Parameter: 2.0

@@ -107,6 +107,8 @@ namespace Ict.Tools.NAntTasks
                 process.StartInfo.Arguments += " /run=" + FTestCase;
             }
 
+            System.Console.WriteLine("Testing " + FAssemblyName + " " + FTestCase);
+
             process.StartInfo.WorkingDirectory = Path.GetDirectoryName(FAssemblyName);
 
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;

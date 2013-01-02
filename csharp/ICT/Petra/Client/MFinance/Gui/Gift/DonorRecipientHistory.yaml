@@ -7,15 +7,13 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: browse
     Template: windowSingleTable
-    WindowWidth: 1000
-    WindowHeight: 800
+    WindowWidth: 850
+    WindowHeight: 650
     Actions:
-        actClose:  {Label=Close, ActionClick=BtnCloseClick}
-        actView: {Label=View, ActionClick=BtnViewClick}
-        actBrowse: {Label=Browse, ActionClick=BtnBrowseClick}
+        actSearch: {Label=Search, ActionClick=BtnSearchClick}
     Controls:
         pnlContent:
-            Controls: [pnlSelect, pnlGrid, pnlDetails, pnlButtons]
+            Controls: [pnlSelect, pnlSelect2, pnlGrid, pnlDetails]
             Dock: Fill
         pnlSelect:
             Dock: Top
@@ -23,32 +21,34 @@ RootNode:
                 Row0: [cmbLedger]
                 Row1: [txtDonor]
                 Row2: [txtRecipient]
+        pnlSelect2:
+            Dock: Top
+            Controls:
                 Row3: [dtpDateFrom,dtpDateTo]
-                Row4: [txtMotivationGroup, txtMotivationDetail, btnBrowse]
+                Row4: [txtMotivationGroup, txtMotivationDetail]
+                Row5: [btnSearch]
         cmbLedger: {Label=Ledger, ReadOnly=true, List=LedgerNameList, OnChange=OnCmbLedgerChange}
-        txtDonor: {Label=Donor, Type=PartnerKey, PartnerClass=FAMILY}
+        txtDonor: {Label=Donor, Type=PartnerKey}
         txtRecipient: {Label=Recipient, Type=PartnerKey}
         dtpDateFrom: {Label=Date from}
         dtpDateTo: {Label=To}  
         txtMotivationGroup: {Label=Motivation Group}
         txtMotivationDetail: {Label=Detail}  
-        btnBrowse:
-            Action: actBrowse        
+        btnSearch:
+            Action: actSearch        
         pnlGrid:
-            Dock: Top
+            Dock: Fill
             Controls: [grdDetails]
-            Height:400
-        pnlButtons:
-            Dock: Bottom
-            Controls:
-                Row0: [btnClose]
-        btnClose: 
-            Action: actClose
         grdDetails:
             TableName: AGiftDetail
             Dock: Fill
             Columns: [DateEntered, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, GiftTransactionAmount, ConfidentialGiftFlag, BatchNumber, GiftTransactionNumber, RecipientDescription, Reference, GiftCommentOne, CommentOneType, RecipientLedgerNumber, RecipientKey, ChargeFlag, MethodOfPaymentCode, MethodOfGivingCode, CostCentreCode, GiftCommentTwo, GiftCommentThree, MailingCode]
             CustomColumns:
+                MotivationGroupCode: {Label=Group}
+                MotivationDetailCode: {Label=Detail}
+                GiftTransactionAmount: {Label=Amount,Type=Currency}
+                BatchNumber: {Label=Batch}
+                GiftTransactionNumber: {Label=Trans}
                 ConfidentialGiftFlag: {Label=C, Type=Boolean}
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 DonorKey: {Label=Donor Key, Type=PartnerKey}
@@ -63,12 +63,9 @@ RootNode:
                 Reference: {Label=Reference, Type=String}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
-            Dock: Top
+            Dock: Bottom
             Controls:
                 Row0: [txtGiftTotal,txtNumberOfGifts]
-                Row1: [btnView]
         txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true}
         txtNumberOfGifts: {Label=Number of Gifts, ReadOnly=true}
-        btnView:
-            Action: actView               
 

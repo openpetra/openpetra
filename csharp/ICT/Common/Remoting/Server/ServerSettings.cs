@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -161,7 +161,12 @@ namespace Ict.Common.Remoting.Server
         {
             get
             {
-                return USingletonSrvSetting.FServerLogFile;
+                if (USingletonSrvSetting != null)
+                {
+                    return USingletonSrvSetting.FServerLogFile;
+                }
+
+                return string.Empty;
             }
         }
 

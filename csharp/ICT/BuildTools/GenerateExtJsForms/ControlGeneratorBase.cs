@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -314,7 +314,7 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         }
 
         /// e.g. used for controls on Reports (readparameter, etc)
-        public virtual void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public virtual void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
         }
     }

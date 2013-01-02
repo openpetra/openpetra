@@ -95,7 +95,7 @@ namespace Ict.Common.Controls
         private const Int16 EXPANDEDHEIGHT = 153;
 
         /// <summary>Hard-coded value of the collapsed width</summary>
-        private const Int16 COLLAPSEDWIDTH = 20;
+        private const Int16 COLLAPSEDWIDTH = 40;
 
         /// <summary>Hard-coded value of the expanded width</summary>
         private const Int16 EXPANDEDWIDTH = 300;
