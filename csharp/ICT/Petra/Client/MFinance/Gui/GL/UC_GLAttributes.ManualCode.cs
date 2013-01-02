@@ -107,7 +107,38 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // bool ActiveOnly = this.Enabled;
             // TFinanceControls.InitialiseValuesList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
 
-            ShowData();
+            // do no longer call ShowData but instead use the code below
+            //ShowData();
+
+            // the following code represents what usually happens inside ShowData. Need manual code here since
+            // the view does not show all records but only filtered one (filter by transaction)
+            FPetraUtilsObject.DisableDataChangedEvent();
+            pnlDetails.Enabled = false;
+            ShowDataManual();
+
+            if (FMainDS.ATransAnalAttrib != null)
+            {
+                // set a row filter to make sure only records belonging to this transaction are shown
+                view.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
+                    ATransAnalAttribTable.GetLedgerNumberDBName(), FLedgerNumber,
+                    ATransAnalAttribTable.GetBatchNumberDBName(), FBatchNumber,
+                    ATransAnalAttribTable.GetJournalNumberDBName(), FJournalNumber,
+                    ATransAnalAttribTable.GetTransactionNumberDBName(), FTransactionNumber);
+                view.AllowNew = false;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(view);
+
+                if (view.Count > 0)
+                {
+                    SelectRowInGrid(1);
+                    pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
+                }
+                else
+                {
+//                    show
+                }
+            }
+
+            FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         /// <summary>
@@ -218,7 +249,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                cmbDetailAnalysisAttributeValue.SelectedIndex = -1;
+                cmbDetailAnalysisAttributeValue.SetSelectedString("", -1);
             }
 
             // If the batch has been posted, the Combobox can't be changed.
@@ -236,10 +267,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// check if the necessary rows for the given account are there, automatically add/delete rows, update account in my table
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="ATransactionNumber"></param>
         /// <param name="AAccount">Account Number for AnalysisTable lookup</param>
-        public void CheckAnalysisAttributes(String AAccount)
+        public void CheckAnalysisAttributes(int ALedgerNumber, int ABatchNumber, int AJournalNumber,
+            int ATransactionNumber, String AAccount)
         {
             //grdDetails
+            checkFCacheInitialised();
+
             if (FCacheDS == null)
             {
                 return;
@@ -262,18 +300,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 String TypeCode = myRow.AnalysisTypeCode;
 
                 ATransAnalAttribRow myTableRow =
-                    (ATransAnalAttribRow)FMainDS.ATransAnalAttrib.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber,
-                                                                                           FTransactionNumber,
+                    (ATransAnalAttribRow)FMainDS.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber,
+                                                                                           ATransactionNumber,
                                                                                            TypeCode });
 
                 if (myTableRow == null)
                 {
                     //Create a new TypeCode for this account
                     ATransAnalAttribRow newRow = FMainDS.ATransAnalAttrib.NewRowTyped(true);
-                    newRow.LedgerNumber = FLedgerNumber;
-                    newRow.BatchNumber = FBatchNumber;
-                    newRow.JournalNumber = FJournalNumber;
-                    newRow.TransactionNumber = FTransactionNumber;
+                    newRow.LedgerNumber = ALedgerNumber;
+                    newRow.BatchNumber = ABatchNumber;
+                    newRow.JournalNumber = AJournalNumber;
+                    newRow.TransactionNumber = ATransactionNumber;
                     newRow.AnalysisTypeCode = TypeCode;
                     newRow.AccountCode = AAccount;
 

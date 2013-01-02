@@ -1437,6 +1437,22 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return AAnalysisAttributeAccess.CountViaAAnalysisType(ATypeCode, null);
         }
 
+        /// <summary>
+        /// Check if a account code for Ledger ALedgerNumber has analysis attributes set up
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool HasAccountSetupAnalysisAttributes(Int32 ALedgerNumber, String AAccountCode)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool HasAccountAnalysisAttributes = false;
+
+            HasAccountAnalysisAttributes = (AAnalysisAttributeAccess.CountViaAAccount(ALedgerNumber, AAccountCode, Transaction) > 0);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return HasAccountAnalysisAttributes;
+        }
+
         //
         //    Rename Account: to rename an AccountCode, we need to update lots of values all over the database:
 

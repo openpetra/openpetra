@@ -104,7 +104,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 TVerificationResult tvt =
                     new TVerificationResult(Catalog.GetString("Year End is expected ..."),
-                        Catalog.GetString("In this situation you cannot run a year end routine"), "",
+                        Catalog.GetString("In this situation you cannot run a month end routine"), "",
                         TPeriodEndErrorAndStatusCodes.PEEC_04.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);

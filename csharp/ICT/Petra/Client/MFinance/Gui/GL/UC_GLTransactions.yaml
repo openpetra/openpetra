@@ -29,8 +29,8 @@ RootNode:
         pnlDetailButtons:
             Dock: Right
             Controls: [btnNew, btnRemove]
-        btnNew: {Action=actNew}
-        btnRemove: {Action=actRemove}
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnRemove: {Action=actRemove, Stretch=horizontally}
         grdDetails:
             Dock: Fill
             TableName: ATransaction

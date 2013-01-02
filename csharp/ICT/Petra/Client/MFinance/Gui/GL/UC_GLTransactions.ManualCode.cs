@@ -282,6 +282,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 pnlDetails.Enabled = true;
             }
 
+            // make sure analysis attributes are created
             ((TFrmGLBatch) this.ParentForm).EnableAttributes();
 
             cmbDetailCostCentreCode.Focus();
@@ -686,11 +687,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void AccountCodeDetailChanged(object sender, EventArgs e)
         {
             ProcessAnalysisAttributes();
+
+            if (TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString()))
+            {
+                ((TFrmGLBatch)ParentForm).EnableAttributes();
+            }
+            else
+            {
+                ((TFrmGLBatch)ParentForm).DisableAttributes();
+            }
         }
 
         private void ProcessAnalysisAttributes()
         {
-            ((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes(cmbDetailAccountCode.GetSelectedString());
+            if (GetSelectedDetailRow() != null)
+            {
+                ((TFrmGLBatch)ParentForm).GetAttributesControl().CheckAnalysisAttributes(FLedgerNumber,
+                    FBatchNumber,
+                    FJournalNumber,
+                    GetSelectedDetailRow().TransactionNumber,
+                    cmbDetailAccountCode.GetSelectedString());
+            }
         }
 
         private void ValidateDataDetailsManual(ATransactionRow ARow)

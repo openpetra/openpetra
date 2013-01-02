@@ -360,11 +360,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void RefreshGridData(int ABatchNumber)
         {
             int newRowToSelectAfterFilter = 1;
-        	
+
             FMainDS.AGiftBatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
-        	FPreviouslySelectedDetailRow = null;
+            FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
 
@@ -384,7 +384,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 SelectRowInGrid(newRowToSelectAfterFilter);
             }
         }
-        
+
         private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
         {
             int rowPos = 0;
@@ -937,10 +937,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 PrintGiftBatchReceipts(PostedGiftTDS);
 
                 RefreshAll();
-                
+
                 if (FPetraUtilsObject.HasChanges)
                 {
-                	((TFrmGiftBatch)ParentForm).SaveChanges();
+                    ((TFrmGiftBatch)ParentForm).SaveChanges();
                 }
             }
         }
