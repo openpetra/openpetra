@@ -53,6 +53,8 @@ namespace Ict.Common.Controls
         static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
         static private Form FLastOpenedScreen = null;
 
+        private static SortedList<String, Object> SingleInstanceWindows = new SortedList<String, Object>();
+
         #region Constructors
 
         /// <summary>
@@ -414,6 +416,7 @@ namespace Ict.Common.Controls
             Assembly asm = FGUIAssemblies[strNamespace];
             string actionClick = TYml2Xml.GetAttribute(node, "ActionClick");
             string actionOpenScreen = TYml2Xml.GetAttribute(node, "ActionOpenScreen");
+            Boolean IsSingleInstance = (TYml2Xml.GetAttribute(node, "SingleInstance") != "");
 
             if (actionClick.Contains("."))
             {
@@ -430,6 +433,7 @@ namespace Ict.Common.Controls
 
                 if (method != null)
                 {
+                    Object LaunchResult = null;
                     List <object>parameters = new List <object>();
                     parameters.Add(AParentWindow);
 
@@ -479,7 +483,34 @@ namespace Ict.Common.Controls
                         parameters.Add((object)FCurrentLedger);
                     }
 
-                    method.Invoke(null, parameters.ToArray());
+                    if (IsSingleInstance)
+                    {
+                        if (SingleInstanceWindows.ContainsKey(actionClick))         // I previously launched one of these,
+                        {                                                           // so I'll re-use that, instead of launching another one.
+                            LaunchResult = SingleInstanceWindows[actionClick];
+                            if (LaunchResult is System.Windows.Forms.Form)
+                            {
+                                ((System.Windows.Forms.Form)LaunchResult).BringToFront();
+                                SingleInstanceWindows.Remove(actionClick);
+                            }
+                        }
+                    }
+
+                    if (LaunchResult == null)
+                    {
+                        LaunchResult = method.Invoke(null, parameters.ToArray());   // The invoked method may actually return NULL,
+                                                                                    // but Invoke always returns an object.
+                                                                                    // If you want "SingleInstance" to work, you need to ensure that the
+                                                                                    // Invoked method returns the launched form.
+                    }
+
+                    if (IsSingleInstance && (LaunchResult is System.Windows.Forms.Form))
+                    {
+                        SingleInstanceWindows.Add(actionClick, LaunchResult);
+                        ((System.Windows.Forms.Form)LaunchResult).FormClosed +=     // Let me know if this "SingleInstance" form is closed
+                            new FormClosedEventHandler(SingleInstance_FormClosed);  // and I'll remove my reference to it.
+
+                    }
                 }
                 else
                 {
@@ -489,6 +520,7 @@ namespace Ict.Common.Controls
             else if (actionOpenScreen.Length > 0)
             {
                 string className = actionOpenScreen;
+                System.Object screen = null;
 
                 System.Type classType = asm.GetType(strNamespace + "." + className);
 
@@ -502,10 +534,28 @@ namespace Ict.Common.Controls
                 // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
                 // delegate as a static function that is available from everywhere?
 
-                System.Object screen = null;
                 try
                 {
-                    screen = Activator.CreateInstance(classType, new object[] { AParentWindow });
+                    if (IsSingleInstance)
+                    {
+                        if (SingleInstanceWindows.ContainsKey(className + ".Show")) // I previously launched one of these,
+                        {                                                           // so I'll re-use that, instead of launching another one.
+                            screen = SingleInstanceWindows[className + ".Show"];
+                            SingleInstanceWindows.Remove(className + ".Show");
+                        }
+                    }
+
+                    if (screen == null)
+                    {
+                        screen = Activator.CreateInstance(classType, new object[] { AParentWindow });
+                    }
+
+                    if (IsSingleInstance)
+                    {
+                        SingleInstanceWindows.Add(className + ".Show", screen);
+                        ((System.Windows.Forms.Form)screen).FormClosed +=           // Let me know if this "SingleInstance" form is closed
+                            new FormClosedEventHandler(SingleInstance_FormClosed);  // and I'll remove my reference to it.
+                    }
                 }
                 catch (System.Reflection.TargetInvocationException E)
                 {
@@ -590,6 +640,21 @@ namespace Ict.Common.Controls
             }
 
             return "";
+        }
+
+        /// <summary>
+        /// A form marked as "single Instance" has been closed.
+        /// I should have a reference to this form in my list, which I need to remove now.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        static void SingleInstance_FormClosed(object sender, FormClosedEventArgs e)
+        {
+        // private static SortedList<String, Object> SingleInstanceWindows = new SortedList<String, Object>();
+            if (SingleInstanceWindows.ContainsValue(sender))
+            { 
+                SingleInstanceWindows.RemoveAt (SingleInstanceWindows.IndexOfValue(sender));
+            }
         }
 
         #endregion

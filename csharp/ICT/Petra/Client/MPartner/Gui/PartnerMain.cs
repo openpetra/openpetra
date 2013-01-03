@@ -79,12 +79,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// open partner find screen
         /// </summary>
-        public static void FindPartner(Form AParentForm)
+        public static TPartnerFindScreen FindPartner(Form AParentForm)
         {
             TPartnerFindScreen frm = new TPartnerFindScreen(AParentForm);
 
             frm.SetParameters(false, -1);
             frm.Show();
+            return frm;
         }
 
         /// <summary>
