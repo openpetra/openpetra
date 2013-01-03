@@ -61,6 +61,8 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         #region Fields
 
+        private System.Windows.Forms.ToolTip FTipMain;
+        
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
@@ -125,6 +127,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitialiseUserControl()
         {
             FIgnorePartnerStatusChange = false;
+            
+            // Set up ToolTip
+            this.components = new System.ComponentModel.Container();
+            FTipMain = new System.Windows.Forms.ToolTip(this.components);
+            FTipMain.AutoPopDelay = 4000;
+            FTipMain.InitialDelay = 500;
+            FTipMain.ReshowDelay = 100;            
 
             BuildValidationControlsDict();
 
@@ -139,12 +148,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtPartnerClass.BackColor = System.Drawing.Color.Yellow;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
-#if TODO
-                    tipMain.SetToolTip(this.txtPersonTitle, PPersonTable.GetTitleHelp());
-                    tipMain.SetToolTip(this.txtPersonFirstName, PPersonTable.GetFirstNameHelp());
-                    tipMain.SetToolTip(this.txtPersonMiddleName, PPersonTable.GetMiddleName1Help());
-                    tipMain.SetToolTip(this.txtPersonFamilyName, PPersonTable.GetFamilyNameHelp());
-#endif
+                    FTipMain.SetToolTip(this.txtPersonTitle, PPersonTable.GetTitleHelp());
+                    FTipMain.SetToolTip(this.txtPersonFirstName, PPersonTable.GetFirstNameHelp());
+                    FTipMain.SetToolTip(this.txtPersonMiddleName, PPersonTable.GetMiddleName1Help());
+                    FTipMain.SetToolTip(this.txtPersonFamilyName, PPersonTable.GetFamilyNameHelp());
+
                     txtPersonTitle.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     txtPersonFirstName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     txtPersonMiddleName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
@@ -159,11 +167,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlFamily2ndLine.Visible = true;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
-#if TODO
-                    tipMain.SetToolTip(this.txtFamilyTitle, PFamilyTable.GetTitleHelp());
-                    tipMain.SetToolTip(this.txtFamilyFirstName, PFamilyTable.GetFirstNameHelp());
-                    tipMain.SetToolTip(this.txtFamilyFamilyName, PFamilyTable.GetFamilyNameHelp());
-#endif
+                    FTipMain.SetToolTip(this.txtFamilyTitle, PFamilyTable.GetTitleHelp());
+                    FTipMain.SetToolTip(this.txtFamilyFirstName, PFamilyTable.GetFirstNameHelp());
+                    FTipMain.SetToolTip(this.txtFamilyFamilyName, PFamilyTable.GetFamilyNameHelp());
+
                     txtFamilyTitle.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     txtFamilyFirstName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     txtFamilyFamilyName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
