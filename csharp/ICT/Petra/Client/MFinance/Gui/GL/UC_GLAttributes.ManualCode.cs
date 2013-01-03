@@ -233,9 +233,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             foreach (AFreeformAnalysisRow AFRow in  FCacheDS.AFreeformAnalysis.Rows)
             {
-                if (ARow.AnalysisTypeCode.Equals(AFRow.AnalysisTypeCode) && ARow.LedgerNumber.Equals(AFRow.LedgerNumber) /*&& AFRow.Active*/)
+                if (ARow.AnalysisTypeCode.Equals(AFRow.AnalysisTypeCode) && ARow.LedgerNumber.Equals(AFRow.LedgerNumber))
                 {
-                    cmbDetailAnalysisAttributeValue.Items.Add(AFRow.AnalysisValue);
+                    // add value if it is active but also if not active and already set
+                    if (AFRow.Active || ARow.AnalysisAttributeValue == AFRow.AnalysisValue)
+                    {
+                        cmbDetailAnalysisAttributeValue.Items.Add(AFRow.AnalysisValue);
+                    }
                 }
             }
 
