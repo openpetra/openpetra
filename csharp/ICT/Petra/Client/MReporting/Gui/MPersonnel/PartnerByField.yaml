@@ -1,4 +1,4 @@
-﻿RootNode:
+RootNode:
     BaseYaml: PersonnelReportingForm.yaml
     FormType: report
     FormTitle: Partner By Field
@@ -59,13 +59,13 @@
         dtpFromDate: {Label=from, ParameterName=param_from_date}
         dtpUntilDate: {Label=until, ParameterName=param_until_date}
         
-        rgrSendingReceiving: {Label=Consider selected Field as, Stretch=Horizontally, ParameterName=param_sending_receiving}
+        rgrSendingReceiving: {Label=Consider selected Field as, Stretch=horizontally, ParameterName=param_sending_receiving}
             Controls: [rbtReceivingField, rbtSendingField]
 #            Action: actSendingReceivingSelectionChanged
         rbtReceivingField: {Label=Receiving Field, ParameterValue=ReceivingField}
         rbtSendingField: {Label=Sending Field, ParameterValue=SendingField}
 
-        rgrCommitmentsOnly: {Label=Commitment and Worker Field, Stretch=Horizontally, ParameterName=param_commitments_and_worker_field}
+        rgrCommitmentsOnly: {Label=Commitment and Worker Field, Stretch=horizontally, ParameterName=param_commitments_and_worker_field}
             Controls: [rbtCommitmentsOnly, rbtCommitmentsAndWorkerField]
         rbtCommitmentsOnly: {Label=Only consider Partners with Commitments, ParameterValue=CommitmentsOnly}
         rbtCommitmentsAndWorkerField: {Label=Allow Commitments and Worker Field, ParameterValue=CommitmentsAndWorkerField}
