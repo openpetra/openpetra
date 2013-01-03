@@ -65,7 +65,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Changing this will stop taborder issues
             sptTransactions.TabStop = false;
-
         }
 
         /// <summary>
@@ -173,7 +172,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateTotals();
             UpdateControlsProtection();
-            
         }
 
         /// <summary>

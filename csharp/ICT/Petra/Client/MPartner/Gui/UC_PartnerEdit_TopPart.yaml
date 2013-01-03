@@ -50,16 +50,19 @@ RootNode:
             ReadOnly: true
             NoLabel: true
             BorderStyle: None
+            Tooltip: Field where the Partner is working
             Width: 100
             
         cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, Width=100, Validation=true, OnChange=PartnerStatusCodeChangePromotion}
         txtStatusUpdated:
             ReadOnly: true
             Width: 100
+            Tooltip: Date of the last change of the Partner Status
             BorderStyle: None
         txtLastContact:
             DataField: MiscellaneousData.LastContactDate
             ReadOnly: true
+            Tooltip: Date when the last contact was made with this Partner
             Width: 100
             BorderStyle: None
 
@@ -78,12 +81,14 @@ RootNode:
             Type: PartnerKey
             ShowLabel: false
             TabStop: false
+            Tooltip: Partner Key
             Width: 100
         txtPartnerClass:
             ReadOnly: true
             Label: Class
             #DefaultValue: test
             BorderStyle: None
+            Tooltip: Partner Class
             Width: 100
 
 
@@ -99,12 +104,14 @@ RootNode:
             DataField: MiscellaneousData.LastGiftDate
             ReadOnly: true
             Width: 88
+            Tooltip: Date when this Partner has last given a gift
             BorderStyle: None        
         txtLastGiftDetails:
             NoLabel: true
             DataField: MiscellaneousData.LastGiftInfo
             ReadOnly: true
             Width: 328
+            Tooltip: Amount and to whom the gift was given to
             BorderStyle: None
                             
  
