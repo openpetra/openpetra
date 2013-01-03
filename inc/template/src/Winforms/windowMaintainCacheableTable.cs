@@ -611,10 +611,23 @@ namespace {#NAMESPACE}
 {#ENDIF SHOWDETAILS}
 {#IFDEF MASTERTABLE}
 
+    /// This method may throw an exception at ARow.EndEdit()
     private void GetDataFromControls({#MASTERTABLETYPE}Row ARow, Control AControl=null)
     {
 {#IFDEF SAVEDATA}
+        if (ARow == null) return;
+
+        object[] beforeEdit = ARow.ItemArray;
+        ARow.BeginEdit();
         {#SAVEDATA}
+        if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
+        {
+            ARow.CancelEdit();
+        }
+        else
+        {
+            ARow.EndEdit();
+        }
 {#ENDIF SAVEDATA}
     }
 {#ENDIF MASTERTABLE}
@@ -647,9 +660,17 @@ namespace {#NAMESPACE}
             }
             else
             {
+                object[] beforeEdit = ARow.ItemArray;
 				ARow.BeginEdit();
 				{#SAVEDETAILS}
-				ARow.EndEdit();
+                if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
+                {
+                    ARow.CancelEdit();
+                }
+                else
+                {
+                    ARow.EndEdit();
+                }
             }
         }
     }

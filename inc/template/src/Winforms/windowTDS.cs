@@ -42,6 +42,11 @@ namespace {#NAMESPACE}
 {#IFDEF DATASETTYPE}
     private {#DATASETTYPE} FMainDS;
 {#ENDIF DATASETTYPE}
+{#IFDEF MASTERTABLE OR DETAILTABLE}
+    private DataColumn FPrimaryKeyColumn = null;
+    private Control FPrimaryKeyControl = null;
+    private string FDefaultDuplicateRecordHint = String.Empty;
+{#ENDIF MASTERTABLE OR DETAILTABLE}
 
 {#IFDEF UICONNECTORTYPE}
 
@@ -101,6 +106,7 @@ namespace {#NAMESPACE}
 
 {#IFDEF MASTERTABLE OR DETAILTABLE}
       BuildValidationControlsDict();
+      SetPrimaryKeyControl();
 {#ENDIF MASTERTABLE OR DETAILTABLE}
     }
 
@@ -151,10 +157,23 @@ namespace {#NAMESPACE}
 
 {#IFDEF MASTERTABLE}
 
+    /// This method may throw an exception at ARow.EndEdit()
     private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
     {
 {#IFDEF SAVEDATA}
+        if (ARow == null) return;
+
+        object[] beforeEdit = ARow.ItemArray;
+        ARow.BeginEdit();
         {#SAVEDATA}
+        if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
+        {
+            ARow.CancelEdit();
+        }
+        else
+        {
+            ARow.EndEdit();
+        }
 {#ENDIF SAVEDATA}
     }
 {#ENDIF MASTERTABLE}
@@ -169,20 +188,37 @@ namespace {#NAMESPACE}
 {#ENDIFN MASTERTABLE}
 {#IFDEF SAVEDETAILS}
 
+    /// This method may throw an exception at ARow.EndEdit()
     private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow, Control AControl=null)
     {
         if (ARow != null)
         {
+            object[] beforeEdit = ARow.ItemArray;
             ARow.BeginEdit();
             {#SAVEDETAILS}
-            ARow.EndEdit();
+            if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
+            {
+                ARow.CancelEdit();
+            }
+            else
+            {
+                ARow.EndEdit();
+            }
         }
     }
 {#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
 
     private void ControlUpdateDataHandler(object sender, EventArgs e)
     {
-        GetDetailsFromControls(FPreviouslySelectedDetailRow, (Control)sender);
+        // This method should not normally be associated with a control that requires validation (because no validation takes place)
+        // GetDetailsFromControls can return an exception if the control is associated with a primary key, so we use a try/catch just in case
+        try
+        {
+            GetDetailsFromControls(FPreviouslySelectedDetailRow, (Control)sender);
+        }
+        catch (ConstraintException)
+        {
+        }
     }
 {#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
@@ -247,13 +283,44 @@ namespace {#NAMESPACE}
 
 {#IFDEF SHOWDETAILS}
             // Validate DetailTable
+            bool bGotConstraintException = false;
+            try
+            {
 {#IFNDEF MASTERTABLE}
-            GetDetailsFromControls(CurrentRow);
+                GetDetailsFromControls(CurrentRow);
 {#ENDIFN MASTERTABLE}
-            ValidateDataDetails(CurrentRow);
+                ValidateDataDetails(CurrentRow);
 {#IFDEF VALIDATEDATADETAILSMANUAL}
-            ValidateDataDetailsManual(CurrentRow);
+                ValidateDataDetailsManual(CurrentRow);
 {#ENDIF VALIDATEDATADETAILSMANUAL}            
+            }
+            catch (ConstraintException)
+            {
+                bGotConstraintException = true;
+            }
+
+            // Duplicate record validation
+            if (FPrimaryKeyColumn == null)
+            {
+                // If controls have been named according to the column names, it should be impossible to get a constraint exception 
+                //    without us knowing which is the 'prime' primary key column and control
+                // But this is our ultimate fallback position.  This creates an exception message that simply lists all the primary key fields in a friendly format
+                FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                    bGotConstraintException ? new TScreenVerificationResult(this, null,
+                    String.Format(Catalog.GetString("You have attempted to create a duplicate record.  Please ensure that you have unique input data for the field(s) {0}."), FDefaultDuplicateRecordHint),
+                    CommonErrorCodes.ERR_DUPLICATE_RECORD, null, TResultSeverity.Resv_Critical) : null, null);
+            }
+            else
+            {
+{#IFDEF DETAILTABLE}
+                    TControlExtensions.ValidateNonDuplicateRecord(this, bGotConstraintException, FPetraUtilsObject.VerificationResultCollection, 
+                            FPrimaryKeyColumn, FPrimaryKeyControl, FMainDS.{#DETAILTABLE}.PrimaryKey);
+{#ENDIF DETAILTABLE}        
+{#IFDEF MASTERTABLE}
+                    TControlExtensions.ValidateNonDuplicateRecord(this, bGotConstraintException, FPetraUtilsObject.VerificationResultCollection, 
+                            FPrimaryKeyColumn, FPrimaryKeyControl, FMainDS.{#MASTERTABLE}.PrimaryKey);
+{#ENDIF MASTERTABLE}        
+            }
 {#ENDIF SHOWDETAILS}
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
 
@@ -658,6 +725,38 @@ namespace {#NAMESPACE}
 {#IFDEF ADDCONTROLTOVALIDATIONCONTROLSDICT}
             {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
 {#ENDIF ADDCONTROLTOVALIDATIONCONTROLSDICT}
+        }
+    }
+
+    private void SetPrimaryKeyControl()
+    {
+        // Make a default hint string from all the primary keys
+        // and initialise the 'prime' primary key control on this control.
+        // This is the last control in the tab order that matches a key
+        int lastTabIndex = -1;
+{#IFDEF MASTERTABLE}
+        DataRow row = (new {#MASTERTABLE}Table()).NewRow();
+{#ENDIF MASTERTABLE}
+{#IFDEF DETAILTABLE}
+        DataRow row = (new {#DETAILTABLE}Table()).NewRow();
+{#ENDIF DETAILTABLE}
+        for (int i = 0; i < row.Table.PrimaryKey.Length; i++)
+        {
+            DataColumn column = row.Table.PrimaryKey[i];
+            if (FDefaultDuplicateRecordHint.Length > 0) FDefaultDuplicateRecordHint += ", ";
+            FDefaultDuplicateRecordHint += TControlExtensions.DataColumnNameToFriendlyName(column, true);
+            
+            Label dummy;
+            Control control;
+            if (TControlExtensions.GetControlsForPrimaryKey(column, this, out dummy, out control))
+            {
+                if (control.TabIndex > lastTabIndex)
+                {
+                    FPrimaryKeyColumn = column;
+                    FPrimaryKeyControl = control;
+                    lastTabIndex = control.TabIndex;
+                }
+            }
         }
     }
 {#ENDIF MASTERTABLE OR DETAILTABLE}    

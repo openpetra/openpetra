@@ -128,7 +128,7 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// Returns a friendly string from the column name of a data column (eg pt_internat_postal_code_c).  
+        /// Returns a friendly string from the column name of a data column (eg pt_internat_postal_code_c).
         /// If AIncludeSpaces is true it would return 'Internat Postal Code', otherwise 'internatpostalcode'
         /// </summary>
         /// <param name="ADataColumn">The data column to work with (often a primary key column)</param>
@@ -136,16 +136,19 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns>The appropriate string</returns>
         public static string DataColumnNameToFriendlyName(System.Data.DataColumn ADataColumn, Boolean AIncludeSpaces)
         {
-            if (ADataColumn == null) return String.Empty;
+            if (ADataColumn == null)
+            {
+                return String.Empty;
+            }
 
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
             // for example pt_internat_postal_code_c
             string primaryKeyName = ADataColumn.ToString();
-            
+
             // strip off the leading p_
             string work = primaryKeyName.Substring(primaryKeyName.IndexOf('_') + 1);
-            
+
             // strip off the trailing _c
             work = work.Substring(0, work.LastIndexOf('_'));
 
@@ -156,6 +159,7 @@ namespace Ict.Petra.Client.CommonControls
                 sb.Append(work.Substring(0, 1).ToUpper());
                 work = work.Substring(1);
                 int pos = work.IndexOf(' ');
+
                 while (pos >= 0)
                 {
                     sb.Append(work.Substring(0, pos + 1));
@@ -163,6 +167,7 @@ namespace Ict.Petra.Client.CommonControls
                     work = work.Substring(pos + 2);
                     pos = work.IndexOf(' ');
                 }
+
                 sb.Append(work);
             }
             else
@@ -187,16 +192,18 @@ namespace Ict.Petra.Client.CommonControls
             out System.Windows.Forms.Label ALabelControl, out System.Windows.Forms.Control ADataControl)
         {
             bool bFound = false;
-            string primaryKeyColName = /*"detail" + */DataColumnNameToFriendlyName(APrimaryKey, false);
+            string primaryKeyColName = /*"detail" + */ DataColumnNameToFriendlyName(APrimaryKey, false);
 
             ALabelControl = null;
             ADataControl = null;
+
             for (int i = 0; i < AHostControl.Controls.Count; i++)
             {
                 string controlName = AHostControl.Controls[i].Name;
+
                 if (controlName.ToLower().EndsWith(primaryKeyColName))
                 {
-                    if (controlName.StartsWith("lbl") && AHostControl.Controls[i].GetType() == typeof(System.Windows.Forms.Label))
+                    if (controlName.StartsWith("lbl") && (AHostControl.Controls[i].GetType() == typeof(System.Windows.Forms.Label)))
                     {
                         ALabelControl = (System.Windows.Forms.Label)AHostControl.Controls[i];
                     }
@@ -204,7 +211,8 @@ namespace Ict.Petra.Client.CommonControls
                     {
                         ADataControl = AHostControl.Controls[i];
                     }
-                    if (ALabelControl != null && ADataControl != null)
+
+                    if ((ALabelControl != null) && (ADataControl != null))
                     {
                         bFound = true;
                         break;
@@ -220,6 +228,7 @@ namespace Ict.Petra.Client.CommonControls
                     }
                 }
             }
+
             return bFound;
         }
 
@@ -231,11 +240,18 @@ namespace Ict.Petra.Client.CommonControls
         public static string GetDisplayTextForControl(Control AControl)
         {
             string ret = String.Empty;
-            if (AControl == null) return ret;
+
+            if (AControl == null)
+            {
+                return ret;
+            }
 
             if (AControl.GetType() == typeof(TtxtPetraDate))
             {
-                if (((TtxtPetraDate)AControl).Date.HasValue) return ((TtxtPetraDate)AControl).Date.Value.ToString("dd-MMM-yyyy").ToUpper();
+                if (((TtxtPetraDate)AControl).Date.HasValue)
+                {
+                    return ((TtxtPetraDate)AControl).Date.Value.ToString("dd-MMM-yyyy").ToUpper();
+                }
             }
             else if (AControl.GetType() == typeof(TCmbAutoComplete))
             {
@@ -280,6 +296,7 @@ namespace Ict.Petra.Client.CommonControls
             {
                 return ((TextBox)AControl).Text;
             }
+
             return ret;
         }
 
@@ -293,9 +310,12 @@ namespace Ict.Petra.Client.CommonControls
         /// <param name="APrimaryKeyColumn">The data column that will be used to identify the error (usually the first of the primary key columns)</param>
         /// <param name="APrimaryKeyControl">The control corresponding to the Primary Key column</param>
         /// <param name="APrimaryKeys">The array of primary key data columns that define the unique constraint being validated</param>
-        public static void ValidateNonDuplicateRecord(object AHostContext, bool AConstraintExceptionOccurred,
-                TVerificationResultCollection AVerificationResultCollection, System.Data.DataColumn APrimaryKeyColumn, System.Windows.Forms.Control APrimaryKeyControl,
-                System.Data.DataColumn[] APrimaryKeys)
+        public static void ValidateNonDuplicateRecord(object AHostContext,
+            bool AConstraintExceptionOccurred,
+            TVerificationResultCollection AVerificationResultCollection,
+            System.Data.DataColumn APrimaryKeyColumn,
+            System.Windows.Forms.Control APrimaryKeyControl,
+            System.Data.DataColumn[] APrimaryKeys)
         {
             TVerificationResult verificationResult = null;
             string resultText = String.Empty;
@@ -305,44 +325,59 @@ namespace Ict.Petra.Client.CommonControls
                 // Work out what the current user input values are for the primary keys
                 ErrCodeInfo errInfo = ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_DUPLICATE_RECORD);
                 resultText = errInfo.ErrorMessageText;
-                
+
                 string hintText = String.Empty;
                 bool bFoundOne = false;
+
                 foreach (System.Data.DataColumn column in APrimaryKeys)
                 {
                     // Look at each primary key name and find its control.  It is quite common for one key (eg Ledger number) to not have a control.
                     System.Windows.Forms.Label label;
                     System.Windows.Forms.Control control;
                     string controlText = String.Empty;
+
                     if (GetControlsForPrimaryKey(column, (System.Windows.Forms.Control)AHostContext, out label, out control))
                     {
                         bFoundOne = true;
                         hintText += Environment.NewLine;
                         hintText += label.Text.Replace("&", String.Empty);
                         controlText = GetDisplayTextForControl(control);
+
                         if (controlText != String.Empty)
                         {
                             // Note from Alan:  I may not have implemented getting control text for all control types
                             // If you find a missing type, please add it to GetDisplayTextForControl()
                             // In the meantime we have to ignore empty text and just display the label text...
-                            if (!hintText.EndsWith(":")) hintText += ":";
+                            if (!hintText.EndsWith(":"))
+                            {
+                                hintText += ":";
+                            }
+
                             hintText += " ";
                             hintText += controlText;
                         }
                     }
                 }
+
                 if (!bFoundOne)
                 {
                     // See Alan's note above.  This will occur on a form that has no control type that has GetDisplayTextForControl()
                     hintText += Environment.NewLine;
                     hintText += Environment.NewLine;
-                    hintText += String.Format(Catalog.GetString("No hint text is available for the following screen:{0}{1}.{0}Please inform the Open Petra team if you see this message."), 
-                        Environment.NewLine, AHostContext.ToString());
+                    hintText +=
+                        String.Format(Catalog.GetString(
+                                "No hint text is available for the following screen:{0}{1}.{0}Please inform the Open Petra team if you see this message."),
+                            Environment.NewLine, AHostContext.ToString());
                 }
+
                 resultText += hintText;
             }
 
-            verificationResult = TGuiChecks.ValidateNonDuplicateRecord(AHostContext, AConstraintExceptionOccurred, resultText, APrimaryKeyColumn, APrimaryKeyControl);
+            verificationResult = TGuiChecks.ValidateNonDuplicateRecord(AHostContext,
+                AConstraintExceptionOccurred,
+                resultText,
+                APrimaryKeyColumn,
+                APrimaryKeyControl);
 
             // Add or remove the error from the collection
             AVerificationResultCollection.AddOrRemove(verificationResult, APrimaryKeyColumn);

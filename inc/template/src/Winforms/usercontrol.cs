@@ -233,10 +233,11 @@ namespace {#NAMESPACE}
         bool bGotConstraintException = false;
         try
         {
-            GetDataFromControls(GetMasterRow());
-            ValidateData(GetMasterRow());
+            {#MASTERTABLETYPE}Row masterRow = GetMasterRow();
+            GetDataFromControls(masterRow);
+            ValidateData(masterRow);
 {#IFDEF VALIDATEDATAMANUAL}
-            ValidateDataManual(GetMasterRow());
+            ValidateDataManual(masterRow);
 {#ENDIF VALIDATEDATAMANUAL}
 {#ENDIF MASTERTABLE}        
 {#ENDIFN SHOWDETAILS}
@@ -346,10 +347,23 @@ namespace {#NAMESPACE}
 
 {#IFDEF MASTERTABLE}
 
+    /// This method may throw an exception at ARow.EndEdit()
     private void GetDataFromControls({#MASTERTABLETYPE}Row ARow, Control AControl=null)
     {
 {#IFDEF SAVEDATA}
+        if (ARow == null) return;
+
+        object[] beforeEdit = ARow.ItemArray;
+        ARow.BeginEdit();
         {#SAVEDATA}
+        if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
+        {
+            ARow.CancelEdit();
+        }
+        else
+        {
+            ARow.EndEdit();
+        }
 {#ENDIF SAVEDATA}
     }
 {#ENDIF MASTERTABLE}
@@ -365,13 +379,22 @@ namespace {#NAMESPACE}
 
 {#IFDEF SAVEDETAILS}
 
+    /// This method may throw an exception at ARow.EndEdit()
     private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow, Control AControl=null)
     {
         if (ARow != null)
         {
+            object[] beforeEdit = ARow.ItemArray;
             ARow.BeginEdit();
             {#SAVEDETAILS}
-            ARow.EndEdit();
+            if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
+            {
+                ARow.CancelEdit();
+            }
+            else
+            {
+                ARow.EndEdit();
+            }
         }
     }
 {#IFDEF GENERATECONTROLUPDATEDATAHANDLER}

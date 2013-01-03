@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template controlMaintainTable
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template controlMaintainTableWithDataViewGrid
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //

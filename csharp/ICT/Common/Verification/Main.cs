@@ -860,7 +860,7 @@ namespace Ict.Common.Verification
 
                 if (ARestrictToTypeWhichRaisesError != null)
                 {
-                    if (si.ResultContext.GetType() == ARestrictToTypeWhichRaisesError || si.ResultCode == CommonErrorCodes.ERR_DUPLICATE_RECORD)
+                    if ((si.ResultContext.GetType() == ARestrictToTypeWhichRaisesError) || (si.ResultCode == CommonErrorCodes.ERR_DUPLICATE_RECORD))
                     {
                         IncludeVerificationResult = true;
                     }
@@ -1070,11 +1070,15 @@ namespace Ict.Common.Verification
                 }
             }
 
-            if (!Found) return;
+            if (!Found)
+            {
+                return;
+            }
 
             for (int Counter = Count - 1; Counter >= 0; Counter--)
             {
                 si = (TScreenVerificationResult)(List[Counter]);
+
                 if (si.ResultCode != CommonErrorCodes.ERR_DUPLICATE_RECORD)
                 {
                     RemoveAt(Counter);
@@ -1094,11 +1098,15 @@ namespace Ict.Common.Verification
                 }
             }
 
-            if (!Found) return;
-            
+            if (!Found)
+            {
+                return;
+            }
+
             for (int Counter = Count - 1; Counter >= 0; Counter--)
             {
                 si = (TScreenVerificationResult)(List[Counter]);
+
                 if (si.ResultColumn == null)
                 {
                     RemoveAt(Counter);

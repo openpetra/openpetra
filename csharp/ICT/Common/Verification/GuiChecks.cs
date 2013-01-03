@@ -146,14 +146,19 @@ namespace Ict.Common.Verification
         /// details about the problem.
         /// </returns>
         public static TVerificationResult ValidateNonDuplicateRecord(object AContext, bool AConstraintExceptionOccurred, string AResultText,
-                System.Data.DataColumn APrimaryKeyColumn, System.Windows.Forms.Control APrimaryKeyControl)
+            System.Data.DataColumn APrimaryKeyColumn, System.Windows.Forms.Control APrimaryKeyControl)
         {
             TVerificationResult ReturnValue = null;
 
             if (AConstraintExceptionOccurred)
             {
                 // create a new screen verification result
-                ReturnValue = new TScreenVerificationResult(AContext, APrimaryKeyColumn, AResultText, CommonErrorCodes.ERR_DUPLICATE_RECORD, APrimaryKeyControl, TResultSeverity.Resv_Critical);
+                ReturnValue = new TScreenVerificationResult(AContext,
+                    APrimaryKeyColumn,
+                    AResultText,
+                    CommonErrorCodes.ERR_DUPLICATE_RECORD,
+                    APrimaryKeyControl,
+                    TResultSeverity.Resv_Critical);
                 ReturnValue.OverrideResultTextCaption(Catalog.GetString("Duplicate record"));
             }
 
