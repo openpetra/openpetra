@@ -23,7 +23,7 @@ RootNode:
             Dock: Fill
         sptTransactions:
             SplitterOrientation: Horizontal
-            SplitterDistance: 285 # This doesn't seem to work here, but the same instruction in ManualCode does...
+            SplitterDistance: 37
             Dock: Fill
             Panel1: pnlDetailGrid
             Panel2: pnlDetails1
