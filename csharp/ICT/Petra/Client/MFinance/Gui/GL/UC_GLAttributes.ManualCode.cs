@@ -236,7 +236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (ARow.AnalysisTypeCode.Equals(AFRow.AnalysisTypeCode) && ARow.LedgerNumber.Equals(AFRow.LedgerNumber))
                 {
                     // add value if it is active but also if not active and already set
-                    if (AFRow.Active || ARow.AnalysisAttributeValue == AFRow.AnalysisValue)
+                    if (AFRow.Active || (ARow.AnalysisAttributeValue == AFRow.AnalysisValue))
                     {
                         cmbDetailAnalysisAttributeValue.Items.Add(AFRow.AnalysisValue);
                     }

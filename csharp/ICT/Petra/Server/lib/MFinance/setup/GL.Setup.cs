@@ -1251,7 +1251,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static bool ContainsTransactions(Int32 ALedgerNumber)
         {
             bool Result = true;
-            
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             Result = (ATransactionAccess.CountViaALedger(ALedgerNumber, Transaction) > 0);
@@ -1260,7 +1260,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             return Result;
         }
-        
+
         /// <summary>
         /// deletes the complete ledger, with all finance data. useful for testing purposes
         /// </summary>
@@ -1299,7 +1299,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         SModuleTable.GetModuleIdDBName(),
                         ALedgerNumber),
                     Transaction);
-                
+
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     String.Format(
                         "DELETE FROM PUB_{0} AS GLMP WHERE EXISTS (SELECT * FROM PUB_{1} AS GLM WHERE GLM.a_glm_sequence_i = GLMP.a_glm_sequence_i AND GLM.a_ledger_number_i = ?)",
@@ -1356,7 +1356,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          ASystemInterfaceTable.GetTableDBName(),
                          AAccountingSystemParameterTable.GetTableDBName(),
                          ACostCentreTypesTable.GetTableDBName(),
-                         
+
                          AAnalysisAttributeTable.GetTableDBName(),
                          ASuspenseAccountTable.GetTableDBName(),
 
@@ -1365,7 +1365,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          AEpAccountTable.GetTableDBName(),
 
                          AAccountingPeriodTable.GetTableDBName(),
-                         
+
                          ABudgetTable.GetTableDBName(),
 
                          SGroupLedgerTable.GetTableDBName()
