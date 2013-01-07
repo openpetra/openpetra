@@ -311,7 +311,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 TCsv2Xml.Xml2Csv(doc, AFileName);
 
                 //Replace the default CSV header row with OM specific
-                ReplaceHeaderInFile(AFileName, TableForExportHeader);
+                ReplaceHeaderInFile(AFileName, TableForExportHeader, ref AVerificationResult);
 
                 /* Change number format back */
                 //TODO
@@ -323,7 +323,10 @@ namespace Ict.Petra.Server.MFinance.ICH
             }
 
             // rollback the reading transaction
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return Successful;
         }
@@ -333,29 +336,46 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// </summary>
         /// <param name="AFileName">File name (including path) to process</param>
         /// <param name="AHeaderText">Text to insert in first line</param>
-        public static void ReplaceHeaderInFile(string AFileName, string AHeaderText)
+        /// <param name="AVerificationResult">Error messaging</param>
+        public static bool ReplaceHeaderInFile(string AFileName, string AHeaderText, ref TVerificationResultCollection AVerificationResult)
         {
-            StringBuilder newFile = new StringBuilder();
+            bool retVal = true;
 
-            string[] file = File.ReadAllLines(AFileName);
-
-            bool IsFirstLine = true;
-
-            foreach (string line in file)
+            try
             {
-                //If first line
-                if (IsFirstLine)
+                StringBuilder newFileContents = new StringBuilder();
+
+                string[] file = File.ReadAllLines(AFileName);
+
+                bool IsFirstLine = true;
+
+                foreach (string line in file)
                 {
-                    newFile.Append(AHeaderText + "\r\n");
-                    IsFirstLine = false;
+                    //If first line
+                    if (IsFirstLine)
+                    {
+                        newFileContents.Append(AHeaderText + "\r\n");
+                        IsFirstLine = false;
+                    }
+                    else
+                    {
+                        newFileContents.Append(line + "\r\n");
+                    }
                 }
-                else
-                {
-                    newFile.Append(line + "\r\n");
-                }
+
+                File.WriteAllText(AFileName, newFileContents.ToString());
+            }
+            catch (Exception)
+            {
+                retVal = false;
+                AVerificationResult.Add(new TVerificationResult("Generating HOSA Files",
+                        "Unable to replace the header in file: " + AFileName,
+                        "Replacing Header in Text File",
+                        TResultSeverity.Resv_Critical, new Guid()));
+                throw new Exception("Error in generating HOSA Files. Unable to replace the header in file: " + AFileName);
             }
 
-            File.WriteAllText(AFileName, newFile.ToString());
+            return retVal;
         }
 
         /// <summary>
