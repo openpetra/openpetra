@@ -1473,6 +1473,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.Height = 600;
             }
 
+            mniEditFind.Text = Catalog.GetString("Find Partner...");
+            mniEditFind.Enabled = true;
+            mniEditFind.Click += new EventHandler( EditFindPartner );
+            
             /*
              * Load data for new Partner or existing Partner
              */
@@ -1848,6 +1852,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void EditFindPartner(System.Object sender, System.EventArgs e)
+        {
+            TPartnerMain.FindPartner(this);
+        }
+        
         #endregion
 
         #region Maintain Menu
