@@ -35,11 +35,11 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
-{#IFDEF MASTERTABLE OR DETAILTABLE}
+{#IFDEF SHOWDETAILS OR MASTERTABLE}
     private DataColumn FPrimaryKeyColumn = null;
     private Control FPrimaryKeyControl = null;
     private string FDefaultDuplicateRecordHint = String.Empty;
-{#ENDIF MASTERTABLE OR DETAILTABLE}
+{#ENDIF SHOWDETAILS OR MASTERTABLE}
 
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
@@ -67,8 +67,10 @@ namespace {#NAMESPACE}
 
 {#IFDEF MASTERTABLE OR DETAILTABLE}
       BuildValidationControlsDict();
-      SetPrimaryKeyControl();
 {#ENDIF MASTERTABLE OR DETAILTABLE}
+{#IFDEF SHOWDETAILS OR MASTERTABLE}
+      SetPrimaryKeyControl();
+{#ENDIF SHOWDETAILS OR MASTERTABLE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -213,9 +215,11 @@ namespace {#NAMESPACE}
         bool bGotConstraintException = false;
         try
         {
+// :W:GetDataFromControls
             GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
             ValidateData(FMainDS.{#MASTERTABLE}[0]);
 {#IFDEF VALIDATEDATAMANUAL}
+// :W:ValidateDataManual
             ValidateDataManual(FMainDS.{#MASTERTABLE}[0]);
 {#ENDIF VALIDATEDATAMANUAL}
         }
@@ -234,9 +238,11 @@ namespace {#NAMESPACE}
             bool bGotConstraintException = false;
             try
             {
+// :W:GetDetailsFromControls
                 GetDetailsFromControls(CurrentRow);
                 ValidateDataDetails(CurrentRow);
 {#IFDEF VALIDATEDATADETAILSMANUAL}
+// :W:ValidateDataDetailsManual
                 ValidateDataDetailsManual(CurrentRow);
 {#ENDIF VALIDATEDATADETAILSMANUAL}
             }
@@ -444,6 +450,8 @@ namespace {#NAMESPACE}
 {#ENDIF ADDCONTROLTOVALIDATIONCONTROLSDICT}
         }
     }
+{#ENDIF MASTERTABLE OR DETAILTABLE}    
+{#IFDEF SHOWDETAILS OR MASTERTABLE}
 
     private void SetPrimaryKeyControl()
     {
@@ -476,7 +484,7 @@ namespace {#NAMESPACE}
             }
         }
     }
-{#ENDIF MASTERTABLE OR DETAILTABLE}    
+{#ENDIF SHOWDETAILS OR MASTERTABLE}
 
 #endregion
 

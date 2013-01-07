@@ -534,9 +534,6 @@ namespace {#NAMESPACE}
             ARow.EndEdit();
         }
 {#ENDIF SAVEDATA}
-{#IFDEF SAVEDETAILS}
-        ValidateAllData(false, false);
-{#ENDIF SAVEDETAILS}
     }
 {#ENDIF MASTERTABLE}
 {#IFNDEF MASTERTABLE}
@@ -635,15 +632,6 @@ namespace {#NAMESPACE}
         {
             // Validate DetailTable
             int prevRowChangedRowBeforeValidation = FPrevRowChangedRow;
-{#IFDEF MASTERTABLE}
-// :WEWCMD:ValidateDataDetails
-            ValidateDataDetails(FPreviouslySelectedDetailRow);
-{#IFDEF VALIDATEDATADETAILSMANUAL}
-// :WEWCMD:ValidateDataDetailsManual
-            ValidateDataDetailsManual(FPreviouslySelectedDetailRow);
-{#ENDIF VALIDATEDATADETAILSMANUAL}            
-{#ENDIF MASTERTABLE}
-{#IFNDEF MASTERTABLE}
             bool bGotConstraintException = false;
 // :WEWCMD:GetDetailsFromControls
             try
@@ -676,7 +664,6 @@ namespace {#NAMESPACE}
                 TControlExtensions.ValidateNonDuplicateRecord(this, bGotConstraintException, FPetraUtilsObject.VerificationResultCollection, 
                             FPrimaryKeyColumn, FPrimaryKeyControl, FMainDS.{#DETAILTABLE}.PrimaryKey);
             }
-{#ENDIFN MASTERTABLE}
 
             // Validation might have moved the row, so we need to locate it again
             // If it has moved we will call SelectRowInGrid (with events) to highlight the new row.
