@@ -82,7 +82,7 @@ namespace Tests.MFinance.Server.ICH
         /// Test whether the code opens a text file and replaces the first line
         ///  with the specified string
         /// </summary>
-        [Test, Explicit]
+        [Test]
         public void TestFileHeaderReplace()
         {
             string fileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
@@ -90,6 +90,9 @@ namespace Tests.MFinance.Server.ICH
             string StandardCostCentre = "4300";
             string CostCentre = "78";
             string Currency = "USD";
+
+            TVerificationResultCollection VerificationResults = null;
+
             string TableForExportHeader = "/** Header **" + "," +
                                           PeriodNumber.ToString() + "," +
                                           StandardCostCentre + "," +
@@ -97,13 +100,16 @@ namespace Tests.MFinance.Server.ICH
                                           DateTime.Today.ToShortDateString() + "," +
                                           Currency;
 
-            TGenHOSAFilesReports.ReplaceHeaderInFile(fileName, TableForExportHeader);
+            TGenHOSAFilesReports.ReplaceHeaderInFile(fileName, TableForExportHeader, ref VerificationResults);
+
+            Assert.IsFalse(VerificationResults.HasCriticalErrors,
+                "Header Replacement in File Failed! " + VerificationResults.BuildVerificationResultString());
         }
 
         /// <summary>
         /// Test generation of HOSA files
         /// </summary>
-        [Test]
+        [Test, Explicit]
         public void TestGenerateHOSAFiles()
         {
             int LedgerNumber = FLedgerNumber;

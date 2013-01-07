@@ -183,7 +183,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
-            GetDetailsFromControls(GetSelectedDetailRow());
+            ValidateAllData(false, false);
+            //GetDetailsFromControls(GetSelectedDetailRow());
         }
 
         /// <summary>

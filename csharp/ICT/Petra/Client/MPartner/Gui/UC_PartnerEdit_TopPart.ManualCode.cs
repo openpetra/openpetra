@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         #region Fields
 
         private System.Windows.Forms.ToolTip FTipMain;
-        
+
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
@@ -127,13 +127,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitialiseUserControl()
         {
             FIgnorePartnerStatusChange = false;
-            
+
             // Set up ToolTip
             this.components = new System.ComponentModel.Container();
             FTipMain = new System.Windows.Forms.ToolTip(this.components);
             FTipMain.AutoPopDelay = 4000;
             FTipMain.InitialDelay = 500;
-            FTipMain.ReshowDelay = 100;            
+            FTipMain.ReshowDelay = 100;
 
             BuildValidationControlsDict();
 

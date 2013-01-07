@@ -248,6 +248,38 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// compare the values of two data rows expressed as object arrays
+        /// </summary>
+        /// <param name="ADataRow1">first row</param>
+        /// <param name="ADataRow2">second row</param>
+        /// <returns>true if identical values</returns>
+        public static Boolean HaveDataRowsIdenticalValues(object[] ADataRow1, object[] ADataRow2)
+        {
+            // Check for matching number of columns
+            if (ADataRow1.Length != ADataRow2.Length)
+            {
+                return false;
+            }
+
+            for (Int32 col = 0; col < ADataRow1.Length; col++)
+            {
+                // Column data must be of same type
+                if (ADataRow1[col].GetType().ToString() != ADataRow2[col].GetType().ToString())
+                {
+                    return false;
+                }
+
+                // Column content must be the same
+                if (!ADataRow1[col].Equals(ADataRow2[col]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// compare the changed columns of a row.
         /// for some reasons, on the client the values are read from the controls, and despite the row has not changed, the row is marked modified
         /// </summary>

@@ -1245,6 +1245,23 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
+        /// return true if the ledger contains any transactions
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ContainsTransactions(Int32 ALedgerNumber)
+        {
+            bool Result = true;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            Result = (ATransactionAccess.CountViaALedger(ALedgerNumber, Transaction) > 0);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return Result;
+        }
+
+        /// <summary>
         /// deletes the complete ledger, with all finance data. useful for testing purposes
         /// </summary>
         [RequireModulePermission("FINANCE-3")]
@@ -1273,6 +1290,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
                         SUserModuleAccessPermissionTable.GetTableDBName(),
                         SUserModuleAccessPermissionTable.GetModuleIdDBName(),
+                        ALedgerNumber),
+                    Transaction);
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
+                        SModuleTable.GetTableDBName(),
+                        SModuleTable.GetModuleIdDBName(),
                         ALedgerNumber),
                     Transaction);
 
@@ -1315,6 +1339,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          AApAnalAttribTable.GetTableDBName(),
                          AApDocumentPaymentTable.GetTableDBName(),
                          AApPaymentTable.GetTableDBName(),
+                         ACrdtNoteInvoiceLinkTable.GetTableDBName(),
                          AApDocumentDetailTable.GetTableDBName(),
                          AApDocumentTable.GetTableDBName(),
 
@@ -1332,11 +1357,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          AAccountingSystemParameterTable.GetTableDBName(),
                          ACostCentreTypesTable.GetTableDBName(),
 
+                         AAnalysisAttributeTable.GetTableDBName(),
+                         ASuspenseAccountTable.GetTableDBName(),
+
                          ALedgerInitFlagTable.GetTableDBName(),
                          ATaxTableTable.GetTableDBName(),
                          AEpAccountTable.GetTableDBName(),
 
                          AAccountingPeriodTable.GetTableDBName(),
+
+                         ABudgetTable.GetTableDBName(),
 
                          SGroupLedgerTable.GetTableDBName()
                 };
