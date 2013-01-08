@@ -196,19 +196,19 @@ namespace Ict.Petra.Client.App.PetraClient
                 // No need to re-record all Singleton screens if this was already done once
                 return;
             }
-            
+
             //Iterate through all children nodes of the node
             while (InspectNode != null)
             {
                 CheckForAndRecordSingletonScreen(InspectNode);
-                
+
                 // Recurse into deeper levels!
                 RecordAllSingletonScreens(InspectNode);
-                
+
                 InspectNode = InspectNode.NextSibling;
-            }            
+            }
         }
-        
+
         /// <summary>
         /// Checks if a screen should be a Singleton screen (=screens for which only one instance is to be opened) and record the fact.
         /// </summary>
@@ -216,12 +216,12 @@ namespace Ict.Petra.Client.App.PetraClient
         static void CheckForAndRecordSingletonScreen(XmlNode childNode)
         {
             string ChildNodeActionOpenScreen = TXMLParser.GetAttribute(childNode, "ActionOpenScreen");
-            
-            if (ChildNodeActionOpenScreen.Length > 0) 
+
+            if (ChildNodeActionOpenScreen.Length > 0)
             {
-                if (TXMLParser.GetAttribute(childNode, "Singleton").ToLower() == "true") 
+                if (TXMLParser.GetAttribute(childNode, "Singleton").ToLower() == "true")
                 {
-                    if (!TFormsList.GSingletonForms.Contains(ChildNodeActionOpenScreen)) 
+                    if (!TFormsList.GSingletonForms.Contains(ChildNodeActionOpenScreen))
                     {
                         TFormsList.GSingletonForms.Add(ChildNodeActionOpenScreen);
                     }
@@ -277,12 +277,12 @@ namespace Ict.Petra.Client.App.PetraClient
                             if (ProcessedLedger.LedgerName != String.Empty)
                             {
                                 SpecificLedgerNode.Attributes["Label"].Value = String.Format(Catalog.GetString(
-                                    "Ledger {0} (#{1})"), ProcessedLedger.LedgerName, ProcessedLedger.LedgerNumber);
+                                        "Ledger {0} (#{1})"), ProcessedLedger.LedgerName, ProcessedLedger.LedgerNumber);
                             }
                             else
                             {
                                 SpecificLedgerNode.Attributes["Label"].Value = String.Format(Catalog.GetString(
-                                    "Ledger #{0}"), ProcessedLedger.LedgerNumber);
+                                        "Ledger #{0}"), ProcessedLedger.LedgerNumber);
                             }
 
                             // Check access permission for Ledger
@@ -319,7 +319,7 @@ namespace Ict.Petra.Client.App.PetraClient
                             {
                                 // Set the 'Current Ledger' to the users' Default Ledger, or if he/she hasn't got one, to the first Ledger of the Site.
                                 PotentialCurrentLedger = TUserDefaults.GetInt32Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER,
-                                                                                       ((ALedgerRow)AAvailableLedgers.DefaultView[0].Row).LedgerNumber);
+                                    ((ALedgerRow)AAvailableLedgers.DefaultView[0].Row).LedgerNumber);
 
                                 if ((FLedgersAvailableToUser != null)
                                     && (FLedgersAvailableToUser.Contains(FormatLedgerNumberForModuleAccess(PotentialCurrentLedger))))
@@ -370,7 +370,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 {
                     // Recurse into deeper levels!
                     AddNavigationForEachLedger(childNode, AAvailableLedgers, ADontUseDefaultLedger);
-                    
+
                     childNode = childNode.NextSibling;
                 }
             }
@@ -396,7 +396,7 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
 
             RecordAllSingletonScreens(MainMenuNode);
-            
+
             AddNavigationForEachLedger(MainMenuNode, AvailableLedgers, ADontUseDefaultLedger);
 
             return MainMenuNode;

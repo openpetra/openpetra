@@ -189,15 +189,15 @@ namespace Ict.Common.Controls
         /// Manages the opening of a new/showing of an existing Instance of a Form.
         /// </summary>
         /// <remarks>See implementation in Ict.Petra.Client.CommonForms.TFormsList!</remarks>
-        /// <remarks>A call to this Method will create a new Instance of the Form if there 
-        /// was no running Instance, otherwise it will just activate any Instance of the Form 
+        /// <remarks>A call to this Method will create a new Instance of the Form if there
+        /// was no running Instance, otherwise it will just activate any Instance of the Form
         /// it finds.</remarks>
-        /// <param name="AFormWasAlreadyOpened">False if a new Form was opened, true if an 
+        /// <param name="AFormWasAlreadyOpened">False if a new Form was opened, true if an
         /// existing Instance of the Form was activated.</param>
         /// <param name="AForm">Type of the Form to be opened.</param>
         /// <param name="AParentForm"></param>
         /// <param name="ARunShowMethod">Set to true to run the Forms' Show() Method. (Default=false).</param>
-        /// <returns>An Instance of the Form (either newly created or just activated).</returns>        
+        /// <returns>An Instance of the Form (either newly created or just activated).</returns>
         public delegate Form TOpenNewOrExistingForm(Type AForm, Form AParentForm, out bool AFormWasAlreadyOpened, bool ARunShowMethod);
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace Ict.Common.Controls
                 FOpenNewOrExistingForm = value;
             }
         }
-        
+
         private Image SingleTask_RequestForDifferentIconSize(string ATaskImagePath, TIconCache.TIconSize AIconSize)
         {
             return TIconCache.IconCache.AddOrGetExistingIcon(ATaskImagePath, AIconSize);
@@ -413,7 +413,7 @@ namespace Ict.Common.Controls
         public static string ExecuteAction(XmlNode node, Form AParentWindow)
         {
             bool FormWasAlreadyOpened = false;
-            
+
             if (!FHasAccessPermission(node, FUserId, true))
             {
                 return Catalog.GetString("Sorry, you don't have enough permissions to do this");
@@ -539,10 +539,10 @@ namespace Ict.Common.Controls
 
                 System.Object screen = null;
                 try
-                {                  
-                    if (OpenNewOrExistingForm != null) 
+                {
+                    if (OpenNewOrExistingForm != null)
                     {
-                        screen = OpenNewOrExistingForm(classType, AParentWindow, out FormWasAlreadyOpened, false);    
+                        screen = OpenNewOrExistingForm(classType, AParentWindow, out FormWasAlreadyOpened, false);
                     }
                     else
                     {
@@ -561,7 +561,7 @@ namespace Ict.Common.Controls
                     return msg;
                 }
 
-                if (!FormWasAlreadyOpened) 
+                if (!FormWasAlreadyOpened)
                 {
                     // check for properties and according attributes; this works for the LedgerNumber at the moment
                     foreach (PropertyInfo prop in classType.GetProperties())
@@ -569,7 +569,7 @@ namespace Ict.Common.Controls
                         if (TYml2Xml.HasAttributeRecursive(node, prop.Name))
                         {
                             Object obj = TYml2Xml.GetAttributeRecursive(node, prop.Name);
-    
+
                             if (prop.PropertyType == typeof(Int32))
                             {
                                 obj = Convert.ToInt32(obj);
@@ -595,13 +595,13 @@ namespace Ict.Common.Controls
                                 // to avoid that Icon is set etc, clear obj
                                 obj = null;
                             }
-    
+
                             if (obj != null)
                             {
                                 prop.SetValue(screen, obj, null);
                             }
                         }
-    
+
                         if (prop.Name == "LedgerNumber")
                         {
                             if (SomeParentDependsOnLedger(node))
@@ -610,10 +610,10 @@ namespace Ict.Common.Controls
                             }
                         }
                     }
-    
+
                     MethodInfo method = classType.GetMethod("Show", BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Any,
                         new Type[] { }, null);
-    
+
                     if (method != null)
                     {
                         method.Invoke(screen, null);

@@ -83,13 +83,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         public static void FindPartner(Form AParentForm)
         {
             bool FormWasAlreadyOpened;
-            
+
             TPartnerFindScreen frm = (TPartnerFindScreen)TFormsList.OpenNewOrExistingForm(
                 typeof(Ict.Petra.Client.MPartner.Gui.TPartnerFindScreen), AParentForm, out FormWasAlreadyOpened, false);
-            
-            if (!FormWasAlreadyOpened) 
+
+            if (!FormWasAlreadyOpened)
             {
-                frm.SetParameters(false, -1);    
+                frm.SetParameters(false, -1);
                 frm.Show();
             }
         }
