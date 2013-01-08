@@ -43,6 +43,7 @@ namespace Ict.Common.Controls
         private static string FUserId;
         private static TLstFolderNavigation.CheckAccessPermissionDelegate FHasAccessPermission;
         private static int FCurrentLedger = -1;
+        private static TOpenNewOrExistingForm FOpenNewOrExistingForm;
 
         private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
         private TaskAppearance FTaskAppearance;
@@ -184,6 +185,38 @@ namespace Ict.Common.Controls
             this.ResumeLayout();
         }
 
+        /// <summary>
+        /// Manages the opening of a new/showing of an existing Instance of a Form.
+        /// </summary>
+        /// <remarks>See implementation in Ict.Petra.Client.CommonForms.TFormsList!</remarks>
+        /// <remarks>A call to this Method will create a new Instance of the Form if there 
+        /// was no running Instance, otherwise it will just activate any Instance of the Form 
+        /// it finds.</remarks>
+        /// <param name="AFormWasAlreadyOpened">False if a new Form was opened, true if an 
+        /// existing Instance of the Form was activated.</param>
+        /// <param name="AForm">Type of the Form to be opened.</param>
+        /// <param name="AParentForm"></param>
+        /// <param name="ARunShowMethod">Set to true to run the Forms' Show() Method. (Default=false).</param>
+        /// <returns>An Instance of the Form (either newly created or just activated).</returns>        
+        public delegate Form TOpenNewOrExistingForm(Type AForm, Form AParentForm, out bool AFormWasAlreadyOpened, bool ARunShowMethod);
+
+        /// <summary>
+        /// This property is used to provide a function which opens a new or existing Form.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TOpenNewOrExistingForm OpenNewOrExistingForm
+        {
+            get
+            {
+                return FOpenNewOrExistingForm;
+            }
+
+            set
+            {
+                FOpenNewOrExistingForm = value;
+            }
+        }
+        
         private Image SingleTask_RequestForDifferentIconSize(string ATaskImagePath, TIconCache.TIconSize AIconSize)
         {
             return TIconCache.IconCache.AddOrGetExistingIcon(ATaskImagePath, AIconSize);
@@ -379,6 +412,8 @@ namespace Ict.Common.Controls
         /// <returns>The error or status message.</returns>
         public static string ExecuteAction(XmlNode node, Form AParentWindow)
         {
+            bool FormWasAlreadyOpened = false;
+            
             if (!FHasAccessPermission(node, FUserId, true))
             {
                 return Catalog.GetString("Sorry, you don't have enough permissions to do this");
@@ -504,8 +539,15 @@ namespace Ict.Common.Controls
 
                 System.Object screen = null;
                 try
-                {
-                    screen = Activator.CreateInstance(classType, new object[] { AParentWindow });
+                {                  
+                    if (OpenNewOrExistingForm != null) 
+                    {
+                        screen = OpenNewOrExistingForm(classType, AParentWindow, out FormWasAlreadyOpened, false);    
+                    }
+                    else
+                    {
+                        screen = Activator.CreateInstance(classType, new object[] { AParentWindow });
+                    }
                 }
                 catch (System.Reflection.TargetInvocationException E)
                 {
@@ -519,65 +561,68 @@ namespace Ict.Common.Controls
                     return msg;
                 }
 
-                // check for properties and according attributes; this works for the LedgerNumber at the moment
-                foreach (PropertyInfo prop in classType.GetProperties())
+                if (!FormWasAlreadyOpened) 
                 {
-                    if (TYml2Xml.HasAttributeRecursive(node, prop.Name))
+                    // check for properties and according attributes; this works for the LedgerNumber at the moment
+                    foreach (PropertyInfo prop in classType.GetProperties())
                     {
-                        Object obj = TYml2Xml.GetAttributeRecursive(node, prop.Name);
-
-                        if (prop.PropertyType == typeof(Int32))
+                        if (TYml2Xml.HasAttributeRecursive(node, prop.Name))
                         {
-                            obj = Convert.ToInt32(obj);
+                            Object obj = TYml2Xml.GetAttributeRecursive(node, prop.Name);
+    
+                            if (prop.PropertyType == typeof(Int32))
+                            {
+                                obj = Convert.ToInt32(obj);
+                            }
+                            else if (prop.PropertyType == typeof(Int64))
+                            {
+                                obj = Convert.ToInt64(obj);
+                            }
+                            else if (prop.PropertyType == typeof(bool))
+                            {
+                                obj = Convert.ToBoolean(obj);
+                            }
+                            else if (prop.PropertyType == typeof(string))
+                            {
+                                // leave it as string
+                            }
+                            else if (prop.PropertyType.IsEnum)
+                            {
+                                obj = Enum.Parse(prop.PropertyType, obj.ToString(), true);
+                            }
+                            else
+                            {
+                                // to avoid that Icon is set etc, clear obj
+                                obj = null;
+                            }
+    
+                            if (obj != null)
+                            {
+                                prop.SetValue(screen, obj, null);
+                            }
                         }
-                        else if (prop.PropertyType == typeof(Int64))
+    
+                        if (prop.Name == "LedgerNumber")
                         {
-                            obj = Convert.ToInt64(obj);
-                        }
-                        else if (prop.PropertyType == typeof(bool))
-                        {
-                            obj = Convert.ToBoolean(obj);
-                        }
-                        else if (prop.PropertyType == typeof(string))
-                        {
-                            // leave it as string
-                        }
-                        else if (prop.PropertyType.IsEnum)
-                        {
-                            obj = Enum.Parse(prop.PropertyType, obj.ToString(), true);
-                        }
-                        else
-                        {
-                            // to avoid that Icon is set etc, clear obj
-                            obj = null;
-                        }
-
-                        if (obj != null)
-                        {
-                            prop.SetValue(screen, obj, null);
+                            if (SomeParentDependsOnLedger(node))
+                            {
+                                prop.SetValue(screen, (object)FCurrentLedger, null);
+                            }
                         }
                     }
-
-                    if (prop.Name == "LedgerNumber")
+    
+                    MethodInfo method = classType.GetMethod("Show", BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Any,
+                        new Type[] { }, null);
+    
+                    if (method != null)
                     {
-                        if (SomeParentDependsOnLedger(node))
-                        {
-                            prop.SetValue(screen, (object)FCurrentLedger, null);
-                        }
+                        method.Invoke(screen, null);
+                        FLastOpenedScreen = (Form)screen;
                     }
-                }
-
-                MethodInfo method = classType.GetMethod("Show", BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Any,
-                    new Type[] { }, null);
-
-                if (method != null)
-                {
-                    method.Invoke(screen, null);
-                    FLastOpenedScreen = (Form)screen;
-                }
-                else
-                {
-                    return "cannot find method " + className + ".Show for " + node.Name;
+                    else
+                    {
+                        return "cannot find method " + className + ".Show for " + node.Name;
+                    }
                 }
             }
             else if (actionClick.Length == 0)

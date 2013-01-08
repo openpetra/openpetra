@@ -644,6 +644,9 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenEventFindScreen = @TEventFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;
 
+            // Set up Delegate for the opening of Forms from the Main Menu
+            Ict.Common.Controls.TLstTasks.OpenNewOrExistingForm = @Ict.Petra.Client.CommonForms.TFormsList.OpenNewOrExistingForm;
+            
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
             TSharedValidationControlHelper.SharedGetDateVerificationResultDelegate = @TtxtPetraDate.GetDateVerificationResult;

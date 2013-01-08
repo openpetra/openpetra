@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Windows.Forms;
 
@@ -46,11 +47,21 @@ namespace Ict.Petra.Client.CommonForms
 
         #endregion
 
-        /// <summary>Key: child; value: parent; both can be either Delphi or Progress windows</summary>
+        /// <summary>Key: child; value: parent</summary>
         private SortedList WindowRelationship;
 
         /// <summary>todoComment</summary>
         public static TFormsList GFormsList = new TFormsList();
+        
+        /// <summary>
+        /// List of all Forms that are treated as being singletons, i.e. of which only on instance should be
+        /// open at a given time (except for Forms that are shown Modal, for which one Modal instance can be opened 
+        /// in addition to a single non-Modal instance of the same Form).
+        /// </summary>
+        /// <remarks>This list is populated through Method 'TFrmMainWindowNew.RecordAllSingletonScreens', which
+        /// adds all Singleton forms that are launchable from the Main Menu. Forms that should be
+        /// Singletons and which aren't launchable from the Main Menu needt to be manually added to this List!</remarks>
+        public static List<string> GSingletonForms = new List<string>();
 
         /// <summary>todoComment</summary>
         public System.Windows.Forms.Form this[string AKey]
@@ -156,7 +167,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AValue"></param>
         public void Add(System.Windows.Forms.Form AValue)
         {
-            // MessageBox.Show('Adding Form ''' + GetKeyForForm(AValue).ToString + '''');
+//            MessageBox.Show("Adding Form '" + GetKeyForForm(AValue).ToString() + "'");
             Dictionary.Add(GetKeyForForm(AValue), AValue);
         }
 
@@ -506,5 +517,68 @@ namespace Ict.Petra.Client.CommonForms
                 }
             }
         }
+        
+        /// <summary>
+        /// Manages the opening of a new/showing of an existing Instance of a Form.
+        /// </summary>
+        /// <remarks>A call to this Method will create a new Instance of the Form if there 
+        /// was no running Instance, otherwise it will check if the Form is a Singleton; if it is,
+        /// that Instance of the Form is activated, otherwise this Method will create a new 
+        /// Instance of the Form.</remarks>
+        /// <param name="AForm">Type of the Form to be opened.</param>
+        /// <param name="AParentForm">Parent Form (can be null).</param>
+        /// <returns>void</returns>
+        public static void OpenNewOrExistingForm(Type AForm, Form AParentForm)
+        {
+            bool FormWasAlreadyOpened;
+
+            OpenNewOrExistingForm(AForm, AParentForm, out FormWasAlreadyOpened, true);
+        }
+
+        /// <summary>
+        /// Manages the opening of a new/showing of an existing Instance of a Form.
+        /// </summary>
+        /// <param name="AForm">Type of the Form to be opened.</param>
+        /// <param name="AParentForm">Parent Form (can be null).</param>
+        /// <param name="AFormWasAlreadyOpened">False if a new Form was opened, true if a 
+        /// Singleton Instance of the Form was activated.</param>
+        /// <param name="ARunShowMethod">Set to true to run the Forms' Show() Method. (Default=true).</param>
+        /// <returns>An Instance of the Form (either newly created or just activated).</returns>
+        public static Form OpenNewOrExistingForm(Type AForm, Form AParentForm, out bool AFormWasAlreadyOpened, bool ARunShowMethod = true)
+        {
+            Form OpenScreen;
+            Form NewScreen;
+    
+            if (AForm == null) 
+            {
+                throw new ArgumentNullException("Argument 'AForm' must not be null");
+            }
+            
+            AFormWasAlreadyOpened = false;
+
+            OpenScreen = TFormsList.GFormsList[AForm.FullName];
+
+            if ((OpenScreen != null)
+                && (OpenScreen.Modal != true))            
+            {
+                if (TFormsList.GSingletonForms.Contains(AForm.Name)) 
+                {
+                    OpenScreen.BringToFront();
+    
+                    AFormWasAlreadyOpened = true;
+    
+                    return OpenScreen;
+                }
+            }
+            
+            NewScreen = (Form)Activator.CreateInstance(AForm, new object[] {AParentForm});
+
+            if (ARunShowMethod) 
+            {
+                NewScreen.Show();        
+            }                    
+            
+            return NewScreen;
+        }        
     }
 }
