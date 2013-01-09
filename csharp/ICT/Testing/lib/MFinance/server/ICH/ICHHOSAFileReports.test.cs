@@ -218,7 +218,6 @@ namespace Tests.MFinance.Server.ICH
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-
         }
     }
 }

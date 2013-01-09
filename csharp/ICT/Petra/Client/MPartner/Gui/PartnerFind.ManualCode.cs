@@ -1136,7 +1136,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void TPartnerFindScreen_Load(System.Object sender, System.EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
-            
+
             this.Cursor = Cursors.WaitCursor;
 
             // Restore Window Position and Size

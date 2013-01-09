@@ -159,12 +159,13 @@ namespace Ict.Testing.NUnitTools
             }
 
             string nantLogFile = rootPath + Path.DirectorySeparatorChar + "nant.txt";
-            
+
             if (!File.Exists(nantLogFile))
             {
-            	FileStream fs = File.Create(nantLogFile);
-            	fs.Close();
+                FileStream fs = File.Create(nantLogFile);
+                fs.Close();
             }
+
             StreamReader sr = new StreamReader(nantLogFile);
             TLogging.Log(sr.ReadToEnd());
             sr.Close();
