@@ -191,12 +191,6 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             XmlNode InspectNode = AChildNode.FirstChild;
 
-            if (TFormsList.GSingletonForms.Count != 0)
-            {
-                // No need to re-record all Singleton screens if this was already done once
-                return;
-            }
-
             //Iterate through all children nodes of the node
             while (InspectNode != null)
             {
@@ -395,7 +389,11 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
 
-            RecordAllSingletonScreens(MainMenuNode);
+
+            if (TFormsList.GSingletonForms.Count == 0)      // There is no need to re-record all Singleton screens if this was already done once
+            {                
+                RecordAllSingletonScreens(MainMenuNode);
+            }
 
             AddNavigationForEachLedger(MainMenuNode, AvailableLedgers, ADontUseDefaultLedger);
 
