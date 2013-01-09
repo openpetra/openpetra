@@ -183,6 +183,46 @@ namespace Ict.Petra.Client.App.PetraClient
             return true;
         }
 
+        /// <summary>
+        /// Recurse through the whole menu hierarachy and record all Singleton screens (=screens for which only one instance is to be opened).
+        /// </summary>
+        /// <param name="AChildNode">'MainMenu' node.</param>
+        static void RecordAllSingletonScreens(XmlNode AChildNode)
+        {
+            XmlNode InspectNode = AChildNode.FirstChild;
+
+            //Iterate through all children nodes of the node
+            while (InspectNode != null)
+            {
+                CheckForAndRecordSingletonScreen(InspectNode);
+
+                // Recurse into deeper levels!
+                RecordAllSingletonScreens(InspectNode);
+
+                InspectNode = InspectNode.NextSibling;
+            }
+        }
+
+        /// <summary>
+        /// Checks if a screen should be a Singleton screen (=screens for which only one instance is to be opened) and record the fact.
+        /// </summary>
+        /// <param name="childNode">Node to inspect.</param>
+        static void CheckForAndRecordSingletonScreen(XmlNode childNode)
+        {
+            string ChildNodeActionOpenScreen = TXMLParser.GetAttribute(childNode, "ActionOpenScreen");
+
+            if (ChildNodeActionOpenScreen.Length > 0)
+            {
+                if (TXMLParser.GetAttribute(childNode, "Singleton").ToLower() == "true")
+                {
+                    if (!TFormsList.GSingletonForms.Contains(ChildNodeActionOpenScreen))
+                    {
+                        TFormsList.GSingletonForms.Add(ChildNodeActionOpenScreen);
+                    }
+                }
+            }
+        }
+
         private static void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers, bool ADontUseDefaultLedger)
         {
             XmlNode childNode = AMenuNode.FirstChild;
@@ -191,6 +231,7 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlAttribute enabledAttribute;
             bool LedgersAvailableToUserCreatedInThisIteration = false;
 
+            //Iterate through all children nodes of the node
             while (childNode != null)
             {
                 if (TXMLParser.GetAttribute(childNode, "DependsOnLedger").ToLower() == "true")
@@ -321,7 +362,9 @@ namespace Ict.Petra.Client.App.PetraClient
                 }
                 else
                 {
+                    // Recurse into deeper levels!
                     AddNavigationForEachLedger(childNode, AAvailableLedgers, ADontUseDefaultLedger);
+
                     childNode = childNode.NextSibling;
                 }
             }
@@ -345,6 +388,12 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
+
+
+            if (TFormsList.GSingletonForms.Count == 0)      // There is no need to re-record all Singleton screens if this was already done once
+            {                
+                RecordAllSingletonScreens(MainMenuNode);
+            }
 
             AddNavigationForEachLedger(MainMenuNode, AvailableLedgers, ADontUseDefaultLedger);
 
