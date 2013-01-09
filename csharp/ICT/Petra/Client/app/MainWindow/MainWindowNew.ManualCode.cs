@@ -389,9 +389,8 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
 
-
             if (TFormsList.GSingletonForms.Count == 0)      // There is no need to re-record all Singleton screens if this was already done once
-            {                
+            {
                 RecordAllSingletonScreens(MainMenuNode);
             }
 

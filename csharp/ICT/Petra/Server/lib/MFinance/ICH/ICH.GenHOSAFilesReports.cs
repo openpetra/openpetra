@@ -418,7 +418,12 @@ namespace Ict.Petra.Server.MFinance.ICH
             decimal IndividualDebitTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
             decimal IndividualCreditTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
 
+            decimal GiftAmount = 0;
+            decimal IntlGiftAmount = 0;
+
             string ExportDescription = string.Empty;
+            string tmpLastGroup = string.Empty;
+            string tmpLastDetail = string.Empty;
 
             //Export Gifts gi3200-1.i
             //Find and total each gift transaction
@@ -457,8 +462,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                 /* Only do after first loop due to last recipient key check */
 
                 Int32 tmpLastRecipKey = Convert.ToInt32(untypedTransRow[8]);         //a_gift_detail.p_recipient_key_n
-                string tmpLastGroup = untypedTransRow[6].ToString();         //a_motivation_detail.a_motivation_group_code_c
-                string tmpLastDetail = untypedTransRow[7].ToString();         //a_motivation_detail.a_motivation_detail_code_c
+                tmpLastGroup = untypedTransRow[6].ToString();         //a_motivation_detail.a_motivation_group_code_c
+                tmpLastDetail = untypedTransRow[7].ToString();         //a_motivation_detail.a_motivation_detail_code_c
 
                 if ((FirstLoopFlag == false)
                     && ((tmpLastRecipKey != LastRecipKey)
@@ -512,8 +517,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                     }
                 }
 
-                decimal GiftAmount = Convert.ToDecimal(untypedTransRow[4]);          //a_gift_detail.a_gift_amount_n
-                decimal IntlGiftAmount = Convert.ToDecimal(untypedTransRow[5]);          //a_gift_detail.a_gift_amount_intl_n
+                GiftAmount = Convert.ToDecimal(untypedTransRow[4]);          //a_gift_detail.a_gift_amount_n
+                IntlGiftAmount = Convert.ToDecimal(untypedTransRow[5]);          //a_gift_detail.a_gift_amount_intl_n
 
                 if (ABase == MFinanceConstants.CURRENCY_BASE)
                 {

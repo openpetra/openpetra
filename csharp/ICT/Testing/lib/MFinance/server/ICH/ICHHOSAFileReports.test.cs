@@ -91,7 +91,7 @@ namespace Tests.MFinance.Server.ICH
             string CostCentre = "78";
             string Currency = "USD";
 
-            TVerificationResultCollection VerificationResults = null;
+            TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
             string TableForExportHeader = "/** Header **" + "," +
                                           PeriodNumber.ToString() + "," +
@@ -158,8 +158,8 @@ namespace Tests.MFinance.Server.ICH
             string AcctCode = "0200";
             string MonthName = "January";
             int PeriodNumber = 1;
-            DateTime PeriodStartDate = new DateTime(2012, 1, 1);
-            DateTime PeriodEndDate = new DateTime(2012, 1, 31);
+            DateTime PeriodStartDate = new DateTime(2013, 1, 1);
+            DateTime PeriodEndDate = new DateTime(2013, 1, 31);
             string Base = MFinanceConstants.CURRENCY_BASE;
             int IchNumber = 0;
             DataTable TableForExport = new DataTable();

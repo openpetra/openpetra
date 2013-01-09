@@ -158,7 +158,15 @@ namespace Ict.Testing.NUnitTools
                 Debug.Print("OS says nant process is finished");
             }
 
-            StreamReader sr = new StreamReader(rootPath + Path.DirectorySeparatorChar + "nant.txt");
+            string nantLogFile = rootPath + Path.DirectorySeparatorChar + "nant.txt";
+
+            if (!File.Exists(nantLogFile))
+            {
+                FileStream fs = File.Create(nantLogFile);
+                fs.Close();
+            }
+
+            StreamReader sr = new StreamReader(nantLogFile);
             TLogging.Log(sr.ReadToEnd());
             sr.Close();
             File.Delete(rootPath + Path.DirectorySeparatorChar + "nant.txt");
