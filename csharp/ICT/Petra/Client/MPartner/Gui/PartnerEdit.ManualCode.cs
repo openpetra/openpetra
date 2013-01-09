@@ -1860,11 +1860,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             TPartnerMain.FindPartner(this);
         }
 
-        private void EditFindPartner(System.Object sender, System.EventArgs e)
-        {
-            TPartnerMain.FindPartner(this);
-        }
-        
         #endregion
 
         #region Maintain Menu
