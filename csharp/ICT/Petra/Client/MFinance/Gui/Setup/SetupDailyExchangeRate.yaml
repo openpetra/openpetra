@@ -11,7 +11,7 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actImport: {ActionClick=Import}
-        actClose:  {Label=Accept, ActionClick=CloseDialog}
+        actClose:  {Label=Close, ActionClick=CloseDialog}
         actCancel:  {Label=Cancel, ActionClick=CancelDialog}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:

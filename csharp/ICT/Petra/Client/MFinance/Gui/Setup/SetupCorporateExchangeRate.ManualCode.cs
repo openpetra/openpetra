@@ -29,6 +29,7 @@ using System.Globalization;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
+using System.Collections.Generic;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
@@ -53,6 +54,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private bool blnSelectedRowChangeable = false;
 
         /// <summary>
+        /// We use this to hold inverse exchange rate items that will need saving at the end
+        /// </summary>
+        private struct tInverseItem
+        {
+            public string FromCurrencyCode;
+            public string ToCurrencyCode;
+            public DateTime DateEffective;
+            public decimal RateOfExchange;
+        }
+
+        /// <summary>
         /// The definition of the ledger number is used to define some
         /// default values and it initializes the dialog to run in the non modal
         /// form ...
@@ -73,30 +85,96 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void RunOnceOnActivationManual()
         {
-            this.txtDetailRateOfExchange.Validated +=
-                new System.EventHandler(this.ValidatedExchangeRate);
+            this.txtDetailRateOfExchange.TextChanged +=
+                new System.EventHandler(this.txtDetailRateOfExchange_TextChanged);
 
             this.cmbDetailFromCurrencyCode.SelectedValueChanged +=
                 new System.EventHandler(this.ValueChangedCurrencyCode);
             this.cmbDetailToCurrencyCode.SelectedValueChanged +=
                 new System.EventHandler(this.ValueChangedCurrencyCode);
 
-            this.tbbSave.Click +=
-                new System.EventHandler(this.SetTheFocusToTheGrid);
+            //this.tbbSave.Click +=
+            //    new System.EventHandler(this.SetTheFocusToTheGrid);
 
             this.btnInvertExchangeRate.Click +=
                 new System.EventHandler(this.InvertExchangeRate);
 
-            FMainDS.ACorporateExchangeRate.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
-                                                              ACorporateExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+            FMainDS.ACorporateExchangeRate.DefaultView.Sort = ACorporateExchangeRateTable.GetToCurrencyCodeDBName() + ", " +
+                    ACorporateExchangeRateTable.GetFromCurrencyCodeDBName() + ", " +
+                    ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + " DESC";
             FMainDS.ACorporateExchangeRate.DefaultView.RowFilter = "";
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
         }
 
         void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
-            // The user has clicked Save. I just want to check it's all OK?
-            ValidateAllData(false, true);
+            // The user has clicked Save.  We need to consider if we need to make any Inverse currency additions...
+            // We need to update the details and validate them first
+            // When we return from this method the standard code will do the validation again and might not allow the save to go ahead
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+            ValidateAllData(false, false);
+            if (FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
+            {
+                return;
+            }
+
+            // Now go through all the grid rows (view) checking all the added rows.  Keep a list of inverses
+            List<tInverseItem> lstInverses = new List<tInverseItem>();
+            DataView gridView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+
+            for (int i = 0; i < gridView.Count; i++)
+            {
+                ACorporateExchangeRateRow ARow = (ACorporateExchangeRateRow)gridView[i].Row;
+
+                if (ARow.RowState == DataRowState.Added)
+                {
+                    tInverseItem item = new tInverseItem();
+                    item.FromCurrencyCode = ARow.ToCurrencyCode;
+                    item.ToCurrencyCode = ARow.FromCurrencyCode;
+                    item.RateOfExchange = Math.Round(1 / ARow.RateOfExchange, 10);
+                    item.DateEffective = ARow.DateEffectiveFrom;
+                    lstInverses.Add(item);
+                }
+            }
+
+            if (lstInverses.Count == 0)
+            {
+                return;
+            }
+
+            // Now go through our list and check if any items need adding to the data Table
+            // The user may already have put an inverse currency in by hand
+            DataView dv = new DataView(FMainDS.ACorporateExchangeRate);
+
+            for (int i = 0; i < lstInverses.Count; i++)
+            {
+                tInverseItem item = lstInverses[i];
+
+                // Does the item exist already?
+                dv.RowFilter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' AND {2}='{3}' AND {4}=#{5}# AND {6}={7}",
+                    ACorporateExchangeRateTable.GetFromCurrencyCodeDBName(),
+                    item.FromCurrencyCode,
+                    ACorporateExchangeRateTable.GetToCurrencyCodeDBName(),
+                    item.ToCurrencyCode,
+                    ACorporateExchangeRateTable.GetDateEffectiveFromDBName(),
+                    item.DateEffective,
+                    ACorporateExchangeRateTable.GetRateOfExchangeDBName(),
+                    item.RateOfExchange);
+
+                if (dv.Count == 0)
+                {
+                    ACorporateExchangeRateRow NewRow = FMainDS.ACorporateExchangeRate.NewRowTyped();
+                    NewRow.FromCurrencyCode = item.FromCurrencyCode; ;
+                    NewRow.ToCurrencyCode = item.ToCurrencyCode;
+                    NewRow.DateEffectiveFrom = DateTime.Parse(item.DateEffective.ToLongDateString());
+                    NewRow.RateOfExchange = item.RateOfExchange;
+
+                    FMainDS.ACorporateExchangeRate.Rows.Add(NewRow);
+                }
+            }
+
+            // Now make sure to select the row that was currently selected when we started the Save operation
+            SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1);
         }
 
         private void ValidateDataDetailsManual(ACorporateExchangeRateRow ARow)
@@ -108,109 +186,74 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// The focus is send to the grid to "unfocus" the input controls and to
-        /// enforce that the dataset verification routines are invoked
-        /// </summary>
-        /// <param name="sender">not used</param>
-        /// <param name="e">not used</param>
-        private void SetTheFocusToTheGrid(object sender, EventArgs e)
-        {
-            grdDetails.Focus();
-        }
-
-        /// <summary>
         /// Create a new CorporateExchangeRateRow ...
         /// </summary>
         /// <param name="sender">not used</param>
         /// <param name="e">not used</param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+            CreateNewACorporateExchangeRate();
+
+            UpdateExchangeRateLabels();
+        }
+
+        private void NewRowManual(ref ACorporateExchangeRateRow ARow)
+        {
             DateTime NewDateEffectiveFrom;
 
             // Calculate the Date from which the Exchange Rate will be effective. It needs to be preset to the first day of the current month.
             NewDateEffectiveFrom = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            string NewToCurrencyCode;
-
-            ACorporateExchangeRateRow ACorporateExRateRow = FMainDS.ACorporateExchangeRate.NewRowTyped();
-            ACorporateExRateRow.FromCurrencyCode = "USD";
 
             if (FPreviouslySelectedDetailRow == null)
             {
+                // Corporate Exchange rates are not part of any ledger, so baseCurrencyOfLedger may be null...
                 if (baseCurrencyOfLedger != null)
                 {
-                    NewToCurrencyCode = baseCurrencyOfLedger; // Corporate Exchange rates are not part of any ledger, so this may not be set...
+                    ARow.FromCurrencyCode = "USD";
+                    ARow.ToCurrencyCode = baseCurrencyOfLedger;
                 }
                 else
                 {
-                    NewToCurrencyCode = "USD";
+                    ARow.FromCurrencyCode = "GBP";
+                    ARow.ToCurrencyCode = "USD";
                 }
 
-                ACorporateExRateRow.RateOfExchange = 1.0m;
+                if (ARow.FromCurrencyCode == ARow.ToCurrencyCode)
+                {
+                    ARow.RateOfExchange = 1.0m;
+                }
+                else
+                {
+                    ARow.RateOfExchange = 0.0m;
+                }
             }
             else
             {
-                NewToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
-                ACorporateExRateRow.RateOfExchange = txtDetailRateOfExchange.NumberValueDecimal.Value;
-            }
+                // Use the same settings as the highlighted row
+                ARow.FromCurrencyCode = cmbDetailFromCurrencyCode.GetSelectedString();
+                ARow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
 
-            ACorporateExRateRow.ToCurrencyCode = NewToCurrencyCode;
+                // Get the most recent value for this currency pair
+                string rowFilter = String.Format("{0}='{1}' AND {2}='{3}'", 
+                        ACorporateExchangeRateTable.GetFromCurrencyCodeDBName(),
+                        ARow.FromCurrencyCode,
+                        ACorporateExchangeRateTable.GetToCurrencyCodeDBName(),
+                        ARow.ToCurrencyCode);
+                string sortBy = String.Format("{0} DESC", ACorporateExchangeRateTable.GetDateEffectiveFromDBName());
+                DataView dv = new DataView(FMainDS.ACorporateExchangeRate, rowFilter, sortBy, DataViewRowState.CurrentRows);
+                ARow.RateOfExchange = ((ACorporateExchangeRateRow)dv[0].Row).RateOfExchange;
+            }
 
             // Ensure we don't create a duplicate record
             while (FMainDS.ACorporateExchangeRate.Rows.Find(new object[] {
-                           ACorporateExRateRow.FromCurrencyCode, NewToCurrencyCode, NewDateEffectiveFrom.ToString()
+                           ARow.FromCurrencyCode, ARow.ToCurrencyCode, NewDateEffectiveFrom.ToString()
                        }) != null)
             {
                 NewDateEffectiveFrom = NewDateEffectiveFrom.AddMonths(1);
             }
 
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                cmbDetailFromCurrencyCode.SetSelectedString(ACorporateExRateRow.FromCurrencyCode);
-                cmbDetailToCurrencyCode.SetSelectedString(ACorporateExRateRow.ToCurrencyCode);
-            }
-
-            ACorporateExRateRow.DateEffectiveFrom = NewDateEffectiveFrom;
-            ACorporateExRateRow.TimeEffectiveFrom = 0;
-
-            FMainDS.ACorporateExchangeRate.Rows.Add(ACorporateExRateRow);
-//            grdDetails.Refresh();
-//
-//            FPetraUtilsObject.SetChangedFlag();
-//            SelectDetailRowByDataTableIndex(FMainDS.ACorporateExchangeRate.Rows.Count - 1);
-
-            FPetraUtilsObject.SetChangedFlag();
-
-            grdDetails.DataSource = null;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ACorporateExchangeRate.DefaultView);
-
-            SelectDetailRowByDataTableIndex(FMainDS.ACorporateExchangeRate.Rows.Count - 1);
-
-            ShowDetails();
-
-            Control[] pnl = this.Controls.Find("pnlDetails", true);
-
-            if (pnl.Length > 0)
-            {
-                //Look for Key & Description fields
-                bool keyFieldFound = false;
-
-                foreach (Control detailsCtrl in pnl[0].Controls)
-                {
-                    if (!keyFieldFound && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
-                    {
-                        keyFieldFound = true;
-                        detailsCtrl.Focus();
-                    }
-
-                    if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && (detailsCtrl.Text == string.Empty))
-                    {
-                        detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
-                        break;
-                    }
-                }
-            }
-
-            UpdateExchangeRateLabels();
+            ARow.DateEffectiveFrom = NewDateEffectiveFrom;
+            ARow.TimeEffectiveFrom = 0;
         }
 
         /// <summary>
@@ -218,9 +261,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         /// <param name="sender">not used</param>
         /// <param name="e">not used</param>
-        private void ValidatedExchangeRate(System.Object sender, EventArgs e)
+        private void txtDetailRateOfExchange_TextChanged(System.Object sender, EventArgs e)
         {
-            UpdateExchangeRateLabels();
+            if (txtDetailRateOfExchange.Text.Trim() != String.Empty)
+            {
+                UpdateExchangeRateLabels();
+            }
         }
 
         /// <summary>
@@ -299,6 +345,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             UpdateExchangeRateLabels();
+        }
+
+        private void GetDetailDataFromControlsManual(ACorporateExchangeRateRow ARow)
+        {
+            // Check if we have an inverse rate for this date/time and currency pair
+            ACorporateExchangeRateRow mainRow = (ACorporateExchangeRateRow)FMainDS.ACorporateExchangeRate.Rows.Find(
+                new object[] { ARow.ToCurrencyCode, ARow.FromCurrencyCode, ARow.DateEffectiveFrom });
+
+            if (mainRow != null)
+            {
+                // Checking to see if we have a matching rate is tricky because rounding errors mean that the inverse of an inverse
+                // does not always get you back where you started.  So we check both ways to look for a match.
+                // If neither way matches we need to do an update, but if there is a match in at least one direction, we leave the other row as it is.
+                decimal inverseRate = Math.Round(1 / ARow.RateOfExchange, 10);
+                decimal inverseRateAlt = Math.Round(1 / mainRow.RateOfExchange, 10);
+
+                if (mainRow.RateOfExchange != inverseRate && ARow.RateOfExchange != inverseRateAlt)
+                {
+                    // Neither way matches so we must have made a change that requires an update to the inverse row
+                    mainRow.BeginEdit();
+                    mainRow.RateOfExchange = inverseRate;
+                    mainRow.EndEdit();
+                }
+            }
         }
 
         /// <summary>
