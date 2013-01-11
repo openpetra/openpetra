@@ -54,7 +54,7 @@ namespace Tests.Common.Controls
             txtBox.NumberValueDecimal = 0.0M;
             txtBox.NumberValueDecimal = 1410.95M;
             Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "decimal value stored in german culture, switching culture, same txt object");
-            Assert.AreEqual("1,410.95 ###",
+            Assert.AreEqual("1,410.95",
                 txtBox.Text,
                 "text value stored in german culture, switching culture, same txt object, therefore still british format");
 
@@ -63,10 +63,10 @@ namespace Tests.Common.Controls
             txtDEBox.DecimalPlaces = 2;
             txtDEBox.NumberValueDecimal = 0.0M;
             txtDEBox.NumberValueDecimal = 1410.95M;
-            Assert.AreEqual("1.410,95 ###", txtDEBox.Text, "text value stored in german culture");
+            Assert.AreEqual("1.410,95", txtDEBox.Text, "text value stored in german culture");
             Assert.AreEqual(1410.95M, txtDEBox.NumberValueDecimal, "decimal value stored in german culture");
             txtDEBox.NumberValueDecimal = 1234410.95M;
-            Assert.AreEqual("1.234.410,95 ###", txtDEBox.Text, "huge number text value stored in german culture");
+            Assert.AreEqual("1.234.410,95", txtDEBox.Text, "huge number text value stored in german culture");
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
@@ -81,9 +81,9 @@ namespace Tests.Common.Controls
             Assert.AreEqual(770.00M,
                 txtBox.NumberValueDecimal,
                 "decimal value stored in english culture, with english UI, thousand separator problem");
-            Assert.AreEqual("770.00 ###", txtBox.Text, "testing problem with thousand separator");
+            Assert.AreEqual("770.00", txtBox.Text, "testing problem with thousand separator");
             txtBox.NumberValueDecimal = 1234410.95M;
-            Assert.AreEqual("1,234,410.95 ###", txtBox.Text, "huge number text value stored in british culture");
+            Assert.AreEqual("1,234,410.95", txtBox.Text, "huge number text value stored in british culture");
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
