@@ -70,7 +70,6 @@ namespace Ict.Common.Controls
 
         private string FNumberDecimalSeparator = ".";
         private string FCurrencyDecimalSeparator = ".";
-        private string FCurrencyGroupSeparator = ",";
         private CultureInfo FCurrentCulture;
         private bool FShowPercentSign = false;
         private string FNumberPositiveSign = "+";
@@ -565,7 +564,6 @@ namespace Ict.Common.Controls
 
             FNumberDecimalSeparator = NfiCurrenThread.NumberDecimalSeparator;     // TODO: make this customisable in Client .config file
             FCurrencyDecimalSeparator = NfiCurrenThread.CurrencyDecimalSeparator; // TODO: make this customisable in Client .config file
-            FCurrencyGroupSeparator = NfiCurrenThread.CurrencyGroupSeparator;     // TODO: make this customisable in Client .config file
 
             FCurrentCulture = Thread.CurrentThread.CurrentCulture;
 

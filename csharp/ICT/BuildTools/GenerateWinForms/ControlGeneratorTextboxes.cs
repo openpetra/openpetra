@@ -862,8 +862,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            string NumberFormat = String.Empty;
-
             base.SetControlProperties(writer, ctrl);
 
             if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
@@ -874,11 +872,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.SetControlProperty(ctrl, "DecimalPlaces", FDecimalPrecision.ToString());
             writer.SetControlProperty(ctrl, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
             writer.SetControlProperty(ctrl, "CurrencySymbol", "\"###\"");
-
-            if (ctrl.HasAttribute("Format"))
-            {
-                NumberFormat = ctrl.GetAttribute("Format");
-            }
 
             return writer.FTemplate;
         }
