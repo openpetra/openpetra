@@ -275,11 +275,7 @@ namespace Ict.Petra.Client.CommonControls
             }
             else if (AControl.GetType() == typeof(TTxtNumericTextBox))
             {
-                if (((TTxtNumericTextBox)AControl).ControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Currency)
-                {
-                    return ((TTxtNumericTextBox)AControl).NumberValueDecimal.ToString();
-                }
-                else if (((TTxtNumericTextBox)AControl).ControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Integer)
+                if (((TTxtNumericTextBox)AControl).ControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Integer)
                 {
                     return ((TTxtNumericTextBox)AControl).NumberValueInt.ToString();
                 }
@@ -291,6 +287,10 @@ namespace Ict.Petra.Client.CommonControls
                 {
                     return ((TTxtNumericTextBox)AControl).NumberValueDecimal.ToString();
                 }
+            }
+            else if (AControl.GetType() == typeof(TTxtCurrencyTextBox))
+            {
+                return ((TTxtNumericTextBox)AControl).NumberValueDecimal.ToString();
             }
             else if (AControl.GetType() == typeof(TextBox))
             {

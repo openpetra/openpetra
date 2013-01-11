@@ -384,7 +384,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             TtxtPetraDate DateEditor;
             System.Windows.Forms.CheckBox CheckBoxEditor;
             TTxtNumericTextBox TextBoxNumericEditor;
-            TTxtNumericTextBox TextBoxCurrencyEditor;
+            TTxtCurrencyTextBox TextBoxCurrencyEditor;
             TCmbAutoPopulated LookupValueEditor;
             TtxtAutoPopulatedButtonLabel PartnerKeyEditor;
             SourceGrid.Cells.Views.Cell ValueModel;
@@ -527,8 +527,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             // Create currency field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CURRENCY)
             {
-                TextBoxCurrencyEditor = new TTxtNumericTextBox();
-                TextBoxCurrencyEditor.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+                TextBoxCurrencyEditor = new TTxtCurrencyTextBox();
                 TextBoxCurrencyEditor.DecimalPlaces = 2;
                 TextBoxCurrencyEditor.CurrencySymbol = ADataLabelRow.CurrencyCode;
                 TextBoxCurrencyEditor.NullValueAllowed = true;
@@ -755,6 +754,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 || (sender.GetType() == typeof(TtxtPetraDate))
                 || (sender.GetType() == typeof(System.Windows.Forms.CheckBox))
                 || (sender.GetType() == typeof(TTxtNumericTextBox))
+                || (sender.GetType() == typeof(TTxtCurrencyTextBox))
                 || (sender.GetType() == typeof(TCmbAutoPopulated))
                 || (sender.GetType() == typeof(TtxtAutoPopulatedButtonLabel)))
             {
@@ -1116,11 +1116,11 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                     if (DataLabelValuePartnerRow != null)
                     {
-                        DataLabelValuePartnerRow.ValueCurrency = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
+                        DataLabelValuePartnerRow.ValueCurrency = ((TTxtCurrencyTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
                     }
                     else if (DataLabelValueApplicationRow != null)
                     {
-                        DataLabelValueApplicationRow.ValueCurrency = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
+                        DataLabelValueApplicationRow.ValueCurrency = ((TTxtCurrencyTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
                     }
                 }
 
@@ -1205,7 +1205,14 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
 
-                    if (((TTxtNumericTextBox)CurrentControl).Text.Trim() == "")
+                    if(ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CURRENCY)
+                    {
+                        if (((TTxtCurrencyTextBox)CurrentControl).Text.Trim() == "")
+                        {
+                            ReturnValue = true;
+                        }
+                    }
+                    else if (((TTxtNumericTextBox)CurrentControl).Text.Trim() == "")
                     {
                         ReturnValue = true;
                     }

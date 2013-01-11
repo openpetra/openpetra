@@ -76,7 +76,7 @@ public partial class MainForm : Form
         MessageBox.Show(
             "Decimal: " + txtDecimal.NumberValueDouble.ToString() + Environment.NewLine +
             "  as Decimal: " + txtDecimal.NumberValueDecimal.ToString() + Environment.NewLine +
-            "Currency: " + txtCurrency.NumberValueDouble.ToString() + Environment.NewLine +
+            "Currency: " + txtCurrency.NumberValueDecimal.ToString() + Environment.NewLine +
             "  as Decimal: " + txtCurrency.NumberValueDecimal.ToString() + Environment.NewLine +
             "Integer: " + txtInteger.NumberValueInt.ToString() + Environment.NewLine +
             "Long Integer: " + txtLongInteger.NumberValueLongInt.ToString() + Environment.NewLine +
@@ -110,7 +110,7 @@ public partial class MainForm : Form
 
         if (txtInteger.NumberValueInt != null)
         {
-            txtInteger.NumberValueInt = txtInteger.NumberValueInt + 6;
+            txtInteger.NumberValueInt = txtInteger.NumberValueInt - 6;
         }
         else
         {
@@ -119,11 +119,11 @@ public partial class MainForm : Form
 
         if (txtLongInteger.NumberValueLongInt != null)
         {
-            txtLongInteger.NumberValueLongInt = txtLongInteger.NumberValueLongInt + 8;
+            txtLongInteger.NumberValueLongInt = txtLongInteger.NumberValueLongInt - 8;
         }
         else
         {
-            txtLongInteger.NumberValueInt = 101;
+            txtLongInteger.NumberValueLongInt = 101;
         }
     }
 
@@ -140,26 +140,13 @@ public partial class MainForm : Form
         this.txtDecimal.ShowPercentSign = chkPercentFormatting.Checked;
         this.txtInteger.ShowPercentSign = chkPercentFormatting.Checked;
         this.txtLongInteger.ShowPercentSign = chkPercentFormatting.Checked;
-        this.txtCurrency.ShowPercentSign = chkPercentFormatting.Checked;               // while this doesn't make sense, it must do no harm to set this property on this Control
         this.txtNormal.ShowPercentSign = chkPercentFormatting.Checked;                 // while this doesn't make sense, it must do no harm to set this property on this Control
     }
-
-    void RbtCurSymbLeftCheckedChanged(object sender, System.EventArgs e)
+    
+    
+    void TxtCurrencySymbolTextChanged(object sender, System.EventArgs e)
     {
-        txtCurrency.CurrencySymbolRightAligned = false;
-        txtDecimal.CurrencySymbolRightAligned = false;               // while this doesn't make sense, it must do no harm to set this property on this Control
-        txtInteger.CurrencySymbolRightAligned = false;               // while this doesn't make sense, it must do no harm to set this property on this Control
-        txtLongInteger.CurrencySymbolRightAligned = false;               // while this doesn't make sense, it must do no harm to set this property on this Control
-        txtNormal.CurrencySymbolRightAligned = false;                // while this doesn't make sense, it must do no harm to set this property on this Control
-    }
-
-    void RbtCurSymbRightCheckedChanged(object sender, System.EventArgs e)
-    {
-        txtCurrency.CurrencySymbolRightAligned = true;
-        txtDecimal.CurrencySymbolRightAligned = true;               // while this doesn't make sense, it must do no harm to set this property on this Control
-        txtInteger.CurrencySymbolRightAligned = true;               // while this doesn't make sense, it must do no harm to set this property on this Control
-        txtLongInteger.CurrencySymbolRightAligned = true;               // while this doesn't make sense, it must do no harm to set this property on this Control
-        txtNormal.CurrencySymbolRightAligned = true;                // while this doesn't make sense, it must do no harm to set this property on this Control
-    }
-}
+        txtCurrency.CurrencySymbol = txtCurrencySymbol.Text;
+    }    
+  }
 }

@@ -44,8 +44,7 @@ namespace Tests.Common.Controls
         public void TestCurrencyValues()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
-            TTxtNumericTextBox txtBox = new TTxtNumericTextBox();
-            txtBox.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            TTxtCurrencyTextBox txtBox = new TTxtCurrencyTextBox();
             txtBox.DecimalPlaces = 2;
 
             txtBox.NumberValueDecimal = 1410.95M;
@@ -60,8 +59,7 @@ namespace Tests.Common.Controls
                 "text value stored in german culture, switching culture, same txt object, therefore still british format");
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
-            TTxtNumericTextBox txtDEBox = new TTxtNumericTextBox();
-            txtDEBox.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Currency;
+            TTxtCurrencyTextBox txtDEBox = new TTxtCurrencyTextBox();
             txtDEBox.DecimalPlaces = 2;
             txtDEBox.NumberValueDecimal = 0.0M;
             txtDEBox.NumberValueDecimal = 1410.95M;

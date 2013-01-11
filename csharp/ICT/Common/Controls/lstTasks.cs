@@ -653,7 +653,8 @@ namespace Ict.Common.Controls
 
             if (InspectNode != null)
             {
-                if (InspectNode.Attributes.Count > 0)
+                if ((InspectNode.Attributes != null)
+                    && (InspectNode.Attributes.Count > 0))
                 {
                     if (InspectNode.Attributes["DependsOnLedger"] != null)
                     {
