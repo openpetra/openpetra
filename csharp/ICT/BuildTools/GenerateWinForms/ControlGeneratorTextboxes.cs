@@ -518,19 +518,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ReturnValue = true;
                 }
 
-                if ((NumberFormat == "Currency")
-                    || (NumberFormat.StartsWith("Currency(")))
-                {
-                    FControlMode = "Currency";
-                    FDefaultWidth = 150;
-                    ReturnValue = true;
-                }
-
                 if (ReturnValue)
                 {
                     if ((NumberFormat.StartsWith("Decimal("))
-                        || (NumberFormat.StartsWith("PercentDecimal("))
-                        || (NumberFormat.StartsWith("Currency(")))
+                        || (NumberFormat.StartsWith("PercentDecimal(")))
                     {
                         PotentialDecimalPrecision = NumberFormat.Substring(NumberFormat.IndexOf('(') + 1,
                             NumberFormat.IndexOf(')') - NumberFormat.IndexOf('(') - 1);
@@ -586,8 +577,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (AFieldOrNull == null)
             {
-                if ((FControlMode == "Decimal")
-                    || (FControlMode == "Currency"))
+                if (FControlMode == "Decimal")
                 {
                     return ctrl.controlName + ".NumberValueDecimal = null;";
                 }
@@ -671,8 +661,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (AFieldTypeDotNet == null)
             {
-                if ((FControlMode == "Decimal")
-                    || (FControlMode == "Currency"))
+                if (FControlMode == "Decimal")
                 {
                     return ctrl.controlName + ".NumberValueDecimal == null";
                 }
@@ -736,6 +725,159 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 || (NumberFormat.StartsWith("PercentDecimal")))
             {
                 writer.SetControlProperty(ctrl, "ShowPercentSign", "true");
+            }
+
+            return writer.FTemplate;
+        }
+    }
+
+
+    /// <summary>
+    /// generator for a numeric currency text box control
+    /// </summary>
+    public class TTxtCurrencyTextBoxGenerator : TControlGenerator
+    {
+        Int16 FDecimalPrecision = 2;
+        bool FNullValueAllowed = true;
+
+        /// <summary>constructor</summary>
+        public TTxtCurrencyTextBoxGenerator()
+            : base("txt", "Ict.Common.Controls.TTxtCurrencyTextBox")
+        {
+            FChangeEventName = "TextChanged";
+            FHasReadOnlyProperty = true;
+            FDefaultHeight = 22;
+        }
+
+        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            bool ReturnValue = false;
+            string NumberFormat;
+            string PotentialNullValue;
+
+//Console.WriteLine("TTxtCurrencyTextBoxGenerator ControlFitsNode");
+            if (base.ControlFitsNode(curNode))
+            {
+                FDefaultWidth = 80;
+
+                NumberFormat = TYml2Xml.GetAttribute(curNode, "Format");
+
+//Console.WriteLine("TTxtCurrencyTextBoxGenerator Format: '" + NumberFormat + "'");
+                if ((NumberFormat == "Currency")
+                    || (NumberFormat.StartsWith("Currency(")))
+                {
+                    FDefaultWidth = 150;
+                    ReturnValue = true;
+                }
+
+                if (ReturnValue)
+                {
+                    if (TYml2Xml.HasAttribute(curNode, "NullValueAllowed"))
+                    {
+                        PotentialNullValue = TYml2Xml.GetAttribute(curNode, "NullValueAllowed");
+
+                        if ((PotentialNullValue == "true")
+                            || (PotentialNullValue == "false"))
+                        {
+                            FNullValueAllowed = Convert.ToBoolean(PotentialNullValue);
+                        }
+                        else
+                        {
+                            throw new ApplicationException(
+                                "TextBox with currency formatting: Value for 'NullValueAllowed' needs to be either 'true' or 'false', but is '" +
+                                PotentialNullValue + "'.");
+                        }
+                    }
+                }
+
+                return ReturnValue;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// how to assign a value to the control
+        /// </summary>
+        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldOrNull == null)
+            {
+                return ctrl.controlName + ".NumberValueDecimal = null;";
+            }
+            else
+            {
+                if (AFieldTypeDotNet.ToLower().Contains("decimal"))
+                {
+                    if (AFieldOrNull == null)
+                    {
+                        return ctrl.controlName + ".NumberValueDecimal = null;";
+                    }
+
+                    return ctrl.controlName + ".NumberValueDecimal = Convert.ToDecimal(" + AFieldOrNull + ");";
+                }
+                else
+                {
+                    TLogging.Log("Warning: unknown type " + AFieldTypeDotNet + " for Textbox.AssignValue for control " + ctrl.controlName);
+                    return string.Empty;
+                }
+            }
+        }
+
+        /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet.ToLower().Contains("decimal"))
+            {
+                return ctrl.controlName + ".NumberValueDecimal = Convert.ToDecimal(" + AFieldOrNull + ");";
+            }
+            else
+            {
+                TLogging.Log("Warning: unknown type " + AFieldTypeDotNet + " for Textbox.UndoValue for control " + ctrl.controlName);
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// how to get the value from the control
+        /// </summary>
+        protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == null)
+            {
+                return ctrl.controlName + ".NumberValueDecimal == null";
+            }
+
+            if (AFieldTypeDotNet.ToLower().Contains("decimal"))
+            {
+                return "Convert.ToDecimal(" + ctrl.controlName + ".NumberValueDecimal)";
+            }
+
+            return ctrl.controlName + ".Text";
+        }
+
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            string NumberFormat = String.Empty;
+
+            base.SetControlProperties(writer, ctrl);
+
+            if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
+            {
+                writer.SetControlProperty(ctrl, "ShowLabel", "false");
+            }
+
+            writer.SetControlProperty(ctrl, "DecimalPlaces", FDecimalPrecision.ToString());
+            writer.SetControlProperty(ctrl, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
+            writer.SetControlProperty(ctrl, "CurrencySymbol", "\"###\"");
+
+            if (ctrl.HasAttribute("Format"))
+            {
+                NumberFormat = ctrl.GetAttribute("Format");
             }
 
             return writer.FTemplate;

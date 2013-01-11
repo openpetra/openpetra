@@ -22,10 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.CommonControls
 {
@@ -275,11 +278,7 @@ namespace Ict.Petra.Client.CommonControls
             }
             else if (AControl.GetType() == typeof(TTxtNumericTextBox))
             {
-                if (((TTxtNumericTextBox)AControl).ControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Currency)
-                {
-                    return ((TTxtNumericTextBox)AControl).NumberValueDecimal.ToString();
-                }
-                else if (((TTxtNumericTextBox)AControl).ControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Integer)
+                if (((TTxtNumericTextBox)AControl).ControlMode == TTxtNumericTextBox.TNumericTextBoxMode.Integer)
                 {
                     return ((TTxtNumericTextBox)AControl).NumberValueInt.ToString();
                 }
@@ -291,6 +290,10 @@ namespace Ict.Petra.Client.CommonControls
                 {
                     return ((TTxtNumericTextBox)AControl).NumberValueDecimal.ToString();
                 }
+            }
+            else if (AControl.GetType() == typeof(TTxtCurrencyTextBox))
+            {
+                return ((TTxtNumericTextBox)AControl).NumberValueDecimal.ToString();
             }
             else if (AControl.GetType() == typeof(TextBox))
             {
@@ -381,6 +384,15 @@ namespace Ict.Petra.Client.CommonControls
 
             // Add or remove the error from the collection
             AVerificationResultCollection.AddOrRemove(verificationResult, APrimaryKeyColumn);
+        }
+
+        /// <summary>
+        /// Retrieves the list of currencies from the Cache.
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable RetrieveCurrencyList()
+        {
+            return TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
         }
     }
 }
