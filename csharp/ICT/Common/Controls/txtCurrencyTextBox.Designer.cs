@@ -51,8 +51,10 @@ namespace Ict.Common.Controls
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.FTxtNumeric = new Ict.Common.Controls.TTxtNumericTextBox();
             this.FLblCurrency = new System.Windows.Forms.Label();
+            this.tipCurrencyName = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // FTxtNumeric
@@ -95,6 +97,7 @@ namespace Ict.Common.Controls
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+        private System.Windows.Forms.ToolTip tipCurrencyName;
         private System.Windows.Forms.Label FLblCurrency;
         private Ict.Common.Controls.TTxtNumericTextBox FTxtNumeric;
     }

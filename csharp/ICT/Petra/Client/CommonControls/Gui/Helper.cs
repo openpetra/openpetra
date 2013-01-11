@@ -22,10 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.CommonControls
 {
@@ -381,6 +384,15 @@ namespace Ict.Petra.Client.CommonControls
 
             // Add or remove the error from the collection
             AVerificationResultCollection.AddOrRemove(verificationResult, APrimaryKeyColumn);
+        }
+        
+        /// <summary>
+        /// Retrieves the list of currencies from the Cache.
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable RetrieveCurrencyList()
+        {
+            return TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
         }
     }
 }

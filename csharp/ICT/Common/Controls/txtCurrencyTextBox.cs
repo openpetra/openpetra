@@ -23,6 +23,7 @@
 //
 using System;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -33,8 +34,15 @@ namespace Ict.Common.Controls
     /// </summary>
     public partial class TTxtCurrencyTextBox : UserControl
     {
+        private const string COLUMNNAME_CURRENCY_NAME = "a_currency_name_c";
+        private const string COLUMNNAME_DISPLAYFORMAT_NAME = "a_display_format_c";
+        
         private int FOriginalTxtNumericWidth;
         private int FLastControlWidth = -1; 
+        private string FCurrencyName;
+        
+        private static TRetrieveCurrencyList FRetrieveCurrencyList;
+        private static DataTable GCurrencyList;
         
         #region Properties (handed through to TTxtNumericTextBox!)
 
@@ -178,6 +186,46 @@ namespace Ict.Common.Controls
                 {
                     FLblCurrency.Visible = true;
                 }
+                
+                if (GCurrencyList != null) 
+                {
+                    DataRow CurrencyDR = GCurrencyList.Rows.Find(value);
+                    
+                    if (CurrencyDR != null) 
+                    {
+                        FCurrencyName = (string)CurrencyDR[COLUMNNAME_CURRENCY_NAME];
+                    
+                        tipCurrencyName.SetToolTip(FLblCurrency, FCurrencyName);
+                        
+                        string DisplayFormat = (string)CurrencyDR[COLUMNNAME_DISPLAYFORMAT_NAME];
+                        int DecimalSeparatorPos = DisplayFormat.LastIndexOf('.');
+                        
+                        if (DecimalSeparatorPos != - 1) 
+                        {
+                            this.DecimalPlaces = DisplayFormat.Length - DecimalSeparatorPos - 1;
+                        }
+                        else
+                        {
+                            this.DecimalPlaces = 0;
+                        }
+                    }
+                    else
+                    {
+                        FCurrencyName = String.Empty;
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// The name of the currency. Only available after (1) assigning the RetrieveCurrencyList Delegate and
+        /// (2) assigning the Currency Property and (3) that Currency was found in the Currency List retrieved by the Delegate.
+        /// </summary>
+        public string CurrencyName
+        {
+            get
+            {
+                return FCurrencyName;
             }
         }
         
@@ -206,6 +254,30 @@ namespace Ict.Common.Controls
         /// </summary>
         public new event EventHandler TextChanged;
         
+        /// <summary>
+        /// Loads a DataTable that contains the list of currencies.
+        /// </summary>
+        /// <remarks>See implementation in Ict.Petra.Client.CommonControls.TControlExtensions.RetrieveCurrencyList!</remarks>
+        /// <returns>A DataTable that contains the list of currencies.</returns>
+        public delegate DataTable TRetrieveCurrencyList();
+
+        /// <summary>
+        /// This property is used to provide a function which loads the list of Currencies.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TRetrieveCurrencyList RetrieveCurrencyList
+        {
+            get
+            {
+                return FRetrieveCurrencyList;
+            }
+
+            set
+            {
+                FRetrieveCurrencyList = value;
+            }
+        }
+        
         #endregion
 
         #region Constructors
@@ -221,6 +293,14 @@ namespace Ict.Common.Controls
             InitializeComponent();
             
             FTxtNumeric.TextChanged += new EventHandler(OnTextChanged);
+            
+            if (FRetrieveCurrencyList != null) 
+            {
+                if (GCurrencyList == null) 
+                {
+                    GCurrencyList = FRetrieveCurrencyList();    
+                }
+            }
         }
 
         #endregion        
