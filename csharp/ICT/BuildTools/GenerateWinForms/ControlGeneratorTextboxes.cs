@@ -756,14 +756,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string NumberFormat;
             string PotentialNullValue;
 
-Console.WriteLine("TTxtCurrencyTextBoxGenerator ControlFitsNode");
+//Console.WriteLine("TTxtCurrencyTextBoxGenerator ControlFitsNode");
             if (base.ControlFitsNode(curNode))
             {
                 FDefaultWidth = 80;
 
                 NumberFormat = TYml2Xml.GetAttribute(curNode, "Format");
 
-Console.WriteLine("TTxtCurrencyTextBoxGenerator Format: '" + NumberFormat + "'");
+//Console.WriteLine("TTxtCurrencyTextBoxGenerator Format: '" + NumberFormat + "'");
                 if ((NumberFormat == "Currency")
                     || (NumberFormat.StartsWith("Currency(")))
                 {
