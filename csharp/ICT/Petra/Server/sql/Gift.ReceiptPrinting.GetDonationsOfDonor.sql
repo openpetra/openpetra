@@ -1,5 +1,7 @@
 SELECT a_gift.a_date_entered_d AS DateEntered, 
-        a_gift_detail.a_gift_transaction_amount_n AS Amount, 
+        a_gift_detail.a_gift_transaction_amount_n AS TransactionAmount,
+        a_gift_detail.a_gift_amount_n AS AmountInBaseCurrency,
+        a_gift_batch.a_currency_code_c AS Currency,
         a_gift_detail.a_gift_comment_one_c AS CommentOne,
         a_account.a_account_code_short_desc_c AS AccountDesc,
         a_cost_centre.a_cost_centre_name_c AS CostCentreDesc

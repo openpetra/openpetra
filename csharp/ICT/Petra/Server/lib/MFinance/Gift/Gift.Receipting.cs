@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections.Specialized;
 using GNU.Gettext;
+using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
@@ -67,6 +68,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static string CreateAnnualGiftReceipts(Int32 ALedgerNumber, DateTime AStartDate, DateTime AEndDate, string AHTMLTemplate)
         {
             TLanguageCulture.LoadLanguageAndCulture();
+
+            // get BaseCurrency
+            System.Type typeofTable = null;
+            TCacheable CachePopulator = new TCacheable();
+            ALedgerTable LedgerTable = (ALedgerTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
+                "",
+                false,
+                ALedgerNumber,
+                out typeofTable);
+            string BaseCurrency = LedgerTable[0].BaseCurrency;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
@@ -109,7 +120,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (donations.Rows.Count > 0)
                 {
-                    string letter = FormatLetter(donorKey, donorName, donations, AHTMLTemplate, LocalCountryCode, Transaction);
+                    string letter = FormatLetter(donorKey, donorName, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, Transaction);
 
                     if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
                     {
@@ -145,6 +156,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         private static string FormatLetter(Int64 ADonorKey,
             string ADonorName,
             DataTable ADonations,
+            string ABaseCurrency,
             string AHTMLTemplate,
             string ALedgerCountryCode,
             TDBTransaction ATransaction)
@@ -201,6 +213,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             decimal sum = 0;
 
             decimal prevAmount = 0.0M;
+            string prevCurrency = String.Empty;
             string prevCommentOne = String.Empty;
             string prevAccountDesc = String.Empty;
             string prevCostCentreDesc = String.Empty;
@@ -209,18 +222,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             foreach (DataRow rowGifts in ADonations.Rows)
             {
                 DateTime dateEntered = Convert.ToDateTime(rowGifts["DateEntered"]);
-                decimal amount = Convert.ToDecimal(rowGifts["Amount"]);
+                decimal amount = Convert.ToDecimal(rowGifts["TransactionAmount"]);
+                string currency = rowGifts["Currency"].ToString();
                 string commentOne = rowGifts["CommentOne"].ToString();
                 string accountDesc = rowGifts["AccountDesc"].ToString();
                 string costcentreDesc = rowGifts["CostCentreDesc"].ToString();
-                sum += amount;
+                sum += Convert.ToDecimal(rowGifts["AmountInBaseCurrency"]);
 
                 // can we sum up donations on the same date, or do we need to print each detail with the account description?
                 if (RowTemplate.Contains("#COMMENTONE") || RowTemplate.Contains("#ACCOUNTDESC") || RowTemplate.Contains("#COSTCENTREDESC"))
                 {
                     rowTexts += RowTemplate.
                                 Replace("#DONATIONDATE", dateEntered.ToString("dd.MM.yyyy")).
-                                Replace("#AMOUNT", String.Format("{0:2}", amount)).
+                                Replace("#AMOUNT", String.Format("{0:0.00}", amount)).
+                                Replace("#AMOUNTCURRENCY", currency).
                                 Replace("#COMMENTONE", commentOne).
                                 Replace("#ACCOUNTDESC", accountDesc).
                                 Replace("#COSTCENTREDESC", costcentreDesc);
@@ -231,7 +246,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         rowTexts += RowTemplate.
                                     Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
-                                    Replace("#AMOUNT", String.Format("{0:2}", prevAmount)).
+                                    Replace("#AMOUNT", String.Format("{0:0.00}", prevAmount)).
+                                    Replace("#AMOUNTCURRENCY", currency).
                                     Replace("#COMMENTONE", prevCommentOne).
                                     Replace("#ACCOUNTDESC", prevAccountDesc).
                                     Replace("#COSTCENTREDESC", prevCostCentreDesc);
@@ -242,6 +258,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         prevAmount += amount;
                     }
 
+                    prevCurrency = currency;
                     prevDateEntered = dateEntered;
                     prevCommentOne = commentOne;
                     prevAccountDesc = accountDesc;
@@ -253,14 +270,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 rowTexts += RowTemplate.
                             Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
-                            Replace("#AMOUNT", String.Format("{0:2}", prevAmount)).
+                            Replace("#AMOUNT", String.Format("{0:0.00}", prevAmount)).
+                            Replace("#AMOUNTCURRENCY", prevCurrency).
                             Replace("#COMMENTONE", prevCommentOne).
                             Replace("#ACCOUNTDESC", prevAccountDesc).
                             Replace("#COSTCENTREDESC", prevCostCentreDesc);
                 prevAmount = 0.0M;
             }
 
-            msg = msg.Replace("#OVERALLAMOUNT", String.Format("{0:2}", sum));
+            msg = msg.Replace("#OVERALLAMOUNT", String.Format("{0:0.00}", sum)).
+                  Replace("#OVERALLAMOUNTCURRENCY", ABaseCurrency);
 
             if ((ADonations.Rows.Count == 1) && msg.Contains("#DONATIONDATE"))
             {
@@ -268,7 +287,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 msg = msg.Replace("#DONATIONDATE", Convert.ToDateTime(ADonations.Rows[0]["DateEntered"]).ToString("dd.MM.yyyy"));
             }
 
-            // TODO allow other currencies. use a_currency table, and transaction currency
+            // TODO allow other currencies. use a_currency table, and base currency
             msg = msg.Replace("#TOTALAMOUNTINWORDS", NumberToWords.AmountToWords(sum, "Euro", "Cent"));
 
             return msg.Replace("#ROWTEMPLATE", rowTexts);
