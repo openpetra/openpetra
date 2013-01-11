@@ -34,6 +34,7 @@ namespace Ict.Common.Controls
     public partial class TTxtCurrencyTextBox : UserControl
     {
         private int FOriginalTxtNumericWidth;
+        private int FLastControlWidth = -1; 
         
         #region Properties (handed through to TTxtNumericTextBox!)
 
@@ -195,42 +196,6 @@ namespace Ict.Common.Controls
                 FTxtNumeric.TextAlign = value;
             }
         }
-
-        /// <summary>
-        /// Gets or sets the width of the Control.
-        /// </summary>
-        public new int Width
-        {
-            get
-            {
-                return base.Width;
-            }
-            
-            set
-            {
-                base.Width = value;
-                
-                MaintainLayoutOfContainedControls();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the height and width of the Control.
-        /// </summary>
-        public new Size Size
-        {
-            get
-            {
-                return base.Size;
-            }
-            
-            set
-            {
-                base.Size = value;
-                
-                MaintainLayoutOfContainedControls();
-            }
-        }
         
         #endregion
         
@@ -300,6 +265,13 @@ namespace Ict.Common.Controls
             FLblCurrency.Width = 37;
             FLblCurrency.Left = this.Size.Width - FLblCurrency.Width - 1;
             FTxtNumeric.Left = 0;
+
+            if (FLastControlWidth != this.Size.Width) 
+            {
+                FLastControlWidth = this.Size.Width;
+
+                MaintainLayoutOfContainedControls();
+            }            
             
             if (FLblCurrency.Text != String.Empty)
             {
