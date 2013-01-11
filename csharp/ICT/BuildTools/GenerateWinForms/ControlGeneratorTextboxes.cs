@@ -770,7 +770,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FDefaultWidth = 150;
                     ReturnValue = true;
                 }
-                
+
                 if (ReturnValue)
                 {
                     if (TYml2Xml.HasAttribute(curNode, "NullValueAllowed"))

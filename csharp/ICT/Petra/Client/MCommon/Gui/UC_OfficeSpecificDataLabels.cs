@@ -1205,7 +1205,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
 
-                    if(ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CURRENCY)
+                    if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_CURRENCY)
                     {
                         if (((TTxtCurrencyTextBox)CurrentControl).Text.Trim() == "")
                         {

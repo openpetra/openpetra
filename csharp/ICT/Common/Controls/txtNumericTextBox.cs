@@ -811,7 +811,7 @@ namespace Ict.Common.Controls
                                             DecimalPointEntered = true;
                                             e.Handled = false;
                                         }
-                                    }                                
+                                    }
                                     else
                                     {
                                         e.Handled = true;
@@ -886,11 +886,11 @@ namespace Ict.Common.Controls
                             break;
                         }
 
-                    case TNumericTextBoxMode.NormalTextBox:
-                    {
-                        //Nothing here..
-                        break;
-                    }
+                    case TNumericTextBoxMode.NormalTextBox :
+                        {
+                            //Nothing here..
+                            break;
+                        }
                 }
 
                 if (bolDelete == true)
@@ -1200,9 +1200,9 @@ namespace Ict.Common.Controls
             string ReturnValue = String.Empty;
 
             if (((FControlMode == TNumericTextBoxMode.Integer)
-                      || (FControlMode == TNumericTextBoxMode.LongInteger)
-                      || (FControlMode == TNumericTextBoxMode.Decimal))
-                     && (this.Text != String.Empty))
+                 || (FControlMode == TNumericTextBoxMode.LongInteger)
+                 || (FControlMode == TNumericTextBoxMode.Decimal))
+                && (this.Text != String.Empty))
             {
                 ReturnValue = this.Text.TrimEnd(new char[] { ' ', '%' });
             }

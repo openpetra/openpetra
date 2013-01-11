@@ -385,7 +385,7 @@ namespace Ict.Petra.Client.CommonControls
             // Add or remove the error from the collection
             AVerificationResultCollection.AddOrRemove(verificationResult, APrimaryKeyColumn);
         }
-        
+
         /// <summary>
         /// Retrieves the list of currencies from the Cache.
         /// </summary>

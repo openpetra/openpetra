@@ -36,21 +36,21 @@ namespace Ict.Common.Controls
     {
         private const string COLUMNNAME_CURRENCY_NAME = "a_currency_name_c";
         private const string COLUMNNAME_DISPLAYFORMAT_NAME = "a_display_format_c";
-        
+
         private int FOriginalTxtNumericWidth;
-        private int FLastControlWidth = -1; 
+        private int FLastControlWidth = -1;
         private string FCurrencyName;
-        
+
         private static TRetrieveCurrencyList FRetrieveCurrencyList;
         private static DataTable GCurrencyList;
-        
+
         #region Properties (handed through to TTxtNumericTextBox!)
 
         /// <summary>
         /// This Property is ignored (!) unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties.
         /// </summary>
         [Description(
-            "This Property is ignored (!) unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties.")
+             "This Property is ignored (!) unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties.")
         ]
         public override string Text
         {
@@ -122,7 +122,7 @@ namespace Ict.Common.Controls
                 FTxtNumeric.NumberValueDecimal = value;
             }
         }
-        
+
         /// This property gets hidden because it doesn't make sense in the Designer!
         [Browsable(false),
          DefaultValue(0.00)]
@@ -138,7 +138,7 @@ namespace Ict.Common.Controls
                 FTxtNumeric.NumberValueDouble = value;
             }
         }
-        
+
         /// <summary>
         /// Whether the TextBox Control is read-only, or not.
         /// </summary>
@@ -148,17 +148,17 @@ namespace Ict.Common.Controls
             {
                 return FTxtNumeric.ReadOnly;
             }
-            
+
             set
             {
                 FTxtNumeric.ReadOnly = value;
             }
         }
-        
+
         #endregion
-        
+
         #region Properties
-        
+
         /// <summary>
         /// Determines the currency symbol.
         /// </summary>
@@ -177,7 +177,7 @@ namespace Ict.Common.Controls
             set
             {
                 FLblCurrency.Text = value;
-                
+
                 if (value == String.Empty)
                 {
                     FLblCurrency.Visible = false;
@@ -186,21 +186,21 @@ namespace Ict.Common.Controls
                 {
                     FLblCurrency.Visible = true;
                 }
-                
-                if (GCurrencyList != null) 
+
+                if (GCurrencyList != null)
                 {
                     DataRow CurrencyDR = GCurrencyList.Rows.Find(value);
-                    
-                    if (CurrencyDR != null) 
+
+                    if (CurrencyDR != null)
                     {
                         FCurrencyName = (string)CurrencyDR[COLUMNNAME_CURRENCY_NAME];
-                    
+
                         tipCurrencyName.SetToolTip(FLblCurrency, FCurrencyName);
-                        
+
                         string DisplayFormat = (string)CurrencyDR[COLUMNNAME_DISPLAYFORMAT_NAME];
                         int DecimalSeparatorPos = DisplayFormat.LastIndexOf('.');
-                        
-                        if (DecimalSeparatorPos != - 1) 
+
+                        if (DecimalSeparatorPos != -1)
                         {
                             this.DecimalPlaces = DisplayFormat.Length - DecimalSeparatorPos - 1;
                         }
@@ -216,7 +216,7 @@ namespace Ict.Common.Controls
                 }
             }
         }
-        
+
         /// <summary>
         /// The name of the currency. Only available after (1) assigning the RetrieveCurrencyList Delegate and
         /// (2) assigning the Currency Property and (3) that Currency was found in the Currency List retrieved by the Delegate.
@@ -228,7 +228,7 @@ namespace Ict.Common.Controls
                 return FCurrencyName;
             }
         }
-        
+
         /// <summary>
         /// Gets or sets how text is aliagned in the TextBox.
         /// </summary>
@@ -238,22 +238,22 @@ namespace Ict.Common.Controls
             {
                 return FTxtNumeric.TextAlign;
             }
-            
+
             set
             {
                 FTxtNumeric.TextAlign = value;
             }
         }
-        
+
         #endregion
-        
+
         #region Events
-        
+
         /// <summary>
         /// Raised whenever the TextBox raises the TextChanged Event.
         /// </summary>
         public new event EventHandler TextChanged;
-        
+
         /// <summary>
         /// Loads a DataTable that contains the list of currencies.
         /// </summary>
@@ -277,11 +277,11 @@ namespace Ict.Common.Controls
                 FRetrieveCurrencyList = value;
             }
         }
-        
+
         #endregion
 
         #region Constructors
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -291,22 +291,22 @@ namespace Ict.Common.Controls
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-            
+
             FTxtNumeric.TextChanged += new EventHandler(OnTextChanged);
-            
-            if (FRetrieveCurrencyList != null) 
+
+            if (FRetrieveCurrencyList != null)
             {
-                if (GCurrencyList == null) 
+                if (GCurrencyList == null)
                 {
-                    GCurrencyList = FRetrieveCurrencyList();    
+                    GCurrencyList = FRetrieveCurrencyList();
                 }
             }
         }
 
-        #endregion        
-        
+        #endregion
+
         #region Public Methods
-        
+
         /// <summary>
         /// Selects all text in the TextBox.
         /// </summary>
@@ -314,11 +314,11 @@ namespace Ict.Common.Controls
         {
             FTxtNumeric.SelectAll();
         }
-        
+
         #endregion
-        
+
         #region Private Methods
-        
+
         /// <summary>
         /// Maintain the custom layout of the TextBox and the Label.
         /// </summary>
@@ -327,11 +327,11 @@ namespace Ict.Common.Controls
             FOriginalTxtNumericWidth = FLblCurrency.Left + 4;
             FTxtNumeric.Width = FOriginalTxtNumericWidth;
         }
-        
+
         #endregion
-        
+
         #region Event Handlers
-        
+
         private void OnTextChanged(object sender, EventArgs e)
         {
             if (TextChanged != null)
@@ -339,20 +339,20 @@ namespace Ict.Common.Controls
                 TextChanged(sender, e);
             }
         }
-        
+
         void TTxtCurrencyTextBoxLayout(object sender, LayoutEventArgs e)
         {
             FLblCurrency.Width = 37;
             FLblCurrency.Left = this.Size.Width - FLblCurrency.Width - 1;
             FTxtNumeric.Left = 0;
 
-            if (FLastControlWidth != this.Size.Width) 
+            if (FLastControlWidth != this.Size.Width)
             {
                 FLastControlWidth = this.Size.Width;
 
                 MaintainLayoutOfContainedControls();
-            }            
-            
+            }
+
             if (FLblCurrency.Text != String.Empty)
             {
                 FTxtNumeric.Width = FOriginalTxtNumericWidth;
@@ -362,7 +362,7 @@ namespace Ict.Common.Controls
                 FTxtNumeric.Width = this.Width;
             }
         }
-        
+
 //        /// <summary>
 //        /// Only for debugging the layout of the Controls
 //        /// </summary>

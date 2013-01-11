@@ -29,21 +29,24 @@ namespace Ict.Common.Controls
         /// Designer variable used to keep track of non-visual components.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        
+
         /// <summary>
         /// Disposes resources used by the control.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing) {
-                if (components != null) {
+            if (disposing)
+            {
+                if (components != null)
+                {
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
-        
+
         /// <summary>
         /// This method is required for Windows Forms designer support.
         /// Do not change the method contents inside the source code editor. The Forms designer might
@@ -56,12 +59,13 @@ namespace Ict.Common.Controls
             this.FLblCurrency = new System.Windows.Forms.Label();
             this.tipCurrencyName = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
-            // 
+            //
             // FTxtNumeric
-            // 
+            //
             this.FTxtNumeric.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.FTxtNumeric.ControlMode = Ict.Common.Controls.TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
-            this.FTxtNumeric.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FTxtNumeric.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FTxtNumeric.Location = new System.Drawing.Point(0, 0);
             this.FTxtNumeric.Name = "FTxtNumeric";
             this.FTxtNumeric.Size = new System.Drawing.Size(157, 21);
@@ -69,9 +73,9 @@ namespace Ict.Common.Controls
             this.FTxtNumeric.Text = "1,234.00";
             this.FTxtNumeric.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 //            this.FTxtNumeric.DoubleClick += new System.EventHandler(this.FLblCurrencyDoubleClick);   // only for debugging the layout of the Controls
-            // 
+            //
             // FLblCurrency
-            // 
+            //
             this.FLblCurrency.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.FLblCurrency.BackColor = System.Drawing.SystemColors.Control;
             this.FLblCurrency.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.75F);
@@ -83,9 +87,9 @@ namespace Ict.Common.Controls
             this.FLblCurrency.Text = "WWW";
             this.FLblCurrency.TextAlign = System.Drawing.ContentAlignment.TopRight;
 //            this.FLblCurrency.DoubleClick += new System.EventHandler(this.FLblCurrencyDoubleClick);   // only for debugging the layout of the Controls
-            // 
+            //
             // TTxtCurrencyTextBox
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
@@ -97,6 +101,7 @@ namespace Ict.Common.Controls
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.ToolTip tipCurrencyName;
         private System.Windows.Forms.Label FLblCurrency;
         private Ict.Common.Controls.TTxtNumericTextBox FTxtNumeric;

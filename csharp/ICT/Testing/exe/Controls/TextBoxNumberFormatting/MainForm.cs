@@ -142,11 +142,10 @@ public partial class MainForm : Form
         this.txtLongInteger.ShowPercentSign = chkPercentFormatting.Checked;
         this.txtNormal.ShowPercentSign = chkPercentFormatting.Checked;                 // while this doesn't make sense, it must do no harm to set this property on this Control
     }
-    
-    
+
     void TxtCurrencySymbolTextChanged(object sender, System.EventArgs e)
     {
         txtCurrency.CurrencySymbol = txtCurrencySymbol.Text;
-    }    
-  }
+    }
+}
 }
