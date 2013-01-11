@@ -283,16 +283,16 @@ namespace Ict.Common.Controls
             }
         }
         
-        /// <summary>
-        /// Only for debugging the layout of the Controls
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void FLblCurrencyDoubleClick(object sender, EventArgs e)
-        {
-            MessageBox.Show(String.Format("this.Name: {0}    this.Width: {1}\r\nFLblCurrency.Width: {2}    FLblCurrency.Left: {3}\r\nFTxtNumeric.Width: {4}",
-                this.Name, this.Width, FLblCurrency.Width, FLblCurrency.Left, FTxtNumeric.Width));
-        }
+//        /// <summary>
+//        /// Only for debugging the layout of the Controls
+//        /// </summary>
+//        /// <param name="sender"></param>
+//        /// <param name="e"></param>
+//        void FLblCurrencyDoubleClick(object sender, EventArgs e)
+//        {
+//            MessageBox.Show(String.Format("this.Name: {0}    this.Width: {1}\r\nFLblCurrency.Width: {2}    FLblCurrency.Left: {3}\r\nFTxtNumeric.Width: {4}",
+//                this.Name, this.Width, FLblCurrency.Width, FLblCurrency.Left, FTxtNumeric.Width));
+//        }
 
         #endregion
     }

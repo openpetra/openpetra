@@ -66,7 +66,7 @@ namespace Ict.Common.Controls
             this.FTxtNumeric.TabIndex = 0;
             this.FTxtNumeric.Text = "1,234.00";
             this.FTxtNumeric.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.FTxtNumeric.DoubleClick += new System.EventHandler(this.FLblCurrencyDoubleClick);   // only for debugging the layout of the Controls
+//            this.FTxtNumeric.DoubleClick += new System.EventHandler(this.FLblCurrencyDoubleClick);   // only for debugging the layout of the Controls
             // 
             // FLblCurrency
             // 
@@ -80,7 +80,7 @@ namespace Ict.Common.Controls
             this.FLblCurrency.TabIndex = 1;
             this.FLblCurrency.Text = "WWW";
             this.FLblCurrency.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.FLblCurrency.DoubleClick += new System.EventHandler(this.FLblCurrencyDoubleClick);   // only for debugging the layout of the Controls
+//            this.FLblCurrency.DoubleClick += new System.EventHandler(this.FLblCurrencyDoubleClick);   // only for debugging the layout of the Controls
             // 
             // TTxtCurrencyTextBox
             // 
