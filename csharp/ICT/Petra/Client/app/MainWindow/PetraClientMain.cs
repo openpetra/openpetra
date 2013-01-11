@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -307,10 +307,14 @@ namespace Ict.Petra.Client.App.PetraClient
                     Process PatchProcess = new System.Diagnostics.Process();
                     PatchProcess.EnableRaisingEvents = false;
                     PatchProcess.StartInfo.FileName = PatchToolExe;
-                    PatchProcess.StartInfo.Arguments = "-action:patchRemote" + " -C:\"" + Path.GetFullPath(TAppSettingsManager.ConfigFileName) +
-                                                       "\" -OpenPetra.Path:\"" + Path.GetFullPath(
-                        TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..") +
-                                                       "\" -OpenPetra.Path.Bin:\"" + Path.GetFullPath(
+                    PatchProcess.StartInfo.Arguments = "-action:patchRemote " +
+                                                       "-OpenPetra.Path.Patches:\"" + Path.GetFullPath(
+                        TClientSettings.Petra_Path_Bin + "/../patches30") + "\" " +
+                                                       "-OpenPetra.PathTemp:\"" + Path.GetFullPath(
+                        TClientSettings.Petra_Path_Bin + "/../tmp30") + "\" " +
+                                                       "-OpenPetra.Path:\"" + Path.GetFullPath(
+                        TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..") + "\" " +
+                                                       "-OpenPetra.Path.Bin:\"" + Path.GetFullPath(
                         TClientSettings.Petra_Path_Bin) + "\"";
                     PatchProcess.Start();
 
