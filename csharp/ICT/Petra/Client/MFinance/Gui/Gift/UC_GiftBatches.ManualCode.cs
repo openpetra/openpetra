@@ -417,6 +417,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 Int32 periodNumber = 0;
                 Int32 yearNumber = 0;
+
                 if (dtpDetailGlEffectiveDate.ValidDate(false))
                 {
                     DateTime dateValue = dtpDetailGlEffectiveDate.Date.Value;
