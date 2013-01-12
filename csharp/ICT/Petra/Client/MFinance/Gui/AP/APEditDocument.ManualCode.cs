@@ -247,6 +247,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtDetailAmount.CurrencySymbol = SupplierRow.CurrencyCode;
 
             FLedgerNumber = DocumentRow.LedgerNumber;
+            this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+
             ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
             FLedgerRow = Tbl[0];
             txtDetailBaseAmount.CurrencySymbol = FLedgerRow.BaseCurrency;

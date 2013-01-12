@@ -82,7 +82,7 @@ namespace Tests.MFinance.Server.ICH
         /// Test whether the code opens a text file and replaces the first line
         ///  with the specified string
         /// </summary>
-        [Test, Explicit]
+        [Test]
         public void TestFileHeaderReplace()
         {
             string fileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
@@ -90,6 +90,9 @@ namespace Tests.MFinance.Server.ICH
             string StandardCostCentre = "4300";
             string CostCentre = "78";
             string Currency = "USD";
+
+            TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
+
             string TableForExportHeader = "/** Header **" + "," +
                                           PeriodNumber.ToString() + "," +
                                           StandardCostCentre + "," +
@@ -97,13 +100,16 @@ namespace Tests.MFinance.Server.ICH
                                           DateTime.Today.ToShortDateString() + "," +
                                           Currency;
 
-            TGenHOSAFilesReports.ReplaceHeaderInFile(fileName, TableForExportHeader);
+            TGenHOSAFilesReports.ReplaceHeaderInFile(fileName, TableForExportHeader, ref VerificationResults);
+
+            Assert.IsFalse(VerificationResults.HasCriticalErrors,
+                "Header Replacement in File Failed! " + VerificationResults.BuildVerificationResultString());
         }
 
         /// <summary>
         /// Test generation of HOSA files
         /// </summary>
-        [Test]
+        [Test, Explicit]
         public void TestGenerateHOSAFiles()
         {
             int LedgerNumber = FLedgerNumber;
@@ -152,8 +158,8 @@ namespace Tests.MFinance.Server.ICH
             string AcctCode = "0200";
             string MonthName = "January";
             int PeriodNumber = 1;
-            DateTime PeriodStartDate = new DateTime(2012, 1, 1);
-            DateTime PeriodEndDate = new DateTime(2012, 1, 31);
+            DateTime PeriodStartDate = new DateTime(2013, 1, 1);
+            DateTime PeriodEndDate = new DateTime(2013, 1, 31);
             string Base = MFinanceConstants.CURRENCY_BASE;
             int IchNumber = 0;
             DataTable TableForExport = new DataTable();

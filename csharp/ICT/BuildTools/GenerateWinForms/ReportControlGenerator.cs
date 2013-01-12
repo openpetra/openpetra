@@ -129,9 +129,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class TcmbAutoPopulatedReportGenerator : TcmbAutoPopulatedGenerator
     {
         /// <summary>add GeneratedReadSetControls</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
-            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TCMBAUTOPOPULATED");
+            ReportControls.GenerateReadSetControls(writer, control.xmlNode, writer.Template, "TCMBAUTOPOPULATED");
         }
     }
 
@@ -141,9 +141,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class ComboBoxReportGenerator : ComboBoxGenerator
     {
         /// <summary>add GeneratedReadSetControls</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
-            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "COMBOBOX");
+            ReportControls.GenerateReadSetControls(writer, control.xmlNode, writer.Template, "COMBOBOX");
         }
     }
 
@@ -153,9 +153,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class CheckBoxReportGenerator : CheckBoxGenerator
     {
         /// <summary>add GeneratedReadSetControls</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef ctrl)
         {
-            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "CHECKBOX");
+            ReportControls.GenerateReadSetControls(writer, ctrl.xmlNode, writer.Template, "CHECKBOX");
+
+            // we are not doing it the same way as in RadioGroupComplexReportGenerator.
+            // difference here: we will always store the value of the dependant controls, even when the checkbox is not ticked
+            foreach (TControlDef childCtrl in ctrl.Children)
+            {
+                childCtrl.SetAttribute("DependsOnRadioButton", "");
+                IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);
+                ctrlGenerator.ApplyDerivedFunctionality(writer, childCtrl);
+                childCtrl.SetAttribute("DependsOnRadioButton", "true");
+            }
         }
     }
 
@@ -165,9 +175,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class TextBoxReportGenerator : TextBoxGenerator
     {
         /// <summary>add GeneratedReadSetControls</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
-            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TEXTBOX");
+            ReportControls.GenerateReadSetControls(writer, control.xmlNode, writer.Template, "TEXTBOX");
         }
     }
 
@@ -177,18 +187,36 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class TTxtNumericTextBoxReportGenerator : TTxtNumericTextBoxGenerator
     {
         /// <summary>add GeneratedReadSetControls</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
-            TControlDef ctrl = writer.CodeStorage.GetControl(curNode.Name);
+            TControlDef ctrl = writer.CodeStorage.GetControl(control.xmlNode.Name);
             string numericType = ctrl.GetAttribute("Format");
 
             if (numericType == "Integer")
             {
-                ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "INTEGERTEXTBOX");
+                ReportControls.GenerateReadSetControls(writer, control.xmlNode, writer.Template, "INTEGERTEXTBOX");
             }
-            else if ((numericType == "Decimal") || (numericType == "Currency"))
+            else if (numericType == "Decimal")
             {
-                ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "DECIMALTEXTBOX");
+                ReportControls.GenerateReadSetControls(writer, control.xmlNode, writer.Template, "DECIMALTEXTBOX");
+            }
+        }
+    }
+
+    /// <summary>
+    /// generator for currency textbox
+    /// </summary>
+    public class TTxtCurrencyTextBoxReportGenerator : TTxtCurrencyTextBoxGenerator
+    {
+        /// <summary>add GeneratedReadSetControls</summary>
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
+        {
+            TControlDef ctrl = writer.CodeStorage.GetControl(control.xmlNode.Name);
+            string numericType = ctrl.GetAttribute("Format");
+
+            if (numericType == "Currency")
+            {
+                ReportControls.GenerateReadSetControls(writer, control.xmlNode, writer.Template, "DECIMALTEXTBOX");
             }
         }
     }
@@ -199,9 +227,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class TClbVersatileReportGenerator : TClbVersatileGenerator
     {
         /// <summary>add GeneratedReadSetControls</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
-            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TCLBVERSATILE");
+            ReportControls.GenerateReadSetControls(writer, control.xmlNode, writer.Template, "TCLBVERSATILE");
         }
     }
 
@@ -211,9 +239,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class DateTimePickerReportGenerator : DateTimePickerGenerator
     {
         /// <summary>add GeneratedReadSetControls</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
-            ReportControls.GenerateReadSetControls(writer, curNode, writer.Template, "TTXTPETRADATE");
+            ReportControls.GenerateReadSetControls(writer, control.xmlNode, writer.Template, "TTXTPETRADATE");
         }
     }
 
@@ -223,9 +251,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class RadioGroupSimpleReportGenerator : RadioGroupSimpleGenerator
     {
         /// <summary>add GeneratedReadSetControls</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
-            string paramName = ReportControls.GetParameterName(curNode);
+            string paramName = ReportControls.GetParameterName(control.xmlNode);
 
             if (paramName == null)
             {
@@ -233,7 +261,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             StringCollection optionalValues =
-                TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "OptionalValues"));
+                TYml2Xml.GetElements(TXMLParser.GetChild(control.xmlNode, "OptionalValues"));
 
             foreach (string rbtValueText in optionalValues)
             {
@@ -258,9 +286,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class RadioGroupComplexReportGenerator : RadioGroupComplexGenerator
     {
         /// <summary>add GeneratedReadSetControls, and all dependent controls</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
-            string paramName = ReportControls.GetParameterName(curNode);
+            string paramName = ReportControls.GetParameterName(control.xmlNode);
 
             if (paramName == null)
             {
@@ -268,7 +296,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             StringCollection Controls =
-                TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
+                TYml2Xml.GetElements(TXMLParser.GetChild(control.xmlNode, "Controls"));
 
             foreach (string controlName in Controls)
             {
@@ -371,7 +399,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class RadioButtonReportGenerator : RadioButtonGenerator
     {
         /// <summary>not needed</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
             // no writing or reading of parameters, should be done in RadioGroup
         }
@@ -383,15 +411,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class UserControlReportGenerator : UserControlGenerator
     {
         /// <summary>add GeneratedReadSetControls</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
-            string controlName = curNode.Name;
+            string controlName = control.xmlNode.Name;
 
             writer.Template.AddToCodelet("INITIALISESCREEN",
                 controlName + ".InitialiseData(FPetraUtilsObject);" +
                 Environment.NewLine);
 
-            if (!(TYml2Xml.HasAttribute(curNode, "NoParameter") && (TYml2Xml.GetAttribute(curNode, "NoParameter").ToLower() == "true")))
+            if (!(TYml2Xml.HasAttribute(control.xmlNode, "NoParameter") && (TYml2Xml.GetAttribute(control.xmlNode, "NoParameter").ToLower() == "true")))
             {
                 writer.Template.AddToCodelet("READCONTROLS",
                     controlName + ".ReadControls(ACalc, AReportAction);" +
@@ -414,9 +442,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class SourceGridReportGenerator : SourceGridGenerator
     {
         /// <summary>add GeneratedReadSetControls</summary>
-        public override void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
         {
-            string controlName = curNode.Name;
+            string controlName = control.xmlNode.Name;
 
             writer.Template.AddToCodelet("INITIALISESCREEN",
                 controlName + "_InitialiseData(FPetraUtilsObject);" +

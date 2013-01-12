@@ -2726,8 +2726,8 @@
                 type="varchar"
                 descr=""
                 format="X(48)"
-                label="First Name"
-                help="Enter the person&apos;s full first name"/>
+                label="First Name(s)"
+                help="Enter the first names of the couple (or in case of a single the person&apos;s full first name)"/>
     <tablefield name="p_family_name_c"
                 type="varchar"
                 descr=""
@@ -22290,6 +22290,16 @@
                 thisFields="p_proposal_submission_type_c"
                 otherTable="p_proposal_submission_type"
                 otherFields="p_submission_type_code_c"/>
+    <foreignkey name="p_foundation_owner_fk1"
+                descr=""
+                thisFields="p_owner_1_key_n"
+                otherTable="p_partner"
+                otherFields="p_partner_key_n"/>
+    <foreignkey name="p_foundation_owner_fk2"
+                descr=""
+                thisFields="p_owner_2_key_n"
+                otherTable="p_partner"
+                otherFields="p_partner_key_n"/>
   </table>
   <table name="p_foundation_proposal_status"
          descr="Foundation proposal status codes and descriptions"

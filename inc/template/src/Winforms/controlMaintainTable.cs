@@ -14,8 +14,8 @@ using System.Resources;
 using System.Collections.Specialized;
 
 using Ict.Common;
-using Ict.Common.Controls;
 using Ict.Common.Verification;
+using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
@@ -43,6 +43,11 @@ namespace {#NAMESPACE}
     private TValidationControlsDict FValidationControlsDict = new TValidationControlsDict();
   
     private {#DATASETTYPE} FMainDS;
+{#IFDEF SHOWDETAILS}       
+    private DataColumn FPrimaryKeyColumn = null;
+    private Control FPrimaryKeyControl = null;
+    private string FDefaultDuplicateRecordHint = String.Empty;
+{#ENDIF SHOWDETAILS}
 
     /// constructor
     public {#CLASSNAME}() : base()
@@ -99,6 +104,9 @@ namespace {#NAMESPACE}
 {#IFDEF MASTERTABLE OR DETAILTABLE}
             BuildValidationControlsDict();
 {#ENDIF MASTERTABLE OR DETAILTABLE}
+{#IFDEF SHOWDETAILS}       
+            SetPrimaryKeyControl();
+{#ENDIF SHOWDETAILS}
 
             ShowData();
         }
@@ -373,7 +381,7 @@ namespace {#NAMESPACE}
     private void grdDetails_Enter(object sender, EventArgs e)
     {
         int nRow = grdDetails.SelectedRowIndex();       // should be the same as FPrevRowChangedRow
-        if (nRow > 0)
+        if (nRow > 0 && FPetraUtilsObject.VerificationResultCollection.Count > 0)
         {
             grdDetails.Selection.Focus(new SourceGrid.Position(nRow, 0), false);
             //Console.WriteLine("{0}: GridFocus - setting Selection.Focus to {1},0", DateTime.Now.Millisecond, nRow);
@@ -497,10 +505,23 @@ namespace {#NAMESPACE}
 {#IFDEF MASTERTABLE}
 
 	/// get the data from the controls and store in the currently selected detail row
+    /// This method may throw an exception at ARow.EndEdit()
     public void GetDataFromControls({#MASTERTABLETYPE}Row ARow, Control AControl=null)
     {
 {#IFDEF SAVEDATA}
+        if (ARow == null) return;
+
+        object[] beforeEdit = ARow.ItemArray;
+        ARow.BeginEdit();
         {#SAVEDATA}
+        if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
+        {
+            ARow.CancelEdit();
+        }
+        else
+        {
+            ARow.EndEdit();
+        }
 {#ENDIF SAVEDATA}
     }
 {#ENDIF MASTERTABLE}
@@ -510,7 +531,7 @@ namespace {#NAMESPACE}
     public void GetDataFromControls()
     {
 {#IFDEF SAVEDETAILS}
-        GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        ValidateAllData(false, false);
 {#ENDIF SAVEDETAILS}
     }
 {#ENDIFN MASTERTABLE}
@@ -536,9 +557,17 @@ namespace {#NAMESPACE}
             }
             else
             {
+                object[] beforeEdit = ARow.ItemArray;
 				ARow.BeginEdit();
 				{#SAVEDETAILS}
-				ARow.EndEdit();
+                if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
+                {
+                    ARow.CancelEdit();
+                }
+                else
+                {
+                    ARow.EndEdit();
+                }
             }
         }
     }
@@ -546,7 +575,15 @@ namespace {#NAMESPACE}
 
     private void ControlUpdateDataHandler(object sender, EventArgs e)
     {
-        GetDetailsFromControls(FPreviouslySelectedDetailRow, false, (Control)sender);
+        // This method should not normally be associated with a control that requires validation (because no validation takes place)
+        // GetDetailsFromControls can return an exception if the control is associated with a primary key, so we use a try/catch just in case
+        try
+        {
+            GetDetailsFromControls(FPreviouslySelectedDetailRow, false, (Control)sender);
+        }
+        catch (ConstraintException)
+        {
+        }
     }
 {#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
@@ -617,14 +654,39 @@ namespace {#NAMESPACE}
                 ControlToValidate = this.ActiveControl;
             }
             
+            bool bGotConstraintException = false;
             int prevRowChangedRowBeforeValidation = FPrevRowChangedRow;
 // :CMT:GetDetailsFromControls
-            GetDetailsFromControls(FPreviouslySelectedDetailRow);
-            ValidateDataDetails(FPreviouslySelectedDetailRow);
+            try
+            {
+                GetDetailsFromControls(FPreviouslySelectedDetailRow);
+                ValidateDataDetails(FPreviouslySelectedDetailRow);
 {#IFDEF VALIDATEDATADETAILSMANUAL}
 // :CMT:ValidateDataDetailsManual
-			ValidateDataDetailsManual(FPreviouslySelectedDetailRow);
+			    ValidateDataDetailsManual(FPreviouslySelectedDetailRow);
 {#ENDIF VALIDATEDATADETAILSMANUAL}
+            }
+            catch (ConstraintException)
+            {
+                bGotConstraintException = true;
+            }
+
+            // Duplicate record validation
+            if (FPrimaryKeyColumn == null)
+            {
+                // If controls have been named according to the column names, it should be impossible to get a constraint exception 
+                //    without us knowing which is the 'prime' primary key column and control
+                // But this is our ultimate fallback position.  This creates an exception message that simply lists all the primary key fields in a friendly format
+                FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                    bGotConstraintException ? new TScreenVerificationResult(this, null,
+                    String.Format(Catalog.GetString("You have attempted to create a duplicate record.  Please ensure that you have unique input data for the field(s) {0}."), FDefaultDuplicateRecordHint),
+                    CommonErrorCodes.ERR_DUPLICATE_RECORD, null, TResultSeverity.Resv_Critical) : null, null);
+            }
+            else
+            {
+                TControlExtensions.ValidateNonDuplicateRecord(this, bGotConstraintException, FPetraUtilsObject.VerificationResultCollection, 
+                            FPrimaryKeyColumn, FPrimaryKeyControl, FMainDS.{#DETAILTABLE}.PrimaryKey);
+            }
             
             // Validation might have moved the row, so we need to locate it again
             // If it has moved we will call SelectRowInGrid (with events) to highlight the new row.
@@ -818,6 +880,35 @@ namespace {#NAMESPACE}
         }
     }
 {#ENDIF MASTERTABLE OR DETAILTABLE}    
+{#IFDEF SHOWDETAILS}       
+
+    private void SetPrimaryKeyControl()
+    {
+        // Make a default hint string from all the primary keys
+        // and initialise the 'prime' primary key control on pnlDetails.
+        // This is the last control in the tab order that matches a key
+        int lastTabIndex = -1;
+        DataRow row = (new {#DETAILTABLE}Table()).NewRow();
+        for (int i = 0; i < row.Table.PrimaryKey.Length; i++)
+        {
+            DataColumn column = row.Table.PrimaryKey[i];
+            if (FDefaultDuplicateRecordHint.Length > 0) FDefaultDuplicateRecordHint += ", ";
+            FDefaultDuplicateRecordHint += TControlExtensions.DataColumnNameToFriendlyName(column, true);
+            
+            Label dummy;
+            Control control;
+            if (TControlExtensions.GetControlsForPrimaryKey(column, this, out dummy, out control))
+            {
+                if (control.TabIndex > lastTabIndex)
+                {
+                    FPrimaryKeyColumn = column;
+                    FPrimaryKeyControl = control;
+                    lastTabIndex = control.TabIndex;
+                }
+            }
+        }
+    }
+{#ENDIF SHOWDETAILS}
 
 #endregion
   }

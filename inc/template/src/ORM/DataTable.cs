@@ -183,6 +183,12 @@ public static {#NEW}short Get{#COLUMNNAME}Length()
     return {#COLUMNLENGTH};
 }
 
+/// get the help text for the field in the database for this column
+public static string Get{#COLUMNNAME}Help()
+{
+    return "{#COLUMNHELP}";
+}
+
 {##TYPEDROW}
 
 {#TABLE_DESCRIPTION}

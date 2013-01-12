@@ -311,7 +311,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 TCsv2Xml.Xml2Csv(doc, AFileName);
 
                 //Replace the default CSV header row with OM specific
-                ReplaceHeaderInFile(AFileName, TableForExportHeader);
+                ReplaceHeaderInFile(AFileName, TableForExportHeader, ref AVerificationResult);
 
                 /* Change number format back */
                 //TODO
@@ -323,7 +323,10 @@ namespace Ict.Petra.Server.MFinance.ICH
             }
 
             // rollback the reading transaction
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return Successful;
         }
@@ -333,29 +336,46 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// </summary>
         /// <param name="AFileName">File name (including path) to process</param>
         /// <param name="AHeaderText">Text to insert in first line</param>
-        public static void ReplaceHeaderInFile(string AFileName, string AHeaderText)
+        /// <param name="AVerificationResult">Error messaging</param>
+        public static bool ReplaceHeaderInFile(string AFileName, string AHeaderText, ref TVerificationResultCollection AVerificationResult)
         {
-            StringBuilder newFile = new StringBuilder();
+            bool retVal = true;
 
-            string[] file = File.ReadAllLines(AFileName);
-
-            bool IsFirstLine = true;
-
-            foreach (string line in file)
+            try
             {
-                //If first line
-                if (IsFirstLine)
+                StringBuilder newFileContents = new StringBuilder();
+
+                string[] file = File.ReadAllLines(AFileName);
+
+                bool IsFirstLine = true;
+
+                foreach (string line in file)
                 {
-                    newFile.Append(AHeaderText + "\r\n");
-                    IsFirstLine = false;
+                    //If first line
+                    if (IsFirstLine)
+                    {
+                        newFileContents.Append(AHeaderText + "\r\n");
+                        IsFirstLine = false;
+                    }
+                    else
+                    {
+                        newFileContents.Append(line + "\r\n");
+                    }
                 }
-                else
-                {
-                    newFile.Append(line + "\r\n");
-                }
+
+                File.WriteAllText(AFileName, newFileContents.ToString());
+            }
+            catch (Exception)
+            {
+                retVal = false;
+                AVerificationResult.Add(new TVerificationResult("Generating HOSA Files",
+                        "Unable to replace the header in file: " + AFileName,
+                        "Replacing Header in Text File",
+                        TResultSeverity.Resv_Critical, new Guid()));
+                throw new Exception("Error in generating HOSA Files. Unable to replace the header in file: " + AFileName);
             }
 
-            File.WriteAllText(AFileName, newFile.ToString());
+            return retVal;
         }
 
         /// <summary>
@@ -398,7 +418,12 @@ namespace Ict.Petra.Server.MFinance.ICH
             decimal IndividualDebitTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
             decimal IndividualCreditTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
 
+            decimal GiftAmount = 0;
+            decimal IntlGiftAmount = 0;
+
             string ExportDescription = string.Empty;
+            string tmpLastGroup = string.Empty;
+            string tmpLastDetail = string.Empty;
 
             //Export Gifts gi3200-1.i
             //Find and total each gift transaction
@@ -437,8 +462,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                 /* Only do after first loop due to last recipient key check */
 
                 Int32 tmpLastRecipKey = Convert.ToInt32(untypedTransRow[8]);         //a_gift_detail.p_recipient_key_n
-                string tmpLastGroup = untypedTransRow[6].ToString();         //a_motivation_detail.a_motivation_group_code_c
-                string tmpLastDetail = untypedTransRow[7].ToString();         //a_motivation_detail.a_motivation_detail_code_c
+                tmpLastGroup = untypedTransRow[6].ToString();         //a_motivation_detail.a_motivation_group_code_c
+                tmpLastDetail = untypedTransRow[7].ToString();         //a_motivation_detail.a_motivation_detail_code_c
 
                 if ((FirstLoopFlag == false)
                     && ((tmpLastRecipKey != LastRecipKey)
@@ -492,8 +517,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                     }
                 }
 
-                decimal GiftAmount = Convert.ToDecimal(untypedTransRow[4]);          //a_gift_detail.a_gift_amount_n
-                decimal IntlGiftAmount = Convert.ToDecimal(untypedTransRow[5]);          //a_gift_detail.a_gift_amount_intl_n
+                GiftAmount = Convert.ToDecimal(untypedTransRow[4]);          //a_gift_detail.a_gift_amount_n
+                IntlGiftAmount = Convert.ToDecimal(untypedTransRow[5]);          //a_gift_detail.a_gift_amount_intl_n
 
                 if (ABase == MFinanceConstants.CURRENCY_BASE)
                 {

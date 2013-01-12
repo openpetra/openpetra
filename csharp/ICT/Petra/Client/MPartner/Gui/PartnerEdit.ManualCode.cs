@@ -44,6 +44,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.MPersonnel.Gui.Setup;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -128,11 +129,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 // TODO            "If the displayed address was valid, you should instead add a new address\r\n" +
 // TODO            "and then enter an end (to) date for the old address.");
 // TODO        private static readonly string StrQueryOverwriteAddressTitle = Catalog.GetString("Replace Current Address?");
-// TODO        private static readonly string StrCannotDeletePartner = Catalog.GetString(
-// TODO            "Cannot delete Partner that has unsaved changes.\r\n\r\n" +
-// TODO            "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
-// TODO            "and then delete the Partner from the Partner Module screen.");
-// TODO        private static readonly string StrCannotDeletePartnerTitle = Catalog.GetString("Cannot Delete Partner That Has Unsaved Changes");
+        private static readonly string StrCannotDeletePartner = Catalog.GetString(
+            "Cannot delete Partner that has unsaved changes.\r\n\r\n" +
+            "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
+            "and then delete the Partner from the Partner Module screen.");
+        private static readonly string StrCannotDeletePartnerTitle = Catalog.GetString("Cannot delete Partner that has unsaved changes");
 // TODO        private static readonly string StrDownloadVideoTutorialTitle = Catalog.GetString("Download Video Tutorial");
 // TODO        private static readonly string StrDownloadVideoTutoriaManuallTitle = Catalog.GetString("Manual Download of Video Tutorial");
 // TODO        private static readonly string StrVideoTutorialTitle = Catalog.GetString("Video Tutorial for Partner Edit Screen");
@@ -1054,12 +1055,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
                         TLogging.Log(
-                            "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine + exp.ToString(),
+                            Catalog.GetString(
+                                "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                             TLoggingType.ToLogfile);
                         MessageBox.Show(
-                            "An error occured while trying to connect to the OpenPetra Server!" + Environment.NewLine +
+                            Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine +
                             "For details see the log file: " + TLogging.GetLogFileName(),
-                            "Server connection error",
+                            Catalog.GetString("Server connection error"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Stop);
 
@@ -1088,11 +1090,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                                 if (UnitParentAssignment == System.Windows.Forms.DialogResult.Yes)
                                 {
-// TODO Unit hierarchy
-#if TODO
-                                    cmdPartner = new TCmdMPartner();
-                                    cmdPartner.RunUnitHierarchy(this, AInspectDS.PPartner[0].PartnerKey);
-#endif
+                                    TFrmUnitHierarchy HierarchyForm = new TFrmUnitHierarchy(this.ParentForm);
+
+                                    HierarchyForm.Show();
+                                    HierarchyForm.ShowThisUnit(AInspectDS.PPartner[0].PartnerKey);
                                 }
                             }
 
@@ -1472,6 +1473,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.Height = 600;
             }
 
+            mniEditFind.Text = Catalog.GetString("Find Partner...");
+            mniEditFind.Enabled = true;
+            mniEditFind.Click += new EventHandler(EditFindPartner);
+
             /*
              * Load data for new Partner or existing Partner
              */
@@ -1747,7 +1752,34 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileDeletePartner(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            /* Check for new Partner that wasn't saved yet */
+            if (IsNewPartner(FMainDS))
+            {
+                /* Tell user that he can't delete a new Partner that wasn't saved yet */
+                MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 + MPartnerResourcestrings.StrErrorDeletePartner2,
+                    MPartnerResourcestrings.StrErrorNeedToSavePartnerTitle,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+            else
+            {
+                /* Check for unsaved changes */
+                if (CanClose())
+                {
+                    /* Delete Partner; if OK, close the screen */
+                    if (TPartnerMain.DeletePartner(FPartnerKey))
+                    {
+                        this.Close();
+                    }
+                }
+                else
+                {
+                    /* Tell user that he can't delete a Partner that has changes that weren't saved yet */
+                    MessageBox.Show(StrCannotDeletePartner, StrCannotDeletePartnerTitle,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }
+            }
         }
 
         private void FileSendEmail(System.Object sender, System.EventArgs e)
@@ -1818,6 +1850,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TImportExportDialogs.ExportTofile(doc, FileName);
                 }
             }
+        }
+
+        /// <summary>
+        /// Opens the Partner Find screen (or activates it in case a non-modal instance was already open).
+        /// </summary>
+        private void EditFindPartner(System.Object sender, System.EventArgs e)
+        {
+            TPartnerMain.FindPartner(this);
         }
 
         #endregion

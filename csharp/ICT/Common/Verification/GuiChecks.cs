@@ -133,5 +133,36 @@ namespace Ict.Common.Verification
 
             return ReturnValue;
         }
+
+        /// <summary>
+        /// Checks if the specified record is a duplicate of an existing one
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation occurs.</param>
+        /// <param name="AConstraintExceptionOccurred">Set to True if a constraint exception occurred when saving the data or False otherwise</param>
+        /// <param name="AResultText">The text that will be displayed as help that explains the data entered that is a duplicate</param>
+        /// <param name="APrimaryKeyColumn">The data column that will be used to identify the error (usually the first of the primary key columns)</param>
+        /// <param name="APrimaryKeyControl">The control corresponding to the Primary Key column</param>
+        /// <returns>TVerificationResult Nil if validation succeeded, otherwise it contains
+        /// details about the problem.
+        /// </returns>
+        public static TVerificationResult ValidateNonDuplicateRecord(object AContext, bool AConstraintExceptionOccurred, string AResultText,
+            System.Data.DataColumn APrimaryKeyColumn, System.Windows.Forms.Control APrimaryKeyControl)
+        {
+            TVerificationResult ReturnValue = null;
+
+            if (AConstraintExceptionOccurred)
+            {
+                // create a new screen verification result
+                ReturnValue = new TScreenVerificationResult(AContext,
+                    APrimaryKeyColumn,
+                    AResultText,
+                    CommonErrorCodes.ERR_DUPLICATE_RECORD,
+                    APrimaryKeyControl,
+                    TResultSeverity.Resv_Critical);
+                ReturnValue.OverrideResultTextCaption(Catalog.GetString("Duplicate record"));
+            }
+
+            return ReturnValue;
+        }
     }
 }

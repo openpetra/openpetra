@@ -30,17 +30,18 @@ OpenPetra:
                     MaintainPartners:
                         #ChangeAddress:
                         #MergePartners:
-                        FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners}
+                        FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners, ActionOpenScreen=TPartnerFindScreen, Singleton=true}
                         WorkWithLastPartner: {Label=Work with Last Partner, Description=Open last Partner worked with, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
+                        DeletePartner: {Label=Delete Partner, Description=Delete a selected Partner, ActionClick=TPartnerMain.DeletePartnerRecord}
                     CreatePartner:
                         AddNewFamily: {ActionClick=TPartnerMain.NewPartner, Description=Create a new Partner of Class FAMILY}
                         AddNewPerson: {ActionClick=TPartnerMain.NewPerson, Description=Create a new Partner of Class PERSON}
                         AddNewOrganisation: {ActionClick=TPartnerMain.NewOrganisation, Description=Create a new Partner of Class ORGANISATION}
                     Contacts:
-                        FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Partner Contacts}
+                        FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Contacts of Partners}
                     ImportExport: {Label=Import and Export}
-                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description="Export to YAML file for importing into other OpenPetra database"}
-                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from file or satellite database}
+                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
+                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
@@ -249,7 +250,7 @@ OpenPetra:
         CrossLedgerSetup: {Icon=finance_setup.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
             General: {SkipThisLevel=true}
                 Ledger: {DontShowNestedTasksAsLinks=true}
-                    CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedger, PermissionsRequired="FINANCE-3"}
+                    CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedger, PermissionsRequired="FINANCE-3", Singleton=true}
                 Setup: {Label="Finance Setup (Cross-Ledger)", DontShowNestedTasksAsLinks=true}
                     SetupEmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
                     SetupCurrencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency, PermissionsRequired=FINANCE-3}
@@ -278,6 +279,7 @@ OpenPetra:
                         PreviousExperienceReport: {ActionOpenScreen=TFrmPreviousExperienceReport}
                         EndOfCommitmentReport: {ActionOpenScreen=TFrmEndOfCommitmentReport}
                         StartOfCommitmentReport: {ActionOpenScreen=TFrmStartOfCommitmentReport}
+                        LengthOfCommitmentReport: {ActionOpenScreen=TFrmLengthOfCommitmentReport}
                         JobAssignmentReport: {ActionOpenScreen=TFrmJobAssignmentReport}
                         BirthdayList: {ActionOpenScreen=TFrmBirthdayListReport}
                         EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactReportStaff}

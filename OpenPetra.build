@@ -156,6 +156,7 @@ useful parameters
       <include name="**/*-generated.resx" />
       <include name="**/*-generated.Designer.cs" />
       <include name="**/*.generated.refs" />
+      <include name="**/*.dll.xml" />
       <include name="tmp/**/AssemblyInfo.cs" />
     </fileset>
   </delete>
