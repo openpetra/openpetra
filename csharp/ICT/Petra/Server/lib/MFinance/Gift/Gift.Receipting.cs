@@ -217,6 +217,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string prevCommentOne = String.Empty;
             string prevAccountDesc = String.Empty;
             string prevCostCentreDesc = String.Empty;
+            string prevgifttype = string.Empty;
             DateTime prevDateEntered = DateTime.MaxValue;
 
             foreach (DataRow rowGifts in ADonations.Rows)
@@ -227,11 +228,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 string commentOne = rowGifts["CommentOne"].ToString();
                 string accountDesc = rowGifts["AccountDesc"].ToString();
                 string costcentreDesc = rowGifts["CostCentreDesc"].ToString();
+                string gifttype = rowGifts["GiftType"].ToString();
+
                 sum += Convert.ToDecimal(rowGifts["AmountInBaseCurrency"]);
 
                 // can we sum up donations on the same date, or do we need to print each detail with the account description?
                 if (RowTemplate.Contains("#COMMENTONE") || RowTemplate.Contains("#ACCOUNTDESC") || RowTemplate.Contains("#COSTCENTREDESC"))
                 {
+                    if (gifttype == MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND)
+                    {
+                        RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT);
+                    }
+                    else if (gifttype == MFinanceConstants.GIFT_TYPE_GIFT)
+                    {
+                        RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND);
+                    }
+
                     rowTexts += RowTemplate.
                                 Replace("#DONATIONDATE", dateEntered.ToString("dd.MM.yyyy")).
                                 Replace("#AMOUNT", String.Format("{0:0.00}", amount)).
@@ -244,10 +256,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     if ((dateEntered != prevDateEntered) && (prevDateEntered != DateTime.MaxValue))
                     {
+                        if (prevgifttype == MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND)
+                        {
+                            RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT);
+                        }
+                        else if (prevgifttype == MFinanceConstants.GIFT_TYPE_GIFT)
+                        {
+                            RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND);
+                        }
+
                         rowTexts += RowTemplate.
                                     Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
                                     Replace("#AMOUNT", String.Format("{0:0.00}", prevAmount)).
-                                    Replace("#AMOUNTCURRENCY", currency).
+                                    Replace("#AMOUNTCURRENCY", prevCurrency).
                                     Replace("#COMMENTONE", prevCommentOne).
                                     Replace("#ACCOUNTDESC", prevAccountDesc).
                                     Replace("#COSTCENTREDESC", prevCostCentreDesc);
@@ -263,11 +284,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     prevCommentOne = commentOne;
                     prevAccountDesc = accountDesc;
                     prevCostCentreDesc = costcentreDesc;
+                    prevgifttype = gifttype;
                 }
             }
 
             if (prevDateEntered != DateTime.MaxValue)
             {
+                if (prevgifttype == MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND)
+                {
+                    RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT);
+                }
+                else if (prevgifttype == MFinanceConstants.GIFT_TYPE_GIFT)
+                {
+                    RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND);
+                }
+
                 rowTexts += RowTemplate.
                             Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
                             Replace("#AMOUNT", String.Format("{0:0.00}", prevAmount)).
