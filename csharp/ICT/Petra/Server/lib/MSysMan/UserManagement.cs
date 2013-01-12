@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -174,6 +174,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             SUserRow newUser = userTable.NewRowTyped();
 
             newUser.UserId = AUsername.ToUpper();
+            newUser.FirstName = AFirstName;
+            newUser.LastName = AFamilyName;
 
             if (AUsername.Contains("@"))
             {
@@ -195,13 +197,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
-                const int SALTSIZE = 32;
-                byte[] saltBytes = new byte[SALTSIZE];
-                RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-                rng.GetNonZeroBytes(saltBytes);
-                newUser.PasswordSalt = Convert.ToBase64String(saltBytes);
-                newUser.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
-                        newUser.PasswordSalt));
+                if (APassword.Length > 0)
+                {
+                    const int SALTSIZE = 32;
+                    byte[] saltBytes = new byte[SALTSIZE];
+                    RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+                    rng.GetNonZeroBytes(saltBytes);
+                    newUser.PasswordSalt = Convert.ToBase64String(saltBytes);
+                    newUser.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
+                            newUser.PasswordSalt));
+                }
             }
             else
             {
@@ -254,7 +259,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
                         foreach (string s in modulePermissions)
                         {
-                            modules.Add(s);
+                            if (s.Trim().Length > 0)
+                            {
+                                modules.Add(s.Trim());
+                            }
                         }
                     }
 
@@ -417,6 +425,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 if (user.RowState == DataRowState.Added)
                 {
                     CreateUser(user.UserId, string.Empty, user.FirstName, user.LastName, string.Empty);
+                    user.AcceptChanges();
                 }
             }
 
