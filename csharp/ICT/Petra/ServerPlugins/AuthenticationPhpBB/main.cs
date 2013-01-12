@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -108,7 +108,7 @@ namespace Plugin.AuthenticationPhpBB
         /// <summary>
         /// could check if the user already exists in phpBB
         /// </summary>
-        public bool CreateUser(string AUsername, string APassword)
+        public bool CreateUser(string AUsername, string APassword, string AFamilyName, string AFirstName)
         {
             // TODO check if user exists. careful: password is probably not valid, since the sysadmin does not know it
             return true;

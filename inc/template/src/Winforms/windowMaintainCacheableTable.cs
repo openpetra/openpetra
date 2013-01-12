@@ -159,9 +159,8 @@ namespace {#NAMESPACE}
       DataTable CacheDT = TDataCache.{#CACHEABLETABLERETRIEVEMETHOD}({#CACHEABLETABLE}, {#CACHEABLETABLESPECIFICFILTERLOAD}, out DataTableType);
       FMainDS.{#DETAILTABLE}.Merge(CacheDT);    
       
-      {#INITMANUALCODE}
-      
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+      {#INITMANUALCODE}
 {#IFDEF SAVEDETAILS}
       grdDetails.Enter += new EventHandler(grdDetails_Enter);
       grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);

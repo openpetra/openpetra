@@ -551,6 +551,8 @@ namespace Ict.Common.Controls
                 }
                 catch (System.Reflection.TargetInvocationException E)
                 {
+                    TLogging.Log(E.ToString());
+
                     String msg = E.Message;
 
                     if (E.InnerException != null)

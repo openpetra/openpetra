@@ -168,7 +168,7 @@ namespace Plugin.AuthenticationPetraProgress
         /// <summary>
         /// this will not be implemented
         /// </summary>
-        public bool CreateUser(string AUsername, string APassword)
+        public bool CreateUser(string AUsername, string APassword, string AFamilyName, string AFirstName)
         {
             return false;
         }

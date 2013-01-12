@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -423,11 +423,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 Int32 periodNumber = 0;
                 Int32 yearNumber = 0;
-                DateTime dateValue;
-                string aDate = dtpDetailGlEffectiveDate.Text;
 
-                if (DateTime.TryParse(aDate, out dateValue))
+                if (dtpDetailGlEffectiveDate.ValidDate(false))
                 {
+                    DateTime dateValue = dtpDetailGlEffectiveDate.Date.Value;
+
                     FPreviouslySelectedDetailRow.GlEffectiveDate = dateValue;
 
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))

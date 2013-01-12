@@ -156,7 +156,7 @@ public class GenerateYamlFiles
 
         if (Label.Length > 0)
         {
-            if ((TranslatedLabel != Label) && (TranslatedLabel != Catalog.GetString(Label)))
+            if ((TranslatedLabel != Label) && (TranslatedLabel != Catalog.GetString(Label)) && (TranslatedLabel.Length > 0))
             {
                 // add to po file
                 if (!NewTranslations.ContainsKey(Label))

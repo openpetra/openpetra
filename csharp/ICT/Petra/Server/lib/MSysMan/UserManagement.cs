@@ -47,6 +47,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
     public class TMaintenanceWebConnector
     {
         /// <summary>
+        /// this will create some default module permissions, for demo purposes
+        /// </summary>
+        public static string DEMOMODULEPERMISSIONS = "DEMOMODULEPERMISSIONS";
+
+        /// <summary>
         /// set the password of an existing user. this takes into consideration how users are authenticated in this system, by
         /// using an optional authentication plugin dll
         /// </summary>
@@ -162,7 +167,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// creates a user, either using the default authentication with the database or with the optional authentication plugin dll
         /// </summary>
         [RequireModulePermission("SYSMAN")]
-        public static bool CreateUser(string AUsername, string APassword, string AModulePermissions)
+        public static bool CreateUser(string AUsername, string APassword, string AFirstName, string AFamilyName, string AModulePermissions)
         {
             // TODO: check permissions. is the current user allowed to create other users?
             SUserTable userTable = new SUserTable();
@@ -204,7 +209,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 {
                     IUserAuthentication auth = TUserManagerWebConnector.LoadAuthAssembly(UserAuthenticationMethod);
 
-                    if (!auth.CreateUser(AUsername, APassword))
+                    if (!auth.CreateUser(AUsername, APassword, AFirstName, AFamilyName))
                     {
                         newUser = null;
                     }
@@ -229,16 +234,28 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         return false;
                     }
 
-                    // TODO: set permissions. for the moment, create all permissions
                     List <string>modules = new List <string>();
-                    modules.Add("PTNRUSER");
-                    modules.Add("FINANCE-1");
 
-                    ALedgerTable theLedgers = ALedgerAccess.LoadAll(Transaction);
-
-                    foreach (ALedgerRow ledger in theLedgers.Rows)
+                    if (AModulePermissions == DEMOMODULEPERMISSIONS)
                     {
-                        modules.Add("LEDGER" + ledger.LedgerNumber.ToString("0000"));
+                        modules.Add("PTNRUSER");
+                        modules.Add("FINANCE-1");
+
+                        ALedgerTable theLedgers = ALedgerAccess.LoadAll(Transaction);
+
+                        foreach (ALedgerRow ledger in theLedgers.Rows)
+                        {
+                            modules.Add("LEDGER" + ledger.LedgerNumber.ToString("0000"));
+                        }
+                    }
+                    else
+                    {
+                        string[] modulePermissions = AModulePermissions.Split(new char[] { ',' });
+
+                        foreach (string s in modulePermissions)
+                        {
+                            modules.Add(s);
+                        }
                     }
 
                     SUserModuleAccessPermissionTable moduleAccessPermissionTable = new SUserModuleAccessPermissionTable();
@@ -393,6 +410,15 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
 
             // TODO: if user module access permissions have changed, automatically update the table access permissions?
+
+            // for new users: create users on the alternative authentication method
+            foreach (SUserRow user in ASubmitDS.SUser.Rows)
+            {
+                if (user.RowState == DataRowState.Added)
+                {
+                    CreateUser(user.UserId, string.Empty, user.FirstName, user.LastName, string.Empty);
+                }
+            }
 
             try
             {

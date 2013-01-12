@@ -87,10 +87,10 @@ namespace {#NAMESPACE}
     public void InitUserControl()
     {
         {#INITUSERCONTROLS}
-        {#INITMANUALCODE}
 {#IFDEF ACTIONENABLING}
         FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
+        {#INITMANUALCODE}
         grdDetails.Enter += new EventHandler(grdDetails_Enter);
         grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
       

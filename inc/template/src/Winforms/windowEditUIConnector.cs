@@ -65,8 +65,8 @@ namespace {#NAMESPACE}
       
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
       {#INITUSERCONTROLS}
-      {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+      {#INITMANUALCODE}
       
       {#INITACTIONSTATE}
       
