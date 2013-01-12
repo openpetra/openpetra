@@ -38,6 +38,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Common.Data;
+using Ict.Petra.Server.App.Core;
 
 namespace Tests.MFinance.Server.Gift
 {
@@ -132,6 +133,8 @@ namespace Tests.MFinance.Server.Gift
             StreamWriter sw = new StreamWriter(formletterExpectedFile + ".updated", false, encodingOfHTMLfile);
             sw.WriteLine(ExpectedFormletterContent);
             sw.Close();
+
+            TLanguageCulture.SetLanguageAndCulture("de-DE", "de-DE");
 
             string receipts =
                 TReceiptingWebConnector.CreateAnnualGiftReceipts(FLedgerNumber,
