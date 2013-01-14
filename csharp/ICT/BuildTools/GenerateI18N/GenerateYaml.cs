@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -95,7 +95,7 @@ public class GenerateYamlFiles
                 label = label.Substring(1).Trim();
             }
 
-            XmlNode LabelNode = node.OwnerDocument.CreateElement(TYml2Xml.XMLELEMENT);
+            XmlNode LabelNode = node.OwnerDocument.CreateElement(TYml2Xml.XMLLIST);
             OptionalValuesLabel.AppendChild(LabelNode);
             TXMLParser.SetAttribute(LabelNode, "name", Catalog.GetString(label));
         }
