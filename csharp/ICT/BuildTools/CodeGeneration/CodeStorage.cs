@@ -536,20 +536,8 @@ namespace Ict.Tools.CodeGeneration
                 throw new Exception("should not parse the 'base' node this way");
             }
 
-            string EventClass = "";
-            string EventMethod = "";
-
-            foreach (XmlAttribute attrib in AParsedNode.Attributes)
-            {
-                if (attrib.Name == "class")
-                {
-                    EventClass = attrib.Value;
-                }
-                else if (attrib.Name == "method")
-                {
-                    EventMethod = attrib.Value;
-                }
-            }
+            string EventClass = TYml2Xml.GetAttribute(AParsedNode, "class");
+            string EventMethod = TYml2Xml.GetAttribute(AParsedNode, "method");
 
             TEventHandler result = new TEventHandler(AParsedNode.Name, EventClass, EventMethod);
             FEventList.Add(AParsedNode.Name, result);
@@ -601,20 +589,8 @@ namespace Ict.Tools.CodeGeneration
                 throw new Exception("should not parse the 'base' node this way");
             }
 
-            string ReportDescription = "";
-            string ReportParameter = "";
-
-            foreach (XmlAttribute attrib in AParsedNode.Attributes)
-            {
-                if (attrib.Name == "Name")
-                {
-                    ReportDescription = attrib.Value;
-                }
-                else if (attrib.Name == "Parameter")
-                {
-                    ReportParameter = attrib.Value;
-                }
-            }
+            string ReportDescription = TYml2Xml.GetAttribute(AParsedNode, "Name");
+            string ReportParameter = TYml2Xml.GetAttribute(AParsedNode, "Parameter");
 
             TReportParameter result = new TReportParameter(AColumnFunctionClassName, ReportDescription, ReportParameter);
             FReportParameterList.Add(AParsedNode.Name, result);
