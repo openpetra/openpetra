@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -571,37 +571,11 @@ namespace Ict.Tools.CodeGeneration
 
             //actClose: {Label=&Close, ActionClick=MniFile_Close, Tooltip=Closes this window, Image=Close.ico}
 
-            string ActionLabel = "";
-            string ActionClick = "";
-            string ActionTooltip = "";
-            string ActionImage = "";
-            string ActionId = "";
-
-            foreach (XmlAttribute attrib in AParsedNode.Attributes)
-            {
-                switch (attrib.Name)
-                {
-                    case "Label":
-                        ActionLabel = attrib.Value;
-                        break;
-
-                    case "ActionClick":
-                        ActionClick = attrib.Value;
-                        break;
-
-                    case "ActionId":
-                        ActionId = attrib.Value;
-                        break;
-
-                    case "Tooltip":
-                        ActionTooltip = attrib.Value;
-                        break;
-
-                    case "Image":
-                        ActionImage = attrib.Value;
-                        break;
-                }
-            }
+            string ActionLabel = TYml2Xml.GetAttribute(AParsedNode, "Label");
+            string ActionClick = TYml2Xml.GetAttribute(AParsedNode, "ActionClick");
+            string ActionTooltip = TYml2Xml.GetAttribute(AParsedNode, "Tooltip");
+            string ActionImage = TYml2Xml.GetAttribute(AParsedNode, "Image");
+            string ActionId = TYml2Xml.GetAttribute(AParsedNode, "ActionId");
 
             TActionHandler result = new TActionHandler(AParsedNode, AParsedNode.Name, ActionClick, ActionId, ActionLabel, ActionTooltip, ActionImage);
 
