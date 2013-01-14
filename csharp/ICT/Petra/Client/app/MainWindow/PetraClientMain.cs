@@ -308,6 +308,8 @@ namespace Ict.Petra.Client.App.PetraClient
                     PatchProcess.EnableRaisingEvents = false;
                     PatchProcess.StartInfo.FileName = PatchToolExe;
                     PatchProcess.StartInfo.Arguments = "-action:patchRemote " +
+                                                       "-ClientConfig:\"" + Path.GetFullPath(
+                        TAppSettingsManager.ConfigFileName) + "\" " +
                                                        "-OpenPetra.Path.Patches:\"" + Path.GetFullPath(
                         TClientSettings.Petra_Path_Bin + "/../patches30") + "\" " +
                                                        "-OpenPetra.PathTemp:\"" + Path.GetFullPath(
