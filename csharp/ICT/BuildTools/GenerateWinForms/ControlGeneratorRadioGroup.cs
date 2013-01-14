@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -108,7 +108,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     IfStatement += Environment.NewLine + "else ";
                 }
 
-                IfStatement += "if(" + AFieldOrNull + " == \"" + optBtn.Label + "\")" + Environment.NewLine + "{" + Environment.NewLine;
+                string value = "\"" + optBtn.Label + "\"";
+
+                if (optBtn.HasAttribute("ConstantValue"))
+                {
+                    value = optBtn.GetAttribute("ConstantValue");
+                }
+
+                IfStatement += "if(" + AFieldOrNull + " == " + value + ")" + Environment.NewLine + "{" + Environment.NewLine;
 
                 foreach (TControlDef optBtnInner in ctrl.Children)
                 {
@@ -145,7 +152,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     IfStatement += " : ";
                 }
 
-                IfStatement += optBtn.controlName + ".Checked ? " + optBtn.controlName + ".Text";
+                string value = "\"" + optBtn.Label + "\"";
+
+                if (optBtn.HasAttribute("ConstantValue"))
+                {
+                    value = optBtn.GetAttribute("ConstantValue");
+                }
+
+                IfStatement += optBtn.controlName + ".Checked ? " + value;
 
                 FirstIfStatement = false;
             }
@@ -225,6 +239,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             StringCollection optionalValuesLabels =
                 TYml2Xml.GetElements(TYml2Xml.GetChild(ctrl.xmlNode, "LabelsForOptionalValues"));
+            StringCollection optionalValuesConstants =
+                TYml2Xml.GetElements(TYml2Xml.GetChild(ctrl.xmlNode, "OptionalValuesConstants"));
 
             // add the radiobuttons on the fly
             int count = 0;
@@ -252,6 +268,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (TYml2Xml.HasAttribute(ctrl.xmlNode, "OnChange"))
                 {
                     newCtrl.SetAttribute("OnChange", TYml2Xml.GetAttribute(ctrl.xmlNode, "OnChange"));
+                }
+
+                if (optionalValuesConstants.Count > count)
+                {
+                    newCtrl.SetAttribute("ConstantValue", optionalValuesConstants[count]);
                 }
 
                 ctrl.Children.Add(newCtrl);
