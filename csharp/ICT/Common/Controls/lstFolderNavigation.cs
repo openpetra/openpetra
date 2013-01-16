@@ -32,7 +32,7 @@ namespace Ict.Common.Controls
 {
     /// <summary>
     /// This control has a list of folders;
-    /// each folder is represented as a radiobutton (TRbtNavigationButton)
+    /// each folder is represented as a TRbtNavigationButton Control
     /// </summary>
     public partial class TLstFolderNavigation : System.Windows.Forms.Panel
     {
@@ -76,11 +76,6 @@ namespace Ict.Common.Controls
             TVisualStyles VisualStyle = new TVisualStyles(TVisualStylesEnum.vsHorizontalCollapse);
 
             InitializeComponent();
-            #region CATALOGI18N
-
-            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblNavigationCaption.Text = Catalog.GetString("Caption");
-            #endregion
 
             sptNavigation.BackColor = VisualStyle.TitleGradientEnd;
 
