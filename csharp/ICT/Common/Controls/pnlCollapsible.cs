@@ -77,6 +77,12 @@ namespace Ict.Common.Controls
     /// <summary>
     /// UserControl which acts as a 'Collapsible Panel'.
     /// </summary>
+    /// <remarks>
+    /// It can be collapsed/expanded in either horizontal or vertical direction.
+    /// Collapsing/expanding is triggered by either clicking the 'collapse/expand button' or the heading.
+    /// It can host either a <see cref="TTaskList" /> Control or a <see cref="TPnlCollapsibleHoster" /> Control
+    /// or an arbitrary <see cref="UserControl" />.
+    /// </remarks>
     public partial class TPnlCollapsible : System.Windows.Forms.UserControl
     {
         #region Private constants and fields

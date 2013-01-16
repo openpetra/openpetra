@@ -30,11 +30,17 @@ using Ict.Common.IO;
 namespace Ict.Common.Controls
 {
     /// <summary>
-    /// This control contains several sub panels;
-    /// each panel has a heading;
-    /// a click on the heading collapses or extends the panel
-    /// several panels can be expanded at the same time
+    /// Represents an OpenPetra Module in the OpenPetra Main Menu. 
+    /// Contains a single instance of a <see cref="TPnlCollapsible" /> Control (FCollapsibleNavigation)
+    /// which collapses in horizontal direction.
     /// </summary>
+    /// <remarks>
+    /// The heading of the <see cref="TPnlCollapsible" /> Control shows the name of the current OpenPetra Module.
+    /// The OpenPetra Main Menu can show various OpenPetra Modules, but only one <see cref="TPnlModuleNavigation" /> 
+    /// instance is seen by the user at any given time.
+    /// Also hold a reference to the currently displayed <see cref="TLstTasks" /> Control in FCurrentTaskList. 
+    /// Although there can be 1..n <see cref="TLstTasks" /> Controls per Sub-Module, only one is currently displayed.
+    /// </remarks>
     public partial class TPnlModuleNavigation : System.Windows.Forms.Panel
     {
         private Ict.Common.Controls.TPnlCollapsible FCollapsibleNavigation = new TPnlCollapsible();
@@ -42,7 +48,7 @@ namespace Ict.Common.Controls
         private bool FIsLedgerBasedModule = false;
         private bool FSuppressLedgerChangedEvent = false;
 
-        /// constructor
+        /// Constructor.
         public TPnlModuleNavigation()
         {
         }
