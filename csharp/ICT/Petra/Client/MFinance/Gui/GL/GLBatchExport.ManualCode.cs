@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Windows.Forms;
+using System.Threading;
 
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
@@ -34,6 +35,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -245,15 +247,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 requestParams.Add("DateForSummary", dtpDateSummary.Date);
                 requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
 
-                String exportString;
-                bool completed = false;
+                String exportString = null;
                 sw1 = new StreamWriter(fileName);
 
-                do
-                {
-                    completed = TRemote.MFinance.GL.WebConnectors.ExportAllGLBatchData(ref batches, requestParams, out exportString);
-                    sw1.Write(exportString);
-                } while (!completed);
+                Thread ExportThread = new Thread(() => ExportAllGLBatchData(ref batches, requestParams, out exportString));
+                TProgressDialog ExportDialog = new TProgressDialog(ExportThread);
+                ExportDialog.ShowDialog();
+
+                sw1.Write(exportString);
 
                 MessageBox.Show(Catalog.GetString("Your data was exported successfully!"),
                     Catalog.GetString("Success"),
@@ -269,6 +270,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     sw1.Close();
                 }
             }
+        }
+
+        /// <summary>
+        /// Wrapper method to handle returned bool value from remoting call to ExportAllGLBatchData
+        /// </summary>
+        /// <param name="Abatches"></param>
+        /// <param name="ArequestParams"></param>
+        /// <param name="exportString"></param>
+        private void ExportAllGLBatchData(
+            ref ArrayList Abatches, 
+            Hashtable ArequestParams, 
+            out string exportString)
+        {
+            string AexportString;
+            bool Acompleted = false;
+
+            do
+            {
+                Acompleted = TRemote.MFinance.GL.WebConnectors.ExportAllGLBatchData(
+                    ref Abatches, 
+                    ArequestParams, 
+                    out AexportString);
+            } while (!Acompleted);
+
+            exportString = AexportString;
         }
 
         void BtnBrowseClick(object sender, EventArgs e)
