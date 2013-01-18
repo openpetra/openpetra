@@ -170,7 +170,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_DISCONNECT = "DISCONNECT";
-        
+
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_USERMESSAGE = "USERMESSAGE";
 

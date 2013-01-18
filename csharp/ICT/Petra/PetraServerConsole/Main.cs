@@ -549,7 +549,7 @@ ReadClientTaskPriority:
 
                         if (Console.ReadLine() == "YES")
                         {
-                            if (!TheServerManager.StopServerControlled(false)) 
+                            if (!TheServerManager.StopServerControlled(false))
                             {
                                 Console.WriteLine("     Shutdown cancelled!");
                                 WriteServerPrompt();
@@ -562,7 +562,7 @@ ReadClientTaskPriority:
                         }
 
                         break;
-                        
+
                     case 'u':
                     case 'U':
                         Console.WriteLine(Environment.NewLine + "-> UNCONDITIONAL SHUTDOWN   (force disconnection of all Clients) <-");

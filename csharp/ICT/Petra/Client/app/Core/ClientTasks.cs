@@ -92,19 +92,19 @@ namespace Ict.Petra.Client.App.Core
                     if (FClientTaskDataRow["TaskCode"].ToString() == "IMMEDIATE")
                     {
                         TLogging.Log("Client disconnected due to server disconnection request.");
-                        
+
                         PetraClientShutdown.Shutdown.SaveUserDefaultsAndDisconnectAndStop();
                     }
 
                     if (FClientTaskDataRow["TaskCode"].ToString() == "IMMEDIATE-HARDEXIT")
                     {
                         TLogging.Log("Application stopped due to server disconnection request (without saving of User Defaults or disconnection).");
-                        
+
                         // APPLICATION STOPS HERE !!!
                         Environment.Exit(0);
                     }
                 }
-                
+
 //                MessageBox.Show("Finished executing Client Task #" + FClientTaskDataRow["TaskID"].ToString() + " in Thread.");
             }
             catch (Exception /* Exp */)

@@ -134,7 +134,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Shows a <see cref="TLstTasks" /> Control.
         /// </summary>
-        /// <param name="ATaskList">The <see cref="TLstTasks" /> Control that should be shown. 
+        /// <param name="ATaskList">The <see cref="TLstTasks" /> Control that should be shown.
         /// If that Control was alreay shown it is not instantiated again but just brought to the foreground,
         /// if it wasn't shown before then an instance of it is created automatically.</param>
         public void ShowTaskList(TLstTasks ATaskList)

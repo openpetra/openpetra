@@ -98,7 +98,7 @@ public class TAdminConsole
             TLogging.Log("CONTROLLED SHUTDOWN PROCEDURE INITIATED...");
             try
             {
-                if (!TRemote.StopServerControlled(true)) 
+                if (!TRemote.StopServerControlled(true))
                 {
                     Console.WriteLine("     Shutdown cancelled!");
                     Console.Write(ServerAdminPrompt);
@@ -127,7 +127,7 @@ public class TAdminConsole
 
         return ReturnValue;
     }
-    
+
     /// <summary>
     /// shut down the server
     /// </summary>
@@ -361,10 +361,10 @@ public class TAdminConsole
 
                         Console.WriteLine("     e: export the database to yml.gz");
                         Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
-                        
-                        Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");                        
+
+                        Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
                         Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
-                        
+
                         Console.WriteLine("     x: exit PETRAServerADMIN");
                         Console.Write(ServerAdminPrompt);
                         break;
@@ -589,7 +589,7 @@ public class TAdminConsole
         catch (System.Net.Sockets.SocketException remexp)
         {
             HandleConnectionError(remexp);
-            
+
             Environment.Exit(0);
 
             // PetraServerAdminConsole application stops here !!!
@@ -680,7 +680,7 @@ public class TAdminConsole
                 else if (TAppSettingsManager.GetValue("Command") == "StopAndCloseClients")
                 {
                     ShutDownControlled(TRemote, false);
-                }                
+                }
                 else if (TAppSettingsManager.GetValue("Command") == "ConnectedClients")
                 {
                     System.Console.WriteLine(TRemote.FormatClientList(false));
