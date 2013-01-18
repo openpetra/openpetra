@@ -118,6 +118,7 @@ CachedTables:
                 CostCentreList:
                 AccountList:
                 AccountHierarchyList:
+                ICHStewardshipList:
     Conference:
         Conference:
             DatabaseTables:
