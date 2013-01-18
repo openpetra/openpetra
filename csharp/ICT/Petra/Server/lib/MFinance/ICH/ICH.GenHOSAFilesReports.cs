@@ -433,7 +433,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             //Begin the transaction
             bool NewTransaction = false;
 
-            TDBTransaction dbTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             OdbcParameter parameter;
 
@@ -460,7 +460,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             parameter.Value = AAcctCode;
             parameters.Add(parameter);
 
-            DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(SQLStmt, "table", dbTransaction, parameters.ToArray());
+            DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(SQLStmt, "table", DBTransaction, parameters.ToArray());
 
             foreach (DataRow untypedTransRow in TmpTable.Rows)
             {
@@ -485,7 +485,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         if (LastRecipKey != 0)
                         {
                             /* Find partner short name details */
-                            PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, dbTransaction);
+                            PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, DBTransaction);
                             PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
 
                             LastDetailDesc += " : " + PartnerRow.PartnerShortName;
@@ -496,7 +496,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         {
                             AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber,
                                 LastGroup,
-                                dbTransaction);
+                                DBTransaction);
                             AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
 
                             Desc = MotivationGroupRow.MotivationGroupDescription.TrimEnd(new Char[] { (' ') }) + "," + LastDetailDesc;
@@ -567,7 +567,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     if (LastRecipKey != 0)
                     {
                         /* Find partner short name details */
-                        PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, dbTransaction);
+                        PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, DBTransaction);
                         PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
 
                         LastDetailDesc += ":" + PartnerRow.PartnerShortName;
@@ -576,7 +576,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     }
                     else
                     {
-                        AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber, LastGroup, dbTransaction);
+                        AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber, LastGroup, DBTransaction);
                         AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
 
                         Desc = MotivationGroupRow.MotivationGroupDescription.TrimEnd() + "," + LastDetailDesc;
