@@ -90,7 +90,12 @@ namespace Ict.Common.Remoting.Shared
         }
 
         /// <summary>
-        /// command to stop the server
+        /// command to stop the server in a more controlled way than <see cref="StopServer" /> (gets all connected clients to disconnect)
+        /// </summary>
+        bool StopServerControlled(bool AForceAutomaticClosing);
+
+        /// <summary>
+        /// command to stop the server unconditionally (forces 'hard' disconnection of all Clients!)
         /// </summary>
         void StopServer();
 

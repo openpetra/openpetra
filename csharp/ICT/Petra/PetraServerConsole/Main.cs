@@ -302,7 +302,8 @@ public class TServer
                         Console.WriteLine("     e: export the database to yml.gz");
                         Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
 
-                        Console.WriteLine("     u: unconditional Server shutdown (forces disconnection of all Clients!)");
+                        Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
+                        Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
                         WriteServerPrompt();
 
                         // list connected Clients
@@ -541,10 +542,31 @@ ReadClientTaskPriority:
                         // unconditional Server shutdown
                         break;
 
+                    case 'o':
+                    case 'O':
+                        Console.WriteLine(Environment.NewLine + "-> CONTROLLED SHUTDOWN  (gets all connected clients to disconnect) <-");
+                        Console.Write("     Enter YES to perform controlled shutdown (anything else to leave command): ");
+
+                        if (Console.ReadLine() == "YES")
+                        {
+                            if (!TheServerManager.StopServerControlled(false))
+                            {
+                                Console.WriteLine("     Shutdown cancelled!");
+                                WriteServerPrompt();
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("     Shutdown cancelled!");
+                            WriteServerPrompt();
+                        }
+
+                        break;
+
                     case 'u':
                     case 'U':
                         Console.WriteLine(Environment.NewLine + "-> UNCONDITIONAL SHUTDOWN   (force disconnection of all Clients) <-");
-                        Console.Write("     Enter YES to perform shutdown (anything else to leave command): ");
+                        Console.Write("     Enter YES to perform UNCONDITIONAL shutdown (anything else to leave command): ");
 
                         if (Console.ReadLine() == "YES")
                         {

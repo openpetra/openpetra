@@ -123,8 +123,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             return ACostCentreAccess.LoadViaALedger(ALedgerNumber, FieldList, AReadTransaction);
         }
 
-		private DataTable GetICHStewardshipListTable(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
-		{
+        private DataTable GetICHStewardshipListTable(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
+        {
             StringCollection FieldList = new StringCollection();
 
             FieldList.Add(AIchStewardshipTable.GetLedgerNumberDBName());
@@ -133,7 +133,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             FieldList.Add(AIchStewardshipTable.GetIchNumberDBName());
             FieldList.Add(AIchStewardshipTable.GetDateProcessedDBName());
             return AIchStewardshipAccess.LoadViaALedger(ALedgerNumber, FieldList, AReadTransaction);
-		}
+        }
 
         private DataTable GetAccountListTable(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
         {

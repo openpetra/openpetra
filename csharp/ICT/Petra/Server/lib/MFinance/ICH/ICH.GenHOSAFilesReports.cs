@@ -598,12 +598,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     AExportDataTable.Rows.Add(DR);
                 }
             }
-            
+
             if (NewTransaction)
             {
-            	DBAccess.GDBAccessObj.RollbackTransaction();
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
-            
         }
 
         /// <summary>

@@ -27,7 +27,6 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
-using SplashScreen;
 
 namespace PetraClientShutdown
 {
@@ -36,24 +35,6 @@ namespace PetraClientShutdown
 /// </summary>
 public static class Shutdown
 {
-    private static TSplashScreenManager FSplashScreen;
-
-    /// <summary>
-    /// the splash screen
-    /// </summary>
-    public static TSplashScreenManager SplashScreen
-    {
-        get
-        {
-            return FSplashScreen;
-        }
-
-        set
-        {
-            FSplashScreen = value;
-        }
-    }
-
     /// <summary>
     /// todoComment
     /// </summary>

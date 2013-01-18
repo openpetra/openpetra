@@ -120,7 +120,13 @@ namespace Tests.MFinance.Server.ICH
             string FileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
             TVerificationResultCollection VerificationResults;
 
-            TGenHOSAFilesReportsWebConnector.GenerateHOSAFiles(LedgerNumber, PeriodNumber, IchNumber, CostCentre, Currency, FileName, out VerificationResults);
+            TGenHOSAFilesReportsWebConnector.GenerateHOSAFiles(LedgerNumber,
+                PeriodNumber,
+                IchNumber,
+                CostCentre,
+                Currency,
+                FileName,
+                out VerificationResults);
 
             Assert.IsFalse(VerificationResults.HasCriticalErrors,
                 "HOSA File Generation Failed!" + VerificationResults.BuildVerificationResultString());

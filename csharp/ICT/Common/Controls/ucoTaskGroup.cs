@@ -33,8 +33,8 @@ namespace Ict.Common.Controls
     /// Groups Tasks (<see cref="TUcoSingleTask" />) into groups.
     /// </summary>
     /// <remarks>
-    /// Each Task Group features a heading and a dividing line. 
-    /// Each Task Group contains a flpTaskGroup Control. 
+    /// Each Task Group features a heading and a dividing line.
+    /// Each Task Group contains a flpTaskGroup Control.
     /// Example in the OpenPetra Main Menu: 'Create Partner' Group in Partner Module, Partners Sub-Module.
     /// </remarks>
     public partial class TUcoTaskGroup : UserControl

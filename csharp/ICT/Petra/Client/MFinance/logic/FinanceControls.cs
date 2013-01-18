@@ -86,7 +86,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             return Filter;
         }
-        
+
         // Adapter for TClbVersatile-init ...
         private static string PrepareAccountFilter(bool APostingOnly, bool AExcludePosting,
             bool AActiveOnly, bool ABankAccountOnly)
@@ -221,7 +221,6 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
 
-        
         /// <summary>
         /// fill combobox values with cost centre list
         /// </summary>
@@ -679,30 +678,30 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
         }
 
-		/// <summary>
+        /// <summary>
         /// This function puts the ICH numbers used of a given ledger into a combobox
-		/// </summary>
-		/// <param name="AControl"></param>
-		/// <param name="ALedgerNumber"></param>
-		/// <param name="APeriodNumber"></param>
-		/// <param name="ACostCentreCode"></param>
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <param name="ACostCentreCode"></param>
         public static void InitialiseICHStewardshipList(
             ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             Int32 APeriodNumber,
             String ACostCentreCode)
         {
-        	DataTable ICHNumbers = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.ICHStewardshipList, ALedgerNumber);
-        	
+            DataTable ICHNumbers = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.ICHStewardshipList, ALedgerNumber);
+
             // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
             DataRow emptyRow = ICHNumbers.NewRow();
-            
+
             emptyRow[AIchStewardshipTable.ColumnLedgerNumberId] = ALedgerNumber;
             emptyRow[AIchStewardshipTable.ColumnPeriodNumberId] = APeriodNumber;
             emptyRow[AIchStewardshipTable.ColumnIchNumberId] = 0;
             emptyRow[AIchStewardshipTable.ColumnCostCentreCodeId] = ACostCentreCode;
             emptyRow[AIchStewardshipTable.ColumnDateProcessedId] = DateTime.Today;
-            
+
             ICHNumbers.Rows.Add(emptyRow);
 
             AControl.InitialiseUserControl(ICHNumbers,
@@ -711,12 +710,10 @@ namespace Ict.Petra.Client.MFinance.Logic
                 null);
             AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
 
-            AControl.Filter = AIchStewardshipTable.GetPeriodNumberDBName() + " = " + APeriodNumber.ToString()
-            	+ " AND " + AIchStewardshipTable.GetCostCentreCodeDBName() + " = " + ACostCentreCode;
-
+            AControl.Filter = AIchStewardshipTable.GetPeriodNumberDBName() + " = " + APeriodNumber.ToString() +
+                              " AND " + AIchStewardshipTable.GetCostCentreCodeDBName() + " = " + ACostCentreCode;
         }
 
-        
         /// <summary>
         /// This function fills the open financial periods of a given ledger into a combobox
         /// </summary>

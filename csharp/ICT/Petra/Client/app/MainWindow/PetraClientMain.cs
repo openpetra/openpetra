@@ -398,7 +398,6 @@ namespace Ict.Petra.Client.App.PetraClient
              * This is non-blocking since it is done in a separate Thread, that means
              * that the startup procedure continues while the Splash Screen is initialised and shown!!! */
             FSplashScreen = new TSplashScreenManager(new TSplashScreenCallback(SplashScreenInfoCallback));
-            Shutdown.SplashScreen = FSplashScreen;
             FSplashScreen.Show();
 
             /*
