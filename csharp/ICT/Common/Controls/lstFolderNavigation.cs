@@ -34,12 +34,12 @@ namespace Ict.Common.Controls
     /// Represents the 'Module Navigation' on the left hand side of the Main Menu of OpenPetra.
     /// </summary>
     /// <remarks>
-    /// Hosts a SplitContainer which hosts... 
-    /// (1) 1..n <see cref="TPnlModuleNavigation" /> Controls, one per OpenPetra Module. 
+    /// Hosts a SplitContainer which hosts...
+    /// (1) 1..n <see cref="TPnlModuleNavigation" /> Controls, one per OpenPetra Module.
     /// (1a) <see cref="TPnlModuleNavigation" /> instances are shown above the <see cref="TRbtNavigationButton" /> Controls (inside the SplitContainer's Splitter Panel #1 (sptNavigation.Panel1)).
-    /// (1b) Once an instance of <see cref="TPnlModuleNavigation" /> got created and added to the Controls of sptNavigation.Panel1 it is re-used once the user switches to it again! 
+    /// (1b) Once an instance of <see cref="TPnlModuleNavigation" /> got created and added to the Controls of sptNavigation.Panel1 it is re-used once the user switches to it again!
     /// (1c) Only one <see cref="TPnlModuleNavigation" /> instance is seen at a given time (the one held in CollPanelHoster)!
-    /// (2) 1..n <see cref="TRbtNavigationButton" /> Controls, each representing an OpenPetra Module. These are shown below the <see cref="TPnlModuleNavigation" /> instances (inside the SplitContainer's Splitter Panel #2 (sptNavigation.Panel2)). 
+    /// (2) 1..n <see cref="TRbtNavigationButton" /> Controls, each representing an OpenPetra Module. These are shown below the <see cref="TPnlModuleNavigation" /> instances (inside the SplitContainer's Splitter Panel #2 (sptNavigation.Panel2)).
     /// Also hosts a Panel that has currently no functionality (pnlMoreButtons). It is displayed below the SplitContainer.
     /// TODO: Future plan is to make the drag'n'drop of the Splitter work (Bug #505 [https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=505]).
     /// </remarks>

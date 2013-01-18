@@ -30,15 +30,15 @@ using Ict.Common.IO;
 namespace Ict.Common.Controls
 {
     /// <summary>
-    /// Represents an OpenPetra Module in the OpenPetra Main Menu. 
+    /// Represents an OpenPetra Module in the OpenPetra Main Menu.
     /// Contains a single instance of a <see cref="TPnlCollapsible" /> Control (FCollapsibleNavigation)
     /// which collapses in horizontal direction.
     /// </summary>
     /// <remarks>
     /// The heading of the <see cref="TPnlCollapsible" /> Control shows the name of the current OpenPetra Module.
-    /// The OpenPetra Main Menu can show various OpenPetra Modules, but only one <see cref="TPnlModuleNavigation" /> 
+    /// The OpenPetra Main Menu can show various OpenPetra Modules, but only one <see cref="TPnlModuleNavigation" />
     /// instance is seen by the user at any given time.
-    /// Also hold a reference to the currently displayed <see cref="TLstTasks" /> Control in FCurrentTaskList. 
+    /// Also hold a reference to the currently displayed <see cref="TLstTasks" /> Control in FCurrentTaskList.
     /// Although there can be 1..n <see cref="TLstTasks" /> Controls per Sub-Module, only one is currently displayed.
     /// </remarks>
     public partial class TPnlModuleNavigation : System.Windows.Forms.Panel

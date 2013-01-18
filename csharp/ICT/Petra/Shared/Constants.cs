@@ -169,6 +169,9 @@ namespace Ict.Petra.Shared
         public const String SYSDEFAULT_PURGEEXTRACTS = "PurgeExtracts";
 
         /// <summary>ClientTask TaskGroups</summary>
+        public const String CLIENTTASKGROUP_DISCONNECT = "DISCONNECT";
+
+        /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_USERMESSAGE = "USERMESSAGE";
 
         /// <summary>ClientTask TaskGroups</summary>
