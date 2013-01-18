@@ -57,14 +57,15 @@ using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MFinance.ICH
+namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 {
     /// <summary>
     /// Class for the generation of "Home Office Statement of Accounts" reports for each
     ///   foreign cost centre (ledger/fund).  This is basically a modified Trial Balance.
     /// </summary>
-    public class TGenHOSAFilesReports
+    public class TGenHOSAFilesReportsWebConnector
     {
         /// <summary>
         /// Performs the ICH code to generate HOSA Files/Reports.
@@ -78,6 +79,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AFileName">File name</param>
         /// <param name="AVerificationResult">Error messaging</param>
         /// <returns>Successful or not</returns>
+        [RequireModulePermission("FINANCE-3")]
         public static bool GenerateHOSAFiles(int ALedgerNumber,
             int APeriodNumber,
             int AIchNumber,
@@ -212,7 +214,6 @@ namespace Ict.Petra.Server.MFinance.ICH
                             CurrencySelect,
                             AIchNumber,
                             ref TableForExport,
-                            ref DBTransaction,
                             ref AVerificationResult);
                     }
 
@@ -337,6 +338,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AFileName">File name (including path) to process</param>
         /// <param name="AHeaderText">Text to insert in first line</param>
         /// <param name="AVerificationResult">Error messaging</param>
+        [RequireModulePermission("FINANCE-3")]
         public static bool ReplaceHeaderInFile(string AFileName, string AHeaderText, ref TVerificationResultCollection AVerificationResult)
         {
             bool retVal = true;
@@ -392,8 +394,8 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="ABase"></param>
         /// <param name="AIchNumber"></param>
         /// <param name="AExportDataTable"></param>
-        /// <param name="ADBTransaction"></param>
         /// <param name="AVerificationResult"></param>
+        [RequireModulePermission("FINANCE-3")]
         public static void ExportGifts(int ALedgerNumber,
             string ACostCentre,
             string AAcctCode,
@@ -404,7 +406,6 @@ namespace Ict.Petra.Server.MFinance.ICH
             string ABase,
             int AIchNumber,
             ref DataTable AExportDataTable,
-            ref TDBTransaction ADBTransaction,
             ref TVerificationResultCollection AVerificationResult)
         {
             /* Define local variables */
@@ -428,6 +429,11 @@ namespace Ict.Petra.Server.MFinance.ICH
             //Export Gifts gi3200-1.i
             //Find and total each gift transaction
             string SQLStmt = TDataBase.ReadSqlFile("ICH.HOSAExportGiftsInner.sql");
+
+            //Begin the transaction
+            bool NewTransaction = false;
+
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             OdbcParameter parameter;
 
@@ -454,7 +460,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             parameter.Value = AAcctCode;
             parameters.Add(parameter);
 
-            DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(SQLStmt, "table", ADBTransaction, parameters.ToArray());
+            DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(SQLStmt, "table", DBTransaction, parameters.ToArray());
 
             foreach (DataRow untypedTransRow in TmpTable.Rows)
             {
@@ -479,7 +485,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                         if (LastRecipKey != 0)
                         {
                             /* Find partner short name details */
-                            PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, ADBTransaction);
+                            PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, DBTransaction);
                             PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
 
                             LastDetailDesc += " : " + PartnerRow.PartnerShortName;
@@ -490,7 +496,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                         {
                             AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber,
                                 LastGroup,
-                                ADBTransaction);
+                                DBTransaction);
                             AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
 
                             Desc = MotivationGroupRow.MotivationGroupDescription.TrimEnd(new Char[] { (' ') }) + "," + LastDetailDesc;
@@ -561,7 +567,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                     if (LastRecipKey != 0)
                     {
                         /* Find partner short name details */
-                        PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, ADBTransaction);
+                        PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, DBTransaction);
                         PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
 
                         LastDetailDesc += ":" + PartnerRow.PartnerShortName;
@@ -570,7 +576,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                     }
                     else
                     {
-                        AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber, LastGroup, ADBTransaction);
+                        AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber, LastGroup, DBTransaction);
                         AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
 
                         Desc = MotivationGroupRow.MotivationGroupDescription.TrimEnd() + "," + LastDetailDesc;
@@ -591,6 +597,11 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     AExportDataTable.Rows.Add(DR);
                 }
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
         }
 
@@ -635,6 +646,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AIchNumber">ICH number</param>
         /// <param name="ACurrency">Currency</param>
         /// <param name="AVerificationResult">Error messaging</param>
+        [RequireModulePermission("FINANCE-3")]
         public static void GenerateHOSAReports(int ALedgerNumber,
             int APeriodNumber,
             int AIchNumber,
