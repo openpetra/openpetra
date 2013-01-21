@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,6 +45,7 @@ using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.App.Core.Processing;
 
 namespace Ict.Petra.Server.App.Core
 {
@@ -103,6 +104,12 @@ namespace Ict.Petra.Server.App.Core
                 new TErrorLog(),
                 new TMaintenanceLogonMessage(),
                 new TClientAppDomainConnection());
+
+            TTimedProcessing.DailyStartTime24Hrs = TAppSettingsManager.GetValue("Server.Processing.DailyStartTime24Hrs", "00:30");
+            TTimedProcessing.ProcessPartnerRemindersEnabled = TAppSettingsManager.GetBoolean("Server.Processing.PartnerReminders.Enabled", true);
+            TTimedProcessing.ProcessAutomatedIntranetExportEnabled = TAppSettingsManager.GetBoolean(
+                "Server.Processing.AutomatedIntranetExport.Enabled",
+                true);
         }
 
         private List <TDataBase>FDBConnections = new List <TDataBase>();
@@ -213,6 +220,18 @@ namespace Ict.Petra.Server.App.Core
             UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
             return FUserManager.AddUser(AUserID);
+        }
+
+        /// <summary>
+        /// Sets up timed Server processing tasks.
+        /// </summary>
+        /// <description>
+        /// Involves creating Timers and opening and closing of a Database connection
+        /// specifically for that purpose.
+        /// </description>
+        public void SetupServerTimedProcessing()
+        {
+            TTimedProcessing.StartProcessing();
         }
     }
 }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -104,6 +104,16 @@ public class TServer
                 TLogging.Log("Please check your OpenPetra.build.config file ...");
                 TLogging.Log("Maybe a nant initConfigFile helps ...");
                 throw new ApplicationException();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            // Setup Server Timed Processing
+            try
+            {
+                TheServerManager.SetupServerTimedProcessing();
             }
             catch (Exception)
             {
