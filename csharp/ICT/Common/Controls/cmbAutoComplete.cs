@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using Ict.Common;
+using Accessibility;
 using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -43,11 +44,6 @@ namespace Ict.Common.Controls
     public delegate void TAcceptNewEntryEventHandler(System.Object Sender, TAcceptNewEntryEventArgs e);
 
     /// <summary>
-    /// delegate for when the data source changes
-    /// </summary>
-    public delegate void TDataSourceChangingEventHandler(System.Object Sender, System.EventArgs e);
-
-    /// <summary>
     /// event arguments for when a new item is added
     /// </summary>
     public class TAcceptNewEntryEventArgs : System.ComponentModel.CancelEventArgs
@@ -56,22 +52,6 @@ namespace Ict.Common.Controls
         /// the new item
         /// </summary>
         public String ItemString;
-    }
-
-    /// <summary>
-    /// event arguments for the data source changing event
-    /// </summary>
-    public class TDataSourceChangingEventArgs : System.EventArgs
-    {
-        /// <summary>
-        /// the old data source
-        /// </summary>
-        public object OldDataSource;
-
-        /// <summary>
-        /// the new data source
-        /// </summary>
-        public object NewDataSource;
     }
 
     /// <summary>
@@ -87,14 +67,6 @@ namespace Ict.Common.Controls
     /// </summary>
     public class TCmbAutoComplete : System.Windows.Forms.ComboBox
     {
-        // const UNIT_SUPPORTED_DATA_TYPES = 'System.Data.DataView, System.Data.DataTable, System.Data.DataSet';
-        /// <summary>
-        /// which data types are supported at the moment
-        /// </summary>
-        private const String UNIT_SUPPORTED_DATA_TYPES = "System.Data.DataView";
-        private const String DEFAULT_COMPLAIN =
-            "The type used for the DataSource Property is not supported \r\nby TcmbAutoComplete. The following types are supported:\r\n" +
-            UNIT_SUPPORTED_DATA_TYPES + "\r\nYour type: ";
         private const String StrValueMember = "#VALUE#";
         private const String StrDisplayMember = "#DISPLAY#";
 
@@ -108,7 +80,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// which columns to search
         /// </summary>
-        protected StringCollection FColumnsToSearch;
+        protected StringCollection FColumnsToSearch = null;
 
         /// <summary>
         /// This property determines which column should be sorted. This may be esential
@@ -176,23 +148,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This property determines which columns are searched, when the user enters
-        /// text into the combobox.
-        ///
-        /// </summary>
-        public System.Collections.Specialized.StringCollection ColumnsToSearchCollection
-        {
-            get
-            {
-                return this.FColumnsToSearch;
-            }
-        }
-
-        /// <summary>
-        /// This property determines which column should be sorted. This may be esential
-        /// for heirs of this class which use more the one column in the combobox. The
-        /// default value for this property is therefore NIL.
-        ///
+        /// case sensitive search
         /// </summary>
         public bool CaseSensitiveSearch
         {
@@ -208,10 +164,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This property determines which column should be sorted. This may be esential
-        /// for heirs of this class which use more the one column in the combobox. The
-        /// default value for this property is therefore NIL.
-        ///
+        /// data source
         /// </summary>
         public new object DataSource
         {
@@ -222,22 +175,12 @@ namespace Ict.Common.Controls
 
             set
             {
-                object OldDataSource = base.DataSource;
-                TDataSourceChangingEventArgs Args = new TDataSourceChangingEventArgs();
-                Args.OldDataSource = OldDataSource;
-                Args.NewDataSource = value;
-
-                if (!(DesignMode))
-                {
-                    OnDataSourceChanging(Args);
-                }
-
                 if (value == null)
                 {
                     return;
                 }
 
-                if (HasDataSourceCorrectDataType(value) == true)
+                if (value is DataView)
                 {
                     base.DataSource = value;
                 }
@@ -247,8 +190,8 @@ namespace Ict.Common.Controls
                 }
 
                 // problem to set it here, because the datasource is still being updated, and the indexchanged triggers give trouble
-                // this.SelectedIndex := 1;
-                // this.SelectedItem := nil;
+                this.SelectedIndex = -1;
+                this.Text = string.Empty;
             }
         }
 
@@ -271,148 +214,12 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// property for the current selection;
-        /// SelectedItem is about the display member, SelectedValue reflects the value member, at the moment only Strings are supported
-        /// </summary>
-        public new System.Object SelectedItem
-        {
-            get
-            {
-                if (DesignMode)
-                {
-                    // messagebox.Show('I am in DesignMode!');
-                    return base.SelectedItem;
-                }
-
-                if ((DataSource == null) && (Items.Count > 0) && (SelectedIndex > -1))
-                {
-                    // use the normal Items values, not the datasource etc
-                    return Convert.ToString(Items[this.SelectedIndex]);
-                }
-
-                DataRowView mRowView = GetSelectedRowView();
-
-                if (mRowView == null)
-                {
-                    return System.DBNull.Value;
-                }
-                else
-                {
-                    return mRowView[GetColumnNrOfValueMember()];
-                }
-            }
-
-            set
-            {
-                if ((value == null) || (value.ToString() == ""))
-                {
-                    base.SelectedIndex = -1;
-                }
-                else
-                {
-                    Int32 m_SelectedIndex = this.FindStringSortedByLength(value.ToString(), GetColumnNrOfValueMember());
-                    base.SelectedIndex = m_SelectedIndex;
-                }
-            }
-        }
-        /// <summary>
-        /// This is yet another version of getting and setting the current selection:
-        ///
-        /// SelectedValueCell is for setting and getting exact the value column if datasource is used:
-        /// we take the object from the table at the special marked value column and at the selected row
-        /// </summary>
-        public System.Object SelectedValueCell
-        {
-            get
-            {
-                if (DesignMode)
-                {
-                    return base.SelectedItem;
-                }
-
-                if (DataSource == null)
-                {
-                    if ((Items.Count > 0) && (SelectedIndex > -1))
-                    {
-                        // use the normal Items values, not the datasource etc
-                        Object mySelectedItem = Items[this.SelectedIndex];
-                        //TODO for composed values return the correct cell instead
-                        return mySelectedItem;
-                    }
-                    else
-                    {
-                        return System.DBNull.Value;
-                    }
-                }
-                else
-                {
-                    DataRowView mRowView = GetSelectedRowView();
-
-                    if (mRowView == null)
-                    {
-                        return System.DBNull.Value;
-                    }
-                    else
-                    {
-                        return mRowView[GetColumnNrOfValueMember()];
-                    }
-                }
-            }
-
-            set
-            {
-                if ((value == null) || (value.ToString() == ""))
-                {
-                    base.SelectedIndex = -1;
-                    base.ResetText();
-                }
-                else
-                {
-                    Int32 m_SelectedIndex = this.FindExactString(value.ToString(), GetColumnNrOfValueMember());
-                    base.SelectedIndex = m_SelectedIndex;
-                }
-            }
-        }
-        /// <summary>
-        /// property for the current selection;
-        /// SelectedItem is about the display member, SelectedValue reflects the value member
-        /// </summary>
-        public new System.Object SelectedValue
-        {
-            get
-            {
-                return base.SelectedValue;
-            }
-            set
-            {
-                if (DesignMode)
-                {
-                    base.SelectedValue = value;
-                }
-
-                if (DataSource == null)
-                {
-                    SelectedItem = value;
-                }
-                else
-                {
-                    // TODO??? something special about DataSource situation?
-                    base.SelectedItem = value;
-                }
-            }
-        }
-
-        /// <summary>
         /// This property manages the new entry event
         /// </summary>
         public event TAcceptNewEntryEventHandler AcceptNewEntries;
 
-        /// <summary>
-        /// This property manages the new entry event
-        /// </summary>
-        public event TDataSourceChangingEventHandler DataSourceChanging;
 
-        #region "Hide Some Unhelpful Parent Properties"
+        #region Hide Some Unhelpful Parent Properties
 
         /// <summary>
         /// required to be overwritten from Parent
@@ -477,6 +284,8 @@ namespace Ict.Common.Controls
         {
             this.BeginUpdate();
             this.DataSource = null;
+            this.SelectedIndex = -1;
+            this.Text = string.Empty;
 
             foreach (String s in AList)
             {
@@ -506,25 +315,30 @@ namespace Ict.Common.Controls
         /// This function builds a string collection out of a comma seperated list given
         /// in the format of a string. The occurance of each column can only be one.
         /// Therefore Duplicates are being removed.
-        ///
         /// </summary>
-        /// <returns>void</returns>
         private StringCollection BuildColumnStringCollection(String AString)
         {
-            StringCollection ReturnValue;
-            StringCollection mRawStringCollection;
-
-            ReturnValue = new StringCollection();
-            mRawStringCollection = StringHelper.StrSplit(AString, ",");
+            StringCollection ReturnValue = new StringCollection();
+            StringCollection mRawStringCollection = StringHelper.StrSplit(AString, ",");
 
             foreach (String mString in mRawStringCollection)
             {
-                if (!(ReturnValue.Contains(mString)))
+                string stringToAdd = mString;
+
+                // Replace the placeholders #VALUE# and #DISPLAY# with the real stuff.
+                if (stringToAdd == StrValueMember)
                 {
-                    if (mString != "")
-                    {
-                        ReturnValue.Add(mString);
-                    }
+                    stringToAdd = this.ValueMember;
+                }
+
+                if (stringToAdd == StrDisplayMember)
+                {
+                    stringToAdd = this.DisplayMember;
+                }
+
+                if (!ReturnValue.Contains(stringToAdd) && (stringToAdd.Length > 0))
+                {
+                    ReturnValue.Add(stringToAdd);
                 }
             }
 
@@ -553,57 +367,7 @@ namespace Ict.Common.Controls
                 return -1;
             }
 
-            if ((AColumnName != null) || (AColumnName == ""))
-            {
-                DataTable mDataTable = null;
-
-                if (this.DataSource != null)
-                {
-                    CheckDataSourceType();
-
-                    if (this.DataSource is System.Data.DataTable)
-                    {
-                        mDataTable = (System.Data.DataTable) this.DataSource;
-                    }
-                    else if (this.DataSource is System.Data.DataView)
-                    {
-                        mDataTable = ((System.Data.DataView)(this.DataSource)).Table;
-                    }
-                }
-
-                if (mDataTable == null)
-                {
-                    if (!(DesignMode))
-                    {
-                        throw new ArgumentException(
-                            "DataSourceTable could not be built. Since DataSource is \"null\". " + this.Name);
-                    }
-
-                    return -1;
-                }
-
-                return mDataTable.Columns.IndexOf(AColumnName);
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>the number of the column that has its name stored in DisplayMember
-        /// </returns>
-        private System.Int32 GetColumnNrOfDisplayMember()
-        {
-            return GetColumnNr(DisplayMember);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>the number of the column that has its name stored in ValueMember
-        /// </returns>
-        private System.Int32 GetColumnNrOfValueMember()
-        {
-            return GetColumnNr(ValueMember);
+            return ((DataView)(this.DataSource)).Table.Columns.IndexOf(AColumnName);
         }
 
         /// <summary>
@@ -655,24 +419,19 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         protected override void OnDataSourceChanged(System.EventArgs e)
         {
-            this.CheckDataSourceType();
-            this.CheckColumnStringCollection();
-            base.OnDataSourceChanged(e);
-        }
-
-        /// <summary>
-        /// This procedure is called when the value of the DataSource property is
-        /// changed on ListControl.
-        /// </summary>
-        /// <param name="e">Event Arguments.
-        /// </param>
-        /// <returns>void</returns>
-        private void OnDataSourceChanging(TDataSourceChangingEventArgs e)
-        {
-            if ((DataSourceChanging != null) && (!(DesignMode)))
+            if ((DisplayMember == null) || (DisplayMember.Length == 0))
             {
-                DataSourceChanging(this, e);
+                throw new Exception(
+                    "cmbAutoComplete: need to first initialise the DisplayMember and the ValueMember before assigning the DataSource!");
             }
+
+            // If the FColumnsToString collection has not yet initialized it must be done now.
+            if ((this.FColumnsToSearch == null) || (this.FColumnsToSearch.Count < 1))
+            {
+                this.ColumnsToSearch = FColumnsToSearchDesignTime;
+            }
+
+            base.OnDataSourceChanged(e);
         }
 
         /// <summary>
@@ -776,12 +535,6 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         protected override void OnKeyUp(System.Windows.Forms.KeyEventArgs e)
         {
-            String TypedText;
-
-            System.Int32 FoundIndex;
-            System.Object FoundItem;
-            String FoundText;
-
             if (this.UPressedKey == true)
             {
                 // Ignoring Control Characters
@@ -801,18 +554,18 @@ namespace Ict.Common.Controls
                 }
 
                 // Get the text in the text box
-                TypedText = this.Text;
+                string TypedText = this.Text;
 
                 // If the text is found in the Items list then Autocomplete
-                FoundIndex = this.FindStringSortedByLength(TypedText);
+                System.Int32 FoundIndex = this.FindStringSortedByLength(TypedText);
 
                 if (FoundIndex >= 0)
                 {
                     // Get item from the list (Return type depends if Datasource ws bound or list created
-                    FoundItem = this.Items[FoundIndex];
+                    object FoundItem = this.Items[FoundIndex];
 
                     // Get the text of the item
-                    FoundText = this.GetItemText(FoundItem);
+                    string FoundText = this.GetItemText(FoundItem);
 
                     // Append then found text to the typed text to preserve case
                     // AppendText := FoundText.Substring(TypedText.Length);
@@ -837,15 +590,10 @@ namespace Ict.Common.Controls
             }
             else
             {
-                TypedText = this.Text;
-
-                if (TypedText == "")
+                if (this.Text == "")
                 {
                     this.SelectedItem = DBNull.Value;
                     this.SelectedValue = DBNull.Value;
-
-                    // TLogging.Log('SelectedItem: ' + this.SelectedItem.ToString);
-                    // TLogging.Log('Selected Index: ' + this.SelectedIndex.ToString);
                 }
             }
 
@@ -942,13 +690,10 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    // TLogging.Log('User may NOT enter ANY new values.');
-                    if (this.SelectedItem.Equals(System.DBNull.Value))
+                    if ((this.SelectedItem != null) && this.SelectedItem.Equals(System.DBNull.Value))
                     {
                         this.Text = System.DBNull.Value.ToString();
                         this.UInitialString = System.DBNull.Value.ToString();
-
-                        // TLogging.Log('Set the whole stuff to dbnull');
                     }
                     else
                     {
@@ -964,40 +709,26 @@ namespace Ict.Common.Controls
         /// This procedure adds an item to the DataSource if the DataSource consists
         /// out of a DataTable with only one column. Otherwise it does nothing.
         /// </summary>
-        /// <param name="ItemString">System.String The string of the item to add.
+        /// <param name="ItemString">The string of the item to add.
         /// </param>
         /// <returns>void</returns>
         private void AddItemToDataSource(String ItemString)
         {
-            System.Int32 mNumDataSourceCols;
-            System.Data.DataTable mDataTable;
-            System.Data.DataRow mNewRow;
-            System.Data.DataColumn mDataColumn;
-            String mColName;
-
-            if (this.DataSource is System.Data.DataTable)
-            {
-                mDataTable = (System.Data.DataTable) this.DataSource;
-            }
-            else if (this.DataSource is System.Data.DataView)
-            {
-                mDataTable = ((System.Data.DataView) this.DataSource).Table;
-            }
-            else // if this.DataSource is System.Data.DataSet then
+            if (this.DataSource == null)
             {
                 return;
             }
 
-            mNumDataSourceCols = mDataTable.Columns.Count;
+            DataTable mDataTable = ((DataView) this.DataSource).Table;
 
-            if (mNumDataSourceCols > 1)
+            if (mDataTable.Columns.Count > 1)
             {
                 return;
             }
 
-            mDataColumn = mDataTable.Columns[0];
-            mColName = mDataColumn.ColumnName;
-            mNewRow = mDataTable.NewRow();
+            DataColumn mDataColumn = mDataTable.Columns[0];
+            string mColName = mDataColumn.ColumnName;
+            DataRow mNewRow = mDataTable.NewRow();
             mNewRow[0] = ItemString;
             mDataTable.Rows.InsertAt(mNewRow, 0);
             this.BeginUpdate();
@@ -1005,152 +736,6 @@ namespace Ict.Common.Controls
             this.ValueMember = mColName;
             this.DataSource = mDataTable.DefaultView;
             this.EndUpdate();
-        }
-
-        /// <summary>
-        /// This function checks the existance of a column name within the datasource
-        /// specified.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private bool DoColumnNamesExistInDataSource()
-        {
-            if (DataSource == null)
-            {
-                return true;
-            }
-
-            System.Data.DataColumnCollection mComboboxItems = null;
-
-            // Get the Column collection of the datasource
-            if (this.DataSource is System.Data.DataTable)
-            {
-                mComboboxItems = ((System.Data.DataTable) this.DataSource).Columns;
-            }
-            else if (this.DataSource is System.Data.DataView)
-            {
-                mComboboxItems = ((System.Data.DataView) this.DataSource).Table.Columns;
-            }
-
-            // Replace the placeholders #VALUE# and #DISPLAY# with the real stuff.
-            System.Int32 mIndex = this.FColumnsToSearch.IndexOf(StrValueMember);
-
-            if (mIndex >= 0)
-            {
-                this.FColumnsToSearch[mIndex] = this.ValueMember;
-            }
-
-            mIndex = this.FColumnsToSearch.IndexOf(StrDisplayMember);
-
-            if (mIndex >= 0)
-            {
-                this.FColumnsToSearch[mIndex] = this.DisplayMember;
-            }
-
-            // If there is nothing to check then the result is FALSE anyway
-            if ((mComboboxItems == null) || (mComboboxItems.Count < 1))
-            {
-                return false;
-            }
-
-            System.Int32 mCountExistance = 0;
-
-            // Check whether the column names in this string collections are in the datasource
-            foreach (String mColumnName in this.FColumnsToSearch)
-            {
-                if (mComboboxItems.Contains(mColumnName))
-                {
-                    mCountExistance = mCountExistance + 1;
-                }
-            }
-
-            if (mCountExistance == this.FColumnsToSearch.Count)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// This function check the string collection of Columns to search against the
-        /// datasource given to the combobox.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private void CheckColumnStringCollection()
-        {
-            System.Collections.Specialized.StringCollection mStringCollection;
-            System.Collections.Specialized.StringCollection mColumnNamesCollection;
-            System.Data.DataColumnCollection mColumns;
-            System.Data.DataTable mDataTable;
-
-            // Initialization
-            mDataTable = new System.Data.DataTable();
-            mColumns = null;
-            CheckDataSourceType();
-
-            // Get the DataColumns of the DataSource
-            if (DataSource is System.Data.DataView)
-            {
-                mColumns = ((System.Data.DataView)DataSource).Table.Columns;
-            }
-            else if (DataSource is System.Data.DataTable)
-            {
-                mColumns = ((System.Data.DataTable)DataSource).Columns;
-            }
-
-            // If the FColumnsToString collection has not yet initialized it must be done now.
-            if ((this.FColumnsToSearch == null) || (this.FColumnsToSearch.Count < 1))
-            {
-                this.ColumnsToSearch = "";
-            }
-
-            mStringCollection = this.FColumnsToSearch;
-
-            // Put the Columnnames of the DataSource into a StringCollection
-            mColumnNamesCollection = new System.Collections.Specialized.StringCollection();
-
-            foreach (DataColumn mColumn in mColumns)
-            {
-                if (!(mColumnNamesCollection.Contains(mColumn.ColumnName)))
-                {
-                    mColumnNamesCollection.Add(mColumn.ColumnName);
-                }
-            }
-
-            mColumnNamesCollection.Add(StrValueMember);
-            mColumnNamesCollection.Add(StrDisplayMember);
-
-            // Remove fishy columns
-            foreach (string mString in mStringCollection)
-            {
-                if (!(mColumnNamesCollection.Contains(mString)))
-                {
-                    mStringCollection.Remove(mString);
-                }
-            }
-
-            this.FColumnsToSearch = mStringCollection;
-        }
-
-        /// <summary>
-        /// This procedure complains if the type of the DataSource property of this
-        /// ComboBox is not of the following:
-        /// - System.Data.DataTable
-        /// - System.Data.DataView
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        protected void CheckDataSourceType()
-        {
-            if (!(DesignMode))
-            {
-                if (!HasDataSourceCorrectDataType(DataSource))
-                {
-                    throw new ArgumentException(DEFAULT_COMPLAIN + DataSource.GetType().ToString());
-                }
-            }
         }
 
         /// <summary>
@@ -1198,45 +783,23 @@ namespace Ict.Common.Controls
         /// </returns>
         public int FindStringSortedByLength(string SearchString, int StartIndex)
         {
-            int ReturnValue;
-
-            System.Data.DataTable IndexTable;
-            System.Data.DataColumn IndexCol;
-            System.Data.DataRow IndexRow;
-            System.Data.DataView IndexView;
-            System.Int32 IndexValue;
-            String ItemString;
-            System.Int32 ItemIndex;
-            System.Int32 ItemLength;
-            System.Int32 ColumnIndex;
-            System.Data.DataRowView TmpRowView;
-            System.Type ItemType;
-            bool IsCorrectDataType;
-
-            // Set return value
-            ReturnValue = -1;
-
             if (DataSource == null)
             {
                 // TODO: proper implementation of FindStringSortedByLength for simple string lists
                 return FindString(SearchString);
             }
 
-            // Check whether the DataSource is of DataSet, DataTable, or DataView
-            IsCorrectDataType = this.HasDataSourceCorrectDataType(this.DataSource);
-
-            if (IsCorrectDataType == false)
+            // Check whether the DataSource is DataView
+            if (!(this.DataSource is DataView))
             {
                 return -1;
             }
 
-            DoColumnNamesExistInDataSource();
-
             // Create the IndexTable where the results are stored. The table consists out
             // of a column that holds the index and a column which holds the length of the
             // found string.
-            IndexTable = new System.Data.DataTable("IndexTable");
-            IndexCol = new System.Data.DataColumn("Index", typeof(System.Int32));
+            DataTable IndexTable = new System.Data.DataTable("IndexTable");
+            DataColumn IndexCol = new System.Data.DataColumn("Index", typeof(System.Int32));
             IndexTable.Columns.Add(IndexCol);
             IndexCol = new System.Data.DataColumn("Column", typeof(System.Int32));
             IndexTable.Columns.Add(IndexCol);
@@ -1257,27 +820,27 @@ namespace Ict.Common.Controls
             // Iterate through the items of the combobox.
             foreach (object ComboboxItem in this.Items)
             {
-                TmpRowView = (System.Data.DataRowView)ComboboxItem;
+                DataRowView TmpRowView = (System.Data.DataRowView)ComboboxItem;
 
                 // Iterate through the columns to search in the datasource
                 foreach (String ColumnName in this.FColumnsToSearch)
                 {
-                    ColumnIndex = this.GetColumnNr(ColumnName);
-                    ItemType = TmpRowView[ColumnIndex].GetType();
+                    Int32 ColumnIndex = this.GetColumnNr(ColumnName);
+                    Type ItemType = TmpRowView[ColumnIndex].GetType();
 
                     // todo: what about ledger numbers (Int32)?
                     if (ItemType == typeof(String))
                     {
-                        ItemString = TmpRowView[ColumnIndex].ToString();
+                        string ItemString = TmpRowView[ColumnIndex].ToString();
                         ItemString = ItemString.ToUpper();
                         SearchString = SearchString.ToUpper();
 
                         if (ItemString.StartsWith(SearchString))
                         {
                             // Store the result.
-                            ItemIndex = this.Items.IndexOf(ComboboxItem);
-                            ItemLength = ItemString.Length;
-                            IndexRow = IndexTable.NewRow();
+                            Int32 ItemIndex = this.Items.IndexOf(ComboboxItem);
+                            Int32 ItemLength = ItemString.Length;
+                            DataRow IndexRow = IndexTable.NewRow();
                             IndexRow["Index"] = (System.Object)ItemIndex;
                             IndexRow["Column"] = (System.Object)ColumnIndex;
                             IndexRow["Length"] = (System.Object)ItemLength;
@@ -1294,20 +857,18 @@ namespace Ict.Common.Controls
                 }
             }
 
-            // End of "for ComboboxItem in this.Items do"
             // Search for the shortest string in the IndexTable with the smallest indices.
-            IndexView = new System.Data.DataView(IndexTable);
+            DataView IndexView = new DataView(IndexTable);
 
             // IndexView.Sort := 'Column ASC';
             IndexView.Sort = "Content ASC, ColumnName ASC";
 
             if (IndexTable.Rows.Count > 0)
             {
-                IndexValue = System.Convert.ToInt32(IndexView[0]["Index"]);
-                ReturnValue = IndexValue;
+                return System.Convert.ToInt32(IndexView[0]["Index"]);
             }
 
-            return ReturnValue;
+            return -1;
         }
 
         /// <summary>
@@ -1364,7 +925,8 @@ namespace Ict.Common.Controls
 
                 for (System.Int32 ColumnIndex = 0; ColumnIndex <= TmpRowView.DataView.Table.Columns.Count - 1; ColumnIndex += 1)
                 {
-                    if (TmpRowView[ColumnIndex].GetType() == typeof(String))
+                    if (this.FColumnsToSearch.Contains(TmpRowView.DataView.Table.Columns[ColumnIndex].ColumnName)
+                        && (TmpRowView[ColumnIndex].GetType() == typeof(String)))
                     {
                         string ItemString = TmpRowView[ColumnIndex].ToString().ToUpper();
 
@@ -1386,8 +948,6 @@ namespace Ict.Common.Controls
 
             return BestMatch;
         }
-
-        // End of function
 
         /// <summary>
         /// This function searches the ObjectCollection of a given ComboBox for a
@@ -1473,38 +1033,13 @@ namespace Ict.Common.Controls
         /// </returns>
         private int GetNumberOfDataSourceCols()
         {
-            int ReturnValue;
-
-            System.Data.DataTable mDataTable;
-            ReturnValue = -1;
-
-            if (this.DataSource is System.Data.DataTable)
-            {
-                mDataTable = (System.Data.DataTable) this.DataSource;
-            }
-            else if (this.DataSource is System.Data.DataView)
-            {
-                mDataTable = ((System.Data.DataView)DataSource).Table;
-            }
-            else if (this.DataSource == null)
+            if (this.DataSource == null)
             {
                 // for simple string list
                 return 1;
             }
-            else
-            {
-                // if this.DataSource is System.Data.DataSet then
-                return -1;
-            }
 
-            try
-            {
-                ReturnValue = mDataTable.Columns.Count;
-            }
-            finally
-            {
-            }
-            return ReturnValue;
+            return ((DataView)DataSource).Table.Columns.Count;
         }
 
         /// <summary>
@@ -1517,7 +1052,7 @@ namespace Ict.Common.Controls
         {
             if (ColumnNumber == -1)
             {
-                ColumnNumber = GetColumnNrOfValueMember();
+                ColumnNumber = GetColumnNr(ValueMember);
             }
 
             if (ColumnNumber == -1)
@@ -1558,7 +1093,7 @@ namespace Ict.Common.Controls
         {
             if (ColumnNumber == -1)
             {
-                ColumnNumber = GetColumnNrOfValueMember();
+                ColumnNumber = GetColumnNr(ValueMember);
             }
 
             if ((this.SelectedItem != null) && (this.SelectedItem != System.DBNull.Value))
@@ -1604,7 +1139,7 @@ namespace Ict.Common.Controls
 
             if (ColumnNumber == -1)
             {
-                ColumnNumber = GetColumnNrOfValueMember();
+                ColumnNumber = GetColumnNr(ValueMember);
             }
 
             if ((this.SelectedItem != null) && (SelectedIndex != -1) && (this.SelectedItem != System.DBNull.Value))
@@ -1618,10 +1153,6 @@ namespace Ict.Common.Controls
                     ReturnValue = (string)this.Items[SelectedIndex];
                 }
             }
-            else
-            {
-                return this.Text;
-            }
 
             return ReturnValue;
         }
@@ -1633,6 +1164,31 @@ namespace Ict.Common.Controls
         public string GetSelectedString()
         {
             return GetSelectedString(-1);
+        }
+
+        /// <summary>
+        /// get the display string for the selected value
+        /// </summary>
+        public string GetSelectedDisplayString()
+        {
+            return GetSelectedString(GetColumnNr(DisplayMember));
+        }
+
+        /// <summary>
+        /// the column that is used for the description in the label
+        /// </summary>
+        public string DescriptionMember
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// get the description string for the selected value (for the label beside the combobox)
+        /// </summary>
+        public string GetSelectedDescription()
+        {
+            return GetSelectedString(GetColumnNr(DescriptionMember));
         }
 
         /// <summary>
@@ -1715,21 +1271,45 @@ namespace Ict.Common.Controls
         /// </returns>
         public bool SetSelectedString(String AStr)
         {
+            return SetSelectedString(AStr, 0);
+        }
+
+        /// <summary>
+        /// This function selects an item with the given string value.
+        /// Set index to ADefaultIndex if the string value is not existing
+        /// </summary>
+        /// <returns>false if the string value is not existing
+        /// </returns>
+        public bool SetSelectedString(String AStr, Int32 ADefaultIndex)
+        {
             Int32 PreviousSelectedIndex = SelectedIndex;
-            Int32 NewSelectedIndex = FindStringInComboBox(AStr);
+
+            // FindStringExact looks for the displayed value only
+            Int32 NewSelectedIndex = this.FindStringExact(AStr);
 
             if ((NewSelectedIndex == -1) && (Items.Count > 0))
             {
-                if (PreviousSelectedIndex != -1)
+                // now search the value members as well
+                NewSelectedIndex = FindStringInComboBox(AStr);
+            }
+
+            if ((NewSelectedIndex == -1) && (Items.Count > 0))
+            {
+                if ((PreviousSelectedIndex != -1) && (AStr.Length > 0))
                 {
                     SelectedIndex = PreviousSelectedIndex;
+                    return false;
                 }
                 else
                 {
-                    SelectedIndex = 0;
+                    // The following statement has to be called twice. For whatever reason if ADefaultIndex
+                    // is -1 then the first statement sets the SelectedIndex value to 0 and only the second
+                    // statement sets it to -1. Not sure why that is the case but just for your information.
+                    // THEREFORE: DON'T REMOVE SECOND STATEMENT FOR NOW!
+                    SelectedIndex = ADefaultIndex;
+                    SelectedIndex = ADefaultIndex;
+                    return true;
                 }
-
-                return false;
             }
 
             SelectedIndex = NewSelectedIndex;
@@ -1758,36 +1338,6 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This function checks whether the DataSource property of this combobox has
-        /// the correct data type. The following types are correct data types:
-        /// - System.Data.DataSet
-        /// - System.Data.DataTable
-        /// - System.Data.DataView
-        /// </summary>
-        /// <param name="ASource">DataSource to be checked.</param>
-        /// <returns>true if the data type of the DataSource property is one of the types above, false otherwise.
-        /// </returns>
-        private bool HasDataSourceCorrectDataType(System.Object ASource)
-        {
-            if (DesignMode)
-            {
-                return true;
-            }
-
-            if (ASource == null)
-            {
-                return true;
-            }
-
-            if (UNIT_SUPPORTED_DATA_TYPES.IndexOf(ASource.GetType().ToString()) >= 0)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// This procedure should prevent databinding from manipulating the original
         /// source.
         ///
@@ -1795,19 +1345,11 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void ProhibitChangeToDataSource()
         {
-            if ((DesignMode == false) || (this.DataSource == null))
+            if ((DesignMode == false) && (this.DataSource != null))
             {
-                if (this.DataSource is System.Data.DataTable)
-                {
-                    ((System.Data.DataTable)DataSource).RejectChanges();
-                }
-
-                if (this.DataSource is System.Data.DataView)
-                {
-                    ((System.Data.DataView) this.DataSource).AllowDelete = false;
-                    ((System.Data.DataView) this.DataSource).AllowEdit = false;
-                    ((System.Data.DataView) this.DataSource).AllowNew = false;
-                }
+                ((DataView) this.DataSource).AllowDelete = false;
+                ((DataView) this.DataSource).AllowEdit = false;
+                ((DataView) this.DataSource).AllowNew = false;
             }
         }
 
@@ -1820,93 +1362,29 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void RestoreOriginalItem()
         {
-            String mTestString;
+            string mTestString = this.UInitialString;
+            Int32 mSelectedIndex = this.SelectedIndex;
 
-            System.Int32 mFoundIndex;
-            System.Int32 mSelectedIndex;
-            mTestString = this.UInitialString;
-            mSelectedIndex = this.SelectedIndex;
-            TLogging.Log("RestoreOriginalItem:mSelectedIndex: " + mSelectedIndex.ToString());
-
-            // Get test for nil first and then set to '' (empty string) otherwise trim would
+            // Get test for null first and then set to '' (empty string) otherwise trim would
             // yield an exception.
             if ((mTestString == null) || (mSelectedIndex < 0))
             {
-                mTestString = "";
+                mTestString = string.Empty;
             }
 
             mTestString = mTestString.Trim();
-            TLogging.Log("RestoreOriginalItem:mTestString: " + mTestString);
 
-            if (mTestString == "")
+            if (mTestString == string.Empty)
             {
                 // It is only an empty string => ComboBox is not set to a certain item
-                TLogging.Log("It is only an empty string => ComboBox is not set to a certain item");
-                this.Text = "";
+                this.Text = string.Empty;
                 this.SelectedIndex = -1;
-                this.SelectedIndex = -1;
-                SetBoundValueToDBNull();
             }
             else
             {
                 // It is a valid string => The string must be in the items collection
-                TLogging.Log("It is a valid string => The string must be in the items collection");
-                this.Text = this.UInitialString;
-                mFoundIndex = this.FindStringExact(this.UInitialString);
-                this.SelectedIndex = mFoundIndex;
-            }
-        }
-
-        /// <summary>
-        /// This procedure sets the data bound value to DBNull. The procedure obtains
-        /// the databound field through the databinding.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private void SetBoundValueToDBNull()
-        {
-            System.Windows.Forms.ControlBindingsCollection mAllBindings;
-            String mBindingField;
-            String mBindingMember;
-            String mBindingPath;
-            System.Int32 mBindingPosition;
-            System.ComponentModel.MarshalByValueComponent mDataSource;
-            System.Data.DataTable mDataTable;
-            System.Data.DataView mDataView;
-            System.Data.DataColumn mDataColumn;
-            mAllBindings = this.DataBindings;
-            mDataTable = new System.Data.DataTable();
-
-            // Iterate through all bindings
-            foreach (System.Windows.Forms.Binding mSingleBinding in mAllBindings)
-            {
-                mDataSource = (System.ComponentModel.MarshalByValueComponent)mSingleBinding.DataSource;
-                mBindingField = mSingleBinding.BindingMemberInfo.BindingField;
-                mBindingMember = mSingleBinding.BindingMemberInfo.BindingMember;
-                mBindingPath = mSingleBinding.BindingMemberInfo.BindingPath;
-                mBindingPosition = mSingleBinding.BindingManagerBase.Position;
-
-                if (mDataSource is System.Data.DataTable)
-                {
-                    mDataTable = (System.Data.DataTable)mDataSource;
-                    mDataColumn = mDataTable.Columns[mBindingField];
-                    mDataColumn.AllowDBNull = true;
-
-                    // mDataTable.Rows.Item[mBindingPosition].Item[mBindingField] := System.DBNull.Value;
-                    mDataTable.Rows[mBindingPosition][mBindingMember] = System.DBNull.Value;
-                }
-                else if (mDataSource is System.Data.DataView)
-                {
-                    mDataView = (System.Data.DataView)mDataSource;
-                    mDataView.Table.Columns[mBindingField].AllowDBNull = true;
-
-                    // mDataView.Item[mBindingPosition].Item[mBindingField] := System.DBNull.Value;
-                    mDataView[mBindingPosition][mBindingMember] = System.DBNull.Value;
-                }
-                else
-                {
-                    MessageBox.Show("Not implemented yet!!!");
-                }
+                this.SelectedIndex = this.FindStringExact(this.UInitialString);
+                this.Text = this.SelectedIndex == -1 ? string.Empty : this.UInitialString;
             }
         }
     }

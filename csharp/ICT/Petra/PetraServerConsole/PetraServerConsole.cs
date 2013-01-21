@@ -37,7 +37,7 @@ namespace PetraServerConsole
 /// the DB, the Client itself has no connection to the DB at all.
 ///
 /// @Comment This application can run both on Windows and Linux.
-///          It uses only a rather small unit (PetraServerConsole.Main.pas) to start
+///          It uses only a rather small class (TServer in Main.cs) to start
 ///          the PetraServer as a Command line application. The 'big' rest of
 ///          the Server logic and the Petra Business Objects are located in
 ///          numeruous libraries (.dll's) that can be used by a Command line
@@ -46,23 +46,15 @@ namespace PetraServerConsole
 /// </summary>
 public class PetraServerConsole
 {
-    private static TServer TheServer;
-
-    private void Run()
-    {
-        TheServer = new TServer();
-        TheServer.Startup();
-    }
-
     /// <summary>
     /// main function
     /// </summary>
     /// <param name="args"></param>
     public static void Main(string[] args)
     {
-        PetraServerConsole myApp = new PetraServerConsole();
+        TServer TheServer = new TServer();
 
-        myApp.Run();
+        TheServer.Startup();
     }
 }
 }

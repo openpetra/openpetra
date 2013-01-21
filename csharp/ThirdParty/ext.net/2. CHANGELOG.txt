@@ -1,6 +1,131 @@
 ﻿**************************************************************************
+*                       Version 1.2.0 CHANGELOG                          *
+**************************************************************************
+
+Release Date     : 2011-09-12
+Current Version  : 1.2.0
+Previous Version : 1.1.0
+
+----
+
+1. [NEW] [#3701] Added .ItemID property to XControlConfig.cs
+
+2. [NEW] [#3696] Added .ItemID() Method to XControlBuilder.cs. 
+
+3. [NEW] [#3693] Add new DateTime Extension Methods. .ToISOString() .ToISODateString(), .ToISOTimeString()
+
+----
+
+1. [UPDATE] [#3697] Loading message of Panel are localized now. Dynamic control renders own container (it is not required)
+
+2. [UPDATE] [#3682] Deactivate viewstate for content container if no content
+
+3. [UPDATE] [#3680] Add DefaultValue attribute for StopIDModeInheritance property
+
+4. [UPDATE] [#3670] DateTime serialization with milliseconds. If RecordFieldType is Int and value is enum then serialized value will be int instead enum
+
+5. [UPDATE] [#3660] Extended http://examples.ext.net/#/GridPanel/Data_with_Details/Form_Details/ to demonstrate that DisplayField can be used with .DataIndex as well as other Fields. Now ID field is a DisplayField.
+
+6. [UPDATE] [#3657] Remove temp IE9 fixes from Examples Explorer
+
+----
+
+1.  [FIX] [#3704] GridPanel.UpdateCell doesn't generate ';' after the method calling
+
+2.  [FIX] [#3703] DirectMethod arguments must be read from Form collection first if POST type for request
+
+3.  [FIX] [#3699] TabStrip has 1px shifting after active tab changing under IE8/9 
+
+4.  [FIX] [#3698] Fix examples (replace 'el' by 'item')
+
+5.  [FIX] [#3694] DefaultScriptBuilder renders scripts are added before Render only after instance
+
+6.  [FIX] [#3692] MenuPanel renders invalid javascript if Menu has no items
+
+7.  [FIX] [#3691] MultiSelect reverse order of droppped items
+
+8.  [FIX] [#3690] LinkButton ignores NavigateUrl
+
+9.  [FIX] [#3689] Fixed History example
+
+10. [FIX] [#3688] History widget works incorrectly under IE9
+
+11. [FIX] [#3687] RowEditor: now Int RecordField can have empty value.
+
+12. [FIX] [#3685] MaxLength property of TextField breaks EditableGrid plugin
+
+13. [FIX] [#3684] GridPanel doesn't restore own state correctly (CookieProvider)
+
+14. [FIX] [#3683] It is not required to hide content container if PreventContent is true
+
+15. [FIX] [#3681] Combo should not trigger blur on mousewheel event
+
+16. [FIX] [#3677] PanelDesigner doesn't check click Region for null
+
+17. [FIX] [#3676] VS2010 designer crashing
+
+18. [FIX] [#3675] SelectBox now works fine with a space key
+
+19. [FIX] [#3674] Now FormGroup is aligned well under IE6
+
+20. [FIX] [#3673] CalendarPanel: fixed "wekk" typo in DayView.js
+
+21. [FIX] [#3668] ResourceHandler have to analyze Headers["If-Modified-Since"] for init script request
+
+22. [FIX] [#3665] PropertyGridParameter invalid value extraction if double quote is presented
+
+23. [FIX] [#3664] Component must destroy own Bin collection
+
+24. [FIX] [#3663] TriggerField has shifting for the trigger under Chrome
+
+25. [FIX] [#3662] Group value with ampersand breaks group command logic
+
+26. [FIX] [#3661] Store have to pass DataMember to GetView method of IDataSource
+
+27. [FIX] [#3659] Simple tasks example: now a ProgressBar has the correct message
+
+28. [FIX] [#3658] Column editor doesn't have reference to grideditor object
+
+29. [FIX] [#3655] RemoteValidation doesn't check client validation before request
+
+30. [FIX] [#3654] Calendar doesn't show event for last day of a month
+
+31. [FIX] [#3669] CacheFly link is updated to 3.4.0 version
+
+32. [FIX] [#3656] Window is not dragable under Chrome
+
+
+**************************************************************************
+*                       Version 1.1.0 CHANGELOG                          *
+**************************************************************************
+
+Release Date     : 2011-07-07
+Current Version  : 1.1.0
+Previous Version : 1.0.0
+
+1.  [UPDATE] [#3624] Update to ExtJS 3.4.0. Enhanced IE9 support.
+	http://dev.sencha.com/deploy/ext-3.4.0/release-notes.html
+
+2.  [FIX] [#3638] LinkButton .enable() and .disable() client-side functions 
+	were not working as expected. 
+
+3.  [FIX] [#3639] TreePanel .toggleChecked() client-side function had a 
+	defect and was fixed. 
+
+4.  [FIX] [#3640] ID confirmation for deleted records was defective. 
+    Now fixed. Related to Store.js. 
+
+5.  [FIX] [#3641] Client-side .isDirty() was always returning 'true' if 
+	CheckboxSelectionModel used. Defect has been fixed.
+
+
+**************************************************************************
 *                       Version 1.0.0 CHANGELOG                          *
 **************************************************************************
+
+Release Date     : 2011-06-24
+Current Version  : 1.0.0
+Previous Version : 1.0.0 RC2
 
 1.   Renamed Coolite.Ext.Web project to Ext.Net
 
@@ -23,7 +148,7 @@
 
 10.  Renamed Coolite.Ext.UX Namespace to Ext.Net.UX
 
-11.  Renamed root singleton "Ext" class to "X". 
+11.  Renamed server-side root singleton "Ext" class to "X". 
 
 	 Example (Old)
 	 
@@ -37,6 +162,9 @@
 	 if (!X.IsAjaxRequest) { }
 	 
 	 X.Msg.Alert("Title", "Message").Show();
+	 
+	 NOTE: The renaming to "X" only applies to the server-side instance. 
+	 The client-side JavaScript root class remains as "Ext". 
 
 12.  Added new feature to get server-side Property values from client id 
      Token strings.
@@ -386,4 +514,25 @@
 	
 77.  LowerCase of RendererFormat enum is renamed to Lowercase (to correct name serialization)
 
+78.  Renamed the ResourceManager property .RemoveViewState to .DisableViewState. 
+
+     Example (old)
+	 
+	 <ext:ResourceManager runat="server" RemoveViewState="true" />
+	 
+	 Example (new)
+	 
+	 <ext:ResourceManager runat="server" DisableViewState="true" />
+	 
+79.  In prior releases, the Store .Load Listener was previously delayed by
+     10 milliseconds. This delay was removed as of v1.0 RC2.
+
+	 Projects configured to use the .Load Listener may require setting a
+	 10 millisecond delay. 
+
+	 Example
+
+	 <Load Handler="..." Delay="10" />
+
+      
 --------------------------------------------------------------------------

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,8 @@ using System.IO;
 using System.Xml;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Printing;
+using System.Globalization;
 using Ict.Common.IO;
 
 namespace Ict.Common.Printing
@@ -56,18 +58,25 @@ namespace Ict.Common.Printing
         /// constructor
         /// </summary>
         /// <param name="AHtmlDocument"></param>
-        /// <param name="APath">is required for embedded images</param>
+        /// <param name="APath">Used for embedding images</param>
         /// <param name="APrinter"></param>
         public TPrinterHtml(string AHtmlDocument, string APath, TPrinter APrinter)
         {
             FPrinter = APrinter;
             FPath = APath;
 
-            AHtmlDocument = AHtmlDocument.Replace("<pagebreak/>", "</body><body>");
-            AHtmlDocument = AHtmlDocument.Replace("<pagebreak>", "</body><body>");
-            AHtmlDocument = RemoveElement(AHtmlDocument, "div", "class", "PageHeader", out FPageHeader);
+            if (AHtmlDocument != "")
+            {
+                AHtmlDocument = AHtmlDocument.Replace("<pagebreak/>", "</body><body>");
+                AHtmlDocument = AHtmlDocument.Replace("<pagebreak>", "</body><body>");
+                AHtmlDocument = RemoveElement(AHtmlDocument, "div", "class", "PageHeader", out FPageHeader);
 
-            FHtmlDoc = ParseHtml(AHtmlDocument);
+                FHtmlDoc = ParseHtml(AHtmlDocument);
+            }
+            else
+            {
+                FHtmlDoc = new XmlDocument();
+            }
         }
 
         /// <summary>
@@ -122,6 +131,91 @@ namespace Ict.Common.Printing
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// get the page size defined in the css styles of body
+        /// </summary>
+        /// <param name="APaperKind"></param>
+        /// <param name="AMargins"></param>
+        /// <param name="AWidthInPoint"></param>
+        /// <param name="AHeightInPoint"></param>
+        /// <returns></returns>
+        public override bool GetPageSize(out PaperKind APaperKind, out Margins AMargins, out float AWidthInPoint, out float AHeightInPoint)
+        {
+            bool Result = false;
+            XmlNode BodyNode = TXMLParser.FindNodeRecursive(FHtmlDoc.DocumentElement, "body");
+
+            APaperKind = PaperKind.A4;
+            AMargins = new Margins(20, 20, 20, 39);
+            AWidthInPoint = -1;
+            AHeightInPoint = -1;
+
+            if (TXMLParser.HasAttribute(BodyNode, "style"))
+            {
+                Dictionary <string, string>Styles = TFormLettersTools.GetStyles(BodyNode);
+
+                foreach (string StyleName in Styles.Keys)
+                {
+                    if (StyleName == "margin")
+                    {
+                        Result = true;
+
+                        // TODO support more than just 0px
+                        if (Styles[StyleName] == "0px")
+                        {
+                            AMargins = new Margins(0, 0, 0, 0);
+                        }
+                    }
+                    else if (StyleName == "size")
+                    {
+                        // http://www.w3.org/TR/css3-page/#page-size
+                        // currently support: either a name of PaperKind enum, or width and height in inches or cm
+                        // eg size: 8.5in 11in;
+                        // eg size: A4;
+                        Result = true;
+
+                        PaperKind FoundPaperKind = PaperKind.Custom;
+
+                        foreach (PaperKind MyPaperKind in Enum.GetValues(typeof(PaperKind)))
+                        {
+                            if (MyPaperKind.ToString() == Styles[StyleName])
+                            {
+                                FoundPaperKind = MyPaperKind;
+                                break;
+                            }
+                        }
+
+                        if (FoundPaperKind != PaperKind.Custom)
+                        {
+                            APaperKind = FoundPaperKind;
+                        }
+                        else
+                        {
+                            string[] dimensions = Styles[StyleName].Trim().Split(' ');
+
+                            if (dimensions.Length != 2)
+                            {
+                                TLogging.Log("body styles must contain 2 numbers for page size: " + Styles[StyleName]);
+                                TLogging.Log(Styles[StyleName]);
+                                return false;
+                            }
+
+                            dimensions[0] = dimensions[0].Trim().ToLower();
+                            dimensions[1] = dimensions[1].Trim().ToLower();
+
+                            CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+
+                            AWidthInPoint = ToPoint(dimensions[0], eResolution.eHorizontal);
+                            AHeightInPoint = ToPoint(dimensions[1], eResolution.eVertical);
+
+                            Catalog.SetCulture(OrigCulture);
+                        }
+                    }
+                }
+            }
+
+            return Result;
         }
 
         /// <summary>
@@ -207,27 +301,51 @@ namespace Ict.Common.Printing
 
                 if (TXMLParser.HasAttribute(BodyNode, "style"))
                 {
-                    string styles = TXMLParser.GetAttribute(BodyNode, "style");
-                    string[] namevaluepairs = styles.Split(',');
+                    Dictionary <string, string>Styles = TFormLettersTools.GetStyles(BodyNode);
 
-                    foreach (string namevaluepair in namevaluepairs)
+                    foreach (string StyleName in Styles.Keys)
                     {
-                        string[] detail = namevaluepair.Split(':');
-
-                        if (detail[0] == "margin-left")
+                        if (StyleName == "margin-left")
                         {
                             // TODO: PixelToInch? support not just 0px left margin
-                            if (detail[1] == "0px")
+                            if (Styles[StyleName] == "0px")
                             {
                                 pageLeftMargin = printer.LeftMargin;
                             }
                         }
-                        else if (detail[0] == "margin-right")
+                        else if (StyleName == "margin-right")
                         {
                             // TODO: PixelToInch? support not just 0px right margin
-                            if (detail[1] == "0px")
+                            if (Styles[StyleName] == "0px")
                             {
                                 pageRightMargin = printer.RightMargin;
+                            }
+                        }
+                        else if (StyleName == "margin")
+                        {
+                            // TODO: PixelToInch? support not just 0px
+                            if (Styles[StyleName] == "0px")
+                            {
+                                pageLeftMargin = printer.LeftMargin;
+                                pageRightMargin = printer.RightMargin;
+                            }
+                        }
+                        else if (StyleName == "background-image")
+                        {
+                            // only supporting url(...) at the moment
+                            if (Styles[StyleName].StartsWith("url(") && Styles[StyleName].EndsWith(")"))
+                            {
+                                if (FPath.Length == 0)
+                                {
+                                    FPath = Environment.CurrentDirectory;
+                                }
+
+                                string filename = System.IO.Path.Combine(FPath, Styles[StyleName].Substring(4, Styles[StyleName].Length - 5));
+                                float oldXPos = FPrinter.CurrentXPos;
+                                float oldYPos = FPrinter.CurrentYPos;
+                                FPrinter.DrawBitmap(filename, oldXPos, oldYPos);
+                                FPrinter.CurrentXPos = oldXPos;
+                                FPrinter.CurrentYPos = oldYPos;
                             }
                         }
                     }
@@ -342,7 +460,7 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// todoComment
+        /// special codes need to be converted from HTML to printable text
         /// </summary>
         /// <param name="sOrig"></param>
         /// <returns></returns>
@@ -365,8 +483,8 @@ namespace Ict.Common.Printing
             // replace special codes
             s = s.Replace("&amp;", "&");
             s = s.Replace("&nbsp;", "  ");
-            s = s.Replace("&gt;", "<");
-            s = s.Replace("&lt;", ">");
+            s = s.Replace("&gt;", ">");
+            s = s.Replace("&lt;", "<");
 
             // other special characters? e.g. &uuml; etc
             // solution: use UTF-8 in the text editor when editing the template
@@ -386,6 +504,203 @@ namespace Ict.Common.Printing
             return ((float)Convert.ToDouble(APixel) * 7.87f) / 800.0f;
         }
 
+        private float GetFloat(string AStyleValue)
+        {
+            CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+
+            AStyleValue = AStyleValue.Trim().ToLower();
+            float DoubleValue = 0.0f;
+
+            if (AStyleValue.EndsWith("cm") || AStyleValue.EndsWith("in") || AStyleValue.EndsWith("px"))
+            {
+                DoubleValue = (float)Convert.ToDouble(AStyleValue.Substring(0, AStyleValue.Length - 2).Trim());
+            }
+            else
+            {
+                DoubleValue = (float)Convert.ToDouble(AStyleValue);
+            }
+
+            Catalog.SetCulture(OrigCulture);
+
+            return DoubleValue;
+        }
+
+        /// <summary>
+        /// convert any given position measurement to points
+        /// </summary>
+        /// <param name="AStyleValue"></param>
+        /// <param name="AResolution"></param>
+        /// <returns></returns>
+        private float ToPoint(string AStyleValue, eResolution AResolution)
+        {
+            float FloatValue = GetFloat(AStyleValue);
+
+            if (AStyleValue.EndsWith("cm"))
+            {
+                return FloatValue / 2.54f * 72.0f;
+            }
+            else if (AStyleValue.EndsWith("in"))
+            {
+                return FloatValue * 72.0f;
+            }
+            else if (AStyleValue.EndsWith("px"))
+            {
+            }
+
+            // assume default unit to be pixel
+            if (AResolution == eResolution.eHorizontal)
+            {
+                return FPrinter.PixelHorizontal(FloatValue);
+            }
+
+            return FPrinter.PixelVertical(FloatValue);
+        }
+
+        /// <summary>
+        /// convert any given position measurement to inches
+        /// </summary>
+        /// <param name="AStyleValue"></param>
+        /// <param name="AResolution"></param>
+        /// <returns></returns>
+        private float ToInch(string AStyleValue, eResolution AResolution)
+        {
+            float FloatValue = GetFloat(AStyleValue);
+
+            if (AStyleValue.EndsWith("cm"))
+            {
+                return FloatValue / 2.54f;
+            }
+            else if (AStyleValue.EndsWith("in"))
+            {
+                return FloatValue;
+            }
+            else if (AStyleValue.EndsWith("px"))
+            {
+            }
+
+            // assume default unit to be pixel
+            if (AResolution == eResolution.eHorizontal)
+            {
+                return FPrinter.PixelHorizontal(FloatValue);
+            }
+
+            return FPrinter.PixelVertical(FloatValue);
+        }
+
+        /// <summary>
+        /// convert any given position measurement to pixel
+        /// </summary>
+        /// <param name="AStyleValue"></param>
+        /// <returns></returns>
+        private Int32 ToPixel(string AStyleValue)
+        {
+            float FloatValue = GetFloat(AStyleValue);
+
+            if (AStyleValue.EndsWith("px"))
+            {
+                return (Int32)Math.Round(FloatValue);
+            }
+            else if (AStyleValue.EndsWith("cm"))
+            {
+                return (Int32)Math.Round(((float)TGfxPrinter.DEFAULTPRINTERRESOLUTION * 2.54f) / FloatValue);
+            }
+            else if (AStyleValue.EndsWith("in"))
+            {
+                return (Int32)Math.Round(TGfxPrinter.DEFAULTPRINTERRESOLUTION / FloatValue);
+            }
+
+            return (Int32)Math.Round(FloatValue);
+        }
+
+        /// <summary>
+        /// set the current position if there is a CSS definition for the current node;
+        /// eg. position:absolute, top:35px, left:240px,
+        /// </summary>
+        /// <param name="curNode"></param>
+        /// <param name="AWidthAvailable"></param>
+        private bool SetPositionFromStyle(XmlNode curNode, ref float AWidthAvailable)
+        {
+            bool absolutePosition = false;
+            bool PositionWasSet = false;
+
+            if (TXMLParser.HasAttribute(curNode, "style"))
+            {
+                Dictionary <string, string>Styles = TFormLettersTools.GetStyles(curNode);
+
+                foreach (string StyleName in Styles.Keys)
+                {
+                    if ((StyleName.ToLower() == "position") && (Styles[StyleName].Trim().ToLower() == "absolute"))
+                    {
+                        absolutePosition = true;
+                    }
+                    else if ((StyleName.ToLower() == "position") && (Styles[StyleName].Trim().ToLower() == "relative"))
+                    {
+                        absolutePosition = false;
+                    }
+                    else if (StyleName.ToLower() == "top")
+                    {
+                        if (absolutePosition)
+                        {
+                            FPrinter.CurrentYPos = ToInch(Styles[StyleName], eResolution.eVertical);
+                        }
+                        else
+                        {
+                            FPrinter.CurrentYPos = FPrinter.AnchorYPos + ToInch(Styles[StyleName], eResolution.eVertical);
+                        }
+
+                        PositionWasSet = true;
+                    }
+                    else if (StyleName.ToLower() == "left")
+                    {
+                        if (absolutePosition)
+                        {
+                            FPrinter.CurrentXPos = ToInch(Styles[StyleName], eResolution.eHorizontal);
+                        }
+                        else
+                        {
+                            FPrinter.CurrentXPos = FPrinter.AnchorXPos + ToInch(Styles[StyleName], eResolution.eHorizontal);
+                        }
+
+                        PositionWasSet = true;
+                    }
+                    else if (StyleName.ToLower() == "width")
+                    {
+                        AWidthAvailable = ToInch(Styles[StyleName], eResolution.eHorizontal);
+                    }
+                    else if (StyleName.ToLower() == "transform")
+                    {
+                        // see also http://www.w3schools.com/cssref/css3_pr_transform.asp
+                        string transformValue = Styles[StyleName].Trim().ToLower();
+
+                        if (transformValue.StartsWith("rotate(") && transformValue.EndsWith("deg)"))
+                        {
+                            CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+                            Double DegreeValue =
+                                Convert.ToDouble(transformValue.Substring("rotate(".Length, transformValue.Length - "rotate(deg)".Length));
+                            Catalog.SetCulture(OrigCulture);
+
+                            FPrinter.RotateAtTransform(
+                                DegreeValue,
+                                FPrinter.CurrentXPos,
+                                FPrinter.CurrentYPos);
+                        }
+                        else
+                        {
+                            TLogging.Log("TPrinterHtml: unsupported transform style. we only support rotation at the moment");
+                        }
+                    }
+                }
+            }
+
+            if (absolutePosition)
+            {
+                FPrinter.AnchorXPos = FPrinter.CurrentXPos;
+                FPrinter.AnchorYPos = FPrinter.CurrentYPos;
+            }
+
+            return PositionWasSet;
+        }
+
         /// <summary>
         /// interpret HTML code
         /// </summary>
@@ -400,9 +715,21 @@ namespace Ict.Common.Printing
             float oldYPos = FPrinter.CurrentYPos;
 
             XmlNode origNode = curNode;
+            float OrigWidthAvailable = AWidthAvailable;
 
             while (curNode != null && FPrinter.ValidYPos() && FContinueNextPageNode == null)
             {
+                AWidthAvailable = OrigWidthAvailable;
+
+                FPrinter.SaveState();
+
+                bool HasPositionInfo = SetPositionFromStyle(curNode, ref AWidthAvailable);
+
+                if (HasPositionInfo)
+                {
+                    AXPos = FPrinter.CurrentXPos;
+                }
+
                 if (curNode.Name == "table")
                 {
                     PrintTable(AXPos, AWidthAvailable, ref curNode);
@@ -445,7 +772,7 @@ namespace Ict.Common.Printing
                         }
                         else
                         {
-                            Width = (float)Convert.ToDouble(WidthString);
+                            Width = ToPixel(WidthString);
                         }
 
                         if (HeightString.EndsWith("%"))
@@ -454,7 +781,7 @@ namespace Ict.Common.Printing
                         }
                         else
                         {
-                            Height = (float)Convert.ToDouble(HeightString);
+                            Height = ToPixel(HeightString);
                         }
 
                         FPrinter.DrawBitmap(src, FPrinter.CurrentXPos, FPrinter.CurrentYPos, Width, Height, WidthPercentage, HeightPercentage);
@@ -469,11 +796,28 @@ namespace Ict.Common.Printing
                 else if (curNode.Name == "font")
                 {
                     // TODO change font name and/or size
-                    Int32 previousFontSize = FPrinter.CurrentRelativeFontSize;
+                    float previousFontSize = FPrinter.CurrentRelativeFontSize;
+                    eFont previousFont = FPrinter.CurrentFont;
 
                     if (TXMLParser.HasAttribute(curNode, "size"))
                     {
-                        FPrinter.CurrentRelativeFontSize += TXMLParser.GetIntAttribute(curNode, "size");
+                        CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+
+                        FPrinter.CurrentRelativeFontSize += (float)TXMLParser.GetDecimalAttribute(curNode, "size");
+
+                        Catalog.SetCulture(OrigCulture);
+                    }
+
+                    if (TXMLParser.HasAttribute(curNode, "face"))
+                    {
+                        foreach (eFont MyFont in Enum.GetValues(typeof(eFont)))
+                        {
+                            if (MyFont.ToString() == TXMLParser.GetAttribute(curNode, "face"))
+                            {
+                                FPrinter.CurrentFont = MyFont;
+                                break;
+                            }
+                        }
                     }
 
                     // recursively call RenderContent
@@ -493,6 +837,8 @@ namespace Ict.Common.Printing
 
                     // reset font
                     FPrinter.CurrentRelativeFontSize = previousFontSize;
+                    FPrinter.CurrentFont = previousFont;
+
                     curNode = curNode.NextSibling;
                 }
                 else if (curNode.Name == "b")
@@ -545,7 +891,11 @@ namespace Ict.Common.Printing
                 }
                 else if (curNode.Name == "ul")
                 {
-                    FPrinter.LineFeed();
+                    if (!HasPositionInfo)
+                    {
+                        FPrinter.LineFeed();
+                    }
+
                     FPrinter.CurrentXPos = AXPos;
 
                     // list with bullet points
@@ -604,7 +954,12 @@ namespace Ict.Common.Printing
                     }
 
                     XmlNode child = curNode.FirstChild;
-                    FPrinter.LineFeed();
+
+                    if (!HasPositionInfo)
+                    {
+                        FPrinter.LineFeed();
+                    }
+
                     FPrinter.CurrentXPos = AXPos;
                     RenderContent(AXPos, AWidthAvailable, ref child);
 
@@ -629,7 +984,7 @@ namespace Ict.Common.Printing
                     // heading
                     eFont previousFont = FPrinter.CurrentFont;
                     FPrinter.CurrentFont = eFont.eHeadingFont;
-                    Int32 previousFontSize = FPrinter.CurrentRelativeFontSize;
+                    float previousFontSize = FPrinter.CurrentRelativeFontSize;
 
                     if (curNode.Name[1] == '1')
                     {
@@ -679,6 +1034,14 @@ namespace Ict.Common.Printing
                     curNode = curNode.NextSibling;
                 }
 
+                if (HasPositionInfo)
+                {
+                    // reset to top of paper, so that there is no unintended page break
+                    FPrinter.CurrentYPos = 0;
+                }
+
+                FPrinter.RestoreState();
+
                 // todo: h1, etc headings???
                 // todo: code, fixed width font (for currency amounts?) ???
                 // todo: don't print to paper if class="preprinted"; but is printed for PDF
@@ -687,7 +1050,7 @@ namespace Ict.Common.Printing
                 // todo: header div style with tray information; config file with local tray names???
             }
 
-            if ((origNode == curNode) && (curNode != null) && FPrinter.ValidYPos())
+            if ((origNode == curNode) && (curNode != null) && FPrinter.ValidYPos() && (FRowsLeftOver == null))
             {
                 throw new Exception("page too small, at " + curNode.Name);
             }
@@ -713,11 +1076,34 @@ namespace Ict.Common.Printing
             FPrinter.CurrentXPos = AXPos;
 
             int border = 0;
+            string outsideborders = "none";
+            string insidelines = "none";
             int height = -1;
 
+            // http://www.htmlcodetutorial.com/tables/index_famsupp_189.html
+            // and http://www.htmlcodetutorial.com/tables/index_famsupp_147.html
             if (TXMLParser.HasAttribute(tableNode, "border"))
             {
                 border = Convert.ToInt32(TXMLParser.GetAttribute(tableNode, "border"));
+
+                if (border != 0)
+                {
+                    outsideborders = "box";
+                    insidelines = "all";
+                }
+            }
+
+            if (TXMLParser.HasAttribute(tableNode, "rules"))
+            {
+                // rules can be all, rows, cols
+                insidelines = TXMLParser.GetAttribute(tableNode, "rules").ToLower();
+                outsideborders = "box";
+            }
+
+            if (TXMLParser.HasAttribute(tableNode, "frame"))
+            {
+                // frame can be box, or hsides, or vsides, or none
+                outsideborders = TXMLParser.GetAttribute(tableNode, "frame").ToLower();
             }
 
             if (TXMLParser.HasAttribute(tableNode, "width"))
@@ -769,7 +1155,7 @@ namespace Ict.Common.Printing
                     {
                         if (TXMLParser.HasAttribute(colNode, "width"))
                         {
-                            Int32 width = Convert.ToInt32(TXMLParser.GetAttribute(colNode, "width"));
+                            Int32 width = ToPixel(TXMLParser.GetAttribute(colNode, "width"));
                             colWidth.Add(width);
                             TableWidth += width;
                         }
@@ -785,7 +1171,6 @@ namespace Ict.Common.Printing
                     // calculate percentages
                     for (Int32 counter = 0; counter < colWidth.Count; counter++)
                     {
-                        int test = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
                         colWidth[counter] = Convert.ToInt32((colWidth[counter] * 100.0f / TableWidth));
                     }
 
@@ -797,10 +1182,12 @@ namespace Ict.Common.Printing
                     curNode = curNode.NextSibling;
                 }
 
-                if (curNode.Name == "tbody")
+                if ((curNode != null) && (curNode.Name == "tbody"))
                 {
                     curNode = curNode.FirstChild;
                 }
+
+                bool firstRow = true;
 
                 while (curNode != null && curNode.Name == "tr")
                 {
@@ -809,10 +1196,57 @@ namespace Ict.Common.Printing
                     XmlNode row = curNode;
                     XmlNode cell = curNode.FirstChild;
 
+                    bool lastRow = (curNode.NextSibling == null) || (curNode.NextSibling.Name != "tr");
+
+                    bool firstColumn = true;
+
                     while (cell != null && (cell.Name == "td" || cell.Name == "th"))
                     {
                         TTableCellGfx preparedCell = new TTableCellGfx();
                         preparedCell.borderWidth = border;
+                        preparedCell.borderBitField = 0;
+
+                        bool lastColumn = (cell.NextSibling == null) || (cell.NextSibling.Name != "td" && cell.NextSibling.Name != "th");
+
+                        if (border > 0)
+                        {
+                            if (firstRow && ((outsideborders == "box") || (outsideborders == "hsides")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.TOP;
+                            }
+                            else if (!firstRow && ((insidelines == "all") || (insidelines == "rows")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.TOP;
+                            }
+
+                            if (lastRow && ((outsideborders == "box") || (outsideborders == "hsides")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.BOTTOM;
+                            }
+                            else if (!lastRow && ((insidelines == "all") || (insidelines == "rows")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.BOTTOM;
+                            }
+
+                            if (firstColumn && ((outsideborders == "box") || (outsideborders == "vsides")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.LEFT;
+                            }
+                            else if (!firstColumn && ((insidelines == "all") || (insidelines == "cols")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.LEFT;
+                            }
+
+                            if (lastColumn && ((outsideborders == "box") || (outsideborders == "vsides")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.RIGHT;
+                            }
+                            else if (!lastColumn && ((insidelines == "all") || (insidelines == "cols")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.RIGHT;
+                            }
+                        }
+
                         preparedCell.content = cell.FirstChild;
 
                         if (TXMLParser.HasAttribute(cell, "colspan"))
@@ -851,6 +1285,7 @@ namespace Ict.Common.Printing
                         }
 
                         cell = cell.NextSibling;
+                        firstColumn = false;
                     }
 
                     // make sure the percentages are right;
@@ -898,6 +1333,7 @@ namespace Ict.Common.Printing
 
                     preparedRows.Add(preparedRow);
                     curNode = row.NextSibling;
+                    firstRow = false;
                 }
             }
 
@@ -1045,7 +1481,7 @@ namespace Ict.Common.Printing
                 child.ParentNode.RemoveChild(child);
             }
 
-            return htmlDoc.OuterXml.Replace("&amp;", "&");
+            return htmlDoc.OuterXml.Replace("&amp;", "&").Replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", string.Empty);
         }
     }
 }

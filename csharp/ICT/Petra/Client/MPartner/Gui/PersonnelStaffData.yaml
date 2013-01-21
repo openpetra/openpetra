@@ -1,0 +1,66 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraEditForm.yaml
+    FormTitle: Enter Staff Data
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DetailTable: PmStaffData
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.PersonnelTDS
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: edit
+    Template: windowEdit
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+    Controls:
+        pnlContent:
+            Controls: [pnlInfo,pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Height: 200
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew:
+            Action: actNew
+        btnDelete:
+            Action: actDelete
+        pnlInfo:
+            Dock: Top
+            Controls:
+                Row0: [txtDetailPartnerKey, txtName]
+                Row1: [txtPartnerStatusCode,txtLanguageCode]    
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailPartnerKey, DetailStartOfCommitment, DetailEndOfCommitment,DetailReceivingField]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailReceivingField]
+                Row1: [dtpDetailStartOfCommitment]
+                Row2: [dtpDetailEndOfCommitment]
+                Row3: [cmbDetailStatusCode]
+                Row4: [txtDetailHomeOffice]
+                Row5: [txtDetailOfficeRecruitedBy]
+                Row6: [txtDetailStaffDataComments]
+                Row7: [txtDetailJobTitle]
+               
+        dtpDetailStartOfCommitment: {Label=&Start of Commitment, Validation=true}
+        dtpDetailEndOfCommitment: {Label=&End of Commitment, Validation=Pair(dtpDetailStartOfCommitment)}
+        txtDetailPartnerKey: {Label=Partner Key, ReadOnly=true}
+        txtName: {Label=Name, ReadOnly=true}
+        txtPartnerStatusCode: {Label=Status, ReadOnly=true}
+        txtLanguageCode: {Label=Language Code, ReadOnly=true}
+        cmbDetailStatusCode: {Label=Status,  List=UserDefinedList, Width=400, Validation=true}
+        txtDetailOfficeRecruitedBy: {Label=Recruiting Office, Type=PartnerKey, PartnerClass=UNIT, Validation=true}
+        txtDetailHomeOffice: {Label=Home Office, Type=PartnerKey, PartnerClass=UNIT, Validation=true}
+        txtDetailReceivingField: {Label=Receiving Field, Type=PartnerKey, PartnerClass=UNIT, Validation=true}
+        txtDetailStaffDataComments: {Label=Comments, Multiline=true, ScrollBars=Vertical, Height=100, Width=500}
+        txtDetailJobTitle: {Label=Job Title, Width=500}
+    Toolbar:
+        tbbNew:
+            Label: New Commitment
+

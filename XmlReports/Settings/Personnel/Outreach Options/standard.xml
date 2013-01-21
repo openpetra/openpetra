@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\outreachoptions.xml" />
+  <Parameter id="currentReport" value="eString:Outreach Options" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:6" />
+  <Parameter id="param_txtYear" value="eString:" />
+  <Parameter id="param_txtOutreachCode" value="eString:" />
+  <Parameter id="orderby0" value="eString:Outreach Code" />
+  <Parameter id="orderby1" value="eString:Unit Name" />
+  <Parameter id="orderby2" value="eString:Start Date" />
+  <Parameter id="param_sortby_readable" value="eString:Outreach Code, Unit Name, Start Date" />
+  <Parameter id="param_sortby_columns" value="eString:0,1,2" />
+  <Parameter id="param_calculation" column="0" value="eString:Unit Key" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:3" />
+  <Parameter id="param_calculation" column="1" value="eString:Unit Name" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:5" />
+  <Parameter id="param_calculation" column="2" value="eString:Unit Code" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_calculation" column="3" value="eString:Outreach Code" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
+  <Parameter id="param_calculation" column="4" value="eString:Start Date" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
+  <Parameter id="param_calculation" column="5" value="eString:End Date" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+</Parameters>

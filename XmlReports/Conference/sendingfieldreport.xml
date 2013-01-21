@@ -39,7 +39,7 @@
       <field whichfield="period2">
         <fielddetail>
           <switch><case condition="eq({param_conferenceselection}, one conference)">
-              <value text="Selected Campaign Options: "></value>
+              <value text="Selected Outreach Options: "></value>
               <value variable="param_conferenceoptionscode"></value>
           </case></switch>
         </fielddetail>
@@ -110,7 +110,7 @@
 					
 					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
 							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_xyz_tbd_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+							AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
 					</value></queryDetail>
 					
 					<queryDetail condition="eq({param_chkAcceptedApplications}, true))"><value>
@@ -171,7 +171,7 @@
 							PUB_pm_short_term_application.pt_travel_type_from_cong_code_c AS DepartureTravelType,
 							PUB_pm_short_term_application.pm_arrival_transport_needed_l,
 							PUB_pm_short_term_application.pm_departure_transport_needed_l,
-							PUB_pm_short_term_application.pm_confirmed_option_code_c AS CampaignCode,
+							PUB_pm_short_term_application.pm_confirmed_option_code_c AS OutreachCode,
 							PUB_pm_short_term_application.pm_st_congress_code_c AS ConferenceRole,
 							PUB_pm_short_term_application.pm_st_fg_code_c AS FellowshipGroup,
 							PUB_pm_short_term_application.pm_st_fg_leader_l,
@@ -180,7 +180,7 @@
 							PUB_pm_general_application.pm_application_key_i AS ApplicationKey,
 							PUB_pm_general_application.pm_registration_office_n AS RegistrationOffice,
 					
-							PUB_pc_attendee.pc_xyz_tbd_type_c AS CampaignType,
+							PUB_pc_attendee.pc_outreach_type_c AS OutreachType,
 							PUB_pc_attendee.pc_discovery_group_c AS DiscoveryGroup,
 							PUB_pc_attendee.pc_work_group_c AS WorkGroup,
 							PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup,
@@ -232,7 +232,7 @@
 					
 					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
 							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_xyz_tbd_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+							AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
 					</value></queryDetail>
 					
 					<queryDetail condition="eq({param_chkAcceptedApplications}, true))"><value>
@@ -370,7 +370,7 @@
 						<value function="assign(GroupLeader, No)" condition="not({pm_st_fg_leader_l})"/>
 						<value function="assign(MissingInformation, GetMissingInfo({AttendeeKey}, {ApplicationKey}, {RegistrationOffice}))"/>
 						<value function="assign(DriverStatus, GetDriverStatus({AttendeeKey}))"/>
-						<value function="CalculateOneAttendeeFieldCost({Age}, {AttendeeKey}, {ApplicationKey}, {RegistrationOffice}, {HomeOffice}, {CampaignType}, {RegistrationDate} )"/>
+						<value function="CalculateOneAttendeeFieldCost({Age}, {AttendeeKey}, {ApplicationKey}, {RegistrationOffice}, {HomeOffice}, {OutreachType}, {RegistrationDate} )"/>
 					</queryDetail>
 				</query>
 			</calculation>

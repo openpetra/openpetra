@@ -7,7 +7,7 @@ RootNode:
     Template: windowFind
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     MasterTable: PPartnerContact
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.Interfaces]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.Interfaces.MPartner,Ict.Petra.Shared.MPartner.Mailroom.Validation]
     Actions:
         actSearch: {ActionClick=Search}
         actDeleteContacts: {ActionClick=DeleteContacts}
@@ -16,6 +16,7 @@ RootNode:
             Dock: Fill
             Controls: [pnlParameters, grdDetails]
         pnlParameters:
+            Dock: Top
             Controls:
                 Row0: [dtpContactDate]
                 Row1: [txtContactor]

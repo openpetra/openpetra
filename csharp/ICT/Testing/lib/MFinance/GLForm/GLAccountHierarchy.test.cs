@@ -42,8 +42,11 @@ using NUnit.Framework.Constraints;
 
 namespace Tests.MFinance.GLBatches
 {
+    /// <summary>
+    /// ...
+    /// </summary>
     [TestFixture]
-    public class GLAccountHierarchy_test : CommonNUnitFunctions
+    public class GLAccountHierarchy_test : CommonNUnitFormFunctions
     {
         // Each account is defined by its LedgerNumber ...
         // Actually the value is read by the TAppSettingsManager
@@ -124,7 +127,8 @@ namespace Tests.MFinance.GLBatches
                 0, 2
             };
             hierarchyTester.trvAccounts.SelectNode(nodeList1);
-            TreeNode node = hierarchyTester.trvAccounts.Properties.SelectedNode;
+
+            //TreeNode node = hierarchyTester.trvAccounts.Properties.SelectedNode;
 
             Boolean blnSaveBtn = hierarchyTester.tbbSave.Properties.Enabled;
             Assert.AreEqual(blnSaveBtn, false, "Save button shall be not enabled!");
@@ -189,6 +193,9 @@ namespace Tests.MFinance.GLBatches
             }
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void T03_CreateANewAccount()
         {
@@ -223,7 +230,7 @@ namespace Tests.MFinance.GLBatches
             // Create a third Account ...
             hierarchyTester.trvAccounts.SelectNode(nodeList1);
             hierarchyTester.tbbAddNewAccount.Click();
-            String strName3 = hierarchyTester.txtDetailAccountCode.Properties.Text;
+            // String strName3 = hierarchyTester.txtDetailAccountCode.Properties.Text;
             hierarchyTester.txtDetailEngAccountCodeLongDesc.Properties.Text = "z";
             // use an invalid name
             hierarchyTester.txtDetailAccountCode.Properties.Text = strName1;
@@ -234,12 +241,15 @@ namespace Tests.MFinance.GLBatches
             // Create a fourth Account ...
             hierarchyTester.trvAccounts.SelectNode(nodeList1);
             hierarchyTester.tbbAddNewAccount.Click();
-            String strName4 = hierarchyTester.txtDetailAccountCode.Properties.Text;
+            // String strName4 = hierarchyTester.txtDetailAccountCode.Properties.Text;
             hierarchyTester.txtDetailEngAccountCodeLongDesc.Properties.Text = "zz";
             // use an invalid name
             hierarchyTester.txtDetailAccountCode.Properties.Text = strName1;
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void T04_CreateNewAccountAndChangeTreeViewSelection()
         {
@@ -257,7 +267,7 @@ namespace Tests.MFinance.GLBatches
 
             // Create a first Account ...
             hierarchyTester.tbbAddNewAccount.Click();
-            String strName1 = hierarchyTester.txtDetailAccountCode.Properties.Text;
+            // String strName1 = hierarchyTester.txtDetailAccountCode.Properties.Text;
             // Invalid Name resp. the name "BAL SHT" exists in the test db ...
             hierarchyTester.txtDetailAccountCode.Properties.Text = "BAL SHT";
 
@@ -276,6 +286,9 @@ namespace Tests.MFinance.GLBatches
             hierarchyTester.mniClose.Click();
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void T05_CreateBankAccount()
         {
@@ -329,14 +342,20 @@ namespace Tests.MFinance.GLBatches
             hierarchyTester.mainForm.Close();
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [TestFixtureSetUp]
         public void Init()
         {
             new TLogging("PetraClient.log");
             TPetraConnector.Connect("../../../../../etc/TestClient.config");
-            fLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValueStatic("LedgerNumber"));
+            fLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValue("LedgerNumber"));
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [TestFixtureTearDown]
         public void Dispose()
         {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -139,13 +139,6 @@ namespace Ict.Petra.Client.MReporting.Logic
             FResults = FResultList.GetResults();
             FLowestLevel = FParameters.Get("lowestLevel").ToInt();
             FTimePrinted = DateTime.Now;
-#if DEBUGMODE
-            if (System.Reflection.Assembly.GetAssembly(typeof(TReportPrinterCommon)).GetName().Version == new Version(0, 0, 9, 0))
-            {
-                // to be able to compare the text output
-                FTimePrinted = new DateTime(1978, 11, 27, 1, 23, 45);
-            }
-#endif
             FPrinter = APrinter;
         }
 

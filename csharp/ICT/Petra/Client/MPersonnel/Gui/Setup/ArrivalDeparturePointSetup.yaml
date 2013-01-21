@@ -1,0 +1,46 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Arrival Departure Points
+    Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
+    DetailTable: PtArrivalPoint
+    CacheableTable: ArrivalDeparturePointList
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 800
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailCode, DetailDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            CustomColumns:
+                DetailCode: {Label=Point Code}
+                DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
+                DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailCode, txtDetailDescription]
+                Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row2: [chkDetailDeletableFlag]
+        txtDetailCode: {Label=Point Code, CharacterCasing=Upper, Width=160}
+        txtDetailDescription: {Label=Description, Width=330}
+        chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
+        chkDetailDeletableFlag: {Label=Deletable}
+    Toolbar:
+        tbbNew:
+            Label: New Arrival Departure Point

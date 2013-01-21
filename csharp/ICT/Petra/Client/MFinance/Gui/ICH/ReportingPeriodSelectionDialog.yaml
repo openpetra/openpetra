@@ -1,0 +1,16 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Select Period for the Report
+    Namespace: Ict.Petra.Client.MFinance.Gui.ICH
+    FormType: dialog
+    Template: window
+    
+    Controls:
+        pnlDialogContent:
+            Controls:
+                Row0: [cmbReportPeriod]
+                Row1: [chkEmailReport]
+                
+        cmbReportPeriod: {Width=100, List=UserDefinedList}
+            
+        chkEmailReport:

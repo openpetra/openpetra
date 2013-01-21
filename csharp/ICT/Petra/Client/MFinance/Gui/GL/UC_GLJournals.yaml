@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     DetailTable: AJournal
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Account.Validation, Ict.Petra.Shared.MFinance.GL.Data]
     FormType: edit
     Template: controlMaintainTable
     Actions:
@@ -25,22 +25,23 @@ RootNode:
         txtCurrentPeriod: {ReadOnly=true, Label=Current Period, Align=right, Unbound=true}
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
-        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true, Format=Currency}
-        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true, Format=Currency}
-        txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Currency}
+        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true, Format=Decimal, Width=150}
+        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true, Format=Decimal, Width=150}
+        txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Decimal, Width=147}
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
             Controls: [btnAdd, btnCancel]
-        btnAdd: {Action=actNew}
-        btnCancel: {Action=actCancel}
+        btnAdd: {Action=actNew, Stretch=horizontally}
+        btnCancel: {Action=actCancel, Stretch=horizontally}
         grdDetails:
             Dock: Fill
             Columns: [AJournal.JournalNumber, AJournal.JournalStatus, AJournal.JournalDebitTotal, AJournal.JournalCreditTotal, AJournal.TransactionCurrency, AJournal.JournalDescription, AJournal.SubSystemCode, AJournal.TransactionTypeCode]
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
+            ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: AJournal.JournalNumber ASC
             RowFilter: AJournal.BatchNumber
         pnlDetails:
@@ -59,5 +60,5 @@ RootNode:
         cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList}
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
-        txtDetailExchangeRateToBase: {Label= Exchange Rate to Base}
+        txtDetailExchangeRateToBase: {Label= Exchange Rate to Base, Validation=true}
         btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}

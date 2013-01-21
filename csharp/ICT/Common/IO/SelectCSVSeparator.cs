@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,6 +36,11 @@ namespace Ict.Common.IO
     /// </summary>
     public partial class TDlgSelectCSVSeparator : Form
     {
+        /// <summary>american number format: decimal point, comma for thousands separator</summary>
+        public static string NUMBERFORMAT_AMERICAN = "American";
+        /// <summary>european number format: decimal comma, point for thousands separator</summary>
+        public static string NUMBERFORMAT_EUROPEAN = "European";
+
         private string FSeparator;
         private bool FFileHasCaption;
         private List <String>FCSVRows = null;
@@ -90,24 +95,22 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// read the number format that the user has selected
+        /// returns a string constant for the selected number format
         /// </summary>
-        public int NumberFormatIndex
+        public String NumberFormat
         {
-            get
-            {
-                return cmbNumberFormat.SelectedIndex;
-            }
             set
             {
-                cmbNumberFormat.SelectedIndex = value;
+                cmbNumberFormat.SelectedIndex = (value == NUMBERFORMAT_AMERICAN ? 0 : 1);
+            }
+            get
+            {
+                return cmbNumberFormat.SelectedIndex == 0 ? NUMBERFORMAT_AMERICAN : NUMBERFORMAT_EUROPEAN;
             }
         }
 
-
         /// <summary>
         /// constructor
-        /// TODO: also select date format?
         /// TODO: select if first row contains captions? or use a parameter to avoid or request captions?
         /// </summary>
         public TDlgSelectCSVSeparator(bool AFileHasCaption)
@@ -123,16 +126,16 @@ namespace Ict.Common.IO
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.rbtComma.Text = Catalog.GetString("Comma");
             this.rbtTabulator.Text = Catalog.GetString("Tabulator");
-            this.rbtOther.Text = Catalog.GetString("Other Separator:");
+            this.rbtOther.Text = Catalog.GetString("Other Separator") + ":";
             this.rbtSemicolon.Text = Catalog.GetString("Semicolon");
             this.btnCancel.Text = Catalog.GetString("Cancel");
             this.btnOK.Text = Catalog.GetString("OK");
-            this.lblDateFormat.Text = Catalog.GetString("Date format:");
-            this.lblNumberFormat.Text = Catalog.GetString("Number format:");
+            this.lblDateFormat.Text = Catalog.GetString("Date format") + ":";
+            this.lblNumberFormat.Text = Catalog.GetString("Number format") + ":";
             this.Text = Catalog.GetString("Select CSV Separator");
             #endregion
 
-            FSeparator = TAppSettingsManager.GetValueStatic("CSVSeparator",
+            FSeparator = TAppSettingsManager.GetValue("CSVSeparator",
                 System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
             System.Globalization.CultureInfo myCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             String regionalDateString = myCulture.DateTimeFormat.ShortDatePattern;
@@ -141,6 +144,10 @@ namespace Ict.Common.IO
             {
                 cmbDateFormat.Items.Insert(0, regionalDateString);
             }
+
+            cmbDateFormat.SelectedIndex = cmbDateFormat.Items.IndexOf(regionalDateString);
+
+            cmbNumberFormat.SelectedIndex = cmbNumberFormat.Items.IndexOf(myCulture.NumberFormat.NumberDecimalSeparator);
 
             UpdateRadioButtons();
         }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
 using Ict.Common;
@@ -120,39 +121,54 @@ namespace Ict.Common
             return ReturnValue;
         }
 
+        private static void StrMergeHelper(ref StringBuilder builder, string element, char delim)
+        {
+            if (element.Contains("\\"))
+            {
+                element = element.Replace("\\", "\\\\");
+            }
+
+            // if the element already contains the delimiter, do something about it.
+            // strsplit and getNextCSV have to revert it
+            if (element.IndexOf(delim) != -1)
+            {
+                if (delim == '\t')
+                {
+                    builder.Append(element.Replace("\t", "\\t"));
+                }
+                else
+                {
+                    // replace a double quote with two double quotes inside the element
+                    builder.Append("\"").Append(element.Replace("\"", "\"\"")).Append("\"");
+                }
+            }
+            else
+            {
+                builder.Append(element);
+            }
+        }
+
         /// <summary>
         /// concatenate a string using the given delimiter
         /// </summary>
         /// <param name="l">the StringCollection containing the strings that should be concatenated</param>
         /// <param name="delim">the delimiter to be used between the strings</param>
         /// <returns>a string with the concatenated strings from the StringCollection</returns>
-        public static string StrMerge(StringCollection l, string delim)
+        public static string StrMerge(StringCollection l, char delim)
         {
-            string ReturnValue;
-            int i;
-            string element;
+            StringBuilder ReturnValue = new StringBuilder();
 
-            ReturnValue = "";
-
-            for (i = 0; i <= l.Count - 1; i += 1)
+            for (int i = 0; i <= l.Count - 1; i += 1)
             {
-                element = l[i];
-
-                // if the element already contains the delimiter, mark it with an escape sequence
-                // strsplit and getNextCSV have to revert it
-                // escape the escape marker
-                element = element.Replace("\\", "\\\\");
-                element = element.Replace(delim, "\\" + delim);
-
                 if (i != 0)
                 {
-                    ReturnValue = ReturnValue + delim;
+                    ReturnValue.Append(delim);
                 }
 
-                ReturnValue = ReturnValue + element;
+                StrMergeHelper(ref ReturnValue, l[i], delim);
             }
 
-            return ReturnValue;
+            return ReturnValue.ToString();
         }
 
         /// <summary>
@@ -161,29 +177,21 @@ namespace Ict.Common
         /// <param name="l">the string array containing the strings that should be concatenated</param>
         /// <param name="delim">the delimiter to be used between the strings</param>
         /// <returns>a string with the concatenated strings from the string array</returns>
-        public static string StrMerge(String[] l, string delim)
+        public static string StrMerge(String[] l, char delim)
         {
-            string ReturnValue = "";
+            StringBuilder ReturnValue = new StringBuilder();
 
-            for (int i = 0; i <= l.Length - 1; i++)
+            for (int i = 0; i <= l.Length - 1; i += 1)
             {
-                string element = l[i];
-
-                // if the element already contains the delimiter, mark it with an escape sequence
-                // strsplit and getNextCSV have to revert it
-                // escape the escape marker
-                element = element.Replace("\\", "\\\\");
-                element = element.Replace(delim, "\\" + delim);
-
                 if (i != 0)
                 {
-                    ReturnValue = ReturnValue + delim;
+                    ReturnValue.Append(delim);
                 }
 
-                ReturnValue = ReturnValue + element;
+                StrMergeHelper(ref ReturnValue, l[i], delim);
             }
 
-            return ReturnValue;
+            return ReturnValue.ToString();
         }
 
         /// <summary>
@@ -356,20 +364,94 @@ namespace Ict.Common
         /// <summary>
         /// need to find the matching quotes
         /// </summary>
-        /// <param name="s">String to the find the matchin quote</param>
-        /// <returns>index of the end matching quote in the string </returns>
-        public static int FindMatchingQuote(String s)
+        /// <param name="s">String to the find the matching quote</param>
+        /// <param name="position">position of the first quote</param>
+        /// <returns>index of the end matching quote in the string</returns>
+        public static int FindMatchingQuote(String s, int position)
         {
-            string localstr;
+            int counter = position + 1;
 
-            localstr = s.Substring(1);
-
-            if (localstr.IndexOf("\"\"") != -1)
+            while (counter < s.Length)
             {
-                localstr = localstr.Replace("\"\"", "  ");
+                if (s[counter] == '"')
+                {
+                    if ((counter + 1 == s.Length) || (s[counter + 1] != '"'))
+                    {
+                        return counter - 1;
+                    }
+                    else
+                    {
+                        // two double quotes mean one escaped double quote.
+                        counter++;
+                    }
+                }
+
+                counter++;
             }
 
-            return localstr.IndexOf('"');
+            // cannot find
+            throw new System.IndexOutOfRangeException();
+        }
+
+        /// <summary>
+        /// need to find the matching quotes
+        /// </summary>
+        /// <param name="s">String to the find the matching quote</param>
+        /// <param name="position">position of the first quote</param>
+        /// <returns>index of the end matching quote in the string</returns>
+        public static int FindMatchingQuote(StringBuilder s, int position)
+        {
+            int counter = position + 1;
+
+            while (counter < s.Length)
+            {
+                if (s[counter] == '"')
+                {
+                    if ((counter + 1 == s.Length) || (s[counter + 1] != '"'))
+                    {
+                        return counter - 1;
+                    }
+                    else
+                    {
+                        // two double quotes mean one escaped double quote.
+                        counter++;
+                    }
+                }
+
+                counter++;
+            }
+
+            // cannot find
+            throw new System.IndexOutOfRangeException();
+        }
+
+        /// <summary>
+        /// get the separator from the first line of CSV Data.
+        /// first test for tab, then for semicolon. otherwise default to comma
+        /// </summary>
+        /// <param name="ACSVData"></param>
+        /// <returns></returns>
+        public static string GetCSVSeparator(string ACSVData)
+        {
+            string InputSeparator = ",";
+
+            string FirstLine = ACSVData;
+
+            if (ACSVData.IndexOf("\n") > 0)
+            {
+                FirstLine = ACSVData.Substring(0, ACSVData.IndexOf("\n"));
+            }
+
+            if (FirstLine.Contains("\t"))
+            {
+                InputSeparator = "\t";
+            }
+            else if (FirstLine.Contains(";"))
+            {
+                InputSeparator = ";";
+            }
+
+            return InputSeparator;
         }
 
         /// <summary>
@@ -379,12 +461,8 @@ namespace Ict.Common
         /// <param name="separator">the delimiter/separator of the list</param>
         /// <param name="ATryAllSeparators">if this is true, a number of default separators (slash, comma, etc) will be used</param>
         /// <returns>the first value of the list</returns>
-        public static string GetNextCSV(ref string list, string separator, Boolean ATryAllSeparators)
+        public static string GetNextCSV(ref string list, string separator, Boolean ATryAllSeparators = false)
         {
-            string value;
-            int position;
-            Boolean escape;
-
             if (list.Length == 0)
             {
                 return "";
@@ -404,9 +482,9 @@ namespace Ict.Common
                 }
             }
 
-            position = 0;
-            escape = false;
-            value = "";
+            int position = 0;
+            bool escape = false;
+            StringBuilder value = new StringBuilder();
 
             if (!list.StartsWith(separator))
             {
@@ -427,22 +505,23 @@ namespace Ict.Common
 
                     if (list[position] == '"')
                     {
-                        string quotedstring = list.Substring(position + 1, FindMatchingQuote(list.Substring(position) + 1));
+                        // TODO: no substring???
+                        string quotedstring = list.Substring(position + 1, FindMatchingQuote(list, position) - position);
 
                         if (value.Length == 0)
                         {
-                            value += quotedstring;
+                            value.Append(quotedstring);
                         }
                         else
                         {
-                            value += "\"" + quotedstring + "\"";
+                            value.Append("\"").Append(quotedstring).Append("\"");
                         }
 
                         position += quotedstring.Length + 2;
                     }
                     else
                     {
-                        value = value + list[position];
+                        value.Append(list[position]);
                         position++;
                     }
 
@@ -471,19 +550,114 @@ namespace Ict.Common
                 }
             }
 
-            return value;
+            return value.ToString();
         }
 
         /// <summary>
-        /// overload for GetNextCSV
-        /// this will only use the given separator
+        /// retrieves the first value of the comma separated list, and removes the value from the list.
+        /// This version of GetNextCSV is quite optimized, but less flexible than the other version.
+        /// only supports single character separators, and works only with the specified separator
+        /// </summary>
+        /// <param name="list">the comma separated list that will get the first value removed</param>
+        /// <param name="separator">the delimiter/separator of the list</param>
+        /// <returns>the first value of the list</returns>
+        public static string GetNextCSV(ref StringBuilder list, char separator)
+        {
+            if (list.Length == 0)
+            {
+                return "";
+            }
+
+            int position = 0;
+            bool escape = false;
+            StringBuilder value = new StringBuilder();
+
+            if (list[0] != separator)
+            {
+                while (position < list.Length)
+                {
+                    if (escape)
+                    {
+                        escape = false;
+                    }
+                    else
+                    {
+                        if (list[position] == '\\')
+                        {
+                            escape = true;
+                            position++;
+                        }
+                    }
+
+                    if (list[position] == '"')
+                    {
+                        // TODO: no substring???
+                        char[] quotedstring = new char[FindMatchingQuote(list, position) - position];
+                        list.CopyTo(position + 1, quotedstring, 0, quotedstring.Length);
+
+                        if (value.Length == 0)
+                        {
+                            value.Append(quotedstring);
+                        }
+                        else
+                        {
+                            value.Append("\"").Append(quotedstring).Append("\"");
+                        }
+
+                        position += quotedstring.Length + 2;
+                    }
+                    else
+                    {
+                        value.Append(list[position]);
+                        position++;
+                    }
+
+                    if (!escape && (position < list.Length) && (list[position] == separator))
+                    {
+                        // found the next separator
+                        break;
+                    }
+                }
+            }
+
+            value.Replace("\"\"", "\"");
+
+            if (position == list.Length)
+            {
+                list.Remove(0, list.Length);
+            }
+            else
+            {
+                list.Remove(0, position + 1);
+
+                // there still was a separator, so if the list is now empty, we need to provide an empty value
+                if (list.Length == 0)
+                {
+                    list.Append("\"\"");
+                }
+            }
+
+            return value.ToString();
+        }
+
+        /// <summary>
+        /// overload for GetNextCSV.
+        /// if the value is empty, the default value will be used
         /// </summary>
         /// <param name="list">separated values; the first value will be removed</param>
         /// <param name="separator">delimiter to be used</param>
+        /// <param name="ADefaultValue">to be used if the csv value is empty</param>
         /// <returns>the first value of the string</returns>
-        public static string GetNextCSV(ref string list, string separator)
+        public static string GetNextCSV(ref string list, string separator, string ADefaultValue)
         {
-            return GetNextCSV(ref list, separator, false);
+            string result = GetNextCSV(ref list, separator, false);
+
+            if (result.Length == 0)
+            {
+                result = ADefaultValue;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -549,6 +723,24 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// parse a line of CSV values, and return a StringCollection with the values
+        /// </summary>
+        public static StringCollection GetCSVList(string list, string delimiter)
+        {
+            string listcsv = list;
+            StringCollection Result = new StringCollection();
+
+            Result.Add(GetNextCSV(ref listcsv, delimiter));
+
+            while ((listcsv.Length != 0))
+            {
+                Result.Add(GetNextCSV(ref listcsv, delimiter));
+            }
+
+            return Result;
+        }
+
+        /// <summary>
         /// checks if the list contains the given value
         /// </summary>
         /// <param name="list">separated values</param>
@@ -556,11 +748,8 @@ namespace Ict.Common
         /// <returns>true if the value is an element of the list</returns>
         public static Boolean ContainsCSV(string list, String AElement)
         {
-            String element;
-            String listcsv;
-
-            listcsv = list;
-            element = GetNextCSV(ref listcsv);
+            string listcsv = list;
+            string element = GetNextCSV(ref listcsv);
 
             while ((listcsv.Length != 0) && (element != AElement))
             {
@@ -802,7 +991,7 @@ namespace Ict.Common
         /// <returns>the string in new convention</returns>
         public static string UpperCamelCase(String AStr, bool AIgnorePrefix, bool AIgnorePostfix)
         {
-            return UpperCamelCase(AStr, "_", AIgnorePrefix, AIgnorePostfix);
+            return UpperCamelCase(AStr, '_', AIgnorePrefix, AIgnorePostfix);
         }
 
         /// <summary>
@@ -813,51 +1002,27 @@ namespace Ict.Common
         /// <param name="AIgnorePrefix">should prefixes be ignored</param>
         /// <param name="AIgnorePostfix">should postfixes be ignored</param>
         /// <returns>the string in new convention</returns>
-        public static string UpperCamelCase(String AStr, String ASeparator, bool AIgnorePrefix, bool AIgnorePostfix)
+        public static string UpperCamelCase(String AStr, char ASeparator, bool AIgnorePrefix, bool AIgnorePostfix)
         {
-            string ReturnValue = "";
-            int underscore;
-            String s;
+            string[] parts = AStr.Split(new char[] { ASeparator }, StringSplitOptions.None);
 
-            s = AStr;
-            underscore = s.IndexOf(ASeparator);
-
-            if (underscore == -1)
+            if (parts.Length <= 1)       // Handle string without seperator
             {
-                if (s.Length > 1)
+                return AStr.Length > 1 ? char.ToUpper(AStr[0]).ToString() + AStr.Substring(1) : AStr;
+            }
+
+            int start = (AIgnorePrefix ? 1 : 0);     // ignore the first part
+            int last = (AIgnorePostfix ? 1 : 0);     // ignore the last part
+
+            for (int idx = start; idx < parts.Length - last; ++idx)
+            {
+                if (parts[idx].Length > 0)
                 {
-                    return s.Substring(0, 1).ToUpper() + s.Substring(1);
+                    parts[idx] = char.ToUpper(parts[idx][0]).ToString() + parts[idx].Substring(1);
                 }
-
-                return s;
             }
 
-            if (AIgnorePrefix)
-            {
-                s = s.Substring(underscore + 1);
-            }
-
-            underscore = s.IndexOf(ASeparator);
-
-            while (underscore != -1)
-            {
-                ReturnValue = ReturnValue + s.Substring(0, 1).ToUpper() + s.Substring(1, underscore - 1);
-                s = s.Substring(underscore + 1);
-                underscore = s.IndexOf(ASeparator);
-            }
-
-            if ((!AIgnorePostfix))
-            {
-                // last part of the name
-                ReturnValue = ReturnValue + s.Substring(0, 1).ToUpper();
-                ReturnValue = ReturnValue + s.Substring(1);
-            }
-            else
-            {
-            }
-
-            // drop last part of the name, which identifies the type
-            return ReturnValue;
+            return string.Join("", parts, start, parts.Length - start - last);
         }
 
         /// <summary>
@@ -1765,13 +1930,14 @@ namespace Ict.Common
             // and http:www.nntp.perl.org/group/perl.datetime/2003/05/msg2250.html
             // better solution has been implemented: for export to CSV/Excel, the date should not be formatted as text, but formatted by the export/print program...
 
-            /* if CultureInfo.CurrentCulture.TwoLetterISOLanguageName = 'de' then
-             * begin
-             * if (ADateTime.Month = 3) then
-             * begin
-             * result := Result.Replace('MRZ', 'M?R');
-             * end;
-             * end; */
+            // Mono and .Net return different strings for month of March in german culture
+            if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de")
+            {
+                if (ADateTime.Month == 3)
+                {
+                    ReturnValue = ReturnValue.Replace("MRZ", "MÄR");
+                }
+            }
 
             // todo use short month names from local array, similar to GetLongMonthName
             if (ATimeWithSeconds)
@@ -1874,12 +2040,12 @@ namespace Ict.Common
                 }
             }
 
-//#if DEBUGMODE
-            Console.WriteLine(String.Format(
-                    "FindMatchingEndBracketPos for AInspectString '{0}', AStartPos: {1}; ABracketChar: '{2}':   Closing bracket '{3}' found at position {4}.",
-                    AInspectString, AStartPos, ABracketChar, ClosingBracketChar, ReturnValue));
-
-//#endif
+/*
+ *          Console.WriteLine(String.Format(
+ *                  "FindMatchingEndBracketPos for AInspectString '{0}', AStartPos: {1}; ABracketChar: '{2}':   Closing bracket '{3}' found at position {4}.",
+ *                  AInspectString, AStartPos, ABracketChar, ClosingBracketChar, ReturnValue));
+ *
+ */
             return ReturnValue;
         }
 
@@ -1887,6 +2053,27 @@ namespace Ict.Common
         static public Boolean ContainsI(string s, string needle)
         {
             return s.IndexOf(needle, StringComparison.OrdinalIgnoreCase) > -1;
+        }
+
+        /// <summary>
+        /// Count the occurences of a certain character in a string
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        public static int CountOccurencesOfChar(string instance, char c)
+        {
+            int result = 0;
+
+            foreach (char curChar in instance)
+            {
+                if (c == curChar)
+                {
+                    ++result;
+                }
+            }
+
+            return result;
         }
     }
 }

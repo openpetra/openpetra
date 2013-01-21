@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -183,7 +183,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                        System.Windows.Forms.AnchorStyles.Left) |
                                                       System.Windows.Forms.AnchorStyles.Right)));
             this.ucoPartnerFindCriteria.AutoScroll = true;
-            this.ucoPartnerFindCriteria.AutoSize = true;
             this.ucoPartnerFindCriteria.BackColor = System.Drawing.SystemColors.Control;
             this.ucoPartnerFindCriteria.CriteriaFieldsLeft = null;
             this.ucoPartnerFindCriteria.CriteriaFieldsRight = null;
@@ -204,14 +203,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             this.ucoPartnerInfo.Dock = DockStyle.Bottom;
             this.ucoPartnerInfo.AutoScroll = true;
-            this.ucoPartnerInfo.AutoSize = true;
             this.ucoPartnerInfo.Font =
                 new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ucoPartnerInfo.Location = new System.Drawing.Point(0, 8);
             this.ucoPartnerInfo.Name = "ucoPartnerInfo";
+            this.ucoPartnerInfo.Text = "Partner Info";
             this.ucoPartnerInfo.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
             this.ucoPartnerInfo.Size = new System.Drawing.Size(515, 110);
             this.ucoPartnerInfo.TabIndex = 0;
+            this.ucoPartnerInfo.VisualStyleEnum = TVisualStylesEnum.vsDashboard;
             this.ucoPartnerInfo.Collapsed += new System.EventHandler(this.UcoPartnerInfo_Collapsed);
             this.ucoPartnerInfo.Expanded += new System.EventHandler(this.UcoPartnerInfo_Expanded);
 

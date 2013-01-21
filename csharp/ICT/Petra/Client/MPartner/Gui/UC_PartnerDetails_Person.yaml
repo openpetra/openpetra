@@ -2,7 +2,7 @@ RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MPartner.Gui   
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: usercontrol
@@ -16,16 +16,12 @@ RootNode:
             Controls:
                 Row0: [txtPreferredName, txtPreviousName]
                 Row1: [txtLocalName]
-            ColWidths: [0=Fixed:140, 1=Percent:40, 3=Percent:40]
-            RowHeights: [0=Percent:50, 1=Percent:40]
 
         txtPreferredName: {DataField=PPerson.PreferedName}            
             Width: 240
         txtPreviousName: {DataField=PPartner.PreviousName}
-            Dock: Top
         txtLocalName: {DataField=PPartner.PartnerShortNameLoc}
-            ColSpan: 3
-            Dock: Top
+            ColSpan: 2
 
         grpMisc: {Label=Miscellaneous, Dock=Top}
             Controls: 
@@ -36,21 +32,17 @@ RootNode:
                 Row4: [cmbLanguageCode]
                 Row5: [cmbAcquisitionCode]
                 Row6: [txtOccupationCode]
-            ColWidths: [0=Fixed:140, 1=Percent:40, 3=Percent:40]
 
-        dtpDateOfBirth:
+        dtpDateOfBirth: {Validation=true}
         txtDecorations:
-            Dock: Top
-        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList}
+        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, Width:200}
         txtAcademicTitle:
-            Dock: Top
-        dtpMaritalStatusSince:
+        dtpMaritalStatusSince: {Validation=true}
         txtMaritalStatusComment:
-            ColSpan: 3
+            ColSpan: 2
             Height: 46
             Multiline: true
             ScrollBars: Vertical            
-            Dock: Top
-        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
-        txtOccupationCode: {Label=Occupation, Type=Occupation, ColSpan=3}
+        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList, ColSpan=2}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, ColSpan=2}
+        txtOccupationCode: {Label=Occupation, Type=Occupation, ColSpan=2}

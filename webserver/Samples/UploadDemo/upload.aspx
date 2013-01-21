@@ -65,7 +65,7 @@ if (Request.Files.Count == 1)
 }
 else
 {
-    if (HttpContext.Current.Request.Params["image-id"].Length > 0)
+    if (HttpContext.Current.Request.Params["image-id"] != null && HttpContext.Current.Request.Params["image-id"].Length > 0)
     {
         string Filename = Path.GetDirectoryName(Path.GetTempFileName()) + Path.DirectorySeparatorChar + Path.GetFileName(HttpContext.Current.Request.Params["image-id"]);
         Response.Buffer = true;
@@ -74,7 +74,7 @@ else
         Response.ClearHeaders();         
         Response.ContentType = "image/jpeg";
         Response.AppendHeader("Content-Disposition","attachment; filename=photo.jpg");
-        Response.TransmitFile( Filename );
+        Response.WriteFile( Filename );
         Response.End();        
     }
 }

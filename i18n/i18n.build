@@ -30,11 +30,24 @@ ENDLOCAL
   </echo>
 </target>
 
-<target name="compile" depends="translationCompilePOFile" 
+<target name="downloadTranslations">
+  <exec program="bzr" commandline="checkout lp:~jomammele/openpetraorg/translationfiles" workingdir="${tempdir}"/>
+  <move todir="${dir.root}/i18n/">
+    <fileset basedir="${tempdir}/translationfiles/i18n">
+      <include name="*.po" />
+    </fileset>
+  </move>
+  <delete dir="${tempdir}/translationfiles"/>
+  <move file="${dir.root}/i18n/de.po" tofile="${dir.root}/i18n/de-DE.po"/>
+  <move file="${dir.root}/i18n/da.po" tofile="${dir.root}/i18n/da-DK.po"/>
+  <move file="${dir.root}/i18n/es.po" tofile="${dir.root}/i18n/es-ES.po"/>
+</target>
+
+<target name="compile" depends="translation" 
         description="compile the language file(s) for delivery"/>
 
-<target name="translationCompilePOFile" description="compile the language file(s) for delivery"
-        depends="compilePoFileInternal-windows">
+<target name="translation" description="compile the language file(s) for delivery"
+        depends="downloadTranslations, compilePoFileInternal-windows">
   <mkdir dir="${tempdir}/i18n"/>
   <foreach item="File" property="TargetLanguage.PofileWithPath">
     <in><items>
@@ -79,7 +92,10 @@ ENDLOCAL
         <arg value="--resource=OpenPetra" />
         <arg value="--csharp" />
         <environment>
-          <variable name="PATH" path="${framework::get-framework-directory(framework::get-target-framework())}" />
+          <!-- /usr/bin/msgfmt: C# compiler not found, try installing pnet
+               solution: ln -s /usr/bin/gmcs /usr/bin/mcs
+          -->
+          <variable name="PATH" path="${environment::get-variable('PATH')}:${framework::get-framework-directory(framework::get-target-framework())}" />
           <variable name="GETTEXTCSHARPLIBDIR" value="${dir.bin}" />
           <variable name="TMPDIR" value="${tempdir}" />
         </environment>
@@ -127,19 +143,36 @@ ENDLOCAL
   </foreach>
   <!-- call generateI18N -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>  
-  <ExecDotNet program="${dir.bin}/GenerateI18N.exe" 
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" 
     commandline="-gettext:&quot;${external.Poedit.gettext}&quot; &quot;-petraxml:${PetraXML.file}&quot; &quot;-tmpPath:${tempdir}/i18n&quot; &quot;-poFile:${template.pot.file}&quot; &quot;-filelist:${tempdir}/i18n/sourcefile.list&quot;" />
   <!-- if GenerateI18N.CollectedGettext.cs was generated, we need to analyze it for po file -->
   <exec program="${external.Poedit.gettext}" workingdir="${dir.root}/i18n/"
         if="${file::exists(path::combine(tempdir,'i18n/GenerateI18N.CollectedGettext.cs'))}" >
-    <arg line="-j --add-comments=/// --no-location --from-code=UTF-8" />
+    <arg line="-j --add-comments=/ --add-location --from-code=UTF-8" />
     <arg value="${tempdir}/i18n/GenerateI18N.CollectedGettext.cs" />
     <arg value="-o" />
     <arg value="${template.pot.file}" />
   </exec>
   
   <!-- remove all strings that should not be translated: demo labels, etc -->
-  <ExecDotNet program="${dir.bin}/GenerateI18N.exe" commandline="-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;"/>   
+  <echo>arguments: -do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;</echo>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" commandline="-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;"/>
+
 </target>
+
+<target name="createI18NYamlFiles" depends="translation">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>  
+  <property name="path" value="${dir.csharp}/ICT/Petra/Client" overwrite="false"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" 
+    commandline="-do:yamlfiles -language:${GUILocalisation} -path:&quot;${path}&quot; -pofile:&quot;${dir.root}/i18n/${GUILocalisation}.po&quot;" />
+</target>
+
+<target name="guidedTrans">
+  <echo>start guided Translation</echo>
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+  <mkdir dir="${I18NAnalysis.Output.dir}" failonerror="false"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GuidedTranslation.exe" commandline="-poFile:&quot;${template.pot.file}&quot; -I18NAnalysisOutputDir:&quot;${I18NAnalysis.Output.dir}&quot;"/>
+</target>
+
 
 </project>

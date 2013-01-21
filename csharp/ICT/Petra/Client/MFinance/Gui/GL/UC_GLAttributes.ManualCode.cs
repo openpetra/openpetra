@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Client.MFinance.Logic;
@@ -95,7 +96,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // only load from server if there are no attributes loaded yet for this journal
             // otherwise we would overwrite attributes that have already been modified
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ATransactionTable.TableId), ",");
+            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ATransactionTable.TableId), ',');
 
             if (view.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber, FTransactionNumber }) == -1)
             {
@@ -103,12 +104,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
-
+            // bool ActiveOnly = this.Enabled;
             // TFinanceControls.InitialiseValuesList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
 
+            // do no longer call ShowData but instead use the code below
+            //ShowData();
 
-            ShowData();
+            // the following code represents what usually happens inside ShowData. Need manual code here since
+            // the view does not show all records but only filtered one (filter by transaction)
+            FPetraUtilsObject.DisableDataChangedEvent();
+            pnlDetails.Enabled = false;
+            ShowDataManual();
+
+            if (FMainDS.ATransAnalAttrib != null)
+            {
+                // set a row filter to make sure only records belonging to this transaction are shown
+                view.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
+                    ATransAnalAttribTable.GetLedgerNumberDBName(), FLedgerNumber,
+                    ATransAnalAttribTable.GetBatchNumberDBName(), FBatchNumber,
+                    ATransAnalAttribTable.GetJournalNumberDBName(), FJournalNumber,
+                    ATransAnalAttribTable.GetTransactionNumberDBName(), FTransactionNumber);
+                view.AllowNew = false;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(view);
+
+                if (view.Count > 0)
+                {
+                    SelectRowInGrid(1);
+                    pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
+                }
+                else
+                {
+//                    show
+                }
+            }
+
+            FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         /// <summary>
@@ -174,6 +204,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtJournalNumber.Text = FJournalNumber.ToString();
             txtTransactionNumber.Text = FTransactionNumber.ToString();
 
+            cmbDetailAnalysisAttributeValue.Items.Clear();  // These details controls may be set by
+            txtReadonlyAnalysisTypeCode.Text = "";          // ShowDetailsManual, below - or they may not...
+            txtReadonlyDescription.Text = "";
+            cmbDetailAnalysisAttributeValue.SetSelectedString("");
 
             checkFCacheInitialised();
         }
@@ -188,20 +222,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ATransAnalAttribRow ARow)
         {
+            cmbDetailAnalysisAttributeValue.Items.Clear();
+
             if (ARow == null)
             {
                 return;
             }
 
-            //the content of the combobox depends from the typecode the ledgernumber and if the value ist active
-            cmbDetailAnalysisAttributeValue.Items.Clear();
-            //cmbDetailAnalysisAttributeValue.Items.Add("");
+            // The content of the combobox derives from the typecode, the ledgernumber and whether the value is active.
 
             foreach (AFreeformAnalysisRow AFRow in  FCacheDS.AFreeformAnalysis.Rows)
             {
-                if (ARow.AnalysisTypeCode.Equals(AFRow.AnalysisTypeCode) && ARow.LedgerNumber.Equals(AFRow.LedgerNumber) /*&& AFRow.Active*/)
+                if (ARow.AnalysisTypeCode.Equals(AFRow.AnalysisTypeCode) && ARow.LedgerNumber.Equals(AFRow.LedgerNumber))
                 {
-                    cmbDetailAnalysisAttributeValue.Items.Add(AFRow.AnalysisValue);
+                    // add value if it is active but also if not active and already set
+                    if (AFRow.Active || (ARow.AnalysisAttributeValue == AFRow.AnalysisValue))
+                    {
+                        cmbDetailAnalysisAttributeValue.Items.Add(AFRow.AnalysisValue);
+                    }
                 }
             }
 
@@ -215,8 +253,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                cmbDetailAnalysisAttributeValue.SelectedIndex = -1;
+                cmbDetailAnalysisAttributeValue.SetSelectedString("", -1);
             }
+
+            // If the batch has been posted, the Combobox can't be changed.
+            Boolean changeable = GetBatchRow() != null
+                                 && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+            cmbDetailAnalysisAttributeValue.Enabled = changeable;
         }
 
         private void GetDetailDataFromControlsManual(ATransAnalAttribRow ARow)
@@ -227,10 +271,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// check if the necessary rows for the given account are there, automatically add/delete rows, update account in my table
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="ATransactionNumber"></param>
         /// <param name="AAccount">Account Number for AnalysisTable lookup</param>
-        public void CheckAnalysisAttributes(String AAccount)
+        public void CheckAnalysisAttributes(int ALedgerNumber, int ABatchNumber, int AJournalNumber,
+            int ATransactionNumber, String AAccount)
         {
             //grdDetails
+            checkFCacheInitialised();
+
             if (FCacheDS == null)
             {
                 return;
@@ -253,18 +304,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 String TypeCode = myRow.AnalysisTypeCode;
 
                 ATransAnalAttribRow myTableRow =
-                    (ATransAnalAttribRow)FMainDS.ATransAnalAttrib.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber,
-                                                                                           FTransactionNumber,
+                    (ATransAnalAttribRow)FMainDS.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber,
+                                                                                           ATransactionNumber,
                                                                                            TypeCode });
 
                 if (myTableRow == null)
                 {
                     //Create a new TypeCode for this account
                     ATransAnalAttribRow newRow = FMainDS.ATransAnalAttrib.NewRowTyped(true);
-                    newRow.LedgerNumber = FLedgerNumber;
-                    newRow.BatchNumber = FBatchNumber;
-                    newRow.JournalNumber = FJournalNumber;
-                    newRow.TransactionNumber = FTransactionNumber;
+                    newRow.LedgerNumber = ALedgerNumber;
+                    newRow.BatchNumber = ABatchNumber;
+                    newRow.JournalNumber = AJournalNumber;
+                    newRow.TransactionNumber = ATransactionNumber;
                     newRow.AnalysisTypeCode = TypeCode;
                     newRow.AccountCode = AAccount;
 
@@ -297,8 +348,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     && (checkRow.LedgerNumber == FLedgerNumber))
                 {
                     AAnalysisAttributeRow attRow =
-                        (AAnalysisAttributeRow)FCacheDS.AAnalysisAttribute.Rows.Find(new Object[] { checkRow.LedgerNumber, AAccount,
-                                                                                                    checkRow.AnalysisTypeCode });
+                        (AAnalysisAttributeRow)FCacheDS.AAnalysisAttribute.Rows.Find(new Object[] { checkRow.LedgerNumber, checkRow.AnalysisTypeCode,
+                                                                                                    AAccount });
 
                     if (!checkRow.AccountCode.Equals(AAccount) || (attRow == null))
                     {
@@ -393,17 +444,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            String v = (String)sio;
-            AFreeformAnalysisRow afaRow =
-                (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(new Object[] { FLedgerNumber, txtReadonlyAnalysisTypeCode.Text,
-                                                                                          v });
-
-            if (afaRow == null)
+            AFreeformAnalysisRow afaRow = null;
+            String v = sio.ToString();
+            bool AccessOk = false;
+            try
             {
-                // this should never happen
+                Object[] PrimaryKey = new Object[] {
+                    FLedgerNumber, txtReadonlyAnalysisTypeCode.Text, v
+                };
+                afaRow = (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(PrimaryKey);
+                AccessOk = true;
+            }
+            catch (Exception)
+            {
                 cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Red;
             }
-            else
+
+            if (AccessOk)
             {
                 if (afaRow.Active)
                 {

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,12 +28,14 @@ using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
+using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MSysMan.Maintenance
+namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
 {
     /// <summary>
     /// Reads and saves a DataTable for the User Defaults.
@@ -58,12 +60,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>tells whether the cache is containing data, or not</summary>
         private static Boolean UTableCached;
 
-        /// <summary>time when this object was instantiated</summary>
-        private DateTime FStartTime;
-
         /// <summary>
         /// initialize some static variables
         /// </summary>
+        [NoRemoting]
         public static void InitializeUnit()
         {
             UReadWriteLock = new System.Threading.ReaderWriterLock();
@@ -76,21 +76,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         }
 
         /// <summary>
-        /// constructor
-        /// </summary>
-        public TUserDefaults() : base()
-        {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + ' created: Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
-            FStartTime = DateTime.Now;
-        }
-
-        /// <summary>
         /// Find out if a user default exists already.
         /// This is required where the default should be calculated otherwise
         /// (e.g. FINANCE_REPORTING_SHOWDIFFFINANCIALYEARSELECTION)
         /// </summary>
         /// <returns>true if a default with the given key already exists
         /// </returns>
+        [NoRemoting]
         public static bool HasDefault(String AKey)
         {
             return TInternal.HasUserDefault(AKey);
@@ -101,20 +93,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public static bool GetBooleanDefault(String AKey, bool ADefault)
+        /// <returns>true if key does not exist</returns>
+        [NoRemoting]
+        public static bool GetBooleanDefault(String AKey, bool ADefault = true)
         {
             return Convert.ToBoolean(TInternal.GetUserDefault(AKey, ADefault.ToString()));
-        }
-
-        /// <summary>
-        /// get boolean default
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>true if key does not exist</returns>
-        public static bool GetBooleanDefault(String AKey)
-        {
-            return GetBooleanDefault(AKey, true);
         }
 
         /// <summary>
@@ -123,6 +106,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
         /// <returns></returns>
+        [NoRemoting]
         public static System.Char GetCharDefault(String AKey, System.Char ADefault)
         {
             return Convert.ToChar(TInternal.GetUserDefault(AKey, ADefault.ToString()));
@@ -133,6 +117,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <param name="AKey"></param>
         /// <returns>space if key does not exist</returns>
+        [NoRemoting]
         public static System.Char GetCharDefault(String AKey)
         {
             return GetCharDefault(AKey, ' ');
@@ -143,20 +128,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public static double GetDoubleDefault(String AKey, double ADefault)
+        /// <returns>0.0 if key does not exist</returns>
+        [NoRemoting]
+        public static double GetDoubleDefault(String AKey, double ADefault = 0.0)
         {
             return Convert.ToDouble(TInternal.GetUserDefault(AKey, ADefault.ToString()));
-        }
-
-        /// <summary>
-        /// get double default
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>0.0 if key does not exist</returns>
-        public static double GetDoubleDefault(String AKey)
-        {
-            return GetDoubleDefault(AKey, 0.0);
         }
 
         /// <summary>
@@ -166,20 +142,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="ADefault">The value that should be returned in case the Key is not (yet)
         /// in the User Defaults.
         /// </param>
-        /// <returns>void</returns>
-        public static System.Int16 GetInt16Default(String AKey, System.Int16 ADefault)
+        /// <returns>0 if key does not exist</returns>
+        [NoRemoting]
+        public static System.Int16 GetInt16Default(String AKey, System.Int16 ADefault = 0)
         {
             return Convert.ToInt16(TInternal.GetUserDefault(AKey, ADefault.ToString()));
-        }
-
-        /// <summary>
-        /// get int default value
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>0 if key does not exist</returns>
-        public static System.Int16 GetInt16Default(String AKey)
-        {
-            return GetInt16Default(AKey, 0);
         }
 
         /// <summary>
@@ -187,8 +154,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public static System.Int32 GetInt32Default(String AKey, System.Int32 ADefault)
+        /// <returns>0 if key does not exist</returns>
+        [NoRemoting]
+        public static System.Int32 GetInt32Default(String AKey, System.Int32 ADefault = 0)
         {
             return Convert.ToInt32(TInternal.GetUserDefault(AKey, ADefault.ToString()));
         }
@@ -197,52 +165,24 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// get int default
         /// </summary>
         /// <param name="AKey"></param>
-        /// <returns>0 if key does not exist</returns>
-        public static System.Int32 GetInt32Default(String AKey)
-        {
-            return GetInt32Default(AKey, 0);
-        }
-
-        /// <summary>
-        /// get int default
-        /// </summary>
-        /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public static System.Int64 GetInt64Default(String AKey, System.Int64 ADefault)
+        /// <returns>0 if key does not exist</returns>
+        [NoRemoting]
+        public static System.Int64 GetInt64Default(String AKey, System.Int64 ADefault = 0)
         {
             return Convert.ToInt64(TInternal.GetUserDefault(AKey, ADefault.ToString()));
         }
 
         /// <summary>
-        /// get int default
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>0 if key does not exist</returns>
-        public static System.Int64 GetInt64Default(String AKey)
-        {
-            return GetInt64Default(AKey, 0);
-        }
-
-        /// <summary>
         /// get string default
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public static String GetStringDefault(String AKey, String ADefault)
+        /// <returns>empty string if key does not exist</returns>
+        [NoRemoting]
+        public static String GetStringDefault(String AKey, String ADefault = "")
         {
             return TInternal.GetUserDefault(AKey, ADefault);
-        }
-
-        /// <summary>
-        /// get string default
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>empty string if key does not exist</returns>
-        public static String GetStringDefault(String AKey)
-        {
-            return GetStringDefault(AKey, "");
         }
 
         /// <summary>
@@ -256,14 +196,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// Defaults.
         /// </param>
         /// <returns>void</returns>
+        [RequireModulePermission("NONE")]
         public static void GetUserDefaults(String AUserName, out SUserDefaultsTable AUserDefaultsDataTable)
         {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
-            {
-                Console.WriteLine("TMaintenanceUserDefaults.GetUserDefaults called.");
-            }
-#endif
+            TLogging.LogAtLevel(7, "TUserDefaults.GetUserDefaults called.");
 
             if (UUserDefaultsDT == null)
             {
@@ -281,52 +217,26 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             {
                 try
                 {
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
-                    {
-                        Console.WriteLine("TMaintenanceUserDefaults.GetUserDefaults waiting for a ReaderLock...");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TUserDefaults.GetUserDefaults waiting for a ReaderLock...");
 
                     /* Try to get a read lock on the cache table [We don't specify a timeout because (1) reading an emptied cache would lead to problems (it is emptied before the DB queries are issued), (2) reading the DB tables into the cached table
                      *should be fairly quick] */
                     UReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
-                    {
-                        Console.WriteLine("TMaintenanceUserDefaults.GetUserDefaults grabbed a ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TUserDefaults.GetUserDefaults grabbed a ReaderLock.");
                     AUserDefaultsDataTable = UUserDefaultsDT;
                 }
                 finally
                 {
                     // Release read lock on the cache table
                     UReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
-                    {
-                        Console.WriteLine("TMaintenanceUserDefaults.GetUserDefaults released the ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TUserDefaults.GetUserDefaults released the ReaderLock.");
                 }
             }
-#if DEBUGMODE
             catch (Exception exp)
             {
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine("Exception in TMaintenanceUserDefaults.GetUserDefaults: " + exp.ToString());
-                }
-
+                TLogging.LogAtLevel(7, "Exception in TUserDefaults.GetUserDefaults: " + exp.ToString());
                 throw;
             }
-#else
-            catch (Exception)
-            {
-                throw;
-            }
-#endif
         }
 
         /// <summary>
@@ -340,6 +250,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="AUserDefaultsDataTable">The loaded UserDefaults DataTable</param>
         /// <returns>true if loading of UserDefaults was successful
         /// </returns>
+        [NoRemoting]
         public static Boolean LoadUserDefaultsTable(String AUserName,
             Boolean AMergeChangesToServerSideCache,
             out SUserDefaultsTable AUserDefaultsDataTable)
@@ -351,12 +262,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             Boolean WriteLockTakenOut;
             LockCookie UpgradeLockCookie = new LockCookie();
 
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("TMaintenanceUserDefaults.LoadUserDefaultsTable called in the AppDomain " + Thread.GetDomain().FriendlyName + '.');
-            }
-#endif
+            TLogging.LogAtLevel(9, "TUserDefaults.LoadUserDefaultsTable called in the AppDomain " + Thread.GetDomain().FriendlyName + '.');
             WriteLockTakenOut = false;
             ReaderLockWasHeld = false;
             try
@@ -385,12 +291,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         if (NewTransaction)
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                            if (TSrvSetting.DL >= 9)
-                            {
-                                Console.WriteLine("TMaintenanceUserDefaults.LoadUserDefaultsTable: committed own transaction.");
-                            }
-#endif
+                            TLogging.LogAtLevel(9, "TUserDefaults.LoadUserDefaultsTable: committed own transaction.");
                         }
                     }
 
@@ -417,46 +318,22 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         {
                             // Other threads are now free to obtain a read lock on the cache table.
                             UReadWriteLock.ReleaseWriterLock();
-#if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
-                            {
-                                Console.WriteLine("TMaintenanceUserDefaults.LoadUserDefaultsTable released the WriterLock.");
-                            }
-#endif
+                            TLogging.LogAtLevel(7, "TUserDefaults.LoadUserDefaultsTable released the WriterLock.");
                         }
                         else
                         {
-#if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
-                            {
-                                Console.WriteLine("TMaintenanceUserDefaults.ReloadUserDefaults waiting for downgrading to a ReaderLock...");
-                            }
-#endif
-
+                            TLogging.LogAtLevel(7, "TUserDefaults.ReloadUserDefaults waiting for downgrading to a ReaderLock...");
                             // Downgrade from a WriterLock to a ReaderLock again!
                             UReadWriteLock.DowngradeFromWriterLock(ref UpgradeLockCookie);
-#if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
-                            {
-                                Console.WriteLine("TMaintenanceUserDefaults.ReloadUserDefaults downgraded to a ReaderLock.");
-                            }
-#endif
+                            TLogging.LogAtLevel(7, "TUserDefaults.ReloadUserDefaults downgraded to a ReaderLock.");
                         }
                     }
                 }
             }
-#if DEBUGMODE
-            catch (Exception exp)
-            {
-                Console.WriteLine("TMaintenanceUserDefaults.LoadUserDefaultsTable: Error loading UserDefaults! " + "Possible cause: " + exp.ToString());
-                throw;
-            }
-#else
             catch (Exception)
             {
                 throw;
             }
-#endif
             return ReturnValue;
         }
 
@@ -473,12 +350,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="ASourceDT">UserDefaults DataTable that is the source of the merge
         /// </param>
         /// <returns>void</returns>
+        [NoRemoting]
         public static void MergeChanges(SUserDefaultsTable ADestinationDT, SUserDefaultsTable ASourceDT)
         {
             Int16 Counter;
-
-            DataColumn[] PrimaryKeyColumns;
-            object[] PrimaryKeyObj;
             SUserDefaultsRow UpdateRow;
             SUserDefaultsRow AddedRow;
 
@@ -492,8 +367,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 throw new System.ArgumentException("ASourceDT must not be nil");
             }
 
-            PrimaryKeyColumns = ASourceDT.PrimaryKey;
-            PrimaryKeyObj = new object[PrimaryKeyColumns.Length];
+            // DataColumn[] PrimaryKeyColumns = ASourceDT.PrimaryKey;
 
             for (Counter = 0; Counter <= ASourceDT.Rows.Count - 1; Counter += 1)
             {
@@ -543,12 +417,22 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         ///
         /// </summary>
         /// <param name="AUserName">User name for which the User Defaults should be read.</param>
-        /// <param name="AMergeChangesToServerSideCache">Set to true if the UserDefaults were
-        /// (re)loaded for the current user and the internal cache needs to be updated</param>
         /// <param name="AUserDefaultsDataTable">Typed DataTable that contains the User
         /// Defaults.
         /// </param>
-        /// <returns>void</returns>
+        [RequireModulePermission("NONE")]
+        public static void ReloadUserDefaults(String AUserName, out SUserDefaultsTable AUserDefaultsDataTable)
+        {
+            ReloadUserDefaults(AUserName, true, out AUserDefaultsDataTable);
+        }
+
+        /// <summary>
+        /// overload
+        /// </summary>
+        /// <param name="AUserName"></param>
+        /// <param name="AMergeChangesToServerSideCache"></param>
+        /// <param name="AUserDefaultsDataTable"></param>
+        [NoRemoting]
         public static void ReloadUserDefaults(String AUserName, Boolean AMergeChangesToServerSideCache, out SUserDefaultsTable AUserDefaultsDataTable)
         {
             LoadUserDefaultsTable(AUserName, AMergeChangesToServerSideCache, out AUserDefaultsDataTable);
@@ -570,7 +454,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// call resulted in an error. Inspect AVerificationResult to retrieve the
         /// error.
         /// </returns>
-        public static Boolean SaveUserDefaultsFromClientSide(String AUserName,
+        [RequireModulePermission("NONE")]
+        public static Boolean SaveUserDefaults(String AUserName,
             ref SUserDefaultsTable AUserDefaultsDataTable,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -583,43 +468,20 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 
             if ((AUserDefaultsDataTable != null) && (AUserDefaultsDataTable.Rows.Count > 0))
             {
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
-                {
-                    Console.WriteLine(
-                        "TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide: Saving " + (AUserDefaultsDataTable.Rows.Count).ToString() +
-                        " User Defaults...");
-                }
-#endif
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
-                {
-                    Console.WriteLine(
-                        "TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide: Row[0] --- UserId: " + AUserDefaultsDataTable[0].UserId +
-                        "; DefaultCode: " + AUserDefaultsDataTable[0].DefaultCode + "; DefaultValue: '" + AUserDefaultsDataTable[0].DefaultValue +
-                        "'");
-                }
-#endif
+                TLogging.LogAtLevel(8,
+                    "TUserDefaults.SaveUserDefaultsFromClientSide: Saving " + (AUserDefaultsDataTable.Rows.Count).ToString() + " User Defaults...");
+                TLogging.LogAtLevel(8, "TUserDefaults.SaveUserDefaultsFromClientSide: Row[0] --- UserId: " + AUserDefaultsDataTable[0].UserId +
+                    "; DefaultCode: " + AUserDefaultsDataTable[0].DefaultCode + "; DefaultValue: '" + AUserDefaultsDataTable[0].DefaultValue + "'");
 
                 if (AUserName == UserInfo.GUserInfo.UserID)
                 {
-                    // Update the serverside copy of the UserDefaults with what was submitted
-                    // from the Client.
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
-                    {
-                        Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide waiting for a WriterLock...");
-                    }
-#endif
+                    // Update the serverside copy of the UserDefaults with what was submitted from the Client.
+                    TLogging.LogAtLevel(7, "TUserDefaults.SaveUserDefaultsFromClientSide waiting for a WriterLock...");
 
                     // Prevent other threads from obtaining a read lock on the cache table while we are merging the cache table!
                     UReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
-                    {
-                        Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide grabbed a WriterLock...");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TUserDefaults.SaveUserDefaultsFromClientSide grabbed a WriterLock...");
+
                     try
                     {
                         try
@@ -632,16 +494,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                              * added UserDefaults in the cache will be unaffected).
                              */
 
-                            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('Before merge: UUserDefaultsDS.Tables.Count: ' + UUserDefaultsDS.Tables.Count.ToString); $ENDIF
-                            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('Before merge: UUserDefaultsDS.Tables[0].Rows.Count: ' + UUserDefaultsDS.Tables[0].Rows.Count.ToString); $ENDIF
-#if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
-                            {
-                                Console.WriteLine("Before merge: UUserDefaultsDT.Rows.Count: " + UUserDefaultsDT.Rows.Count.ToString());
-                            }
-#endif
-#if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            TLogging.LogAtLevel(7, "Before merge: UUserDefaultsDT.Rows.Count: " + UUserDefaultsDT.Rows.Count.ToString());
+
+                            if (TLogging.DL >= 7)
                             {
                                 DataTable TmpChangesDT = UUserDefaultsDT.GetChangesTyped();
 
@@ -650,19 +505,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                                     Console.WriteLine("Before merge: UUserDefaultsDT Changed Rows: " + TmpChangesDT.Rows.Count.ToString());
                                 }
                             }
-#endif
+
                             MergeChanges(UUserDefaultsDT, AUserDefaultsDataTable);
 
-                            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('After merge: UUserDefaultsDS.Tables.Count: ' + UUserDefaultsDS.Tables.Count.ToString); $ENDIF
-                            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('After merge: UUserDefaultsDS.Tables[0].Rows.Count: ' + UUserDefaultsDS.Tables[0].Rows.Count.ToString); $ENDIF
-#if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
-                            {
-                                Console.WriteLine("After merge: UUserDefaultsDT.Rows.Count: " + UUserDefaultsDT.Rows.Count.ToString());
-                            }
-#endif
-#if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
+                            TLogging.LogAtLevel(7, "After merge: UUserDefaultsDT.Rows.Count: " + UUserDefaultsDT.Rows.Count.ToString());
+
+                            if (TLogging.DL >= 7)
                             {
                                 DataTable TmpChangesDT = UUserDefaultsDT.GetChangesTyped();
 
@@ -671,30 +519,24 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                                     Console.WriteLine("After merge: UUserDefaultsDT Changed Rows: " + TmpChangesDT.Rows.Count.ToString());
                                 }
                             }
-#endif
-#if DEBUGMODE
+
                             int TmpRow = UUserDefaultsDV.Find("MailroomLastPerson");
 
-                            if (TmpRow != -1)
+                            if (TLogging.DL >= 7)
                             {
-                                if (TSrvSetting.DL >= 7)
+                                if (TmpRow != -1)
                                 {
                                     Console.WriteLine("MailroomLastPerson value: '" +
                                         UUserDefaultsDV[TmpRow][SUserDefaultsTable.GetDefaultValueDBName()].ToString() + "'");
                                 }
                             }
-#endif
 
                             // User Defaults were submitted from the Client side for any user but
                             // the current user > just save the (now updated) serverside copy
                             // of the UserDefaults.
-#if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
-                            {
-                                Console.WriteLine(
-                                    "TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide: merged changed data from the Client side into the Server-side UserDefaults cache; saving the Server-side UserDefaults cache now.");
-                            }
-#endif
+                            TLogging.LogAtLevel(
+                                7,
+                                "TUserDefaults.SaveUserDefaultsFromClientSide: merged changed data from the Client side into the Server-side UserDefaults cache; saving the Server-side UserDefaults cache now.");
                             SubmissionOK = SaveUserDefaultsFromServerSide(out AVerificationResult, false);
 
                             if (SubmissionOK)
@@ -732,12 +574,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     {
                         // Other threads are now free to obtain a read lock on the cache table.
                         UReadWriteLock.ReleaseWriterLock();
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
-                        {
-                            Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromClientSide released the WriterLock.");
-                        }
-#endif
+                        TLogging.LogAtLevel(7, "TUserDefaults.SaveUserDefaultsFromClientSide released the WriterLock.");
                     }
                 }
                 else
@@ -780,6 +617,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// call resulted in an error. Inspect AVerificationResult to retrieve the
         /// error.
         /// </returns>
+        [NoRemoting]
         public static Boolean SaveUserDefaultsTable(String AUserName,
             ref SUserDefaultsTable AUserDefaultsDataTable,
             TDBTransaction AWriteTransaction,
@@ -801,23 +639,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 
                 if ((ChangedUserDefaultsDT != null) && (ChangedUserDefaultsDT.Rows.Count > 0))
                 {
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
+                    if (TLogging.DebugLevel >= 8)
                     {
-                        Console.WriteLine(
-                            "TMaintenanceUserDefaults.SaveUserDefaultsTable: Saving " + (ChangedUserDefaultsDT.Rows.Count).ToString() +
-                            " User Defaults...");
+                        TLogging.Log(
+                            "TUserDefaults.SaveUserDefaultsTable: Saving " + (ChangedUserDefaultsDT.Rows.Count).ToString() + " User Defaults...");
+                        TLogging.Log("TUserDefaults.SaveUserDefaultsTable: Row[0] --- UserId: " + ChangedUserDefaultsDT[0].UserId +
+                            "; DefaultCode: " + ChangedUserDefaultsDT[0].DefaultCode + "; DefaultValue: " + ChangedUserDefaultsDT[0].DefaultValue);
                     }
-#endif
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
-                    {
-                        Console.WriteLine(
-                            "TMaintenanceUserDefaults.SaveUserDefaultsTable: Row[0] --- UserId: " + ChangedUserDefaultsDT[0].UserId +
-                            "; DefaultCode: " +
-                            ChangedUserDefaultsDT[0].DefaultCode + "; DefaultValue: " + ChangedUserDefaultsDT[0].DefaultValue);
-                    }
-#endif
 
                     if (AWriteTransaction == null)
                     {
@@ -841,13 +669,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             }
                             catch (EDBConcurrencyException)
                             {
-#if DEBUGMODE
-                                if (TSrvSetting.DL >= 8)
-                                {
-                                    TLogging.Log(
-                                        "TMaintenanceUserDefaults.SaveUserDefaultsTable: EDBConcurrencyException occured --> refreshing cached UserDefaults with UserDefaults from the DB!");
-                                }
-#endif
+                                TLogging.LogAtLevel(
+                                    8,
+                                    "TMaintenanceUserDefaults.SaveUserDefaultsTable: EDBConcurrencyException occured --> refreshing cached UserDefaults with UserDefaults from the DB!");
 
                                 // The same user has saved the same UserDefault after we have read it in
                                 // (this can only happen if the same user is logged in twice).
@@ -860,33 +684,22 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                                 SavingAttempts = SavingAttempts + 1;
                                 ASendUpdateInfoToClient = true;
                             }
-#if DEBUGMODE
                             catch (Exception Exp)
                             {
-                                if (TSrvSetting.DL >= 8)
+                                if (TLogging.DL >= 8)
                                 {
                                     TLogging.Log("TMaintenanceUserDefaults.SaveUserDefaultsTable: Exception occured: " + Exp.ToString());
                                 }
 
                                 throw;
                             }
-#endif
                         } while (!((SavingAttempts > 1) || SubmissionOK));
 
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
-                        {
-                            Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: after saving.");
-                        }
-#endif
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
-                        {
-                            Console.WriteLine(
-                                "TMaintenanceUserDefaults.SaveUserDefaultsTable: ChangedUserDefaultsDT.Rows.Count: " +
-                                ChangedUserDefaultsDT.Rows.Count.ToString());
-                        }
-#endif
+                        TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: after saving.");
+                        TLogging.LogAtLevel(
+                            8,
+                            "TMaintenanceUserDefaults.SaveUserDefaultsTable: ChangedUserDefaultsDT.Rows.Count: " +
+                            ChangedUserDefaultsDT.Rows.Count.ToString());
 
                         if (SubmissionOK)
                         {
@@ -895,12 +708,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             // Tell the Client the updated UserDefaults (needed for the ModificationIDs)
                             if (ASendUpdateInfoToClient)
                             {
-#if DEBUGMODE
-                                if (TSrvSetting.DL >= 8)
-                                {
-                                    Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: ASendUpdateInfoToClient = true");
-                                }
-#endif
+                                TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: ASendUpdateInfoToClient = true");
                                 UpdateUserDefaultsOnClient(AUserName, ChangedUserDefaults2DT);
                             }
                             else
@@ -910,13 +718,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                                     // If a new UserDefault has been INSERTed into the DB Table, inform other Clients about that
                                     if (ChangedUDDR.RowState == DataRowState.Added)
                                     {
-#if DEBUGMODE
-                                        if (TSrvSetting.DL >= 8)
-                                        {
-                                            Console.WriteLine(
-                                                "TMaintenanceUserDefaults.SaveUserDefaultsTable: new UserDefault has been INSERTed into the DB Table, inform other Clients about that!");
-                                        }
-#endif
+                                        TLogging.LogAtLevel(
+                                            8,
+                                            "TMaintenanceUserDefaults.SaveUserDefaultsTable: new UserDefault has been INSERTed - inform other Clients..");
                                         ASendUpdateInfoToClient = true;
                                         break;
                                     }
@@ -925,12 +729,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                                 if (ASendUpdateInfoToClient)
                                 {
                                     // CopyModificationIDsOver(ChangedUserDefaultsDT, AUserDefaultsDataTable);
-#if DEBUGMODE
-                                    if (TSrvSetting.DL >= 8)
-                                    {
-                                        Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: informing other Clients!");
-                                    }
-#endif
+                                    TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: informing other Clients!");
                                     UpdateUserDefaultsOnClient(AUserName, ChangedUserDefaults2DT);
                                 }
                             }
@@ -939,24 +738,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             AUserDefaultsDataTable.AcceptChanges();
                         }
 
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 8)
-                        {
-                            Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: after AcceptChanges.");
-                        }
-#endif
+                        TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: after AcceptChanges.");
                     }
-#if DEBUGMODE
                     catch (Exception Exp)
                     {
-                        if (TSrvSetting.DL >= 8)
-                        {
-                            Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: Exception occured: " + Exp.ToString());
-                        }
-
+                        TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: Exception occured: " + Exp.ToString());
                         throw;
                     }
-#endif
                     finally
                     {
                         if (NewTransaction)
@@ -964,55 +752,30 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                             if (SubmissionOK)
                             {
                                 DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                                if (TSrvSetting.DL >= 8)
-                                {
-                                    Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: committed own transaction.");
-                                }
-#endif
+                                TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: committed own transaction.");
                             }
                             else
                             {
                                 DBAccess.GDBAccessObj.RollbackTransaction();
-#if DEBUGMODE
-                                if (TSrvSetting.DL >= 8)
-                                {
-                                    Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: rolled back own transaction.");
-                                }
-#endif
+                                TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: rolled back own transaction.");
                             }
                         }
                     }
 
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
-                    {
-                        Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: Done!");
-                    }
-#endif
+                    TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: Done!");
                     ReturnValue = SubmissionOK;
                 }
                 else
                 {
 // nothing to save!
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
-                    {
-                        Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: nothing to save: no changes!");
-                    }
-#endif
+                    TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: nothing to save: no changes!");
                     ReturnValue = true;
                 }
             }
             else
             {
                 // nothing to save!
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
-                {
-                    Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsTable: nothing to save: no UserDefaults in memory!");
-                }
-#endif
+                TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: nothing to save: no UserDefaults in memory!");
                 ReturnValue = true;
             }
 
@@ -1027,6 +790,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="AWriteTransaction"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [NoRemoting]
         public static Boolean SaveUserDefaultsTable(String AUserName,
             ref SUserDefaultsTable AUserDefaultsDataTable,
             TDBTransaction AWriteTransaction,
@@ -1049,27 +813,21 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// was nothing to save. false indicates that a DB call resulted in an error.
         /// Inspect AVerificationResult to retrieve the error.
         /// </returns>
-        public static Boolean SaveUserDefaultsFromServerSide(out TVerificationResultCollection AVerificationResult, Boolean ASendUpdateInfoToClient)
+        [NoRemoting]
+        public static Boolean SaveUserDefaultsFromServerSide(
+            out TVerificationResultCollection AVerificationResult,
+            Boolean ASendUpdateInfoToClient = true)
         {
             Boolean ReturnValue;
             Boolean SubmissionOK;
 
             AVerificationResult = null;
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
-            {
-                Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide waiting for a ReaderLock...");
-            }
-#endif
+            TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide waiting for a ReaderLock...");
 
             // Prevent other threads from obtaining a read lock on the cache table while we are reading values from the cache table!
             UReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
-            {
-                Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide grabbed a ReaderLock.");
-            }
-#endif
+            TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide grabbed a ReaderLock.");
+
             try
             {
                 if (UUserDefaultsDT.Rows.Count > 0)
@@ -1091,12 +849,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 else
                 {
                     // nothing to save!
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
-                    {
-                        Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide: nothing to save.");
-                    }
-#endif
+                    TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide: nothing to save.");
                     ReturnValue = true;
                 }
             }
@@ -1104,30 +857,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             {
                 // Other threads are now free to obtain a read lock on the cache table.
                 UReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide released the ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide released the ReaderLock.");
             }
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 8)
-            {
-                Console.WriteLine("TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide: Done!");
-            }
-#endif
+            TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide: Done!");
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        public static Boolean SaveUserDefaultsFromServerSide(ref TVerificationResultCollection AVerificationResult)
-        {
-            return SaveUserDefaultsFromServerSide(out AVerificationResult, true);
         }
 
         /// <summary>
@@ -1141,19 +874,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// change to the UserDefault (by means of sending a ClientTask)
         /// </param>
         /// <returns>void</returns>
-        public static void SetDefault(String AKey, object AValue, Boolean ASendUpdateInfoToClient)
+        [NoRemoting]
+        public static void SetDefault(String AKey, object AValue, Boolean ASendUpdateInfoToClient = true)
         {
             TInternal.SetUserDefault(AKey, AValue.ToString(), ASendUpdateInfoToClient);
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <param name="AValue"></param>
-        public static void SetDefault(String AKey, object AValue)
-        {
-            SetDefault(AKey, AValue, true);
         }
 
         /// <summary>
@@ -1177,32 +901,28 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// because (potentially) several DefaultCodes have changed.
         /// </param>
         /// <returns>void</returns>
+        [NoRemoting]
         public static void UpdateUserDefaultsOnClient(String AUserName,
             String AChangedUserDefaultCode,
             String AChangedUserDefaultValue,
             String AChangedUserDefaultModId,
-            Boolean ASingleCode)
+            Boolean ASingleCode = true)
         {
             String SingleOrMultipleIndicator;
 
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
-            {
-                Console.WriteLine("TMaintenanceUserDefaults.UpdateUserDefaultsOnClient: calling DomainManager.ClientTaskAdd...");
-            }
-#endif
+            TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.UpdateUserDefaultsOnClient: calling DomainManager.ClientTaskAdd...");
 
             if (AChangedUserDefaultCode == null)
             {
                 if (AUserName == UserInfo.GUserInfo.UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
-                    Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH, "All", 1);
+                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH, "All", 1);
                 }
                 else
                 {
                     // Queue a ClientTask to any but the current User's PetraClient
-                    Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAddToOtherClient(AUserName,
+                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(AUserName,
                         SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                         "All",
                         1);
@@ -1222,7 +942,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 if (AUserName == UserInfo.GUserInfo.UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
-                    Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
+                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                         SingleOrMultipleIndicator,
                         AChangedUserDefaultCode,
                         AChangedUserDefaultValue,
@@ -1233,7 +953,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 
                 // Send the same ClientTask to all other running PetraClient instances where
                 // the same user is logged in!
-                Ict.Petra.Server.App.ClientDomain.DomainManager.ClientTaskAddToOtherClient(AUserName,
+                Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(AUserName,
                     SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                     SingleOrMultipleIndicator,
                     AChangedUserDefaultCode,
@@ -1242,21 +962,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     null,
                     1);
             }
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="AUserName"></param>
-        /// <param name="AChangedUserDefaultCode"></param>
-        /// <param name="AChangedUserDefaultValue"></param>
-        /// <param name="AChangedUserDefaultModId"></param>
-        public static void UpdateUserDefaultsOnClient(String AUserName,
-            String AChangedUserDefaultCode,
-            String AChangedUserDefaultValue,
-            String AChangedUserDefaultModId)
-        {
-            UpdateUserDefaultsOnClient(AUserName, AChangedUserDefaultCode, AChangedUserDefaultValue, AChangedUserDefaultModId, true);
         }
 
         /// <summary>
@@ -1269,6 +974,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// that have changed and that should be updated on the Client side
         /// </param>
         /// <returns>void</returns>
+        [NoRemoting]
         public static void UpdateUserDefaultsOnClient(String AUserName, SUserDefaultsTable AChangedUserDefaultsDT)
         {
             String ChangedUserDefaultCodes;
@@ -1284,11 +990,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             {
                 for (Counter = 0; Counter <= AChangedUserDefaultsDT.Rows.Count - 1; Counter += 1)
                 {
-                    ChangedUserDefaultCodes = ChangedUserDefaultCodes + TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR +
+                    ChangedUserDefaultCodes = ChangedUserDefaultCodes + RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR +
                                               AChangedUserDefaultsDT[Counter].DefaultCode;
-                    ChangedUserDefaultValues = ChangedUserDefaultValues + TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR +
+                    ChangedUserDefaultValues = ChangedUserDefaultValues + RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR +
                                                AChangedUserDefaultsDT[Counter].DefaultValue;
-                    ChangedUserDefaultModIds = ChangedUserDefaultModIds + TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR +
+                    ChangedUserDefaultModIds = ChangedUserDefaultModIds + RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR +
                                                AChangedUserDefaultsDT[Counter].ModificationId;
                 }
 
@@ -1344,21 +1050,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     TUserDefaults.GetUserDefaults(UserInfo.GUserInfo.UserID, out UserDefaultsDataTable);
                 }
 
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine("TMaintenanceUserDefaults.GetUserDefault waiting for a ReaderLock...");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.GetUserDefault waiting for a ReaderLock...");
 
                 // Prevent other threads from obtaining a read lock on the cache table while we are reading a value from the cache table!
                 UReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine("TMaintenanceUserDefaults.GetUserDefault grabbed a ReaderLock.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.GetUserDefault grabbed a ReaderLock.");
+
                 try
                 {
                     FoundInRow = UUserDefaultsDV.Find(AKey);
@@ -1378,12 +1075,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 {
                     // Other threads are now free to obtain a read lock on the cache table.
                     UReadWriteLock.ReleaseReaderLock();
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
-                    {
-                        Console.WriteLine("TMaintenanceUserDefaults.GetUserDefault released the ReaderLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.GetUserDefault released the ReaderLock.");
                 }
                 return ReturnValue;
             }
@@ -1419,21 +1111,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                     TUserDefaults.GetUserDefaults(UserInfo.GUserInfo.UserID, out UserDefaultsDataTable);
                 }
 
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine("TMaintenanceUserDefaults.SetUserDefault waiting for a WriterLock...");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SetUserDefault waiting for a WriterLock...");
 
                 // Prevent other threads from obtaining a read lock on the cache table while we are changing a value in the cache table!
                 UReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine("TMaintenanceUserDefaults.SetUserDefault grabbed a WriterLock.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SetUserDefault grabbed a WriterLock.");
                 FoundInRow = UUserDefaultsDV.Find(AKey);
                 try
                 {
@@ -1444,13 +1126,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         {
                             // Update only if the value is actually different
                             UUserDefaultsDV[FoundInRow][SUserDefaultsTable.GetDefaultValueDBName()] = AValue;
-#if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
-                            {
-                                Console.WriteLine(
-                                    "TMaintenanceUserDefaults.SetUserDefault: updated UserDefault '" + AKey + "' with value '" + AValue + "'.");
-                            }
-#endif
+//                          TLogging.LogAtLevel (7, "TMaintenanceUserDefaults.SetUserDefault: updated UserDefault '" + AKey + "' with value '" + AValue + "'.");
                         }
                     }
                     else
@@ -1461,13 +1137,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                         Tmp[SUserDefaultsTable.GetDefaultCodeDBName()] = AKey;
                         Tmp[SUserDefaultsTable.GetDefaultValueDBName()] = AValue;
                         Tmp.EndEdit();
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
-                        {
-                            Console.WriteLine(
-                                "TMaintenanceUserDefaults.SetUserDefault: added UserDefault '" + AKey + "' with value '" + AValue + "'.");
-                        }
-#endif
+//                      TLogging.LogAtLevel (7, "TMaintenanceUserDefaults.SetUserDefault: added UserDefault '" + AKey + "' with value '" + AValue + "'.");
                         FoundInRow = UUserDefaultsDV.Find(AKey);
                     }
 
@@ -1481,12 +1151,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 {
                     // Other threads are now free to obtain a read lock on the cache table.
                     UReadWriteLock.ReleaseWriterLock();
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
-                    {
-                        Console.WriteLine("TMaintenanceUserDefaults.SetUserDefault released the WriterLock.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SetUserDefault released the WriterLock.");
                 }
             }
 

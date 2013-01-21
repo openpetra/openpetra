@@ -112,23 +112,23 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="btnLogin.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAXBJREFUOE+VU79L
-        w0AUbv8rjWBtm14ak0JjkkqEBuNQRakoVkEcOgqCf4SLg4PYsS6KiwhOLg7uTqUZBMWhfOadvnqW1raB
-        j/fu3X3f+3GXdOrnmy0bYJ/s/VU7ra7/9YlMcE511FGS/qDgSAGV3ISPQ3jTiZgrPoIbASITjuBiExa2
-        YPcr4STDbIoEqHTarN4ZaHza2PuwED4IRB2BtbfEJljtJogF1mHKCgmUWApIJ/kqZwXsxhYaPRu1ZxNO
-        K48oNhDcCrgtgfJlAdWnIvZ7JRBPzokrIJHwUaD+voiNThF+QtCWDXmQoDkG3HMD1o6DmcSnmBwsObla
-        Fu7LAsJuAeGrjqW2jtzBd1vqNTPpzw3RgtvQr+chLjLINvOYq1i/WcY9CFVEi/LQPAt2dIysH0mM48t9
-        FiFL5GD7RIIEKMZiI0XVDSYPClGcYkNfKQkwkW3Gc/qHx7bCZXKWqfpXr4qIPMCJfyh1yup7n2T6XzTS
-        QnjoDpMVAAAAAElFTkSuQmCC
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAWNJREFUOE+VUz1L
+        w1AUzc/SCNa0yUtjUmhMUonQYByqKBXFKohDR0HwR7g4OAgddVHcBCcXB3en0gyC4lCOuU9vTIsS8+Bw
+        3zt559yPRxTle802TeTB/L8iC91THV00MqPS4j4CHMIvZ2KtBAhvBEhMOIKHTdjYgjPR0nSLfFbIgEon
+        on1novfhYO/dRnQvEA8F1l7TmGJ1lCIRWIclKyRQYmkgN+lqnRnYTWz0xg46TxbcQQ1xYiK8FfAGAs1L
+        A+3HOvbHDZCOkmYVkEn0INB9W8TGsI4gFajLprxIUF0T3rkJe8fFTLonTg6ZNtWOBu95AdHIQPSiY+lK
+        R/Xgq638M7Mozyt04Db063mIiwq0fg1zLfsnS9F75k3UuAbVt+HEx9CCWKJIL7+zCUUSh9snEmRAHJv9
+        aZr/wOJpI+KJm5gBl0cGLORY8d3scmErXCZnKdV//qlIyAP8tdSiiZb9pT8BJmVFsx6hyXQAAAAASUVO
+        RK5CYII=
 </value>
   </data>
   <data name="btnCancel.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

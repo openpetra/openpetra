@@ -1,0 +1,26 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Passport Name Entry
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 400
+    WindowHeight: 200
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent:
+            Controls:
+                Row0: [lblExplanation]
+                Row1: [Empty]
+                Row2: [txtPassportName]
+                
+        lblExplanation:
+            
+        Empty:
+
+        txtPassportName:
+            Label: Passport Name
+            Width: 250

@@ -145,47 +145,54 @@ namespace Ict.Petra.Client.CommonControls
 
             set
             {
-                switch (this.ControlMode)
+                if (value == null) // This may happen during initialisation of a form
                 {
-                    case TControlMode.Normal:
-                        this.SplitButtonBase1.Text = value;
-                        break;
+                    this.SplitButtonBase1.Text = "";
+                }
+                else
+                {
+                    switch (this.ControlMode)
+                    {
+                        case TControlMode.Normal:
+                            this.SplitButtonBase1.Text = value;
+                            break;
 
-                    case TControlMode.Matches:
-                        try
-                        {
-//                            TLogging.Log("SelectedValue for '" + this.Name + "' set to '" + value + "'");
-                            switch ((TMatches)(Enum.Parse(typeof(TMatches), value)))
+                        case TControlMode.Matches:
+                            try
                             {
-                                case TMatches.BEGINS:
+                                //                            TLogging.Log("SelectedValue for '" + this.Name + "' set to '" + value + "'");
+                                switch ((TMatches)(Enum.Parse(typeof(TMatches), value)))
+                                {
+                                    case TMatches.BEGINS:
 
-//                                    TLogging.Log("SelectedValue setter for '" + this.Name + "': invoking 'MnuMatchStartsWith_Click'...");
-                                    MnuMatchStartsWith_Click(null, null);
-                                    break;
+                                        //                                    TLogging.Log("SelectedValue setter for '" + this.Name + "': invoking 'MnuMatchStartsWith_Click'...");
+                                        MnuMatchStartsWith_Click(null, null);
+                                        break;
 
-                                case TMatches.ENDS:
+                                    case TMatches.ENDS:
 
-//                                    TLogging.Log("SelectedValue setter for '" + this.Name + "': invoking 'MnuMatchEndsWith_Click'...");
-                                    MnuMatchEndsWith_Click(null, null);
-                                    break;
+                                        //                                    TLogging.Log("SelectedValue setter for '" + this.Name + "': invoking 'MnuMatchEndsWith_Click'...");
+                                        MnuMatchEndsWith_Click(null, null);
+                                        break;
 
-                                case TMatches.CONTAINS:
+                                    case TMatches.CONTAINS:
 
-//                                    TLogging.Log("SelectedValue setter for '" + this.Name + "': invoking 'MnuMatchContains_Click'...");
-                                    MnuMatchContains_Click(null, null);
-                                    break;
+                                        //                                    TLogging.Log("SelectedValue setter for '" + this.Name + "': invoking 'MnuMatchContains_Click'...");
+                                        MnuMatchContains_Click(null, null);
+                                        break;
 
-                                case TMatches.EXACT:
+                                    case TMatches.EXACT:
 
-//                                    TLogging.Log("SelectedValue setter for '" + this.Name + "': invoking 'MnuMatchExact_Click'...");
-                                    MnuMatchExact_Click(null, null);
-                                    break;
+                                        //                                    TLogging.Log("SelectedValue setter for '" + this.Name + "': invoking 'MnuMatchExact_Click'...");
+                                        MnuMatchExact_Click(null, null);
+                                        break;
+                                }
                             }
-                        }
-                        finally
-                        {
-                        }
-                        break;
+                            finally
+                            {
+                            }
+                            break;
+                    }
                 }
             }
         }

@@ -1,0 +1,57 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS
+    DetailTable: MExtractMaster
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation,Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actMaintain: {Label=&Maintain, ActionClick=MaintainExtract}      
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+        actRefreshGrid: {ActionClick=RefreshExtractList, Image: Refresh.ico}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnMaintain, btnDeleteExtract, btnRefreshGrid]
+        btnMaintain: {Stretch=horizontally}
+            Action: actMaintain
+        btnDeleteExtract: {Stretch=horizontally}
+            Action: actDelete
+        btnRefreshGrid: {NoLabel=true, Stretch=horizontally}
+            Action: actRefreshGrid
+            Help: Refresh Extract List (e.g. after a new extract has been created)
+        grdDetails:
+            Dock: Fill
+            Columns: [MExtractMaster.ExtractName, MExtractMaster.CreatedBy, MExtractMaster.KeyCount, MExtractMaster.ExtractDesc, MExtractMaster.DateCreated, MExtractMaster.Deletable]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtExtractName, txtKeyCount]
+                Row1: [chkDeletable, chkFrozen]
+                Row2: [txtExtractDesc]
+                #Row3: [chkManualMod, dtpManualMod, txtManualModBy]
+                Row3: [dtpManualMod, txtManualModBy]
+                Row4: [dtpDateCreated, txtCreatedBy]
+                Row5: [dtpDateModified, txtModifiedBy]
+               
+        txtExtractName: {Label=Extract Name}
+        txtKeyCount: {Label=Key Count, ReadOnly=true}
+        chkDeletable:{Label=Deletable}
+        chkFrozen:{Label=Frozen}
+        txtExtractDesc: {Label=Description, ColSpan=2, Multiline=true, ScrollBars=Vertical, Height=50, Width=500}
+        #chkManualMod:{Label=Manually updated, ReadOnly=true}
+        dtpManualMod:{Label=Manually modified, ReadOnly=true}
+        txtManualModBy:{Label=By, ReadOnly=true}
+        dtpDateCreated:{Label=Created, ReadOnly=true}
+        txtCreatedBy:{Label=By, ReadOnly=true}
+        dtpDateModified:{Label=Modified, ReadOnly=true}
+        txtModifiedBy:{Label=By, ReadOnly=true}

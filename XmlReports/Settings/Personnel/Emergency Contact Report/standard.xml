@@ -1,43 +1,43 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\emergencycontactreport.xml,Personnel\\personnel.xml" />
-  <Parameter id="currentReport" value="Emergency Contact Report" />
-  <Parameter id="MaxDisplayColumns" value="12" />
-  <Parameter id="param_source" value="Event" />
-  <Parameter id="param_event_selection" value="this" />
-  <Parameter id="param_event_code" value="" />
-  <Parameter id="param_event_name" value="" />
-  <Parameter id="param_extract_name" value="" />
-  <Parameter id="param_conference_code" value="" />
-  <Parameter id="param_unit_key" value="" />
-  <Parameter id="param_application_status_accepted" value="true" />
-  <Parameter id="param_application_status_cancelled" value="false" />
-  <Parameter id="param_application_status_enquiry" value="false" />
-  <Parameter id="param_application_status_hold" value="false" />
-  <Parameter id="param_application_status_rejected" value="false" />
-  <Parameter id="param_calculation" column="0" value="Emergency Contact Type" />
-  <Parameter id="ColumnWidth" column="0" value="2.2" />
-  <Parameter id="param_calculation" column="1" value="Emergency Contact Key" />
-  <Parameter id="ColumnWidth" column="1" value="2" />
-  <Parameter id="param_calculation" column="2" value="Emergency Contact Name" />
-  <Parameter id="ColumnWidth" column="2" value="3" />
-  <Parameter id="param_calculation" column="3" value="Street" />
-  <Parameter id="ColumnWidth" column="3" value="3" />
-  <Parameter id="param_calculation" column="4" value="Post Code" />
-  <Parameter id="ColumnWidth" column="4" value="1.8" />
-  <Parameter id="param_calculation" column="5" value="City" />
-  <Parameter id="ColumnWidth" column="5" value="3" />
-  <Parameter id="param_calculation" column="6" value="Country" />
-  <Parameter id="ColumnWidth" column="6" value="1.5" />
-  <Parameter id="param_calculation" column="7" value="Telephone" />
-  <Parameter id="ColumnWidth" column="7" value="2" />
-  <Parameter id="param_calculation" column="8" value="Mobile" />
-  <Parameter id="ColumnWidth" column="8" value="2" />
-  <Parameter id="param_calculation" column="9" value="Alternate Telephone" />
-  <Parameter id="ColumnWidth" column="9" value="2" />
-  <Parameter id="param_calculation" column="10" value="Fax" />
-  <Parameter id="ColumnWidth" column="10" value="2" />
-  <Parameter id="param_calculation" column="11" value="E-Mail" />
-  <Parameter id="ColumnWidth" column="11" value="2" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\emergencycontactreport.xml,Personnel\\personnel.xml" />
+  <Parameter id="currentReport" value="eString:Emergency Contact Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:12" />
+  <Parameter id="param_source" value="eString:Event" />
+  <Parameter id="param_event_selection" value="eString:this" />
+  <Parameter id="param_event_code" value="eString:" />
+  <Parameter id="param_event_name" value="eString:" />
+  <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="param_conference_code" value="eString:" />
+  <Parameter id="param_unit_key" value="eString:" />
+  <Parameter id="param_application_status_accepted" value="eString:true" />
+  <Parameter id="param_application_status_cancelled" value="eString:false" />
+  <Parameter id="param_application_status_enquiry" value="eString:false" />
+  <Parameter id="param_application_status_hold" value="eString:false" />
+  <Parameter id="param_application_status_rejected" value="eString:false" />
+  <Parameter id="param_calculation" column="0" value="eString:Emergency Contact Type" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4612136378390124954" />
+  <Parameter id="param_calculation" column="1" value="eString:Emergency Contact Key" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="param_calculation" column="2" value="eString:Emergency Contact Name" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:3" />
+  <Parameter id="param_calculation" column="3" value="eString:Street" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
+  <Parameter id="param_calculation" column="4" value="eString:Post Code" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4610785298501913805" />
+  <Parameter id="param_calculation" column="5" value="eString:City" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
+  <Parameter id="param_calculation" column="6" value="eString:Country" />
+  <Parameter id="ColumnWidth" column="6" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="7" value="eString:Telephone" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
+  <Parameter id="param_calculation" column="8" value="eString:Mobile" />
+  <Parameter id="ColumnWidth" column="8" value="eInteger:2" />
+  <Parameter id="param_calculation" column="9" value="eString:Alternate Telephone" />
+  <Parameter id="ColumnWidth" column="9" value="eInteger:2" />
+  <Parameter id="param_calculation" column="10" value="eString:Fax" />
+  <Parameter id="ColumnWidth" column="10" value="eInteger:2" />
+  <Parameter id="param_calculation" column="11" value="eString:E-Mail" />
+  <Parameter id="ColumnWidth" column="11" value="eInteger:2" />
 </Parameters>

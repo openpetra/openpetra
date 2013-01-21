@@ -30,21 +30,17 @@
             Dock: Fill
             ParameterName: param_partner_source
         grpSelection:
-            Dock: Top
             Label: Selection
             Controls: [dtpStartDate, dtpEndDate, txtMinimumAmount]
         grpCurrencySelection:
-            Dock: Top
             Label: Select Currency
             Controls: [cmbCurrency]
             ParameterName: param_detail
         rgrSorting:
-            Dock: Top
             Label: Sort
             Controls: [rbtSortByPartnerName, rbtSortByDonorKey, rbtSortByAmount]
             ParameterName: param_sort_by
         grpExcludePartners:
-            Dock: Top
             Label: Exclude Partners
             Controls: [chkExcludeAnonymousDonors, chkExcludeNoSolicitation]
         lblLedger:

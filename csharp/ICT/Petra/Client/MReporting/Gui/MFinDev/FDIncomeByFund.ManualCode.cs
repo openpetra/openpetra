@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,9 @@
 //
 using System;
 using System.Windows.Forms;
-using Ict.Petra.Shared.Interfaces; // Implicit reference
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -43,7 +45,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             {
                 FLedgerNumber = value;
 
-                TRemote.MFinance.Reporting.UIConnectors.SelectLedger(FLedgerNumber);
                 TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
                 TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYearQuarter, FLedgerNumber);
 

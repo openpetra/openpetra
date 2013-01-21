@@ -1,0 +1,8 @@
+,Not a driver.,false,?,false,?,?,?,?,?
+1,Accepted Driver with a first driver rating,false,?,false,?,?,?,?,?
+2,Accepted Driver with a second driver rating,false,?,false,?,?,?,?,?
+A,Very good driver; test at congress,false,?,false,?,?,?,?,?
+B,Average driver; test at congress,false,?,false,?,?,?,?,?
+C,Below avg. driver; test at congress,false,?,false,?,?,?,?,?
+R,Rejected as a driver by home office,false,?,false,?,?,?,?,?
+U,Unknown driver status,false,?,false,?,?,?,?,?

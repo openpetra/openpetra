@@ -171,6 +171,71 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
+        /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
+        /// <para>
+        /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+        /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+        /// this Argument.
+        /// </para>
+        /// </param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        {
+            bool ReturnValue = true;
+
+// TODO
+//        bool ReturnValue = false;
+//        Control ControlToValidate;
+//        if (AValidateSpecificControl != null)
+//        {
+//            ControlToValidate = AValidateSpecificControl;
+//        }
+//        else
+//        {
+//            ControlToValidate = this.ActiveControl;
+//        }
+//
+//        GetDataFromControls(FMainDS.PSubscription[0]);
+//
+//            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+//            ValidateDataManual(FMainDS.PSubscription[0]);
+//
+//            if (AProcessAnyDataValidationErrors)
+//            {
+//                // Only process the Data Validations here if ControlToValidate is not null.
+//                // It can be null if this.ActiveControl yields null - this would happen if no Control
+//                // on this UserControl has got the Focus.
+//                if (ControlToValidate != null)
+//                {
+//                    if(ControlToValidate.FindUserControlOrForm(true) == this)
+//                    {
+//                        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+//                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+//                    }
+//                    else
+//                    {
+//                        ReturnValue = true;
+//                    }
+//                }
+//            }
+//
+//        if(ReturnValue)
+//        {
+//            // Remove a possibly shown Validation ToolTip as the data validation succeeded
+//            FPetraUtilsObject.ValidationToolTip.RemoveAll();
+//        }
+
+            return ReturnValue;
+        }
+
         #endregion
 
         #region Helper functions

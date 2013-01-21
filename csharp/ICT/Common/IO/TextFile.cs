@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,10 +33,10 @@ namespace Ict.Common.IO
     public delegate void ProcessFileType(string filename);
 
     /// Some useful functions for dealing with text files;
-    /// only used for PetraTools at the moment
+    /// only used for BuildTools at the moment
     public class TTextFile
     {
-        /// todo: exclude directory names, e.g. CSV, see PetraTools\ProgressConverter\AnalyseProgressFiles.cs
+        /// todo: exclude directory names, e.g. CSV, see BuildTools\ProgressConverter\AnalyseProgressFiles.cs
         public static void RecurseFilesAndDirectories(string APath, string AExt, ProcessFileType func)
         {
             string[] listOfDirectories = System.IO.Directory.GetDirectories(APath);
@@ -80,6 +80,32 @@ namespace Ict.Common.IO
             StreamWriter sw = new StreamWriter(filename, false, oldEncoding);
             sw.Write(lines.Replace("\r", "").Replace("\n", "\r\n"));
             sw.Close();
+        }
+
+        /// <summary>
+        /// convert a text file from a given code page to Unicode
+        /// </summary>
+        /// <param name="AFilename"></param>
+        /// <param name="AEncodingCodePage"></param>
+        public static void ConvertToUnicode(String AFilename, String AEncodingCodePage)
+        {
+            Encoding SourceEncoding = Encoding.Default;
+
+            try
+            {
+                SourceEncoding = Encoding.GetEncoding(Convert.ToInt32(AEncodingCodePage));
+            }
+            catch (Exception)
+            {
+                SourceEncoding = Encoding.GetEncoding(AEncodingCodePage);
+            }
+
+            StreamReader reader = new StreamReader(AFilename, SourceEncoding);
+            string Content = reader.ReadToEnd();
+            reader.Close();
+            StreamWriter writer = new StreamWriter(AFilename, false, Encoding.Unicode);
+            writer.Write(Content);
+            writer.Close();
         }
 
         /// <summary>
@@ -216,17 +242,7 @@ namespace Ict.Common.IO
                 if (System.IO.File.Exists(AOrigFilename))
                 {
                     // create backup of original file
-                    int backupnr = 0;
-
-                    while (File.Exists(AOrigFilename + "." + backupnr.ToString() + ".bak"))
-                    {
-                        backupnr++;
-                    }
-
-                    File.Copy(AOrigFilename, AOrigFilename + "." + backupnr.ToString() + ".bak");
-
-                    // delete original file
-                    System.IO.File.Delete(AOrigFilename);
+                    TFileHelper.MoveToBackup(AOrigFilename);
                 }
 
                 System.IO.File.Move(NewFilename, AOrigFilename);
@@ -253,7 +269,7 @@ namespace Ict.Common.IO
 
         /// StreamReader DetectEncodingFromByteOrderMarks does not work for ANSI?
         /// therefore we have to detect the encoding by comparing the first bytes of the file
-        public static Encoding GetFileEncoding(String AFilename)
+        public static Encoding GetFileEncoding(String AFilename, Encoding ADefaultEncoding = null)
         {
             FileInfo fileinfo = new FileInfo(AFilename);
 
@@ -288,7 +304,12 @@ namespace Ict.Common.IO
                 fs.Close();
             }
 
-            return Encoding.Default;
+            if (ADefaultEncoding == null)
+            {
+                return Encoding.Default;
+            }
+
+            return ADefaultEncoding;
         }
     }
 }

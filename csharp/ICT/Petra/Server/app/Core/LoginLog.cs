@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -86,6 +86,7 @@ namespace Ict.Petra.Server.App.Core.Security
             LoginDateTime = DateTime.Now;
 
             // Set DataRow values
+            NewLoginRow.LoginProcessId = -1;
             NewLoginRow.UserId = AUserID.ToUpper();
             NewLoginRow.LoginStatus = ALoginStatus;
             NewLoginRow.LoginDate = LoginDateTime;
@@ -101,6 +102,13 @@ namespace Ict.Petra.Server.App.Core.Security
 
             // Save DataRow
             WriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            // especially in the unit tests, we need to allow several logins per minute, without unique key violation
+            while (SLoginAccess.Exists(NewLoginRow.UserId, NewLoginRow.LoginDate, NewLoginRow.LoginTime, WriteTransaction))
+            {
+                NewLoginRow.LoginTime++;
+            }
+
             SubmissionOK = SLoginAccess.SubmitChanges(LoginTable, WriteTransaction, out AVerificationResult);
 
             if (SubmissionOK)
@@ -129,7 +137,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 // ROWID for postgresql: see http://archives.postgresql.org/sydpug/2005-05/msg00002.php
                 AProcessID =
-                    Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT s_login_process_id_r FROM PUB_" +
+                    Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT " + SLoginTable.GetLoginProcessIdDBName() + " FROM PUB_" +
                             TTypedDataTable.GetTableNameSQL(SLoginTable.TableId) +
                             ' ' +
                             "WHERE " + SLoginTable.GetUserIdDBName() + " = ? AND " + SLoginTable.GetLoginDateDBName() + " = ? AND " +
@@ -141,7 +149,6 @@ namespace Ict.Petra.Server.App.Core.Security
                 throw;
             }
 
-            // $IFDEF DEBUGMODE Console.WriteLine('SLogin RowID: ' + AProcessID.ToString);$ENDIF
             DBAccess.GDBAccessObj.CommitTransaction();
             return SubmissionOK;
         }

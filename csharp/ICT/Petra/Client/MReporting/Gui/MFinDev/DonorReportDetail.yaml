@@ -20,7 +20,7 @@
     Controls:
         tpgGeneralSettings:
             Label: GeneralSettings
-            Controls: [lblLedger, rgrPartnerSelection, grpDateSelection, grpCurrencySelection, rgrSorting]
+            Controls: [pnlTitle, rgrPartnerSelection, grpDateSelection, grpCurrencySelection, rgrSorting]
         tpgColumns:
             Label: Columns
             Controls: [ucoReportColumns]
@@ -47,6 +47,9 @@
             Label: Sort
             Controls: [rbtSortByPartnerName, rbtSortByDonorKey]
             ParameterName: param_sort_by
+        pnlTitle:
+            Controls: [lblLedger]
+            Dock: Top
         lblLedger:
             Label: Ledger
             

@@ -1,0 +1,49 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PmSpecialNeed
+    Controls:
+        pnlContent: {ControlsOrientation=horizontal}
+            Controls: [pnlMedicalNeeds, pnlDietaryNeeds, pnlOtherNeeds]              
+            Dock: Fill
+       
+        pnlMedicalNeeds:
+            Controls: [lblMedicalNeeds, txtMedicalComment]
+                   
+        lblMedicalNeeds:
+        txtMedicalComment:
+            Width: 165
+            Height: 340
+            Multiline: true
+            ScrollBars: Vertical
+            NoLabel: true
+            
+        pnlDietaryNeeds:
+            Controls: [lblDietaryNeeds, txtDietaryComment, chkVegetarianFlag]
+
+        lblDietaryNeeds:
+        txtDietaryComment:
+            Width: 165
+            Height: 340
+            Multiline: true
+            ScrollBars: Vertical
+            NoLabel: true
+            
+        chkVegetarianFlag:
+            Label: Vegetarian
+            
+        pnlOtherNeeds:
+            Controls: [lblOtherNeeds, txtOtherSpecialNeed]            
+            
+        lblOtherNeeds:
+        txtOtherSpecialNeed:
+            Width: 165
+            Height: 340
+            Multiline: true
+            ScrollBars: Vertical
+            NoLabel: true

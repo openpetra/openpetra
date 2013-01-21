@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="param_currency" value="eString:BaseCurrency" />
+  <Parameter id="param_amount_per_single_gift" value="eBoolean:false" />
+  <Parameter id="param_min_gift_amount" value="eString:0.00" />
+  <Parameter id="param_max_gift_amount" value="eString:999999999.99" />
+  <Parameter id="param_min_number_gifts" value="eInteger:1" />
+  <Parameter id="param_max_number_gifts" value="eInteger:999999" />
+  <Parameter id="param_active" value="eBoolean:true" />
+  <Parameter id="param_mailing_addresses_only" value="eBoolean:true" />
+  <Parameter id="param_families_only" value="eBoolean:true" />
+  <Parameter id="param_exclude_no_solicitations" value="eBoolean:true" />
+</Parameters>

@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PInterest
     CacheableTable: InterestList
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 713
@@ -31,20 +31,11 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [pnlInterest]
-                Row1: [pnlDescription]            
-        pnlInterest:
-            Dock: Bottom
-            Controls:
-                Row0: [txtDetailInterest, cmbDetailCategory]                
-            Margin: 22,0,0,0
-        pnlDescription:
-            Controls:
-                Row0: [txtDetailDescription]
-            ColSpan: 3
-        txtDetailInterest: {Label=Interest}
+                Row0: [txtDetailInterest, cmbDetailCategory]
+                Row1: [txtDetailDescription]            
+        txtDetailInterest: {Label=Interest, CharacterCasing=Upper}
         cmbDetailCategory: {Label=Category, List=InterestCategoryList}
-        txtDetailDescription: {Width=357}
+        txtDetailDescription: {Width=357, ColSpan=2}
     Toolbar:
         tbbNew: 
             Label: New Partner Interest

@@ -1,6 +1,7 @@
 RootNode:
     BaseClass: UserControl
-    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
+    UsingNamespaces: [Ict.Common.Data]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS
     UtilObjectClass: TFrmPetraReportingUtils
     FormType: edit

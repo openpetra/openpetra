@@ -4,13 +4,11 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup.Gift
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     DetailTable: AMotivationDetail
-    CacheableTable: MotivationList
-    CacheableTableSpecificFilter: Ledger
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data,Ict.Petra.Shared.MFinance.Gift.Validation]
     FormType: edit
-    Template: windowMaintainCacheableTable
+    Template: windowEdit
     WindowWidth: 660
-    WindowHeight: 700
+    WindowHeight: 550
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -28,24 +26,40 @@ RootNode:
             Dock: Fill
             Columns: [DetailMotivationGroupCode, DetailMotivationDetailCode, DetailMotivationDetailDesc, DetailAccountCode, DetailCostCentreCode, DetailMotivationStatus, DetailReceipt]
             CustomColumns:
+                DetailMotivationGroupCode: {Label=Group}
+                DetailMotivationDetailCode: {Label=Motivation Detail}
+                DetailMotivationDetailDesc: {Label=Description}
                 DetailMotivationStatus: {Label=Active, Type=Boolean}            
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailMotivationGroupCode]
+                Row0: [cmbDetailMotivationGroupCode]
                 Row1: [txtDetailMotivationDetailCode, txtDetailMotivationDetailDesc]
-                Row3: [cmbDetailAccountCode]
-                Row4: [cmbDetailCostCentreCode]
-                Row5: [chkDetailMotivationStatus, chkDetailReceipt]
-            ColWidths: [1=Fixed:200]
-        txtDetailMotivationGroupCode: {Label=Group}
+                Row3: [cmbDetailAccountCode, chkDetailMotivationStatus]
+                Row4: [cmbDetailCostCentreCode, chkDetailReceipt]
+                Row5: [lblFeePayable, lblFeeReceivable]
+                Row6: [clbDetailFeesPayable, clbDetailFeesReceivable]
+            ColWidths: [1=Fixed:200, 2=Fixed:120]
+        cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
-        txtDetailMotivationDetailDesc: {Label=Description, Width=195}
-        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, ColSpan=3}
-        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ColSpan=3}
+        txtDetailMotivationDetailDesc: {Label=Description, Width=173}
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Width=200}
+        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Width=200}
         chkDetailMotivationStatus: {Label=Active}
         chkDetailReceipt: {Label=Print Receipt}
+        lblFeePayable:
+        lblFeeReceivable:
+        clbDetailFeesPayable:
+            NoLabel: true
+            List: UserDefinedList
+            Height:140
+            Width:298
+        clbDetailFeesReceivable:
+            NoLabel: true
+            List: UserDefinedList
+            Height:140
+            Width:298
     Toolbar:
         tbbNew:
             Label: New Motivation Detail

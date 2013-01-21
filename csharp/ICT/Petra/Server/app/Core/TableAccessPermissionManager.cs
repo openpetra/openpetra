@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -66,12 +66,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
-                    {
-                        Console.WriteLine("TTableAccessPermissionManager.LoadTableAccessPermissions: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(8, "TTableAccessPermissionManager.LoadTableAccessPermissions: committed own transaction.");
                 }
             }
             return ReturnValue;

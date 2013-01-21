@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -433,14 +433,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void ShowForExistingPartner(IntPtr AParentFormHandle)
+        public void ShowForExistingPartner(Form AParentForm)
         {
             TFrmPartnerEdit frmPEDS;
 
             // MessageBox.Show('From Thread: about to show PartnerEdit screen for existing Partner...');
             try
             {
-                frmPEDS = new TFrmPartnerEdit(AParentFormHandle);
+                frmPEDS = new TFrmPartnerEdit(AParentForm);
                 frmPEDS.SetParameters(FScreenMode,
                     FPartnerKey,
                     FSiteKeyForSelectingPartnerLocation,
@@ -461,14 +461,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void ShowForNewPartner(IntPtr AParentFormHandle)
+        public void ShowForNewPartner(Form AParentForm)
         {
             TFrmPartnerEdit frmPEDS;
 
             // MessageBox.Show('From Thread: about to show PartnerEdit screen for new Partner...');
             try
             {
-                frmPEDS = new TFrmPartnerEdit(AParentFormHandle);
+                frmPEDS = new TFrmPartnerEdit(AParentForm);
                 frmPEDS.SetParameters(FScreenMode,
                     FNewPartnerPartnerClass,
                     FNewPartnerSiteKey,

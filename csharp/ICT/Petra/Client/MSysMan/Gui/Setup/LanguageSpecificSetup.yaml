@@ -1,0 +1,93 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Month Names For Different Languages
+    Namespace: Ict.Petra.Client.MSysMan.Gui.Setup
+    DetailTable: SLanguageSpecific
+    CacheableTable: LanguageSpecificList
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan.Validation, Ict.Petra.Shared.MCommon.Data]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 750
+    WindowHeight: 600
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailLanguageCode, DetailMonthName1, DetailMonthName2, DetailMonthName3, DetailMonthName4, DetailMonthName5, DetailMonthName6, DetailMonthName7, DetailMonthName8, DetailMonthName9, DetailMonthName10, DetailMonthName11, DetailMonthName12]
+            CustomColumns:
+                DetailMonthName1: {Label="Name of Month 1"}
+                DetailMonthName2: {Label="Name of Month 2"}
+                DetailMonthName3: {Label="Name of Month 3"}
+                DetailMonthName4: {Label="Name of Month 4"}
+                DetailMonthName5: {Label="Name of Month 5"}
+                DetailMonthName6: {Label="Name of Month 6"}
+                DetailMonthName7: {Label="Name of Month 7"}
+                DetailMonthName8: {Label="Name of Month 8"}
+                DetailMonthName9: {Label="Name of Month 9"}
+                DetailMonthName10: {Label="Name of Month 10"}
+                DetailMonthName11: {Label="Name of Month 11"}
+                DetailMonthName12: {Label="Name of Month 12"}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [pnlLanguage]
+                Row1: [lblHeading1, lblHeading2, lblHeading3, lblHeading4]
+                Row2: [txtDetailMonthName1, txtDetailMonthNameShort1, txtDetailMonthName7, txtDetailMonthNameShort7]
+                Row3: [txtDetailMonthName2, txtDetailMonthNameShort2, txtDetailMonthName8, txtDetailMonthNameShort8]
+                Row4: [txtDetailMonthName3, txtDetailMonthNameShort3, txtDetailMonthName9, txtDetailMonthNameShort9]
+                Row5: [txtDetailMonthName4, txtDetailMonthNameShort4, txtDetailMonthName10, txtDetailMonthNameShort10]
+                Row6: [txtDetailMonthName5, txtDetailMonthNameShort5, txtDetailMonthName11, txtDetailMonthNameShort11]
+                Row7: [txtDetailMonthName6, txtDetailMonthNameShort6, txtDetailMonthName12, txtDetailMonthNameShort12]
+            ColWidths: [3=Fixed:180]
+        lblHeading1: {Text=Full Name, Align=Right}
+            Padding: 0,0,40,0
+        lblHeading2: {Text=Abbr}
+        lblHeading3: {Text=Full Name, Align=Right}
+            Padding: 0,0,40,0
+        lblHeading4: {Text=Abbr}
+        txtDetailMonthName1: {Label=Name of Month 1, Width=100}
+        txtDetailMonthName2: {Label=Name of Month 2, Width=100}
+        txtDetailMonthName3: {Label=Name of Month 3, Width=100}
+        txtDetailMonthName4: {Label=Name of Month 4, Width=100}
+        txtDetailMonthName5: {Label=Name of Month 5, Width=100}
+        txtDetailMonthName6: {Label=Name of Month 6, Width=100}
+        txtDetailMonthName7: {Label=Name of Month 7, Width=100}
+        txtDetailMonthName8: {Label=Name of Month 8, Width=100}
+        txtDetailMonthName9: {Label=Name of Month 9, Width=100}
+        txtDetailMonthName10: {Label=Name of Month 10, Width=100}
+        txtDetailMonthName11: {Label=Name of Month 11, Width=100}
+        txtDetailMonthName12: {Label=Name of Month 12, Width=100}
+        txtDetailMonthNameShort1: {NoLabel=true, Width=50}
+        txtDetailMonthNameShort2: {NoLabel=true, Width=50}
+        txtDetailMonthNameShort3: {NoLabel=true, Width=50}
+        txtDetailMonthNameShort4: {NoLabel=true, Width=50}
+        txtDetailMonthNameShort5: {NoLabel=true, Width=50}
+        txtDetailMonthNameShort6: {NoLabel=true, Width=50}
+        txtDetailMonthNameShort7: {NoLabel=true, Width=50}
+        txtDetailMonthNameShort8: {NoLabel=true, Width=50}
+        txtDetailMonthNameShort9: {NoLabel=true, Width=50}
+        txtDetailMonthNameShort10: {NoLabel=true, Width=50}
+        txtDetailMonthNameShort11: {NoLabel=true, Width=50}
+        txtDetailMonthNameShort12: {NoLabel=true, Width=50}
+        pnlLanguage: {ColSpan = 4}
+            Controls:
+                Row0: [cmbDetailLanguageCode]
+            Padding: 200,0,0,0
+            Margin: 0
+        cmbDetailLanguageCode: {List=LanguageCodeList}
+        Empty:
+    Toolbar:
+        tbbNew:
+            Label: New Month Names for Different Language

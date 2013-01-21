@@ -13,7 +13,8 @@ RootNode:
         # it seems to be necessary to have such a first card, the monitorValue function does not seem to work on the first page
         aspWelcome:
             Label: Welcome
-            Controls: [lblWelcome, lblWelcome2, hidRegistrationOffice, hidRegistrationCountryCode, hidEventIdentifier, hidRole, hidCity, hidPostCode, hidLastName, hidFirstName, hidStreet]
+            Controls: [lblWelcome, lblWelcome2]
+            HiddenValues: [hidRegistrationOffice, hidRegistrationCountryCode, hidEventIdentifier, hidRole, hidCity, hidPostCode, hidLastName, hidFirstName, hidStreet]
         lblWelcome: {Label="Welcome to the registration for participants aged between 23 and 28. For other age groups, please go back to the main website."}
         lblWelcome2: {Label="Please click on &quot;next&quot; to start your application!"}
         hidRegistrationOffice: {value=43000000}

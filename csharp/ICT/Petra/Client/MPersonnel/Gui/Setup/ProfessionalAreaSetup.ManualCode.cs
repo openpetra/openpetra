@@ -33,6 +33,7 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
@@ -78,6 +79,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             {
                 dtpDetailQualificationDate.Date = DateTime.Now.Date;
             }
+        }
+
+        private void ValidateDataDetailsManual(PtQualificationAreaRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedValidation_CacheableDataTables.ValidateProfessionalArea(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtDriverStatus
     CacheableTable: DriverStatusList
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
@@ -41,7 +41,7 @@ RootNode:
         txtDetailCode: {Label=Driver Status Code, CharacterCasing=Upper}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         txtDetailDescription: {Width=256}
-        dtpDetailUnassignableDate: {Label=Unassignable Date}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

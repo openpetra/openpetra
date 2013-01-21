@@ -1,20 +1,23 @@
-43,1,January,2010-1-1,2010-1-31,2010-6-15,2010-6-15,?,?,?,?
-43,2,February,2010-2-1,2010-2-28,2010-6-15,2010-6-15,?,?,?,?
-43,3,March,2010-3-1,2010-3-31,2010-6-15,2010-6-15,?,?,?,?
-43,4,April,2010-4-1,2010-4-30,2010-6-15,2010-6-15,?,?,?,?
-43,5,May,2010-5-1,2010-5-31,2010-6-15,2010-6-15,?,?,?,?
-43,6,June,2010-6-1,2010-6-30,2010-6-15,2010-6-15,?,?,?,?
-43,7,July,2010-7-1,2010-7-31,2010-6-15,2010-6-15,?,?,?,?
-43,8,August,2010-8-1,2010-8-31,2010-6-15,2010-6-15,?,?,?,?
-43,9,September,2010-9-1,2010-9-30,2010-6-15,2010-6-15,?,?,?,?
-43,10,October,2010-10-1,2010-10-31,2010-6-15,2010-6-15,?,?,?,?
-43,11,November,2010-11-1,2010-11-30,2010-6-15,2010-6-15,?,?,?,?
-43,12,December,2010-12-1,2010-12-31,2010-6-15,2010-6-15,?,?,?,?
-43,13,January,2011-1-1,2011-1-31,2010-6-15,2010-6-15,?,?,?,?
-43,14,February,2011-2-1,2011-2-28,2010-6-15,2010-6-15,?,?,?,?
-43,15,March,2011-3-1,2011-3-31,2010-6-15,2010-6-15,?,?,?,?
-43,16,April,2011-4-1,2011-4-30,2010-6-15,2010-6-15,?,?,?,?
-43,17,May,2011-5-1,2011-5-31,2010-6-15,2010-6-15,?,?,?,?
-43,18,June,2011-6-1,2011-6-30,2010-6-15,2010-6-15,?,?,?,?
-43,19,July,2011-7-1,2011-7-31,2010-6-15,2010-6-15,?,?,?,?
-43,20,August,2011-8-1,2011-8-31,2010-6-15,2010-6-15,?,?,?,?
+43,1,January,${datetime::get-year(datetime::now())}-1-1,${datetime::get-year(datetime::now())}-1-31,2010-6-15,2010-6-15,?,?,?,?
+43,2,February,${datetime::get-year(datetime::now())}-2-1,${datetime::get-year(datetime::now())}-2-${datetime::get-days-in-month(datetime::get-year(datetime::now()), 2)},2010-6-15,2010-6-15,?,?,?,?
+43,3,March,${datetime::get-year(datetime::now())}-3-1,${datetime::get-year(datetime::now())}-3-31,2010-6-15,2010-6-15,?,?,?,?
+43,4,April,${datetime::get-year(datetime::now())}-4-1,${datetime::get-year(datetime::now())}-4-30,2010-6-15,2010-6-15,?,?,?,?
+43,5,May,${datetime::get-year(datetime::now())}-5-1,${datetime::get-year(datetime::now())}-5-31,2010-6-15,2010-6-15,?,?,?,?
+43,6,June,${datetime::get-year(datetime::now())}-6-1,${datetime::get-year(datetime::now())}-6-30,2010-6-15,2010-6-15,?,?,?,?
+43,7,July,${datetime::get-year(datetime::now())}-7-1,${datetime::get-year(datetime::now())}-7-31,2010-6-15,2010-6-15,?,?,?,?
+43,8,August,${datetime::get-year(datetime::now())}-8-1,${datetime::get-year(datetime::now())}-8-31,2010-6-15,2010-6-15,?,?,?,?
+43,9,September,${datetime::get-year(datetime::now())}-9-1,${datetime::get-year(datetime::now())}-9-30,2010-6-15,2010-6-15,?,?,?,?
+43,10,October,${datetime::get-year(datetime::now())}-10-1,${datetime::get-year(datetime::now())}-10-31,2010-6-15,2010-6-15,?,?,?,?
+43,11,November,${datetime::get-year(datetime::now())}-11-1,${datetime::get-year(datetime::now())}-11-30,2010-6-15,2010-6-15,?,?,?,?
+43,12,December,${datetime::get-year(datetime::now())}-12-1,${datetime::get-year(datetime::now())}-12-31,2010-6-15,2010-6-15,?,?,?,?
+43,13,January,${datetime::get-year(datetime::now()) + 1}-1-1,${datetime::get-year(datetime::now()) + 1}-1-31,2010-6-15,2010-6-15,?,?,?,?
+43,14,February,${datetime::get-year(datetime::now()) + 1}-2-1,${datetime::get-year(datetime::now()) + 1}-2-${datetime::get-days-in-month(datetime::get-year(datetime::now())+1, 2)},2010-6-15,2010-6-15,?,?,?,?
+43,15,March,${datetime::get-year(datetime::now()) + 1}-3-1,${datetime::get-year(datetime::now()) + 1}-3-31,2010-6-15,2010-6-15,?,?,?,?
+43,16,April,${datetime::get-year(datetime::now()) + 1}-4-1,${datetime::get-year(datetime::now()) + 1}-4-30,2010-6-15,2010-6-15,?,?,?,?
+43,17,May,${datetime::get-year(datetime::now()) + 1}-5-1,${datetime::get-year(datetime::now()) + 1}-5-31,2010-6-15,2010-6-15,?,?,?,?
+43,18,June,${datetime::get-year(datetime::now()) + 1}-6-1,${datetime::get-year(datetime::now()) + 1}-6-30,2010-6-15,2010-6-15,?,?,?,?
+43,19,July,${datetime::get-year(datetime::now()) + 1}-7-1,${datetime::get-year(datetime::now()) + 1}-7-31,2010-6-15,2010-6-15,?,?,?,?
+43,20,August,${datetime::get-year(datetime::now()) + 1}-8-1,${datetime::get-year(datetime::now()) + 1}-8-31,2010-6-15,2010-6-15,?,?,?,?
+43,21,September,${datetime::get-year(datetime::now()) + 1}-9-1,${datetime::get-year(datetime::now()) + 1}-9-30,2010-6-15,2010-6-15,?,?,?,?
+43,22,October,${datetime::get-year(datetime::now()) + 1}-10-1,${datetime::get-year(datetime::now()) + 1}-10-31,2010-6-15,2010-6-15,?,?,?,?
+43,23,November,${datetime::get-year(datetime::now()) + 1}-11-1,${datetime::get-year(datetime::now()) + 1}-11-30,2010-6-15,2010-6-15,?,?,?,?

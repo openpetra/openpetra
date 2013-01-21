@@ -1,0 +1,65 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Payable Administration Grants
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DetailTable: AFeesPayable
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 790
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+            Action: actNew
+        grdDetails:
+            Dock: Fill
+            Columns: [FeeCode, FeeDescription, ChargeOption, ChargePercentage, ChargeAmount, DrAccountCode, CostCentreCode, AccountCode]
+            CustomColumns: 
+                FeeCode: {Label=Fee Code}
+                FeeDescription: {Label=Description}
+                ChargeOption: {Label=Charge Option}
+                ChargePercentage: {Label=Charge Percentage, Type=Currency(2)}
+                ChargeAmount: {Label=Charge Amount, Type=Currency(2)}                
+                DrAccountCode: {Label=DR Account Code}
+                CostCentreCode: {Label=Cost Centre Code}
+                AccountCode: {Label=Account Code}            
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailFeeCode, txtDetailFeeDescription]
+                Row1: [cmbDetailChargeOption, txtDetailChargePercentage, txtDetailChargeAmount]
+                Row2: [grpAssignment]
+        txtDetailFeeCode: {Label=Fee Code, CharacterCasing=Upper}
+        txtDetailFeeDescription: {Label=Description, ColSpan=2, Width=320}
+        cmbDetailChargeOption:  {Label=Charge Option, OnChange=ChargeOptionChanged}
+            OptionalValues: [Minimum, Maximum, Fixed, Percentage]
+        txtDetailChargePercentage:  {Label=Charge Percentage, Format=PercentDecimal}
+        txtDetailChargeAmount:  {Label=Charge Amount, Format=Decimal, Width=111, LabelWidth=130}
+        cmbDetailCostCentreCode:  {NoLabel=True, List=UserDefinedList}
+        cmbDetailAccountCode:  {NoLabel=True, List=UserDefinedList, Width=250}
+        cmbDetailDrAccountCode:  {Label=Account, List=UserDefinedList}
+        txtReceivingFund: {Label=Cost Centre, Enabled=False, DefaultValue=Receiving Fund, Width=200}
+        lblToBeDebited: 
+            Padding:96,0,0,0
+        lblToBeCredited:
+        grpAssignment: {ColSpan=3}
+            Controls: 
+                Row0: [lblToBeDebited, lblToBeCredited]
+                Row1: [txtReceivingFund, cmbDetailCostCentreCode]
+                Row2: [cmbDetailDrAccountCode, cmbDetailAccountCode]
+
+    Toolbar:
+        tbbNew:
+            Label: New Payable Admin. Grant

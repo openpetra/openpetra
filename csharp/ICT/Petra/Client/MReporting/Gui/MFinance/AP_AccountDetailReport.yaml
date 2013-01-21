@@ -6,7 +6,7 @@
     WindowHeight: 480
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
-        XMLFILES: [Finance\\\\AP_accountdetail.xml,Finance\\\\finance.xml,common.xml]
+        XMLFILES: [Finance/AccountsPayable/AP_accountdetail.xml,Finance/finance.xml,common.xml]
         REPORTNAME: APAccountDetailReport
         CURRENTREPORT: APAccountDetailReport
         SETAVAILABLEFUNCTIONS:
@@ -34,12 +34,10 @@
             Label: Ledger
         grpDateSelection:
             Label: Select Date
-            Dock: Top
             Controls: [dtpFromDate, dtpToDate]
         
         grpAccountSelection:
             Label: Select Accounts
-            Dock: Top
             Controls: [cmbAccountFrom, cmbAccountTo]
         
         dtpFromDate:

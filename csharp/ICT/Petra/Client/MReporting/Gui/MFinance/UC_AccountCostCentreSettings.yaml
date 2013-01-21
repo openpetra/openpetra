@@ -11,6 +11,8 @@ RootNode:
             ActionClick: UnselectAllCostCentres
         actUnselectAllAccountCodes:
             ActionClick: UnselectAllAccountCodes
+        actSelectAllReportingCostCentres:
+            ActionClick: SelectAllReportingCostCentres
     Controls:
         pnlContent:
             Controls: [rgrAccountCodes, rgrCostCentre]
@@ -37,13 +39,16 @@ RootNode:
             Controls: [cmbFromCostCentre, cmbToCostCentre]
         rbtCostCentreFromList:
             Label: From List
-            Controls: [clbCostCentres, btnUnselectAllCostCentres]
-            ControlsOrientation: horizontal
+            Controls: [pnlCostCentreFromList]
+        pnlCostCentreFromList:
+            Controls: 
+                Row0: [clbCostCentres, btnUnselectAllCostCentres]
+                Row1: [cmbSummaryCostCentres]
+                Row2: [btnSelectAllReportingCostCentres]
         
         clbAccountCodes: 
             List: UserDefinedList
             NoLabel:true
-            Dock: Fill
             Width: 365
         btnUnselectAllAccountCodes: 
             Label: Unselect All
@@ -60,13 +65,17 @@ RootNode:
         cmbToCostCentre:
             List: UserDefinedList
             Label: To
+        cmbSummaryCostCentres:
+            ColSpan: 2
+            List: UserDefinedList
+            Label: Summary Cost Centres
         clbCostCentres: 
             List: UserDefinedList
             NoLabel:true
-            Dock: Fill
             Width: 365
         btnUnselectAllCostCentres: 
             Label: Unselect All
             Action: actUnselectAllCostCentres
-        
+        btnSelectAllReportingCostCentres:
+            Label: Tick all reporting cost centres
      

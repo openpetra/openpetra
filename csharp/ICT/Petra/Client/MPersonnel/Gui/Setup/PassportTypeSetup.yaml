@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtPassportType
     CacheableTable: PassportTypeList
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
@@ -38,7 +38,7 @@ RootNode:
         txtDetailCode: {Label=Passport Type, CharacterCasing=Upper}
         txtDetailDescription: {Label=Description, Width=288}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

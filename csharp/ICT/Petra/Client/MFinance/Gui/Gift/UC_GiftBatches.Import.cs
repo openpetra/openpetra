@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, timop, dougm
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,12 +25,15 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Windows.Forms;
+using System.Threading;
 
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -61,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             dialog.Title = Catalog.GetString("Import batches from spreadsheet file");
             dialog.Filter = Catalog.GetString("Gift Batches files (*.csv)|*.csv");
-            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -72,7 +75,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (impOptions.Length > 1)
                 {
-                    FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
                 }
 
                 FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
@@ -84,19 +87,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     requestParams.Add("ALedgerNumber", FLedgerNumber);
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
-                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European");
+                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                     requestParams.Add("NewLine", Environment.NewLine);
 
-                    String importString;
-                    TVerificationResultCollection AMessages;
+                    String importString = File.ReadAllText(dialog.FileName);
+                    TVerificationResultCollection AMessages = new TVerificationResultCollection();
 
+                    Thread ImportThread = new Thread(() => ImportGiftBatches(
+                            requestParams,
+                            importString,
+                            out AMessages,
+                            out ok));
 
-                    importString = File.ReadAllText(dialog.FileName);
-
-                    ok = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatches(
-                        requestParams,
-                        importString,
-                        out AMessages);
+                    TProgressDialog ImportDialog = new TProgressDialog(ImportThread);
+                    ImportDialog.ShowDialog();
 
                     ShowMessages(AMessages);
                 }
@@ -115,11 +119,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// Wrapper method to handle returned bool value from remoting call to ImportGiftBatches
+        /// </summary>
+        /// <param name="ARequestParams"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="AMessages"></param>
+        /// <param name="ok"></param>
+        private void ImportGiftBatches(Hashtable ARequestParams, string AImportString,
+            out TVerificationResultCollection AMessages, out bool ok)
+        {
+            TVerificationResultCollection AResultMessages;
+            bool ImportIsSuccessful;
+
+            ImportIsSuccessful = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatches(
+                ARequestParams,
+                AImportString,
+                out AResultMessages);
+
+            ok = ImportIsSuccessful;
+            AMessages = AResultMessages;
+        }
+
         private void SaveUserDefaults(OpenFileDialog dialog, String impOptions)
         {
             TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
             impOptions = FdlgSeparator.SelectedSeparator;
-            impOptions += FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European";
+            impOptions += FdlgSeparator.NumberFormat;
             TUserDefaults.SetDefault("Imp Options", impOptions);
             TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);
             TUserDefaults.SaveChangedUserDefaults();

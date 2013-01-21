@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,8 +38,82 @@ namespace Ict.Common.IO
     public class TImportExportDialogs
     {
         /// <summary>
-        /// export data to a range of different file formats;
+        /// Select a path and filename for file export
+        /// </summary>
+        /// <param name="ADialogTitle"></param>
+        /// <returns>Local path, or empty sctring if no path selected.</returns>
+        public static String GetExportFilename(string ADialogTitle)
+        {
+            SaveFileDialog DialogSave = new SaveFileDialog();
+
+            DialogSave.DefaultExt = "yml";
+            DialogSave.Filter = Catalog.GetString(
+                "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv");
+            DialogSave.AddExtension = true;
+            DialogSave.RestoreDirectory = true;
+            DialogSave.Title = ADialogTitle;
+
+            if (DialogSave.ShowDialog() == DialogResult.OK)
+            {
+                return DialogSave.FileName.ToLower();
+            }
+            else
+            {
+                return String.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Put this (ext formatted) string onto a file
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <param name="FileName"></param>
+        /// <returns></returns>
+        public static bool ExportTofile(string doc, string FileName)
+        {
+            if (FileName.EndsWith("ext"))
+            {
+                StreamWriter outfile = new StreamWriter(FileName);
+                outfile.Write(doc);
+                outfile.Close();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Put this (XML formatted) data on a local file
+        /// </summary>
+        /// <param name="doc">XML data to be exported</param>
+        /// <param name="FileName">Filename from GetExportFilename, above</param>
+        /// <returns>true if successful</returns>
+        public static bool ExportTofile(XmlDocument doc, string FileName)
+        {
+            if (FileName.EndsWith("xml"))
+            {
+                doc.Save(FileName);
+                return true;
+            }
+            else if (FileName.EndsWith("csv"))
+            {
+                return TCsv2Xml.Xml2Csv(doc, FileName);
+            }
+            else if (FileName.EndsWith("yml"))
+            {
+                return TYml2Xml.Xml2Yml(doc, FileName);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Export data to a range of different file formats;
         /// ask the user for filename and file format
+        ///
+        /// NOTE this has been replaced by the two-part scheme above:
+        ///   first get the filename, then the caller loads the data
+        ///   from the server, then it calls ExportToFile.
         /// </summary>
         /// <param name="doc"></param>
         /// <param name="ADialogTitle"></param>
@@ -52,7 +126,8 @@ namespace Ict.Common.IO
             SaveFileDialog DialogSave = new SaveFileDialog();
 
             DialogSave.DefaultExt = "yml";
-            DialogSave.Filter = Catalog.GetString("Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Spreadsheet file (*.csv)|*.csv");
+            DialogSave.Filter = Catalog.GetString(
+                "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv");
             DialogSave.AddExtension = true;
             DialogSave.RestoreDirectory = true;
             DialogSave.Title = ADialogTitle;
@@ -63,6 +138,10 @@ namespace Ict.Common.IO
                 {
                     doc.Save(DialogSave.FileName);
                     return true;
+                }
+                else if (DialogSave.FileName.ToLower().EndsWith("ext"))
+                {
+                    return false;
                 }
                 else if (DialogSave.FileName.ToLower().EndsWith("csv"))
                 {
@@ -96,10 +175,19 @@ namespace Ict.Common.IO
 
             if (DialogSave.ShowDialog() == DialogResult.OK)
             {
-                FileStream fs = new FileStream(DialogSave.FileName, FileMode.Create);
+                string filename = DialogSave.FileName;
+
+                // it seems there was a bug that only .gz was added if user did not type the extension
+                if (!filename.EndsWith(".yml.gz"))
+                {
+                    filename = Path.GetFileNameWithoutExtension(filename) + ".yml.gz";
+                }
+
+                FileStream fs = new FileStream(filename, FileMode.Create);
                 byte[] buffer = Convert.FromBase64String(AZippedYML);
                 fs.Write(buffer, 0, buffer.Length);
                 fs.Close();
+                return true;
             }
 
             return false;

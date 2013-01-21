@@ -1,0 +1,84 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    DetailTable: PmJobAssignment
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlDetailGrid, pnlDetails]
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
+        grdDetails:
+            Dock: Fill
+            TableName: PmJobAssignment
+            Columns: [UnitKey, PositionName, AssistantTo, FromDate, ToDate, AssignmentTypeCode]
+            #Columns: [UnitKey, UnitName, PositionName, AssistantTo, FromDate, ToDate, AssignmentTypeCode]
+            CustomColumns:
+                UnitKey: {Label=Unit Key, Type=PartnerKey}
+                #UnitName: {Label=Unit}
+                PositionName: {Label=Position/Role}
+                AssistantTo: {Label=Assist.}
+                FromDate: {Label=From Date, Type=DateTime}
+                ToDate: {Label=To Date, Type=DateTime}
+                AssignmentTypeCode: {Label=Assignment Type}
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: UnitKey ASC
+            
+        pnlDetails:
+            Dock: Bottom
+#            Width: 500
+#            Height: 400
+            Controls:
+                Row0: [cmbAssignmentTypeCode]
+                Row1: [dtpFromDate, dtpToDate]
+                Row2: [txtUnitKey]
+                Row3: [cmbPositionName]
+                Row4: [chkAssistantTo]
+                
+        cmbAssignmentTypeCode:
+            List: JobAssignmentTypeList
+            DataField: PmJobAssignment.AssignmentTypeCode
+            ColSpan: 2
+            Validation: true
+        
+        dtpFromDate:
+            Label: From Date
+            DataField: PmJobAssignment.FromDate
+            Validation: true
+        dtpToDate:
+            Label: To Date
+            DataField: PmJobAssignment.ToDate
+            Validation: Pair(dtpFromDate)
+        
+        txtUnitKey:
+            DataField: PmJobAssignment.UnitKey
+            Type: PartnerKey
+            PartnerClass: UNIT
+            ColSpan: 2
+            Validation: true
+        
+        cmbPositionName:
+            Label: Position/Role
+            List: PositionList
+            DataField: PmJobAssignment.PositionName
+            ColSpan: 2
+            Validation: true
+        
+        chkAssistantTo:
+            Label: Assistant to selected Position
+            DataField: PmJobAssignment.AssistantTo
+        

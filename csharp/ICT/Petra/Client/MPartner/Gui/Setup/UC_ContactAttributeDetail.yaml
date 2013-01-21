@@ -1,0 +1,49 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PContactAttributeDetail
+    CacheableTable: ContactAttributeDetailList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    FormType: edit
+    Template: controlMaintainCachableTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew:
+            Action: actNew
+        btnDelete:
+            Action: actDelete
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailContactAttrDetailCode, DetailContactAttrDetailDescr, DetailActive]
+            CustomColumns:
+                DetailContactAttrDetailCode: {Label=Detail Code}
+                DetailContactAttrDetailDescr: {Label=Description}
+                DetailActive: {Label=Active, Type=Boolean}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Height: 85
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailContactAttrDetailCode]
+                Row1: [txtDetailContactAttrDetailDescr]
+                Row2: [chkDetailActive]
+        txtDetailContactAttrDetailCode: {Label=Detail Code, CharacterCasing=Upper}
+        txtDetailContactAttrDetailDescr: {Label=Description, Width=475}
+        chkDetailActive: {Label=Active}
+    Menu:
+        mniAnalysisValues:
+    Toolbar:
+        tbbNew:
+            Label: New Contact Attribute Detail

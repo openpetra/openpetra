@@ -33,6 +33,7 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
@@ -68,9 +69,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)
         {
-            dtpDetailUnassignableDate.Enabled = !chkDetailUnassignableFlag.Checked;
+            dtpDetailUnassignableDate.Enabled = chkDetailUnassignableFlag.Checked;
 
-            if (chkDetailUnassignableFlag.Checked)
+            if (!chkDetailUnassignableFlag.Checked)
             {
                 dtpDetailUnassignableDate.Date = null;
             }
@@ -78,6 +79,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             {
                 dtpDetailUnassignableDate.Date = DateTime.Now.Date;
             }
+        }
+
+        private void ValidateDataDetailsManual(PtLeavingCodeRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedValidation_CacheableDataTables.ValidateLeavingCode(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

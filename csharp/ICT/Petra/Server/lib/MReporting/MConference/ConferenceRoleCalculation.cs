@@ -62,7 +62,7 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// <param name="AFamilyKey">The Family Key the person belongs to</param>
         /// <param name="AConferenceRole">The role the person has at the conference</param>
         /// <param name="AConferenceKey">The key of the current conference to examine</param>
-        /// <param name="AOptionCode">The partner key of the confirmed campaign option of the attendee</param>
+        /// <param name="AOptionCode">The partner key of the confirmed outreach option of the attendee</param>
         /// <returns></returns>
         public bool CalculateSingleConferenceRole(String AGender, long AFamilyKey,
             String AConferenceRole, long AConferenceKey,
@@ -83,10 +83,10 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// <summary>
         /// Copies the result of the FConferenceRoleTable to report.
         /// </summary>
-        /// <param name="ASelectedCampaignOptions">csv list of the selected campaign options</param>
+        /// <param name="ASelectedOutreachOptions">csv list of the selected outreach options</param>
         /// <param name="ASituation">current report situation</param>
         /// <returns></returns>
-        public bool FinishConferenceRoleTable(String ASelectedCampaignOptions, ref TRptSituation ASituation)
+        public bool FinishConferenceRoleTable(String ASelectedOutreachOptions, ref TRptSituation ASituation)
         {
             ASituation.GetResults().Clear();
 
@@ -95,7 +95,7 @@ namespace Ict.Petra.Server.MReporting.MConference
                 return false;
             }
 
-            DataTable ResultTable = MakeResultTable(ASelectedCampaignOptions);
+            DataTable ResultTable = MakeResultTable(ASelectedOutreachOptions);
 
             int ChildRow = 1;
             int[] Totals = new int[] {
@@ -191,10 +191,10 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// <summary>
         /// Returns a table that represents the reporting result
         /// </summary>
-        /// <param name="ASelectedCampaignOptions">csv list of the selected campaign options. Only persons
-        /// with this campaign option will be counted into the report</param>
+        /// <param name="ASelectedOutreachOptions">csv list of the selected outreach options. Only persons
+        /// with this outreach option will be counted into the report</param>
         /// <returns></returns>
-        private DataTable MakeResultTable(String ASelectedCampaignOptions)
+        private DataTable MakeResultTable(String ASelectedOutreachOptions)
         {
             DataTable ResultTable = new DataTable("Result Table");
 
@@ -239,7 +239,7 @@ namespace Ict.Petra.Server.MReporting.MConference
                         break;
                 }
 
-                if (!IsCampaignOptionSelected(ASelectedCampaignOptions, Row[COLUMNOPTIONCODE].ToString()))
+                if (!IsOutreachOptionSelected(ASelectedOutreachOptions, Row[COLUMNOPTIONCODE].ToString()))
                 {
                     continue;
                 }
@@ -342,21 +342,21 @@ namespace Ict.Petra.Server.MReporting.MConference
         }
 
         /// <summary>
-        /// Checks if the current campaign option is in the list of the selected campaign options.
+        /// Checks if the current outreach option is in the list of the selected outreach options.
         /// </summary>
-        /// <param name="ASelectedCampaignOptions"></param>
-        /// <param name="ACurrentCampaignOption"></param>
+        /// <param name="ASelectedOutreachOptions"></param>
+        /// <param name="ACurrentOutreachOption"></param>
         /// <returns></returns>
-        private bool IsCampaignOptionSelected(String ASelectedCampaignOptions, String ACurrentCampaignOption)
+        private bool IsOutreachOptionSelected(String ASelectedOutreachOptions, String ACurrentOutreachOption)
         {
-            if (ASelectedCampaignOptions.Length == 0)
+            if (ASelectedOutreachOptions.Length == 0)
             {
-                // If we have no selected campaignoptions this means, user selected "all conferences"
+                // If we have no selected outreachoptions this means, user selected "all conferences"
                 // from the report.
                 return true;
             }
 
-            if (ASelectedCampaignOptions.Contains(ACurrentCampaignOption))
+            if (ASelectedOutreachOptions.Contains(ACurrentOutreachOption))
             {
                 return true;
             }

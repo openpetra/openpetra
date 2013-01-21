@@ -4,6 +4,7 @@ BOOKING,This partner has booked with us for a term of service.,true,false,false,
 CHURCH,Church of Worker,true,false,false,?,?,?,?,?
 INQUIRY,This partner is new to the system and requests info.,true,false,false,?,?,?,?,?
 LOAD,Loaded in a patch,true,false,false,?,?,?,?,?
+IMPORT,Loaded from an extract,true,false,false,?,?,?,?,?
 MAILROOM,Entered by the Mailroom Department,true,false,false,?,?,?,?,?
 STAFF,Present Worker applying through this office,true,false,true,?,?,?,?,?
 PARTNER,Partner sought out our organisation without solicitation,true,false,false,?,?,?,?,?

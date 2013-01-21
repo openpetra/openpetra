@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@ using System;
 using System.Threading;
 using System.Globalization;
 using GNU.Gettext;
+using System.IO;
 
 namespace Ict.Common
 {
@@ -50,12 +51,67 @@ namespace Ict.Common
         /// </summary>
         public static void Init(string ALanguageCode, string ACultureCode)
         {
+            if (ALanguageCode.ToLower() == "en-en")
+            {
+                ALanguageCode = "en-GB";
+            }
+
+            if (ACultureCode.ToLower() == "en-en")
+            {
+                ACultureCode = "en-GB";
+            }
+
             // modify current locale for the given language
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(ALanguageCode);
 
-            catalog = new GettextResourceManager("OpenPetra");
+            string ResourceDllFname = TAppSettingsManager.ApplicationDirectory +
+                                      "\\" + Thread.CurrentThread.CurrentUICulture.IetfLanguageTag + "\\OpenPetra.resources.dll";
+
+            if (File.Exists(ResourceDllFname))
+            {
+                catalog = new GettextResourceManager("OpenPetra");
+            }
+            else
+            {
+                TLogging.LogAtLevel(1, "cannot find " + ResourceDllFname);
+            }
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo(ACultureCode);
+        }
+
+        /// <summary>
+        /// set the given culture
+        /// </summary>
+        /// <param name="ACulture"></param>
+        /// <returns>the previously set culture</returns>
+        public static CultureInfo SetCulture(CultureInfo ACulture)
+        {
+            CultureInfo OrigCulture = Thread.CurrentThread.CurrentCulture;
+
+            Thread.CurrentThread.CurrentCulture = ACulture;
+
+            return OrigCulture;
+        }
+
+        /// <summary>
+        /// set the given culture
+        /// </summary>
+        /// <param name="ACulture"></param>
+        /// <returns>the previously set culture</returns>
+        public static CultureInfo SetCulture(string ACulture)
+        {
+            CultureInfo OrigCulture = Thread.CurrentThread.CurrentCulture;
+
+            try
+            {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(ACulture);
+            }
+            catch (Exception)
+            {
+                TLogging.Log("Ict.Common Catalog.SetCulture: invalid culture name: " + ACulture);
+            }
+
+            return OrigCulture;
         }
 
         /// <summary>
@@ -72,8 +128,24 @@ namespace Ict.Common
         /// </summary>
         public static string GetString(string AEnglishMessage)
         {
-//            return catalog.GetString(AEnglishMessage); @TODO Fix this (Catalog is coming up null)
-            return AEnglishMessage;
+            if (catalog == null)
+            {
+                return AEnglishMessage;
+            }
+
+            string result = AEnglishMessage;
+
+            try
+            {
+                result = catalog.GetString(AEnglishMessage);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("GetText: Catalog.GetString: problem for getting text for \"" + AEnglishMessage + "\"");
+                TLogging.Log(e.ToString());
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -89,6 +161,18 @@ namespace Ict.Common
         /// <returns>the translation, or <c>null</c> if none is found</returns>
         public static string GetPluralString(String msgid, String msgidPlural, long n)
         {
+            if (catalog == null)
+            {
+                if (n > 1)
+                {
+                    return msgidPlural;
+                }
+                else
+                {
+                    return msgid;
+                }
+            }
+
             return catalog.GetPluralString(msgid, msgidPlural, n);
         }
     }

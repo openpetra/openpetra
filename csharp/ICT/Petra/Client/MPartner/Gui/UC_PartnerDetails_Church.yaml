@@ -3,7 +3,7 @@ RootNode:
     InterfaceName: IPetraEditUserControl, Ict.Petra.Client.CommonForms.IFrmPetra
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MPartner.Gui   
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: usercontrol
@@ -17,7 +17,7 @@ RootNode:
             Controls:
                 Row0: [txtPreviousName]
                 Row1: [txtLocalName]
-            ColWidths: [0=Fixed:140]
+            ColWidths: [0=Fixed:140, 1=Fixed:300]
             
         txtPreviousName: {DataField=PPartner.PreviousName}
             Stretch: horizontally
@@ -32,24 +32,21 @@ RootNode:
                 Row3: [cmbAcquisitionCode]
                 Row4: [txtContactPartnerKey]
                 Row5: [chkAccomodation, txtAccomodationSize, cmbAccomodationType]
-            ColWidths: [0=Fixed:140, 1=Fixed:130, 2=Fixed:140, 3=Fixed:45]
 
         cmbDenominationCode: {List=DenominationList}
         
         txtApproximateSize:
             Width: 45
+            Format: Integer
             
         chkMapOnFile:
             CheckBoxAttachedLabel: right
-            ColSpan: 0
-            Align: right
             
         chkPrayerGroup:
             CheckBoxAttachedLabel: right
-            ColSpan: 0
             
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
-            ColSpan: 5
+            ColSpan: 3
             
         chkAccomodation:
             OnChange: ShowHideAccomodationData
@@ -61,9 +58,9 @@ RootNode:
             Width: 100
         
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
-            ColSpan: 5
+            ColSpan: 3
             
         txtContactPartnerKey:
-            ColSpan: 5
+            ColSpan: 3
             Label: Contact Partner
             Type: PartnerKey

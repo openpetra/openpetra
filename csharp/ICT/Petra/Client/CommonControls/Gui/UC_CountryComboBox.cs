@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using System.Data;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using System.Globalization;
@@ -72,7 +73,10 @@ namespace Ict.Petra.Client.CommonControls
                 }
                 else
                 {
-                    cmbCountry.cmbCombobox.SelectedIndex = -1;
+                    if (FAddNotSetValue)
+                    {
+                        SelectNotSetRow();
+                    }
                 }
             }
         }
@@ -119,12 +123,11 @@ namespace Ict.Petra.Client.CommonControls
                 cmbCountry.cmbCombobox.Tag = this.Tag;
                 FDataCache_CountryListTable = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
                 cmbCountry.cmbCombobox.BeginUpdate();
-                cmbCountry.cmbCombobox.DataSource = FDataCache_CountryListTable.DefaultView;
                 cmbCountry.cmbCombobox.DisplayMember = "p_country_code_c";
                 cmbCountry.cmbCombobox.ValueMember = "p_country_code_c";
+                cmbCountry.cmbCombobox.DataSource = FDataCache_CountryListTable.DefaultView;
                 cmbCountry.cmbCombobox.EndUpdate();
 
-                //	cmbCountry.cmbCombobox.SelectedItem = null;
                 this.cmbCountry.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
                 FUserControlInitialised = true;
             }
@@ -146,6 +149,7 @@ namespace Ict.Petra.Client.CommonControls
             Dr.CountryName = FNotSetDisplay;
             Dr.CountryCode = FNotSetValue;
             FDataCache_CountryListTable.Rows.InsertAt(Dr, 0);
+            cmbCountry.cmbCombobox.SelectedValue = FNotSetValue;
         }
 
         /// <summary>

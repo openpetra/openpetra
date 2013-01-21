@@ -39,18 +39,18 @@ namespace Ict.Petra.Client.MPartner.Verification
     /// </summary>
     public class TPartnerSubscriptionVerification
     {
-        /// <summary>todoComment</summary>
-        public const String StrGiftGivenByMandatory = "You need to specify the Partner who has made the " + "gift for this Subscription!" + "\r\n" +
-                                                      "Either choose the 'Gift Given By' button to select the Partner or enter" + "\r\n" +
-                                                      "the Partners' Partner Key in the Field next to it." +
-                                                      "\r\n" + "\r\n" +
-                                                      "Note: If the price for the Subscription is no longer paid by another Partner, you need to select"
-                                                      +
-                                                      "\r\n" +
-                                                      "a different Subscription Status than 'GIFT'.";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrGiftGivenByMandatoryTitle = "Gift Given By Mandatory";
+        private static readonly string StrGiftGivenByMandatory = Catalog.GetString(
+            "You need to specify the Partner who has made the gift for this Subscription!" + "\r\n" +
+            "Either choose the 'Gift Given By' button to select the Partner or enter\r\n" +
+            "the Partners' Partner Key in the Field next to it.\r\n\r\n" +
+            "Note: If the price for the Subscription is no longer paid by another Partner, you need to select\r\n" +
+            "a different Subscription Status than 'GIFT'.");
+
+        private static readonly string StrGiftGivenByMandatoryTitle = Catalog.GetString("Gift Given By Mandatory");
+
+        #endregion
 
         #region TPartnerSubscriptionVerification
 
@@ -133,6 +133,7 @@ namespace Ict.Petra.Client.MPartner.Verification
             DataColumn TmpDC;
             DataColumn NilDataColumn;
             String mVerifiedString;
+            bool mPartnerExists;
             bool mPartnerIsMerged;
             TPartnerClass mPartnerClass;
 
@@ -254,6 +255,7 @@ namespace Ict.Petra.Client.MPartner.Verification
                     mPartnerClassSet = new TPartnerClass[0];
                     FtmpPartnerKeyValid = TServerLookup.TMPartner.VerifyPartner(Row.GiftFromKey,
                         mPartnerClassSet,
+                        out mPartnerExists,
                         out mVerifiedString,
                         out mPartnerClass,
                         out mPartnerIsMerged);

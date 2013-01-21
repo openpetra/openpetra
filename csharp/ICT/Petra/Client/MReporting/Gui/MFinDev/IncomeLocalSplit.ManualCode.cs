@@ -44,7 +44,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             {
                 FLedgerNumber = value;
 
-                TRemote.MFinance.Reporting.UIConnectors.SelectLedger(FLedgerNumber);
                 uco_Selection.InitialiseLedger(FLedgerNumber);
                 uco_Selection.ShowAccountHierarchy(false);
                 uco_Selection.ShowCurrencySelection(false);

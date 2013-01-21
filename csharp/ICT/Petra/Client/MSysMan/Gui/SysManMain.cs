@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.Xml;
 using System.Windows.Forms;
+using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
@@ -42,8 +43,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// this function allows to store the content of the whole database
         /// as a text file, and import it somewhere else, across database types etc
         /// </summary>
-        /// <param name="AParentFormHandle"></param>
-        public static void ExportAllData(IntPtr AParentFormHandle)
+        /// <param name="AParentForm"></param>
+        public static void ExportAllData(Form AParentForm)
         {
             MessageBox.Show(Catalog.GetString("This may take a while. Please just wait!"));
 
@@ -51,11 +52,18 @@ namespace Ict.Petra.Client.MSysMan.Gui
             TImportExportDialogs.ExportWithDialogYMLGz(zippedYml, Catalog.GetString("Save Database into File"));
         }
 
+        private static bool WebConnectorResult = false;
+
+        private static void ResetDatabaseInThread(string AZippedYml)
+        {
+            WebConnectorResult = TRemote.MSysMan.ImportExport.WebConnectors.ResetDatabase(AZippedYml);
+        }
+
         /// <summary>
         /// this will delete the current database, and reset it with the data selected
         /// </summary>
-        /// <param name="AParentFormHandle"></param>
-        public static void ImportAllData(IntPtr AParentFormHandle)
+        /// <param name="AParentForm"></param>
+        public static void ImportAllData(Form AParentForm)
         {
             DialogResult r = MessageBox.Show(
                 Catalog.GetString("WARNING: this will reset the database! Do you really want to delete the current database?"),
@@ -70,7 +78,16 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
                 if (zippedYml != null)
                 {
-                    if (TRemote.MSysMan.ImportExport.WebConnectors.ResetDatabase(zippedYml))
+                    Thread t = new Thread(() => ResetDatabaseInThread(zippedYml));
+
+                    TProgressDialog dialog = new TProgressDialog(t);
+
+                    if (dialog.ShowDialog() == DialogResult.Cancel)
+                    {
+                        return;
+                    }
+
+                    if (WebConnectorResult)
                     {
                         // TODO: reset all caches? for comboboxes etc
                         MessageBox.Show(Catalog.GetString("Import of database was successful. Please restart your OpenPetra client"));
@@ -86,7 +103,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// <summary>
         /// change the password of the current user
         /// </summary>
-        public static void SetUserPassword(IntPtr AParentFormHandle)
+        public static void SetUserPassword(Form AParentForm)
         {
             string username = Ict.Petra.Shared.UserInfo.GUserInfo.UserID;
 
@@ -119,13 +136,17 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     {
                         if (password == input.GetAnswer())
                         {
-                            if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, oldPassword))
+                            TVerificationResultCollection VerificationResult;
+
+                            if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, oldPassword, out VerificationResult))
                             {
                                 MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
                             }
                             else
                             {
-                                MessageBox.Show(String.Format(Catalog.GetString("There was a problem setting the password for user {0}"), username));
+                                MessageBox.Show(String.Format(Catalog.GetString(
+                                            "There was a problem setting the password for user {0}."), username) +
+                                    Environment.NewLine + VerificationResult.BuildVerificationResultString());
                             }
                         }
                         else

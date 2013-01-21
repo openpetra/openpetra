@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -707,7 +707,7 @@ namespace Ict.Petra.Shared.MReporting
             System.Data.DataRow row;
             System.Int32 i;
             System.Int32 maxColumn;
-            maxColumn = -1;
+            maxColumn = -1; // This causes a crash if it is not overwritten. below.
 
             for (i = 0; i <= MaxDisplayColumns - 1; i += 1)
             {
@@ -832,10 +832,9 @@ namespace Ict.Petra.Shared.MReporting
         /// <param name="separator">if this has the value FIND_BEST_SEPARATOR,
         /// then first the parameters will be checked for CSV_separator, and if that parameter does not exist,
         /// then the CurrentCulture is checked, for the local language settings</param>
-        /// <param name="ADebugging">if true, thent the currency and date values are written encoded, not localized
+        /// <param name="ADebugging">if true, thent the currency and date values are written encoded, not localized</param>
         /// <param name="AExportOnlyLowestLevel">if true, only the lowest level of AParameters are exported (level with higest depth)
         /// otherwise all levels in AParameter are exported</param>
-        /// </param>
         /// <returns>true for success</returns>
         public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator, Boolean ADebugging, Boolean AExportOnlyLowestLevel)
         {
@@ -896,11 +895,12 @@ namespace Ict.Petra.Shared.MReporting
 
             // write headings
             strLine = "";
-#if DEBUGMODE
-            strLine = StringHelper.AddCSV(strLine, "masterRow", separator);
-            strLine = StringHelper.AddCSV(strLine, "childRow", separator);
-            strLine = StringHelper.AddCSV(strLine, "depth", separator);
-#endif
+
+            // for debugging:
+            // strLine = StringHelper.AddCSV(strLine, "masterRow", separator);
+            // strLine = StringHelper.AddCSV(strLine, "childRow", separator);
+            // strLine = StringHelper.AddCSV(strLine, "depth", separator);
+
             strLine = StringHelper.AddCSV(strLine, "id", separator);
 
             if (FormattedParameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT1,
@@ -988,11 +988,12 @@ namespace Ict.Petra.Shared.MReporting
                 if (element.display)
                 {
                     strLine = "";
-#if DEBUGMODE
-                    strLine = StringHelper.AddCSV(strLine, element.masterRow.ToString(), separator);
-                    strLine = StringHelper.AddCSV(strLine, element.childRow.ToString(), separator);
-                    strLine = StringHelper.AddCSV(strLine, element.depth.ToString(), separator);
-#endif
+
+                    // for debugging
+                    // strLine = StringHelper.AddCSV(strLine, element.masterRow.ToString(), separator);
+                    // strLine = StringHelper.AddCSV(strLine, element.childRow.ToString(), separator);
+                    // strLine = StringHelper.AddCSV(strLine, element.depth.ToString(), separator);
+
                     strLine = StringHelper.AddCSV(strLine, element.code, separator);
 
                     if (FormattedParameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT1, -1, eParameterFit.eBestFit))

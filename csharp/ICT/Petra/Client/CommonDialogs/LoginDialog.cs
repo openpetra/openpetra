@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,43 +40,34 @@ using Ict.Petra.Client.App.Core;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Controls;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.CommonDialogs
 {
     /// <summary>
-    /// login form for authentication of Petra user
+    /// Login Form for the authentication of an OpenPetra user
     /// </summary>
-    public partial class TLoginForm : System.Windows.Forms.Form
+    public partial class TLoginForm : System.Windows.Forms.Form, IFrmPetra
     {
+        private TFrmPetraUtils FPetraUtilsObject;
+
         private static bool FPreviouslyShown = false;
 
-        /// <summary>todoComment</summary>
-        public const String PETRA_LOGIN_FORMTITLE = "OpenPetra Login";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrConnectionNotYetEst = "Please try again, \r\nthe connection has not" + " been established yet";
+        private readonly String StrPetraLoginFormTitle = Catalog.GetString("OpenPetra Login");
+        private readonly String StrDetailsInLogfile = Catalog.GetString("For details see the log file");
+// TODO  private readonly String StrConnectionNotYetEst = Catalog.GetString("Please try again, \r\nthe connection has not" + " been established yet");
+// TODO  private readonly String StrConnectionNotYetEstTitle = Catalog.GetString("Connection Problem");
+// TODO  private readonly String StrConnToServerCouldntEst = Catalog.GetString("Connection to the Server could not be established!");
+// TODO  private readonly String StrLoginFailed = Catalog.GetString("Login failed!");
 
-        /// <summary>todoComment</summary>
-        public const String StrConnectionNotYetEstTitle = "Connection Problem";
-
-        /// <summary>todoComment</summary>
-        public const String StrEnterUserIDAndPwd = "Enter User ID and Password to login.";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnToServerCouldntEst = "Connection to Server could not be established!";
-
-        /// <summary>todoComment</summary>
-        public const String StrLoginFailed = "Login failed!";
-
-        /// <summary>todoComment</summary>
-        public const String StrDetailsInLogfile = "For details see the log file";
-
-        /// <summary>todoComment</summary>
-        public const String StrCapsLockIsOn = "The Caps Lock key is ON. Please switch it off and try to login again";
+        #endregion
 
         /// <summary>Private Declarations</summary>
         private String FSelUserName;
@@ -90,7 +81,7 @@ namespace Ict.Petra.Client.CommonDialogs
         {
             if (!((AMessage == null) || (AMessage == "")))
             {
-                MessageBox.Show(AMessage, PETRA_LOGIN_FORMTITLE, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show(AMessage, StrPetraLoginFormTitle, MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
         }
 
@@ -106,22 +97,26 @@ namespace Ict.Petra.Client.CommonDialogs
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblUserName.Text = Catalog.GetString("&User ID:");
-            this.lblPassword.Text = Catalog.GetString("&Password:");
+            this.lblUserName.Text = Catalog.GetString("&User ID") + ":";
+            this.lblPassword.Text = Catalog.GetString("&Password") + ":";
             this.btnLogin.Text = Catalog.GetString(" &Login");
             this.btnCancel.Text = Catalog.GetString(" &Cancel");
-            this.lblDatabase.Text = Catalog.GetString("Database:");
+            this.lblDatabase.Text = Catalog.GetString("Database") + ":";
             this.chkRememberUserName.Text = Catalog.GetString("Remember the username");
-            this.Text = Catalog.GetString("Petra Login");
+            this.label1.Text = Catalog.GetString("Initial Login: demo/demo or sysadmin/CHANGEME");
+            this.label2.Text = Catalog.GetString("Please change the passwords immediately!");
+            this.Text = Catalog.GetString("OpenPetra Login");
             #endregion
 
-            this.Text = PETRA_LOGIN_FORMTITLE;
+            FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(null, this, null);
+
+            this.Text = StrPetraLoginFormTitle;
 
             //this.Height = 142;
             //pnlLoginControls.Top = 46;
         }
 
-        private void TxtUserName_Leave(System.Object sender, System.EventArgs e)
+        private void TxtUserNameLeave(System.Object sender, System.EventArgs e)
         {
             this.txtUserName.Text = this.txtUserName.Text.ToUpper();
         }
@@ -153,7 +148,13 @@ namespace Ict.Petra.Client.CommonDialogs
             }
         }
 
-        private void TLoginForm_Shown(System.Object sender, System.EventArgs e)
+        void TLoginFormActivated(object sender, EventArgs e)
+        {
+            // Needed to make sure the user can activate the Application Help
+            RunOnceOnActivation();
+        }
+
+        private void TLoginFormShown(System.Object sender, System.EventArgs e)
         {
             if (!FPreviouslyShown)
             {
@@ -167,15 +168,15 @@ namespace Ict.Petra.Client.CommonDialogs
                 {
                     string UserNameStr = String.Empty;
 
-                    if ((TAppSettingsManager.GetValueStatic("AutoLogin",
+                    if ((TAppSettingsManager.GetValue("AutoLogin",
                              false) != TAppSettingsManager.UNDEFINEDVALUE) && !ReadRememberedUserName(ref UserNameStr))
                     {
-                        txtUserName.Text = TAppSettingsManager.GetValueStatic("AutoLogin").ToUpper();
+                        txtUserName.Text = TAppSettingsManager.GetValue("AutoLogin").ToUpper();
 
-                        if (TAppSettingsManager.GetValueStatic("AutoLoginPasswd") != TAppSettingsManager.UNDEFINEDVALUE)
+                        if (TAppSettingsManager.GetValue("AutoLoginPasswd") != TAppSettingsManager.UNDEFINEDVALUE)
                         {
-                            txtPassword.Text = TAppSettingsManager.GetValueStatic("AutoLoginPasswd");
-                            BtnLogin_Click(null, null);
+                            txtPassword.Text = TAppSettingsManager.GetValue("AutoLoginPasswd");
+                            BtnLoginClick(null, null);
                         }
                     }
                     else
@@ -199,7 +200,7 @@ namespace Ict.Petra.Client.CommonDialogs
             }
         }
 
-        private void TLoginForm_Load(System.Object sender, System.EventArgs e)
+        private void TLoginFormLoad(System.Object sender, System.EventArgs e)
         {
             /* The following commands are needed to get the input focus after having
              * displayed the Splash Screen...
@@ -207,13 +208,42 @@ namespace Ict.Petra.Client.CommonDialogs
             WindowHandling.SetForegroundWindowWrapper(this.Handle);
         }
 
-        private void BtnCancel_Click(System.Object sender, System.EventArgs e)
+        #region ENTER Key Handlers
+
+        void TxtPasswordKeyPress(object sender, KeyPressEventArgs e)
+        {
+            // If the ENTER key is pressed, the Handled property is set to true,
+            // to indicate the event is handled and the Login Button is 'clicked'.
+
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                e.Handled = true;
+                BtnLoginClick(this, null);
+            }
+        }
+
+        void TxtUserNameKeyPress(object sender, KeyPressEventArgs e)
+        {
+            // If the ENTER key is pressed, the Handled property is set to true,
+            // to indicate the event is handled and the Focus is moved to the Password TextBox.
+
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                e.Handled = true;
+                txtPassword.Focus();
+                txtPassword.SelectAll();
+            }
+        }
+
+        #endregion
+
+        private void BtnCancelClick(System.Object sender, System.EventArgs e)
         {
             Close();
         }
 
         // Button 'Login' pressed
-        private void BtnLogin_Click(System.Object sender, System.EventArgs e)
+        private void BtnLoginClick(System.Object sender, System.EventArgs e)
         {
             FConnectionEstablished = false;
 
@@ -223,14 +253,16 @@ namespace Ict.Petra.Client.CommonDialogs
 
             if ((FSelUserName.Length == 0) || (FSelPassWord.Length == 0))
             {
-                MessageBox.Show(StrEnterUserIDAndPwd, PETRA_LOGIN_FORMTITLE);
+                MessageBox.Show(Catalog.GetString("Please enter a User ID and a Password to log in into OpenPetra."),
+                    StrPetraLoginFormTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             // don't waste a try for authentication if the CapsLock is on; otherwise the user is retired quite quickly
             if (Control.IsKeyLocked(Keys.CapsLock))
             {
-                MessageBox.Show(StrCapsLockIsOn, PETRA_LOGIN_FORMTITLE);
+                MessageBox.Show(Catalog.GetString("The Caps Lock key is ON. Please switch it off and try to login again"),
+                    StrPetraLoginFormTitle);
                 return;
             }
 
@@ -251,12 +283,12 @@ namespace Ict.Petra.Client.CommonDialogs
                 if (UserInfo.GUserInfo.LoginMessage != null)
                 {
                     MessageBox.Show(UserInfo.GUserInfo.LoginMessage,
-                        PETRA_LOGIN_FORMTITLE,
+                        StrPetraLoginFormTitle,
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                 }
 
-                TUserDefaults.GUserDefaults = new TUserDefaults();
+                TUserDefaults.InitUserDefaults();
                 prbLogin.Value = 100;
                 FConnectionEstablished = true;
                 this.Cursor = Cursors.Default;
@@ -275,7 +307,7 @@ namespace Ict.Petra.Client.CommonDialogs
                 {
                     // this message box shows if the password is wrong
                     // otherwise there has already been a message box usually
-                    MessageBox.Show(ConnectionError);
+                    MessageBox.Show(ConnectionError, StrPetraLoginFormTitle, MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 }
             }
         }
@@ -287,7 +319,7 @@ namespace Ict.Petra.Client.CommonDialogs
             AError = "";
             try
             {
-                ReturnValue = TConnectionManagement.GConnectionManagement.ConnectToServer(AUserName, APassWord,
+                ReturnValue = ((TConnectionManagement)TConnectionManagement.GConnectionManagement).ConnectToServer(AUserName, APassWord,
                     out FProcessID,
                     out FWelcomeMessage,
                     out FSystemEnabled,
@@ -295,18 +327,20 @@ namespace Ict.Petra.Client.CommonDialogs
             }
             catch (EClientVersionMismatchException exp)
             {
-                MessageBox.Show(exp.Message, "Petra Client/Server Program Version Mismatch!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show(exp.Message, Catalog.GetString("OpenPetra Client/Server Program Version Mismatch!"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return false;
             }
             catch (ELoginFailedServerTooBusyException)
             {
 #if TESTMODE
-                TLogging.Log("The PetraServer is too busy to accept the Login request.");
+                TLogging.Log("The OpenPetra Server is too busy to accept the Login request.");
 #endif
 #if  TESTMODE
 #else
-                MessageBox.Show("The PetraServer is too busy to accept the Login request." + "\r\n" + "\r\n" + "Please try again after a short time!",
-                    "Server busy",
+                MessageBox.Show(Catalog.GetString(
+                        "The OpenPetra Server is too busy to accept the Login request.\r\n\r\nPlease try again after a short time!"),
+                    Catalog.GetString("OpenPetra Server Busy"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 #endif
@@ -320,8 +354,8 @@ namespace Ict.Petra.Client.CommonDialogs
 #if  TESTMODE
 #else
                     MessageBox.Show(
-                        "Too many users are logged in.",
-                        "Too many users",
+                        Catalog.GetString("Too many users are logged in."),
+                        Catalog.GetString("Too Many Users"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
 #endif
@@ -329,14 +363,16 @@ namespace Ict.Petra.Client.CommonDialogs
                 else
                 {
                     TLogging.Log(
-                        "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+                        Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                         TLoggingType.ToLogfile);
 #if  TESTMODE
 #else
                     MessageBox.Show(
-                        "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + StrDetailsInLogfile + ": " +
+                        Catalog.GetString(
+                            "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile +
+                        ": " +
                         TLogging.GetLogFileName(),
-                        "Server connection error",
+                        Catalog.GetString("Server Connection Error"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
 #endif
@@ -347,24 +383,74 @@ namespace Ict.Petra.Client.CommonDialogs
             catch (EServerConnectionServerNotReachableException)
             {
 #if TESTMODE
-                TLogging.Log("The PetraServer cannot be reached!");
+                TLogging.Log("The OpenPetra Server cannot be reached!");
 #endif
 #if  TESTMODE
 #else
-                MessageBox.Show("The PetraServer cannot be reached!", "No Server response", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                // on Standalone, we can find the Server.log file, and check the last 10 lines for "System.Exception: Unsupported upgrade"
+                string ServerLog = Path.GetDirectoryName(TLogging.GetLogFileName()) + Path.DirectorySeparatorChar + "Server.log";
+
+                if (File.Exists(ServerLog))
+                {
+                    int countExceptionLine = 0;
+                    string ErrorMessage = string.Empty;
+
+                    StreamReader sr = new StreamReader(ServerLog);
+
+                    while (!sr.EndOfStream)
+                    {
+                        string line = sr.ReadLine();
+
+                        if (line.Contains("System.Exception: Unsupported upgrade"))
+                        {
+                            countExceptionLine = 12;
+                            ErrorMessage = line.Substring("System.Exception: Unsupported upgrade".Length + 2);
+                        }
+                        else
+                        {
+                            countExceptionLine--;
+                        }
+                    }
+
+                    sr.Close();
+
+                    if (countExceptionLine > 0)
+                    {
+                        MessageBox.Show(ErrorMessage.Replace('/', Path.DirectorySeparatorChar),
+                            Catalog.GetString("Unsupported upgrade"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            Catalog.GetString(
+                                "The OpenPetra Server cannot be reached!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                            ServerLog,
+                            Catalog.GetString("No Server Response"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                    }
+
+                    return false;
+                }
+
+                MessageBox.Show(Catalog.GetString("The OpenPetra Server cannot be reached!"),
+                    Catalog.GetString("No Server Response"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
 #endif
                 return false;
             }
             catch (EServerConnectionGeneralException exp)
             {
                 TLogging.Log(
-                    "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(), TLoggingType.ToLogfile);
+                    Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
+                    TLoggingType.ToLogfile);
 #if  TESTMODE
 #else
-                MessageBox.Show(
-                    "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + StrDetailsInLogfile + ": " +
+                MessageBox.Show(Catalog.GetString(
+                        "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
                     TLogging.GetLogFileName(),
-                    "Server connection error",
+                    "Server Connection Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Stop);
 #endif
@@ -373,13 +459,15 @@ namespace Ict.Petra.Client.CommonDialogs
             catch (Exception exp)
             {
                 TLogging.Log(
-                    "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(), TLoggingType.ToLogfile);
+                    Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
+                    TLoggingType.ToLogfile);
 #if  TESTMODE
 #else
                 MessageBox.Show(
-                    "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + StrDetailsInLogfile + ": " +
+                    Catalog.GetString(
+                        "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + StrDetailsInLogfile + ": " +
                     TLogging.GetLogFileName(),
-                    "Server connection error",
+                    Catalog.GetString("Server Connection Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Stop);
 #endif
@@ -401,7 +489,7 @@ namespace Ict.Petra.Client.CommonDialogs
         private void GetUsers()
         {
             // in some countries, don't give a clue about the username
-            if (TAppSettingsManager.ToBoolean(TAppSettingsManager.GetValueStatic("UseWindowsUserID"), false))
+            if (TAppSettingsManager.ToBoolean(TAppSettingsManager.GetValue("UseWindowsUserID"), false))
             {
                 // Get the windows user name
                 String UserNameStr = System.Security.Principal.WindowsIdentity.GetCurrent().Name.ToUpper();
@@ -543,5 +631,40 @@ namespace Ict.Petra.Client.CommonDialogs
 
             return FConnectionEstablished;
         }
+
+        #region Implement interface functions
+
+        /// auto generated
+        public void RunOnceOnActivation()
+        {
+            FPetraUtilsObject.TFrmPetra_Activated(this, null);
+        }
+
+        /// <summary>
+        /// Adds event handlers for the appropiate onChange event to call a central procedure
+        /// </summary>
+        public void HookupAllControls()
+        {
+        }
+
+        /// auto generated
+        public void HookupAllInContainer(Control container)
+        {
+            FPetraUtilsObject.HookupAllInContainer(container);
+        }
+
+        /// auto generated
+        public bool CanClose()
+        {
+            return FPetraUtilsObject.CanClose();
+        }
+
+        /// auto generated
+        public TFrmPetraUtils GetPetraUtilsObject()
+        {
+            return (TFrmPetraUtils)FPetraUtilsObject;
+        }
+
+        #endregion
     }
 }

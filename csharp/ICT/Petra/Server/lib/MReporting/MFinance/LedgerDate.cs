@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,8 @@ using Ict.Petra.Server.MReporting;
 using System.Data.Odbc;
 using System.Data;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MReporting.MFinance
 {
@@ -148,39 +150,30 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <returns>void</returns>
         public void GetPeriodDetails(int ledgernr, int period, out DateTime startOfPeriod, out DateTime endOfPeriod, int whichyear, int column)
         {
-            int currentFinancialYear;
-            string strSql;
-            DataTable tab;
-            DataRow row;
-            TFinancialPeriod financialPeriod;
-
-            currentFinancialYear = parameters.Get("param_current_financial_year_i", column).ToInt();
-            financialPeriod = new TFinancialPeriod(situation.GetDatabaseConnection(), period, whichyear,
+            int currentFinancialYear = parameters.Get("param_current_financial_year_i", column).ToInt();
+            TFinancialPeriod financialPeriod = new TFinancialPeriod(situation.GetDatabaseConnection(), period, whichyear,
                 situation.GetParameters(), situation.GetColumn());
-            strSql = "SELECT a_period_start_date_d, a_period_end_date_d FROM PUB_a_accounting_period WHERE " + "a_accounting_period_number_i = " +
-                     financialPeriod.realPeriod.ToString() + " AND a_ledger_number_i = " + ledgernr.ToString();
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+            AAccountingPeriodTable tab = AAccountingPeriodAccess.LoadByPrimaryKey(ledgernr, period, situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count == 1)
             {
-                row = tab.Rows[0];
-                startOfPeriod = TSaveConvert.ObjectToDate(row["a_period_start_date_d"]);
-                endOfPeriod = TSaveConvert.ObjectToDate(row["a_period_end_date_d"]);
+                AAccountingPeriodRow row = tab[0];
+
                 try
                 {
-                    endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - financialPeriod.realYear),
-                        endOfPeriod.Month,
-                        endOfPeriod.Day);
+                    endOfPeriod = new DateTime(row.PeriodEndDate.Year - (currentFinancialYear - financialPeriod.realYear),
+                        row.PeriodEndDate.Month,
+                        row.PeriodEndDate.Day);
                 }
                 catch (Exception)
                 {
-                    endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - financialPeriod.realYear),
-                        endOfPeriod.Month,
-                        endOfPeriod.Day - 1);
+                    endOfPeriod = new DateTime(row.PeriodEndDate.Year - (currentFinancialYear - financialPeriod.realYear),
+                        row.PeriodEndDate.Month,
+                        row.PeriodEndDate.Day - 1);
                 }
-                startOfPeriod = new DateTime(startOfPeriod.Year - (currentFinancialYear - financialPeriod.realYear),
-                    startOfPeriod.Month,
-                    startOfPeriod.Day);
+                startOfPeriod = new DateTime(row.PeriodStartDate.Year - (currentFinancialYear - financialPeriod.realYear),
+                    row.PeriodStartDate.Month,
+                    row.PeriodStartDate.Day);
             }
             else
             {
@@ -397,14 +390,11 @@ namespace Ict.Petra.Server.MReporting.MFinance
             string ReturnValue = "";
             int start_period;
             int numberAccountingPeriods;
-            int currentFinancialYear;
-            int selectedYear;
 
             if (reportytd == "mixed")
             {
                 start_period = 1;
-                selectedYear = parameters.Get("param_year_i").ToInt();
-                currentFinancialYear = parameters.Get("param_current_financial_year_i").ToInt();
+                // currentFinancialYear = parameters.Get("param_current_financial_year_i").ToInt();
                 numberAccountingPeriods = parameters.Get("param_number_of_accounting_periods_i").ToInt();
 
                 if (end_period > numberAccountingPeriods)
@@ -600,68 +590,3 @@ namespace Ict.Petra.Server.MReporting.MFinance
         }
     }
 }
-
-/*
- * '******************
- * ' test function; see how the functions are supposed to work
- * '******************
- * Function dunit(testnr As String, val1 As String, val2 As String)
- *   If (val1 <> val2) Then MsgBox ("error " + testnr + " " + val1 + " " + val2)
- * End Function
- *
- * Function testDates()
- * '    Ledger 84 Caucasus is setup with a very odd calendar
- * '    current financial year 0 from 15 June 2000 till 14 June 2001;
- * '    12 periods; current period: 7
- *   setMyDb
- *   Call setParameter("param_year_i", 0)
- *   Call initParameterLedger(84)
- *   Call dunit(1, getEndDateOfYear(84, 0), DateSerial(2001, 6, 14))
- *   Call dunit(2, getEndDateOfYear(84, 1), DateSerial(2002, 6, 14))
- *   Call dunit(3, getEndDateOfYear(84, 2), DateSerial(2003, 6, 14))
- *   Call dunit(4, getStartDateOfPeriod(84, -1, 2), DateSerial(1999, 7, 15))
- *   Call dunit("4a", getStartDateOfPeriod(84, 0, 2), DateSerial(2000, 7, 15))
- *   Call dunit(5, getStartDateOfPeriod(84, 2, 2), DateSerial(2002, 7, 15))
- *   Call dunit(6, getEndDateOfPeriod(84, 0, 2), DateSerial(2000, 8, 14))
- *   Call dunit(7, getEndDateOfPeriod(84, 1, 2), DateSerial(2001, 8, 14))
- *   Call dunit(8, getStartDateOfPeriod(84, -1, 8), DateSerial(2000, 1, 15))
- *   Call dunit(9, getStartDateOfPeriod(84, 1, 8), DateSerial(2002, 1, 15))
- *   Call dunit(10, getEndDateOfPeriod(84, -1, 7), DateSerial(2000, 1, 14))
- *   Call dunit(11, getEndDateOfPeriod(84, 1, 7), DateSerial(2002, 1, 14))
- *   Call dunit(12, getEndDateOfPeriod(84, -1, 6), DateSerial(1999, 12, 14))
- *   Call dunit(13, getEndDateOfPeriod(84, 2, 6), DateSerial(2002, 12, 14))
- *   Call dunit(14, getColumnCaptionYear(84, 1, 12, -1), "1999-2000")
- *   Call dunit(15, getColumnCaptionYear(84, 1, 12, 0), "2000-2001")
- *   Call dunit("15a", getColumnCaptionYear(84, 14, 12, 0), "2001-2002")
- *   Call dunit(16, getColumnCaptionYear(84, 1, 12, 1), "2001-2002")
- *   Call dunit(17, getStatePeriod(84, 0, 7), "CURRENT")
- *   Call dunit(18, getStatePeriod(84, -1, 3), "CLOSED")
- *   Call dunit(19, getStatePeriod(84, 2, 3), "FWD PERIOD")
- *
- *   ' a ledger with a financial year fitting to the calendar; current year 1999
- *   Call initParameterLedger(10)
- *   Call dunit(20, getEndDateOfYear(10, 0), DateSerial(1999, 12, 31))
- *   Call dunit(21, getEndDateOfYear(10, 1), DateSerial(2000, 12, 31))
- *   Call dunit("21a", getEndDateOfYear(10, -1), DateSerial(1998, 12, 31))
- *   Call dunit(22, getStartDateOfPeriod(10, 0, 6), DateSerial(1999, 6, 1))
- *   Call dunit(23, getStartDateOfPeriod(10, 3, 6), DateSerial(2002, 6, 1))
- *   Call dunit(24, getEndDateOfPeriod(10, 0, 6), DateSerial(1999, 6, 30))
- *   Call dunit(25, getEndDateOfPeriod(10, 3, 6), DateSerial(2002, 6, 30))
- *   Call dunit(26, getColumnCaptionYear(10, 1, 12, 0), "1999")
- *   Call dunit(27, getColumnCaptionYear(10, 13, 12, 2), "2002")
- *   Call dunit(28, getColumnCaptionYear(10, 1, 12, 1), "2000")
- *
- *   ' UK National Office has a 3 year history of transactions
- *   Call initParameterLedger(37)
- *   Call setParameter("param_year_i", 1)
- *   Call dunit("29a", getEndDateOfYear(37, 0), DateSerial(1997, 12, 31))
- *   Call dunit(29, getColumnCaptionYear(37, 1, 12, 0), "1998")
- *   Call dunit(30, getColumnCaptionYear(37, 13, 12, 2), "2001")
- *   Call dunit(31, getColumnCaptionYear(37, 1, 12, 1), "1999")
- *   Call dunit(32, getCurrentYearCaption(37, 1, 12), "1998")
- *   Call dunit(33, getPreviousYearCaption(37, 13, 12), "1998")
- *   Call dunit(34, getNextYearCaption(37, 1, 12), "1999")
- *
- *   MsgBox ("test finished!")
- * End Function
- */

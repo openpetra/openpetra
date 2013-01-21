@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -772,8 +772,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <param name="AStatusBarText"></param>
         protected void UpdateStatusBarTextButton(System.Object AButton, String AStatusBarText)
         {
-            System.Windows.Forms.Button mButton;
-            mButton = (System.Windows.Forms.Button)AButton;
+            // System.Windows.Forms.Button mButton = (System.Windows.Forms.Button)AButton;
 
             if (this.FStatusbar == null)
             {

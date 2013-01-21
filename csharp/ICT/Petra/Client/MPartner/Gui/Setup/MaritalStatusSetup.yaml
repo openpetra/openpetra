@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PtMaritalStatus
     CacheableTable: MaritalStatusList
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 672
@@ -35,7 +35,7 @@ RootNode:
         txtDetailCode: {Label=Marital Status Code, Width=40}
         txtDetailDescription: {Width=285}
         chkDetailAssignableFlag: {Label=Assignable, OnChange=EnableDisableAssignableDate}
-        dtpDetailAssignableDate: {Label=Unassignable Date}
+        dtpDetailAssignableDate: {Label=Unassignable Date, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

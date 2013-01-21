@@ -1,0 +1,3 @@
+    <None Include="${filename}">
+      <DependentUpon>${relative-DependentUpon}</DependentUpon>
+    </None>

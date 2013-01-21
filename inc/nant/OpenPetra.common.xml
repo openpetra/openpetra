@@ -35,6 +35,14 @@
         StreamReader sr = new StreamReader(APath + Path.DirectorySeparatorChar + "db" + Path.DirectorySeparatorChar + "patches" + Path.DirectorySeparatorChar + "version.txt");
         string version = sr.ReadLine().Replace("-", ".");
         sr.Close();
+
+        string BuildNumber = Environment.GetEnvironmentVariable("BUILD_NUMBER");
+
+        if ((BuildNumber != null) && (BuildNumber.Length > 0))
+        {
+            version = version.Substring(0, version.LastIndexOf(".") + 1) + BuildNumber;
+        }
+
         return version;
     }
        
@@ -45,7 +53,102 @@
       string line = sr.ReadLine();
       sr.Close();
       return line == null || line.ToLower().IndexOf("auto generated with nant") != -1;
-    }        
+    }
+
+    /// get the relative path, that leads from the workingDirectory to the absolutePath
+    [Function("GetRelativePath")]
+    public static string GetRelativePath(string absolutePath, string workingDirectory)
+    {
+      absolutePath = absolutePath.Replace("\\", "/");
+      workingDirectory = workingDirectory.Replace("\\", "/");
+      
+      int countSame = 0;
+      while (countSame < absolutePath.Length 
+             && countSame < workingDirectory.Length 
+             && absolutePath[countSame] == workingDirectory[countSame])
+      {
+          countSame ++;
+      }
+
+      // go back to the last directory seperator
+      countSame = absolutePath.Substring(0, countSame).LastIndexOf("/") + 1;
+      string Result = absolutePath.Substring(countSame);
+      
+      if (countSame > 0)
+      {
+          // how many directories do we need to go up from the working Directory
+          while (countSame < workingDirectory.Length)
+          {
+              if (workingDirectory[countSame] == '/')
+              {
+                  Result = "../" + Result;
+              }
+              countSame ++;
+          }
+      }
+
+      return Result;
+    }
+
+    /// get the absolute path, if it is not yet absolute.
+    [Function("MakeAbsolute")]
+    public static string MakeAbsolute(string relativePath, string workingDirectory)
+    {
+        if (Path.IsPathRooted(relativePath))
+        {
+            return relativePath;
+        }
+        
+        return Path.GetFullPath(workingDirectory + Path.DirectorySeparatorChar + relativePath);
+    }
+
+    private static void GetProgramFiles(out string ProgramFiles, out string ProgramFilesX86)
+    {
+        ProgramFiles = Environment.GetEnvironmentVariable("ProgramFiles");
+        ProgramFilesX86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+        if (ProgramFiles == ProgramFilesX86)
+        {
+            ProgramFiles = Environment.GetEnvironmentVariable("ProgramW6432");
+        }
+    }
+
+    /// for Windows: check if the program exists in the 32bit or 64bit location of the Program Files.
+    /// returns the full path of the file
+    [Function("GetFileInProgramDirectory")]
+    public static string GetFileInProgramDirectory(string relativePath)
+    {
+        string ProgramFiles;
+        string ProgramFilesX86;
+        GetProgramFiles(out ProgramFiles, out ProgramFilesX86);
+        if (File.Exists(ProgramFiles + relativePath))
+        {
+            return ProgramFiles + relativePath;
+        }
+        else if (File.Exists(ProgramFilesX86 + relativePath))
+        {
+            return ProgramFilesX86 + relativePath;
+        }
+        return ProgramFiles + relativePath;
+    }
+
+    /// for Windows: check if the directory exists in the 32bit or 64bit location of the Program Files.
+    /// returns the full path of the file
+    [Function("GetDirInProgramDirectory")]
+    public static string GetDirInProgramDirectory(string relativePath)
+    {
+        string ProgramFiles;
+        string ProgramFilesX86;
+        GetProgramFiles(out ProgramFiles, out ProgramFilesX86);
+        if (Directory.Exists(ProgramFiles + relativePath))
+        {
+            return ProgramFiles + relativePath;
+        }
+        else if (Directory.Exists(ProgramFilesX86 + relativePath))
+        {
+            return ProgramFilesX86 + relativePath;
+        }
+        return ProgramFiles + relativePath;
+    }
 ]]>
     </code>
 </script>
@@ -61,10 +164,26 @@
           overwrite="false" />
 
 
-<!-- Import user specific properties, if available -->
-<property name="userconfig.file" value="${path::combine(dir.root,'OpenPetra.build.config')}" overwrite="false" />
-<include buildfile="${userconfig.file}" verbose="true" if="${file::exists(userconfig.file)}"/>
+<!-- tempdir handling for build server -->
+<property name="tempdir" value="${path::combine(dir.root,'tmp')}" overwrite="false" />
+<mkdir dir="${tempdir}" failonerror="false"/>
+<!-- All known variants for the temp directory -->
+<setenv name="TMPDIR" value="${tempdir}"/>
+<setenv name="TMP" value="${tempdir}"/>
+<setenv name="TEMP" value="${tempdir}"/>
 
+
+<!-- Import user specific properties, if available -->
+<property name="userconfig.file" value="${path::combine(dir.root,'OpenPetra.build.config.my')}" overwrite="false" />
+<include buildfile="${userconfig.file}" verbose="true" if="${file::exists(userconfig.file)}"/>
+<if test="${not file::exists(userconfig.file)}">
+    <property name="userconfig.file" value="${path::combine(dir.root,'OpenPetra.build.config')}" overwrite="true" />
+    <include buildfile="${userconfig.file}" verbose="true" if="${file::exists(userconfig.file)}"/>
+</if>
+<if test="${not file::exists(userconfig.file)}">
+    <property name="userconfig.file" value="${path::combine(dir.root,'../OpenPetra.build.config')}" overwrite="true" />
+    <include buildfile="${userconfig.file}" verbose="true" if="${file::exists(userconfig.file)}"/>
+</if>
 
 <!-- Version number -->
 <property name="ReleaseID" value="${OP::GetReleaseIDFromVersionTxt(dir.root)}" overwrite="false"  />
@@ -75,33 +194,59 @@
           overwrite="false" />
 <property name="dir.incdir.template.etc" value="${path::combine(dir.incdir.template, 'etc')}"
           overwrite="false" />
+<property name="dir.incdir.template.src" value="${path::combine(dir.incdir.template, 'src')}"
+          overwrite="false" />
+<property name="dir.incdir.cfg" value="${path::combine(dir.incdir, 'cfg')}"
+          overwrite="false" />
+
  <!-- csharp -->
 <property name="dir.csharp" value="${path::combine(dir.root, 'csharp')}"
           overwrite="false" />
 <property name="dir.3rdParty" value="${path::combine(dir.csharp, 'ThirdParty')}"
+          overwrite="false" />
+<property name="dir.sql" value="${path::combine(dir.csharp, 'ICT/Petra/Server/sql')}"
           overwrite="false" />
  <!-- delivery -->
 <property name="dir.delivery" value="${path::combine(dir.root, 'delivery')}"
           overwrite="false" />
 <property name="dir.bin" value="${path::combine(dir.delivery, 'bin')}"
           overwrite="false" />
-<property name="dir.setup" value="${path::combine(dir.delivery, 'setup')}"
+<property name="dir.obj" value="${path::combine(dir.delivery, 'obj')}"
           overwrite="false" />
-<property name="dir.namespace.map" value="${path::combine(dir.delivery, 'nsMap')}"
+<property name="dir.setup" value="${path::combine(dir.delivery, 'setup')}"
           overwrite="false" />
  <!-- projectfiles -->
 <property name="dir.projectfiles" value="${path::combine(dir.delivery, 'projects')}"
           overwrite="false" />
 <property name="uuidFile" value="${path::combine(dir.projectfiles, 'projectuuid.map')}"
           overwrite="false" />
-<property name="projectfiles.templates-list" value="vs2008,sharpdevelop3" overwrite="false" />
+<property name="namespaceFile" value="${path::combine(dir.projectfiles, 'namespace.map')}"
+          overwrite="false" />
+<property name="namespaceFile3rdParty" value="${path::combine(dir.3rdParty, 'namespace.map')}"
+          overwrite="false" />
+<property name="projectDependenciesFile" value="${path::combine(dir.projectfiles, 'project.map')}"
+          overwrite="false" />
+<property name="projectfiles.templates-list" value="sharpdevelop4,monodevelop2,vs2010" overwrite="false" />
+<property name="devenv-msbuild" value="sharpdevelop4" overwrite="false" />
+<property name="devenv-xbuild" value="monodevelop2" overwrite="false" />
  <!-- webserver -->
 <property name="dir.webserver" value="${path::combine(dir.delivery, 'webserver')}" overwrite="false" />
 <property name="dir.webserver.bin" value="${path::combine(dir.webserver, 'bin')}" overwrite="false" />
+<property name="webserver.includeSamples" value="true" overwrite="false"/>
+<property name="dir.webforms.source" value="${dir.root}/webserver" overwrite="false"/>
+<property name="dir.webforms.delivery" value="${dir.webserver}" overwrite="false"/>
+<property name="dir.webserver.OnlineRegBackend.doc" value="" overwrite="false"/>
+<property name="dir.webserver.OnlineReg.doc" value="" overwrite="false"/>
+<property name="dir.webserver.DirectLinks" value="" overwrite="false"/>
+<property name="dir.webserver.ProductionConfig" value="" overwrite="false"/>
+<property name="dir.webserver.Formletters" value="${dir.root}/demodata/formletters" overwrite="false"/>
+<property name="dir.webserver.Badges" value="" overwrite="false"/>
+<property name="dir.webserver.HtmlReports" value="" overwrite="false"/>
+<property name="Formletters.Path" value="${dir.root}/demodata/formletters" overwrite="false"/>
+
+<property name="I18NAnalysis.Output.dir" value="${dir.delivery}/i18nAnalysis" overwrite="false" />
 
 <!-- build tools -->
-<property name="devenv-name" value="sharpdevelop3"
-          overwrite="false" />
 <property name="msbuildtask.file" value="${nant::get-base-directory()}/extensions/common/neutral/NAntContrib/NAnt.Contrib.Tasks.dll"
           overwrite="false"/>
 <property name="Configuration" value="DEBUG" overwrite="false"/>
@@ -114,7 +259,12 @@
           
 <!-- logdir -->
 <property name="dir.log" value="${path::combine(dir.root, 'log')}" overwrite="false" />
-<property name="dir.petraclient.log" value="${path::combine(dir.log, 'PetraClient')}" overwrite="false" />
+<mkdir dir="${dir.log}" failonerror="false"/>
+<property name="dir.var" value="${path::combine(dir.root, 'var')}" overwrite="false" />
+<mkdir dir="${dir.var}" failonerror="false"/>
+<property name="dir.petraclient.log" value="${dir.log}" overwrite="false" />
+<property name="dir.petraclient.var" value="${dir.var}" overwrite="false" />
+<property name="dir.petraclient.tmp" value="${tempdir}" overwrite="false" />
 <property name="dir.petraclient.definitions" value="${path::combine(dir.csharp, 'ICT/Petra/Definitions/UINavigation.yml')}" overwrite="false" />
 
 
@@ -134,10 +284,12 @@
 <!-- Server configuration -->
 <property name="Server.Port" value="9000" 
           overwrite="false" />
+<property name="Server.DebugLevel" value="0" 
+          overwrite="false" />
 <property name="SelectedLanguage" value="en" overwrite="false" />
 
 <!-- database -->
-<property name="DBMS.Type" value="sqlite"
+<property name="DBMS.Type" value="postgresql"
           overwrite="false" />
 <property name="DBMS.DBName" value="openpetra"
           overwrite="false"/>
@@ -145,10 +297,34 @@
           overwrite="false"/>
 <property name="DBMS.Password" value="petra"
           overwrite="false" />
+<property name="DBMS.DBPort" value="5432"
+          overwrite="false"/>
+<property name="DBMS.DBHostOrFile" value="127.0.0.1"
+          overwrite="false"/>
 
+<property name="DBMS.Setup.DBName" value="openpetra_basedb"
+          overwrite="false"/>
+
+<!-- smtp -->
+<property name="smtp.host" value="smtp.example.org"
+          overwrite="false"/>
+<property name="smtp.port" value="25"
+          overwrite="false"/>
+<property name="smtp.username" value="smtpuser"
+          overwrite="false"/>
+<property name="smtp.password" value="YourSmtpPassword"
+          overwrite="false"/>
+<property name="smtp.enablessl" value="true"
+          overwrite="false"/>
+<property name="LocalFieldFinance.EmailAddress" value="finance@myfield.example.org"
+          overwrite="false"/>
+<property name="ClearingHouse.EmailAddress" value="ich@example.org"
+          overwrite="false"/>
+<property name="intranet.email" value="intranet@example.org"
+          overwrite="false"/>
 
 <!-- Set correct .NET platform -->
-<property name="NETframework-version" value ="2.0" overwrite="false" />
+<property name="NETframework-version" value ="4.0" overwrite="false" />
 <property name="nant.settings.currentframework" value="net-${NETframework-version}"
           overwrite="false" if="${platform::is-windows()}" />
 <property name="nant.settings.currentframework" value="mono-${NETframework-version}" 
@@ -169,10 +345,13 @@
 <property name="PetraXML.file" value="${dir.root}/db/petra.xml" overwrite="false" />
 
 <!-- generateWinforms -->
-<property name="tool-generateWinForms" value="${dir.bin}/GenerateWinForms.exe" overwrite="false" />
-<!-- leave this empty for MS.net and AutoSize/TableLayoutPanel, mono-2.0 needs it set! -->
-<property name="GUILocalisation" value="" overwrite="false" unless="${framework::get-target-framework() == 'mono-2.0'}"/> 
-<property name="GUILocalisation" value="en" overwrite="false" if="${framework::get-target-framework() == 'mono-2.0'}" />
+<property name="tool-generateWinForms" value="${dir.bin}/Ict.Tools.GenerateWinForms.exe" overwrite="false" />
+<property name="GUILocalisation" value="en-EN" overwrite="false"/>
+
+<property name="tool-generateEncryptionKey" value="${dir.bin}/Ict.Tools.GenerateEncryptionKey.exe" overwrite="false" />
+
+<property name="OrgName" value="MyOpenPetra" overwrite="false"/>
+<property name="OrgNameWithoutSpace" value="${string::replace(OrgName, ' ', '')}" overwrite="false"/>
     
 <!-- loglevel -->
 <property name="verbose" value="false"  overwrite="false" />
@@ -187,37 +366,37 @@
 
 
 <!-- external utilities dependend on platform -->
+<property name="external.doxygen" value="doxygen" overwrite="false"/>
+<property name="external.doxygen.configfile" value="${path::combine(dir.incdir.cfg, 'doxygen.cfg')}"
+          overwrite="false" />
+
 <if test="${'win32'==platform::get-name()}" >
   <!-- MS Windows specific -->
-  <property name="external.Uncrustify" value="${environment::get-variable('ProgramFiles')}/uncrustify-0.56-win32/uncrustify.exe" 
+  <property name="external.Uncrustify" value="${OP::GetFileInProgramDirectory('/uncrustify/uncrustify.exe')}" 
             overwrite="false"/>
-  <property name="external.Poedit.gettext" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/xgettext.exe" overwrite="false"/>
-  <property name="external.Poedit.msgfmt" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/msgfmt.exe" overwrite="false"/>
-  <property name="external.Poedit.msgcat" value="${environment::get-variable('ProgramFiles')}/Poedit/bin/msgcat.exe" overwrite="false"/> 
-            
+  <property name="external.Java" value="${OP::GetFileInProgramDirectory('/Java/jre6/bin/java.exe')}" overwrite="false"/>
+  <property name="external.Benerator" value="${OP::GetFileInProgramDirectory('/databene-benerator-0.7.6/bin/benerator.bat')}" overwrite="false"/>
+  <property name="external.Poedit.gettext" value="${OP::GetFileInProgramDirectory('/Poedit/bin/xgettext.exe')}" overwrite="false"/>
+  <property name="external.Poedit.msgfmt" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgfmt.exe')}" overwrite="false"/>
+  <property name="external.Poedit.msgcat" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgcat.exe')}" overwrite="false"/> 
+  <property name="NUnitVersion" value="NUnit 2.6" overwrite="false"/> 
+  <property name="external.NUnitConsole" value="${OP::GetFileInProgramDirectory('/' + NUnitVersion + '/bin/nunit-console-x86.exe')}" overwrite="false"/>
 </if>
 <if test="${'win32'!=platform::get-name()}">
   <if test="${'unix'==platform::get-name()}">
     <!-- Unix specific -->
-    <property name="external.Uncrustify" value="uncrustify" 
-              overwrite="false"/>
+    <property name="external.Uncrustify" value="uncrustify" overwrite="false"/>
+    <property name="external.Benerator" value="/usr/local/benerator/bin/benerator.sh" overwrite="false"/>
+    <property name="external.Java" value="/usr/bin/java" overwrite="false"/>
     <property name="external.Poedit.gettext" value="/usr/bin/xgettext" overwrite="false"/>
     <property name="external.Poedit.msgfmt" value="/usr/bin/msgfmt" overwrite="false"/>
     <property name="external.Poedit.msgcat" value="/usr/bin/msgcat" overwrite="false"/>     
+    <property name="external.NUnitConsole" value="/opt/NUnit-2.6.1/bin/nunit-console.exe" overwrite="false"/>
   </if>
   <if test="${'unix'!=platform::get-name()}">
     <echo>Unknown platform!</echo>
     <fail>Platform={$platform::get-name()} not supported! Expand the properties here!!</fail>
   </if>
 </if>  
-
-
-<!-- tempdir handling for build server -->
-<property name="tempdir" value="${path::combine(dir.root,'tmp')}" overwrite="false" />
-<mkdir dir="${tempdir}" failonerror="false"/>
-<!-- All known variants for the temp directory -->
-<setenv name="TMPDIR" value="${tempdir}"/>
-<setenv name="TMP" value="${tempdir}"/>
-<setenv name="TEMP" value="${tempdir}"/>
 
 </project>

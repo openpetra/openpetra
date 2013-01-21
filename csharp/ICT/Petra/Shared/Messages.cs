@@ -23,6 +23,8 @@
 //
 using System;
 using System.Collections;
+
+using Ict.Common;
 using Ict.Common.Verification;
 
 namespace Ict.Petra.Shared
@@ -30,6 +32,9 @@ namespace Ict.Petra.Shared
     /// Contains functions for processing of error messages, etc.
     public class Messages
     {
+        /// <summary>Shown when Warnings are brought to the attention of the user.</summary>
+        public static readonly string StrWarningsAttention = Catalog.GetString("The following warnings are brought to your attention:");
+
         /// <summary>
         /// format an error message using the errors from Verification Result
         /// </summary>
@@ -44,18 +49,39 @@ namespace Ict.Petra.Shared
 
             if (AMessageHeadline == null)
             {
-                AMessageHeadline = "Saving of data failed!" + Environment.NewLine + "Reasons:";
+                if (AVerificationResult.HasCriticalErrors)
+                {
+                    AMessageHeadline = Catalog.GetString("Saving of data failed!\r\n\r\nReasons:");
+                }
+                else
+                {
+                    AMessageHeadline = StrWarningsAttention;
+                }
             }
 
-            // MessageBox.Show('AVerificationResult.Count: ' + AVerificationResult.Count.ToString);
+// MessageBox.Show('AVerificationResult.Count: ' + AVerificationResult.Count.ToString);
             ReturnValue = AMessageHeadline + Environment.NewLine;
             VerificationResultEnum = AVerificationResult.GetEnumerator();
 
             while (VerificationResultEnum.MoveNext())
             {
                 VerificationResultEntry = ((TVerificationResult)VerificationResultEnum.Current);
-                ReturnValue = ReturnValue + "  * [" + VerificationResultEntry.ResultContext + "] " + VerificationResultEntry.ResultText +
-                              Environment.NewLine + Environment.NewLine;
+
+                ReturnValue += "  * ";
+
+                if (VerificationResultEntry.ResultContext != null)
+                {
+                    ReturnValue += "[" + VerificationResultEntry.ResultContext.ToString() + "] ";
+                }
+
+                ReturnValue += VerificationResultEntry.ResultText;
+
+                if (VerificationResultEntry.ResultCode != String.Empty)
+                {
+                    ReturnValue += "  [" + VerificationResultEntry.ResultCode + "]";
+                }
+
+                ReturnValue += Environment.NewLine + Environment.NewLine;
             }
 
             return ReturnValue;

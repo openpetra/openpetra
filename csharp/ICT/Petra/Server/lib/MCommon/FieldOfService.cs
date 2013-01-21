@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,10 +25,11 @@ using System;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
-using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using System.Data;
@@ -102,12 +103,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         {
             TDBTransaction ReadTransaction;
 
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": LoadData called.");
-            }
-#endif
+//          TLogging.LogAtLevel(9, (this.GetType().FullName + ": LoadData called.");
 
             // create the FMainDS DataSet that will later be passed to the Client
             FMainDS = new FieldOfServiceTDS(DATASETNAME);
@@ -127,18 +123,18 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
                     // Load data for Field Of Service
                     PPartnerFieldOfServiceAccess.LoadViaPPartner(FMainDS, FPartnerKey, ReadTransaction);
                 }
-                catch (EPartnerNotExistantException Exp)
+                catch (EPartnerNotExistantException)
                 {
                     // don't log this exception  this is thrown on purpose here and the Client deals with it.
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw Exp;
+                    throw;
                 }
                 catch (Exception Exp)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     TLogging.Log(this.GetType().FullName + ".LoadData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                     TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
-                    throw Exp;
+                    throw;
                 }
             }
             finally

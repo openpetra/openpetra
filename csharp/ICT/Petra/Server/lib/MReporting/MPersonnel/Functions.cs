@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -124,12 +124,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 return true;
             }
 
-            if (StringHelper.IsSame(f, "GetLeadershipRating"))
-            {
-                value = new TVariant(GetLeadershipRating(ops[1].ToInt64(), ops[2].ToInt(), ops[3].ToInt64()));
-                return true;
-            }
-
             if (StringHelper.IsSame(f, "GetDietary"))
             {
                 value = new TVariant(GetDietary(ops[1].ToInt64()));
@@ -145,12 +139,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             if (StringHelper.IsSame(f, "GetOtherNeeds"))
             {
                 value = new TVariant(GetOtherNeeds(ops[1].ToInt64()));
-                return true;
-            }
-
-            if (StringHelper.IsSame(f, "GetPartyType"))
-            {
-                value = new TVariant(GetPartyType(ops[1].ToString()));
                 return true;
             }
 
@@ -313,6 +301,12 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// <returns>returns the type code or an empty string</returns>
         private String GetType(Int64 APartnerKey, String ATypeList, String AMatch)
         {
+            if (ATypeList == "DEFAULTWORKERTYPES")
+            {
+                // allows ORGANIZATION SPECIFIC types
+                ATypeList = TAppSettingsManager.GetValue("DEFAULTWORKERTYPES_STARTINGWITH", "WORKER;EX-WORKER;ASSOC", false);
+            }
+
             PPartnerTypeTable PartnerType;
 
             String[] TypeList;
@@ -379,16 +373,15 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// This function is called by the "UnitHierarchyReport"
         /// </summary>
         /// <param name="AUnitKey">Parent unit to get the child unit from</param>
-        /// <param name="AWithCampaigns">Indicates if campaigns and conferences should
+        /// <param name="AWithOutreaches">Indicates if outreaches and conferences should
         /// be included in the result.</param>
         /// <returns>True</returns>
-        private bool GenerateUnitHierarchy(long AUnitKey, string AWithCampaigns)
+        private bool GenerateUnitHierarchy(long AUnitKey, string AWithOutreaches)
         {
             int ChildRow = 1;
 
-            GetChildUnits(AUnitKey, 0, (AWithCampaigns == "true"), ref ChildRow);
-
-            DataTable table = situation.GetResults().ToDataTable(parameters);
+            // stores the child units into the situation results
+            GetChildUnits(AUnitKey, 0, (AWithOutreaches == "true"), ref ChildRow);
 
             return true;
         }
@@ -399,12 +392,12 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// </summary>
         /// <param name="AUnitKey">Parent unit to get the child unit from</param>
         /// <param name="AChildLevel">Indicates how deep we are in the recursion</param>
-        /// <param name="AWithCampaigns">Indicates if campaigns and conferences should
+        /// <param name="AWithOutreaches">Indicates if outreaches and conferences should
         /// be included in the result</param>
         /// <param name="AChildRow">the number of the row</param>
         /// <returns>False if the parent unit is not active.
         /// Otherwise true</returns>
-        private bool GetChildUnits(long AUnitKey, int AChildLevel, bool AWithCampaigns, ref int AChildRow)
+        private bool GetChildUnits(long AUnitKey, int AChildLevel, bool AWithOutreaches, ref int AChildRow)
         {
             UmUnitStructureTable UnitStructure;
             PUnitTable UnitTable;
@@ -491,7 +484,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 string UnitName = UnitRow.UnitName;
                 string UnitTypeName = UnitRow.UnitTypeCode;
 
-                if (!AWithCampaigns
+                if (!AWithOutreaches
                     && ((UnitTypeName.StartsWith("GA"))
                         || (UnitTypeName.StartsWith("GC"))
                         || (UnitTypeName.StartsWith("TN"))
@@ -507,7 +500,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
 
             foreach (KeyValuePair <string, long>kvp in ChildList)
             {
-                GetChildUnits(kvp.Value, AChildLevel, AWithCampaigns, ref AChildRow);
+                GetChildUnits(kvp.Value, AChildLevel, AWithOutreaches, ref AChildRow);
             }
 
             return true;
@@ -687,9 +680,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             {
                 PmShortTermApplicationRow Row = (PmShortTermApplicationRow)ShortTermApplicationTable.Rows[Counter];
 
-                if ((Row.ConfirmedOptionCode != "")
-                    || (Row.Option1Code != "")
-                    || (Row.Option2Code != ""))
+                if (Row.ConfirmedOptionCode != "")
                 {
                     HasEvent = true;
                 }
@@ -754,21 +745,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 else
                 {
                     SpokenLanguages += Row.LanguageCode + " (" + Row.LanguageLevel;
-                }
-
-                if (Row.WillingToTranslate)
-                {
-                    SpokenLanguages += ", tx";
-
-                    if (Row.TranslateInto)
-                    {
-                        SpokenLanguages += " into";
-                    }
-
-                    if (Row.TranslateOutOf)
-                    {
-                        SpokenLanguages += " from";
-                    }
                 }
 
                 SpokenLanguages += "), ";
@@ -883,7 +859,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
 
                 PPartnerLocationRow PartnerLocationRow;
                 PLocationTable LocationTable;
-                PLocationRow LocationRow;
 
                 if (!TRptUserFunctionsPartner.GetPartnerBestAddressRow(Row.PartnerKey, situation, out PartnerLocationRow))
                 {
@@ -906,8 +881,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 {
                     GatheredResults["Church-Name"] += ", " + ((PPartnerRow)ChurchTable.Rows[0]).PartnerShortName + " ";
                 }
-
-                LocationRow = (PLocationRow)LocationTable.Rows[0];
 
                 // Add this church address to the results
                 // the variables will be something like Church-PostalCode, Church-StreetName
@@ -996,40 +969,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             return true;
         }
 
-        /// <summary>
-        /// Get the leadership rating of a short term application partner.
-        /// </summary>
-        /// <param name="APartnerKey">Partner Key</param>
-        /// <param name="AApplicationKey">Application Key</param>
-        /// <param name="ARegistrationOffice">Registration Office</param>
-        /// <returns>String of all the missing informations for this partner and application</returns>
-        private String GetLeadershipRating(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice)
-        {
-            String LeadershipRating = "";
-            PmShortTermApplicationTable ShortTermTable;
-            PtLeadershipRatingTable LeadershipRatingTable;
-
-            ShortTermTable = PmShortTermApplicationAccess.LoadByPrimaryKey(APartnerKey,
-                AApplicationKey, ARegistrationOffice, situation.GetDatabaseConnection().Transaction);
-
-            if (ShortTermTable.Rows.Count > 0)
-            {
-                if (!((PmShortTermApplicationRow)ShortTermTable.Rows[0]).IsStLeadershipRatingNull())
-                {
-                    String LeadershipRatingCode = ((PmShortTermApplicationRow)ShortTermTable.Rows[0]).StLeadershipRating;
-                    LeadershipRatingTable = PtLeadershipRatingAccess.LoadByPrimaryKey(LeadershipRatingCode,
-                        situation.GetDatabaseConnection().Transaction);
-
-                    if (LeadershipRatingTable.Rows.Count > 0)
-                    {
-                        LeadershipRating = ((PtLeadershipRatingRow)LeadershipRatingTable.Rows[0]).Description;
-                    }
-                }
-            }
-
-            return LeadershipRating;
-        }
-
         private String GetDietary(Int64 APartnerKey)
         {
             String Dietary = "";
@@ -1114,24 +1053,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             }
 
             return PartnerContact;
-        }
-
-        private String GetPartyType(String ATypeKey)
-        {
-            PtPartyTypeTable PartyTable;
-            String PartyType = "";
-
-            if (ATypeKey != "")
-            {
-                PartyTable = PtPartyTypeAccess.LoadByPrimaryKey(ATypeKey, situation.GetDatabaseConnection().Transaction);
-
-                if (PartyTable.Rows.Count > 0)
-                {
-                    PartyType = ATypeKey + " " + ((PtPartyTypeRow)PartyTable.Rows[0]).Description;
-                }
-            }
-
-            return PartyType;
         }
 
         /// <summary>

@@ -24,6 +24,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using Ict.Common;
+using Ict.Common.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -42,6 +45,29 @@ namespace Ict.Petra.Client.App.Core
     /// </summary>
     public class TServerLookup
     {
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public class TMCommon
+        {
+            #region TServerLookup.TMCommon
+
+            /// <summary>
+            /// simple data reader;
+            /// checks for permissions of the current user;
+            /// </summary>
+            /// <param name="ATablename"></param>
+            /// <param name="ASearchCriteria">a set of search criteria</param>
+            /// <param name="AResultTable">returns typed datatable</param>
+            /// <returns></returns>
+            public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
+            {
+                return TRemote.MCommon.DataReader.WebConnectors.GetData(ATablename, ASearchCriteria, out AResultTable);
+            }
+
+            #endregion
+        }
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -70,7 +96,7 @@ namespace Ict.Petra.Client.App.Core
                 out TPartnerClass APartnerClass,
                 Boolean AMergedPartners)
             {
-                return TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(APartnerKey,
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(APartnerKey,
                     out APartnerShortName,
                     out APartnerClass,
                     AMergedPartners);
@@ -90,7 +116,7 @@ namespace Ict.Petra.Client.App.Core
                 TPartnerInfoScopeEnum APartnerInfoScope,
                 out PartnerInfoTDS APartnerInfoDS)
             {
-                return TRemote.MPartner.Partner.ServerLookups.PartnerInfo(APartnerKey,
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.PartnerInfo(APartnerKey,
                     APartnerInfoScope, out APartnerInfoDS);
             }
 
@@ -110,7 +136,7 @@ namespace Ict.Petra.Client.App.Core
                 TPartnerInfoScopeEnum APartnerInfoScope,
                 out PartnerInfoTDS APartnerInfoDS)
             {
-                return TRemote.MPartner.Partner.ServerLookups.PartnerInfo(APartnerKey,
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.PartnerInfo(APartnerKey,
                     ALocationKey, APartnerInfoScope, out APartnerInfoDS);
             }
 
@@ -132,6 +158,7 @@ namespace Ict.Petra.Client.App.Core
             /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
             /// <param name="AValidPartnerClasses">Pass in a Set of valid PartnerClasses that the
             ///  Partner is allowed to have (eg. [PERSON, FAMILY], or an empty Set ( [] ).</param>
+            /// <param name="APartnerExists">True if the Partner exists in the database or if PartnerKey is 0.</param>
             /// <param name="APartnerShortName">ShortName for the found Partner ('' if Partner
             ///  doesn't exist or PartnerKey is 0)</param>
             /// <param name="APartnerClass">Partner Class of the found Partner (FAMILY if Partner
@@ -143,12 +170,14 @@ namespace Ict.Petra.Client.App.Core
             ///  Set) or PartnerKey is 0, otherwise false</returns>
             public static Boolean VerifyPartner(Int64 APartnerKey,
                 TPartnerClass[] AValidPartnerClasses,
+                out bool APartnerExists,
                 out String APartnerShortName,
                 out TPartnerClass APartnerClass,
                 out Boolean AIsMergedPartner)
             {
-                return TRemote.MPartner.Partner.ServerLookups.VerifyPartner(APartnerKey,
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartner(APartnerKey,
                     AValidPartnerClasses,
+                    out APartnerExists,
                     out APartnerShortName,
                     out APartnerClass,
                     out AIsMergedPartner);
@@ -175,7 +204,7 @@ namespace Ict.Petra.Client.App.Core
                 out Boolean AIsMergedPartner,
                 out Boolean AUserCanAccessPartner)
             {
-                return TRemote.MPartner.Partner.ServerLookups.VerifyPartner(APartnerKey,
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartner(APartnerKey,
                     out APartnerShortName,
                     out APartnerClass,
                     out AIsMergedPartner,
@@ -210,7 +239,7 @@ namespace Ict.Petra.Client.App.Core
                 out String AMergedBy,
                 out DateTime AMergeDate)
             {
-                return TRemote.MPartner.Partner.ServerLookups.MergedPartnerDetails(
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.MergedPartnerDetails(
                     AMergedPartnerPartnerKey,
                     out AMergedPartnerPartnerShortName,
                     out AMergedPartnerPartnerClass,
@@ -229,7 +258,7 @@ namespace Ict.Petra.Client.App.Core
             /// <returns>true if the extract was found and the description was retrieved</returns>
             public static Boolean GetExtractDescription(String AExtractName, out String AExtractDescription)
             {
-                return TRemote.MPartner.Partner.ServerLookups.GetExtractDescription(AExtractName, out AExtractDescription);
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetExtractDescription(AExtractName, out AExtractDescription);
             }
 
             /// <summary>
@@ -240,7 +269,7 @@ namespace Ict.Petra.Client.App.Core
             /// <returns>true if an entry of the partner was found in table p_organisation</returns>
             public static Boolean GetPartnerFoundationStatus(Int64 APartnerKey, out Boolean AIsFoundation)
             {
-                return TRemote.MPartner.Partner.ServerLookups.GetPartnerFoundationStatus(APartnerKey, out AIsFoundation);
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerFoundationStatus(APartnerKey, out AIsFoundation);
             }
 
             /// <summary>
@@ -256,7 +285,22 @@ namespace Ict.Petra.Client.App.Core
                 ArrayList APartnerClasses,
                 out Dictionary <long, string>ARecentlyUsedPartners)
             {
-                return TRemote.MPartner.Partner.ServerLookups.GetRecentlyUsedPartners(AMaxPartnersCount, APartnerClasses, out ARecentlyUsedPartners);
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetRecentlyUsedPartners(AMaxPartnersCount,
+                    APartnerClasses,
+                    out ARecentlyUsedPartners);
+            }
+
+            /// <summary>
+            /// Gets the family partner key of a person record.
+            /// This function should only be called for partners of type person.
+            /// </summary>
+            /// <param name="APersonKey">Partner key of the person to retrieve the family key for
+            /// Partner must be a person.</param>
+            /// <returns>Family partner key of the person. A Person must always have a family that it is related to.
+            /// False, if there is no partner with the partner key or the partner is not an organisation</returns>
+            public static Int64 GetFamilyKeyForPerson(Int64 APersonKey)
+            {
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetFamilyKeyForPerson(APersonKey);
             }
 
             #endregion
@@ -267,6 +311,46 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         public class TMFinance
         {
+            /// <summary>
+            /// Get the current posting date range for the specified ledger
+            /// </summary>
+            /// <param name="ALedgerNumber"></param>
+            /// <param name="AStartDateCurrentPeriod"></param>
+            /// <param name="AEndDateLastForwardingPeriod"></param>
+            /// <returns></returns>
+            public static Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+                out DateTime AStartDateCurrentPeriod,
+                out DateTime AEndDateLastForwardingPeriod)
+            {
+                return TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(ALedgerNumber,
+                    out AStartDateCurrentPeriod,
+                    out AEndDateLastForwardingPeriod);
+            }
+
+            /// <summary>
+            /// Get the start and end dates for the specified period
+            /// </summary>
+            /// <param name="ALedgerNumber"></param>
+            /// <param name="AYearNumber"></param>
+            /// <param name="ADiffPeriod"></param>
+            /// <param name="APeriodNumber"></param>
+            /// <param name="AStartDatePeriod"></param>
+            /// <param name="AEndDatePeriod"></param>
+            /// <returns></returns>
+            public static Boolean GetCurrentPeriodDates(Int32 ALedgerNumber,
+                Int32 AYearNumber,
+                Int32 ADiffPeriod,
+                Int32 APeriodNumber,
+                out DateTime AStartDatePeriod,
+                out DateTime AEndDatePeriod)
+            {
+                return TRemote.MFinance.GL.WebConnectors.GetPeriodDates(ALedgerNumber,
+                    AYearNumber,
+                    ADiffPeriod,
+                    APeriodNumber,
+                    out AStartDatePeriod,
+                    out AEndDatePeriod);
+            }
         }
 
         /// <summary>
@@ -281,7 +365,7 @@ namespace Ict.Petra.Client.App.Core
             /// <returns>true</returns>
             public static Boolean GetInstalledPatches(out Ict.Petra.Shared.MSysMan.Data.SPatchLogTable APatchLogDT)
             {
-                return TRemote.MSysMan.Application.ServerLookups.GetInstalledPatches(out APatchLogDT);
+                return TRemote.MSysMan.Application.WebConnectors.GetInstalledPatches(out APatchLogDT);
             }
 
             /// <summary>
@@ -291,7 +375,7 @@ namespace Ict.Petra.Client.App.Core
             /// <returns>true</returns>
             public static Boolean GetDBVersion(out System.String APetraDBVersion)
             {
-                return TRemote.MSysMan.Application.ServerLookups.GetDBVersion(out APetraDBVersion);
+                return TRemote.MSysMan.Application.WebConnectors.GetDBVersion(out APetraDBVersion);
             }
         }
     }

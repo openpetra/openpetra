@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,25 +27,32 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.App.Core.Security;
 
-
-namespace Ict.Petra.Server.MCommon.DataReader
+namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 {
     /// <summary>
     /// Performs server-side lookups for the Client in the MCommon DataReader sub-namespace.
     ///
     /// </summary>
-    public class TCommonDataReader
+    public partial class TCommonDataReader
     {
         /// <summary>
         /// simple data reader;
@@ -55,17 +62,21 @@ namespace Ict.Petra.Server.MCommon.DataReader
         /// <param name="ASearchCriteria">a set of search criteria</param>
         /// <param name="AResultTable">returns typed datatable</param>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
         {
             // TODO: check access permissions for the current user
 
+            bool NewTransaction = false;
             TDBTransaction ReadTransaction;
 
             TTypedDataTable tempTable = null;
 
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead, 5);
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
 
                 // TODO: auto generate
                 if (ATablename == AApSupplierTable.GetTableDBName())
@@ -88,9 +99,52 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     tempTable = ADailyExchangeRateAccess.LoadAll(ReadTransaction);
                 }
+                else if (ATablename == ACorporateExchangeRateTable.GetTableDBName())
+                {
+                    tempTable = ACorporateExchangeRateAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == ACurrencyLanguageTable.GetTableDBName())
+                {
+                    tempTable = ACurrencyLanguageAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == AFeesPayableTable.GetTableDBName())
+                {
+                    tempTable = AFeesPayableAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == AFeesReceivableTable.GetTableDBName())
+                {
+                    tempTable = AFeesReceivableAccess.LoadAll(ReadTransaction);
+                }
                 else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                 {
                     tempTable = AAnalysisTypeAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == AGiftBatchTable.GetTableDBName())
+                {
+                    tempTable = AGiftBatchAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == AJournalTable.GetTableDBName())
+                {
+                    tempTable = AJournalAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == MExtractMasterTable.GetTableDBName())
+                {
+                    if (ASearchCriteria == null)
+                    {
+                        tempTable = MExtractMasterAccess.LoadAll(ReadTransaction);
+                    }
+                    else
+                    {
+                        tempTable = MExtractMasterAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
+                    }
+                }
+                else if (ATablename == MExtractTable.GetTableDBName())
+                {
+                    // it does not make sense to load ALL extract rows for all extract masters so search criteria needs to be set
+                    if (ASearchCriteria != null)
+                    {
+                        tempTable = MExtractAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
+                    }
                 }
                 else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                 {
@@ -100,21 +154,37 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     tempTable = PtApplicationTypeAccess.LoadAll(ReadTransaction);
                 }
+                else if (ATablename == PMailingTable.GetTableDBName())
+                {
+                    tempTable = PMailingAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == PmDocumentTypeTable.GetTableDBName())
+                {
+                    tempTable = PmDocumentTypeAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == SGroupTable.GetTableDBName())
+                {
+                    tempTable = SGroupAccess.LoadAll(ReadTransaction);
+                }
                 else
                 {
-                    throw new Exception("TCommonDataReader.LoadData: unknown table " + ATablename);
+                    throw new Exception("TCommonDataReader.GetData: unknown table " + ATablename);
                 }
             }
             catch (Exception Exp)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.Log("TCommonDataReader.LoadData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
+                TLogging.Log("TCommonDataReader.GetData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                 TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
-                throw Exp;
+                throw;
             }
             finally
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TCommonDataReader.GetData: committed own transaction.");
+                }
             }
 
             // Accept row changes here so that the Client gets 'unmodified' rows
@@ -133,6 +203,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
         /// <param name="ASubmitTable"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static TSubmitChangesResult SaveData(string ATablename,
             ref TTypedDataTable ASubmitTable,
             out TVerificationResultCollection AVerificationResult)
@@ -140,6 +211,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             AVerificationResult = null;
 
@@ -175,6 +247,60 @@ namespace Ict.Petra.Server.MCommon.DataReader
                             SubmissionResult = TSubmitChangesResult.scrError;
                         }
                     }
+                    else if (ATablename == ACorporateExchangeRateTable.GetTableDBName())
+                    {
+                        if (ACorporateExchangeRateAccess.SubmitChanges((ACorporateExchangeRateTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == ACurrencyLanguageTable.GetTableDBName())
+                    {
+                        if (ACurrencyLanguageAccess.SubmitChanges((ACurrencyLanguageTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == AFeesPayableTable.GetTableDBName())
+                    {
+                        if (AFeesPayableAccess.SubmitChanges((AFeesPayableTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheableFinanceTablesEnum.FeesPayableList.ToString());
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == AFeesReceivableTable.GetTableDBName())
+                    {
+                        if (AFeesReceivableAccess.SubmitChanges((AFeesReceivableTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheableFinanceTablesEnum.FeesReceivableList.ToString());
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
                     else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                     {
                         if (AAnalysisTypeAccess.SubmitChanges((AAnalysisTypeTable)ASubmitTable, SubmitChangesTransaction,
@@ -189,7 +315,43 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     }
                     else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                     {
-                        if (PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction,
+                        ValidateInternationalPostalType(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                        ValidateInternationalPostalTypeManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                        if (!AVerificationResult.HasCriticalErrors)
+                        {
+                            if (PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            else
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrError;
+                            }
+                        }
+                    }
+                    else if (ATablename == PtApplicationTypeTable.GetTableDBName())
+                    {
+                        if (PtApplicationTypeAccess.SubmitChanges((PtApplicationTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            // mark dependent lists for needing to be refreshed since there was a change in base list
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheablePersonTablesEnum.EventApplicationTypeList.ToString());
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheablePersonTablesEnum.FieldApplicationTypeList.ToString());
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PMailingTable.GetTableDBName())
+                    {
+                        if (PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
@@ -199,9 +361,21 @@ namespace Ict.Petra.Server.MCommon.DataReader
                             SubmissionResult = TSubmitChangesResult.scrError;
                         }
                     }
-                    else if (ATablename == PtApplicationTypeTable.GetTableDBName())
+                    else if (ATablename == PmDocumentTypeTable.GetTableDBName())
                     {
-                        if (PtApplicationTypeAccess.SubmitChanges((PtApplicationTypeTable)ASubmitTable, SubmitChangesTransaction,
+                        if (PmDocumentTypeAccess.SubmitChanges((PmDocumentTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == SGroupTable.GetTableDBName())
+                    {
+                        if (SGroupAccess.SubmitChanges((SGroupTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
@@ -235,7 +409,23 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 }
             }
 
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+
             return SubmissionResult;
         }
+
+        #region Data Validation
+
+        static partial void ValidateInternationalPostalType(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateInternationalPostalTypeManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+
+        #endregion Data Validation
     }
 }

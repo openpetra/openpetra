@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
     DetailTable: AFreeformAnalysis
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: controlMaintainTable
     Actions:
@@ -15,9 +15,8 @@ RootNode:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
-            Height: 150
             Dock: Fill
-            Controls: [txtHeaderLedgerNumber,grdDetails, pnlButtons]
+            Controls: [pnlDetailTop,grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
             Controls: [btnNew, btnDelete]
@@ -37,6 +36,9 @@ RootNode:
                 Row1: [chkDetailActive]
         txtDetailAnalysisValue: {Label=Value, Width=400}
         chkDetailActive: {Label=Active}
+        pnlDetailTop:
+            Dock: Top
+            Controls: [txtHeaderLedgerNumber]
         txtHeaderLedgerNumber: {Label=Values for this Type and Ledger Number,ReadOnly=true}
     Menu:
         mniAnalysisValues:

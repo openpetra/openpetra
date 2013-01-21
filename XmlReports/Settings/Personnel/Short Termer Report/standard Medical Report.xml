@@ -1,38 +1,38 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\generalshorttermerreport.xml,Personnel\\shorttermerreport.xml" />
-  <Parameter id="currentReport" value="Short Termer Report" />
-  <Parameter id="MaxDisplayColumns" value="3" />
-  <Parameter id="param_source" value="Event" />
-  <Parameter id="param_event_selection" value="this" />
-  <Parameter id="param_event_code" value="" />
-  <Parameter id="param_event_name" value="" />
-  <Parameter id="param_extract_name" value="" />
-  <Parameter id="param_conference_code" value="" />
-  <Parameter id="param_unit_key" value="-1" />
-  <Parameter id="param_application_status_accepted" value="true" />
-  <Parameter id="param_application_status_cancelled" value="false" />
-  <Parameter id="param_application_status_enquiry" value="false" />
-  <Parameter id="param_application_status_hold" value="false" />
-  <Parameter id="param_application_status_rejected" value="false" />
-  <Parameter id="orderby0" value="Partner Name" />
-  <Parameter id="orderby1" value="Medical Info" />
-  <Parameter id="orderby2" value="Partner Key" />
-  <Parameter id="param_sortby_readable" value="Partner Name, Medical Info, Partner Key" />
-  <Parameter id="param_calculation" column="3" value="Partner Name" />
-  <Parameter id="param_calculation" column="4" value="Medical Info" />
-  <Parameter id="param_calculation" column="5" value="Partner Key" />
-  <Parameter id="param_sortby_columns" value="3,4,5" />
-  <Parameter id="param_hide_empty_lines" value="true" />
-  <Parameter id="param_print_two_lines" value="false" />
-  <Parameter id="param_calculation" column="0" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_calculation" column="1" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="1" value="5" />
-  <Parameter id="param_calculation" column="2" value="Medical Info" />
-  <Parameter id="ColumnWidth" column="2" value="10" />
-  <Parameter id="param_address_detail" value="false" />
-  <Parameter id="param_passport_detail" value="false" />
-  <Parameter id="param_church_detail" value="false" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\generalshorttermerreport.xml,Personnel\\shorttermerreport.xml" />
+  <Parameter id="currentReport" value="eString:Short Termer Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:3" />
+  <Parameter id="param_source" value="eString:Event" />
+  <Parameter id="param_event_selection" value="eString:this" />
+  <Parameter id="param_event_code" value="eString:" />
+  <Parameter id="param_event_name" value="eString:" />
+  <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="param_conference_code" value="eString:" />
+  <Parameter id="param_unit_key" value="eInteger:-1" />
+  <Parameter id="param_application_status_accepted" value="eString:true" />
+  <Parameter id="param_application_status_cancelled" value="eString:false" />
+  <Parameter id="param_application_status_enquiry" value="eString:false" />
+  <Parameter id="param_application_status_hold" value="eString:false" />
+  <Parameter id="param_application_status_rejected" value="eString:false" />
+  <Parameter id="orderby0" value="eString:Partner Name" />
+  <Parameter id="orderby1" value="eString:Medical Info" />
+  <Parameter id="orderby2" value="eString:Partner Key" />
+  <Parameter id="param_sortby_readable" value="eString:Partner Name, Medical Info, Partner Key" />
+  <Parameter id="param_calculation" column="3" value="eString:Partner Name" />
+  <Parameter id="param_calculation" column="4" value="eString:Medical Info" />
+  <Parameter id="param_calculation" column="5" value="eString:Partner Key" />
+  <Parameter id="param_sortby_columns" value="eString:3,4,5" />
+  <Parameter id="param_hide_empty_lines" value="eString:true" />
+  <Parameter id="param_print_two_lines" value="eString:false" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:5" />
+  <Parameter id="param_calculation" column="2" value="eString:Medical Info" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:10" />
+  <Parameter id="param_address_detail" value="eString:false" />
+  <Parameter id="param_passport_detail" value="eString:false" />
+  <Parameter id="param_church_detail" value="eString:false" />
 </Parameters>

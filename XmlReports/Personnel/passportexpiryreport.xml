@@ -24,9 +24,6 @@
 					<value text = "All current Staff at date "/>
 					<value variable = "param_currentstaffdate" format="formatteddate"/>
 				</fielddetail>
-				<fielddetail condition="eq({param_selection},all staff)">
-					<value text = "All Staff"/>
-				</fielddetail>
 			</field>
 			<field whichfield="descr2">
 				<fielddetail condition="ne({param_selection}, one partner)">
@@ -90,10 +87,6 @@
 							AND ( PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
 								OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )
 					</value></queryDetail>
-					<queryDetail condition="eq({param_selection},all staff)"><value>
-							, PUB_pm_staff_data
-						WHERE PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
-					</value></queryDetail>
 					<queryDetail><value>
 							AND PUB_pm_passport_details.p_partner_key_n = PUB_p_partner.p_partner_key_n
 							AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
@@ -116,7 +109,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="Passport Expiry Date" returnsFormat="formatteddate" returns="text">
+			<calculation id="Passport Expiry Date" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Expiry Date"/></caption>
 				<query>
 					<queryDetail>
@@ -170,7 +163,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="Passport Date of Birth" returnsFormat="formatteddate" returns="text">
+			<calculation id="Passport Date of Birth" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Passport Date of Birth"/></caption>
 				<query>
 					<queryDetail>
@@ -179,7 +172,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="Passport Date of Issue" returnsFormat="formatteddate" returns="text">
+			<calculation id="Passport Date of Issue" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Passport Date of Issue"/></caption>
 				<query>
 					<queryDetail>
@@ -251,7 +244,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="Person Date of Birth" returnsFormat="text" returns="text">
+			<calculation id="Person Date of Birth" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Date of Birth"/></caption>
 				<query>
 					<queryDetail>

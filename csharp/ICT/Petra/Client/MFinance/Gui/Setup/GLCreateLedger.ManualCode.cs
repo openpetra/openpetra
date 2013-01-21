@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,11 +23,14 @@
 //
 using System;
 using System.Windows.Forms;
+using System.Reflection;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -45,14 +48,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             dtpCalendarStartDate.Date = new DateTime(DateTime.Now.Year, 1, 1);
             nudNumberOfFwdPostingPeriods.Value = 8;
             nudNumberOfPeriods.Value = 12;
-            nudCurrentPeriod.Value = DateTime.Now.Month;
+            nudCurrentPeriod.Value = 1;
             cmbBaseCurrency.SetSelectedString("EUR");
             cmbIntlCurrency.SetSelectedString("USD");
             cmbCountryCode.SetSelectedString("DE");
         }
 
-        private void CreateLedger(System.Object sender, EventArgs e)
+        private void BtnOK_Click(System.Object sender, EventArgs e)
         {
+            MethodInfo method;
+
             TVerificationResultCollection VerificationResult;
 
             if (txtLedgerName.Text.Length == 0)
@@ -61,6 +66,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     Catalog.GetString("Please enter a name for your ledger!"),
                     Catalog.GetString("Problem: No Ledger has been created"));
                 return;
+            }
+
+            if (!dtpCalendarStartDate.Date.HasValue)
+            {
+                MessageBox.Show(Catalog.GetString("Please supply valid Start date."),
+                    Catalog.GetString("Problem: No Ledger has been created"));
             }
 
             if (!TRemote.MFinance.Setup.WebConnectors.CreateNewLedger(
@@ -78,7 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
-                        VerificationResult.GetVerificationResult(0).ResultText,
+                        VerificationResult.BuildVerificationResultString(),
                         Catalog.GetString("Problem: No Ledger has been created"));
                 }
                 else
@@ -90,11 +101,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
-                            "The ledger {0} ({1}) has been created successfully. Please assign permissions to the users in System Manager."),
+                            "Ledger {0} ({1}) has been created successfully and is now the current Ledger.\r\n\r\nPermissions for users to be able to access this Ledger can be assigned in the System Manager Module."),
                         txtLedgerName.Text,
                         nudLedgerNumber.Value),
                     Catalog.GetString("Success"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // reload permissions for user
+                UserInfo.GUserInfo = TRemote.MSysMan.Security.UserManager.WebConnectors.ReloadCachedUserInfo();
+
+                // reload list of Ledger names
+                TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+
+                // reload navigation
+                Form MainWindow = FPetraUtilsObject.GetCallerForm();
+
+                PropertyInfo CurrentLedgerProperty = MainWindow.GetType().GetProperty("CurrentLedger");
+                CurrentLedgerProperty.SetValue(MainWindow, Convert.ToInt32(nudLedgerNumber.Value), null);
+
+                method = MainWindow.GetType().GetMethod("LoadNavigationUI");
+
+                if (method != null)
+                {
+                    method.Invoke(MainWindow, new object[] { true });
+                }
+
+                method = MainWindow.GetType().GetMethod("ShowCurrentLedgerInfoInStatusBar");
+
+                if (method != null)
+                {
+                    method.Invoke(MainWindow, new object[] { });
+                }
+
+                Close();
             }
         }
     }

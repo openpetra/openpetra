@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,6 +36,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -474,26 +475,17 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// <returns>void</returns>
         private bool GetPartnerBestAddress(Int64 APartnerKey)
         {
-            bool ReturnValue;
-            DataSet PartnerLocationsDS;
-            DataTable PartnerLocationTable;
-            PLocationTable LocationTable;
-            PFamilyTable FamilyTable;
-            PPersonTable PersonTable;
-            PPartnerTable PartnerTable;
-            StringCollection NameColumnNames;
-
-            ReturnValue = false;
+            bool ReturnValue = false;
 
             // reset the variables
-            LocationTable = new PLocationTable();
+            PLocationTable LocationTable = new PLocationTable();
 
             foreach (DataColumn col in LocationTable.Columns)
             {
                 situation.GetParameters().RemoveVariable(StringHelper.UpperCamelCase(col.ColumnName, true, true));
             }
 
-            PartnerLocationTable = new PPartnerLocationTable();
+            DataTable PartnerLocationTable = new PPartnerLocationTable();
 
             foreach (DataColumn col in PartnerLocationTable.Columns)
             {
@@ -506,7 +498,17 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
             situation.GetParameters().RemoveVariable("FirstName");
             situation.GetParameters().RemoveVariable("FamilyName");
-            PartnerLocationsDS = new DataSet();
+
+            StringCollection NameColumnNames = new StringCollection();
+            NameColumnNames.Add(PPartnerTable.GetPartnerShortNameDBName());
+            PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
+                situation.GetDatabaseConnection().Transaction);
+            string PartnerShortName = PartnerTable.Rows[0][PPartnerTable.GetPartnerShortNameDBName()].ToString();
+
+            situation.GetParameters().Add("NameWithTitle",
+                Ict.Petra.Shared.MPartner.Calculations.FormatShortName(PartnerShortName, eShortNameFormat.eReverseShortname));
+
+            DataSet PartnerLocationsDS = new DataSet();
             PartnerLocationsDS.Tables.Add(new PPartnerLocationTable());
             PartnerLocationTable = PartnerLocationsDS.Tables[PPartnerLocationTable.GetTableName()];
 
@@ -551,7 +553,8 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         NameColumnNames = new StringCollection();
                         NameColumnNames.Add(PPersonTable.GetFirstNameDBName());
                         NameColumnNames.Add(PPersonTable.GetFamilyNameDBName());
-                        PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames, situation.GetDatabaseConnection().Transaction);
+                        PPersonTable PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
+                            situation.GetDatabaseConnection().Transaction);
 
                         if (PersonTable.Rows.Count > 0)
                         {
@@ -564,7 +567,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                             NameColumnNames = new StringCollection();
                             NameColumnNames.Add(PFamilyTable.GetFirstNameDBName());
                             NameColumnNames.Add(PFamilyTable.GetFamilyNameDBName());
-                            FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
+                            PFamilyTable FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
                                 situation.GetDatabaseConnection().Transaction);
 
                             if (FamilyTable.Rows.Count > 0)
@@ -577,15 +580,11 @@ namespace Ict.Petra.Server.MReporting.MPartner
                                 // it was an organisation or church, just use the shortname
                                 situation.GetParameters().RemoveVariable("FirstName");
                                 situation.GetParameters().RemoveVariable("FamilyName");
-                                NameColumnNames = new StringCollection();
-                                NameColumnNames.Add(PPartnerTable.GetPartnerShortNameDBName());
-                                PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, NameColumnNames,
-                                    situation.GetDatabaseConnection().Transaction);
 
                                 if (PartnerTable.Rows.Count > 0)
                                 {
                                     situation.GetParameters().Add("FamilyName",
-                                        new TVariant(PartnerTable.Rows[0][PPartnerTable.GetPartnerShortNameDBName()]));
+                                        new TVariant(PartnerShortName));
                                 }
                             }
                         }
@@ -609,8 +608,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             String APostCodeTo,
             String ACounty)
         {
-            bool ReturnValue;
-            TDBTransaction ReadTransaction;
+            bool ReturnValue = false;
             Boolean NewTransaction;
             String postalCode;
 
@@ -636,12 +634,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return (APostalRegion.Length == 0) && (APostCodeFrom.Length == 0) && (APostCodeTo.Length == 0) && (ACounty.Length == 0);
             }
 
-            ReturnValue = false;
-
             if (APostalRegion.Length > 0)
             {
                 postalCode = situation.GetParameters().Get("PostalCode").ToString();
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+                DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
                 try
                 {
 // todo, wrong combination of table/columns
@@ -1110,8 +1106,6 @@ namespace Ict.Petra.Server.MReporting.MPartner
             Dictionary <String, int>CountyRowList = InitStatisticalReportTable();
             FNumberOfAcitvePartner = 0;
 
-            String SubscriptionCodeDBName = PSubscriptionTable.GetPublicationCodeDBName();
-            String SubscriptionCopiesDBName = PSubscriptionTable.GetPublicationCopiesDBName();
             String PartnerKeyDBName = PPartnerTable.GetPartnerKeyDBName() + " = ";
 
             foreach (PPartnerRow PartnerRow in PartnerTable.Rows)
@@ -1162,7 +1156,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         if (LocationRow.County.Length > 0)
                         {
                             // County
-                            RowName = LocationRow.County.ToLower();
+                            RowName = LocationRow.County.ToLower().Trim();
                         }
                         else
                         {
@@ -1179,17 +1173,16 @@ namespace Ict.Petra.Server.MReporting.MPartner
                     {
                         PSubscriptionRow SubscriptionRow = (PSubscriptionRow)Row;
 
-                        if (!SubscriptionRow.IsDateCancelledNull())
+                        // if there is a cancelled date set, then don't use this subscription in the report
+                        if (SubscriptionRow.IsDateCancelledNull()
+                            && ((SubscriptionRow.SubscriptionStatus == "PROVISIONAL")
+                                || (SubscriptionRow.SubscriptionStatus == "PERMANENT")
+                                || (SubscriptionRow.SubscriptionStatus == "GIFT")))
                         {
-                            // if there is a cancelled date, then don't use this subscription in the report
-                            continue;
-                        }
+                            // Add Value to Table
+                            AddToStatisticalReportTable(CountyRowList[RowName], SubscriptionRow.PublicationCode, 1);
 
-                        // Add Value to Table
-                        AddToStatisticalReportTable(CountyRowList[RowName], SubscriptionRow.PublicationCode, 1);
-
-                        if (SubscriptionRow.PublicationCopies > 1)
-                        {
+                            // Add number of copies to overall "Count:" column
                             AddToStatisticalReportTable(CountyRowList[ROW_COUNT], SubscriptionRow.PublicationCode, SubscriptionRow.PublicationCopies);
                         }
                     }
@@ -1416,7 +1409,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
         }
 
         /// <summary>
-        /// Calculates the Row "Percent", "Totals" and "Counts" for the publication statistical report
+        /// Calculates the Row "Percent" and "Totals" for the publication statistical report
         /// </summary>
         private void CalculateTotals()
         {
@@ -1442,11 +1435,6 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 FStatisticalReportDataTable.Rows[RowIndex][ColumnIndex] = CalcPercent;                 //.ToString("F");
                 FStatisticalReportPercentage.Add(FStatisticalReportDataTable.Columns[ColumnIndex].ColumnName,
                     CalcPercent.ToString("F"));
-
-                // Counts:
-                FStatisticalReportDataTable.Rows[RowIndex + 2][ColumnIndex] = (int)
-                                                                              ((int)FStatisticalReportDataTable.Rows[RowIndex +
-                                                                                                                     2][ColumnIndex] + Totals);
             }
         }
 
@@ -1592,8 +1580,6 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 POccupationTable OccupationTable;
 
                 OccupationTable = POccupationAccess.LoadByPrimaryKey(AOccupationCode, situation.GetDatabaseConnection().Transaction);
-
-                DataRow[] OccupationRows = OccupationTable.Select(POccupationTable.GetOccupationCodeDBName() + " = '" + AOccupationCode + "'");
 
                 if (OccupationTable.Rows.Count > 0)
                 {

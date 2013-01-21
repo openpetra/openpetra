@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -73,7 +73,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// </summary>
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
-            btnDummy.Visible = false;
             FUpdatingRelationColumns = false;
 
             FPetraUtilsObject = APetraUtilsObject;
@@ -161,7 +160,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             /* load available ledgers into listbox */
             DataTable LedgerTable;
 
-            TRemote.MFinance.Cacheable.RefreshCacheableTable(TCacheableFinanceTablesEnum.LedgerNameList, out LedgerTable);
+            TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(TCacheableFinanceTablesEnum.LedgerNameList, out LedgerTable);
 
             LedgerTable.Columns.Add("Selection", Type.GetType("System.Boolean"));
 
@@ -640,7 +639,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 String Calculation =
                     FColumnParameters.GetOrDefault("param_calculation", ASelectedColumn, new TVariant(cmbYearSelection.GetSelectedString())).ToString();
-                TFinanceColumnFunction Func = (TFinanceColumnFunction)GetFunction(Calculation);
+
+                //TFinanceColumnFunction Func = (TFinanceColumnFunction)GetFunction(Calculation);
 
                 if (cmbYearSelection.FindString(Calculation) != -1)
                 {

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,7 @@ using System.Threading;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
@@ -48,8 +49,11 @@ namespace Ict.Petra.Server.App.Core
     /// @Comment The System Defaults are retrieved from the s_system_defaults table
     ///   and are put into a Typed DataTable that has the structure of this table.
     /// </summary>
-    public class TSystemDefaultsCache : MarshalByRefObject
+    public class TSystemDefaultsCache : MarshalByRefObject, ISystemDefaultsCache
     {
+        /// a static variable for global access to the system defaults
+        public static TSystemDefaultsCache GSystemDefaultsCache;
+
         /*------------------------------------------------------------------------------
          * Partner System Default Constants
          * -------------------------------------------------------------------------------*/
@@ -77,7 +81,6 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         public TSystemDefaultsCache() : base()
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + ': created. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             FTableCached = false;
             FReadWriteLock = new System.Threading.ReaderWriterLock();
         }
@@ -106,46 +109,27 @@ namespace Ict.Petra.Server.App.Core
         {
             SSystemDefaultsTable ReturnValue;
 
-            /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefaultsTable called in the AppDomain ' + Thread.GetDomain.FriendlyName + '. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
-            **/
-
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine('GetSystemDefaultsTable: FTableCached: ' + FTableCached.ToString); $ENDIF
             if (!FTableCached)
             {
                 LoadSystemDefaultsTable();
                 FTableCached = true;
             }
 
-#if DEBUGMODE
             try
-#endif
             {
-                try
-                {
-                    // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.GetSystemDefaultsTable waiting for a ReaderLock...');$ENDIF
-
-                    /* Try to get a read lock on the cache table [We don't specify a timeout because (1) reading an emptied cache would lead to problems (it is emptied before the DB queries are issued), (2) reading the DB tables into the cached table
-                     *should be fairly quick] */
-                    FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-
-                    // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.GetSystemDefaultsTable grabbed a ReaderLock.');$ENDIF
-                    ReturnValue = FSystemDefaultsDT;
-                }
-                finally
-                {
-                    // Release read lock on the cache table
-                    FReadWriteLock.ReleaseReaderLock();
-
-                    // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.GetSystemDefaultsTable released the ReaderLock.');$ENDIF
-                }
+                /*
+                 * Try to get a read lock on the cache table [We don't specify a timeout because
+                 *   (1) reading an emptied cache would lead to problems (it is emptied before the DB queries are issued),
+                 *   (2) reading the DB tables into the cached table should be fairly quick]
+                 */
+                FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
+                ReturnValue = FSystemDefaultsDT;
             }
-#if DEBUGMODE
-            catch (Exception exp)
+            finally
             {
-                Console.WriteLine("Exception in TSystemDefaultsCache.GetSystemDefaultsTable: " + exp.ToString());
-                throw;
+                // Release read lock on the cache table
+                FReadWriteLock.ReleaseReaderLock();
             }
-#endif
             return ReturnValue;
         }
 
@@ -167,52 +151,37 @@ namespace Ict.Petra.Server.App.Core
             String ReturnValue;
             SSystemDefaultsRow FoundSystemDefaultsRow;
 
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefault called in the AppDomain ' + Thread.GetDomain.FriendlyName + '. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             if (!FTableCached)
             {
                 LoadSystemDefaultsTable();
                 FTableCached = true;
             }
 
-#if DEBUGMODE
             try
-#endif
             {
-                try
+                /*
+                 * Try to get a read lock on the cache table [We don't specify a timeout because
+                 *   (1) reading an emptied cache would lead to problems (it is emptied before the DB queries are issued),
+                 *   (2) reading the DB tables into the cached table should be fairly quick]
+                 */
+                FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
+
+                FoundSystemDefaultsRow = (SSystemDefaultsRow)FSystemDefaultsDT.Rows.Find(ASystemDefaultName);
+
+                if (FoundSystemDefaultsRow != null)
                 {
-                    // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.GetSystemDefault waiting for a ReaderLock...');$ENDIF
-
-                    /* Try to get a read lock on the cache table [We don't specify a timeout because (1) reading an emptied cache would lead to problems (it is emptied before the DB queries are issued), (2) reading the DB tables into the cached table
-                     *should be fairly quick] */
-                    FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-
-                    // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.GetSystemDefault grabbed a ReaderLock.');$ENDIF
-                    FoundSystemDefaultsRow = (SSystemDefaultsRow)FSystemDefaultsDT.Rows.Find(ASystemDefaultName);
-
-                    if (FoundSystemDefaultsRow != null)
-                    {
-                        ReturnValue = FoundSystemDefaultsRow.DefaultValue;
-                    }
-                    else
-                    {
-                        ReturnValue = SharedConstants.SYSDEFAULT_NOT_FOUND;
-                    }
+                    ReturnValue = FoundSystemDefaultsRow.DefaultValue;
                 }
-                finally
+                else
                 {
-                    // Release read lock on the cache table
-                    FReadWriteLock.ReleaseReaderLock();
-
-                    // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.GetSystemDefault released the ReaderLock.');$ENDIF
+                    ReturnValue = SharedConstants.SYSDEFAULT_NOT_FOUND;
                 }
             }
-#if DEBUGMODE
-            catch (Exception exp)
+            finally
             {
-                Console.WriteLine("Exception in TSystemDefaultsCache.GetSystemDefaultsTable: " + exp.ToString());
-                throw;
+                // Release read lock on the cache table
+                FReadWriteLock.ReleaseReaderLock();
             }
-#endif
             return ReturnValue;
         }
 
@@ -416,65 +385,39 @@ namespace Ict.Petra.Server.App.Core
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
-            /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.LoadSystemDefaultsTable called in the AppDomain ' + Thread.GetDomain.FriendlyName + '. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
-            **/
-#if DEBUGMODE
-            try
-#endif
-            {
-                // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.LoadSystemDefaultsTable waiting for a WriterLock...');$ENDIF
-                // Prevent other threads from obtaining a read lock on the cache table while we are (re)loading the cache table!
-                FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
+            // Prevent other threads from obtaining a read lock on the cache table while we are (re)loading the cache table!
+            FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
 
-                // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.LoadSystemDefaultsTable grabbed a WriterLock.');$ENDIF
+            try
+            {
+                if (FSystemDefaultsDT != null)
+                {
+                    FSystemDefaultsDT.Clear();
+                }
+
                 try
                 {
-                    if (FSystemDefaultsDT != null)
-                    {
-                        // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine('GetSystemDefaultsTable: FSystemDefaultsDT <> nil'); $ENDIF
-                        // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine('GetSystemDefaultsTable: FSystemDefaultsDT.Rows.Count: ' + FSystemDefaultsDT.Rows.Count.ToString); $ENDIF
-                        FSystemDefaultsDT.Clear();
-                    }
-
-                    try
-                    {
-                        ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                            TEnforceIsolationLevel.eilMinimum,
-                            out NewTransaction);
-                        FSystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadTransaction);
-                    }
-                    finally
-                    {
-                        if (NewTransaction)
-                        {
-                            DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                            if (TSrvSetting.DL >= 7)
-                            {
-                                Console.WriteLine(this.GetType().FullName + ".LoadSystemDefaultsTable: commited own transaction.");
-                            }
-#endif
-                        }
-                    }
-
-                    // Thread.Sleep(5000);     uncomment this for debugging. This allows checking whether read access to FSystemDefaultsDT actually waits until we release the WriterLock in the finally block.
-                    // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine('TSystemDefaultsCache: SystemDefaults (re)loaded!');$ENDIF
+                    ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                        TEnforceIsolationLevel.eilMinimum,
+                        out NewTransaction);
+                    FSystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadTransaction);
                 }
                 finally
                 {
-                    // Other threads are now free to obtain a read lock on the cache table.
-                    FReadWriteLock.ReleaseWriterLock();
-
-                    // $IFDEF DEBUGMODE Console.WriteLine('TSystemDefaultsCache.LoadSystemDefaultsTable released the WriterLock.');$ENDIF
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                        TLogging.LogAtLevel(7, "TSystemDefaultsCache.LoadSystemDefaultsTable: commited own transaction.");
+                    }
                 }
+
+                // Thread.Sleep(5000);     uncomment this for debugging. This allows checking whether read access to FSystemDefaultsDT actually waits until we release the WriterLock in the finally block.
             }
-#if DEBUGMODE
-            catch (Exception exp)
+            finally
             {
-                Console.WriteLine("Exception in TSystemDefaultsCache.LoadSystemDefaultsTable: " + exp.ToString());
-                throw;
+                // Other threads are now free to obtain a read lock on the cache table.
+                FReadWriteLock.ReleaseWriterLock();
             }
-#endif
         }
 
         /// <summary>
@@ -484,10 +427,7 @@ namespace Ict.Petra.Server.App.Core
         /// <returns>void</returns>
         public void ReloadSystemDefaultsTable()
         {
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable called. Instance hash is ' + this.GetHashCode().ToString()); $ENDIF
             LoadSystemDefaultsTable();
-
-            // $IFDEF DEBUGMODE Console.WriteLine('SystemDefault "LocalisedCountyLabel": ' + GetSystemDefault('LocalisedCountyLabel'));$ENDIF
         }
 
         /// <summary>
@@ -503,8 +443,7 @@ namespace Ict.Petra.Server.App.Core
         ///
         /// </summary>
         /// <param name="ASystemDefaultsDataTable">Typed SystemDefaults DataTable</param>
-        /// <returns>true if the System Defaults could be saved successfully, otherwise
-        /// false.
+        /// <returns>true if the System Defaults could be saved successfully
         /// </returns>
         public Boolean SaveSystemDefaults(SSystemDefaultsTable ASystemDefaultsDataTable)
         {
@@ -515,8 +454,10 @@ namespace Ict.Petra.Server.App.Core
             // DefaultInDataBaseCount: Int16;
             // AllSubmissionsOK: Boolean;
 
-            /* TODO 2 oChristanK cDB : Rewrite this function so that it saves entries that originally came from the s_system_parameter table in the DB to this table instead of writing them to the s_system_defaults table! Also use the DataStore to
-             *save the data instead of using SQL queries!!! */
+            /* TODO 2 oChristanK cDB : Rewrite this function so that it saves entries that originally came from the s_system_parameter table
+             * in the DB to this table instead of writing them to the s_system_defaults table! Also use the DataStore to
+             * save the data instead of using SQL queries!!!
+             */
 
             // Currently always returns false because the function needs to be rewritten!
             return false;
@@ -526,7 +467,7 @@ namespace Ict.Petra.Server.App.Core
             //
             // if (ASystemDefaultsDataTable <> nil) and (ASystemDefaultsDataTable.Rows.Count > 0) then
             // begin
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine('Saving ' + (ASystemDefaultsDataTable.Rows.Count).ToString + ' System Defaults...'); $ENDIF
+            // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('Saving ' + (ASystemDefaultsDataTable.Rows.Count).ToString + ' System Defaults...'); $ENDIF
             //
             // Transaction := DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             //
@@ -547,7 +488,7 @@ namespace Ict.Petra.Server.App.Core
             // on exp: Exception do
             // begin
             // Result := false;
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error running count query!!! ' +
+            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error running count query!!! ' +
             // 'Possible cause: ' + exp.ToString); $ENDIF
             // Exit;
             // end;
@@ -557,7 +498,7 @@ namespace Ict.Petra.Server.App.Core
             // begin
             // System Default doesn't exist yet > create it
 
-            /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine('Inserting SystemDefault ' + ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString + '; Value: ' +
+            /* $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('Inserting SystemDefault ' + ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString + '; Value: ' +
              *ASystemDefaultsDataTable.Rows[Counter].Item['s_default_value_c'].ToString);$ENDIF */
 
             // SetLength(ParametersArray, 3);
@@ -577,7 +518,7 @@ namespace Ict.Petra.Server.App.Core
             // on exp: Exception do
             // begin
             // Result := false;
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error running insert query!!! ' +
+            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error running insert query!!! ' +
             // 'Possible cause: ' + exp.ToString); $ENDIF
             // Exit;
             // end;
@@ -587,7 +528,7 @@ namespace Ict.Petra.Server.App.Core
             // begin
             // System Default exists > update it
 
-            /* $IFDEF DEBUGMODE if TSrvSetting.DL >= 8 then Console.WriteLine('Updating SystemDefault ' + ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString + '; Value: ' +
+            /* $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('Updating SystemDefault ' + ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString + '; Value: ' +
              *ASystemDefaultsDataTable.Rows[Counter].Item['s_default_value_c'].ToString);$ENDIF */
 
             // SetLength(ParametersArray, 3);
@@ -607,7 +548,7 @@ namespace Ict.Petra.Server.App.Core
             // on exp: Exception do
             // begin
             // Result := false;
-            // $IFDEF DEBUGMODE if TSrvSetting.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error runing insert query!!! ' +
+            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error runing insert query!!! ' +
             // 'Possible cause: ' + exp.ToString); $ENDIF
             // Exit;
             // end;

@@ -4,7 +4,7 @@
 // @Authors:
 //       charlvj, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace Ict.Common
@@ -41,7 +42,8 @@ namespace Ict.Common
     public class TCmdOpts
     {
         /// The string list of all the command line options.
-        private StringCollection FList;
+        private StringCollection FList = new StringCollection();
+        private Dictionary <string, string>_options = new Dictionary <string, string>();
 
         /// <summary>
         /// </summary>
@@ -55,7 +57,6 @@ namespace Ict.Common
             }
         }
 
-
         /// <summary>
         /// Creates a new object of this class and copies all the parameters that were
         /// passed on the command line into a string list.
@@ -64,14 +65,14 @@ namespace Ict.Common
         /// <returns>void</returns>
         public TCmdOpts()
         {
-            FList = new StringCollection();
             string[] list = Environment.GetCommandLineArgs();
 
             foreach (string s in list)
             {
-                if ((FList.Count > 0) && FList[FList.Count - 1].EndsWith(":"))
+                if ((FList.Count > 0) && FList[FList.Count - 1].EndsWith(":") && !s.StartsWith("-"))
                 {
                     // allow space after : to allow automatic tab expansion for the filename on the Command line
+                    // but also allow empty parameters, that do not use the next parameter name as a value
                     FList[FList.Count - 1] += s.Trim();
                 }
                 else if ((FList.Count > 0) && !s.StartsWith("-"))
@@ -82,6 +83,22 @@ namespace Ict.Common
                 else
                 {
                     FList.Add(s.Trim());
+                }
+            }
+
+            foreach (string entry in FList)
+            {
+                string[] res = entry.Split(new Char[] { '-' }, 2);
+
+                if (1 < res.Length)
+                {
+                    string[] opt = res[1].Split(new Char[] { ':' }, 2);
+
+                    if ((1 < opt.Length) && !_options.ContainsKey(opt[0]))
+                    {
+                        // Add option to dictionary for fast lockup
+                        _options.Add(opt[0], opt[1]);
+                    }
                 }
             }
         }
@@ -95,12 +112,9 @@ namespace Ict.Common
         /// </returns>
         public string GetOptValue(string AOpt)
         {
-            foreach (string s in FList)
+            if (_options.ContainsKey(AOpt))
             {
-                if ((s.IndexOf(AOpt) == 1) && (s.IndexOf(':') == AOpt.Length + 1))
-                {
-                    return s.Substring(AOpt.Length + 2);
-                }
+                return _options[AOpt];
             }
 
             throw new Exception("missing option " + AOpt);
@@ -116,15 +130,7 @@ namespace Ict.Common
         /// </returns>
         public Boolean IsFlagSet(string flag)
         {
-            foreach (string s in FList)
-            {
-                if ((s.IndexOf(flag) == 1) && (s.IndexOf(':') == flag.Length + 1))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return _options.ContainsKey(flag);
         }
     }
 }

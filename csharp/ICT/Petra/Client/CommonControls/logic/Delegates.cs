@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Windows.Forms;
 using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Client.CommonControls.Logic
@@ -31,12 +32,25 @@ namespace Ict.Petra.Client.CommonControls.Logic
         out Int64 APartnerKey,
         out String AShortName,
         out TLocationPK ALocationPK,
-        IntPtr AParentFormHandle);
+        Form AParentForm);
 
-    /// <summary>Delegate for a call to open a Modal Partner Find screen</summary>
+    /// <summary>Delegate for a call to open a Modal Conference Find screen</summary>
     public delegate bool TDelegateOpenConferenceFindScreen(String AConferenceNamePattern,
-        String ACampaignCodePattern,
+        String AOutreachCodePattern,
         out Int64 AConferenceKey,
         out String AConferenceName,
-        IntPtr AParentFormHandle);
+        Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Event Find screen</summary>
+    public delegate bool TDelegateOpenEventFindScreen(String AEventNamePattern,
+        out Int64 AEventKey,
+        out String AEventName,
+        out String AOutreachCode,
+        Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Extract Find screen</summary>
+    public delegate bool TDelegateOpenExtractFindScreen(out int AExtractId,
+        out String AExtractName,
+        out String AExtractDesc,
+        Form AParentForm);
 }

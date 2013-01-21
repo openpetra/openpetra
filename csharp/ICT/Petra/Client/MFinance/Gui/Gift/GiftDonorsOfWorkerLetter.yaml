@@ -1,0 +1,46 @@
+﻿RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Send a letter to the donors of one Worker
+    Comment: this screen allows to send letters to donors of one specific worker
+    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    FormType: browse
+    Template: windowBrowsePrint
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.NewDonorTDS
+    MasterTable: AGift
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
+    WindowWidth: 754
+    WindowHeight: 623
+    Actions:
+        actGenerateLetters: {Label=&Generate Letters, ActionClick=GenerateLetters}
+        actCreateExtract: {ActionClick=CreateExtract}
+        actAddContactHistory: {ActionClick=AddContactHistory}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlParameters, sptResult]
+        pnlParameters:
+            Dock: Top
+            Controls:
+                Row0: [txtWorkerPartnerKey]
+        sptResult:
+            Dock: Fill
+            SplitterOrientation: Horizontal
+            Panel1: grdDetails
+            Panel2: preLetters
+        txtWorkerPartnerKey:
+            Type: PartnerKey
+        grdDetails:
+            Dock: Fill
+            TableName: AGift
+            Columns: [DonorKey, DonorShortName, RecipientDescription]
+            CustomColumns:
+                DonorShortName: {Label=DonorShortName, Type=String}
+                RecipientDescription: {Label=Recipient, Type=String}
+            ActionFocusRow: FocusedRowChanged
+        preLetters:
+            Dock: Fill
+    Menu:
+    Toolbar:
+        tbbGenerateLetters:
+        tbbCreateExtract:
+        tbbAddContactHistory:

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<setup>
+<import class="org.databene.benerator.util.RandomUtil"/>
+
+<!-- Organisation: okay -->
+<generate type="Organisation" count="${organisations_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/organisations.csv')">
+<!--
+	<variable name="organisation" generator="CompanyNameGenerator" dataset="DE" locale="de_DE" />	
+-->
+	<variable name="organisation" generator="CompanyNameGenerator" />	
+	<attribute name="OrganisationName" script="organisation.fullName" /> 
+
+	<variable name="address" generator="AddressGenerator" />
+	<attribute name="Addr2" script="address.street + ' ' + address.houseNumber" />
+	<attribute name="PostCode" script="address.postalCode" />
+	<attribute name="City" script="address.city.name" />
+	<attribute name="Province" script="address.city.state.name" />
+	<attribute name="CountryCode" script="address.city.state.country.isoCode" />
+    
+    <attribute name="IsSupplier" type="string" pattern="no|yes|no"/>
+    <attribute name="Currency" type="string" pattern="EUR|EUR|EUR|EUR|EUR|EUR"/> <!-- TODO also create foreign currency suppliers, eg GBP -->
+</generate>
+
+<bean id="myDayGen" class="DayGenerator">
+    <property name='min'          value='${datetime::get-year(datetime::now())}-01-01'/>
+    <property name='max'          value='${datetime::get-year(datetime::now())}-12-31'/>
+    <property name='granularity'  value='00-00-02'  />
+    <property name='distribution' value='random'    />
+</bean>
+
+<!-- field -->
+<generate name="the_field" type="Field" count="${fields_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/fields.csv')">
+    <id name="id" type="int" generator="IncrementalIdGenerator" />
+	<attribute name="Name" type="string" pattern="(HK|GY|GT|IE|GN|ID|IQ|KH|LB|MD|MR|NG|PR|RW|SV|UY|TN|UZ|VE|ZW)" unique="true"/>
+    <!-- key ministries per field -->
+    <generate type="KeyMinistry" count="${keyminsperfield_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/keymins.csv')">
+        <id name="id" type="int" generator="IncrementalIdGenerator" />
+        <attribute name="KeyMinName" type="string" pattern="(Feed the|Heal the|Save the|Rescue the|Free the) (Forest|Dolphins|Poor|Hungry|Injured|Addicted|Disadvantaged)" unique="true"/>
+        <reference name="field" script="the_field.id"/>
+    </generate>
+</generate>
+
+<!-- workers -->
+<bean id="myMalePersonGen" class="PersonGenerator">
+    <property name='locale'          value='US'/>
+    <property name='femaleQuota'          value='0.0'/>
+    <property name='minAgeYears'          value='19'/>
+</bean>
+
+<bean id="myFemalePersonGen" class="PersonGenerator">
+    <property name='locale'          value='US'/>
+    <property name='femaleQuota'          value='1.0'/>
+    <property name='minAgeYears'          value='19'/>
+</bean>
+
+<bean id="myChildPersonGen" class="PersonGenerator">
+    <property name='locale'          value='US'/>
+    <property name='minAgeYears'          value='0'/>
+    <property name='maxAgeYears'          value='15'/>
+</bean>
+
+<bean id="myStartCommitmentGen" class="DayGenerator">
+    <property name='min'          value='${datetime::get-year(datetime::now()) - 3}-01-01'/>
+    <property name='max'          value='${datetime::get-year(datetime::now())}-12-31'/>
+    <property name='granularity'  value='00-00-02'  />
+    <property name='distribution' value='random'    />
+</bean>
+
+<generate name="the_worker" type="Worker" count="${workers_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/workers.csv')">
+    <id name="id" type="int" generator="IncrementalIdGenerator" />
+    <!-- worker needs a person and a family record, perhaps with spouse and children, an address record, and a commitment record with one of the fields. -->
+    
+    <variable name="personMale" generator="myMalePersonGen"/>
+    <variable name="personFemale" generator="myFemalePersonGen"/>
+    <variable name="personChild1" generator="myChildPersonGen"/>
+    <variable name="personChild2" generator="myChildPersonGen"/>
+    <variable name="personChild3" generator="myChildPersonGen"/>
+    <variable name="personChild4" generator="myChildPersonGen"/>
+    <variable name="personChild5" generator="myChildPersonGen"/>
+
+	<id name="identifier" type="long"  />
+    <attribute name="familySituation" type="string" pattern="(singleMan|singleWoman|family)"/>
+    <attribute name="numberOfChildren" type="int" min="0" max="5"/>
+
+	<attribute name="MaleTitle" script="personMale.salutation" />
+	<attribute name="MaleFirstName" script="personMale.givenName" />
+	<attribute name="MaleMiddleName" script="personMale.secondGivenName" />
+	<attribute name="MaleFamilyName" script="personMale.familyName" />
+	<attribute name="MaleDateOfBirth" script="personMale.birthDate" />
+	<attribute name="MaleEmail" script="personMale.email" />
+
+	<attribute name="FemaleTitle" script="personFemale.salutation" />
+	<attribute name="FemaleFirstName" script="personFemale.givenName" />
+	<attribute name="FemaleMiddleName" script="personFemale.secondGivenName" />
+	<attribute name="FemaleFamilyName" script="personFemale.familyName" />
+	<attribute name="FemaleDateOfBirth" script="personFemale.birthDate" />
+	<attribute name="FemaleEmail" script="personFemale.email" />
+    <attribute name="AgeDifferenceSpouse" type="int" min="-5" max="5"/>
+
+	<attribute name="Child1Title" script="personChild1.salutation" />
+	<attribute name="Child1FirstName" script="personChild1.givenName" />
+	<attribute name="Child1MiddleName" script="personChild1.secondGivenName" />
+	<attribute name="Child1DateOfBirth" script="personChild1.birthDate" />
+    <attribute name="Child1Gender" script="personChild1.gender" />
+    <attribute name="Child1Email" script="personChild1.email" />
+    
+	<attribute name="Child2Title" script="personChild2.salutation" />
+	<attribute name="Child2FirstName" script="personChild2.givenName" />
+	<attribute name="Child2MiddleName" script="personChild2.secondGivenName" />
+	<attribute name="Child2DateOfBirth" script="personChild2.birthDate" />
+    <attribute name="Child2Gender" script="personChild2.gender" />
+    <attribute name="Child2Email" script="personChild2.email" />
+
+	<attribute name="Child3Title" script="personChild3.salutation" />
+	<attribute name="Child3FirstName" script="personChild3.givenName" />
+	<attribute name="Child3MiddleName" script="personChild3.secondGivenName" />
+	<attribute name="Child3DateOfBirth" script="personChild3.birthDate" />
+    <attribute name="Child3Gender" script="personChild3.gender" />
+    <attribute name="Child3Email" script="personChild3.email" />
+
+   	<attribute name="Child4Title" script="personChild4.salutation" />
+	<attribute name="Child4FirstName" script="personChild4.givenName" />
+	<attribute name="Child4MiddleName" script="personChild4.secondGivenName" />
+	<attribute name="Child4DateOfBirth" script="personChild4.birthDate" />
+    <attribute name="Child4Gender" script="personChild4.gender" />
+    <attribute name="Child4Email" script="personChild4.email" />
+
+	<attribute name="Child5Title" script="personChild5.salutation" />
+	<attribute name="Child5FirstName" script="personChild5.givenName" />
+	<attribute name="Child5MiddleName" script="personChild5.secondGivenName" />
+	<attribute name="Child5DateOfBirth" script="personChild5.birthDate" />
+    <attribute name="Child5Gender" script="personChild5.gender" />
+    <attribute name="Child5Email" script="personChild5.email" />
+
+	<variable name="address" generator="AddressGenerator" />
+	<attribute name="Addr2" script="address.street + ' ' + address.houseNumber" />
+	<attribute name="PostCode" script="address.postalCode" />
+	<attribute name="City" script="address.city.name" />
+	<attribute name="Province" script="address.city.state.name" />
+	<attribute name="CountryCode" script="address.city.state.country.isoCode" />
+
+    <!-- TODO: add a commitment for the wife as well? -->
+    <attribute name="startDateCommitment" generator="myStartCommitmentGen"/>
+    <attribute name="lengthCommitment" type="int" min="0" max="5"/> <!-- 0 is open ended -->
+    <attribute name="lengthCommitmentUnit" type="string" pattern="(week|month|year)"/>
+    <attribute name="fieldCommitment" type="int" min="1" max="300"/>
+</generate>
+
+<generate name="people" type="People" count="${people_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/people.csv')">
+    <!-- a partner can be a single male, single female, or a couple. They can be donors or other contacts -->
+    <id name="id" type="int" generator="IncrementalIdGenerator" />
+    
+    <variable name="personMale" generator="myMalePersonGen"/>
+    <variable name="personFemale" generator="myFemalePersonGen"/>
+
+	<id name="identifier" type="long"  />
+    <attribute name="familySituation" type="string" pattern="(singleMan|singleWoman|family)"/>
+    <attribute name="numberOfChildren" type="int" min="0" max="5"/>
+
+	<attribute name="MaleTitle" script="personMale.salutation" />
+	<attribute name="MaleFirstName" script="personMale.givenName" />
+	<attribute name="MaleMiddleName" script="personMale.secondGivenName" />
+	<attribute name="MaleFamilyName" script="personMale.familyName" />
+	<attribute name="MaleDateOfBirth" script="personMale.birthDate" />
+	<attribute name="MaleEmail" script="personMale.email" />
+
+	<attribute name="FemaleTitle" script="personFemale.salutation" />
+	<attribute name="FemaleFirstName" script="personFemale.givenName" />
+	<attribute name="FemaleMiddleName" script="personFemale.secondGivenName" />
+	<attribute name="FemaleFamilyName" script="personFemale.familyName" />
+	<attribute name="FemaleDateOfBirth" script="personFemale.birthDate" />
+	<attribute name="FemaleEmail" script="personFemale.email" />
+    <attribute name="AgeDifferenceSpouse" type="int" min="-5" max="5"/>
+
+	<variable name="address" generator="AddressGenerator" />
+	<attribute name="Addr2" script="address.street + ' ' + address.houseNumber" />
+	<attribute name="PostCode" script="address.postalCode" />
+	<attribute name="City" script="address.city.name" />
+	<attribute name="Province" script="address.city.state.name" />
+	<attribute name="CountryCode" script="address.city.state.country.isoCode" />
+    
+    <attribute name="bankaccount_bank" type="int" min="1" max="10000"/>
+    <attribute name="bankaccount_account" type="int" min="1000000" max="99000000" unique="true"/>
+</generate>
+
+<generate type="Donations" count="${donations_count}" 
+	consumer="new CSVEntityExporter(uri='${dir.data.output}/donations.csv')">
+
+	<id name="identifier" type="long"  />
+    
+    <!--
+      frequency: this gift is only once, or starting with the startdate every month, or once in a quarter
+      splitgift: should amount_2 and amount_3 also be used?
+      motivation: the gift can be towards personal support, for a field, or for a key ministry/project
+      assuming we have 1000 donors
+      assuming we have about 200 workers, 50 key ministries, 20 fields
+    -->
+
+    <attribute name="frequency" type="string" pattern="(once|once|monthly|monthly|monthly|quarterly)"/>
+    <attribute name="startdate" generator="myDayGen"/>
+    <attribute name="splitgift" type="string" pattern="(1|1|1|2|2|3)" />
+    <attribute name="donor" type="int" min="1" max="1000"/>
+    <attribute name="motivation_1" type="string" pattern="(SUPPORT|SUPPORT|SUPPORT|FIELD|KEYMIN)" />
+    <attribute name="recipient_support_1" type="int" min="1" max="200"/>
+    <attribute name="recipient_keymin_1" type="int" min="1" max="50"/>
+    <attribute name="recipient_field_1" type="int" min="1" max="20"/>
+    <attribute name="amount_1" type="int" min="5" max="500"/>
+    <attribute name="motivation_2" type="string" pattern="(SUPPORT|SUPPORT|SUPPORT|FIELD|KEYMIN)" />
+    <attribute name="recipient_support_2" type="int" min="1" max="200"/>
+    <attribute name="recipient_keymin_2" type="int" min="1" max="50"/>
+    <attribute name="recipient_field_2" type="int" min="1" max="20"/>
+    <attribute name="amount_2" type="int" min="5" max="500"/>
+    <attribute name="motivation_3" type="string" pattern="(SUPPORT|SUPPORT|SUPPORT|FIELD|KEYMIN)" />
+    <attribute name="recipient_support_3" type="int" min="1" max="200"/>
+    <attribute name="recipient_keymin_3" type="int" min="1" max="50"/>
+    <attribute name="recipient_field_3" type="int" min="1" max="20"/>
+    <attribute name="amount_3" type="int" min="5" max="500"/>
+
+</generate>
+
+<generate type="Invoices" count="${invoices_count}" 
+	consumer="new CSVEntityExporter(uri='${dir.data.output}/invoices.csv')">
+
+	<id name="identifier" type="long"  />
+    <attribute name="DateIssued" generator="myDayGen"/>
+    <attribute name="Supplier" type="int" min="1" max="1000"/>
+    <attribute name="Amount" type="int" min="500" max="600000"/> <!-- import will divide amount by 100 to get decimals -->
+    <attribute name="PaidAfterXDays" type="int" min="0" max="20"/>
+    <attribute name="ExpenseAccount" type="int" min="1" max="300"/>
+</generate>
+
+<generate type="ConferenceApplication" count="${conference_applications_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/conferenceApplications.csv')">
+    <variable name="person" generator="PersonGenerator"/>
+
+	<id name="identifier" type="long"  />
+
+    <attribute name="RegistrationCountryCode" type="string" pattern="(deDE|deDE|deDE|deDE|deDE|deDE|enGB|enGB|enGB|enUS|frFR|nbNO)" />
+    
+    <attribute name="age" type="int" min="1" max="40"/>
+    <attribute name="role" type="string" pattern="(CHILD|TEEN|TEEN|TEEN|TEEN|TEEN|TEEN|TEEN|TEEN|TEEN|COACH|COACH|STAFF|SERVE|SERVE|SERVE|SERVE|MM)"/>
+    
+	<attribute name="FirstName" script="person.givenName" />
+	<attribute name="FamilyName" script="person.familyName" />
+	<attribute name="DateOfBirth" script="person.birthDate" />
+	<attribute name="Email" script="person.email" />
+	<attribute name="Gender" script="person.gender" />
+    
+	<variable name="address" generator="AddressGenerator" />
+	<attribute name="Street" script="address.street + ' ' + address.houseNumber" />
+	<attribute name="PostCode" script="address.postalCode" />
+	<attribute name="City" script="address.city.name" />
+</generate>
+
+<echo>\n ### GENERATE COMPLETE ### \n</echo>
+
+</setup>

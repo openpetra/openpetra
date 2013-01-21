@@ -1,0 +1,52 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Methods of Giving
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DetailTable: AMethodOfGiving
+    CacheableTable: MethodOfGivingList
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Account.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 785
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+            Action: actNew
+        grdDetails:
+            Dock: Fill
+            Columns: [MethodOfGivingCode, MethodOfGivingDesc, RecurringMethodFlag, TaxRebateFlag, TrustFlag, Active]
+            CustomColumns:
+                MethodOfGivingCode:  {Label=Method of Giving}
+                MethodOfGivingDesc:  {Label=Description}
+                RecurringMethodFlag: {Label=Recurring, Type=Boolean}
+                TaxRebateFlag: {Label=Tax Rebate, Type=Boolean}
+                TrustFlag: {Label=Trust, Type=Boolean}
+                Active: {Label=Active, Type=Boolean}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailMethodOfGivingCode, txtDetailMethodOfGivingDesc]
+                Row1: [chkDetailRecurringMethodFlag, chkDetailTaxRebateFlag]
+                Row2: [chkDetailTrustFlag]
+                Row3: [chkDetailActive]
+        txtDetailMethodOfGivingCode: {Label=Method of Giving, CharacterCasing=Upper}
+        txtDetailMethodOfGivingDesc: {Label=Description, Width=245}
+        chkDetailRecurringMethodFlag:  {Label=Used by Recurring Gifts}
+        chkDetailTaxRebateFlag:  {Label=Involves a Tax Rebate}
+        chkDetailTrustFlag:  {Label=Involves a Trust}
+        chkDetailActive:  {Label=Active}
+    Toolbar:
+        tbbNew:
+            Label: New Method of Giving

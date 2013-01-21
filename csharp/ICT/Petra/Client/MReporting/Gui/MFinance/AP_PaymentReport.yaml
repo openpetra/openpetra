@@ -1,0 +1,40 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: AP Payment Report
+    WindowWidth: 680
+    WindowHeight: 480
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        XMLFILES: [Finance/AccountsPayable/AP_PaymentReport.xml,Finance/finance.xml,common.xml]
+        REPORTNAME: APPaymentReport
+        CURRENTREPORT: APPaymentReport
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION:BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+        REPORTSETTINGSDIRECTORY: Finance
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgReportSpecific:
+            Controls: [pnlRow1,pnlRow2]
+        pnlRow1:
+            Controls: [dtpPaymentDateFrom, dtpPaymentDateTo]
+        pnlRow2:
+            Controls: [txtPaymentNumFrom, txtPaymentNumTo]
+        dtpPaymentDateFrom:
+            Label: From date
+            ParameterName: param_payment_date_from_i
+        dtpPaymentDateTo:
+            Label: To date
+            ParameterName: param_payment_dte_to_i
+        txtPaymentNumFrom:
+            Label: From Pymnt#
+            ParameterName: param_payment_num_from_i
+        txtPaymentNumTo:
+            Label: To Pymnt#
+            ParameterName: param_payment_num_to_i
+            

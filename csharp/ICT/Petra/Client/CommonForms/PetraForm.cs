@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,42 +31,16 @@ using System.ComponentModel.Design;
 using System.Windows.Forms;
 using System.Resources;
 using System.Threading;
+using System.Reflection;
+
+using Ict.Common;
+using Ict.Common.Controls;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
-using Ict.Common.Controls;
-
-//using Ict.Petra.Client.CommonDialogs;
-using Ict.Common;
 
 namespace Ict.Petra.Client.CommonForms
 {
-#if TODO
-    /// This Form is the Base Form for all Petra Forms.
-    ///
-    /// It contains the File and Help Menus, a Toolbar with a Close button,
-    /// a Statusbar and a StatusBarTextProvider.
-    ///
-    /// @Comment All Forms that are used in Petra should inherit from this Form -
-    ///   except for Dialog-style (Modal) Forms, these should inherit from
-    ///   TFrmPetraDialog (in Ict.Petra.Client.CommonDialogs.dll)!
-    public class TFrmPetra : Form
-    {
-        /// <summary>
-        /// Special property to determine whether our code is running in the WinForms Designer.
-        /// The result of this property is correct even if InitializeComponent() wasn't run yet
-        /// (.NET's DesignMode property returns false in that case)!
-        /// </summary>
-        protected bool InDesignMode
-        {
-            get
-            {
-                return (this.GetService(typeof(IDesignerHost)) != null)
-                       || (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime);
-            }
-        }
-    }
-#endif
-
     /// <summary>todoComment</summary>
     public delegate void ActionEventHandler(object sender, ActionEventArgs e);
 
@@ -87,9 +61,21 @@ namespace Ict.Petra.Client.CommonForms
         protected IFrmPetra FTheForm;
 
         /// <summary>
+        /// ToolTip instance which is used to show Data Validation messages.
+        /// </summary>
+        protected ToolTip FValidationToolTip;
+
+        /// <summary>
+        /// Dictionary that contains Controls on whose data Data Validation should be run.
+        /// </summary>
+        protected TValidationControlsDict FValidationControlsDict = new TValidationControlsDict();
+
+        /// <summary>
         /// points to the same object as FTheForm, but already casted to a WinForm
         /// </summary>
         protected System.Windows.Forms.Form FWinForm;
+
+        private Form FCallerForm;
 
         /// Tells whether the Form is activated for the first time (after loading the Form) or not
         protected Boolean FFormActivatedForFirstTime;
@@ -97,24 +83,57 @@ namespace Ict.Petra.Client.CommonForms
         /// Set this to true to prevent the automatic hookup of change Events of all Controls on the Form
         protected Boolean FNoAutoHookupOfAllControls;
 
-        /// This will hold a reference to ALL controls on the screen  even if they are buried in groub boxes, panels, or tab pages
+        /// This holds a reference to ALL controls on the screen  even if they are buried in GroupBoxes, Panels, or TabPages
         protected ArrayList FAllControls;
+
+        /// This holds a reference to ALL controls on the screen that have child controls, even if they are buried in GroupBoxes, Panels, or TabPages
+        protected ArrayList FControlsWithChildren;
+
+        /// Used for keeping track of data verification errors
+        protected TVerificationResultCollection FVerificationResultCollection;
+
+        /// Used for keeping track of data verification errors
+        public TVerificationResultCollection VerificationResultCollection
+        {
+            get
+            {
+                return FVerificationResultCollection;
+            }
+            set
+            {
+                FVerificationResultCollection = value;
+            }
+        }
 
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
+        /// <param name="ACallerForm">the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>
-        public TFrmPetraUtils(IntPtr ACallerWindowHandle, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar)
+        public TFrmPetraUtils(Form ACallerForm, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar)
         {
             FFormActivatedForFirstTime = true;
+            FVerificationResultCollection = new TVerificationResultCollection();
 
             FTheForm = ATheForm;
             FWinForm = (Form)ATheForm;
             FStatusBar = AStatusBar;
+            FCallerForm = ACallerForm;
 
-            TFormsList.GFormsList.NotifyWindowOpened(ACallerWindowHandle, FWinForm.Handle);
+            if (ACallerForm != null)
+            {
+                TFormsList.GFormsList.NotifyWindowOpened(ACallerForm.Handle, FWinForm.Handle);
+            }
+
+            //
+            // Initialise the Data Validation ToolTip
+            //
+            FValidationToolTip = new System.Windows.Forms.ToolTip();
+            FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
+            FValidationToolTip.ToolTipTitle = Catalog.GetString("Incorrect Data");
+            FValidationToolTip.UseAnimation = true;
+            FValidationToolTip.UseFading = true;
 
             // WriteToStatusBar(Catalog.GetString("Ready."));
         }
@@ -175,11 +194,25 @@ namespace Ict.Petra.Client.CommonForms
         {
             foreach (Control ctrl in c.Controls)
             {
+                // exclude TPetraUserControl objects that should not be hooked up
+                if ((ctrl is TPetraUserControl)
+                    && (!((TPetraUserControl)ctrl).CanBeHookedUpForValueChangedEvent))
+                {
+                    continue;
+                }
+
                 // recurse into children;
                 // but special case for UpDownBase/NumericUpDown, because we don't want the child controls of that
-                if ((ctrl.HasChildren == true) && !(ctrl is UpDownBase))
+                if ((ctrl.HasChildren == true) && !(ctrl is UpDownBase) && !(ctrl is TClbVersatile))
                 {
                     EnumerateControls(ctrl);
+
+                    if ((ctrl is Panel)
+                        || (ctrl is GroupBox)
+                        || (ctrl is UserControl))
+                    {
+                        FControlsWithChildren.Add(ctrl);
+                    }
                 }
                 else
                 {
@@ -193,25 +226,79 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         public virtual void HookupAllControls()
         {
+            Control IteratedControl;
+
             FAllControls = new ArrayList();
+            FControlsWithChildren = new ArrayList();
+
             EnumerateControls(FWinForm); //this adds all controls on form to ArrayList
 
             // this is on an international version of Windows, so we want no bold fonts
             // because the letters are difficult to read
             bool changeFonts = TAppSettingsManager.ChangeFontForLocalisation();
 
-            foreach (Control ctrl in FAllControls)
+            for (int Counter1 = 0; Counter1 < FAllControls.Count; Counter1++)
             {
+                IteratedControl = (Control)FAllControls[Counter1];
+
                 if (changeFonts)
                 {
-                    if (TAppSettingsManager.ReplaceFont(ctrl.Font))
+                    if (TAppSettingsManager.ReplaceFont(IteratedControl.Font))
                     {
                         // remove bold and replace with regular
-                        ctrl.Font = new System.Drawing.Font(ctrl.Font.Name,
-                            ctrl.Font.Size,
+                        IteratedControl.Font = new System.Drawing.Font(IteratedControl.Font.Name,
+                            IteratedControl.Font.Size,
                             System.Drawing.FontStyle.Regular);
                     }
                 }
+            }
+
+            // Hook up Global Application Help handler to to the Form itself
+            FWinForm.HelpRequested += new HelpEventHandler(GlobalApplicationHelpEventHandler);
+
+            // Hook up Global Application Help handler to all Controls that have child controls
+            for (int Counter2 = 0; Counter2 < FControlsWithChildren.Count; Counter2++)
+            {
+                ((Control)FControlsWithChildren[Counter2]).HelpRequested += new HelpEventHandler(GlobalApplicationHelpEventHandler);
+            }
+        }
+
+        /// <summary>
+        /// Global application help handler. Every 'F1' key-press that happens in a context where it is hooked up
+        /// gets passed to this handler.
+        /// </summary>
+        /// <param name="ASender">A Form or a Control.</param>
+        /// <param name="AHelpEvent">Ignored.</param>
+        void GlobalApplicationHelpEventHandler(object ASender, HelpEventArgs AHelpEvent)
+        {
+            Form HelpContextForm;
+            Control HelpContextControl;
+
+            if (ASender is Form)
+            {
+                HelpContextForm = (Form)ASender;
+                HelpContextControl = null;
+            }
+            else
+            {
+                HelpContextForm = FWinForm;
+                HelpContextControl = (Control)ASender;
+            }
+
+            try
+            {
+                if (!Ict.Common.HelpLauncher.ShowHelp(HelpContextForm, HelpContextControl))
+                {
+                    WriteToStatusBar(Catalog.GetString("Sorry, there is no help available for the context."));
+                }
+            }
+            catch (EHelpLauncherException Exp)
+            {
+                MessageBox.Show(Exp.Message, "Error Launching Application Help", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -291,6 +378,68 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        /// <summary>
+        /// ToolTip instance which is used to show Data Validation messages.
+        /// </summary>
+        public ToolTip ValidationToolTip
+        {
+            get
+            {
+                return FValidationToolTip;
+            }
+        }
+
+        /// <summary>
+        /// Sets the Validation ToolTip severity. This affects the icon and title of the Validation ToolTip.
+        /// </summary>
+        public TResultSeverity ValidationToolTipSeverity
+        {
+            set
+            {
+                switch (value)
+                {
+                    case TResultSeverity.Resv_Critical:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Error;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Incorrect Data");
+
+                        break;
+
+                    case TResultSeverity.Resv_Noncritical:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Warning");
+
+                        break;
+
+                    case TResultSeverity.Resv_Info:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Information");
+
+                        break;
+
+                    case TResultSeverity.Resv_Status:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.None;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Note");
+
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Dictionary that contains Controls on whose data Data Validation should be run.
+        /// </summary>
+        public TValidationControlsDict ValidationControlsDict
+        {
+            get
+            {
+                return FValidationControlsDict;
+            }
+            set
+            {
+                FValidationControlsDict = value;
+            }
+        }
+
         /// useful for initialising actions, eg based on permissions
         virtual public void InitActionState()
         {
@@ -341,12 +490,19 @@ namespace Ict.Petra.Client.CommonForms
             ExecuteAction(ATag.Id);
         }
 
+        private Assembly CommonDialogsAssembly = null;
+
         /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="id"></param>
         public void ExecuteAction(eActionId id)
         {
+            if (CommonDialogsAssembly == null)
+            {
+                CommonDialogsAssembly = Assembly.LoadFrom("Ict.Petra.Client.CommonDialogs.dll");
+            }
+
             switch (id)
             {
                 case eActionId.eClose:
@@ -364,12 +520,12 @@ namespace Ict.Petra.Client.CommonForms
                     break;
 
                 case eActionId.eHelpAbout:
-#if TODO
-                    using (AboutPetraDialog aboutDialog = new AboutPetraDialog())
+                    System.Type dialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmAboutDialog");
+
+                    using (Form aboutDialog = (Form)Activator.CreateInstance(dialogType, new object[] { this.FWinForm }))
                     {
                         aboutDialog.ShowDialog();
                     }
-#endif
                     break;
 
                 case eActionId.eHelp:
@@ -427,10 +583,25 @@ namespace Ict.Petra.Client.CommonForms
          * @param s the text to be displayed in the StatusBar
          *
          */
+        delegate void WriteCallback (String s);
+
+        /// <summary>
+        /// (Thread safe)
+        /// </summary>
+        /// <param name="s"></param>
         public void WriteToStatusBar(String s)
         {
-            // StatusBar appears to be threadsafe; otherwise you would need a Invoke(System.Delegate(@myDelegate)); call
-            FStatusBar.ShowMessage(s);
+            if (FStatusBar != null)
+            {
+                if (FStatusBar.InvokeRequired)
+                {
+                    FStatusBar.Invoke(new WriteCallback(WriteToStatusBar), new object[] { s });
+                }
+                else
+                {
+                    FStatusBar.ShowMessage(s);
+                }
+            }
         }
 
         /**
@@ -478,7 +649,7 @@ namespace Ict.Petra.Client.CommonForms
                 values.RemoveAt(values.Count - 1);
             }
 
-            TUserDefaults.SetDefault(keyName, StringHelper.StrMerge(values, ","));
+            TUserDefaults.SetDefault(keyName, StringHelper.StrMerge(values, ','));
         }
 
         /// <summary>
@@ -488,6 +659,24 @@ namespace Ict.Petra.Client.CommonForms
         public void LoadComboBoxHistory(TCmbAutoComplete AComboBox)
         {
             AComboBox.SetDataSourceStringList(TUserDefaults.GetStringDefault("CmbHistory" + AComboBox.Name, ""));
+        }
+
+        /// <summary>
+        /// get the form that has opened this form
+        /// </summary>
+        /// <returns></returns>
+        public Form GetCallerForm()
+        {
+            return FCallerForm;
+        }
+
+        /// <summary>
+        /// get the current form
+        /// </summary>
+        /// <returns></returns>
+        public Form GetForm()
+        {
+            return FWinForm;
         }
     }
 

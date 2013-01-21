@@ -83,7 +83,7 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>
         /// page for relationships between partners
         /// </summary>
-        petpRelationships,
+        petpPartnerRelationships,
 
         /// <summary>
         /// page for contact management
@@ -93,7 +93,17 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>
         /// page for notes about the partner
         /// </summary>
-        petpNotes
+        petpNotes,
+
+        /// <summary>
+        /// page for individual data about the partner (Personnel Module)
+        /// </summary>
+        petpPersonnelIndividualData,
+
+        /// <summary>
+        /// page for applications of the partner (Personnel Module)
+        /// </summary>
+        petpPersonnelApplications
     };
 
     /// <summary>
@@ -135,6 +145,9 @@ namespace Ict.Petra.Shared.MPartner
 
         /// family name
             eOnlySurname,
+
+        /// first name
+            eOnlyFirstname,
 
         /// firstname l.; useful for data protection
             eReverseLastnameInitialsOnly,
@@ -204,6 +217,31 @@ namespace Ict.Petra.Shared.MPartner
         {
             FSiteKey = ASiteKey;
             FLocationKey = ALocationKey;
+        }
+
+        /// <summary>
+        /// returns true if objects are the same
+        /// </summary>
+        /// <param name="AObject"></param>
+        /// <returns></returns>
+        public override bool Equals(object AObject)
+        {
+            if ((AObject == null) || !(AObject is TLocationPK))
+            {
+                return false;
+            }
+
+            return ((TLocationPK)AObject).LocationKey == this.LocationKey
+                   && ((TLocationPK)AObject).SiteKey == this.SiteKey;
+        }
+
+        /// <summary>
+        /// returns a unique hash code for this object
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return (int)FSiteKey + FLocationKey;
         }
     }
     #endregion

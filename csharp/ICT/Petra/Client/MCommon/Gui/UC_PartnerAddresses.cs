@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,7 +34,7 @@ using SourceGrid.Cells.DataGrid;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Gui;
@@ -44,7 +44,7 @@ using System.Threading;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Client.MCommon.Gui
 {
@@ -58,51 +58,40 @@ namespace Ict.Petra.Client.MCommon.Gui
     /// </summary>
     public partial class TUCPartnerAddresses : System.Windows.Forms.UserControl, IPetraEditUserControl
     {
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocation1stLine = "A similar address already exists in the datab" + "ase:";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationUseQuestionPart1 = "Use the existing address record?";
+        private static readonly string StrSimilarLocation1stLine = Catalog.GetString("A similar address already exists in the database:");
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationUseQuestionPart2 = "(Choose 'No' to create a new address record.)";
+        private static readonly string StrSimilarLocationUseQuestionPart1 = Catalog.GetString("Use the existing address record?");
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationTitle = "Similar Address Exists";
+        private static readonly string StrSimilarLocationUseQuestionPart2 = Catalog.GetString("(Choose 'No' to create a new address record.)");
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationUsedByN1 = "NOTE: this is used by ";
+        private static readonly string StrSimilarLocationTitle = Catalog.GetString("Similar Address Exists");
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationUsedByN2plural = " other partners.";
+        private static readonly string StrSimilarLocationUsedByN1 = Catalog.GetString("NOTE: this is used by {0} ");
 
-        /// <summary>todoComment</summary>
-        public const String StrSimilarLocationUsedByN2singular = " other partner.";
+        private static readonly string StrAddressAddedFamilyPromotion1stLine = Catalog.GetString(
+            "You have added the following address to this family:");
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressAddedFamilyPromotion1stLine = "You have added the following address " + "to this family:";
+        private static readonly string StrAddressAddedFamilyPromotionQuestion = Catalog.GetString(
+            "Do you want to add this address to all members\r\nof this family?");
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressAddedFamilyPromotionQuestion = "Do you want to add this address to all members" + "\r\n" + "of this family?";
+        private static readonly string StrAddressAddedFamilyPromotionQuestionTitle = Catalog.GetString("Add Address to Family Members?");
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressAddedFamilyPromotionQuestionTitle = "Add Address to Family Members?";
+        private static readonly string StrExpireAllCurrentAddressesTitle = Catalog.GetString("Expire All Current Addresses");
 
-        /// <summary>todoComment</summary>
-        public const String StrExpireAllCurrentAddressesTitle = "Expire All Current Addresses";
+        private static readonly string StrExpireAllCurrentAddressesNone = Catalog.GetString(
+            "There are no Current Addresses, therefore none need to be expired.");
 
-        /// <summary>todoComment</summary>
-        public const String StrExpireAllCurrentAddressesNone = "There are no Current Addresses, therefore none need to be expired.";
+        private static readonly string StrExpireAllCurrentAddressesNone2 = Catalog.GetString("There are no Current Addresses that can be expired.");
 
-        /// <summary>todoComment</summary>
-        public const String StrExpireAllCurrentAddressesNone2 = "There are no Current Addresses that can be expired.";
+        private static readonly string StrExpireAllCurrentAddressesDoneTitle = Catalog.GetString("All Addresses Expired");
 
-        /// <summary>todoComment</summary>
-        public const String StrExpireAllCurrentAddressesDoneTitle = "All Addresses Expired";
+        private static readonly string StrExpireAllCurrentAddressesDone = Catalog.GetString(
+            "The following {0} Address(es) was/were expired:\r\n{1}\r\n" +
+            "The Partner has no Current Addresses left.");
 
-        /// <summary>todoComment</summary>
-        public const String StrExpireAllCurrentAddressesDone = "The following {0} Address(es) was/were expired:" + "\r\n" + "{1}" + "\r\n" +
-                                                               "The Partner has no Current Addresses left.";
+        #endregion
 
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         protected IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
@@ -189,9 +178,6 @@ namespace Ict.Petra.Client.MCommon.Gui
             }
         }
 
-        /// <summary>Custom Event for enabling/disabling of other parts of the screen</summary>
-        public event TEnableDisableScreenPartsEventHandler EnableDisableOtherScreenParts;
-
         /// <summary>Custom Event for recalculation of the Tab Header</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 
@@ -217,7 +203,6 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.btnDeleteRecord.Text = Catalog.GetString("      &Delete");
-            this.btnEditRecord.Text = Catalog.GetString("       Edi&t");
             this.btnNewRecord.Text = Catalog.GetString("       &New");
             #endregion
 
@@ -249,7 +234,6 @@ namespace Ict.Petra.Client.MCommon.Gui
                 FPetraUtilsObject.SetStatusBarText(this.btnMaximiseMinimiseGrid, Catalog.GetString("List expand button"));
                 FPetraUtilsObject.SetStatusBarText(this.grdRecordList, Catalog.GetString("Address list"));
                 FPetraUtilsObject.SetStatusBarText(this.btnDeleteRecord, Catalog.GetString("Delete currently selected Address"));
-                FPetraUtilsObject.SetStatusBarText(this.btnEditRecord, Catalog.GetString("Edit currently selected Address"));
                 FPetraUtilsObject.SetStatusBarText(this.btnNewRecord, Catalog.GetString("Create new address"));
             }
         }
@@ -283,7 +267,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             grdRecordList.Selection.SelectRow(BestAddressRowNumber, true);
 
             // Scroll grid to line where the 'Best Address' is displayed
-            grdRecordList.ShowCell(new Position(BestAddressRowNumber, 0), true);
+            grdRecordList.ShowCell(BestAddressRowNumber);
 
             if (APerformDataBinding)
             {
@@ -428,21 +412,6 @@ namespace Ict.Petra.Client.MCommon.Gui
         }
 
         /// <summary>
-        /// Raises Event EnableDisableOtherScreenParts.
-        ///
-        /// </summary>
-        /// <param name="e">Event parameters
-        /// </param>
-        /// <returns>void</returns>
-        protected void OnEnableDisableOtherScreenParts(TEnableDisableEventArgs e)
-        {
-            if (EnableDisableOtherScreenParts != null)
-            {
-                EnableDisableOtherScreenParts(this, e);
-            }
-        }
-
-        /// <summary>
         /// Raises Event HookupDataChange.
         ///
         /// </summary>
@@ -477,16 +446,12 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <summary>
         /// Sets up the screen logic, retrieves data, databinds the Grid and the Detail
         /// UserControl.
-        ///
         /// </summary>
         /// <returns>void</returns>
         public void InitialiseUserControl()
         {
             DataColumn ForeignTableColumn;
             DataTable LocationTable;
-
-            DataColumn[] LocationPK = new DataColumn[1 - 0 + 1];
-            DataColumn[] PartnerLocationPK = new DataColumn[1 - 0 + 1];
 
             // Set up screen logic
             FLogic.MainDS = FMainDS;
@@ -555,9 +520,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             OnHookupDataChange(new System.EventArgs());
 
             // initial state of buttons. show edit and delete button
-            btnEditRecord.Text = "       " + CommonResourcestrings.StrBtnTextEdit;
-            btnDeleteRecord.Text = "     " + CommonResourcestrings.StrBtnTextDelete;
-            btnEditRecord.ImageIndex = 1;
+            btnDeleteRecord.Text = "     " + MCommonResourcestrings.StrBtnTextDelete;
             btnDeleteRecord.ImageIndex = 2;
         }
 
@@ -668,16 +631,11 @@ namespace Ict.Petra.Client.MCommon.Gui
                 {
                     if (SimilarLocationParametersRow.UsedByNOtherPartners > 0)
                     {
-                        AlreadyUsedMessage = "\r\n\r\n" + StrSimilarLocationUsedByN1 + SimilarLocationParametersRow.UsedByNOtherPartners.ToString();
-
-                        if (SimilarLocationParametersRow.UsedByNOtherPartners > 1)
-                        {
-                            AlreadyUsedMessage = AlreadyUsedMessage + StrSimilarLocationUsedByN2plural;
-                        }
-                        else
-                        {
-                            AlreadyUsedMessage = AlreadyUsedMessage + StrSimilarLocationUsedByN2singular;
-                        }
+                        AlreadyUsedMessage = "\r\n\r\n" +
+                                             String.Format(StrSimilarLocationUsedByN1, SimilarLocationParametersRow.UsedByNOtherPartners) +
+                                             Catalog.GetPluralString(" other partner.",
+                            " other partners.",
+                            SimilarLocationParametersRow.UsedByNOtherPartners);
                     }
                     else
                     {
@@ -731,20 +689,21 @@ namespace Ict.Petra.Client.MCommon.Gui
             PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddedOrChangedPromotionDT,
             PartnerAddressAggregateTDSChangePromotionParametersTable AParameterDT)
         {
-// TODO ProcessServerResponseAddressAddedOrChanged
-#if TODO
             PLocationRow LocationRow;
             PLocationTable LocationDT;
 
             System.Windows.Forms.DialogResult AddressAddedPromotionDialogResult;
             int Counter;
             PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedPromotionRow;
-            TPartnerAddressChangePropagationSelectionWinForm AddressChangedDialog;
-            DataView PartnerSharingLocationDV;
-            string UserAnswer;
+
+#if TODO
             string FilterCriteria;
             DataView PersonsLocationsDV;
+            DataView PartnerSharingLocationDV;
+            TPartnerAddressChangePropagationSelectionWinForm AddressChangedDialog;
+            string UserAnswer;
             TPartnerLocationChangePropagationSelectionWinForm LocationChangedDialog;
+#endif
 
             for (Counter = 0; Counter <= AAddedOrChangedPromotionDT.Rows.Count - 1; Counter += 1)
             {
@@ -798,21 +757,25 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (AParameterDT != null)
                         {
+#if TODO
                             FilterCriteria = PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.SiteKey.ToString() + " AND " +
                                              PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.LocationKey.ToString();
 
                             // MessageBox.Show('FilterCriteria: ' + FilterCriteria);
+#endif
                             LocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new Object[] { AddressAddedOrChangedPromotionRow.SiteKey,
                                                                                                    AddressAddedOrChangedPromotionRow.LocationKey });
 
                             if (LocationRow != null)
                             {
+#if TODO
                                 PartnerSharingLocationDV = new DataView(AParameterDT,
                                     FilterCriteria,
                                     PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyDBName() + " ASC",
                                     DataViewRowState.CurrentRows);
+
                                 AddressChangedDialog = new TPartnerAddressChangePropagationSelectionWinForm();
                                 AddressChangedDialog.SetParameters(AddressAddedOrChangedPromotionRow, PartnerSharingLocationDV, LocationRow, "", "");
 
@@ -830,28 +793,32 @@ namespace Ict.Petra.Client.MCommon.Gui
                                     if (AddressChangedDialog.GetReturnedParameters(out UserAnswer))
                                     {
                                         AddressAddedOrChangedPromotionRow.UserAnswer = UserAnswer;
+#endif
+                                AddressAddedOrChangedPromotionRow.UserAnswer = "CHANGE-NONE";          // TODO Remove this assignment once the code lines immediately above are no longer in compiler directive '#if Todo'!
 
-                                        if (AddressAddedOrChangedPromotionRow.UserAnswer.StartsWith("CHANGE"))
-                                        {
-                                            /*
-                                             * The LocationRow gets deleted from the LocationTable on the
-                                             * Server side, but there a AcceptChanges is done so that the
-                                             * DataRow doesn't actually get deleted from the DB. The Client
-                                             * would then no longer know that it needs to delete it, so we
-                                             * need do remember to do it later!
-                                             */
-                                            FLogic.AddCleanupAddressesLocationKey((Int32)AddressAddedOrChangedPromotionRow.LocationKey);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        throw new System.Exception(
-                                            "GetReturnedParameters called, but Form '" + AddressChangedDialog.Name +
-                                            "' is not finished yet with initialisation");
-                                    }
+                                if (AddressAddedOrChangedPromotionRow.UserAnswer.StartsWith("CHANGE"))
+                                {
+                                    /*
+                                     * The LocationRow gets deleted from the LocationTable on the
+                                     * Server side, but there a AcceptChanges is done so that the
+                                     * DataRow doesn't actually get deleted from the DB. The Client
+                                     * would then no longer know that it needs to delete it, so we
+                                     * need do remember to do it later!
+                                     */
+                                    FLogic.AddCleanupAddressesLocationKey((Int32)AddressAddedOrChangedPromotionRow.LocationKey);
+#if TODO
+                                }
+                            }
+                            else
+                            {
+                                throw new System.Exception(
+                                    "GetReturnedParameters called, but Form '" + AddressChangedDialog.Name +
+                                    "' is not finished yet with initialisation");
+                            }
 
-                                    // get NewPartnerDialog out of memory
-                                    AddressChangedDialog.Dispose();
+                            // get NewPartnerDialog out of memory
+                            AddressChangedDialog.Dispose();
+#endif
                                 }
                             }
                             else
@@ -872,12 +839,14 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (AParameterDT != null)
                         {
+#if TODO
                             FilterCriteria = PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyOfEditedRecordDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.SiteKey.ToString() + " AND " +
                                              PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyOfEditedRecordDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.LocationKey.ToString();
 
                             // MessageBox.Show('FilterCriteria: ' + FilterCriteria);
+#endif
                             LocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new Object[] { AddressAddedOrChangedPromotionRow.SiteKey,
                                                                                                    AddressAddedOrChangedPromotionRow.LocationKey });
 
@@ -897,10 +866,12 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                             if (LocationRow != null)
                             {
+#if TODO
                                 PersonsLocationsDV = new DataView(AParameterDT,
                                     FilterCriteria,
                                     PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyDBName() + " ASC",
                                     DataViewRowState.CurrentRows);
+
                                 LocationChangedDialog = new TPartnerLocationChangePropagationSelectionWinForm();
                                 LocationChangedDialog.SetParameters(AddressAddedOrChangedPromotionRow, PersonsLocationsDV, LocationRow, "", "");
 
@@ -918,17 +889,21 @@ namespace Ict.Petra.Client.MCommon.Gui
                                     if (LocationChangedDialog.GetReturnedParameters(out UserAnswer))
                                     {
                                         AddressAddedOrChangedPromotionRow.UserAnswer = UserAnswer;
-                                    }
-                                    else
-                                    {
-                                        throw new System.Exception(
-                                            "GetReturnedParameters called, but Form '" + LocationChangedDialog.Name +
-                                            "' is not finished yet with initialisation");
-                                    }
+#endif
+                                AddressAddedOrChangedPromotionRow.UserAnswer = "NO";          // TODO Remove this assignment once the code lines immediately above are no longer in compiler directive '#if Todo'!
+#if TODO
+                            }
+                            else
+                            {
+                                throw new System.Exception(
+                                    "GetReturnedParameters called, but Form '" + LocationChangedDialog.Name +
+                                    "' is not finished yet with initialisation");
+                            }
 
-                                    // get NewPartnerDialog out of memory
-                                    LocationChangedDialog.Dispose();
-                                }
+                            // get NewPartnerDialog out of memory
+                            LocationChangedDialog.Dispose();
+                        }
+#endif
                             }
                             else
                             {
@@ -946,12 +921,10 @@ namespace Ict.Petra.Client.MCommon.Gui
                     }
                 }
             }
-#endif
         }
 
         /// <summary>
         /// Applies Petra Security to restrict functionality, if needed.
-        ///
         /// </summary>
         /// <returns>void</returns>
         protected void ApplySecurity()
@@ -975,11 +948,12 @@ namespace Ict.Petra.Client.MCommon.Gui
                 || (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PPartnerTable.GetTableDBName())))
             {
                 // needed for setting p_partner.s_date_modified_d = TODAY
-                btnEditRecord.Enabled = false;
+                btnDeleteRecord.Enabled = false;
             }
 
             // Check security for Delete record operations
-            if (FLogic.CheckDeleteSecurityGeneral(false))
+            // do not allow deletion of record, if this is location 0 (this is done in DataGrid_FocusRowEntered)
+            if (FLogic.CheckDeleteSecurityGeneral(false) && btnDeleteRecord.Enabled)
             {
                 btnDeleteRecord.Enabled = true;
 
@@ -999,10 +973,84 @@ namespace Ict.Petra.Client.MCommon.Gui
                 if (this.PartnerLocationDataRowOfCurrentlySelectedRecord.LocationType.EndsWith(SharedConstants.SECURITY_CAN_LOCATIONTYPE)
                     && (!UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_ADDRESSCAN)))
                 {
-                    btnEditRecord.Enabled = false;
                     btnDeleteRecord.Enabled = false;
                 }
             }
+        }
+
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing
+        /// to another record, otherwise set it to false.</param>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
+        /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
+        /// <para>
+        /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+        /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+        /// this Argument.
+        /// </para>
+        /// </param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        {
+            bool ReturnValue = true;
+
+// TODO
+//            bool ReturnValue = false;
+//            Control ControlToValidate;
+//            PSubscriptionRow CurrentRow;
+//
+//            CurrentRow = GetSelectedDetailRow();
+//
+//            if (CurrentRow != null)
+//            {
+//                if (AValidateSpecificControl != null)
+//                {
+//                    ControlToValidate = AValidateSpecificControl;
+//                }
+//                else
+//                {
+//                    ControlToValidate = this.ActiveControl;
+//                }
+//
+//                GetDetailsFromControls(CurrentRow);
+//
+//                // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+//                ValidateDataDetailsManual(CurrentRow);
+//
+//                if (AProcessAnyDataValidationErrors)
+//                {
+//                    // Only process the Data Validations here if ControlToValidate is not null.
+//                    // It can be null if this.ActiveControl yields null - this would happen if no Control
+//                    // on this UserControl has got the Focus.
+//                    if(ControlToValidate.FindUserControlOrForm(true) == this)
+//                    {
+//                        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+//                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+//                    }
+//                    else
+//                    {
+//                        ReturnValue = true;
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                ReturnValue = true;
+//            }
+//
+//            if(ReturnValue)
+//            {
+//                // Remove a possibly shown Validation ToolTip as the data validation succeeded
+//                FPetraUtilsObject.ValidationToolTip.RemoveAll();
+//            }
+
+            return ReturnValue;
         }
 
         #endregion
@@ -1018,6 +1066,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// and the three Buttons next to the Grid are set up to perform Done and Cancel
         /// operations.
         ///
+        /// Only location 0 is read only!!!
         /// </summary>
         /// <param name="ASelectCurrentRow">Set this to true to select the DataRow that is deemed
         /// to be the 'current' one in FLogic in the Grid and to DataBind the Details
@@ -1034,23 +1083,11 @@ namespace Ict.Petra.Client.MCommon.Gui
             {
                 FIsEditingRecord = true;
                 ucoDetails.SetMode(TDataModeEnum.dmEdit);
-                btnNewRecord.Enabled = false;
-                btnEditRecord.Text = "      " + CommonResourcestrings.StrBtnTextDone;
-                btnEditRecord.ImageIndex = 3;
-                btnDeleteRecord.Text = "     " + CommonResourcestrings.StrBtnTextCancel;
-                btnDeleteRecord.ImageIndex = 4;
-                grdRecordList.Enabled = false;
             }
             else
             {
                 FIsEditingRecord = false;
                 ucoDetails.SetMode(TDataModeEnum.dmBrowse);
-                btnNewRecord.Enabled = true;
-                btnEditRecord.Text = "       " + CommonResourcestrings.StrBtnTextEdit;
-                btnDeleteRecord.Text = "     " + CommonResourcestrings.StrBtnTextDelete;
-                btnEditRecord.ImageIndex = 1;
-                btnDeleteRecord.ImageIndex = 2;
-                grdRecordList.Enabled = true;
             }
 
             if (ASelectCurrentRow)
@@ -1153,7 +1190,6 @@ namespace Ict.Petra.Client.MCommon.Gui
         protected void ActionNewRecord()
         {
             Int32 AddedLocationsRowKey;
-            TEnableDisableEventArgs CustomEventArgs;
             DataRowView TmpDataRowView;
             Int32 TmpRowIndex;
             Int64 SiteKey;
@@ -1168,7 +1204,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                     TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).DataView);
                     TmpRowIndex = grdRecordList.Rows.DataSourceRowToIndex(TmpDataRowView);
 
-//                  MessageBox.Show("TmpRowIndex: " + TmpRowIndex.ToString());
+                    //                  MessageBox.Show("TmpRowIndex: " + TmpRowIndex.ToString());
 
                     // Determine PrimaryKey of the current row in the Grid
                     LocationKey = FLogic.DetermineCurrentKey(TmpRowIndex + 1);
@@ -1189,24 +1225,14 @@ namespace Ict.Petra.Client.MCommon.Gui
                     ucoDetails.SetAddressFieldOrder();
                     ucoDetails.Focus();
 
-                    // Fire OnEnableDisableOtherScreenParts event
-                    CustomEventArgs = new TEnableDisableEventArgs();
-                    CustomEventArgs.Enable = false;
-                    OnEnableDisableOtherScreenParts(CustomEventArgs);
-                    btnEditRecord.Enabled = true;
                     btnDeleteRecord.Enabled = true;
                 }
 
                 ApplySecurity();
-
-                // 'Done' button must always be enabled when adding an record
-                btnEditRecord.Enabled = true;
             }
             catch (Exception Exp)
             {
-#if DEBUGMODE
-                MessageBox.Show("Exception occured in ActionNewRecord: " + Exp.ToString());
-#endif
+                TLogging.Log("Exception occured in ActionNewRecord: " + Exp.ToString());
             }
         }
 
@@ -1230,10 +1256,10 @@ namespace Ict.Petra.Client.MCommon.Gui
             PartnerEditTDSPPartnerLocationRow ErroneousRow;
             String ErrorMessages;
             Control FirstErrorControl;
-            TEnableDisableEventArgs EnableDisableEventArgs;
             TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
 
-            if (btnEditRecord.Enabled)
+            // only allow edit if deletion is allowed
+            if (btnDeleteRecord.Enabled)
             {
                 // MessageBox.Show('Running ActionEditRecord...');
                 if (!FIsEditingRecord)
@@ -1249,11 +1275,6 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // MessageBox.Show('SwitchDetailReadOnlyModeOrEditMode(false).');
                     ucoDetails.SetAddressFieldOrder();
                     ucoDetails.Focus();
-
-                    // Fire OnEnableDisableOtherScreenParts event
-                    EnableDisableEventArgs = new TEnableDisableEventArgs();
-                    EnableDisableEventArgs.Enable = false;
-                    OnEnableDisableOtherScreenParts(EnableDisableEventArgs);
 
                     // MessageBox.Show('Finished running ActionEditRecord.');
                     return;
@@ -1276,13 +1297,8 @@ namespace Ict.Petra.Client.MCommon.Gui
                             out ErrorMessages,
                             out FirstErrorControl);
 
-                        // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
-                        MessageBox.Show(
-                            "Cannot end editing because invalid data has not been corrected!" + Environment.NewLine + Environment.NewLine +
-                            ErrorMessages,
-                            "Record contains invalid data!",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
+                        TMessages.MsgRecordChangeVerificationError(ErrorMessages, this.GetType());
+
                         FirstErrorControl.Focus();
                         return;
                     }
@@ -1297,11 +1313,6 @@ namespace Ict.Petra.Client.MCommon.Gui
                 }
 
                 SwitchDetailReadOnlyModeOrEditMode(true);
-
-                // Fire OnEnableDisableOtherScreenParts event
-                EnableDisableEventArgs = new TEnableDisableEventArgs();
-                EnableDisableEventArgs.Enable = true;
-                OnEnableDisableOtherScreenParts(EnableDisableEventArgs);
 
                 // Fire OnRecalculateScreenParts event
                 RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
@@ -1346,109 +1357,63 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             Int32 NewlySelectedRow;
             TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-            TEnableDisableEventArgs EnableDisableEventArgs;
 
             // MessageBox.Show('btnDeleteRecord_Click');
             if (btnDeleteRecord.Enabled)
             {
-                if (!FIsEditingRecord)
+                if (FLogic.DeleteRecord())
                 {
-                    if (FLogic.DeleteRecord())
+                    // Ensure that following Selection.ActivePosition inquiries will work!
+                    grdRecordList.Focus();
+
+                    // Update the details section to show the details of the now selected row
+                    if (grdRecordList.Selection.ActivePosition != Position.Empty)
                     {
-                        // Ensure that following Selection.ActivePosition inquiries will work!
-                        grdRecordList.Focus();
-
-                        // Update the details section to show the details of the now selected row
-                        if (grdRecordList.Selection.ActivePosition != Position.Empty)
-                        {
-                            NewlySelectedRow = grdRecordList.Selection.ActivePosition.Row;
-                        }
-                        else
-                        {
-                            NewlySelectedRow = grdRecordList.Rows.Count - 1;
-                        }
-
-//                      MessageBox.Show("NewlySelectedRow: " + NewlySelectedRow.ToString());
-                        if (grdRecordList.Rows.Count > 1)
-                        {
-                            // Deleted any row but the last one
-
-                            grdRecordList.Selection.SelectRow(NewlySelectedRow, true);
-                            grdRecordList.ShowCell(new Position(NewlySelectedRow - 1, 0), true);
-
-                            // Make the Grid respond on updown keys
-                            grdRecordList.Selection.Focus(new Position(NewlySelectedRow, 1), true);
-                            DataGrid_FocusRowEntered(this, new RowEventArgs(NewlySelectedRow));
-                        }
-                        else
-                        {
-                            // Deleted last row, adding default one
-                            FLogic.AddDefaultRecord();
-                            grdRecordList.Selection.SelectRow(1, true);
-                            grdRecordList.ShowCell(new Position(1, 0), true);
-
-                            // Make the Grid respond on updown keys
-                            grdRecordList.Selection.Focus(new Position(1, 1), true);
-                            DataGrid_FocusRowEntered(this, new RowEventArgs(1));
-
-                            // Enable 'New' Address Button if it was initially disabled
-                            if (FDisabledNewButtonOnAutoCreatedAddress)
-                            {
-                                FDisabledNewButtonOnAutoCreatedAddress = false;
-                                btnNewRecord.Enabled = true;
-                                ApplySecurity();
-                            }
-                        }
-
-                        // Fire OnRecalculateScreenParts event
-                        RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-                        RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-                        OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
-                    }
-                }
-                else
-                {
-                    ucoDetails.CancelEditing(FLogic.NewRecordFromRecordKey == 0, FLogic.IsRecordBeingAdded);
-
-                    // Clear any errors that might have been set
-                    FPetraUtilsObject.VerificationResultCollection.Remove(ucoDetails);
-
-                    if (FLogic.IsRecordBeingAdded)
-                    {
-                        /*
-                         * FLogic's LocationKey is no longer valid since the Row got deleted
-                         * --> reset FLogic's LocationKey to the LocationKey that we were on
-                         * when 'New' was chosen
-                         */
-                        FLogic.LocationKey = FLogic.NewRecordFromRecordKey;
+                        NewlySelectedRow = grdRecordList.Selection.ActivePosition.Row;
                     }
                     else
                     {
-                        if (FLogic.RecordKeyBeforeFinding != null)
-                        {
-                            // MessageBox.Show('btnDeleteRecord_Click: FLogic.RecordKeyBeforeFinding.LocationKey: ' + FLogic.RecordKeyBeforeFinding.LocationKey.ToString);
-                            FLogic.LocationKey = FLogic.RecordKeyBeforeFinding.LocationKey;
-                            FLogic.RecordKeyBeforeFinding = null;
-                        }
-
-                        // MessageBox.Show('btnDeleteRecord_Click: FLogic.LocationKey: ' + FLogic.LocationKey.ToString);
+                        NewlySelectedRow = grdRecordList.Rows.Count - 1;
                     }
 
-                    // Tell FLogic that we are no longer adding a Location
-                    FLogic.IsRecordBeingAdded = false;
+//                      MessageBox.Show("NewlySelectedRow: " + NewlySelectedRow.ToString());
+                    if (grdRecordList.Rows.Count > 1)
+                    {
+                        // Deleted any row but the last one
 
-                    // MessageBox.Show('btnDeleteRecord_Click:  FLogic.IsRecordBeingAdded: ' + FLogic.IsRecordBeingAdded.ToString);
-                    FLogic.EnsureDefaultRecordIsPresentIfNeeded();
+                        grdRecordList.Selection.SelectRow(NewlySelectedRow, true);
+                        grdRecordList.ShowCell(new Position(NewlySelectedRow - 1, 0), true);
 
-                    // Fire OnEnableDisableOtherScreenParts event
-                    EnableDisableEventArgs = new TEnableDisableEventArgs();
-                    EnableDisableEventArgs.Enable = true;
-                    OnEnableDisableOtherScreenParts(EnableDisableEventArgs);
-                    grdRecordList.Refresh();
-                    SwitchDetailReadOnlyModeOrEditMode(!FLogic.IsRecordBeingAdded);
+                        // Make the Grid respond on updown keys
+                        grdRecordList.Selection.Focus(new Position(NewlySelectedRow, 1), true);
+                        DataGrid_FocusRowEntered(this, new RowEventArgs(NewlySelectedRow));
+                    }
+                    else
+                    {
+                        // Deleted last row, adding default one
+                        FLogic.AddDefaultRecord();
+                        grdRecordList.Selection.SelectRow(1, true);
+                        grdRecordList.ShowCell(new Position(1, 0), true);
 
-                    // Make the Grid respond on updown keys
-                    grdRecordList.Focus();
+                        // Make the Grid respond on updown keys
+                        grdRecordList.Selection.Focus(new Position(1, 1), true);
+                        DataGrid_FocusRowEntered(this, new RowEventArgs(1));
+
+                        // Enable 'New' Address Button if it was initially disabled
+                        if (FDisabledNewButtonOnAutoCreatedAddress)
+                        {
+                            FDisabledNewButtonOnAutoCreatedAddress = false;
+                            btnNewRecord.Enabled = true;
+                            ApplySecurity();
+                        }
+                    }
+
+                    FPetraUtilsObject.SetChangedFlag();
+
+                    // Fire OnRecalculateScreenParts event
+                    RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
+                    RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
+                    OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
                 }
             }
         }
@@ -1471,16 +1436,20 @@ namespace Ict.Petra.Client.MCommon.Gui
             // Determine current Location Key and enable/disable buttons
             if (FLogic.DetermineCurrentKey(AEventArgs.Row) == 0)
             {
-                btnEditRecord.Enabled = false;
                 btnDeleteRecord.Enabled = false;
             }
             else
             {
-                btnEditRecord.Enabled = true;
                 btnDeleteRecord.Enabled = true;
             }
 
             ApplySecurity();
+
+            if (btnDeleteRecord.Enabled == true)
+            {
+                FIsEditingRecord = false;
+                ActionEditRecord();
+            }
 
             // Update detail section only if user actually changed to a different record
             // (this Event also fires if the user just (double)clicks on the same record again)

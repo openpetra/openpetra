@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtQualificationLevel
     CacheableTable: QualificationLevelList
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
@@ -38,7 +38,7 @@ RootNode:
         txtDetailQualificationLevel: {Label=Qualification Level, Format=Integer, Width=30}
         txtDetailQualificationLevelDescr: {Label=Description, Width=380}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable, Enabled=false}
     Toolbar:
         tbbNew:

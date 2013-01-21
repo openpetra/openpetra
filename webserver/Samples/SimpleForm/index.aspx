@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <title>Sample Registration</title>
 
-    <link rel="stylesheet" type="text/css" href="../../css/ext-all.css"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/ext-all.css"/>
     <script type="text/javascript" src="../../js/ext-base.js"></script>
     <script type="text/javascript" src="../../js/ext-all.js"></script>
 

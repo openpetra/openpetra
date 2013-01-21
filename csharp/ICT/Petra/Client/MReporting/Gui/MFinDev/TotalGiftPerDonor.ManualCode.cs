@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,7 +44,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             {
                 FLedgerNumber = value;
 
-                TRemote.MFinance.Reporting.UIConnectors.SelectLedger(FLedgerNumber);
                 uco_Selection.InitialiseLedger(FLedgerNumber);
                 uco_Selection.ShowAccountHierarchy(false);
                 uco_Selection.ShowCurrencySelection(false);
@@ -66,7 +65,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
             if (chkOnlyFromCountry.Checked)
             {
-                CountryCode = cmbCountry.SelectedItem.ToString();
+                CountryCode = cmbCountry.GetSelectedString();
 
                 if (CountryCode.Length == 0)
                 {
@@ -84,7 +83,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             if ((CountryCode.Length > 0)
                 && (CountryCode != "*"))
             {
-                cmbCountry.SelectedItem = CountryCode;
+                cmbCountry.SetSelectedString(CountryCode);
             }
         }
     }

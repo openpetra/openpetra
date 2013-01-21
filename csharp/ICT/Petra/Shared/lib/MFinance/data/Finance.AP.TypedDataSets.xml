@@ -1,27 +1,64 @@
 <PetraDataSets>
   <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
   
     <DataSet name="AccountsPayableTDS">
-        <Table sqltable="a_ap_supplier"/>
-        <Table sqltable="a_ap_document">
-            <CustomField name="Tagged" type="Boolean"/>
-            <CustomField name="DateDue" type="DateTime" notnull="true"/>
-        </Table>
-        <Table sqltable="a_ap_document_detail"/>
-        <Table sqltable="a_ap_document_payment">
-            <CustomField name="TotalAmountToPay" type="Decimal"/>
-            <CustomField name="UseDiscount" type="Boolean"/>
-            <CustomField name="PayFullInvoice" type="Boolean"/>
-            <CustomField name="HasValidDiscount" type="Boolean"/>
-            <CustomField name="DiscountPercentage" type="Decimal"/>
-        </Table>
-        <Table sqltable="a_ap_payment">
-            <CustomField name="SupplierKey" type="Int64"/>
-            <CustomField name="SupplierName" type="string"/>
-            <CustomField name="CurrencyCode" type="string"/>
-            <CustomField name="ListLabel" type="string"/>
-        </Table>
-        <Table sqltable="a_ap_anal_attrib"/>
+      <Table sqltable="a_ap_supplier"/>
+      <Table sqltable="a_ap_document">
+          <CustomField name="Tagged" type="Boolean"/>
+          <CustomField name="DateDue" type="DateTime" notnull="true"/>
+          <CustomField name="OutstandingAmount" type="Decimal"/>
+          <CustomField name="SavedExchangeRate" type="Decimal"/>
+      </Table>
+      <Table sqltable="a_ap_document_detail">
+          <CustomField name="AnalAttr" type="string"/>
+      </Table>
+      <Table sqltable="a_ap_document_payment">
+          <CustomField name="UseDiscount" type="Boolean"/>
+          <CustomField name="HasValidDiscount" type="Boolean"/>
+          <CustomField name="DiscountPercentage" type="Decimal"/>
+          <CustomField name="DocumentCode" type="string"/>
+          <CustomField name="DocType" type="string"/>
+          <CustomField name="CurrencyCode" type="string"/>
+          <CustomField name="PayFullInvoice" type="Boolean"/>
+          <CustomField name="InvoiceTotal" type="Decimal"/>
+      </Table>
+      <Table sqltable="a_ap_payment">
+          <CustomField name="SupplierKey" type="Int64"/>
+          <CustomField name="SupplierName" type="string"/>
+          <CustomField name="CurrencyCode" type="string"/>
+          <CustomField name="ListLabel" type="string"/>
+          <CustomField name="TotalAmountToPay" type="Decimal"/>
+      </Table>
+      <Table sqltable="a_ap_anal_attrib"/>
+      <Table sqltable="a_analysis_attribute"/>
+      <Table sqltable="a_freeform_analysis"/>
+      <Table sqltable="p_partner"/>
+      <Table sqltable="p_partner_location"/>
+      <Table sqltable="p_location"/>
     </DataSet> 
+
+    <DataSet name="AccountsPayableGUITDS">
+      <CustomTable name="TransactionList">
+          <CustomField name="ApNum" type="string"/>
+          <CustomField name="InvNum" type="string"/>
+          <CustomField name="CreditNote" type="Boolean"/>
+          <CustomField name="Amount" type="Decimal"/>
+          <CustomField name="Status" type="string"/>
+          <CustomField name="DiscountPercent" type="Decimal"/>
+          <CustomField name="DiscountDays" type="Int32"/>
+          <CustomField name="s_date_created_d" type="DateTime"/>
+          <CustomField name="DocumentId" type="Int64"/>
+      </CustomTable>
+      <Table sqltable="a_ap_document" name="InvoiceList">
+          <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+          <Field sqltable="a_ap_supplier" sqlfield="a_currency_code_c"/>
+          <CustomField name="DateDue" type="DateTime"/>
+          <CustomField name="DateDiscountUntil" type="DateTime"/>
+          <CustomField name="OutstandingAmount" type="Decimal"/>
+          <CustomField name="DiscountMsg" type="string"/>
+          <CustomField name="Selected" type="Boolean"/>
+      </Table>
+    </DataSet>
     
 </PetraDataSets>

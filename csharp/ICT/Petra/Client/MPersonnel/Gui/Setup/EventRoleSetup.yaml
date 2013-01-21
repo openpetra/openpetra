@@ -1,0 +1,65 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain EventRoles
+    Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
+    DetailTable: PtCongressCode
+    CacheableTable: EventRoleList
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 800
+    WindowHeight: 575
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailCode, DetailDescription, DetailPreCongress, DetailConference, DetailOutreach, DetailDiscounted, DetailParticipant, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            CustomColumns:
+                DetailCode: {Label=Role}
+                DetailPreCongress: {Label=Pre-Congress, Type=Boolean}
+                DetailDiscounted: {Label=Discounted, Type=Boolean}
+                DetailOutreach: {Label=Outreach, Type=Boolean}
+                DetailConference: {Label=Conference, Type=Boolean}
+                DetailParticipant: {Label=Participant, Type=Boolean}
+                DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
+                DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailCode, txtDetailDescription]
+                Row1: [pnlCanBeAssignedAs]
+                Row2: [chkDetailDiscounted, chkDetailParticipant]
+                Row3: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row4: [chkDetailDeletableFlag]
+            ColWidths: [0=Fixed:150, 2=Fixed:155]
+        txtDetailCode: {Label=Role, CharacterCasing=Upper, Width=120}
+        txtDetailDescription: {Label=Description, Width=290}
+        chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
+        chkDetailDeletableFlag: {Label=Deletable}
+        pnlCanBeAssignedAs: {ColSpan=2}
+            Label: Can be assigned as
+            Margin: 0
+            Controls:
+                Row0: [chkDetailPreCongress, chkDetailConference, chkDetailOutreach]
+            ColWidths: [0=Fixed:150, 2=Fixed:155]
+        chkDetailPreCongress: {Label=Pre-Conference Role, CheckBoxAttachedLabel=right}
+        chkDetailConference: {Label=Conference Role, CheckBoxAttachedLabel=right}
+        chkDetailOutreach: {Label=Outreach Role, CheckBoxAttachedLabel=right}
+        chkDetailDiscounted: {Label=Discounted Fees}
+        chkDetailParticipant: {Label=Included in Participants}
+    Toolbar:
+        tbbNew:
+            Label: New Event Role

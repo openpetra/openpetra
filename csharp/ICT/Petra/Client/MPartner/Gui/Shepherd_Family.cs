@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -56,11 +57,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Constructor.
         /// </summary>
-        public TShepherdFamilyForm(IntPtr AParentFormHandle) : base(AParentFormHandle)
+        public TShepherdFamilyForm(Form AParentForm) : base(AParentForm)
         {
             TLogging.Log("Entering TShepherdFamilyForm Constructor...");
 
-            FYamlFile = "Shepherd_Family_Definition.yaml";
+            FYamlFile = Path.GetDirectoryName(TAppSettingsManager.GetValue("UINavigation.File")) + 
+                Path.DirectorySeparatorChar + "Shepherd_Family_Definition.yaml";
 
             FLogic = new TShepherdFamilyFormLogic(FYamlFile, this);
             FSpecificLogic = (TShepherdFamilyFormLogic)FLogic;

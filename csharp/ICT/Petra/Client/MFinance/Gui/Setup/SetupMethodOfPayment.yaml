@@ -1,0 +1,48 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Methods of Payment
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DetailTable: AMethodOfPayment
+    CacheableTable: MethodOfPaymentList
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Gift.Data, Ict.Petra.Shared.MFinance.Gift.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 760
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+            Action: actNew
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailMethodOfPaymentCode, DetailMethodOfPaymentDesc, DetailSpecialMethodOfPmt, DetailActive]
+#            ColWidths: [2=Fixed:50]
+            CustomColumns:
+                DetailMethodOfPaymentCode:  {Label=Method of Payment}
+                DetailMethodOfPaymentDesc:  {Label=Description}
+                DetailSpecialMethodOfPmt: {Label=Special, Type=Boolean}
+                DetailActive: {Label=Active, Type=Boolean}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailMethodOfPaymentCode, txtDetailMethodOfPaymentDesc]
+                Row1: [chkDetailSpecialMethodOfPmt]
+                Row2: [chkDetailActive]
+        txtDetailMethodOfPaymentCode: {Label=Method of Payment, CharacterCasing=Upper}
+        txtDetailMethodOfPaymentDesc: {Label=Description, Width=265}
+        chkDetailSpecialMethodOfPmt:  {Label=Special Method of Payment}
+        chkDetailActive:
+    Toolbar:
+        tbbNew:
+            Label: New Method of Payment

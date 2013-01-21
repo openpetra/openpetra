@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,7 +22,6 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Web;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 
@@ -37,29 +36,50 @@ namespace Ict.Petra.Shared
         /// <summary>used internally to hold User Information</summary>
         private static TPetraPrincipal MUserInfo = null;
 
+        /// <summary>
+        /// delegate for setting the object for this current session
+        /// </summary>
+        public delegate void ObjectSetter(TPetraPrincipal value);
+        /// <summary>
+        /// delegate for getting the object for this current session
+        /// </summary>
+        public delegate TPetraPrincipal ObjectGetter();
+
+        private static ObjectSetter ObjDelegateSet = null;
+        private static ObjectGetter ObjDelegateGet = null;
+
+        /// we cannot have a reference to System.Web for Session here, so we use a delegate
+        public static void SetFunctionForRetrievingCurrentObjectFromWebSession(
+            ObjectSetter setter,
+            ObjectGetter getter)
+        {
+            ObjDelegateSet = setter;
+            ObjDelegateGet = getter;
+        }
+
         /// <summary>used internally to hold User Information</summary>
         public static TPetraPrincipal GUserInfo
         {
             set
             {
-                if (HttpContext.Current == null)
+                if (ObjDelegateSet == null)
                 {
                     MUserInfo = value;
                 }
                 else
                 {
-                    HttpContext.Current.Session["USERINFO"] = value;
+                    ObjDelegateSet(value);
                 }
             }
             get
             {
-                if (HttpContext.Current == null)
+                if (ObjDelegateGet == null)
                 {
                     return MUserInfo;
                 }
                 else
                 {
-                    return (TPetraPrincipal)HttpContext.Current.Session["USERINFO"];
+                    return ObjDelegateGet();
                 }
             }
         }

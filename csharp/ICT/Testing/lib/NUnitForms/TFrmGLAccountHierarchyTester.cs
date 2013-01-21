@@ -49,30 +49,88 @@ namespace Ict.Testing.NUnitForms
     /// </summary>
     public sealed class TFrmGLAccountHierarchyTester
     {
+        /// <summary>
+        /// ...
+        /// </summary>
         public TFrmGLAccountHierarchy mainForm;
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public TTrvTreeViewTester trvAccounts;
+        /// <summary>
+        /// ...
+        /// </summary>
         public TextBoxTester txtDetailAccountCode;
+        /// <summary>
+        /// ...
+        /// </summary>
         public TCmbAutoCompleteTester cmbDetailAccountType;
+        /// <summary>
+        /// ...
+        /// </summary>
         public TextBoxTester txtDetailEngAccountCodeLongDesc;
+        /// <summary>
+        /// ...
+        /// </summary>
         public TextBoxTester txtDetailEngAccountCodeShortDesc;
+        /// <summary>
+        /// ...
+        /// </summary>
         public TextBoxTester txtDetailAccountCodeLongDesc;
+        /// <summary>
+        /// ...
+        /// </summary>
         public TextBoxTester txtDetailAccountCodeShortDesc;
+        /// <summary>
+        /// ...
+        /// </summary>
         public TCmbAutoCompleteTester cmbDetailValidCcCombo;
+        /// <summary>
+        /// ...
+        /// </summary>
         public CheckBoxTester chkDetailBankAccountFlag;
+        /// <summary>
+        /// ...
+        /// </summary>
         public CheckBoxTester chkDetailAccountActiveFlag;
+        /// <summary>
+        /// ...
+        /// </summary>
         // public Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes ucoAccountAnalysisAttributes;
         public ToolStripButtonTester tbbSave;
+        /// <summary>
+        /// ...
+        /// </summary>
         public ToolStripButtonTester tbbAddNewAccount;
+        /// <summary>
+        /// ...
+        /// </summary>
         public ToolStripButtonTester tbbDeleteUnusedAccount;
+        /// <summary>
+        /// ...
+        /// </summary>
         public ToolStripButtonTester tbbExportHierarchy;
+        /// <summary>
+        /// ...
+        /// </summary>
         public ToolStripButtonTester tbbImportHierarchy;
+        /// <summary>
+        /// ...
+        /// </summary>
         public System.Windows.Forms.MenuStrip mnuMain;
+        /// <summary>
+        /// ...
+        /// </summary>
         public CheckBoxTester chkDetailForeignCurrencyFlag;
+        /// <summary>
+        /// ...
+        /// </summary>
         public TCmbAutoPopulatedTester cmbDetailForeignCurrencyCode;
-
+        /// <summary>
+        /// ...
+        /// </summary>
         public ToolStripMenuItemTester mniClose;
-
 //        public ToolStripMenuItemTester mniFile;
 //        public System.Windows.Forms.ToolStripMenuItem mniFileSave;
 //        public System.Windows.Forms.ToolStripSeparator mniSeparator0;
@@ -101,9 +159,12 @@ namespace Ict.Testing.NUnitForms
 
         // Contructor which initializes the acces to all the controls on the
         // Dialog
+        /// <summary>
+        /// ...
+        /// </summary>
         public TFrmGLAccountHierarchyTester()
         {
-            mainForm = new TFrmGLAccountHierarchy(IntPtr.Zero);
+            mainForm = new TFrmGLAccountHierarchy(null);
 
             trvAccounts = new TTrvTreeViewTester("trvAccounts", mainForm);
             txtDetailAccountCode = new TextBoxTester("txtDetailAccountCode", mainForm);

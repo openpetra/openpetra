@@ -15,7 +15,6 @@
 				<option name="one partner"/>
 				<option name="an extract"/>
 				<option name="all current staff"/>
-				<option name="all staff"/>
 			</reportparameter>
 			<reportparameter name="param_extract"
 				condition="param_selection=an extract"/>

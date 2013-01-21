@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,7 +35,7 @@ namespace Ict.Petra.Shared.Security
     /// The TPetraPrincipal class is a .NET Principal-derived representation of a
     /// User in the Petra DB with its Groups and Roles.
     [Serializable()]
-    public class TPetraPrincipal : object, System.Security.Principal.IPrincipal
+    public class TPetraPrincipal : IPrincipal
     {
         private System.Security.Principal.IIdentity FIdentity;
         private SUserGroupTable FGroupsDT;
@@ -339,6 +339,19 @@ namespace Ict.Petra.Shared.Security
         public Boolean IsInModule(string AModuleName)
         {
             return (FModuleAccess != null) && (System.Array.BinarySearch(FModuleAccess, AModuleName) >= 0);
+        }
+
+        /// <summary>
+        /// diagnostic string to show which modules a user has been given access to (separated by newlines)
+        /// </summary>
+        /// <returns>
+        /// string permissions
+        /// </returns>
+        public string GetPermissions()
+        {
+            string permissions = string.Join(Environment.NewLine, FModuleAccess);
+
+            return permissions;
         }
 
         #endregion

@@ -1,44 +1,44 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="xmlfiles" value="Conference\\absenteereport.xml,Conference\\personnel.xml" />
-  <Parameter id="currentReport" value="Absentee Report" />
-  <Parameter id="MaxDisplayColumns" value="12" />
-  <Parameter id="param_conferenceselection" value="one conference" />
-  <Parameter id="param_attendeeselection" value="all attendees" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_conferencekey" value="0" />
-  <Parameter id="param_conferencename" value="" />
-  <Parameter id="param_extractname" value="" />
-  <Parameter id="orderby0" value="Partner Name" />
-  <Parameter id="orderby1" value="Arrival Date" />
-  <Parameter id="orderby2" value="Nationality" />
-  <Parameter id="param_sortby_readable" value="Partner Name, Arrival Date, Nationality" />
-  <Parameter id="param_calculation" column="12" value="Partner Name" />
-  <Parameter id="param_calculation" column="13" value="Arrival Date" />
-  <Parameter id="param_calculation" column="14" value="Nationality" />
-  <Parameter id="param_sortby_columns" value="12,13,14" />
-  <Parameter id="param_calculation" column="0" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="0" value="3" />
-  <Parameter id="param_calculation" column="1" value="Passport Number" />
-  <Parameter id="ColumnWidth" column="1" value="3" />
-  <Parameter id="param_calculation" column="2" value="Age" />
-  <Parameter id="ColumnWidth" column="2" value="1" />
-  <Parameter id="param_calculation" column="3" value="Gender" />
-  <Parameter id="ColumnWidth" column="3" value="1.5" />
-  <Parameter id="param_calculation" column="4" value="Charged Office" />
-  <Parameter id="ColumnWidth" column="4" value="3" />
-  <Parameter id="param_calculation" column="5" value="Campaign Code" />
-  <Parameter id="ColumnWidth" column="5" value="3" />
-  <Parameter id="param_calculation" column="6" value="Conference Room" />
-  <Parameter id="ColumnWidth" column="6" value="3" />
-  <Parameter id="param_calculation" column="7" value="Fellowship Group" />
-  <Parameter id="ColumnWidth" column="7" value="2" />
-  <Parameter id="param_calculation" column="8" value="Group Leader" />
-  <Parameter id="ColumnWidth" column="8" value="1.5" />
-  <Parameter id="param_calculation" column="9" value="Arrival Date" />
-  <Parameter id="ColumnWidth" column="9" value="2" />
-  <Parameter id="param_calculation" column="10" value="Departure Date" />
-  <Parameter id="ColumnWidth" column="10" value="2" />
-  <Parameter id="param_calculation" column="11" value="Conference Role" />
-  <Parameter id="ColumnWidth" column="11" value="1.5" />
+  <Parameter id="xmlfiles" value="eString:Conference\\absenteereport.xml,Conference\\personnel.xml" />
+  <Parameter id="currentReport" value="eString:Absentee Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:12" />
+  <Parameter id="param_conferenceselection" value="eString:one conference" />
+  <Parameter id="param_attendeeselection" value="eString:all attendees" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_conferencekey" value="eInteger:0" />
+  <Parameter id="param_conferencename" value="eString:" />
+  <Parameter id="param_extractname" value="eString:" />
+  <Parameter id="orderby0" value="eString:Partner Name" />
+  <Parameter id="orderby1" value="eString:Arrival Date" />
+  <Parameter id="orderby2" value="eString:Nationality" />
+  <Parameter id="param_sortby_readable" value="eString:Partner Name, Arrival Date, Nationality" />
+  <Parameter id="param_calculation" column="12" value="eString:Partner Name" />
+  <Parameter id="param_calculation" column="13" value="eString:Arrival Date" />
+  <Parameter id="param_calculation" column="14" value="eString:Nationality" />
+  <Parameter id="param_sortby_columns" value="eString:12,13,14" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:3" />
+  <Parameter id="param_calculation" column="1" value="eString:Passport Number" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
+  <Parameter id="param_calculation" column="2" value="eString:Age" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:1" />
+  <Parameter id="param_calculation" column="3" value="eString:Gender" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="4" value="eString:Charged Office" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:3" />
+  <Parameter id="param_calculation" column="5" value="eString:Outreach Code" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
+  <Parameter id="param_calculation" column="6" value="eString:Conference Room" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:3" />
+  <Parameter id="param_calculation" column="7" value="eString:Fellowship Group" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
+  <Parameter id="param_calculation" column="8" value="eString:Group Leader" />
+  <Parameter id="ColumnWidth" column="8" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="9" value="eString:Arrival Date" />
+  <Parameter id="ColumnWidth" column="9" value="eInteger:2" />
+  <Parameter id="param_calculation" column="10" value="eString:Departure Date" />
+  <Parameter id="ColumnWidth" column="10" value="eInteger:2" />
+  <Parameter id="param_calculation" column="11" value="eString:Conference Role" />
+  <Parameter id="ColumnWidth" column="11" value="eDecimal:4609434218613702656" />
 </Parameters>

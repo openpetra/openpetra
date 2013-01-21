@@ -1,0 +1,58 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    DetailTable: PmPersonLanguage
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actShowLanguageLevelExplanation: {Label=&Explanation..., ActionClick=ShowLanguageLevelExplanation}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlDetailGrid, pnlDetails]
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
+        grdDetails:
+            Dock: Fill
+            TableName: PmPersonLanguage
+            Columns: []
+            CustomColumns:
+                LanguageCode: {Label=Language}
+                LanguageLevel: {Label=Language Level}
+                YearsOfExperience: {Label=Years Of Experience}
+                YearsOfExperienceAsOf: {Label=as of, Type=DateTime}
+            ActionFocusRow: FocusedRowChanged
+            
+        pnlDetails:
+            Dock: Bottom
+#            Width: 500
+#            Height: 400
+            Controls:
+                Row0: [cmbLanguageCode]
+                Row1: [txtYearsOfExperience, dtpYearsOfExperienceAsOf]
+                Row2: [cmbLanguageLevel, btnShowLanguageLevelExplanation]
+                Row3: [txtComment]
+                
+        cmbLanguageCode: {Label=Language, DataField=PmPersonLanguage.LanguageCode, List=LanguageCodeList, Width=200, ColSpan=2, Validation=true}
+        txtYearsOfExperience: {DataField=PmPersonLanguage.YearsOfExperience, Width=25, Format=Integer}
+        dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonLanguage.YearsOfExperienceAsOf}
+        cmbLanguageLevel: {Label=Level, List=LanguageLevelList, Width=170, Validation=true}
+        btnShowLanguageLevelExplanation:
+        txtComment:
+            DataField: PmPersonLanguage.Comment
+            Multiline: true
+            ScrollBars: Vertical
+            Height: 110
+            Width: 380
+            ColSpan: 2

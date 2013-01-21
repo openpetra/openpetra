@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MCommon.Gui.Setup
     DetailTable: PCountry
     CacheableTable: CountryList
-    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.MCommon.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 740
@@ -33,37 +33,21 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailCountryCode, txtDetailCountryName]
-                Row1: [Empty, txtDetailCountryNameLocal]
-                Row2: [pnlInternat]
+                Row1: [Empty1, Empty2, txtDetailCountryNameLocal]
+                Row2: [chkDetailUndercover, txtDetailInternatAccessCode, txtDetailInternatTelephoneCode]
                 Row3: [cmbDetailAddressOrder, cmbDetailInternatPostalTypeCode]
-                Row4: [pnlTimeZone]
-            ColWidths: [1=Fixed:127] 
-        txtDetailCountryCode: {Width=100, CharacterCasing=Upper}
-        Empty:
-        txtDetailCountryName: {Width=247, OnLeave=UpdateCountryNameLocal}
-        txtDetailCountryNameLocal: {Width=247}
-        chkDetailUndercover: 
-        txtDetailInternatAccessCode: {Label=Int'l Access Code, Width=30}
-        txtDetailInternatTelephoneCode: {Label=Int'l Dialling Code, Format=Integer, Width=30, Align=right}        
-        cmbDetailAddressOrder:  {Label=Address Display Order, List=AddressDisplayOrderList, Width=145}
-        cmbDetailInternatPostalTypeCode: {Label=Int'l Postal Type, List=InternationalPostalTypeList}
-        txtDetailTimeZoneMinimum: {Label=Time Zone From, Width=45, Format=Decimal, OnLeave=UpdateTimeZoneMaximum}
+                Row4: [txtDetailTimeZoneMinimum, txtDetailTimeZoneMaximum, chkDetailDeletable, Empty]
+        txtDetailCountryCode: {ColSpan=2, Width=100, CharacterCasing=Upper}
+        txtDetailCountryName: {ColSpan=2, Width=247, OnLeave=UpdateCountryNameLocal}
+        txtDetailCountryNameLocal: {ColSpan=2, Width=247}
+        chkDetailUndercover: {ColSpan=2}
+        txtDetailInternatAccessCode: {Label=Int'l Access Code, Width=30, Validation=true}
+        txtDetailInternatTelephoneCode: {Label=Int'l Dialling Code, Format=Integer, Width=30, Validation=true}
+        cmbDetailAddressOrder: {ColSpan=2, Label=Address Display Order, List=AddressDisplayOrderList, Width=145}
+        cmbDetailInternatPostalTypeCode: {ColSpan=2, Label=Int'l Postal Type, List=InternationalPostalTypeList, Validation=true}
+        txtDetailTimeZoneMinimum: {Label=Time Zone From, Width=45, Format=Decimal, OnLeave=UpdateTimeZoneMaximum, Validation=Pair(txtDetailTimeZoneMaximum)}
         txtDetailTimeZoneMaximum: {Label=To, Width=45, Format=Decimal}
         chkDetailDeletable:
-        
-        pnlInternat:
-            Controls: 
-                Row0: [chkDetailUndercover, txtDetailInternatAccessCode, txtDetailInternatTelephoneCode]
-            ColWidths: [1=Fixed:144, 4=Fixed:180] 
-            ColSpan: 3
-            Margin: 63,0,0,5        
-        
-        pnlTimeZone:
-            Controls: 
-                Row0: [txtDetailTimeZoneMinimum, txtDetailTimeZoneMaximum, chkDetailDeletable]
-            ColWidths: [1=Fixed:60, 3=Fixed:97]  
-            ColSpan: 3
-            Margin: 35,0,0,5        
         
     Toolbar:
         tbbNew: 

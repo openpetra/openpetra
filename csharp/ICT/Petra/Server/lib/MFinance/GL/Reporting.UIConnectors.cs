@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,87 +23,54 @@
 //
 using System;
 using System.Data;
+using System.Collections.Generic;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
+using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 
-namespace Ict.Petra.Server.MFinance.Reporting
+namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
     ///<summary>
-    /// This UIConnector provides data for the finance reporting screens
-    ///
-    /// UIConnector Objects are instantiated by the Client's User Interface via the
-    /// Instantiator classes.
-    /// They handle requests for data retrieval and saving of data (including data
-    /// verification).
-    ///
-    /// Their role is to
-    ///   - retrieve (and possibly aggregate) data using Business Objects,
-    ///   - put this data into///one* DataSet that is passed to the Client and make
-    ///     sure that no unnessary data is transferred to the Client,
-    ///   - optionally provide functionality to retrieve additional, different data
-    ///     if requested by the Client (for Client screens that load data initially
-    ///     as well as later, eg. when a certain tab on the screen is clicked),
-    ///   - save data using Business Objects.
-    ///
-    /// @Comment These Objects would usually not be instantiated by other Server
-    ///          Objects, but only by the Client UI via the Instantiator classes.
-    ///          However, Server Objects that derive from these objects and that
-    ///          are also UIConnectors are feasible.
+    /// This WebConnector provides data for the finance reporting screens
     ///</summary>
-    public class TFinanceReportingUIConnector : TConfigurableMBRObject
+    public class TFinanceReportingWebConnector
     {
-//TODO: TFinanceReportingUIConnector needs to implement IFinanceUIConnectorsReporting
-        /// <summary>the currently selected ledger</summary>
-        private System.Int32 FLedgerNr;
-        private int FNumberAccountingPeriods;
-        private int FNumberForwardingPeriods;
-        private int FCurrentPeriod;
-        private int FCurrentYear;
-
-        /// <summary>
-        /// initialise the object, select the given ledger
-        /// </summary>
-        /// <param name="ALedgerNr"></param>
-        public void SelectLedger(System.Int32 ALedgerNr)
-        {
-            FLedgerNr = ALedgerNr;
-            GetLedgerPeriodDetails(out FNumberAccountingPeriods, out FNumberForwardingPeriods, out FCurrentPeriod, out FCurrentYear);
-        }
-
         /// <summary>
         /// get the details of the given ledger
         /// </summary>
-        /// <param name="ANumberAccountingPeriods"></param>
-        /// <param name="ANumberForwardingPeriods"></param>
-        /// <param name="ACurrentPeriod"></param>
-        /// <param name="ACurrentYear"></param>
-        public void GetLedgerPeriodDetails(out int ANumberAccountingPeriods,
+        [RequireModulePermission("FINANCE-1")]
+        public static void GetLedgerPeriodDetails(
+            int ALedgerNumber,
+            out int ANumberAccountingPeriods,
             out int ANumberForwardingPeriods,
             out int ACurrentPeriod,
             out int ACurrentYear)
         {
             System.Type typeofTable = null;
             TCacheable CachePopulator = new TCacheable();
-            DataTable CachedDataTable = CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
+            ALedgerTable CachedDataTable = (ALedgerTable)CachePopulator.GetCacheableTable(
+                TCacheableFinanceTablesEnum.LedgerDetails,
                 "",
                 false,
-                FLedgerNr,
+                ALedgerNumber,
                 out typeofTable);
-            string whereClause = ALedgerTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString();
-            DataRow[] filteredRows = CachedDataTable.Select(whereClause, ALedgerTable.GetLedgerNumberDBName());
 
-            if (filteredRows.Length > 0)
+            if (CachedDataTable.Rows.Count > 0)
             {
-                ANumberAccountingPeriods = ((ALedgerRow)filteredRows[0]).NumberOfAccountingPeriods;
-                ANumberForwardingPeriods = ((ALedgerRow)filteredRows[0]).NumberFwdPostingPeriods;
-                ACurrentPeriod = ((ALedgerRow)filteredRows[0]).CurrentPeriod;
-                ACurrentYear = ((ALedgerRow)filteredRows[0]).CurrentFinancialYear;
+                ANumberAccountingPeriods = CachedDataTable[0].NumberOfAccountingPeriods;
+                ANumberForwardingPeriods = CachedDataTable[0].NumberFwdPostingPeriods;
+                ACurrentPeriod = CachedDataTable[0].CurrentPeriod;
+                ACurrentYear = CachedDataTable[0].CurrentFinancialYear;
             }
             else
             {
@@ -115,179 +82,31 @@ namespace Ict.Petra.Server.MFinance.Reporting
         }
 
         /// <summary>
-        /// get the real period stored in the database
-        /// this is needed for reports that run on a different financial year, ahead or behind by several months
-        /// </summary>
-        /// <param name="ADiffPeriod"></param>
-        /// <param name="AYear"></param>
-        /// <param name="APeriod"></param>
-        /// <param name="ARealPeriod"></param>
-        /// <param name="ARealYear"></param>
-        public void GetRealPeriod(System.Int32 ADiffPeriod,
-            System.Int32 AYear,
-            System.Int32 APeriod,
-            out System.Int32 ARealPeriod,
-            out System.Int32 ARealYear)
-        {
-            ARealPeriod = APeriod + ADiffPeriod;
-            ARealYear = AYear;
-
-            if (ADiffPeriod == 0)
-            {
-                return;
-            }
-
-            // the period is in the last year
-            // this treatment only applies to situations with different financial years.
-            // in a financial year equals to the glm year, the period 0 represents the start balance
-            if ((ADiffPeriod == 0) && (ARealPeriod == 0))
-            {
-                //do nothing
-            }
-            else if (ARealPeriod < 1)
-            {
-                ARealPeriod = FNumberAccountingPeriods + ARealPeriod;
-                ARealYear = ARealYear - 1;
-            }
-
-            // forwarding periods are only allowed in the current year
-            if ((ARealPeriod > FNumberAccountingPeriods) && (ARealYear != FCurrentYear))
-            {
-                ARealPeriod = ARealPeriod - FNumberAccountingPeriods;
-                ARealYear = ARealYear + 1;
-            }
-        }
-
-        /// <summary>
-        /// get the start date of the given period
-        /// </summary>
-        /// <param name="AYear"></param>
-        /// <param name="ADiffPeriod"></param>
-        /// <param name="APeriod"></param>
-        /// <returns></returns>
-        public System.DateTime GetPeriodStartDate(System.Int32 AYear, System.Int32 ADiffPeriod, System.Int32 APeriod)
-        {
-            System.Int32 RealYear = 0;
-            System.Int32 RealPeriod = 0;
-            System.Type typeofTable = null;
-            TCacheable CachePopulator = new TCacheable();
-            DateTime ReturnValue = DateTime.Now;
-            GetRealPeriod(ADiffPeriod, AYear, APeriod, out RealPeriod, out RealYear);
-            DataTable CachedDataTable = CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
-                "",
-                false,
-                FLedgerNr,
-                out typeofTable);
-            string whereClause = AAccountingPeriodTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString() + " and " +
-                                 AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod.ToString();
-            DataRow[] filteredRows = CachedDataTable.Select(whereClause);
-
-            if (filteredRows.Length > 0)
-            {
-                ReturnValue = ((AAccountingPeriodRow)filteredRows[0]).PeriodStartDate;
-                ReturnValue = ReturnValue.AddYears(RealYear - FCurrentYear);
-            }
-
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// get the end date of the given period
-        /// </summary>
-        /// <param name="AYear"></param>
-        /// <param name="ADiffPeriod"></param>
-        /// <param name="APeriod"></param>
-        /// <returns></returns>
-        public System.DateTime GetPeriodEndDate(System.Int32 AYear, System.Int32 ADiffPeriod, System.Int32 APeriod)
-        {
-            System.Int32 RealYear = 0;
-            System.Int32 RealPeriod = 0;
-            System.Type typeofTable = null;
-            TCacheable CachePopulator = new TCacheable();
-            DateTime ReturnValue = DateTime.Now;
-            GetRealPeriod(ADiffPeriod, AYear, APeriod, out RealPeriod, out RealYear);
-            DataTable CachedDataTable = CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
-                "",
-                false,
-                FLedgerNr,
-                out typeofTable);
-            string whereClause = AAccountingPeriodTable.GetLedgerNumberDBName() + " = " + FLedgerNr.ToString() + " and " +
-                                 AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod.ToString();
-            DataRow[] filteredRows = CachedDataTable.Select(whereClause);
-
-            if (filteredRows.Length > 0)
-            {
-                ReturnValue = ((AAccountingPeriodRow)filteredRows[0]).PeriodEndDate;
-                ReturnValue = ReturnValue.AddYears(RealYear - FCurrentYear);
-            }
-
-            return ReturnValue;
-        }
-
-        /// <summary>
         /// Loads all available financial years into a table
         /// To be used by a combobox to select the financial year
         ///
         /// </summary>
         /// <returns>DataTable</returns>
-        public DataTable GetAvailableFinancialYears(System.Int32 ADiffPeriod, out String ADisplayMember, out String AValueMember)
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetAvailableFinancialYears(int ALedgerNumber,
+            System.Int32 ADiffPeriod,
+            out String ADisplayMember,
+            out String AValueMember)
         {
-            DataTable tab;
-            DataTable BatchYearTable;
-            DataRow resultRow;
-            String sql;
-
-            System.DateTime currentYearEnd;
-            Int32 counter;
-            TDBTransaction ReadTransaction;
-            currentYearEnd = GetPeriodEndDate(FCurrentYear, ADiffPeriod, FNumberAccountingPeriods);
-            ADisplayMember = "YearDate";
-            AValueMember = "YearNumber";
-            tab = new DataTable();
-            tab.Columns.Add(AValueMember, typeof(System.Int32));
-            tab.Columns.Add(ADisplayMember, typeof(String));
-            counter = 0;
-
-            // add the current year
-            resultRow = tab.NewRow();
-            resultRow[0] = (System.Object)FCurrentYear;
-            resultRow[1] = currentYearEnd.ToString("yyyy");
-            tab.Rows.InsertAt(resultRow, counter);
-            counter = counter + 1;
-            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction();
-            try
-            {
-                // add the previous years, which are retrieved by reading from the old batches
-                // TODO: use GetDBName of the table
-                sql = "SELECT DISTINCT a_batch_year_i AS availYear " + " FROM PUB_a_previous_year_batch " + " WHERE a_ledger_number_i = " +
-                      FLedgerNr.ToString() + " ORDER BY 1 DESC";
-                BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
-
-                foreach (DataRow row in BatchYearTable.Rows)
-                {
-                    resultRow = tab.NewRow();
-                    resultRow[0] = row[0];
-
-                    // resultRow.item[1] := DateToLocalizedString(CurrentYearEnd.AddYears(1  (CurrentFinancialYear  Convert.ToInt32(row[0]))));
-                    resultRow[1] = currentYearEnd.AddYears(-1 * (FCurrentYear - Convert.ToInt32(row[0]))).ToString("yyyy");
-                    tab.Rows.InsertAt(resultRow, counter);
-                    counter = counter + 1;
-                }
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-            return tab;
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetAvailableGLYears(
+                ALedgerNumber,
+                ADiffPeriod,
+                false,
+                out ADisplayMember,
+                out AValueMember);
         }
 
         /// <summary>
         /// Load all the receiving fields
         /// </summary>
-        /// <param name="ADisplayMember"></param>
-        /// <param name="AValueMember"></param>
         /// <returns>Table with the field keys and the field names</returns>
-        public DataTable GetReceivingFields(out String ADisplayMember, out String AValueMember)
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetReceivingFields(int ALedgerNumber, out String ADisplayMember, out String AValueMember)
         {
             DataTable ReturnTable = new DataTable();
             String sql;
@@ -319,6 +138,144 @@ namespace Ict.Petra.Server.MFinance.Reporting
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
             return ReturnTable;
+        }
+
+        private static void GetReportingCostCentres(ACostCentreTable ACostCentres, ref List <string>AResult, string ASummaryCostCentreCode)
+        {
+            if (ASummaryCostCentreCode.Length == 0)
+            {
+                return;
+            }
+
+            string[] CostCentres = ASummaryCostCentreCode.Split(new char[] { ',' });
+
+            foreach (string costcentre in CostCentres)
+            {
+                DataRowView[] ReportingCostCentres = ACostCentres.DefaultView.FindRows(costcentre);
+
+                if (ReportingCostCentres.Length > 0)
+                {
+                    foreach (DataRowView rv in ReportingCostCentres)
+                    {
+                        ACostCentreRow row = (ACostCentreRow)rv.Row;
+
+                        if (row.PostingCostCentreFlag)
+                        {
+                            AResult.Add(row.CostCentreCode);
+                        }
+                        else
+                        {
+                            GetReportingCostCentres(ACostCentres, ref AResult, row.CostCentreCode);
+                        }
+                    }
+                }
+                else
+                {
+                    DataView dv = new DataView(ACostCentres);
+                    dv.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+                    ACostCentreRow cc = (ACostCentreRow)dv.FindRows(costcentre)[0].Row;
+
+                    if (cc.PostingCostCentreFlag)
+                    {
+                        AResult.Add(costcentre);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get all cost centres that report into the given summary cost centre
+        /// </summary>
+        /// <returns>a CSV list of the reporting cost centres</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static string GetReportingCostCentres(int ALedgerNumber, String ASummaryCostCentreCode, string ARemoveCostCentresFromList)
+        {
+            System.Type typeofTable = null;
+            TCacheable CachePopulator = new TCacheable();
+            ACostCentreTable CachedDataTable = (ACostCentreTable)CachePopulator.GetCacheableTable(
+                TCacheableFinanceTablesEnum.CostCentreList,
+                "",
+                false,
+                ALedgerNumber,
+                out typeofTable);
+
+            CachedDataTable.DefaultView.Sort = ACostCentreTable.GetCostCentreToReportToDBName();
+
+            List <string>Result = new List <string>();
+
+            GetReportingCostCentres(CachedDataTable, ref Result, ASummaryCostCentreCode);
+
+            List <string>IgnoreCostCentres = new List <string>();
+
+            GetReportingCostCentres(CachedDataTable, ref IgnoreCostCentres, ARemoveCostCentresFromList);
+
+            foreach (string s in IgnoreCostCentres)
+            {
+                if (Result.Contains(s))
+                {
+                    Result.Remove(s);
+                }
+            }
+
+            return StringHelper.StrMerge(Result.ToArray(), ',');
+        }
+
+        private static void GetReportingAccounts(AAccountHierarchyDetailTable AAccountHierarchyDetail,
+            ref List <string>AResult,
+            string ASummaryAccountCodes,
+            string AAccountHierarchy)
+        {
+            string[] Accounts = ASummaryAccountCodes.Split(new char[] { ',' });
+
+            foreach (string account in Accounts)
+            {
+                DataRowView[] ReportingAccounts = AAccountHierarchyDetail.DefaultView.FindRows(new object[] { AAccountHierarchy, account });
+
+                if (ReportingAccounts.Length == 0)
+                {
+                    AResult.Add(account);
+                }
+                else
+                {
+                    foreach (DataRowView rv in ReportingAccounts)
+                    {
+                        AAccountHierarchyDetailRow row = (AAccountHierarchyDetailRow)rv.Row;
+
+                        GetReportingAccounts(AAccountHierarchyDetail, ref AResult, row.ReportingAccountCode, AAccountHierarchy);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get all accounts that report into the given summary account
+        /// </summary>
+        /// <returns>a CSV list of the reporting accounts</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static string GetReportingAccounts(int ALedgerNumber, string ASummaryAccountCodes, string ARemoveAccountsFromList)
+        {
+            GLSetupTDS MainDS = TGLSetupWebConnector.LoadAccountHierarchies(ALedgerNumber);
+
+            List <string>accountcodes = new List <string>();
+
+            MainDS.AAccountHierarchyDetail.DefaultView.Sort =
+                AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + "," +
+                AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName();
+
+
+            GetReportingAccounts(MainDS.AAccountHierarchyDetail, ref accountcodes, ASummaryAccountCodes, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD);
+
+            string[] RemoveAccountsFromList = ARemoveAccountsFromList.Split(new char[] { ',' });
+
+            foreach (string s in RemoveAccountsFromList)
+            {
+                if (accountcodes.Contains(s))
+                {
+                    accountcodes.Remove(s);
+                }
+            }
+
+            return StringHelper.StrMerge(accountcodes.ToArray(), ',');
         }
     }
 }

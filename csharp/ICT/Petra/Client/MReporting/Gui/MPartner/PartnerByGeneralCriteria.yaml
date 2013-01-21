@@ -1,0 +1,73 @@
+RootNode:
+    BaseYaml: PartnerReportingForm.yaml
+    FormType: report
+    FormTitle: Partner By General Criteria
+    WindowWidth: 750
+    WindowHeight: 600
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByGeneralCriteria.CalculateExtract
+        ISOLATIONLEVEL: serializable
+        XMLFILES: [Partner\\\\partnerbygeneralcriteria.xml]
+        REPORTNAME: Partner By Gen Criteria
+        CURRENTREPORT: Partner By Gen Criteria
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: ReadControlsVerify(ACalc, AReportAction);
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: 
+                Row0: [pnlLeft, pnlRight]
+            Order: AlwaysFirst
+        pnlLeft:
+            Controls: 
+                Row0: [grpPartnerInfo]
+                Row1: [ucoAddress]
+                Row2: [grpRecordModification]
+        pnlRight:
+            Controls: 
+                Row0: [ucoChkFilter]
+                Row1: [grpLocationType]
+        grpPartnerInfo: {NoLabel=true}
+            Controls:
+                Row0: [cmbPartnerClass]
+                Row1: [cmbDenomination]
+                Row2: [cmbBusiness]
+                Row3: [cmbLanguage]
+        ucoChkFilter:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Width: 300
+            Height: 100
+        grpLocationType:
+            Controls: [clbLocationType]
+        clbLocationType:
+            NoLabel: true 
+            ParameterName: param_location_type
+            Width: 200
+            Height: 300
+        ucoAddress:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+            Width: 500
+            Height: 170
+        grpRecordModification: {NoLabel=true}
+            Controls:
+                Row0: [cmbUserCreated]
+                Row1: [dtpCreatedFrom, dtpCreatedTo]
+                Row2: [cmbUserModified]
+                Row3: [dtpModifiedFrom, dtpModifiedTo]
+        cmbPartnerClass: {List=PartnerClassList, OnChange=OnPartnerClassChanged, ClearIfSettingEmpty=true, ParameterName=param_partner_class}
+        cmbDenomination: {List=DenominationList, ClearIfSettingEmpty=true, ParameterName=param_denomination}
+        cmbBusiness: {List=BusinessCodeList, ClearIfSettingEmpty=true, ParameterName=param_business}
+        cmbLanguage: {List=LanguageCodeList, ClearIfSettingEmpty=true, ParameterName=param_language}
+        cmbUserCreated: {Label=Created By, List=UserList, ClearIfSettingEmpty=true, ParameterName=param_user_created, ColSpan=2}
+        dtpCreatedFrom: {Label=Created Date between, ClearIfSettingEmpty=true, ParameterName=param_date_created_from}
+        dtpCreatedTo: {Label=and, ClearIfSettingEmpty=true, ParameterName=param_date_created_to}
+        cmbUserModified: {Label=Modified By, List=UserList, ClearIfSettingEmpty=true, ParameterName=param_user_modified, ColSpan=2}
+        dtpModifiedFrom: {Label=Modified Date between, ClearIfSettingEmpty=true, ParameterName=param_date_modified_from}
+        dtpModifiedTo: {Label=and, ClearIfSettingEmpty=true, ParameterName=param_date_modified_to}
+

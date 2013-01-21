@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,47 +24,32 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using System.Collections.Specialized;
 
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Common.Controls;
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MPartner.Logic;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.RemotedExceptions;
+using Ict.Petra.Client.MPersonnel.Gui.Setup;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TFrmPartnerEdit
     {
-        #region Enums
-
-        /// <summary>
-        /// Used for enabling/disabling parts of the screen according to the
-        /// Petra Module.
-        /// </summary>
-        public enum TModuleSwitchEnum
-        {
-            /// <summary>No module</summary>
-            msNone,
-
-            /// <summary>Partner Module</summary>
-            msPartner,
-
-            /// <summary>Personnel Module</summary>
-            msPersonnel,
-
-            /// <summary>Finance Module</summary>
-            msFinance
-        }
-
         /// <summary>
         /// Determines the type of call to the UIConnector of the screen.
         /// </summary>
@@ -74,13 +59,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             uictPartnerKey,
 
             /// <summary>Call the UIConnector with Partner Key, Location Key and Site Key Arguments</summary>
-           uictLocationKey,
+            uictLocationKey,
 
             /// <summary>Call the UIConnector without any Arguments, thus signalising that a new Partner should be created</summary>
-           uictNewPartner
+            uictNewPartner
         }
-
-        #endregion
 
         #region Fields
 
@@ -93,9 +76,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>used for sending information back from the PetraServer while saving</summary>
         private DataSet FResponseDS;
-
-        /// <summary>controls whether the SaveChanges function saves the changes or just submits parameters</summary>
-        private Boolean FSubmitChangesContinue;
 
         /// <summary>holds the PartnerKey for which the screen is opened</summary>
         private System.Int64 FPartnerKey;
@@ -127,12 +107,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
         private Boolean FUppperPartInitiallyCollapsed;
         private Boolean FFoundationDetailsEnabled;
-
-// TODO        private Boolean FPartnerTabSetInitialised;
-
-//TODO        private Boolean FPersonnelTabSetInitialised;
-//TODO        private Boolean FFinanceTabSetInitialised;
-        private TModuleSwitchEnum FCurrentModuleTabGroup;
+        private TPartnerEditScreenLogic.TModuleTabGroupEnum FCurrentModuleTabGroup;
 
         /// <summary>Stores any Exception that occurs while the screen is loading</summary>
         public static Exception UExceptionAtLoad = null;
@@ -143,45 +118,47 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         // TODO 2 Replace with String.Format(Catalog.GetString("Hello {0}"), myname);
 
-        private const String StrScreenCaption = "Partner Edit";
-        private const String StrQueryUnitParent = "All 'Units' MUST be assigned a 'Parent'." + "\r\n" + "Do you wish to assign one now?";
-        private const String StrQueryUnitParentTitle = "Assign Parent in Unit Hierarchy?";
-        private const String StrQueryOverwriteAddress = "Are you sure you want to replace the current " + "address with the address" + "\r\n" +
-                                                        "that you are about to find?" + "\r\n" + "\r\n" + "WARNING:" + "\r\n" +
-                                                        "If you choose 'Yes', history for the currently " +
-                                                        "displayed address will be lost!" + "\r\n" + "If the displayed address " +
-                                                        "was valid, you should instead add a new address" + "\r\n" +
-                                                        "and then enter an end (to) date for the old address.";
-        private const String StrQueryOverwriteAddressTitle = "Replace Current Address?";
-        private const String StrCannotDeletePartner = "Cannot delete Partner that has unsaved changes." + "\r\n" + "\r\n" +
-                                                      "Either save the changes that you have made, or close this Partner Edit sc" +
-                                                      "reen without saving the data and then delete the Partner from the Partner" + " Module screen.";
-        private const String StrCannotDeletePartnerTitle = "Cannot Delete Partner That Has Unsaved Chan" + "ges";
-        private const String StrDownloadVideoTutorialTitle = "Download Video Tutorial";
-        private const String StrDownloadVideoTutoriaManuallTitle = "Manual Download of Video Tutorial";
-        private const String StrVideoTutorialTitle = "Video Tutorial for Partner Edit Screen";
-        private const String StrVideoTutorialNotFound = "The Video Tutorial for Partner Edit Screen cannot be found on your system." + "\r\n" +
-                                                        "(Petra is looking in '{0}' for a file named '{1}')." + "\r\n" + "\r\n" +
-                                                        "The video can also be download from the Internet. Choose 'Yes' to download it and view it, "
-                                                        +
-                                                        "\r\n" +
-                                                        "or choose 'No' to not download the video.";
-        private const String StrVideoTutorialLaunchFailed =
-            "There was a problem launching the Video Tutorial application. (Details can be found in the log file.)";
-        private const String StrVideoTutorialWebBRowserLaunched = "The web bRowser should have been launched and offer the download of the file.";
-        private const String StrVideoTutorialWebBRowserLaunchFailed =
-            "There was a problem launching Internet Explorer. (Details can be found in the log file.)" + "\r\n" + "\r\n" +
-            "To download the Video Tutorial, launch your web bRowser and enter the following address:" + "\r\n" + "   ";
-        private const String StrVideoTutorialDownloadInstructions = "Please save the file in the following folder:" + "\r\n" + "   {0}" + "\r\n" +
-                                                                    "\r\n" +
-                                                                    "After the download is finished: choose 'Yes' to start the Video Tutorial from that folder,"
-                                                                    +
-                                                                    "\r\n" +
-                                                                    "or choose 'No' to return to the Partner Edit screen.";
-        private const String StrDeactivatePartnerTitle = "Deactivate Partner";
-        private const String StrDeactivatePartnerActionCancelled = "Deactivate Partner procedure cancel" + "led - no data was changed.";
-        private const String StrDeactivatePartnerSuccess = "Deactivate Partner procedure finished suces" + "sfully.";
-        private const String StrDeactivatePartnerStatusNotChanged = "Partner Status wasn't changed - it " + "was already set to '{0}'.";
+        private static readonly string StrScreenCaption = Catalog.GetString("Partner Edit");
+        private static readonly string StrQueryUnitParent = Catalog.GetString(
+            "All 'Units' MUST be assigned a 'Parent'.\r\nDo you wish to assign one now?");
+        private static readonly string StrQueryUnitParentTitle = Catalog.GetString("Assign Parent in Unit Hierarchy?");
+// TODO        private static readonly string StrQueryOverwriteAddress = Catalog.GetString(
+// TODO            "Are you sure you want to replace the current address with the address\r\n" +
+// TODO            "that you are about to find?\r\n\r\nWARNING:\r\n" +
+// TODO            "If you choose 'Yes', history for the currently displayed address will be lost!\r\n" +
+// TODO            "If the displayed address was valid, you should instead add a new address\r\n" +
+// TODO            "and then enter an end (to) date for the old address.");
+// TODO        private static readonly string StrQueryOverwriteAddressTitle = Catalog.GetString("Replace Current Address?");
+        private static readonly string StrCannotDeletePartner = Catalog.GetString(
+            "Cannot delete Partner that has unsaved changes.\r\n\r\n" +
+            "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
+            "and then delete the Partner from the Partner Module screen.");
+        private static readonly string StrCannotDeletePartnerTitle = Catalog.GetString("Cannot delete Partner that has unsaved changes");
+// TODO        private static readonly string StrDownloadVideoTutorialTitle = Catalog.GetString("Download Video Tutorial");
+// TODO        private static readonly string StrDownloadVideoTutoriaManuallTitle = Catalog.GetString("Manual Download of Video Tutorial");
+// TODO        private static readonly string StrVideoTutorialTitle = Catalog.GetString("Video Tutorial for Partner Edit Screen");
+// TODO        private static readonly string StrVideoTutorialNotFound = Catalog.GetString(
+// TODO            "The Video Tutorial for Partner Edit Screen cannot be found on your system.\r\n" +
+// TODO            "(OpenPetra is looking in '{0}' for a file named '{1}').\r\n\r\n" +
+// TODO            "The video can also be download from the Internet. Choose 'Yes' to download it and view it,\r\n" +
+// TODO            "or choose 'No' to not download the video.");
+// TODO        private static readonly string StrVideoTutorialLaunchFailed = Catalog.GetString(
+// TODO            "There was a problem launching the Video Tutorial application. (Details can be found in the log file.)");
+// TODO        private static readonly string StrVideoTutorialWebBRowserLaunched = Catalog.GetString(
+// TODO            "The web browser should have been launched and offer the download of the file.");
+// TODO        private static readonly string StrVideoTutorialWebBRowserLaunchFailed = Catalog.GetString(
+// TODO            "There was a problem launching Internet Explorer. (Details can be found in the log file.)\r\n\r\n" +
+// TODO            "To download the Video Tutorial, launch your web browser and enter the following address:\r\n" + "   ");
+// TODO        private static readonly string StrVideoTutorialDownloadInstructions = Catalog.GetString(
+// TODO            "Please save the file in the following folder:\r\n   {0}\r\n\r\n" +
+// TODO            "After the download is finished: choose 'Yes' to start the Video Tutorial from that folder,\r\n" +
+// TODO            "or choose 'No' to return to the Partner Edit screen.");
+// TODO        private static readonly string StrDeactivatePartnerTitle = Catalog.GetString("Deactivate Partner");
+// TODO        private static readonly string StrDeactivatePartnerActionCancelled = Catalog.GetString(
+// TODO            "Deactivate Partner procedure cancelled - no data was changed.");
+// TODO        private static readonly string StrDeactivatePartnerSuccess = Catalog.GetString("Deactivate Partner procedure finished sucessfully.");
+// TODO        private static readonly string StrDeactivatePartnerStatusNotChanged = Catalog.GetString(
+// TODO            "Partner Status wasn't changed - it was already set to '{0}'.");
 
         #endregion
 
@@ -797,17 +774,51 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoUpperPart.PartnerClassMainDataChanged += new TPartnerClassMainDataChangedHandler(this.UcoUpperPart_PartnerClassMainDataChanged);
         }
 
+        private void GetDataFromControlsManual(PPartnerRow ARow)
+        {
+            GetDataFromControls();
+        }
+
+        private void GetDataFromControls()
+        {
+            ucoUpperPart.GetDataFromControls();
+            ucoLowerPart.GetDataFromControls();
+        }
+
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        private bool ValidateAllData()
+        {
+            bool ReturnValue = false;
+
+            // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
+            FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
+
+            // Perform validation in UserControls, too
+            ucoUpperPart.ValidateAllData(false);
+            ucoLowerPart.ValidateAllData(false);
+
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType(), null, true);
+
+            if (ReturnValue)
+            {
+                // Remove a possibly shown Validation ToolTip as the data validation succeeded
+                FPetraUtilsObject.ValidationToolTip.RemoveAll();
+            }
+
+            return ReturnValue;
+        }
+
         /// <summary>
         /// needed for the interface
         /// </summary>
         /// <returns></returns>
         public bool SaveChanges()
         {
-            bool ReturnValue;
-
-            ReturnValue = SaveChanges(ref FMainDS);
-
-            return ReturnValue;
+            return SaveChanges(ref FMainDS);
         }
 
         /// <summary>
@@ -819,29 +830,26 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>True if saving of data succeeded, otherwise false.</returns>
         private Boolean SaveChanges(ref PartnerEditTDS AInspectDS)
         {
-            Boolean ReturnValue;
+            Boolean ReturnValue = false;
             PartnerEditTDS SubmitDS;
             TSubmitChangesResult SubmissionResult;
 
-            System.Int32 ChangedColumns;
-            String ErrorMessages;
             TVerificationResultCollection VerificationResult;
             TVerificationResult VerificationResultItem;
+
             System.Windows.Forms.DialogResult UnitParentAssignment;
             int RowIndex;
             int NumRows;
-            Control FirstErrorControl;
-            System.Object FirstErrorContext;
             Int32 MaxColumn;
+            bool AddressesOrRelationsChanged = false;
+            System.Int32 ChangedColumns;
 #if SHOWCHANGES
-            System.Int32 Counter;
             String DebugMessage;
 #endif
-
-
-            // TmpRowCounter: Int16;
-            // TmpDebugString: String;
-            // Counter: Integer;
+#if DATASETDEBUGGING
+            Int16 TmpRowCounter;
+            string TmpDebugString = String.Empty;
+#endif
             FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
             // Don't allow saving if user is still editing a Detail of a List
@@ -854,12 +862,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Make sure that DataBinding writes the value of the active Control to the underlying DataSource!
             TDataBinding.EnsureDataChangesAreStored(this);
 
-            ucoUpperPart.GetDataFromControls();
-            ucoLowerPart.GetDataFromControls();
+            GetDataFromControls();
 
-            ReturnValue = false;
+            // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+            FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
+            if (ValidateAllData())
             {
                 foreach (DataTable InspectDT in AInspectDS.Tables)
                 {
@@ -871,7 +879,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (FPetraUtilsObject.HasChanges)
                 {
-                    FPetraUtilsObject.WriteToStatusBar("Saving data...");
+                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataInProgress);
                     this.Cursor = Cursors.WaitCursor;
 
                     /* $IFDEF SHOWCHANGES MessageBox.Show('SaveChanges: AInspectDS.PLocation.Rows[0].HasVersion(DataRowVersion.Original): ' + AInspectDS.PLocation.Rows[0].HasVersion(DataRowVersion.Original).ToString + '; LocationKey: ' +
@@ -879,7 +887,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     /* $IFDEF SHOWCHANGES MessageBox.Show('SaveChanges: AInspectDS.PLocation.Rows[1].HasVersion(DataRowVersion.Original): ' + AInspectDS.PLocation.Rows[1].HasVersion(DataRowVersion.Original).ToString + '; LocationKey: ' +
                      *AInspectDS.PLocation.Row[1].LocationKey.ToString); $ENDIF */
-                    if (!FSubmitChangesContinue)
+                    if (!FPetraUtilsObject.SubmitChangesContinue)
                     {
                         foreach (DataTable InspectDT in AInspectDS.Tables)
                         {
@@ -887,39 +895,44 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if ((InspectDT.TableName != PLocationTable.GetTableName()) && (InspectDT.TableName != PPartnerLocationTable.GetTableName()))
                             {
                                 MaxColumn = InspectDT.Columns.Count;
-                                ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
-#if SHOWCHANGES
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(InspectDT, MaxColumn);
+
                                 if (ChangedColumns != 0)
                                 {
+#if SHOWCHANGES
                                     MessageBox.Show(InspectDT.TableName + " - changed colums: " + ChangedColumns.ToString());
-                                }
 #endif
+                                }
                             }
                             else if (InspectDT.TableName == PLocationTable.GetTableName())
                             {
                                 MaxColumn = new PLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PLocation MaxColumn: ' + MaxColumn.ToString);
-                                ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
-#if SHOWCHANGES
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PLocation, MaxColumn, true);
+
                                 if (ChangedColumns != 0)
                                 {
+#if SHOWCHANGES
                                     MessageBox.Show(PLocationTable.GetTableName() + " - changed colums: " + ChangedColumns.ToString());
-                                }
 #endif
+                                }
                             }
                             else
                             {
                                 MaxColumn = new PPartnerLocationTable().Columns.Count;
 
                                 // MessageBox.Show('PPartnerLocation MaxColumn: ' + MaxColumn.ToString);
-                                ChangedColumns = SharedDataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation, MaxColumn, true);
-#if SHOWCHANGES
+                                ChangedColumns = DataUtilities.AcceptChangesForUnmodifiedRows(AInspectDS.PPartnerLocation,
+                                    MaxColumn,
+                                    true);
+
                                 if (ChangedColumns != 0)
                                 {
+#if SHOWCHANGES
                                     MessageBox.Show(PPartnerLocationTable.GetTableName() + " - changed colums: " + ChangedColumns.ToString());
-                                }
 #endif
+                                }
                             }
 
 #if SHOWCHANGES
@@ -940,13 +953,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                                         DebugMessage = DebugMessage + " --- inserted Row. Column contents:" + Environment.NewLine;
                                     }
 
-                                    for (Counter = 0; Counter <= MaxColumn - 1; Counter += 1)
+                                    for (int Counter1 = 0; Counter1 <= MaxColumn - 1; Counter1 += 1)
                                     {
-                                        if ((InspectDR.RowState == DataRowState.Added) || (InspectDR != InspectDR[Counter, DataRowVersion.Current]))
+                                        if ((InspectDR.RowState == DataRowState.Added) || (InspectDR != InspectDR[Counter1, DataRowVersion.Current]))
                                         {
                                             ChangedColumns = ChangedColumns + 1;
-                                            DebugMessage = DebugMessage + "  " + (InspectDT.Columns[Counter].ColumnName).ToString() + ": " +
-                                                           InspectDR[Counter, DataRowVersion.Current].ToString() + Environment.NewLine;
+                                            DebugMessage = DebugMessage + "  " + (InspectDT.Columns[Counter1].ColumnName).ToString() + ": " +
+                                                           InspectDR[Counter1, DataRowVersion.Current].ToString() + Environment.NewLine;
                                         }
                                     }
 
@@ -981,12 +994,33 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     SubmitDS = AInspectDS.GetChangesTyped(true);
 
-                    // $IFDEF DEBUGMODE if SubmitDS = nil then MessageBox.Show('SubmitDS = nil!'); $ENDIF
-                    // TLogging.Log('Before submitting data to the Server  Client DataSet: ' + SubmitDS.GetXml);
+                    if (SubmitDS == null)
+                    {
+                        // There is nothing to be saved.
+                        // Update UI
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
+                        this.Cursor = Cursors.Default;
+
+                        // We don't have unsaved changes anymore
+                        FPetraUtilsObject.DisableSaveButton();
+
+                        return true;
+                    }
+
+                    if ((SubmitDS.Tables.Contains(PLocationTable.GetTableName()))
+                        || (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                        || (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
+                    {
+                        AddressesOrRelationsChanged = true;
+                    }
+
+#if DATASETDEBUGGING
+                    TLogging.Log("Before submitting data to the Server. Client DataSet: " + SubmitDS.GetXml());
+#endif
                     // Submit changes to the PETRAServer
                     try
                     {
-                        if (!FSubmitChangesContinue)
+                        if (!FPetraUtilsObject.SubmitChangesContinue)
                         {
                             FResponseDS = null;
                             SubmissionResult = FPartnerEditUIConnector.SubmitChanges(ref SubmitDS, ref FResponseDS, out VerificationResult);
@@ -996,51 +1030,43 @@ namespace Ict.Petra.Client.MPartner.Gui
                             SubmissionResult = FPartnerEditUIConnector.SubmitChangesContinue(out SubmitDS, ref FResponseDS, out VerificationResult);
                         }
                     }
-                    catch (System.Net.Sockets.SocketException)
-                    {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-                        this.Cursor = Cursors.Default;
-                        MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
-                            "No Server response",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Stop);
-                        ReturnValue = false;
-                        OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                        return ReturnValue;
-                    }
                     catch (ESecurityDBTableAccessDeniedException Exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
                         TMessages.MsgSecurityException(Exp, this.GetType());
+
                         ReturnValue = false;
-                        OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
                     catch (EDBConcurrencyException Exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
                         TMessages.MsgDBConcurrencyException(Exp, this.GetType());
+
                         ReturnValue = false;
-                        OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
                     catch (Exception exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
                         TLogging.Log(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+                            Catalog.GetString(
+                                "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                             TLoggingType.ToLogfile);
                         MessageBox.Show(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
+                            Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine +
                             "For details see the log file: " + TLogging.GetLogFileName(),
-                            "Server connection error",
+                            Catalog.GetString("Server connection error"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Stop);
+
                         ReturnValue = false;
-                        OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
 
@@ -1064,19 +1090,32 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                                 if (UnitParentAssignment == System.Windows.Forms.DialogResult.Yes)
                                 {
-// TODO Unit hierarchy
-#if TODO
-                                    cmdPartner = new TCmdMPartner();
-                                    cmdPartner.RunUnitHierarchy(this, AInspectDS.PPartner[0].PartnerKey);
-#endif
+                                    TFrmUnitHierarchy HierarchyForm = new TFrmUnitHierarchy(this.ParentForm);
+
+                                    HierarchyForm.Show();
+                                    HierarchyForm.ShowThisUnit(AInspectDS.PPartner[0].PartnerKey);
                                 }
                             }
 
-                            // TLogging.Log('After submtting  returned Server DataSet: ' + SubmitDS.GetXml);
-                            // Get rid of any new Addresses; they are returned back with different LocationKeys (based on a Progress Sequence)
+#if DATASETDEBUGGING
+                            TLogging.Log("After submtting returned Server DataSet: " + SubmitDS.GetXml());
+                            MessageBox.Show("Before CleanupAddressesBeforeMerge");
+#endif
+                            // Get rid of any new Addresses; they are returned back with different LocationKeys (based on a Sequence)
                             ucoLowerPart.CleanupAddressesBeforeMerge();
+#if DATASETDEBUGGING
+                            MessageBox.Show("After CleanupAddressesBeforeMerge");
 
-                            // MessageBox.Show('Location[0] LocationKey: ' + SubmitDS.PLocation.Row[0].LocationKey.ToString + '; PartnerLocation[0] LocationKey: ' + SubmitDS.PPartnerLocation.Row[0].LocationKey.ToString);
+                            if ((SubmitDS.PLocation != null)
+                                && (SubmitDS.PLocation.Rows.Count > 0))
+                            {
+                                MessageBox.Show(
+                                    "Location[0] LocationKey: " + SubmitDS.PLocation[0].LocationKey.ToString() +
+                                    "; PartnerLocation[0] LocationKey: " +
+                                    SubmitDS.PPartnerLocation[0].LocationKey.ToString());
+                            }
+#endif
+
                             if (AInspectDS.PDataLabelValuePartner != null)
                             {
                                 // Delete all added Rows in the original dataset. They will automatically
@@ -1106,79 +1145,110 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
                             AInspectDS.AcceptChanges();
+#if DATASETDEBUGGING
+                            TLogging.Log("After getting rid now of any deleted columns   Client DataSet: " + AInspectDS.GetXml());
 
-                            // TLogging.Log('After getting rid now of any deleted columns   Client DataSet: ' + AInspectDS.GetXml);
-                            // $IFDEF DEBUGMODE
-                            // if AInspectDS.Tables.Contains(PLocationTable.GetTableName()) then
-                            // begin
-                            // for TmpRowCounter := 0 to AInspectDS.Tables[PLocationTable.GetTableName].Rows.Count  1 do
-                            // begin
+                            if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
+                            {
+                                for (TmpRowCounter = 0; TmpRowCounter < AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count; TmpRowCounter++)
+                                {
+                                    TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                                     "]: PLocationKey: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetLocationKeyDBName()].
+                                                     ToString() + "(); PSiteKey: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetSiteKeyDBName()].
+                                                     ToString() + "(); Modification TimeStamp: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetModificationIdDBName()].
+                                                     ToString() + "\r\n";
+                                }
+                            }
 
-                            /* TmpDebugString := TmpDebugString + PLocationTable.GetTableName() + '.Row[' + TmpRowCounter.ToString + ']: PLocationKey: ' +
-                            * *AInspectDS.Tables[PLocationTable.GetTableName].Rows[TmpRowCounter][PLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
-                            *AInspectDS.Tables[PLocationTable.GetTableName].Rows[TmpRowCounter][PLocationTable.GetSiteKeyDBName()].ToString + "\r\n"(); */
+                            if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                            {
+                                TmpDebugString = TmpDebugString + "\r\n";
 
-                            // end;
-                            // end;
-                            //
-                            // if AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()) then
-                            // begin
-                            // TmpDebugString := TmpDebugString + "\r\n";
-                            // for TmpRowCounter := 0 to AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows.Count  1 do
-                            // begin
+                                for (TmpRowCounter = 0;
+                                     TmpRowCounter < AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count;
+                                     TmpRowCounter++)
+                                {
+                                    TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                                     "]: PLocationKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetLocationKeyDBName()].ToString() + "(); PSiteKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetSiteKeyDBName()].ToString() + "(); PPartnerKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetPartnerKeyDBName()].ToString() + "(); Modification TimeStamp: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetModificationIdDBName()].ToString() + "\r\n";
+                                }
 
-                            /* TmpDebugString := TmpDebugString + PPartnerLocationTable.GetTableName() + '.Row[' + TmpRowCounter.ToString + ']: PLocationKey: ' +
-                             * *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
-                             * *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetSiteKeyDBName()].ToString + '(); PPartnerKey: ' +
-                             *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetPartnerKeyDBName()].ToString + "\r\n"(); */
-
-                            // end;
-                            // MessageBox.Show(TmpDebugString, 'DEBUG: PLocation / PPartnerLocation local contents');
-                            // end;
-                            // $ENDIF
+                                MessageBox.Show(TmpDebugString, "DEBUG: PLocation / PPartnerLocation local contents  [#1]");
+                            }
+#endif
                             // Merge back with data from the Server (eg. for getting Sequence values)
                             AInspectDS.Merge(SubmitDS, false);
+#if DATASETDEBUGGING
+                            TLogging.Log("After Merge back with data from the Server  Server DataSet: " + SubmitDS.GetXml());
+                            TLogging.Log("After Merge back with data from the Server  Client DataSet: " + AInspectDS.GetXml());
 
-                            // TLogging.Log('After Merge back with data from the Server  Server DataSet: ' + SubmitDS.GetXml);
-                            // TLogging.Log('After Merge back with data from the Server  Client DataSet: ' + AInspectDS.GetXml);
-                            // $IFDEF DEBUGMODE
-                            // if AInspectDS.Tables.Contains(PLocationTable.GetTableName()) then
-                            // begin
-                            // TmpDebugString := '';
-                            // for TmpRowCounter := 0 to AInspectDS.Tables[PLocationTable.GetTableName].Rows.Count  1 do
-                            // begin
+                            if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
+                            {
+                                TmpDebugString = "";
 
-                            /* TmpDebugString := TmpDebugString + PLocationTable.GetTableName() + '.Row[' + TmpRowCounter.ToString + ']: PLocationKey: ' +
-                            * *AInspectDS.Tables[PLocationTable.GetTableName].Rows[TmpRowCounter][PLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
-                            *AInspectDS.Tables[PLocationTable.GetTableName].Rows[TmpRowCounter][PLocationTable.GetSiteKeyDBName()].ToString + "\r\n"(); */
+                                for (TmpRowCounter = 0; TmpRowCounter < AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count; TmpRowCounter++)
+                                {
+                                    TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                                     "]: PLocationKey: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetLocationKeyDBName()].
+                                                     ToString() + "(); PSiteKey: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetSiteKeyDBName()].
+                                                     ToString() + "(); Modification TimeStamp: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetModificationIdDBName()].
+                                                     ToString() + "\r\n";
+                                }
+                            }
 
-                            // end;
-                            // end;
-                            //
-                            // if AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()) then
-                            // begin
-                            // TmpDebugString := TmpDebugString + "\r\n";
-                            // for TmpRowCounter := 0 to AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows.Count  1 do
-                            // begin
+                            if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                            {
+                                TmpDebugString = TmpDebugString + "\r\n";
 
-                            /* TmpDebugString := TmpDebugString + PPartnerLocationTable.GetTableName() + '.Row[' + TmpRowCounter.ToString + ']: PLocationKey: ' +
-                             * *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetLocationKeyDBName()].ToString + '(); PSiteKey: ' +
-                             * *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetSiteKeyDBName()].ToString + '(); PPartnerKey: ' +
-                             * *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter][PPartnerLocationTable.GetPartnerKeyDBName()].ToString + '(); RowError: ' +
-                             *AInspectDS.Tables[PPartnerLocationTable.GetTableName].Rows[TmpRowCounter].RowError.ToString + "\r\n"(); */
+                                for (TmpRowCounter = 0;
+                                     TmpRowCounter < AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count;
+                                     TmpRowCounter++)
+                                {
+                                    TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                                     "]: PLocationKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetLocationKeyDBName()].ToString() + "(); PSiteKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetSiteKeyDBName()].ToString() + "(); PPartnerKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetPartnerKeyDBName()].ToString() + "(); Modification TimeStamp: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetModificationIdDBName()].ToString() + "\r\n";
+                                }
 
-                            // end;
-                            // MessageBox.Show(TmpDebugString, 'DEBUG: PLocation / PPartnerLocation local contents');
-                            // end;
-                            // $ENDIF
+                                MessageBox.Show(TmpDebugString, "DEBUG: PLocation / PPartnerLocation local contents  [#2]");
+                            }
+#endif
+
                             ucoLowerPart.RefreshAddressesAfterMerge();
+                            ucoLowerPart.RefreshPersonnelDataAfterMerge(AddressesOrRelationsChanged);
 
                             // Call AcceptChanges so that we don't have any changed data anymore!
                             AInspectDS.AcceptChanges();
-
-                            // TLogging.Log('After calling AcceptChanges on the Client DataSet: ' + AInspectDS.GetXml);
+#if DATASETDEBUGGING
+                            TLogging.Log("After calling AcceptChanges on the Client DataSet: " + AInspectDS.GetXml());
+#endif
                             // Update UI
-                            FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
+                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
                             this.Cursor = Cursors.Default;
                             EnableSave(false);
 
@@ -1190,12 +1260,21 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             // We don't have unsaved changes anymore
                             FPetraUtilsObject.DisableSaveButton();
-                            FSubmitChangesContinue = false;
+                            FPetraUtilsObject.SubmitChangesContinue = false;
 
                             // Assign PartnerKey. This is needed in case this was a new Partner before saving!
                             FPartnerKey = AInspectDS.PPartner[0].PartnerKey;
+
                             ReturnValue = true;
-                            OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+
+                            if ((VerificationResult != null)
+                                && (VerificationResult.HasCriticalOrNonCriticalErrors))
+                            {
+                                TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
+                                    this.GetType(), null);
+                            }
+
                             break;
 
                         case TSubmitChangesResult.scrError:
@@ -1203,14 +1282,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             if (!(VerificationResult.Contains((System.Object) "Location Change Promotion: Information")))
                             {
-                                FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrSavingDataErrorOccured);
+                                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
 
-                                MessageBox.Show(
-                                    Messages.BuildMessageFromVerificationResult(null, VerificationResult));
+                                TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
+                                    this.GetType(), null);
                             }
                             else
                             {
-                                FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrSavingDataCancelled);
+                                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataCancelled);
 
                                 VerificationResultItem = (TVerificationResult)VerificationResult.FindBy(
                                     (object)"Location Change Promotion: Information");
@@ -1220,118 +1299,131 @@ namespace Ict.Petra.Client.MPartner.Gui
                                     MessageBoxIcon.Information);
                             }
 
-                            FSubmitChangesContinue = false;
+                            FPetraUtilsObject.SubmitChangesContinue = false;
+
                             ReturnValue = false;
-                            OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                             break;
 
                         case TSubmitChangesResult.scrNothingToBeSaved:
 
+                            // If there were no changes discovered then still need to call AcceptChanges to get rid now of
+                            // any deleted columns
+                            AInspectDS.AcceptChanges();
+
                             // Update UI
-                            FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrSavingDataNothingToSave);
                             this.Cursor = Cursors.Default;
-                            EnableSave(false);
+                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
 
                             // We don't have unsaved changes anymore
+                            EnableSave(false);
                             FPetraUtilsObject.HasChanges = false;
+
                             ReturnValue = true;
-                            OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                             break;
 
                         case TSubmitChangesResult.scrInfoNeeded:
                             this.Cursor = Cursors.Default;
+#if DATASETDEBUGGING
+                            for (int Counter2 = 0; Counter2 < FResponseDS.Tables.Count; Counter2++)
+                            {
+                                MessageBox.Show(
+                                    "Table #" + Counter2.ToString() + "'s name is " + FResponseDS.Tables[Counter2].TableName + ". It has " +
+                                    FResponseDS.Tables[Counter2].Rows.Count.ToString() + " Rows. Type: " +
+                                    FResponseDS.Tables[Counter2].GetType().ToString());
+                            }
 
-                            // for Counter := 0 to FResponseDS.Tables.Count  1 do
-                            // begin
+                            if (FResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
+                            {
+                                MessageBox.Show("FResponseDS Type: " + FResponseDS.GetType().ToString());
+                                MessageBox.Show(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+                                    FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
+                                MessageBox.Show(
+                                    "FResponseDS.Tables[" + MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + "].Rows.Count: " +
+                                    FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
+                                // Check if there is a Parameter Row that is not yet processed
+                                DataView ExistingLocationParametersDV = new DataView(
+                                    FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME],
+                                    PartnerAddressAggregateTDSSimilarLocationParametersTable.GetAnswerProcessedClientSideDBName() +
+                                    " = false", "", DataViewRowState.CurrentRows);
 
-                            /* MessageBox.Show('Table #' + Counter.ToString + '''s name is ' + FResponseDS.Tables[Counter].TableName + '. It has ' + FResponseDS.Tables[Counter].Rows.Count.ToString + ' Rows. Type: ' +
-                             *FResponseDS.Tables[Counter].GetType().ToString); */
-
-                            // end;
-                            // if FResponseDS.Tables.Contains(EXISTINGLOCATIONPARAMETERS_TABLENAME) then
-                            // begin
-                            // MessageBox.Show('FResponseDS Type: ' + FResponseDS.GetType().ToString);
-                            // MessageBox.Show(EXISTINGLOCATIONPARAMETERS_TABLENAME + ' Type: ' + FResponseDS.Tables[EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString);
-                            // MessageBox.Show('FResponseDS.Tables[' + EXISTINGLOCATIONPARAMETERS_TABLENAME + '].Rows.Count: ' + FResponseDS.Tables[EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString);
-                            // Check if there is a Parameter Row that is not yet processed
-                            // ExistingLocationParametersDV := new DataView(
-                            // FResponseDS.Tables[EXISTINGLOCATIONPARAMETERS_TABLENAME],
-                            // PartnerAddressAggregateTDSSimilarLocationParametersTable.GetAnswerProcessedClientSideDBName() +
-                            // ' = false', '', DataViewRowState.CurrentRows);
-                            //
-                            // if ExistingLocationParametersDV.Count > 0 then
-                            // begin
-                            // MessageBox.Show('ExistingLocationParametersDV.Count: ' + ExistingLocationParametersDV.Count.ToString);
-                            // MessageBox.Show('Row[0].LocationKey: ' + (ExistingLocationParametersDV[0].Row as PartnerAddressAggregateTDSSimilarLocationParametersRow).LocationKey.ToString);
+                                if (ExistingLocationParametersDV.Count > 0)
+                                {
+                                    MessageBox.Show("ExistingLocationParametersDV.Count: " + ExistingLocationParametersDV.Count.ToString());
+                                    MessageBox.Show(
+                                        "Row[0].LocationKey: " +
+                                        (ExistingLocationParametersDV[0].Row as PartnerAddressAggregateTDSSimilarLocationParametersRow).LocationKey.
+                                        ToString());
+                                }
+                            }
+#endif
                             ucoLowerPart.SimilarLocationsProcessing(
                             (PartnerAddressAggregateTDSSimilarLocationParametersTable)FResponseDS.Tables[MPartnerConstants.
                                                                                                          EXISTINGLOCATIONPARAMETERS_TABLENAME]);
+#if DATASETDEBUGGING
+                            if (FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count > 0)
+                            {
+                                MessageBox.Show("Reuse?: " + (FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME]
+                                                              as PartnerAddressAggregateTDSSimilarLocationParametersTable)[0].AnswerReuse.ToString());
+                            }
 
-                            // MessageBox.Show('Reuse?: ' + (FResponseDS.Tables[EXISTINGLOCATIONPARAMETERS_TABLENAME]
-                            // as PartnerAddressAggregateTDSSimilarLocationParametersTable).Row[0].AnswerReuse.ToString);
-                            // end;
-                            // end;
-                            // if FResponseDS.Tables.Contains(ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME) then
-                            // begin
-                            // MessageBox.Show(ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + ' Type: ' + FResponseDS.Tables[ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString);
-                            // MessageBox.Show('FResponseDS.Tables[' + ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + '].Rows.Count: ' + FResponseDS.Tables[ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count.ToString);
-                            // Check if there is a Parameter Row that is not yet processed
-                            // AddressAddedOrChangedParametersDV := new DataView(
-                            // FResponseDS.Tables[ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME],
-                            // PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetAnswerProcessedClientSideDBName() +
-                            // ' = false', '', DataViewRowState.CurrentRows);
-                            //
-                            // if AddressAddedOrChangedParametersDV.Count > 0 then
-                            // begin
-                            // MessageBox.Show('AddressAddedOrChangedParametersDV.Count: ' + AddressAddedOrChangedParametersDV.Count.ToString);
-                            // MessageBox.Show('Row[0].LocationKey: ' + (AddressAddedOrChangedParametersDV[0].Row as PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow).LocationKey.ToString);
+                            if (FResponseDS.Tables.Contains(MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME))
+                            {
+                                MessageBox.Show(MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " +
+                                    FResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString());
+                                MessageBox.Show(
+                                    "FResponseDS.Tables[" + MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + "].Rows.Count: " +
+                                    FResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count.ToString());
+                                //Check if there is a Parameter Row that is not yet processed
+                                DataView AddressAddedOrChangedParametersDV = new DataView(
+                                    FResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME],
+                                    PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetAnswerProcessedClientSideDBName() +
+                                    " = false", "", DataViewRowState.CurrentRows);
+
+                                if (AddressAddedOrChangedParametersDV.Count > 0)
+                                {
+                                    MessageBox.Show("AddressAddedOrChangedParametersDV.Count: " + AddressAddedOrChangedParametersDV.Count.ToString());
+                                    MessageBox.Show(
+                                        "Row[0].LocationKey: " +
+                                        (AddressAddedOrChangedParametersDV[0].Row as PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow).
+                                        LocationKey.
+                                        ToString());
+                                }
+                            }
+#endif
                             ucoLowerPart.AddressAddedOrChangedProcessing(
                             (PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable)
                             FResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME],
                             (PartnerAddressAggregateTDSChangePromotionParametersTable)
                             FResponseDS.Tables[MPartnerConstants.ADDRESSCHANGEPROMOTIONPARAMETERS_TABLENAME]);
-
-                            // end;
-                            // recursive call!
-                            FSubmitChangesContinue = true;
+#if DATASETDEBUGGING
+                            MessageBox.Show("After AddressAddedOrChangedProcessing");
+#endif
+                            // Recursive call!
+                            FPetraUtilsObject.SubmitChangesContinue = true;
                             ReturnValue = SaveChanges(ref AInspectDS);
+
                             return ReturnValue;
                     }
                 }
                 else
                 {
                     // Update UI
-                    FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrSavingDataNothingToSave);
+                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
                     this.Cursor = Cursors.Default;
                     EnableSave(false);
 
                     // We don't have unsaved changes anymore
                     FPetraUtilsObject.HasChanges = false;
+
                     ReturnValue = true;
-                    OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                    FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                 }
             }
             else
             {
-                // User needs to fix data validation errors before he can save data
-                // TDataBinding.IterateErrorsInData(AInspectDataSet, ErrorMessages, FirstErrorControlName);
-                // MessageBox.Show('FPetraUtilsObject.VerificationResultCollection.Count: ' +
-                // FPetraUtilsObject.VerificationResultCollection.Count.ToString);
-                FPetraUtilsObject.VerificationResultCollection.BuildScreenVerificationResultList(out ErrorMessages,
-                    out FirstErrorControl,
-                    out FirstErrorContext);
-
-                // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
-                MessageBox.Show(
-                    "Cannot save data because invalid data has not been corrected!" + Environment.NewLine + Environment.NewLine + ErrorMessages,
-                    "Form contains invalid data!",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                // TFocusing.SetFocusOnControlInFormOrUserControl(this, FirstErrorControl.Name);
-                FirstErrorControl.Focus();
-                ReturnValue = false;
-                OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
             }
 
             return ReturnValue;
@@ -1381,8 +1473,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.Height = 600;
             }
 
-            // Determine which tab page will be shown
-            DetermineInitiallySelectedTabPage();
+            mniEditFind.Text = Catalog.GetString("Find Partner...");
+            mniEditFind.Enabled = true;
+            mniEditFind.Click += new EventHandler(EditFindPartner);
 
             /*
              * Load data for new Partner or existing Partner
@@ -1401,12 +1494,16 @@ namespace Ict.Petra.Client.MPartner.Gui
              */
             FPartnerClass = FMainDS.PPartner[0].PartnerClass;
 
+            // Determine which tab page will be shown
+            DetermineInitiallySelectedTabPage();
+
+
             // Determine whether Partner is of PartnerClass ORGANISATION and whether it is a Foundation
             DetermineOrganisationIsFoundation();
 
 
             // Setup Modulerelated Toggle Buttons in ToolBar
-            SetupAvailableModuleDataItems(true, TModuleSwitchEnum.msNone);
+            SetupAvailableModuleDataItems(true, TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone);
 
             /*
              * Setup the bottom part of the screen - that is the TabSet that corresponds
@@ -1431,37 +1528,32 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoLowerPart.HookupDataChange += new THookupDataChangeEventHandler(this.UcoPartnerTabSet_HookupDataChange);
             ucoLowerPart.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
                 this.UcoPartnerTabSet_HookupPartnerEditDataChange);
-            ucoLowerPart.InitChildUserControl();
-
-            if (FNewPartnerWithAutoCreatedAddress)
-            {
-                // hardcoded for the first Address of a new Partner
-                ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
-            }
 
             switch (FCurrentModuleTabGroup)
             {
-                case TModuleSwitchEnum.msPartner:
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
 
-                    /*
-                     * Set up ucoPartnerTabSet
-                     */
-
-                    // TODO 1
-
-                    // TODO FPartnerTabSetInitialised = true;
+                    ViewPartnerData(null, null);
 
                     break;
 
-                case TModuleSwitchEnum.msPersonnel:
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
 
-                    // TODO 2
+                    // Only switch to Personnel Tab Group if Partner is of Partner Class PERSON
+                    if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+                    {
+                        ViewPersonnelData(null, null);
+                    }
+                    else
+                    {
+                        ViewPartnerData(null, null);
+                    }
 
                     break;
 
-                case TModuleSwitchEnum.msFinance:
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance:
 
-                    // TODO 2
+                    ViewFinanceData(null, null);
 
                     break;
             }
@@ -1506,7 +1598,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 mniMaintainLocalPartnerData.Enabled = false;
             }
 
-            FSubmitChangesContinue = false;
+            FPetraUtilsObject.SubmitChangesContinue = false;
             ApplySecurity();
 
             // Need to do this manually  we disabled the automatic hookup in the Base Form because
@@ -1567,7 +1659,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                SetupAvailableModuleDataItems(e.Enable, TModuleSwitchEnum.msNone);
+                SetupAvailableModuleDataItems(e.Enable, TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone);
                 EnableSave(FPetraUtilsObject.HasChanges);
                 FPetraUtilsObject.DetailEditMode = false;
             }
@@ -1600,16 +1692,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="o"></param>
-        /// <param name="args"></param>
-        public void OnDataSaved(Object o, TDataSavedEventArgs args)
-        {
-            // TODO event OnDataSaved
-        }
-
         #endregion
 
 
@@ -1619,7 +1701,23 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileNewPartner(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit PartnerEditForm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(this);
+
+            if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
+            {
+                PartnerEditForm.SetParameters(TScreenMode.smNew,
+                    FPartnerClass, -1, -1, ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.CountryCode);
+            }
+            else
+            {
+                PartnerEditForm.SetParameters(TScreenMode.smNew, FPartnerClass,
+                    -1, -1, String.Empty, String.Empty, false, FPartnerKey,
+                    ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.LocationKey,
+                    ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.SiteKey
+                    );
+            }
+
+            PartnerEditForm.Show();
         }
 
         private void FileNewPartnerWithShepherdPerson(System.Object sender, System.EventArgs e)
@@ -1654,7 +1752,34 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileDeletePartner(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            /* Check for new Partner that wasn't saved yet */
+            if (IsNewPartner(FMainDS))
+            {
+                /* Tell user that he can't delete a new Partner that wasn't saved yet */
+                MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 + MPartnerResourcestrings.StrErrorDeletePartner2,
+                    MPartnerResourcestrings.StrErrorNeedToSavePartnerTitle,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+            else
+            {
+                /* Check for unsaved changes */
+                if (CanClose())
+                {
+                    /* Delete Partner; if OK, close the screen */
+                    if (TPartnerMain.DeletePartner(FPartnerKey))
+                    {
+                        this.Close();
+                    }
+                }
+                else
+                {
+                    /* Tell user that he can't delete a Partner that has changes that weren't saved yet */
+                    MessageBox.Show(StrCannotDeletePartner, StrCannotDeletePartnerTitle,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }
+            }
         }
 
         private void FileSendEmail(System.Object sender, System.EventArgs e)
@@ -1695,6 +1820,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // TPartnerEditTabPageEnum.petpDocuments:     SelectedTab := 4;
                     // TPartnerEditTabPageEnum.petpOfficeSpecific:     SelectedTab := 5;
                     // TPartnerEditTabPageEnum.petpFoundationDetails:     SelectedTab := 6;
+                    // TPartnerEditTabPageEnum.petpPartnerRelationshipsDetails:     SelectedTab := 7;
             }
 
             TPartnerPrintSectionDialog PrintSectionDialog = new TPartnerPrintSectionDialog();
@@ -1706,7 +1832,32 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileExportPartner(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
+
+            if (FileName.Length > 0)
+            {
+                if (FileName.EndsWith("ext"))
+                {
+                    StringCollection ASpecificBuildingInfo = null;
+                    String doc = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader();
+                    Int32 SiteKey = 0;
+                    Int32 LocationKey = 0;
+
+                    doc += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
+                        this.PartnerKey, SiteKey, LocationKey, false, ASpecificBuildingInfo);
+
+                    doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter();
+                    TImportExportDialogs.ExportTofile(doc, FileName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Opens the Partner Find screen (or activates it in case a non-modal instance was already open).
+        /// </summary>
+        private void EditFindPartner(System.Object sender, System.EventArgs e)
+        {
+            TPartnerMain.FindPartner(this);
         }
 
         #endregion
@@ -1715,12 +1866,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainAddresses(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpAddresses);
         }
 
         private void MaintainPartnerDetails(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpDetails);
         }
 
         private void MaintainFoundationDetails(System.Object sender, System.EventArgs e)
@@ -1730,12 +1881,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainSubscriptions(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpSubscriptions);
         }
 
         private void MaintainSpecialTypes(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpPartnerTypes);
         }
 
         private void MaintainContacts(System.Object sender, System.EventArgs e)
@@ -1745,12 +1896,21 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainFamilyMembers(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            if ((FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
+                || (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON)))
+            {
+                ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpFamilyMembers);
+            }
+            else
+            {
+                MessageBox.Show(MCommonResourcestrings.StrErrorOnlyForFamilyOrPerson,
+                    MCommonResourcestrings.StrGenericFunctionalityNotAvailable);
+            }
         }
 
         private void MaintainRelationships(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpPartnerRelationships);
         }
 
         private void MaintainInterests(System.Object sender, System.EventArgs e)
@@ -1765,12 +1925,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainNotes(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpNotes);
         }
 
         private void MaintainLocalPartnerData(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpOfficeSpecific);
         }
 
         /// <summary>
@@ -1783,22 +1943,36 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
+
+            staffDataForm.PartnerKey = FPartnerKey;
+            staffDataForm.Show();
         }
 
         private void MaintainIndividualData(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
+            {
+                ViewPersonnelData(null, null);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private void MaintainDonorHistory(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainDonorHistory",
+                PartnerKey,
+                FPetraUtilsObject.GetForm());
         }
 
         private void MaintainRecipientHistory(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainRecipientHistory",
+                PartnerKey,
+                FPetraUtilsObject.GetForm());
         }
 
         private void MaintainFinanceReports(System.Object sender, System.EventArgs e)
@@ -1837,17 +2011,82 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ViewPartnerData(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            // if tab group is about to be changed make sure that validation is ok
+            if (ucoLowerPart.CurrentModuleTabGroup != TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
+            {
+                if (!ucoLowerPart.ValidateCurrentModuleTabGroupData())
+                {
+                    return;
+                }
+            }
+
+            tbbViewPartnerData.Checked = true;
+            tbbViewPersonnelData.Checked = false;
+            tbbViewFinanceData.Checked = false;
+            mniViewPartnerData.Checked = true;
+            mniViewPersonnelData.Checked = false;
+            mniViewFinanceData.Checked = false;
+
+            ucoLowerPart.ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner);
+
+            if (FNewPartnerWithAutoCreatedAddress)
+            {
+                // hardcoded for the first Address of a new Partner
+                ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
+            }
         }
 
         private void ViewPersonnelData(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            // if tab group is about to be changed make sure that validation is ok
+            if (ucoLowerPart.CurrentModuleTabGroup != TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel)
+            {
+                if (!ucoLowerPart.ValidateCurrentModuleTabGroupData())
+                {
+                    return;
+                }
+            }
+
+            if (UserHasPersonnelAccess())
+            {
+                if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
+                {
+                    tbbViewPersonnelData.Checked = true;
+                    tbbViewPartnerData.Checked = false;
+                    tbbViewFinanceData.Checked = false;
+                    mniViewPersonnelData.Checked = true;
+                    mniViewPartnerData.Checked = false;
+                    mniViewFinanceData.Checked = false;
+
+                    ucoLowerPart.ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel);
+                }
+                else
+                {
+                    // If editing a Partner of Partner Class UNIT, don't enable the Personnel Data TabGroup!
+                }
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("You do not have access rights to the Personnel System of OpenPetra.\r\n\r\n" +
+                        "For that reason the Pesonnel Data Tabs cannot be switched to on the\r\n" +
+                        "Partner Edit screen. Showing the Partner Data Tabs instead."),
+                    Catalog.GetString("Access Denied"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                tbbViewPersonnelData.Enabled = false;
+                mniViewPersonnelData.Enabled = false;
+
+                ViewPartnerData(null, null);
+            }
         }
 
         private void ViewFinanceData(System.Object sender, System.EventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private bool UserHasPersonnelAccess()
+        {
+            return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
         }
 
         #endregion
@@ -1893,9 +2132,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!GetPartnerEditUIConnector(TUIConnectorType.uictNewPartner))
                     {
                         MessageBox.Show(
-                            String.Format(CommonResourcestrings.StrOpeningCancelledByUser,
+                            String.Format(MCommonResourcestrings.StrOpeningCancelledByUser,
                                 StrScreenCaption),
-                            CommonResourcestrings.StrOpeningCancelledByUserTitle,
+                            MCommonResourcestrings.StrOpeningCancelledByUserTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         // to prevent strange error message, that would stop the form from closing
@@ -2037,9 +2276,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         if (!GetPartnerEditUIConnector(TUIConnectorType.uictPartnerKey))
                         {
                             MessageBox.Show(
-                                String.Format(CommonResourcestrings.StrOpeningCancelledByUser,
+                                String.Format(MCommonResourcestrings.StrOpeningCancelledByUser,
                                     StrScreenCaption),
-                                CommonResourcestrings.StrOpeningCancelledByUserTitle,
+                                MCommonResourcestrings.StrOpeningCancelledByUserTitle,
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             // to prevent strange error message, that would stop the form from closing
@@ -2055,9 +2294,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         if (!GetPartnerEditUIConnector(TUIConnectorType.uictLocationKey))
                         {
                             MessageBox.Show(
-                                String.Format(CommonResourcestrings.StrOpeningCancelledByUser,
+                                String.Format(MCommonResourcestrings.StrOpeningCancelledByUser,
                                     StrScreenCaption),
-                                CommonResourcestrings.StrOpeningCancelledByUserTitle,
+                                MCommonResourcestrings.StrOpeningCancelledByUserTitle,
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                             // to prevent strange error message, that would stop the form from closing
@@ -2161,7 +2400,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 catch (ESecurityPartnerAccessDeniedException Exp)
                 {
                     this.Cursor = Cursors.Default;
-                    TMessages.MsgSecurityException(Exp, this.GetType());
+                    TMessages.MsgSecurityException(Exp);
 
                     // for the modal dialog (called from Progress)
                     DialogResult = System.Windows.Forms.DialogResult.Cancel;
@@ -2220,7 +2459,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // TODO 2 oChristianK cPartner Edit / Tabs : Introduce a User Default that can specify which TabPage is the one the User wants to see as default.
                     FShowTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
                 case TPartnerEditTabPageEnum.petpFoundationDetails:
@@ -2231,7 +2470,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
                 case TPartnerEditTabPageEnum.petpFamilyMembers:
@@ -2243,7 +2482,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
                 case TPartnerEditTabPageEnum.petpOfficeSpecific:
@@ -2254,46 +2493,50 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
                 case TPartnerEditTabPageEnum.petpAddresses:
                 case TPartnerEditTabPageEnum.petpDetails:
                 case TPartnerEditTabPageEnum.petpSubscriptions:
                 case TPartnerEditTabPageEnum.petpPartnerTypes:
+                case TPartnerEditTabPageEnum.petpPartnerRelationships:
                 case TPartnerEditTabPageEnum.petpNotes:
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
 #if  SHOWUNFINISHEDTABS
-                case TPartnerEditTabPageEnum.petpRelationships:
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                 case TPartnerEditTabPageEnum.petpInterests:
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 
 #else
-                case TPartnerEditTabPageEnum.petpRelationships:
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                 case TPartnerEditTabPageEnum.petpInterests:
                     FShowTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FInitiallySelectedTabPage = FShowTabPage;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
+
                     break;
 #endif
-                default:
 
-                    // Fallback
-#if TODO
-                    ucoPartnerTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
-                    FCurrentModuleTabGroup = TModuleSwitchEnum.msPartner;
-#endif
+                case TPartnerEditTabPageEnum.petpPersonnelIndividualData:
+                case TPartnerEditTabPageEnum.petpPersonnelApplications:
+                    FInitiallySelectedTabPage = FShowTabPage;
+
+                    break;
+
+                default:
+                    FInitiallySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
+
                     break;
             }
+
+            FCurrentModuleTabGroup = TPartnerEditScreenLogic.DetermineTabGroup(FInitiallySelectedTabPage);
         }
 
         /// <summary>
@@ -2320,17 +2563,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Sets Module-related Toggle Buttons in ToolBar up
         /// </summary>
         /// <returns>void</returns>
-        private void SetupAvailableModuleDataItems(Boolean AEnable, TModuleSwitchEnum ALockOnModule)
+        private void SetupAvailableModuleDataItems(Boolean AEnable, TPartnerEditScreenLogic.TModuleTabGroupEnum ALockOnModule)
         {
-// TODO enable disable buttons
-#if TODO
             Boolean IsEnabled = false;
 
             // TODO 2 oChristianK cSecurity : Take security settings into consideration.
             // Partner Module Data
-            if ((ALockOnModule == TModuleSwitchEnum.msNone) || (ALockOnModule == TModuleSwitchEnum.msPartner))
+            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner))
             {
-                if (ALockOnModule == TModuleSwitchEnum.msPartner)
+                if (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
                 {
                     IsEnabled = false;
                 }
@@ -2339,26 +2581,33 @@ namespace Ict.Petra.Client.MPartner.Gui
                     IsEnabled = AEnable;
                 }
 
-                tbbTogglePartner.Enabled = IsEnabled;
-                mniViewPartnerData.Enabled = IsEnabled;
-
                 if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
+                    tbbViewPartnerData.Enabled = IsEnabled;
+                    mniViewPartnerData.Enabled = IsEnabled;
+
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainWorkerField.Enabled = IsEnabled;
-                    mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMenuItemText;
+                    mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMenuItemText;
 
-                    // Exchange the 'Family Members' icon with the 'Family' icon!
-                    this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
+                    // TODO
+//                    // Exchange the 'Family Members' icon with the 'Family' icon!
+//                    this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
                 }
                 else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
                 {
+                    tbbViewPartnerData.Enabled = false;
+                    mniViewPartnerData.Enabled = false;
+
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
                     mniMaintainWorkerField.Enabled = IsEnabled;
-                    mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                    mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText;
                 }
                 else
                 {
+                    tbbViewPartnerData.Enabled = false;
+                    mniViewPartnerData.Enabled = false;
+
                     // Following functionality is available only for PERSON and FAMILY
                     mniMaintainFamilyMembers.Enabled = false;
                     mniMaintainWorkerField.Enabled = false;
@@ -2375,7 +2624,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 mniMaintainSubscriptions.Enabled = IsEnabled;
                 mniMaintainSpecialTypes.Enabled = IsEnabled;
-                mniMaintainOfficeSpecific.Enabled = IsEnabled;
+                mniMaintainLocalPartnerData.Enabled = IsEnabled;
                 mniMaintainInterests.Enabled = IsEnabled;
                 mniMaintainReminders.Enabled = IsEnabled;
                 mniMaintainRelationships.Enabled = IsEnabled;
@@ -2385,8 +2634,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                tbbTogglePartner.Enabled = (!IsEnabled);
-                mniViewFinanceData.Enabled = (!IsEnabled);
+                tbbViewPartnerData.Enabled = (!IsEnabled);
+                tbbViewPartnerData.Enabled = (!IsEnabled);
                 mniMaintainAddresses.Enabled = (!IsEnabled);
                 mniEditFindNewAddress.Enabled = (!IsEnabled);
                 mniMaintainPartnerDetails.Enabled = (!IsEnabled);
@@ -2398,7 +2647,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 mniMaintainSubscriptions.Enabled = (!IsEnabled);
                 mniMaintainSpecialTypes.Enabled = (!IsEnabled);
-                mniMaintainOfficeSpecific.Enabled = (!IsEnabled);
+                mniMaintainLocalPartnerData.Enabled = (!IsEnabled);
                 mniMaintainInterests.Enabled = (!IsEnabled);
                 mniMaintainReminders.Enabled = (!IsEnabled);
                 mniMaintainFamilyMembers.Enabled = (!IsEnabled);
@@ -2410,45 +2659,54 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // Personnel Module Data
-            if ((ALockOnModule == TModuleSwitchEnum.msNone) || (ALockOnModule == TModuleSwitchEnum.msPersonnel))
+            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel))
             {
                 if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
-                    tbbTogglePersonnel.Enabled = AEnable;
-                    mniViewPersonnelData.Enabled = AEnable;
-                    mniMaintainPersonnelIndividualData.Enabled = AEnable;
-                    mniMaintainPersonnelIndividualData.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
+                    if (UserHasPersonnelAccess())
+                    {
+                        tbbViewPersonnelData.Enabled = AEnable;
+                        mniViewPersonnelData.Enabled = AEnable;
+                        mniMaintainPersonnelData.Enabled = AEnable;
+                    }
+                    else
+                    {
+                        tbbViewPersonnelData.Enabled = false;
+                        mniViewPersonnelData.Enabled = false;
+                        mniMaintainPersonnelData.Enabled = false;
+                    }
+
+                    mniMaintainPersonnelData.Text = MPartnerResourcestrings.StrPersonnelPersonMenuItemText;
                 }
                 else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
                 {
-                    mniMaintainPersonnelIndividualData.Enabled = AEnable;
-                    mniMaintainPersonnelIndividualData.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
+                    mniMaintainPersonnelData.Enabled = AEnable;
+                    tbbViewPersonnelData.Enabled = false;
+                    mniViewPersonnelData.Enabled = false;
+
+                    mniMaintainPersonnelData.Text = MPartnerResourcestrings.StrPersonnelUnitMenuItemText;
                 }
                 else
                 {
-                    tbbTogglePersonnel.Enabled = (!AEnable);
+                    tbbViewPersonnelData.Enabled = (!AEnable);
                     mniViewPersonnelData.Enabled = (!AEnable);
-                    mniMaintainPersonnelIndividualData.Enabled = (!AEnable);
+                    mniMaintainPersonnelData.Enabled = (!AEnable);
                 }
             }
             else
             {
-                tbbTogglePersonnel.Enabled = (!AEnable);
+                tbbViewPersonnelData.Enabled = (!AEnable);
                 mniViewPersonnelData.Enabled = (!AEnable);
-                mniMaintainPersonnelIndividualData.Enabled = (!AEnable);
+                mniMaintainPersonnelData.Enabled = (!AEnable);
             }
 
-#if  ENABLEMODULESWITCHBUTTONS
-#else
-            tbbTogglePersonnel.Enabled = false;
-            mniViewPersonnelData.Enabled = false;
-#endif
-
             // Finance Module Data
-            if ((ALockOnModule == TModuleSwitchEnum.msNone) || (ALockOnModule == TModuleSwitchEnum.msFinance))
+            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance))
             {
-                tbbToggleFinance.Enabled = AEnable;
-                mniViewFinanceData.Enabled = AEnable;
+                //tbbViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
+                //mniViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
                 mniMaintainDonorHistory.Enabled = AEnable;
                 mniMaintainRecipientHistory.Enabled = AEnable;
 
@@ -2459,8 +2717,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                tbbToggleFinance.Enabled = (!AEnable);
-                mniViewFinanceData.Enabled = (!AEnable);
+                //tbbViewFinanceData.Enabled = (!AEnable);    // This Tab Group is not functional yet
+                //mniViewFinanceData.Enabled = (!AEnable);    // This Tab Group is not functional yet
                 mniMaintainDonorHistory.Enabled = (!AEnable);
                 mniMaintainRecipientHistory.Enabled = (!AEnable);
 
@@ -2474,22 +2732,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             mniMaintainFinanceReports.Visible = false;
             mniMaintainBankAccounts.Visible = false;
             mniMaintainGiftReceipting.Visible = false;
-#if  ENABLEMODULESWITCHBUTTONS
-#else
-            tbbToggleFinance.Enabled = false;
-            mniViewFinanceData.Enabled = false;
-#endif
-#if SHOWMODULESWITCHBUTTONS
-            tbbSeparator2.Visible = true;
-            mniViewSeparator1.Visible = true;
-            tbbTogglePartner.Visible = true;
-            mniViewPartnerData.Visible = true;
-            tbbTogglePersonnel.Visible = true;
-            mniViewPersonnelData.Visible = true;
-            tbbToggleFinance.Visible = true;
-            mniViewFinanceData.Visible = true;
-#endif
-#endif
         }
 
         private bool CheckSecurityOKToCreateNewPartner(Boolean AShowMessage)
@@ -2568,10 +2810,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     switch (AUIConnectorType)
                     {
                         case TUIConnectorType.uictPartnerKey:
-                            FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit(FPartnerKey,
-                            ref FMainDS,
-                            TClientSettings.DelayedDataLoading,
-                            FInitiallySelectedTabPage);
+                            FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit(FPartnerKey);
+                            FMainDS = FPartnerEditUIConnector.GetData(TClientSettings.DelayedDataLoading, FInitiallySelectedTabPage);
                             break;
 
                         case TUIConnectorType.uictLocationKey:
@@ -2579,10 +2819,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // MessageBox.Show('Passed in FLocationKeyForSelectingPartnerLocation: ' + FLocationKeyForSelectingPartnerLocation.toString);
                             FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit(FPartnerKey,
                             FSiteKeyForSelectingPartnerLocation,
-                            FLocationKeyForSelectingPartnerLocation,
-                            ref FMainDS,
-                            TClientSettings.DelayedDataLoading,
-                            FInitiallySelectedTabPage);
+                            FLocationKeyForSelectingPartnerLocation);
+                            FMainDS = FPartnerEditUIConnector.GetData(TClientSettings.DelayedDataLoading, FInitiallySelectedTabPage);
                             break;
 
                         case TUIConnectorType.uictNewPartner:
@@ -2595,8 +2833,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 catch (EDBTransactionBusyException)
                 {
                     ServerBusyDialogResult =
-                        MessageBox.Show(String.Format(CommonResourcestrings.StrPetraServerTooBusy, "open the " + StrScreenCaption + " screen"),
-                            CommonResourcestrings.StrPetraServerTooBusyTitle,
+                        MessageBox.Show(String.Format(MCommonResourcestrings.StrPetraServerTooBusy, "open the " + StrScreenCaption + " screen"),
+                            MCommonResourcestrings.StrPetraServerTooBusyTitle,
                             MessageBoxButtons.RetryCancel,
                             MessageBoxIcon.Warning,
                             MessageBoxDefaultButton.Button1);
@@ -2632,7 +2870,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TPartnerNewDialogWinForm NewPartnerDialog;
 
-            NewPartnerDialog = new TPartnerNewDialogWinForm(this.Handle);
+            NewPartnerDialog = new TPartnerNewDialogWinForm(this);
             NewPartnerDialog.SetParameters(FPartnerEditUIConnector,
                 FNewPartnerPartnerClass,
                 FNewPartnerSiteKey,
@@ -2766,7 +3004,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FMainDS.PDataLabelValuePartner.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
                     break;
 
-                case TPartnerEditTabPageEnum.petpRelationships:
+                case TPartnerEditTabPageEnum.petpPartnerRelationships:
+                    FMainDS.PPartnerRelationship.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PPartnerRelationship.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
                     break;
 
                 case TPartnerEditTabPageEnum.petpContacts:
@@ -2852,19 +3092,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void EnableSave(bool Enable)
         {
-// TODO enablesave
-#if TODO
             if ((Enable) && (ucoUpperPart.Enabled))
             {
-                mniFileSave.Enabled = true;
-                tbbSave.Enabled = true;
+                FPetraUtilsObject.SetChangedFlag();
             }
             else
             {
-                mniFileSave.Enabled = false;
-                tbbSave.Enabled = false;
+                FPetraUtilsObject.DisableSaveButton();
             }
-#endif
         }
 
         private void EnableDisableUpperPart(bool AEnable)

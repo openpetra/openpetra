@@ -1,0 +1,87 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PmPersonalData
+    Controls:
+        pnlContent: {ControlsOrientation=vertical}
+            Controls: [grpEmergencyData, grpMedical, grpProofOfLifeQuestions]              
+            Dock: Fill
+       
+        grpEmergencyData:
+            Controls:
+                Row0: [pnlEmergencyDataLeft, pnlEmergencyDataRight]
+            Label: Emergency Data (will not be exported)
+
+        pnlEmergencyDataLeft:
+            Controls:
+                Row0: [txtHeightCm]
+                Row1: [txtWeightKg]
+                Row2: [cmbEyeColour]
+                Row3: [cmbHairColour]
+                Row4: [cmbFacialHair]
+        
+        pnlEmergencyDataRight:
+            Controls:
+                Row0: [lblIdentMarks]
+                Row1: [txtIdentifyingMarks]
+        txtHeightCm:
+            Label: Height (cm)
+            Width: 100
+        txtWeightKg:
+            Width: 100
+            Label: Weight (kg)
+        cmbEyeColour:
+            Label: Eye Colour
+            Width: 160
+            OptionalValues: [=Unknown, Amber, Blue, Brown, Gray, Green, Hazel, Red, Violet]
+        cmbHairColour:
+            Label: Hair Colour
+            Width: 160
+            OptionalValues: [=Unknown, Black, Blond, Brown, Gray, Red]
+        cmbFacialHair:
+            Label: Facial Hair
+            Width: 160
+            OptionalValues: [=Unknown, Moustache, Beard, Goatee, Sideburns]
+        lblIdentMarks:
+            Label:Scars, Marks, Tattoos, Piercings
+        txtIdentifyingMarks:
+            Multiline: true
+            ScrollBars: Vertical
+            NoLabel: True
+            Width: 250
+            Height: 110
+            DataField: PmPersonalData.PhysicalDesc
+            
+        grpMedical: {Label=Blood Type (will be exported), Stretch=horizontally}
+            Controls: [cmbBloodType]
+        
+        cmbBloodType: 
+            OptionalValues: [=Unknown, A Pos, A Neg, A Unknown, B Pos, B Neg, B Unknown, AB Pos, AB Neg, AB Unknown, O Pos, O Neg, O Unknown]
+            
+        grpProofOfLifeQuestions:
+            Controls: [txtQuestion1, txtAnswer1, txtQuestion2, txtAnswer2, txtQuestion3, txtAnswer3]
+            Label: Proof of life questions (will not be exported)
+        txtQuestion1:
+            Width: 400
+            DataField: PmPersonalData.LifeQuestion1
+        txtAnswer1:
+            Width: 400
+            DataField: PmPersonalData.LifeAnswer1
+        txtQuestion2:
+            Width: 400
+            DataField: PmPersonalData.LifeQuestion2
+        txtAnswer2:
+            Width: 400
+            DataField: PmPersonalData.LifeAnswer2
+        txtQuestion3:
+            Width: 400
+            DataField: PmPersonalData.LifeQuestion3
+        txtAnswer3:
+            Width: 400
+            DataField: PmPersonalData.LifeAnswer3
+        

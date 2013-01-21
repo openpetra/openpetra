@@ -25,13 +25,60 @@ using System;
 
 namespace Ict.Petra.Shared.MPersonnel.Person
 {
-    class DataElements
+    /// <summary>
+    /// Individual Data Items.
+    /// </summary>
+    /// <remarks>Displayed in the Partner Edit screen, on the 'Personnel Data' Tab Group, 'Indidivual Data' Tab.</remarks>
+    public enum TIndividualDataItemEnum
     {
-        /*
-         *   Enums holding the possible cacheable tables for the Petra Personnel Module.
-         */
+        /// <summary>
+        /// The Summary page (initially displayed)
+        /// </summary>
+        idiSummary,
 
-        // [Serializable()]
-        // TVariableDataLabelsTypesEnum = (Office, Personal, LongTermApp, ShortTermApp);
+        /// <summary>Personal Data</summary>
+        idiPersonalData,
+
+        /// <summary>Emergency Data</summary>
+        idiEmergencyData,
+
+        /// <summary>Passport Details</summary>
+        idiPassportDetails,
+
+        /// <summary>Personal Documents</summary>
+        idiPersonalDocuments,
+
+        /// <summary>Special Needs</summary>
+        idiSpecialNeeds,
+
+        /// <summary>Local Personnel Data</summary>
+        idiLocalPersonnelData,
+
+        /// <summary>Professional Areas</summary>
+        idiProfessionalAreas,
+
+        /// <summary>Personal Languages</summary>
+        idiPersonalLanguages,
+
+        /// <summary>Abilities</summary>
+        idiPersonalAbilities,
+
+        /// <summary>Previous Experience</summary>
+        idiPreviousExperiences,
+
+        /// <summary>Commitments</summary>
+        idiCommitmentPeriods,
+
+        /// <summary>Job Assignments</summary>
+        idiJobAssignments,
+
+        /// <summary>Progress Reports (Person Evaluations)</summary>
+        idiProgressReports,
+
+        /// <summary>Person Skills</summary>
+        idiPersonSkills,
+
+        /// <summary>Applications</summary>
+        idiApplications
     }
 }

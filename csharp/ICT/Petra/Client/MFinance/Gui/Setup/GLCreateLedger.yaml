@@ -1,18 +1,15 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
     FormTitle: Create Ledger
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     UsingNamespaces: [Ict.Petra.Shared.MCommon.Data]
-    FormType: browse
+    FormType: dialog
     Template: window
-    WindowWidth: 660
-    WindowHeight: 500
-    Actions:
-        actCreate: {Label=&Create Ledger, ActionClick=CreateLedger}
+    WindowWidth: 530
+    WindowHeight: 340
     Controls:
-        pnlContent:
+        pnlDialogContent:
             Controls: [nudLedgerNumber, txtLedgerName, cmbCountryCode, cmbBaseCurrency, cmbIntlCurrency, dtpCalendarStartDate, nudNumberOfPeriods, nudCurrentPeriod, nudNumberOfFwdPostingPeriods]
-            Dock: Fill
         nudLedgerNumber:
         txtLedgerName:
         cmbCountryCode: {List=CountryList}
@@ -22,5 +19,4 @@ RootNode:
         nudNumberOfPeriods:
         nudCurrentPeriod:
         nudNumberOfFwdPostingPeriods:
-    Toolbar:
-        tbbCreate:
+        btnOK: {Label="C&reate Ledger"}

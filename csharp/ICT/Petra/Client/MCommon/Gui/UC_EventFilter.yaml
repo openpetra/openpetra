@@ -1,0 +1,60 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    Namespace: Ict.Petra.Client.MCommon.Gui
+    FormType: edit
+    Template: usercontrolUnbound
+#    WindowWidth: 600
+#    WindowHeight: 600
+#    TemplateParameters:
+#        INITUSERCONTROLS: InitUserControlsManually();
+    Actions:
+        actActivateFilter: {ActionClick=FilterEvents}     
+        actClearFilter: {ActionClick=ClearFilterEvents}     
+        
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Stretch: horizontally
+            Controls: [pnlFilter]
+        pnlFilter:
+            Stretch: horizontally
+            Controls: [grpFilterEventType, grpFilterEventName]
+        grpFilterEventType:
+            Stretch: horizontally
+            Label: Filter by Event Type
+            Controls:
+                Row1: [rbtConference, rbtOutreach, rbtAll]
+                Row2: [chkCurrentFutureOnly]
+        rbtOutreach:
+            Label: Outreaches Only
+            OnChange: EventTypeChanged
+            NoParameter: true
+        rbtConference:
+            Label: Conferences Only
+            OnChange: EventTypeChanged
+            NoParameter: true
+        rbtAll:
+            Label: All
+            OnChange: EventTypeChanged
+            NoParameter: true
+        chkCurrentFutureOnly:
+            Label: Current / Future Events Only
+            OnChange: EventDateChanged
+            NoParameter: true
+        
+        grpFilterEventName:
+            Label: Filter by Event Name
+            Stretch: horizontally
+            Controls:
+                Row1: [txtEventName, btnFilter, btnClearFilter]
+        txtEventName:
+            Label: Event Name
+            Width: 300
+            NoParameter: true
+        btnFilter:
+            Label: Filter
+            Action: actActivateFilter
+        btnClearFilter:
+            Label: Clear Filter
+            Action: actClearFilter
+                    

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,12 +30,17 @@ using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using GNU.Gettext;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Core;
 
-namespace Plugin.BankImportFromCSV
+namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
 {
     /// <summary>
     /// import a bank statement from a CSV file
@@ -43,21 +48,13 @@ namespace Plugin.BankImportFromCSV
     public class TBankStatementImport : IImportBankStatement
     {
         /// <summary>
-        /// should return the text for the filter for AEpTransactionTable to get all the gifts, by transaction type
-        /// </summary>
-        /// <returns></returns>
-        public string GetFilterGifts()
-        {
-            // TODO
-            return "";
-        }
-
-        /// <summary>
         /// asks the user to open a csv file and imports the contents according to the config file
         /// </summary>
         /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
+        /// <param name="ALedgerNumber">the current ledger number</param>
+        /// <param name="ABankAccountCode">the bank account against which the statement should be stored</param>
         /// <returns></returns>
-        public bool ImportBankStatement(out Int32 AStatementKey)
+        public bool ImportBankStatement(out Int32 AStatementKey, Int32 ALedgerNumber, string ABankAccountCode)
         {
             OpenFileDialog DialogOpen = new OpenFileDialog();
 
@@ -73,96 +70,129 @@ namespace Plugin.BankImportFromCSV
 
             string BankStatementFilename = DialogOpen.FileName;
 
-            StreamReader dataFile = new StreamReader(BankStatementFilename, TTextFile.GetFileEncoding(BankStatementFilename), false);
+            TDlgSelectCSVSeparator DlgSeparator = new TDlgSelectCSVSeparator(false);
+            DlgSeparator.CSVFileName = BankStatementFilename;
+            String dateFormatString = TUserDefaults.GetStringDefault("BankimportCSVDateFormat", "MDY");
+            String impOptions = TUserDefaults.GetStringDefault("BankimportCSVNumberFormat", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
-            string FileStructureConfig = TAppSettingsManager.GetValueStatic("BankImportCSV.FileStructure.Config", "");
+            DlgSeparator.DateFormat = dateFormatString;
 
-            if (FileStructureConfig.Length == 0)
+            if (impOptions.Length > 1)
             {
-                // check if there is only one yml file in the directory of the csv file
-                string[] ymlConfigFile = Directory.GetFiles(Path.GetDirectoryName(BankStatementFilename), "*.yml");
+                DlgSeparator.NumberFormat = impOptions.Substring(1);
+            }
 
-                if (ymlConfigFile.Length == 1)
+            DlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+
+            if (DlgSeparator.ShowDialog() != DialogResult.OK)
+            {
+                AStatementKey = -1;
+                return false;
+            }
+
+            TUserDefaults.SetDefault("BankimportCSVDateFormat", DlgSeparator.DateFormat);
+            TUserDefaults.SetDefault("BankimportCSVNumberFormat", DlgSeparator.SelectedSeparator + DlgSeparator.NumberFormat);
+
+            StreamReader dataFile = new StreamReader(BankStatementFilename, TTextFile.GetFileEncoding(BankStatementFilename), false);
+            string StatementData = dataFile.ReadToEnd();
+            dataFile.Close();
+
+            BankImportTDS MainDS = ImportBankStatementNonInteractive(
+                ALedgerNumber,
+                ABankAccountCode,
+                DlgSeparator.SelectedSeparator,
+                DlgSeparator.DateFormat,
+                DlgSeparator.NumberFormat,
+                TUserDefaults.GetStringDefault(
+                    "BankimportCSVColumnsUsage",
+                    "unused,DateEffective,Description,Amount,Currency"),
+                BankStatementFilename,
+                StatementData);
+
+            if (MainDS != null)
+            {
+                TVerificationResultCollection VerificationResult;
+
+                if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
+                        MainDS,
+                        out AStatementKey,
+                        out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
-                    FileStructureConfig = ymlConfigFile[0];
+                    return AStatementKey != -1;
                 }
             }
 
-            if (FileStructureConfig.Length == 0)
-            {
-                TLogging.Log(Catalog.GetString("Missing setting in config file: BankImportCSV.FileStructure.Config"));
-                MessageBox.Show(Catalog.GetString("Missing setting in config file: BankImportCSV.FileStructure.Config"));
-                AStatementKey = -1;
-                return false;
-            }
+            AStatementKey = -1;
+            return false;
+        }
 
-            if (!System.IO.File.Exists(FileStructureConfig))
-            {
-                TLogging.Log("Cannot find file " + FileStructureConfig);
-                AStatementKey = -1;
-                return false;
-            }
+        /// <summary>
+        /// this non interactive function can be used from the unit tests
+        /// </summary>
+        public BankImportTDS ImportBankStatementNonInteractive(Int32 ALedgerNumber,
+            string ABankAccountCode,
+            string ASeparator,
+            string ADateFormat,
+            string ANumberFormat,
+            string AColumnsUsage,
+            string ABankStatementFilename,
+            string AStatementData)
+        {
+            Int32 FirstTransactionRow = 0;
+            string DateFormat = (ADateFormat == "MDY" ? "M/d/yyyy" : "d.M.yyyy");
+            string ThousandsSeparator = (ANumberFormat == TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN ? "," : ".");
+            string DecimalSeparator = (ANumberFormat == TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN ? "." : ",");
 
-            TYml2Xml parser = new TYml2Xml(FileStructureConfig);
+            string[] StatementData = AStatementData.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            XmlDocument dataDescription = parser.ParseYML2XML();
-            XmlNode RootNode = TXMLParser.FindNodeRecursive(dataDescription.DocumentElement, "RootNode");
-
-            XmlNode ColumnsNode = TXMLParser.GetChild(RootNode, "Columns");
-            Int32 FirstTransactionRow = TXMLParser.GetIntAttribute(RootNode, "FirstTransactionRow");
-            string CurrencyCode = TXMLParser.GetAttribute(RootNode, "Currency");
-            string Separator = TXMLParser.GetAttribute(RootNode, "Separator");
-            string DateFormat = TXMLParser.GetAttribute(RootNode, "DateFormat");
-            string ThousandsSeparator = TXMLParser.GetAttribute(RootNode, "ThousandsSeparator");
-            string DecimalSeparator = TXMLParser.GetAttribute(RootNode, "DecimalSeparator");
-
-            // read headers
-            for (Int32 lineCounter = 0; lineCounter < FirstTransactionRow - 1; lineCounter++)
-            {
-                dataFile.ReadLine();
-            }
+            // skip headers
+            Int32 lineCounter = FirstTransactionRow;
 
             // TODO: support splitting a file by month?
             // at the moment this only works for files that are already split by month
             // TODO: check if this statement has already been imported, by the stmt.Filename; delete old statement
-            AEpStatementTable stmtTable = new AEpStatementTable();
-            AEpStatementRow stmt = stmtTable.NewRowTyped();
+            BankImportTDS MainDS = new BankImportTDS();
+            AEpStatementRow stmt = MainDS.AEpStatement.NewRowTyped();
             stmt.StatementKey = -1;
 
             // TODO: depending on the path of BankStatementFilename you could determine between several bank accounts
             // TODO: BankAccountKey should be NOT NULL. for the moment not time to implement
             // stmt.BankAccountKey = Convert.ToInt64(TXMLParser.GetAttribute(RootNode, "BankAccountKey"));
-            stmt.Filename = BankStatementFilename;
+            stmt.Filename = ABankStatementFilename;
 
             if (stmt.Filename.Length > AEpStatementTable.GetFilenameLength())
             {
                 // use the last number of characters of the path and filename
-                stmt.Filename = BankStatementFilename.Substring(BankStatementFilename.Length - AEpStatementTable.GetFilenameLength());
+                stmt.Filename = ABankStatementFilename.Substring(ABankStatementFilename.Length - AEpStatementTable.GetFilenameLength());
             }
 
-            stmt.CurrencyCode = CurrencyCode;
-            stmtTable.Rows.Add(stmt);
+            stmt.LedgerNumber = ALedgerNumber;
+            stmt.CurrencyCode = string.Empty;
+            stmt.BankAccountCode = ABankAccountCode;
+            MainDS.AEpStatement.Rows.Add(stmt);
 
             DateTime latestDate = DateTime.MinValue;
 
-            AEpTransactionTable transactionsTable = new AEpTransactionTable();
-
             Int32 rowCount = 0;
 
-            do
-            {
-                string line = dataFile.ReadLine();
+            // TODO would need to allow the user to change the order&meaning of columns
+            string[] ColumnsUsage = AColumnsUsage.Split(new char[] { ',' });
 
+            while (lineCounter < StatementData.Length)
+            {
+                string line = StatementData[lineCounter];
+
+                lineCounter++;
                 rowCount++;
 
-                AEpTransactionRow row = transactionsTable.NewRowTyped();
+                AEpTransactionRow row = MainDS.AEpTransaction.NewRowTyped();
                 row.StatementKey = stmt.StatementKey;
                 row.Order = rowCount;
+                row.NumberOnPaperStatement = row.Order;
 
-                foreach (XmlNode ColumnNode in ColumnsNode.ChildNodes)
+                foreach (string UseAs in ColumnsUsage)
                 {
-                    string Value = StringHelper.GetNextCSV(ref line, Separator);
-                    string UseAs = TXMLParser.GetAttribute(ColumnNode, "UseAs");
+                    string Value = StringHelper.GetNextCSV(ref line, ASeparator);
 
                     if (UseAs.ToLower() == "dateeffective")
                     {
@@ -180,13 +210,11 @@ namespace Plugin.BankImportFromCSV
                             latestDate = row.DateEffective;
                         }
                     }
-
-                    if (UseAs.ToLower() == "accountname")
+                    else if (UseAs.ToLower() == "accountname")
                     {
                         row.AccountName = Value;
                     }
-
-                    if (UseAs.ToLower() == "description")
+                    else if (UseAs.ToLower() == "description")
                     {
                         // remove everything after DTA; it is not relevant and confused matching
                         if (Value.IndexOf(" DTA ") > 0)
@@ -196,8 +224,7 @@ namespace Plugin.BankImportFromCSV
 
                         row.Description = Value;
                     }
-
-                    if (UseAs.ToLower() == "amount")
+                    else if (UseAs.ToLower() == "amount")
                     {
                         if (Value.Contains(" "))
                         {
@@ -210,24 +237,31 @@ namespace Plugin.BankImportFromCSV
 
                         row.TransactionAmount = Convert.ToDecimal(Value, System.Globalization.CultureInfo.InvariantCulture);
                     }
+                    else if (UseAs.ToLower() == "currency")
+                    {
+                        if (stmt.CurrencyCode == string.Empty)
+                        {
+                            stmt.CurrencyCode = Value.ToUpper();
+                        }
+                        else if (stmt.CurrencyCode != Value.ToUpper())
+                        {
+                            throw new Exception("cannot mix several currencies in the same bank statement file");
+                        }
+                    }
                 }
 
-                transactionsTable.Rows.Add(row);
-            } while (!dataFile.EndOfStream);
+                // all transactions with positive amount can be donations
+                if (row.TransactionAmount > 0)
+                {
+                    row.TransactionTypeCode = MFinanceConstants.BANK_STMT_POTENTIAL_GIFT;
+                }
+
+                MainDS.AEpTransaction.Rows.Add(row);
+            }
 
             stmt.Date = latestDate;
 
-            TVerificationResultCollection VerificationResult;
-
-            if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(ref stmtTable, transactionsTable,
-                    out VerificationResult) == TSubmitChangesResult.scrOK)
-            {
-                AStatementKey = stmtTable[0].StatementKey;
-                return AStatementKey != -1;
-            }
-
-            AStatementKey = -1;
-            return false;
+            return MainDS;
         }
     }
 }

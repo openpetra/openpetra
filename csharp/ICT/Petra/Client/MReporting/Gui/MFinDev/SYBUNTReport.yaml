@@ -33,7 +33,6 @@
             Dock: Fill
             ParameterName: param_partner_source
         grpDateSelection:
-            Dock: Top
             Label: Selection
             Controls: [txtLastYear, txtThisYear, txtMinimumAmount, rbtAllPartners, rbtExtract]
         ucoSorting:

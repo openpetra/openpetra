@@ -1,2 +1,135 @@
 <PetraDataSets>
+    <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MPartner.Mailroom.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MPersonnel.Units.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MHospitality.Data"/>
+    <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
+  
+    <DataSet name="PersonnelTDS">
+        <Table sqltable="p_partner"/>
+        <Table sqltable="pm_staff_data"/> 
+        <Table sqltable="pm_commitment_status"/>
+    </DataSet>  
+
+    <DataSet name="IndividualDataTDS">
+        <Table sqltable="p_person"/>                      <!-- Personal Data -->
+        <Table sqltable="pm_general_application">         <!-- General Application Data -->
+          <Field name="EventOrFieldName" sqltable="p_unit" sqlfield="p_unit_name_c"/>
+          <CustomField name="ApplicationForEventOrField" type="string"/>
+        </Table>
+        <Table sqltable="pm_short_term_application"/>      <!-- Short Term Application Data -->
+        <Table sqltable="pm_year_program_application"/>   <!-- Long Term Application Data -->
+        <Table sqltable="pm_personal_data"/>              <!-- Personal Data -->
+        <Table sqltable="pm_passport_details"/>           <!-- Passport Details -->
+        <Table sqltable="pm_document"/>                   <!-- Personal Documents -->
+        <Table sqltable="pm_special_need"/>               <!-- Special Needs -->
+        <Table sqltable="pm_person_qualification"/>       <!-- Professional Areas (should be merged with Personal Abilities) -->
+        <Table sqltable="pm_person_language"/>            <!-- Personal Languages -->
+        <Table sqltable="pm_person_ability"/>             <!-- Personal Abilities (should be merged with Professional Areas)-->
+        <Table sqltable="pm_past_experience"/>            <!-- Previous Experience -->
+        <Table sqltable="pm_staff_data"/>                 <!-- Commitment Periods -->
+        <Table sqltable="pm_job_assignment"/>             <!-- Job Assignments -->
+        <Table sqltable="pm_person_evaluation"/>          <!-- Progress Reports -->
+        <Table sqltable="pm_person_skill"/>               <!-- Person Skills -->
+        <Table sqltable="p_data_label_value_application"/><!-- Local Application Data -->
+        <Table sqltable="p_data_label_value_partner"/>    <!-- Local Personnel Data -->
+
+        <Table sqltable="p_language"/>   <!-- Not filled on server but used from cached table. Needed for retrieval of Language Name in Language Grid -->
+        <Table sqltable="p_country"/>    <!-- Not filled on server but used from cached table. Needed for retrieval of Country Name in Passport Grid -->
+          
+        <CustomTable name="SummaryData">
+            <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
+            <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
+            <Field sqltable="p_person" sqlfield="p_gender_c"/>
+            <Field sqltable="p_person" sqlfield="p_marital_status_c"/>
+            <Field name="Nationalities" sqltable="p_country" sqlfield="p_country_name_c" comment="Nationality/Nationalities of the PERSON (taken from his-her Passports)"/>
+            <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
+            <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>       
+            <CustomField name="ChurchName" type="string" comment="Name of *a* supporting church of the PERSON"/>
+            <CustomField name="ChurchAddress" type="string" comment="Address of *this* supporting church of the PERSON"/>
+            <CustomField name="ChurchPhone" type="string" comment="Phone of *this* supporting church of the PERSON"/>
+            <CustomField name="ChurchPastor" type="string" comment="Pastor of *this* supporting church of the PERSON"/>
+            <CustomField name="ChurchPastorsPhone" type="string" comment="Phone of *this* pastor of *this* supporting church of the PERSON"/>
+            <CustomField name="NumberOfShownSupportingChurchPastors" type="int" comment="Number of pastors at *this* supporting church of the PERSON"/>
+            <CustomField name="NumberOfShownSupportingChurches" type="int" comment="Number of supporting churches of the PERSON"/>
+            
+            <PrimaryKey thisFields="PartnerKey"/>           
+        </CustomTable>
+
+        <CustomTable name="JobAssignmentStaffDataCombined">
+            <CustomField name="Key" type="Int32"/>
+            <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
+            <Field name="FieldKey" sqltable="pm_job_assignment" sqlfield="pm_unit_key_n"/>
+            <CustomField name="FieldName" type="string"/>
+            <CustomField name="Position" type="string"/>
+            <Field sqltable="pm_job_assignment" sqlfield="pm_from_date_d"/>
+            <Field sqltable="pm_job_assignment" sqlfield="pm_to_date_d"/>
+            
+            <PrimaryKey thisFields="Key"/>           
+        </CustomTable>
+        
+        <CustomTable name="MiscellaneousData">
+            <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
+            <CustomField name="ItemsCountPassportDetails" type="Int32"/>
+            <CustomField name="ItemsCountPersonalDocuments" type="Int32"/>
+            <CustomField name="ItemsCountProfessionalAreas" type="Int32"/>      <!-- not in use yet! -->
+            <CustomField name="ItemsCountPersonalLanguages" type="Int32"/>          
+            <CustomField name="ItemsCountPersonalAbilities" type="Int32"/>
+            <CustomField name="ItemsCountPreviousExperience" type="Int32"/>
+            <CustomField name="ItemsCountCommitmentPeriods" type="Int32"/>
+            <CustomField name="ItemsCountJobAssignments" type="Int32"/>
+            <CustomField name="ItemsCountProgressReports" type="Int32"/>
+            <CustomField name="ItemsCountPersonSkills" type="Int32"/>
+            <CustomField name="ItemsCountApplications" type="Int32"/>
+            <PrimaryKey thisFields="PartnerKey"/>
+        </CustomTable>                    
+        
+        <CustomRelation name="PersonLanguage"
+                childTable="PmPersonLanguage" childFields="LanguageCode"
+                parentTable="PLanguage" parentFields="LanguageCode"
+                createConstraints="false"/>
+        <CustomRelation name="PersonPassportCountry"
+                childTable="PmPassportDetails" childFields="PassportNationalityCode"
+                parentTable="PCountry" parentFields="CountryCode"
+                createConstraints="false"/>
+        <CustomRelation name="ShortTermApp"
+                childTable="PmShortTermApplication" childFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                parentTable="PmGeneralApplication" parentFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                createConstraints="false"/>
+        <CustomRelation name="LongTermApp"
+                childTable="PmYearProgramApplication" childFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                parentTable="PmGeneralApplication" parentFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                createConstraints="false"/>
+        
+   </DataSet>    
+   
+    <DataSet name="ApplicationTDS">
+        <Table sqltable="pm_general_application"/>        <!-- General Application Data -->
+        <Table sqltable="pm_short_term_application"/>     <!-- Short Term Application Data -->
+        <Table sqltable="pm_year_program_application"/>   <!-- Long Term Application Data -->
+        
+        <CustomRelation name="ShortTermApp"
+                childTable="PmShortTermApplication" childFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                parentTable="PmGeneralApplication" parentFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                createConstraints="false"/>
+        <CustomRelation name="LongTermApp"
+                childTable="PmYearProgramApplication" childFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                parentTable="PmGeneralApplication" parentFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                createConstraints="false"/>
+    </DataSet>
+
+    <DataSet name="LengthOfCommitmentReportTDS">
+        <Table sqltable="pm_staff_data">
+          <Field name="EventOrFieldName" sqltable="p_unit" sqlfield="p_unit_name_c"/>
+          <CustomField name="TotalYears" type="Int32"/>
+          <CustomField name="AnniversaryDay" type="DateTime"/>
+          <CustomField name="PartnerName" type="string"/>
+          <CustomField name="FirstName" type="string"/>
+          <CustomField name="Surname" type="string"/>
+          <CustomField name="Gender" type="string"/>
+        </Table>
+    </DataSet>
+
 </PetraDataSets>

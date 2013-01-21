@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,17 +27,17 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using SourceGrid;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 
 namespace Ict.Petra.Client.MPartner
 {
@@ -50,19 +50,23 @@ namespace Ict.Petra.Client.MPartner
     /// </summary>
     public class TUCPartnerTypesLogic
     {
+        #region Resourcestrings
+
+        private static readonly string StrPartnerHasCostCentreLink = Catalog.GetString(
+            "This Partner is linked to a Cost Centre ({0}) in the\r\nFinance Module.  Remove the link before deleting\r\n" +
+            "this Special Type.");
+        private static readonly string StrPartnerHasCostCentreLinkTitle = Catalog.GetString("Cannot remove Partner Type");
+// TODO        private static readonly string StrTheCodeIsNoLongerActive = Catalog.GetString(
+// TODO            "The code '{0}' is no longer active.\r\nDo you still want to use it?");
+        private static readonly string StrSecurityPreventsRemoval = Catalog.GetString(
+            "You are not allowed to remove this Partner Type from the Partner\r\n" +
+            "because of the security warning you have just received.");
+        private static readonly string StrSecurityPreventsRemovalTitle = Catalog.GetString("Partner Type Removal Denied");
+
+        #endregion
+
         private delegate void CheckChangedArgs (int ChangedRow);
         private event CheckChangedArgs ChangedRowEvent;
-
-        private const String StrPartnerHasCostCentreLink1 = "This partner is linked to a Cost Centre (";
-        private const String StrPartnerHasCostCentreLink2 = ") in the" + "\r\n" + "Finance Module.  Remove the link before deleting" + "\r\n" +
-                                                            "this special type.";
-        private const String StrPartnerHasCostCentreLinkTitle = "Cannot remove Partner Type";
-        private const String StrTheCodeIsNoLongerActive1 = "The code";
-        private const String StrTheCodeIsNoLongerActive2 = "is no longer active.";
-        private const String StrTheCodeIsNoLongerActive3 = "Do you still want to use it?";
-        private const String StrSecurityPreventsRemoval = "You are not allowed to remove this Partner Type from the Partner" + "\r\n" +
-                                                          "because of the security warning you have just received.";
-        private const String StrSecurityPreventsRemovalTitle = "Partner Type Removal Denied";
 
         private PartnerEditTDS FMainDS;
         private TFrmPetraEditUtils FPetraUtilsObject;
@@ -72,7 +76,10 @@ namespace Ict.Petra.Client.MPartner
         private DataView FDataCache_PartnerTypeListDV;
         private TSgrdDataGrid FDataGrid;
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
+// TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
+#if TODO
         private TDelegatePartnerTypePropagationSelection FDelegatePartnerTypePropagationSelection;
+#endif
         private CustomValueChangedEvent FGridValueChangedEvent;
 
         #region Properties
@@ -237,7 +244,7 @@ namespace Ict.Petra.Client.MPartner
                     FDataGrid.Selection.SelectRow(TmpRowIndex + 1, true);
 
                     // Scroll grid to line where the new record is now displayed
-                    FDataGrid.ShowCell(new Position(TmpRowIndex + 1, 0), true);
+                    FDataGrid.ShowCell(TmpRowIndex + 1);
                 }
             }
             else
@@ -324,15 +331,9 @@ namespace Ict.Petra.Client.MPartner
 
                         if (!CheckTypeRow.ValidType)
                         {
-                            // TODO 2 oChristianK cMessages : Use a common Message Library instead
-                            CheckTypeRowsAnswer = MessageBox.Show(
-                                StrTheCodeIsNoLongerActive1 + " '" + TypeCode + "' " + StrTheCodeIsNoLongerActive2 + "\r\n" +
-                                StrTheCodeIsNoLongerActive3 + "\r\n" + "\r\n" + "Message Number: X_0035" + "\r\n" + "File Name: " +
-                                this.GetType().FullName,
-                                "Invalid Data Entered",
-                                MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Error,
-                                MessageBoxDefaultButton.Button2);
+                            CheckTypeRowsAnswer = TMessages.MsgQuestion(
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE, TypeCode),
+                                this.GetType(), false);
 
                             if (CheckTypeRowsAnswer == DialogResult.No)
                             {
@@ -384,8 +385,8 @@ namespace Ict.Petra.Client.MPartner
                         {
                             if (FPartnerEditUIConnector.HasPartnerCostCentreLink(out CostCentreLink))
                             {
-                                MessageBox.Show(StrPartnerHasCostCentreLink1 + CostCentreLink + StrPartnerHasCostCentreLink2,
-                                    StrPartnerHasCostCentreLinkTitle);
+                                MessageBox.Show(String.Format(StrPartnerHasCostCentreLink, CostCentreLink,
+                                        StrPartnerHasCostCentreLinkTitle));
 
                                 // reset to checked
                                 AChangingPartnerTypeRow.CancelEdit();
@@ -422,6 +423,8 @@ namespace Ict.Petra.Client.MPartner
                 /*
                  * Check if this change could be applied to Family Members
                  */
+// TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
+#if TODO
                 if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) == TPartnerClass.FAMILY)
                 {
                     if (HasFamilyFamilyMembers())
@@ -439,6 +442,7 @@ namespace Ict.Petra.Client.MPartner
                         }
                     }
                 }
+#endif
             }
             catch (Exception E)
             {
@@ -518,7 +522,7 @@ namespace Ict.Petra.Client.MPartner
                     // If this Type is inactive, show it.
                     if (!Convert.ToBoolean(FDataCache_PartnerTypeListDV[TypeDescriptionInCachePosition][PTypeTable.GetValidTypeDBName()]))
                     {
-                        TypeDescription = TypeDescription + CommonResourcestrings.StrGenericInactiveCode;
+                        TypeDescription = TypeDescription + MCommonResourcestrings.StrGenericInactiveCode;
                     }
                 }
                 else
@@ -546,7 +550,7 @@ namespace Ict.Petra.Client.MPartner
                     // If this Type is inactive, show it.
                     if (!Convert.ToBoolean(PartnerTypesRow[PTypeTable.GetValidTypeDBName()]))
                     {
-                        TypeDescription = TypeDescription + CommonResourcestrings.StrGenericInactiveCode;
+                        TypeDescription = TypeDescription + MCommonResourcestrings.StrGenericInactiveCode;
                     }
 
                     #endregion
@@ -587,6 +591,8 @@ namespace Ict.Petra.Client.MPartner
             return ReturnValue;
         }
 
+// TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
+#if TODO
         /// <summary>
         /// todoComment
         /// </summary>
@@ -595,6 +601,9 @@ namespace Ict.Petra.Client.MPartner
         {
             FDelegatePartnerTypePropagationSelection = ADelegate;
         }
+#endif
+
+
 
         /// <summary>
         /// todoComment

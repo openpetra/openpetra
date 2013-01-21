@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -53,8 +53,8 @@ namespace Tests.MFinance.GLBatches
             // nant startPetraServer
             // this may take some time ....
             new TLogging("TestClient.log");
-            TPetraConnector.Connect("../../../../../etc/TestClient.config");
-            FLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValueStatic("LedgerNumber"));
+            TPetraConnector.Connect("../../etc/TestClient.config");
+            FLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValue("LedgerNumber"));
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Tests.MFinance.GLBatches
         [Test]
         public void TestCreateBatchAndSave()
         {
-            TFrmGLBatch frmBatch = new TFrmGLBatch(IntPtr.Zero);
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
 
             frmBatch.LedgerNumber = FLedgerNumber;
             frmBatch.Show();
@@ -95,7 +95,7 @@ namespace Tests.MFinance.GLBatches
         [Test]
         public void TestCancelBatchBug121()
         {
-            TFrmGLBatch frmBatch = new TFrmGLBatch(IntPtr.Zero);
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
 
             frmBatch.LedgerNumber = FLedgerNumber;
             frmBatch.Show();
@@ -145,7 +145,7 @@ namespace Tests.MFinance.GLBatches
         [Test]
         public void TestCreateBatchAndPost()
         {
-            TFrmGLBatch frmBatch = new TFrmGLBatch(IntPtr.Zero);
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
 
             frmBatch.LedgerNumber = FLedgerNumber;
             frmBatch.Show();
@@ -175,9 +175,9 @@ namespace Tests.MFinance.GLBatches
             TextBoxTester txtDetailReference = new TextBoxTester("txtDetailReference");
             txtDetailReference.Properties.Text = "test";
 
-            TextBoxTester txtDebitAmount = new TextBoxTester("txtDebitAmount");
+            TTxtCurrencyTextBoxTester txtDebitAmount = new TTxtCurrencyTextBoxTester("txtDebitAmount");
             decimal Amount = 1111.44M;
-            txtDebitAmount.Properties.Text = Amount.ToString();
+            txtDebitAmount.Properties.NumberValueDecimal = Amount;
 
             TCmbAutoPopulatedTester cmbDetailAccountCode = new TCmbAutoPopulatedTester("cmbDetailAccountCode");
             cmbDetailAccountCode.Properties.SetSelectedString("6000");
@@ -188,8 +188,8 @@ namespace Tests.MFinance.GLBatches
             btnNewTransaction.Click();
             txtDetailNarrative.Properties.Text = "test";
             txtDetailReference.Properties.Text = "test";
-            TextBoxTester txtCreditAmount = new TextBoxTester("txtCreditAmount");
-            txtCreditAmount.Properties.Text = Amount.ToString();
+            TTxtCurrencyTextBoxTester txtCreditAmount = new TTxtCurrencyTextBoxTester("txtCreditAmount");
+            txtCreditAmount.Properties.NumberValueDecimal = Amount;
 
             cmbDetailAccountCode.Properties.SetSelectedString("0200");
             cmbDetailCostCentreCode.Properties.SetSelectedString(FLedgerNumber.ToString("00") + "00");
@@ -220,6 +220,12 @@ namespace Tests.MFinance.GLBatches
 
             ToolStripButtonTester btnPost = new ToolStripButtonTester("tbbPostBatch");
             btnPost.Click();
+
+            // and now try to create a new batch, bug https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=1058
+            // go to Batch tab
+            tabGLBatch.SelectTab(0);
+            btnNewBatch.Click();
+            btnSave.Click();
         }
 
         /// <summary>
@@ -232,12 +238,12 @@ namespace Tests.MFinance.GLBatches
             // export the 2 test batches, with summarize option
             // compare the exported text file
 
-            string TestFile = TAppSettingsManager.GetValueStatic("Testing.Path") + "/MFinance/GLForm/TestData/BatchImportFloatTest.csv";
+            string TestFile = TAppSettingsManager.GetValue("Testing.Path") + "/MFinance/GLForm/TestData/BatchImportFloatTest.csv";
 
             TestFile = Path.GetFullPath(TestFile);
             Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
 
-            TFrmGLBatch frmBatch = new TFrmGLBatch(IntPtr.Zero);
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
 
             frmBatch.LedgerNumber = FLedgerNumber;
             frmBatch.Show();
@@ -276,7 +282,7 @@ namespace Tests.MFinance.GLBatches
             // get the batch number from the journal tab
             int ImportedBatchNumber = Convert.ToInt32(txtBatchNumber.Properties.Text);
 
-            TFrmGLBatchExport frmBatchExport = new TFrmGLBatchExport(IntPtr.Zero);
+            TFrmGLBatchExport frmBatchExport = new TFrmGLBatchExport(null);
 
             frmBatch.Close();
 
@@ -304,7 +310,7 @@ namespace Tests.MFinance.GLBatches
             txtBatchNumberEnd.Properties.NumberValueInt = ImportedBatchNumber;
 
             // Test simple export of batches, no summary
-            TestFile = TAppSettingsManager.GetValueStatic("Testing.Path") + "/MFinance/GLForm/TestData/BatchExportFloatTest.csv";
+            TestFile = TAppSettingsManager.GetValue("Testing.Path") + "/MFinance/GLForm/TestData/BatchExportFloatTest.csv";
             TestFile = Path.GetFullPath(TestFile);
             Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
             txtFilename.Properties.Text = TestFile + ".new";
@@ -323,7 +329,7 @@ namespace Tests.MFinance.GLBatches
             System.IO.File.Delete(TestFile + ".new");
 
             // Test export of batches, summarizing the transactions
-            TestFile = TAppSettingsManager.GetValueStatic("Testing.Path") + "/MFinance/GLForm/TestData/BatchExportFloatTestSummary.csv";
+            TestFile = TAppSettingsManager.GetValue("Testing.Path") + "/MFinance/GLForm/TestData/BatchExportFloatTestSummary.csv";
             TestFile = Path.GetFullPath(TestFile);
             Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
             txtFilename.Properties.Text = TestFile + ".new";
@@ -346,6 +352,117 @@ namespace Tests.MFinance.GLBatches
         }
 
         /// <summary>
+        /// simple test to view the transactions of a posted batch and then add a new batch
+        /// </summary>
+        [Test]
+        public void TestViewPostedBatchTransactionsAndAddBatch()
+        {
+            //This test adds a new batch, saves and posts it, then views it and then tries to add a new batch
+
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
+
+            frmBatch.LedgerNumber = FLedgerNumber;
+            frmBatch.Show();
+
+            // create a new batch and save
+            ButtonTester btnNewBatch = new ButtonTester("ucoBatches.btnNew");
+            btnNewBatch.Click();
+            TextBoxTester txtDetailBatchDescription = new TextBoxTester("txtDetailBatchDescription");
+            txtDetailBatchDescription.Properties.Text = "Created by test TestExportGLBatch";
+
+            TabControlTester tabGLBatch = new TabControlTester("tabGLBatch");
+
+            // go to Journal tab
+            tabGLBatch.SelectTab(1);
+
+            ButtonTester btnNewJournal = new ButtonTester("ucoJournals.btnAdd");
+            btnNewJournal.Click();
+
+            // go to transaction tab
+            tabGLBatch.SelectTab(2);
+
+            ButtonTester btnNewTransaction = new ButtonTester("ucoTransactions.btnNew");
+            btnNewTransaction.Click();
+
+            TextBoxTester txtDetailNarrative = new TextBoxTester("txtDetailNarrative");
+            txtDetailNarrative.Properties.Text = "test";
+            TextBoxTester txtDetailReference = new TextBoxTester("txtDetailReference");
+            txtDetailReference.Properties.Text = "test";
+
+            TTxtCurrencyTextBoxTester txtDebitAmount = new TTxtCurrencyTextBoxTester("txtDebitAmount");
+            decimal Amount = 1111.44M;
+            txtDebitAmount.Properties.NumberValueDecimal = Amount;
+
+            TCmbAutoPopulatedTester cmbDetailAccountCode = new TCmbAutoPopulatedTester("cmbDetailAccountCode");
+            cmbDetailAccountCode.Properties.SetSelectedString("6000");
+
+            TCmbAutoPopulatedTester cmbDetailCostCentreCode = new TCmbAutoPopulatedTester("cmbDetailCostCentreCode");
+            cmbDetailCostCentreCode.Properties.SetSelectedString(FLedgerNumber.ToString("00") + "00");
+
+            btnNewTransaction.Click();
+            txtDetailNarrative.Properties.Text = "test";
+            txtDetailReference.Properties.Text = "test";
+            TTxtCurrencyTextBoxTester txtCreditAmount = new TTxtCurrencyTextBoxTester("txtCreditAmount");
+            txtCreditAmount.Properties.NumberValueDecimal = Amount;
+
+            cmbDetailAccountCode.Properties.SetSelectedString("0200");
+            cmbDetailCostCentreCode.Properties.SetSelectedString(FLedgerNumber.ToString("00") + "00");
+
+            //ToolStripButtonTester btnSave = new ToolStripButtonTester("tbbSave");
+            //btnSave.Click();
+
+            // post this batch
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                Assert.IsTrue(tester.Text.StartsWith(
+                        "Are you sure you want to post batch"),
+                    "Should start with 'are you sure you want to post batch', but is '" +
+                    tester.Text + "'");
+
+                // there is a second message box after posting, telling the user about success.
+                // because the ModalFormHandler is reset after handling the first message box, we need to set up a new handler.
+                ModalFormHandler = delegate(string name2, IntPtr hWnd2, Form form2)
+                {
+                    MessageBoxTester tester2 = new MessageBoxTester(hWnd2);
+                    Assert.AreEqual("Success", tester2.Title);
+                    tester2.SendCommand(MessageBoxTester.Command.Yes);
+                };
+
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+
+            // and now try to create a new batch, bug https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=1058
+            // go to Batch tab
+            tabGLBatch.SelectTab(0);
+
+            ButtonTester btnPostBatch = new ButtonTester("ucoBatches.btnPostBatch");
+            btnPostBatch.Click();
+
+            //Make sure the grid is clear
+            RadioButtonTester rbtPosting = new RadioButtonTester("rbtPosting");
+            rbtPosting.Properties.Checked = true;
+
+            //This will then select the first batch in the grid which needs to be posted
+            RadioButtonTester rbtAll = new RadioButtonTester("rbtAll");
+            rbtAll.Properties.Checked = true;
+
+            //TabControlTester tabGLBatch = new TabControlTester("tabGLBatch");
+
+            // go to Journal tab
+            tabGLBatch.SelectTab(1);
+
+            // go to Transaction Tab
+            tabGLBatch.SelectTab(2);
+
+            // go to Batch Tab
+            tabGLBatch.SelectTab(0);
+
+            //ButtonTester btnNewBatch = new ButtonTester("ucoBatches.btnNew");
+            btnNewBatch.Click();
+        }
+
+        /// <summary>
         /// simple test to create a batch and save it
         /// </summary>
         [Test]
@@ -354,7 +471,7 @@ namespace Tests.MFinance.GLBatches
             // At the moment the initial state is unknown so we make a relative test
 
 
-            TFrmSetupAnalysisTypes frmAnalysistypes = new TFrmSetupAnalysisTypes(IntPtr.Zero);
+            TFrmSetupAnalysisTypes frmAnalysistypes = new TFrmSetupAnalysisTypes(null);
 
             frmAnalysistypes.LedgerNumber = FLedgerNumber;
             frmAnalysistypes.Show();

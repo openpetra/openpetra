@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,7 +90,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             cmbChargedFields.SelectedIndex = 0;
 
             ucoConferenceSelection.DisableRadioButtonAllConferences(true);
-            ucoConferenceSelection.FShowSelectCampaignOptionsDialog = false;
+            ucoConferenceSelection.FShowSelectOutreachOptionsDialog = false;
         }
 
         /// <summary>
@@ -127,9 +127,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 // Don't add them again when the conference key changed
                 grdFields.AddCheckBoxColumn("", FUnitTableList.Columns["Selection"]);
 
-                if (FUnitType == TUnitTypeEnum.utCampaignOptions)
+                if (FUnitType == TUnitTypeEnum.utOutreachOptions)
                 {
-                    grdFields.AddTextColumn(Catalog.GetString("Campaign Code"), FUnitTableList.Columns["Campaign Code"]);
+                    grdFields.AddTextColumn(Catalog.GetString("Outreach Code"), FUnitTableList.Columns["Outreach Code"]);
                 }
                 else
                 {
@@ -230,8 +230,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         }
 
         /// <summary>
-        /// Show all units when "All Conferences" is choosen.
-        /// Show only relevant units when "Selected Conference" is choosen.
+        /// Show all units when "All Conferences" is chosen.
+        /// Show only relevant units when "Selected Conference" is chosen.
         /// The third column in grdFields indicates if the unit is used in the current conference.
         /// </summary>
         /// <param name="ASelectedFields">csv list with the selected field keys</param>
@@ -298,8 +298,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
         private void ConferenceSelectionChanged(System.Object sender, EventArgs e)
         {
-            RadioButton RbtAllConferences = (RadioButton)sender;
-
             grdFields_InitialiseData(FUnitType);
         }
 
@@ -317,9 +315,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                     && (ucoConferenceSelection.AllConferenceSelected
                         || (!ucoConferenceSelection.AllConferenceSelected && (bool)Row["Used_in_Conference"])))
                 {
-                    if (FUnitType == TUnitTypeEnum.utCampaignOptions)
+                    if (FUnitType == TUnitTypeEnum.utOutreachOptions)
                     {
-                        ReturnValue = ReturnValue + Row["Campaign Code"].ToString() + ',';
+                        ReturnValue = ReturnValue + Row["Outreach Code"].ToString() + ',';
                     }
                     else
                     {

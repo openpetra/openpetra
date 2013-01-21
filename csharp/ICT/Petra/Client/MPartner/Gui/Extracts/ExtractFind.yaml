@@ -1,0 +1,68 @@
+RootNode:
+    BaseClass: System.Windows.Forms.Form
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    FormTitle: Find Extract
+    FormType: dialog
+    Template: window
+    Icon: petraico-big.ico
+    Actions:
+        actAccept: {ActionClick=AcceptExtract}
+        actClose: {ActionClick=CloseScreen}
+        actSearch: {ActionClick=RefreshExtractList}
+        actClear: {ActionClick=ClearSearchCriteria}
+    Controls:
+        stbMain:
+        pnlContent:
+            Controls: [pnlFilter, pnlExtractMasterList, pnlButtons]
+            Dock: Fill
+        pnlFilter:
+            Controls: [pnlFilterCriteria, pnlFilterButtons]
+            Dock: Top
+        pnlFilterCriteria:
+            NoLabel: true
+            Controls: 
+                Row0: [txtExtractName]
+                Row1: [txtExtractDesc]
+                Row2: [cmbUserCreated]
+                Row3: [dtpCreatedFrom, dtpCreatedTo]
+                Row4: [cmbUserModified]
+                Row5: [dtpModifiedFrom, dtpModifiedTo]
+        pnlFilterButtons: {ControlsOrientation=horizontal}
+            NoLabel: true
+            Controls: [btnSearch, btnClear]
+        pnlExtractMasterList:
+            Dock: Fill
+            Controls: [clbDetails]
+        pnlButtons: {ControlsOrientation=horizontal}
+            NoLabel: true
+            Dock: Bottom
+            Controls: [btnAccept, btnClose]
+
+        txtExtractName: {Label=Extract Name, ColSpan=2, Width=200}
+        txtExtractDesc: {Label=Description, ColSpan=2, Width=350}
+        cmbUserCreated: {Label=Created by, List=UserList, ColSpan=2}
+        dtpCreatedFrom: {Label=Created between}
+        dtpCreatedTo: {Label=and}
+        cmbUserModified: {Label=Modified/Verified by, List=UserList, ColSpan=2}
+        dtpModifiedFrom: {Label=Modified between}
+        dtpModifiedTo: {Label=and}
+
+        btnSearch:
+            Label: Search
+            Action: actSearch
+        btnClear:
+            Label: Clear
+            Action: actClear
+
+        clbDetails:
+            Dock: Fill
+            Columns: []
+
+        btnAccept:
+            Label: Accept
+            Dock: Left
+            Action: actAccept
+        btnClose:
+            Label: Close
+            Dock: Right
+            Action: actClose

@@ -1,8 +1,15 @@
 -- passwords are inserted by OpenPetra.build
 INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('DEMO', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', true);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('MEDICAL', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', true);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('HEADSET', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', true);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('BOUNDARIES', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', true);
 INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('ANONYMOUS', '{#PASSWORDHASHANONYMOUS}', '{#PASSWORDSALTANONYMOUS}', false);
 
 INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('LEDGER0043', 'LEDGER0043');
+INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('HEADSET', 'Headset Management');
+INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('MEDICAL', 'Medical can write and read medical info');
+INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('BOUNDARIES', 'Boundaries Team can write rebukes');
+INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('SEMINARS', 'access for seminar registrations');
 
 -- setup the sample user DEMO
 INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('DEMO', 'PTNRUSER', true);
@@ -24,6 +31,14 @@ INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('D
 INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_bank');
 INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_venue');
 INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_organisation');
+
+-- setup the user HEADSET for the headsets management
+INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('HEADSET', 'HEADSET', true);
+INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('MEDICAL', 'MEDICAL', true);
+INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('BOUNDARIES', 'BOUNDARIES', true);
+insert into p_data_label(p_key_i, p_text_c, p_data_type_c, p_char_length_i, p_restricted_l) values(1, 'Rebukes', 'char', 8000, false);
+insert into p_data_label(p_key_i, p_text_c, p_data_type_c, p_char_length_i, p_restricted_l) values(2, 'MedicalNotes', 'char', 8000, false);
+
 
 -- setup the user ANONYMOUS for the webforms
 INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'PTNRUSER', true);
@@ -61,6 +76,10 @@ INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p
 INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(1000000,'The Organisation','R'); 
 INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,1000000);
 
+INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,43000000);
+
+COPY um_job FROM '{#ABSOLUTEBASEDATAPATH}/um_job.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+
 -- setup special funds
 INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(4000000, 'International Clearing House', 'UNIT', 'ACTIVE'); 
 INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(4000000, 'LEDGER'); 
@@ -96,12 +115,45 @@ COPY a_account_property_code FROM '{#ABSOLUTEBASEDATAPATH}/a_account_property_co
 COPY a_account_property FROM '{#ABSOLUTEBASEDATAPATH}/a_account_property.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_account_hierarchy FROM '{#ABSOLUTEBASEDATAPATH}/a_account_hierarchy.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_account_hierarchy_detail FROM '{#ABSOLUTEBASEDATAPATH}/a_account_hierarchy_detail.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
-COPY a_accounting_period FROM '{#ABSOLUTEBASEDATAPATH}/a_accounting_period.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY a_accounting_period FROM '{#ABSOLUTEBASEDATAPATH}/a_accounting_period.csv.local' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_accounting_system_parameter FROM '{#ABSOLUTEBASEDATAPATH}/a_accounting_system_parameter.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_system_interface FROM '{#ABSOLUTEBASEDATAPATH}/a_system_interface.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_transaction_type FROM '{#ABSOLUTEBASEDATAPATH}/a_transaction_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_valid_ledger_number FROM '{#ABSOLUTEBASEDATAPATH}/a_valid_ledger_number.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_motivation_group FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_group.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_motivation_detail FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_detail.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY a_fees_payable FROM '{#ABSOLUTEBASEDATAPATH}/a_fees_payable.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY a_fees_receivable FROM '{#ABSOLUTEBASEDATAPATH}/a_fees_receivable.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY a_motivation_detail_fee FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_detail_fee.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 
 COPY p_publication FROM '{#ABSOLUTEBASEDATAPATH}/p_publication.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+
+-- sample partner for online registration demo
+INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(1110198, 'DemoConference', 'UNIT', 'ACTIVE');
+INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(1110198,'DemoConference','CONF'); 
+INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(1110198, 0, 0);
+INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(43000000,1110198);
+INSERT INTO pc_conference(pc_conference_key_n, pc_outreach_prefix_c, pc_start_d, pc_end_d, a_currency_code_c) values( 1110198, 'DEMO77', '2013-01-01', '2013-01-14', 'EUR');
+
+-- prepare for the headset management at conferences
+INSERT INTO p_contact_attribute(p_contact_attribute_code_c, p_contact_attribute_descr_c) VALUES('SESSION', 'a name for a session where people can use headsets');
+INSERT INTO p_method_of_contact(p_method_of_contact_code_c, p_description_c) VALUES('HEADSET_OUT', 'handing out the headset');
+INSERT INTO p_method_of_contact(p_method_of_contact_code_c, p_description_c) VALUES('HEADSET_RETURN', 'participant has returned the headset');
+
+-- import sample partners (donor and supplier)
+COPY p_partner FROM '{#ABSOLUTEBASEDATAPATH}/p_partner.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_family FROM '{#ABSOLUTEBASEDATAPATH}/p_family.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_organisation FROM '{#ABSOLUTEBASEDATAPATH}/p_organisation.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_bank FROM '{#ABSOLUTEBASEDATAPATH}/p_bank.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY a_ap_supplier FROM '{#ABSOLUTEBASEDATAPATH}/a_ap_supplier.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_location FROM '{#ABSOLUTEBASEDATAPATH}/p_location.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_partner_location FROM '{#ABSOLUTEBASEDATAPATH}/p_partner_location.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+UPDATE p_partner_ledger SET p_last_partner_id_i = 5004 WHERE p_partner_key_n = 43000000; 
+
+-- add a bank account to the sample donor. same account number as in demodata\bankstatements\SampleMT940.sta
+INSERT INTO p_banking_details(p_banking_details_key_i, p_banking_type_i, p_account_name_c, p_bank_key_n, p_bank_account_number_c) VALUES (1, 0, 'test bank account', 43005004, '310012345678');
+INSERT INTO p_partner_banking_details(p_partner_key_n, p_banking_details_key_i) VALUES(43005001, 1);
+-- increase sequence
+SELECT nextval('seq_bank_details');
+SELECT nextval('seq_bank_details');
+SELECT nextval('seq_location_number');

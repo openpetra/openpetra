@@ -1,0 +1,3 @@
+    <EmbeddedResource Include="${filename}">
+      <DependentUpon>${relative-DependentUpon}</DependentUpon>
+    </EmbeddedResource>

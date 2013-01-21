@@ -1,0 +1,45 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Publication Costs
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PPublicationCost
+    CacheableTable: PublicationCostList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 710
+    WindowHeight: 550
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailPublicationCode, DetailDateEffective, DetailPublicationCost, DetailPostageCost, DetailCurrencyCode]
+            CustomColumns:
+                DetailDateEffective: {Label=Effective Date, Type=DateTime}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [cmbDetailPublicationCode]
+                Row1: [dtpDetailDateEffective, txtDetailPublicationCost, txtDetailPostageCost]
+                Row2: [cmbDetailCurrencyCode]
+        cmbDetailPublicationCode: {List=PublicationInfoList, ColSpan=3}
+        dtpDetailDateEffective: {Label=Effective Date}
+        txtDetailPublicationCost: {Width=60, Format=Decimal}
+        txtDetailPostageCost: {Width=60, Format=Decimal}
+        cmbDetailCurrencyCode: {List=CurrencyCodeList, ColSpan=3}
+
+    Toolbar:
+        tbbNew: 
+            Label: New Publication Cost

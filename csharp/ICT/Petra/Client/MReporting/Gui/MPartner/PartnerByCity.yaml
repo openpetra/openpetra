@@ -4,6 +4,8 @@
     FormTitle: Partner by City
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByCity.CalculateExtract
+        ISOLATIONLEVEL: serializable
         XMLFILES: [Partner\\\\partnerbycity.xml]
         REPORTNAME: Partner by City
         CURRENTREPORT: Partner by City
@@ -19,8 +21,8 @@
         tpgReportSorting:
             Label: Sorting
             Controls: [ucoReportSorting]
-        tpgReportSpecific:
-            Label: Report parameters
+        tpgGeneralSettings:
+            Label: General Settings
             Controls: [txtCityName]
             Order: AlwaysFirst
         txtCityName: {Label=Name of City, ParameterName=param_city}
@@ -31,8 +33,11 @@
         Para1:
             Name: City
             Parameter: 4.0
+        Para2a:
+            Name: Partner Name
+            Parameter: 3.0
         Para2:
-            Name: Partner Shortname
+            Name: Short Name
             Parameter: 3.0
         Para3:
             Name: Partner Key

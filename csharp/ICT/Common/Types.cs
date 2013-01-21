@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,6 +90,15 @@ namespace Ict.Common
         /// Windows NT and later
         /// </summary>
         eosWinNTOrLater,
+
+        /// WinXP
+        eosWinXP,
+
+        /// WinVista
+        eosWinVista,
+
+        /// Win7
+        eosWin7,
 
         /// <summary>
         /// unknown and unsupported
@@ -248,18 +257,6 @@ namespace Ict.Common
     }
 
     /// <summary>
-    /// Surrogate Base Interface
-    /// All Interfaces can safely derive from this Interface. The reason why we have this is:
-    /// that all Types that implement any Interfaces that themselves derives from IInterface
-    /// can be cast to IInterface (and passed as Function Argument: eg. IInterface AnObject).
-    /// This is important for .NET Remoting scenarios.
-    ///
-    /// </summary>
-    public interface IInterface
-    {
-    }
-
-    /// <summary>
     /// some functions that are useful for operating with the enums defined in Ict.Common
     /// </summary>
     public class CommonTypes
@@ -333,6 +330,15 @@ namespace Ict.Common
 
                     break;
 
+                case TExecutingOSEnum.eosWinXP:
+                    return "Windows XP / Server 2003";
+
+                case TExecutingOSEnum.eosWinVista:
+                    return "Windows Vista";
+
+                case TExecutingOSEnum.eosWin7:
+                    return "Windows 7 / Server 2008";
+
                 case TExecutingOSEnum.eosWinNTOrLater:
 
                     if (ALongDescription)
@@ -341,7 +347,7 @@ namespace Ict.Common
                     }
                     else
                     {
-                        ReturnValue = "WindowsNT/XP";
+                        ReturnValue = "WindowsNT/XP/Win7/2008";
                     }
 
                     break;
@@ -829,6 +835,14 @@ namespace Ict.Common
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// simple attribute for marking methods that should not be remoted.
+    /// the code generator for generateGlue will take note of this attribute.
+    /// </summary>
+    public class NoRemotingAttribute : System.Attribute
+    {
     }
 
     /// <summary>

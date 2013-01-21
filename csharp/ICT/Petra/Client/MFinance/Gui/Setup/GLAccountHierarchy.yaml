@@ -4,11 +4,11 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
     DetailTable: AAccount
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.GL.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.GL.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: windowTDS
-    WindowWidth: 660
-    WindowHeight: 700
+    WindowWidth: 680
+    WindowHeight: 650
     Actions:
         actAddNewAccount: {Label=Add Account, ActionClick=AddNewAccount}
         actDeleteUnusedAccount: {Label=Delete Account, Help=This only works for accounts that have not been used yet; otherwise deactivate the account, ActionClick=DeleteUnusedAccount}
@@ -21,11 +21,14 @@ RootNode:
         sptAccountSplitter:
             Panel1: trvAccounts
             Panel2: pnlDetails
-            SplitterDistance: 50
+            SplitterDistance: 45
             SplitterOrientation: vertical
             Dock: Fill
         trvAccounts: {Dock=Fill}
         pnlDetails: {Dock=Fill}
+            Controls: [pnlDetailTop, ucoAccountAnalysisAttributes, pnlStatus]
+        pnlDetailTop:
+            Dock: Top
             Controls: 
                 Row0: [txtDetailAccountCode]
                 Row1: [cmbDetailAccountType]
@@ -37,7 +40,6 @@ RootNode:
                 Row6: [chkDetailBankAccountFlag]
                 Row7: [chkDetailAccountActiveFlag]
                 Row7a: [chkDetailForeignCurrencyFlag]
-                Row8: [ucoAccountAnalysisAttributes]
         txtDetailAccountCode: {OnLeave=ChangeAccountCodeValue}
         cmbDetailAccountType:
             OptionalValues: [Income, Expense, Asset, Equity, Liability]
@@ -60,7 +62,17 @@ RootNode:
         cmbDetailForeignCurrencyCode: {Label=Foreign Currency, List=CurrencyCodeList}		
         ucoAccountAnalysisAttributes:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes
+            Dock: Top
+            Height:200
+        pnlStatus:
             Dock: Fill
+            Controls: [txtStatus]
+        txtStatus:
+            Dock: Fill
+            Multiline:true
+            ScrollBars:Vertical
+            ReadOnly:true
+
     Menu:
         mniAccounts:
             mniAddNewAccount:

@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,9 +41,6 @@ namespace Ict.Common.Controls
         // This node is not necessarily the same node if the control get back the focus
         private TreeNode workNode = null;
 
-        // In order to restore the last settings ....
-        private TreeNode lastWorkNode = null;
-
         // Actual used BackgroundColor which regulary is defined by System-Settings
         // Defaut value is Color.Empty which is a real Color on the Color-Palette.
         private Color treeBackgroundColor = Color.Empty;
@@ -77,7 +74,6 @@ namespace Ict.Common.Controls
                     SelectedNode.ForeColor = Color.White;
                 }
 
-                lastWorkNode = workNode;
                 workNode = SelectedNode;
             }
             catch (Exception)

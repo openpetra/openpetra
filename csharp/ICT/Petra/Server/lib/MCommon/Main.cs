@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,11 +31,12 @@ using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Petra.Server.MCommon
 {
@@ -48,25 +49,86 @@ namespace Ict.Petra.Server.MCommon
         #region Functions
 
         /// <summary>
-        /// get the partner short name and the partner class and status
+        /// Retrieves the Partner ShortName, the PartnerClass and PartnerStatus.
         /// </summary>
-        /// <param name="APartnerKey">partner key to identify the partner</param>
-        /// <param name="APartnerShortName">returns the shortname</param>
-        /// <param name="APartnerClass">returns the partner class (FAMILY, ORGANISATION, etc)</param>
-        /// <param name="APartnerStatus">returns the partner status (eg. ACTIVE, DIED)</param>
-        /// <returns>true if partner was found</returns>
+        /// <param name="APartnerKey">PartnerKey to identify the Partner.</param>
+        /// <param name="APartnerShortName">Returns the ShortName.</param>
+        /// <param name="APartnerClass">Returns the PartnerClass (FAMILY, ORGANISATION, etc).</param>
+        /// <param name="APartnerStatus">Returns the PartnerStatus (eg. ACTIVE, DIED).</param>
+        /// <returns>True if partner was found, otherwise false.</returns>
         public static Boolean RetrievePartnerShortName(Int64 APartnerKey,
             out String APartnerShortName,
             out TPartnerClass APartnerClass,
             out TStdPartnerStatusCode APartnerStatus)
         {
-            Boolean ReturnValue;
+            bool NewTransaction = false;
+            bool Result = false;
             TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+
+            TPartnerClass tmpPartnerClass = new TPartnerClass();
+            TStdPartnerStatusCode tmpPartnerStatus = new TStdPartnerStatusCode();
+            string tmpPartnerShortName = "";
+
+            if (APartnerKey != 0)
+            {
+                try
+                {
+                    ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                        TEnforceIsolationLevel.eilMinimum,
+                        out NewTransaction);
+
+                    Result = RetrievePartnerShortName(APartnerKey,
+                        out tmpPartnerShortName,
+                        out tmpPartnerClass,
+                        out tmpPartnerStatus,
+                        ReadTransaction);
+
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                        TLogging.LogAtLevel(7, "RetrievePartnerShortName: committed own transaction.");
+                    }
+                }
+                catch (Exception)
+                {
+                    TLogging.Log(String.Format("Problem retrieveing partner short name for Partner {0}", APartnerKey));
+                    TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                }
+            }
+            else
+            {
+                APartnerClass = new TPartnerClass();
+
+                Result = true;                //partner key key 0 should be valid
+            }
+
+            APartnerShortName = tmpPartnerShortName;
+            APartnerClass = tmpPartnerClass;
+            APartnerStatus = tmpPartnerStatus;
+
+            return Result;
+        }
+
+        /// <summary>
+        /// Retrieves the Partner ShortName, the PartnerClass and PartnerStatus.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey to identify the Partner.</param>
+        /// <param name="APartnerShortName">Returns the ShortName.</param>
+        /// <param name="APartnerClass">Returns the PartnerClass (FAMILY, ORGANISATION, etc).</param>
+        /// <param name="APartnerStatus">Returns the PartnerStatus (eg. ACTIVE, DIED).</param>
+        /// <param name="ATransaction">Open DB Transaction.</param>
+        /// <returns>True if partner was found, otherwise false.</returns>
+        public static Boolean RetrievePartnerShortName(Int64 APartnerKey,
+            out String APartnerShortName,
+            out TPartnerClass APartnerClass,
+            out TStdPartnerStatusCode APartnerStatus,
+            TDBTransaction ATransaction)
+        {
+            Boolean ReturnValue;
             StringCollection RequiredColumns;
             PPartnerTable PartnerTable;
 
-            // initialise outout Arguments
+            // initialise out Arguments
             APartnerShortName = "";
 
             // Default. This is not really correct but the best compromise if PartnerKey is 0 or Partner isn't found since we have an enum here.
@@ -82,26 +144,8 @@ namespace Ict.Petra.Server.MCommon
                 RequiredColumns.Add(PPartnerTable.GetPartnerShortNameDBName());
                 RequiredColumns.Add(PPartnerTable.GetPartnerClassDBName());
                 RequiredColumns.Add(PPartnerTable.GetStatusCodeDBName());
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                try
-                {
-                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, RequiredColumns, ReadTransaction, null, 0, 0);
-                }
-                finally
-                {
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
-                        {
-                            Console.WriteLine("RetrievePartnerShortName: committed own transaction.");
-                        }
-#endif
-                    }
-                }
+
+                PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, RequiredColumns, ATransaction, null, 0, 0);
 
                 if (PartnerTable.Rows.Count == 0)
                 {
@@ -113,7 +157,6 @@ namespace Ict.Petra.Server.MCommon
                     APartnerShortName = PartnerTable[0].PartnerShortName;
                     APartnerClass = SharedTypes.PartnerClassStringToEnum(PartnerTable[0].PartnerClass);
 
-                    // $IFDEF DEBUGMODE if TSrvSetting.DL >= 7 then Console.WriteLine('RetrievePartnerShortName: PartnerClass: ' + PartnerTable.Row[0].PartnerClass + '; APartnerClass: ' + PartnerClassEnumToString(APartnerClass)); $ENDIF
                     APartnerStatus = SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerTable[0].StatusCode);
                     ReturnValue = true;
                 }
@@ -170,12 +213,7 @@ namespace Ict.Petra.Server.MCommon
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 7)
-                        {
-                            Console.WriteLine("CheckPartnerExists: committed own transaction.");
-                        }
-#endif
+                        TLogging.LogAtLevel(7, "CheckPartnerExists: committed own transaction.");
                     }
                 }
 
@@ -234,7 +272,7 @@ namespace Ict.Petra.Server.MCommon
         DataTable FPageDataTable;
 
         /// <summary>Last retrieved page</summary>
-        System.Int16 FLastRetrievedPage;
+        System.Int32 FLastRetrievedPage = -1;
 
         /// <summary>Property value.</summary>
         System.Int32 FTotalRecords = -1;
@@ -306,28 +344,16 @@ namespace Ict.Petra.Server.MCommon
                 FTmpDataTable = ATypedTable.Clone();
             }
 
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + " called.");
-            }
-#endif
+            TLogging.LogAtLevel(7, "TPagedDataSet created.");
         }
 
-#if DEBUGMODE
         /// <summary>
         /// destructor for debugging purposes only
         /// </summary>
         ~TPagedDataSet()
         {
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
-            }
+            TLogging.LogAtLevel(7, "TPagedDataSet.FINALIZE called!");
         }
-#endif
-
-
 
         /// <summary>
         /// Executes the query. Call this method in a separate Thread to execute the
@@ -370,31 +396,38 @@ namespace Ict.Petra.Server.MCommon
         {
 //            TDBTransaction ReadTransaction;
 //            Boolean NewTransaction = false;
-            string SQLOrderBy = "";
-            string SQLWhereCriteria = "";
-
-            if (FFindParameters.FPagedTableWhereCriteria != "")
+            if (FFindParameters.FParametersGivenSeparately)
             {
-                SQLWhereCriteria = "WHERE " + FFindParameters.FPagedTableWhereCriteria;
+                string SQLOrderBy = "";
+                string SQLWhereCriteria = "";
+
+                if (FFindParameters.FPagedTableWhereCriteria != "")
+                {
+                    SQLWhereCriteria = "WHERE " + FFindParameters.FPagedTableWhereCriteria;
+                }
+
+                if (FFindParameters.FPagedTableOrderBy != "")
+                {
+                    SQLOrderBy = " ORDER BY " + FFindParameters.FPagedTableOrderBy;
+                }
+
+                FSelectSQL = "SELECT " + FFindParameters.FPagedTableColumns + " FROM " + FFindParameters.FPagedTable +
+                             ' ' +
+                             SQLWhereCriteria + SQLOrderBy;
+            }
+            else
+            {
+                FSelectSQL = FFindParameters.FSqlQuery;
             }
 
-            if (FFindParameters.FPagedTableOrderBy != "")
-            {
-                SQLOrderBy = " ORDER BY " + FFindParameters.FPagedTableOrderBy;
-            }
-
-            FSelectSQL = "SELECT " + FFindParameters.FPagedTableColumns + " FROM " + FFindParameters.FPagedTable +
-                         ' ' +
-                         SQLWhereCriteria + SQLOrderBy;
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                TDataBase.LogSqlStatement(this.GetType().FullName + ".GetData", FSelectSQL, FFindParameters.FParametersArray);
-            }
-#endif
-
+/*
+ *          if (TLogging.DL >= 9)
+ *          {
+ *              TDataBase.LogSqlStatement(this.GetType().FullName + ".GetData", FSelectSQL, FFindParameters.FParametersArray);
+ *          }
+ */
             // use temp table
-            FTmpDataTable.TableName = FFindParameters.FPagedTable + "_for_paging";
+            FTmpDataTable.TableName = FFindParameters.FSearchName;
             try
             {
                 // Fill temporary table with query results (all records)
@@ -417,23 +450,18 @@ namespace Ict.Petra.Server.MCommon
 //                if (NewTransaction)
 //                {
 //                    DBAccess.GDBAccessObj.CommitTransaction();
-//#if DEBUGMODE
-//                    if (TSrvSetting.DL >= 7)
-//                    {
-//                        Console.WriteLine(this.GetType().FullName + ".ClassName: committed own transaction.");
-//                    }
-//#endif
 //                }
             }
 
-            if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
-            {
-                PerformColumnNameMapping();
-            }
-
+/*
+ *          if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
+ *          {
+ *              PerformColumnNameMapping();
+ *          }
+ */
             try
             {
-//                FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
+//              FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
                 FTotalRecords = FTmpDataTable.Rows.Count;
             }
             catch (System.InvalidOperationException)
@@ -454,25 +482,15 @@ namespace Ict.Petra.Server.MCommon
             // Check if query execution cancellation was requested  necessary only for mono (at least up to 1.1.13.2)
             if (FAsyncExecProgress.FCancelExecution)
             {
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine("Query got cancelled!");
-                }
-#endif
+                TLogging.LogAtLevel(7, "Query got cancelled!");
                 FAsyncExecProgress.ProgressInformation = "Query cancelled!";
                 FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
                 return;
             }
 
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + "  FDataAdapter.Fill finished. FTotalRecords: " + FTotalRecords.ToString());
-            }
-#endif
+            TLogging.LogAtLevel(7, "TPagedDataSet  FDataAdapter.Fill finished. FTotalRecords: " + FTotalRecords.ToString());
             FPageDataTable = FTmpDataTable.Clone();
-            FPageDataTable.TableName = "PagedTable";
+            FPageDataTable.TableName = FFindParameters.FSearchName;
             FAsyncExecProgress.ProgressInformation = "Query executed.";
             FAsyncExecProgress.ProgressPercentage = 100;
             FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Finished;
@@ -490,12 +508,7 @@ namespace Ict.Petra.Server.MCommon
         /// </returns>
         public DataTable GetData(Int16 APage, Int16 APageSize)
         {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + ".GetData(" + APage.ToString() + ") called.");
-            }
-#endif
+            TLogging.LogAtLevel(7, "TPagedDataSet.GetData(" + APage.ToString() + ") called.");
 
             // wait until the query has been run in the other thread
             while (FTotalRecords == -1)
@@ -503,7 +516,7 @@ namespace Ict.Petra.Server.MCommon
                 System.Threading.Thread.Sleep(500);
             }
 
-            if (((APage != FLastRetrievedPage) || (APage == 0)) && (APage >= 0))
+            if (APage != FLastRetrievedPage)
             {
                 FLastRetrievedPage = APage;
 
@@ -511,10 +524,7 @@ namespace Ict.Petra.Server.MCommon
                 {
                     FTotalPages = Convert.ToInt16(Math.Ceiling(((double)FTotalRecords) / ((double)APageSize)));
 
-                    if (TSrvSetting.DL >= 7)
-                    {
-                        Console.WriteLine("FTotalPages: " + FTotalPages.ToString());
-                    }
+                    TLogging.LogAtLevel(7, "FTotalPages: " + FTotalPages.ToString());
 
                     if (FTotalRecords > 0)
                     {
@@ -548,26 +558,6 @@ namespace Ict.Petra.Server.MCommon
                         throw new EPagedTableNoRecordsException();
                     }
                 }
-
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 9)
-                {
-                    Console.WriteLine("Select done in " + this.GetType().FullName + ".GetData(" + APage.ToString() + "). Result: ");
-
-                    if (FPageDataTable != null)
-                    {
-                        Console.WriteLine("Processing rows...");
-
-                        foreach (DataRow TheRow in FPageDataTable.Rows)
-                        {
-                            if (TheRow.ItemArray.Length > 4)
-                            {
-                                Console.WriteLine(TheRow[0].ToString() + " | " + TheRow[1].ToString() + " | " + TheRow[3].ToString());
-                            }
-                        }
-                    }
-                }
-#endif
             }
             // (APage > FLastRetrievedPage) or (APage = 0)
             else
@@ -608,14 +598,6 @@ namespace Ict.Petra.Server.MCommon
             Int32 RowInPage;
             Int32 MaxRowInPage;
 
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
-            {
-                Console.WriteLine(
-                    "TPagedDataSet.CopyRowsInPage called.  APage: " + APage.ToString() + "; APageSize: " + APageSize.ToString() +
-                    "; FTmpDataTable.Rows.Count: " + FTmpDataTable.Rows.Count.ToString());
-            }
-#endif
             MaxRowInPage = (APageSize * APage) + APageSize;
 
             if (MaxRowInPage > FTotalRecords)
@@ -629,26 +611,27 @@ namespace Ict.Petra.Server.MCommon
             }
         }
 
-        /// <summary>
-        /// Creates a mapping between the names of the fields in the DB and how they
-        /// should be named in the resulting DataTable.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private void PerformColumnNameMapping()
-        {
-            DataTableMapping AliasNames;
-            IDictionaryEnumerator ColumNameMappingEnumerator;
-
-            AliasNames = FDataAdapter.TableMappings.Add(FFindParameters.FPagedTable + "_for_paging", FFindParameters.FPagedTable + "_for_paging");
-            ColumNameMappingEnumerator = FFindParameters.FColumNameMapping.GetEnumerator();
-
-            while (ColumNameMappingEnumerator.MoveNext())
-            {
-                AliasNames.ColumnMappings.Add(ColumNameMappingEnumerator.Key.ToString(), ColumNameMappingEnumerator.Value.ToString());
-            }
-        }
-
+/*
+ *      /// <summary>
+ *      /// Creates a mapping between the names of the fields in the DB and how they
+ *      /// should be named in the resulting DataTable.
+ *      ///
+ *      /// </summary>
+ *      /// <returns>void</returns>
+ *      private void PerformColumnNameMapping()
+ *      {
+ *          DataTableMapping AliasNames;
+ *          IDictionaryEnumerator ColumNameMappingEnumerator;
+ *
+ *          AliasNames = FDataAdapter.TableMappings.Add(FTmpDataTable.TableName, FTmpDataTable.TableName);
+ *          ColumNameMappingEnumerator = FFindParameters.FColumNameMapping.GetEnumerator();
+ *
+ *          while (ColumNameMappingEnumerator.MoveNext())
+ *          {
+ *              AliasNames.ColumnMappings.Add(ColumNameMappingEnumerator.Key.ToString(), ColumNameMappingEnumerator.Value.ToString());
+ *          }
+ *      }
+ */
         /// <summary>
         /// Cancels an asynchronously executing query. This might take some time;
         /// therefore always execute this procedure in a separate Thread!
@@ -660,19 +643,9 @@ namespace Ict.Petra.Server.MCommon
             try
             {
                 // Cancel the executing query.
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine("TPagedDataSet.StopQuery called...");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery called...");
                 FDataAdapter.SelectCommand.Cancel();
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine("TPagedDataSet.StopQuery finished.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery finished.");
             }
             catch (Exception exp)
             {
@@ -696,7 +669,7 @@ namespace Ict.Petra.Server.MCommon
          * Nested Class for passing in of parameters.
          *
          * This is used because the main execution occurs in a Thread, and it's not
-         * straightforward to pass in several typed parameters to a Tread Delegate.
+         * straightforward to pass in several typed parameters to a Thread Delegate.
          *
          */
         public class TAsyncFindParameters : object
@@ -706,6 +679,9 @@ namespace Ict.Petra.Server.MCommon
 
             /// Table part of the SQL SELECT statement
             internal String FPagedTable;
+
+            /// Set this to the name of the search
+            public String FSearchName;
 
             /// WHERE part of the SQL SELECT statement
             internal String FPagedTableWhereCriteria;
@@ -719,21 +695,21 @@ namespace Ict.Petra.Server.MCommon
             /// Array containing the OdbcParameters for the parameterised query
             internal OdbcParameter[] FParametersArray;
 
-            /**
-             * Initialises the fields.
-             *
-             * @param AColumns Columns part of the SQL SELECT statement
-             * @param ATable Table part of the SQL SELECT statement
-             * @param AWhereCriteria WHERE part of the SQL SELECT statement
-             * @param AOrderBy ORDER BY part of the SQL SELECT statement
-             * @param AColumNameMapping HashTable containing a mapping of source column
-             * names to result column names
-             * @param APageSize Number of DataRows in a Page of data
-             * @param AParametersArray Array containing the OdbcParameters for the
-             * parameterised query
-             *
-             */
-            public TAsyncFindParameters(String AColumns,
+            internal bool FParametersGivenSeparately;
+
+            internal String FSqlQuery;
+
+            /// <summary>
+            /// Initialises the fields.
+            /// </summary>
+            /// <param name="AColumns">Columns part of the SQL SELECT statement</param>
+            /// <param name="ATable">Table part of the SQL SELECT statement</param>
+            /// <param name="AWhereCriteria">WHERE part of the SQL SELECT statement</param>
+            /// <param name="AOrderBy">ORDER BY part of the SQL SELECT statement</param>
+            /// <param name="AColumNameMapping">HashTable containing a mapping of source column names to result column names</param>
+            /// <param name="AParametersArray">Array containing the OdbcParameters for the parameterised query</param>
+            public TAsyncFindParameters(
+                String AColumns,
                 String ATable,
                 String AWhereCriteria,
                 String AOrderBy,
@@ -746,6 +722,18 @@ namespace Ict.Petra.Server.MCommon
                 FPagedTableOrderBy = AOrderBy;
                 FColumNameMapping = AColumNameMapping;
                 FParametersArray = AParametersArray;
+                FParametersGivenSeparately = true;
+            }
+
+            /// <summary>
+            ///
+            /// </summary>
+            /// <param name="ASqlQuery">Completely formed SqlQuery</param>
+            public TAsyncFindParameters(String ASqlQuery)
+            {
+                FSqlQuery = ASqlQuery;
+                FPagedTable = "Find";
+                FParametersGivenSeparately = false;
             }
         }
         #endregion
@@ -768,7 +756,7 @@ namespace Ict.Petra.Server.MCommon
     /// as well as on the Server side.
     ///
     /// </summary>
-    public class TAsynchronousExecutionProgress : MarshalByRefObject, IAsynchronousExecutionProgress
+    public class TAsynchronousExecutionProgress : TConfigurableMBRObject, IAsynchronousExecutionProgress
     {
         /// <summary>Property value.</summary>
         private String FProgressInformation;
@@ -826,7 +814,6 @@ namespace Ict.Petra.Server.MCommon
                 FProgressState = value;
             }
         }
-
         /// <summary>Can be used by the 'Instantiator' to pass a result to the 'Listener'</summary>
         public object Result
         {
@@ -876,12 +863,7 @@ namespace Ict.Petra.Server.MCommon
         /// <returns>void</returns>
         public void Cancel()
         {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 6)
-            {
-                Console.WriteLine("TAsynchronousExecutionProgress.Cancel called!");
-            }
-#endif
+            TLogging.LogAtLevel(6, "TAsynchronousExecutionProgress.Cancel called!");
             FCancelExecution = true;
             FProgressState = TAsyncExecProgressState.Aeps_Stopping;
 

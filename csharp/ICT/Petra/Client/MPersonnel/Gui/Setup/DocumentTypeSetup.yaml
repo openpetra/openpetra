@@ -1,0 +1,49 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Document Types
+    Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
+    DetailTable: PmDocumentType
+    CacheableTable: DocumentTypeList
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 800
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailDocCode, DetailDocCategory, DetailDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            CustomColumns:
+                DetailCode: {Label=Document Code}
+                DetailDocCategory: {Label=Document Category}
+                DetailUnassignableFlag: {Label=Unassignable}
+                DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailDocCode, txtDetailDescription]
+                Row1: [cmbDetailDocCategory]
+                Row2: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row3: [chkDetailDeletableFlag]
+        txtDetailDocCode: {Label=Document Code, CharacterCasing=Upper, Width=160}
+        txtDetailDescription: {Label=Description, Width=290}
+        cmbDetailDocCategory: {Label=Document Category, List=DocumentTypeCategoryList, ColSpan=2, ComboBoxWidth=130}
+        chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
+        chkDetailDeletableFlag: {Label=Deletable}
+    Toolbar:
+        tbbNew:
+            Label: New Document Type

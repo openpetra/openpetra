@@ -1,0 +1,45 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Motivation Groups
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup.Gift
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
+    DetailTable: AMotivationGroup
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data,Ict.Petra.Shared.MFinance.Gift.Validation]
+    FormType: edit
+    Template: windowEdit
+    WindowWidth: 660
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailMotivationGroupCode, DetailMotivationGroupDescription, DetailMotivationGroupDescLocal, DetailGroupStatus]
+            CustomColumns:
+                DetailMotivationGroupDescription: {Label=Description}
+                DetailGroupStatus: {Label=Assignable, Type=Boolean}
+                DetailMotivationGroupDescLocal: {Label=Description (local)}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailMotivationGroupCode, txtDetailMotivationGroupDescription]
+                Row1: [chkDetailGroupStatus, txtDetailMotivationGroupDescLocal]
+        txtDetailMotivationGroupCode: {Label=Group Code, CharacterCasing=Upper, Width=110}
+        txtDetailMotivationGroupDescription: {Label=Description, Width=250}
+        chkDetailGroupStatus: {Label=Assignable}
+        txtDetailMotivationGroupDescLocal: {Label=Description (local), Width=250}
+
+    Toolbar:
+        tbbNew: 
+            Label: New Motivation Group

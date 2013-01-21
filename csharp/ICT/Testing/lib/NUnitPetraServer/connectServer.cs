@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,13 +25,16 @@ using System;
 using System.Data;
 using System.Configuration;
 using System.IO;
+using System.Security.Principal;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
+using Ict.Testing.NUnitTools;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
-using Ict.Petra.Server.App.Main;
-using Ict.Petra.Server.App.ClientDomain;
-using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.CallForwarding;
 
 namespace Ict.Testing.NUnitPetraServer
 {
@@ -47,12 +50,36 @@ namespace Ict.Testing.NUnitPetraServer
         private static TClientDomainManager FDomain = null;
 
         /// <summary>
+        /// Initialize the Petra server and connect to the database.
+        /// this overload looks for the config file itself
+        /// </summary>
+        public static TServerManager Connect()
+        {
+            CommonNUnitFunctions.InitRootPath();
+
+            string strNameConfig = CommonNUnitFunctions.rootPath + "etc/TestServer.config";
+
+            return Connect(strNameConfig);
+        }
+
+        /// <summary>
         /// Initialize the Petra server and connect to the database
         /// </summary>
         /// <param name="AConfigName">just provide the server config file, plus AutoLogin and AutoLoginPasswd</param>
-        public static void Connect(string AConfigName)
+        public static TServerManager Connect(string AConfigName)
         {
-            TAppSettingsManager Config = new TAppSettingsManager(AConfigName);
+            if (File.Exists(AConfigName))
+            {
+                new TAppSettingsManager(AConfigName);
+            }
+            else
+            {
+                new TAppSettingsManager();
+            }
+
+            new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
+
+            CommonNUnitFunctions.InitRootPath();
 
             Catalog.Init();
             TServerManager ServerManager = new TServerManager();
@@ -65,8 +92,8 @@ namespace Ict.Testing.NUnitPetraServer
 
             bool SystemEnabled;
             int ProcessID;
-            TPetraPrincipal UserInfo = TClientManager.PerformLoginChecks(Config.GetValue("AutoLogin").ToUpper(),
-                Config.GetValue("AutoLoginPasswd"),
+            TPetraPrincipal UserInfo = (TPetraPrincipal)TClientManager.PerformLoginChecks(TAppSettingsManager.GetValue("AutoLogin").ToUpper(),
+                TAppSettingsManager.GetValue("AutoLoginPasswd"),
                 "NUNITTEST", "127.0.0.1", out ProcessID, out SystemEnabled);
 
             if (FDomain != null)
@@ -74,38 +101,24 @@ namespace Ict.Testing.NUnitPetraServer
                 FDomain.StopClientAppDomain();
             }
 
+            TClientManager ClientManager = new TClientManager();
+            DomainManager.UClientManagerCallForwarderRef = new TClientManagerCallForwarder(ClientManager);
+
             // do the same as in Ict.Petra.Server.App.Main.TRemoteLoader.LoadDomainManagerAssembly
             FDomain = new TClientDomainManager("0",
-                "-1",
                 TClientServerConnectionType.csctLocal,
                 DomainManager.UClientManagerCallForwarderRef,
-                TClientManager.SystemDefaultsCache,
-                TClientManager.UCacheableTablesManager,
+                new TSystemDefaultsCache(),
+                new TCacheableTablesManager(null),
                 UserInfo);
-            FDomain.TakeoverServerSettings(TSrvSetting.ApplicationName,
-                TSrvSetting.ConfigurationFile,
-                TSrvSetting.ApplicationVersion,
-                TSrvSetting.ExecutingOS,
-                TSrvSetting.RDMBSType,
-                TSrvSetting.ODBCDsn,
-                TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
-                TSrvSetting.PostgreSQLDatabaseName,
-                TSrvSetting.DBUsername, TSrvSetting.DBPassword,
-                TSrvSetting.IPBasePort,
-                TSrvSetting.DebugLevel, TSrvSetting.ServerLogFile, TSrvSetting.HostName, TSrvSetting.HostIPAddresses,
-                TSrvSetting.ClientIdleStatusAfterXMinutes, TSrvSetting.ClientKeepAliveCheckIntervalInSeconds,
-                TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsLAN,
-                TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsRemote,
-                TSrvSetting.ClientConnectionTimeoutAfterXSeconds,
-                TSrvSetting.ClientAppDomainShutdownAfterKeepAliveTimeout,
-                TSrvSetting.SMTPServer,
-                TSrvSetting.AutomaticIntranetExportEnabled,
-                TSrvSetting.RunAsStandalone,
-                TSrvSetting.IntranetDataDestinationEmail,
-                TSrvSetting.IntranetDataSenderEmail);
+            FDomain.InitAppDomain(TSrvSetting.ServerSettings);
+
+            new TCallForwarding();
 
             // we don't need to establish the database connection anymore
             // FDomain.EstablishDBConnection();
+
+            return ServerManager;
         }
 
         /// <summary>

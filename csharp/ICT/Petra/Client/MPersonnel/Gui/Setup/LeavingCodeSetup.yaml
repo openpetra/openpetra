@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtLeavingCode
     CacheableTable: LeavingCodeList
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Units.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Units.Data,Ict.Petra.Shared.MPersonnel.Units.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
@@ -39,7 +39,7 @@ RootNode:
         txtDetailLeavingCodeInd: {Label=Leaving Code}
         txtDetailLeavingCodeDescr: {Label=Description, CharacterCasing=Upper, Width=288}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

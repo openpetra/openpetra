@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,13 +30,14 @@ using System.Xml;
 using System.IO;
 using System.Globalization;
 using Ict.Common;
-using Ict.Common.IO;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces; // Implicit reference
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Server.MPartner.Partner.UIConnectors;
+using Ict.Petra.Server.MPartner.PartnerFind;
 using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
@@ -47,12 +48,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     public class TSimplePartnerFindWebConnector
     {
         /// <summary>
-        /// return all partners that match the given criteria. this is used for the partner import screen
+        /// Return all partners that match the given criteria. This is used for the partner import screen.
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
         public static PartnerFindTDS FindPartners(string AFirstName, string AFamilyNameOrOrganisation, string ACity, StringCollection APartnerClasses)
         {
-            TPartnerFindUIConnector UIConnector = new TPartnerFindUIConnector();
+            TPartnerFind PartnerFind = new TPartnerFind();
 
             PartnerFindTDSSearchCriteriaTable CriteriaData = new PartnerFindTDSSearchCriteriaTable();
             PartnerFindTDSSearchCriteriaRow CriteriaRow = CriteriaData.NewRowTyped();
@@ -73,7 +74,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 CriteriaRow.PartnerClass = "*";
             }
 
-            UIConnector.PerformSearch(CriteriaData, false);
+            PartnerFind.PerformSearch(CriteriaData, true);
 
             Int32 TotalRecords;
             short TotalPages;
@@ -81,7 +82,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             PartnerFindTDS result = new PartnerFindTDS();
 
-            DataTable typedResult = UIConnector.GetDataPagedResult(0, MaxRecords, out TotalRecords, out TotalPages);
+            DataTable typedResult = PartnerFind.GetDataPagedResult(0, MaxRecords, out TotalRecords, out TotalPages);
 
             if (typedResult != null)
             {

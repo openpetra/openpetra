@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,6 +58,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             AMotivationGroupAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();

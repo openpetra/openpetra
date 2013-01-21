@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,14 +29,15 @@ using System.Windows.Forms;
 using System.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.MReporting;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Logic;
-using Ict.Petra.Shared.Interfaces; // Implicit reference
 using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MConference
@@ -58,18 +59,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             ACalc.AddParameter("param_calculation", "Room", ColumnCounter++);
 
-            TimeSpan CheckLength = dtpToDate.Date.Value.Subtract(dtpFromDate.Date.Value);
-
-            // Add the days as columns
-            for (int Counter = 0; Counter <= CheckLength.Days; ++Counter)
+            if (DatesAreValid)
             {
-                DateTime currentDate = dtpFromDate.Date.Value.AddDays(Counter);
+                TimeSpan CheckLength = dtpToDate.Date.Value.Subtract(dtpFromDate.Date.Value);
 
-                ACalc.AddParameter("param_calculation", "CheckDate", ColumnCounter);
-                ACalc.AddParameter("ColumnWidth", (float)1.3, ColumnCounter);
-                ACalc.AddParameter("ColumnCaption", currentDate.ToString("MMM-d"), ColumnCounter);
+                // Add the days as columns
+                for (int Counter = 0; Counter <= CheckLength.Days; ++Counter)
+                {
+                    DateTime currentDate = dtpFromDate.Date.Value.AddDays(Counter);
 
-                ColumnCounter++;
+                    ACalc.AddParameter("param_calculation", "CheckDate", ColumnCounter);
+                    ACalc.AddParameter("ColumnWidth", (float)1.3, ColumnCounter);
+                    ACalc.AddParameter("ColumnCaption", currentDate.ToString("MMM-d"), ColumnCounter);
+
+                    ColumnCounter++;
+                }
             }
 
             if (!rbtDetailReport.Checked)
@@ -94,13 +98,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 ACalc.AddParameter("param_report_detail", "Detail");
             }
 
-            if (AReportAction == TReportActionEnum.raGenerate)
+            if ((AReportAction == TReportActionEnum.raGenerate) && DatesAreValid)
             {
                 if (dtpFromDate.Date > dtpToDate.Date)
                 {
                     TVerificationResult VerificationResult = new TVerificationResult(
                         "Change From-Date or To-Date",
-                        "From Date must be smaller than To Date",
+                        "From Date must be earlier than To Date",
                         TResultSeverity.Resv_Critical);
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
@@ -109,8 +113,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             if (!DatesAreValid)
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
-                    "Enter valid To- and From-Date.",
-                    "Dates must be a valid date",
+                    "Enter valid From-Date and To-Date.",
+                    "Dates must be valid",
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }

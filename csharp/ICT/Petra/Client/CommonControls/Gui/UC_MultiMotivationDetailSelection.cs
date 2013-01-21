@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using System.Data;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using SourceGrid;
 using System.Collections.Specialized;

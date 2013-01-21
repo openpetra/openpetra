@@ -206,6 +206,15 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>Set to true after the first page of data is loaded</summary>
+        public Boolean IsInitialised
+        {
+            get
+            {
+                return FGridInitialised;
+            }
+        }
+
         /**
          * This property gets hidden because it doesn't work with sgrdDataGridPaged!
          *
@@ -355,13 +364,20 @@ namespace Ict.Common.Controls
 
             // MessageBox.Show('FTotalRecords: ' + FTotalRecords.ToString + '; FPageSize: ' + FPageSize.ToString);
             // Add empty rows if needed (these allow scrolling in the DataGrid!)
-            if (FTotalRecords > FPageSize)
+            try
             {
-                for (int Counter = 0; Counter <= (FTotalRecords - FPageSize - 1); Counter += 1)
+                if (FTotalRecords > FPageSize)
                 {
-                    EmptyRow = FPagedDataTable.NewRow();
-                    FPagedDataTable.Rows.Add(EmptyRow);
+                    for (int Counter = 0; Counter <= (FTotalRecords - FPageSize - 1); Counter += 1)
+                    {
+                        EmptyRow = FPagedDataTable.NewRow();
+                        FPagedDataTable.Rows.Add(EmptyRow);
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Empty rows cannot be added to the grid (because of DB constraints)", "Exception");
             }
 
             FDataTransferDone = true;
@@ -440,7 +456,10 @@ namespace Ict.Common.Controls
                 this.OnDataPageLoading(CustomEventArgs);
 
                 // MessageBox.Show('Retrieving Page ' + ANeededPage.ToString + '...');
-                PagedTable = FGetDataPagedResult((short)ANeededPage, FPageSize, out FTotalRecords, out FTotalPages);
+
+                Int32 CurrentTotalRecords;  // These two values should be the same as FTotalRecords
+                Int16 CurrentTotalPages;    // and FTotalPages, which were set when the first page was loaded.
+                PagedTable = FGetDataPagedResult((short)ANeededPage, FPageSize, out CurrentTotalRecords, out CurrentTotalPages);
 
                 if (PagedTable != null)
                 {
@@ -509,9 +528,9 @@ namespace Ict.Common.Controls
         #region Helper functions
 
         /// <summary>
-        /// Determines the PageSize, that is the amount of rows that would fit into the
-        /// Grid at its current horizontal size.
-        /// Takes the height of a possible visible HScrollBar and the heigh of a possible
+        /// Determines the PageSize, that is the number of rows that would fit into the
+        /// Grid at its current vertical size.
+        /// Takes the height of a possible visible HScrollBar and the height of a possible
         /// visible DataRowHeader into consideration.
         /// </summary>
         /// <returns>void</returns>
@@ -713,7 +732,7 @@ namespace Ict.Common.Controls
 
 //                    TLogging.Log("CheckPage: " + CheckPage.ToString());
 
-                    if (CheckPage != LastCheckedPage)
+                    if ((CheckPage != LastCheckedPage) && (CheckPage < FTotalPages))
                     {
 //                        TLogging.Log("Checking if Page #" + CheckPage.ToString() + " is already transfered...");
                         if (!FTransferredDataPages.Contains(CheckPage))

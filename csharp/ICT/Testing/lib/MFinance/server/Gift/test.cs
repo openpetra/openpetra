@@ -45,7 +45,7 @@ namespace Tests.MFinance.Server.Gift
         [TestFixtureSetUp]
         public void Init()
         {
-            new TLogging("TestServer.log");
+            //new TLogging("TestServer.log");
             TPetraServerConnector.Connect("../../etc/TestServer.config");
         }
 

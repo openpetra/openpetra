@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Threading;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using System.Data;
@@ -230,7 +231,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             String paramName;
             String paramValue;
             String SettingsDirectory;
-            Int64 PartnerKey;
             MenuItem ClickedMenuItem = (MenuItem)sender;
             TheDataRowViewArray = FGridView.SelectedDataRowsAsDataRowView;
 
@@ -259,9 +259,9 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (action == "PartnerEditScreen")
             {
-                // get the partner key
-                PartnerKey = Convert.ToInt64(SelectedResult.column[Convert.ToInt32(detailReportCSV)].ToString());
 #if TODO
+                // get the partner key
+                Int64 PartnerKey = Convert.ToInt64(SelectedResult.column[Convert.ToInt32(detailReportCSV)].ToString());
                 // TODO: open Partner Edit screen with the given partner key
 #endif
             }
@@ -337,20 +337,11 @@ namespace Ict.Petra.Client.MReporting.Gui
                     // EnableDisableToolbar(true);
                 }
             }
-#if DEBUGMODE
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
-                MessageBox.Show(e.Message);
-
+                TLogging.Log("Exception in GenerateReport: " + e.ToString());
                 // EnableDisableToolbar(true);
             }
-#else
-            catch (Exception)
-            {
-                // EnableDisableToolbar(true);
-            }
-#endif
         }
     }
 }

@@ -63,6 +63,26 @@ namespace Ict.Common
         public const int DEBUGLEVEL_TRACE = 10;
 
         /// <summary>
+        /// the debuglevel that is required for saving some detailed log files for the reporting
+        /// </summary>
+        public const int DEBUGLEVEL_REPORTING = 5;
+
+        /// <summary>
+        /// some log messages will be only displayed at a certain DebugLevel
+        /// </summary>
+        public static int DebugLevel = 0;
+
+        /// <summary>DL is a abbreviated synonym for DebugLevel (more convenient)</summary>
+        public static int DL
+        {
+            get
+            {
+                return DebugLevel;
+            }
+        }
+
+
+        /// <summary>
         /// this is the default prefix for the username
         /// </summary>
         public const string DEFAULTUSERNAMEPREFIX = "MiB";
@@ -84,7 +104,7 @@ namespace Ict.Common
         private static String Context;
 
         /// <summary>
-        /// This is a procedure that is called with the text as an parameter. It can be used to update a status bar.
+        /// This is a procedure that is called with the text as a parameter. It can be used to update a status bar.
         /// </summary>
         private static TStatusCallbackProcedure StatusBarProcedure;
 
@@ -203,32 +223,55 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// Logs a message. Output destination can be selected with the Loggingtype
-        /// flag.
+        /// Log if level is this high
+        /// </summary>
+        /// <param name="Level"></param>
+        /// <param name="Text"></param>
+        public static void LogAtLevel(Int32 Level, string Text)
+        {
+            if (TLogging.DebugLevel >= Level)
+            {
+                TLogging.Log(Text);
+            }
+        }
+
+        /// <summary>
+        /// Log if level is this high. Output destination can be selected with the Loggingtype flag.
+        /// </summary>
+        /// <param name="ALevel"></param>
+        /// <param name="AText"></param>
+        /// <param name="ALoggingType"></param>
+        public static void LogAtLevel(Int32 ALevel, string AText, TLoggingType ALoggingType)
+        {
+            if (TLogging.DebugLevel >= ALevel)
+            {
+                TLogging.Log(AText, ALoggingType);
+            }
+        }
+
+        /// <summary>
+        /// Logs a message. Output destination can be selected with the Loggingtype flag.
         /// </summary>
         /// <param name="Text">Log message</param>
-        /// <param name="ALoggingType">Determines the output destination. Note: More than one
-        /// output destination can be chosen!</param>
-        /// <returns>void</returns>
+        /// <param name="ALoggingType">Determines the output destination.
+        /// Note: More than one output destination can be chosen!</param>
         public static void Log(string Text, TLoggingType ALoggingType)
         {
             if (((ALoggingType & TLoggingType.ToConsole) != 0)
                 || ((ALoggingType & TLoggingType.ToLogfile) != 0)
-#if DEBUGMODE
                 // only in Debugmode write the messages for the statusbar also on the console (e.g. reporting progress)
-                || ((ALoggingType & TLoggingType.ToStatusBar) != 0)
-#endif
-                )
+                || (((ALoggingType & TLoggingType.ToStatusBar) != 0) && (TLogging.DebugLevel == TLogging.DEBUGLEVEL_TRACE)))
             {
-                Console.WriteLine(Utilities.CurrentTime() + "  " + Text);
+                Console.Error.WriteLine(Utilities.CurrentTime() + "  " + Text);
 
                 if ((TLogging.Context != null) && (TLogging.Context.Length != 0))
                 {
-                    Console.WriteLine("  Context: " + TLogging.Context);
+                    Console.Error.WriteLine("  Context: " + TLogging.Context);
                 }
             }
 
-            if (((ALoggingType & TLoggingType.ToConsole) != 0) || ((ALoggingType & TLoggingType.ToLogfile) != 0))
+            if (((ALoggingType & TLoggingType.ToConsole) != 0) || ((ALoggingType & TLoggingType.ToLogfile) != 0)
+                || ((ALoggingType & TLoggingType.ToStatusBar) != 0))
             {
                 if (TLogging.StatusBarProcedureValid && (Text.IndexOf("SELECT") == -1))
                 {
@@ -256,8 +299,8 @@ namespace Ict.Common
                 }
                 else
                 {
-                    // I found it was better to write the actual logging message, even if the logwriter
-                    // is not setup up correctly
+                    // I found it was better to write the actual logging message,
+                    // even if the logwriter is not setup up correctly
                     new TLogging("temp.log");
                     TLogWriter.Log(Text);
 
@@ -276,11 +319,17 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// log the current stack trace; it is recommended to use SafeLogStackTrace instead
+        /// log the current stack trace; on Mono, that does not fully work
         /// </summary>
         /// <param name="ALoggingtype">destination of logging</param>
         public static void LogStackTrace(TLoggingType ALoggingtype)
         {
+            if (Utilities.DetermineExecutingCLR() == TExecutingCLREnum.eclrMono)
+            {
+                // not printing the stacktrace since that could cause an exception
+                return;
+            }
+
             StackTrace st;
             StackFrame sf;
             Int32 Counter;

@@ -34,7 +34,7 @@ namespace Tests.MFinance.Server.Gift
     [TestFixture]
     public class SetMotivationGroupAndDetailTest
     {
-        const string SMTH = "SMTH"; // Means Something
+        const string SMTH = "GIFT"; // "SMTH"; // Means Something
         const string KMIN = "KEYMIN"; // Special Result ...
 
         /// <summary>
@@ -43,7 +43,6 @@ namespace Tests.MFinance.Server.Gift
         [TestFixtureSetUp]
         public void Init()
         {
-            new TLogging("TestServer.log");
             TPetraServerConnector.Connect("../../etc/TestServer.config");
         }
 
@@ -96,6 +95,9 @@ namespace Tests.MFinance.Server.Gift
             Assert.AreEqual(SMTH, motivationDetail, "motivationDetail must not be changed");
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         [Test]
         public void Test_Person()
         {
@@ -112,6 +114,9 @@ namespace Tests.MFinance.Server.Gift
             Assert.AreEqual(SMTH, motivationDetail, "motivationDetail must not be changed");
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         [Test]
         public void Test_Unit_WithoutKeyMin()
         {
@@ -128,18 +133,21 @@ namespace Tests.MFinance.Server.Gift
             Assert.AreEqual(SMTH, motivationDetail, "motivationDetail must not be changed");
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         [Test]
         public void Test_Unit_WithKeyMin()
         {
-            Int64 partnerKey = 1800504;      // Valid Number for the unit ""Save The Forest""
+            Int64 partnerKey = 73000000; //1800504;      // Valid Number for the unit ""Save The Forest""
             Boolean partnerKeyIsValid;
             String motivationGroup = SMTH;
-            String motivationDetail = SMTH;
+            String motivationDetail = KMIN;
 
             partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
                 partnerKey, ref motivationGroup, ref motivationDetail);
 
-            Assert.IsTrue(partnerKeyIsValid, "Check if partnerKey=1800504 does not exist");
+            Assert.IsTrue(partnerKeyIsValid, "Check if partnerKey=73000000 does not exist");
             Assert.AreEqual(SMTH, motivationGroup, "motivationGroup must not be changed");
             Assert.AreEqual(KMIN, motivationDetail, "motivationDetail must be changed to " + KMIN);
         }

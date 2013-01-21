@@ -1,0 +1,49 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Recipient by Field
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MFinance.queries.QueryRecipientByField.CalculateExtract
+        ISOLATIONLEVEL: serializable
+        REPORTNAME: Recipient by Field
+        CURRENTREPORT: Recipient by Field
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        # TODO: the following things have to be set by generator
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Actions:
+        actFilter: {Label=Filter List, ActionClick=FilterList}
+    Controls:
+        tpgGeneralSettings: {ControlsOrientation=vertical}
+            Label: General Settings
+            Controls: [pnlFilter, clbLedger, pnlBottom]
+        pnlFilter: {ControlsOrientation=horizontal}
+            Dock: Top
+            Controls: [txtFilter, btnFilter]
+        pnlBottom:
+            Dock: Bottom
+            Controls: [dtpDateFrom, dtpDateTo, chkAllLedgers]
+        clbLedger:
+            Dock: Fill
+            NoLabel: true 
+            ParameterName: param_ledgers
+        txtFilter:
+            NoLabel: true
+            Width: 300
+        btnFilter:
+            Action: actFilter
+        dtpDateFrom:
+            Label: Date from
+            ParameterName: param_date_from
+        dtpDateTo:
+            Label: To
+            ParameterName: param_date_to
+        chkAllLedgers: {CheckBoxAttachedLabel=right}
+            Label: Select all ledgers (ignore selection in list above)
+            ParameterName: param_all_ledgers

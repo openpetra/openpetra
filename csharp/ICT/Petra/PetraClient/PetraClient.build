@@ -1,34 +1,17 @@
 <?xml version="1.0"?>
 <project name="OpenPetra-csharp-PetraClient-build">
-<property name="Namespace" value="PetraClient" />
-
-<property name="OutputType" value="winexe" overwrite="false"/>
 
 <target name="custclean"> 
   <!-- Remove generated files from generateWinForms -->
-  <foreach item="String" property="yamldir" in="${dir.root}/csharp/ICT/Petra/PetraClient" delim="," trim="Both"><do>
-    <foreach item="File" property="yamlfile">
-        <in> <items>
-                <include name="${yamldir}/*.yaml" />
-        </items></in>
-        <do>
-          <loadfile file="${yamlfile}" property="yamlfilecontent"/>
-          <if test="${not string::contains(yamlfilecontent, 'FormType: abstract') }" >
-            <delete file="${path::change-extension(yamlfile, '.cs')}" />
-            <delete file="${path::change-extension(yamlfile, '.Designer.cs')}" />
-<!--            <delete file="${path::change-extension(yamlfile, '.resx')}" /> -->
-          </if>
-        </do>
-    </foreach>
-  </do></foreach>  
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:clean -ymldir:${dir.root}/csharp/ICT/Petra/PetraClient"/>
 </target>
 
 <target name="custdepend"> 
+  <!-- Remove generated files from generateWinForms -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="generateWinformsParameters" value="-TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${framework::get-target-framework()}"/>
-
-  <ExecDotNet program="${tool-generateWinForms}" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/PetraClient ${generateWinformsParameters}"/> 
-
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymldir:${dir.root}/csharp/ICT/Petra/PetraClient ${generateWinformsParameters}"/>
 </target>
 
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 

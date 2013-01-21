@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,7 +25,7 @@ using System;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
 using Ict.Common;
-using Ict.Petra.Shared.Interfaces.ServerAdminInterface;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.ServerAdmin.App.Core;
 using System.Reflection;
 using System.Diagnostics;
@@ -43,7 +43,6 @@ public class TAdminConsole
     /// the command prompt
     /// </summary>
     public const String ServerAdminPrompt = "SERVERADMIN> ";
-    private static TLogging Logger;
 
     /// <summary>
     /// todoComment
@@ -63,6 +62,70 @@ public class TAdminConsole
         {
             Console.WriteLine(remexp);
         }
+    }
+
+    /// <summary>
+    /// shut down the server (gets all connected clients to disconnect)
+    /// </summary>
+    /// <param name="TRemote"></param>
+    /// <param name="AWithUserInteraction"></param>
+    /// <returns>true if shutdown was completed</returns>
+    public static bool ShutDownControlled(IServerAdminInterface TRemote, bool AWithUserInteraction)
+    {
+        bool ReturnValue;
+        bool ack;
+
+        ack = false;
+
+        if (AWithUserInteraction == true)
+        {
+            Console.WriteLine(Environment.NewLine + "-> CONTROLLED SHUTDOWN  (gets all connected clients to disconnect) <-");
+            Console.Write("     Enter YES to perform shutdown (anything else to leave command): ");
+
+            if (Console.ReadLine() == "YES")
+            {
+                Console.WriteLine();
+                ack = true;
+            }
+        }
+        else
+        {
+            ack = true;
+        }
+
+        if (ack == true)
+        {
+            TLogging.Log("CONTROLLED SHUTDOWN PROCEDURE INITIATED...");
+            try
+            {
+                if (!TRemote.StopServerControlled(true))
+                {
+                    Console.WriteLine("     Shutdown cancelled!");
+                    Console.Write(ServerAdminPrompt);
+                    ReturnValue = false;
+                }
+            }
+            catch (SocketException)
+            {
+                if (AWithUserInteraction == true)
+                {
+                    Console.WriteLine();
+                    TLogging.Log("SERVER STOPPED!");
+                    Console.WriteLine();
+                    Console.Write("Press ENTER to end PETRAServerADMIN...");
+                    Console.ReadLine();
+                }
+            }
+            ReturnValue = true;
+        }
+        else
+        {
+            Console.WriteLine("     Shutdown cancelled!");
+            Console.Write(ServerAdminPrompt);
+            ReturnValue = false;
+        }
+
+        return ReturnValue;
     }
 
     /// <summary>
@@ -101,7 +164,7 @@ public class TAdminConsole
             {
                 TRemote.StopServer();
             }
-            catch (RemotingException)
+            catch (SocketException)
             {
                 if (AWithUserInteraction == true)
                 {
@@ -158,6 +221,88 @@ public class TAdminConsole
         }
     }
 
+    private static void ExportDatabase(IServerAdminInterface TRemote)
+    {
+        Console.Write("     Please enter filename of yml.gz file: ");
+        string backupFile = Path.GetFullPath(Console.ReadLine());
+
+        if (!backupFile.EndsWith(".yml.gz"))
+        {
+            Console.WriteLine("filename has to end with .yml.gz. Please try again");
+            return;
+        }
+
+        string YmlGZData = TRemote.BackupDatabaseToYmlGZ();
+
+        FileStream fs = new FileStream(backupFile, FileMode.Create);
+        byte[] buffer = Convert.FromBase64String(YmlGZData);
+        fs.Write(buffer, 0, buffer.Length);
+        fs.Close();
+        TLogging.Log("backup has been written to " + backupFile);
+    }
+
+    private static bool RestoreDatabase(IServerAdminInterface TRemote, string ARestoreFile)
+    {
+        string restoreFile = Path.GetFullPath(ARestoreFile);
+
+        if (!File.Exists(restoreFile) || !restoreFile.EndsWith(".yml.gz"))
+        {
+            Console.WriteLine("invalid filename, please try again");
+            return false;
+        }
+
+        string YmlGZData = string.Empty;
+
+        try
+        {
+            FileStream fs = new FileStream(restoreFile, FileMode.Open, FileAccess.Read);
+            byte[] buffer = new byte[fs.Length];
+            fs.Read(buffer, 0, buffer.Length);
+            fs.Close();
+            YmlGZData = Convert.ToBase64String(buffer);
+        }
+        catch (Exception e)
+        {
+            TLogging.Log("cannot open file " + restoreFile);
+            TLogging.Log(e.ToString());
+            return false;
+        }
+
+        if (TRemote.RestoreDatabaseFromYmlGZ(YmlGZData))
+        {
+            TLogging.Log("backup has been restored from " + restoreFile);
+            return true;
+        }
+        else
+        {
+            TLogging.Log("there have been problems with the restore");
+            return false;
+        }
+    }
+
+    private static void RestoreDatabase(IServerAdminInterface TRemote)
+    {
+        Console.WriteLine(Environment.NewLine + "-> DELETING YOUR DATABASE <-");
+        Console.Write("     Enter YES to import the new database (anything else to leave command): ");
+
+        if (Console.ReadLine() == "YES")
+        {
+            Console.Write("     Please enter filename of yml.gz file: ");
+            string restoreFile = Console.ReadLine();
+
+            RestoreDatabase(TRemote, restoreFile);
+        }
+        else
+        {
+            Console.WriteLine("     Reset of database cancelled!");
+        }
+    }
+
+    private static void AddUser(IServerAdminInterface TRemote, string AUserId)
+    {
+        TRemote.AddUser(AUserId);
+    }
+
     /// <summary>
     /// shows the menu and processes the selections of the administrator
     /// </summary>
@@ -207,11 +352,19 @@ public class TAdminConsole
                         Console.WriteLine("     d: disconnect a certain Client");
                         Console.WriteLine("     q: queue a Client Task for a certain Client");
                         Console.WriteLine("     s: Server Status");
-#if DEBUGMODE
-                        Console.WriteLine("     y: show Server memory");
-                        Console.WriteLine("     g: perform Server garbage collection (for debugging purposes only!)");
-#endif
-                        Console.WriteLine("     u: unconditional Server shutdown (forces disconnection of all Clients!)");
+
+                        if (TLogging.DebugLevel > 0)
+                        {
+                            Console.WriteLine("     y: show Server memory");
+                            Console.WriteLine("     g: perform Server garbage collection (for debugging purposes only!)");
+                        }
+
+                        Console.WriteLine("     e: export the database to yml.gz");
+                        Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
+
+                        Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
+                        Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
+
                         Console.WriteLine("     x: exit PETRAServerADMIN");
                         Console.Write(ServerAdminPrompt);
                         break;
@@ -249,6 +402,27 @@ public class TAdminConsole
                         // queue a Client Task for a certain Client
                         break;
 
+                    case 'e':
+                    case 'E':
+                        Console.WriteLine(Environment.NewLine + "-> Export the database to yml.gz file <-");
+
+                        ExportDatabase(TRemote);
+
+                        Console.Write(ServerAdminPrompt);
+
+                        // queue a Client Task for a certain Client
+                        break;
+
+                    case 'i':
+                    case 'I':
+                        Console.WriteLine(Environment.NewLine + "-> Restore the database from yml.gz file <-");
+
+                        RestoreDatabase(TRemote);
+
+                        Console.Write(ServerAdminPrompt);
+
+                        // queue a Client Task for a certain Client
+                        break;
 
                     case 's':
                     case 'S':
@@ -352,6 +526,11 @@ public class TAdminConsole
                         Console.Write(ServerAdminPrompt);
                         break;
 
+                    case 'o':
+                    case 'O':
+                        ReadLineLoopEnd = ShutDownControlled(TRemote, true);
+                        break;
+
                     case 'u':
                     case 'U':
                         ReadLineLoopEnd = ShutDown(TRemote, true);
@@ -402,12 +581,18 @@ public class TAdminConsole
         catch (RemotingException remexp)
         {
             HandleConnectionError(remexp);
-            return;
+
+            Environment.Exit(0);
+
+            // PetraServerAdminConsole application stops here !!!
         }
         catch (System.Net.Sockets.SocketException remexp)
         {
             HandleConnectionError(remexp);
-            return;
+
+            Environment.Exit(0);
+
+            // PetraServerAdminConsole application stops here !!!
         }
         catch (System.Exception)
         {
@@ -441,7 +626,6 @@ public class TAdminConsole
     public static void Start()
     {
         Ict.Petra.ServerAdmin.App.Core.TConnector TheConnector;
-        TAppSettingsManager AppOpts;
         IServerAdminInterface TRemote;
         String ClientID;
         Boolean SilentSysadm;
@@ -449,20 +633,23 @@ public class TAdminConsole
 
         try
         {
-            // effectively this is currently in the bin22 directory
-            // in 2.3 I would like to move the file to /usr/local/petra
-            Logger = new TLogging();
-            AppOpts = new TAppSettingsManager();
+            new TLogging();
+            new TAppSettingsManager();
             SilentSysadm = true;
 
-            if ((!AppOpts.HasValue("Command") || (AppOpts.GetValue("Command") == "Stop")))
+            if (TAppSettingsManager.HasValue("DebugLevel"))
+            {
+                TLogging.DebugLevel = TAppSettingsManager.GetInt32("DebugLevel");
+            }
+
+            if ((!TAppSettingsManager.HasValue("Command") || (TAppSettingsManager.GetValue("Command") == "Stop")))
             {
                 SilentSysadm = false;
             }
 
-            if (AppOpts.HasValue("ServerAdmin.LogFile"))
+            if (TAppSettingsManager.HasValue("ServerAdmin.LogFile"))
             {
-                Logger = new TLogging(AppOpts.GetValue("ServerAdmin.LogFile"));
+                new TLogging(TAppSettingsManager.GetValue("ServerAdmin.LogFile"));
             }
 
             if ((!SilentSysadm))
@@ -484,28 +671,40 @@ public class TAdminConsole
             TheConnector = new Ict.Petra.ServerAdmin.App.Core.TConnector();
             TheConnector.GetServerConnection(TAppSettingsManager.ConfigFileName, out TRemote);
 
-            if (AppOpts.HasValue("Command"))
+            if (TAppSettingsManager.HasValue("Command"))
             {
-                if (AppOpts.GetValue("Command") == "Stop")
+                if (TAppSettingsManager.GetValue("Command") == "Stop")
                 {
                     ShutDown(TRemote, false);
                 }
-                else if (AppOpts.GetValue("Command") == "ConnectedClients")
+                else if (TAppSettingsManager.GetValue("Command") == "StopAndCloseClients")
+                {
+                    ShutDownControlled(TRemote, false);
+                }
+                else if (TAppSettingsManager.GetValue("Command") == "ConnectedClients")
                 {
                     System.Console.WriteLine(TRemote.FormatClientList(false));
                 }
-                else if (AppOpts.GetValue("Command") == "ConnectedClientsSysadm")
+                else if (TAppSettingsManager.GetValue("Command") == "ConnectedClientsSysadm")
                 {
                     System.Console.WriteLine(TRemote.FormatClientListSysadm(false));
                 }
-                else if (AppOpts.GetValue("Command") == "DisconnectedClients")
+                else if (TAppSettingsManager.GetValue("Command") == "DisconnectedClients")
                 {
                     System.Console.WriteLine(TRemote.FormatClientList(true));
                 }
-                else if (AppOpts.GetValue("Command") == "DisconnectClient")
+                else if (TAppSettingsManager.GetValue("Command") == "DisconnectClient")
                 {
-                    ClientID = AppOpts.GetValue("ClientID");
+                    ClientID = TAppSettingsManager.GetValue("ClientID");
                     DisconnectClient(TRemote, ClientID);
+                }
+                else if (TAppSettingsManager.GetValue("Command") == "LoadYmlGz")
+                {
+                    RestoreDatabase(TRemote, TAppSettingsManager.GetValue("YmlGzFile"));
+                }
+                else if (TAppSettingsManager.GetValue("Command") == "AddUser")
+                {
+                    AddUser(TRemote, TAppSettingsManager.GetValue("UserId"));
                 }
             }
             else

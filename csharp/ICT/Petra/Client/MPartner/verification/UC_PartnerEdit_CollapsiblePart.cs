@@ -34,63 +34,27 @@ using Ict.Petra.Shared;
 namespace Ict.Petra.Client.MPartner.Verification
 {
     /// <summary>
-    /// Contains verification logic for the UC_PartnerAddress UserControl.
+    /// Contains verification logic for the UC_PartnerEdit_CollapsiblePart UserControl.
     /// </summary>
     public class TPartnerVerification : System.Object
     {
-        /// <summary>todoComment</summary>
-        public const String StrPartnerStatusNotMerged = "The Partner Status cannot be set to 'MERGED'" + " by the user -" + "\r\n" +
-                                                        "this Partner Status is set only by the " + "Partner Merge function" + "\r\n" +
-                                                        "for Partners that have been merged " +
-                                                        "into another Partner!";
+        #region Resourcetexts
 
-        /// <summary>todoComment</summary>
-        public const String StrFundnameChange = "This partner is a ledger." + "\r\n" +
-                                                "Fund names can be changed only with the approval from the IFC." + "\r\n" + "\r\n" +
-                                                "Do you have the approval to change the fund name?";
+        private static readonly string StrFundnameChange = Catalog.GetString(
+            "This partner is a ledger.\r\n" +
+            "Fund names can be changed only with the approval from the IFC.\r\n\r\n" +
+            "Do you have the approval to change the fund name?");
 
-        /// <summary>todoComment</summary>
-        public const String StrFundNameChangeTitle = "Fund Name Change Authorisation";
+        private static readonly string StrFundNameChangeTitle = Catalog.GetString("Fund Name Change Authorisation");
 
-        /// <summary>todoComment</summary>
-        public const String StrFundNameChangeUndone = "Fund Name change has been undone.";
+        private static readonly string StrFundNameChangeUndone = Catalog.GetString("Fund Name change has been undone.");
 
-        /// <summary>todoComment</summary>
-        public const String StrFundNameChangeUndoneTitle = "Missing Approval";
+        /// <summary>Resourcetext: 'Missing Approval'</summary>
+        public static readonly string StrFundNameChangeUndoneTitle = Catalog.GetString("Missing Approval");
+
+        #endregion
 
         #region TPartnerVerification
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        public static Boolean VerifyPartnerData(DataColumnChangeEventArgs e, out TVerificationResult AVerificationResult)
-        {
-            Boolean ReturnValue;
-
-            AVerificationResult = null;
-
-            if (e.Column.ColumnName == PPartnerTable.GetStatusCodeDBName())
-            {
-                VerifyPartnerStatus(e, out AVerificationResult);
-            }
-
-            // any verification errors?
-            if (AVerificationResult == null)
-            {
-                ReturnValue = true;
-            }
-            else
-            {
-                ReturnValue = false;
-
-                // MessageBox.Show('VerifyPartnerData: There was an error!');
-            }
-
-            return ReturnValue;
-        }
 
         /// <summary>
         /// todoComment
@@ -135,6 +99,7 @@ namespace Ict.Petra.Client.MPartner.Verification
         {
             AVerificationResult = null;
             System.Windows.Forms.DialogResult ApprovalFromIFC;
+
             try
             {
                 /*
@@ -144,21 +109,24 @@ namespace Ict.Petra.Client.MPartner.Verification
                 if ((SharedTypes.PartnerClassStringToEnum(AMainDS.PPartner[0].PartnerClass) == TPartnerClass.UNIT)
                     && (AMainDS.PPartner[0].HasVersion(DataRowVersion.Original)))
                 {
-                    if (AMainDS.PPartnerType.Rows.Find(new Object[] { AMainDS.PPartner[0].PartnerKey, "LEDGER" }) != null)
+                    if (AMainDS.PPartnerType != null)
                     {
-                        ApprovalFromIFC = MessageBox.Show(StrFundnameChange,
-                            StrFundNameChangeTitle,
-                            MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Question,
-                            MessageBoxDefaultButton.Button2);
-
-                        if (ApprovalFromIFC == System.Windows.Forms.DialogResult.No)
+                        if (AMainDS.PPartnerType.Rows.Find(new Object[] { AMainDS.PPartner[0].PartnerKey, "LEDGER" }) != null)
                         {
-                            AVerificationResult = new TVerificationResult("",
-                                StrFundNameChangeUndone,
-                                StrFundNameChangeUndoneTitle,
-                                ErrorCodes.PETRAERRORCODE_UNITNAMECHANGEUNDONE,
-                                TResultSeverity.Resv_Critical);
+                            ApprovalFromIFC = MessageBox.Show(StrFundnameChange,
+                                StrFundNameChangeTitle,
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Question,
+                                MessageBoxDefaultButton.Button2);
+
+                            if (ApprovalFromIFC == System.Windows.Forms.DialogResult.No)
+                            {
+                                AVerificationResult = new TVerificationResult("",
+                                    StrFundNameChangeUndone,
+                                    StrFundNameChangeUndoneTitle,
+                                    PetraErrorCodes.ERR_UNITNAMECHANGEUNDONE,
+                                    TResultSeverity.Resv_Noncritical);
+                            }
                         }
                     }
                 }
@@ -166,27 +134,6 @@ namespace Ict.Petra.Client.MPartner.Verification
             catch (Exception)
             {
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="AVerificationResult"></param>
-        public static void VerifyPartnerStatus(DataColumnChangeEventArgs e, out TVerificationResult AVerificationResult)
-        {
-            if (e.ProposedValue.ToString() == SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED))
-            {
-                AVerificationResult = new TVerificationResult("",
-                    StrPartnerStatusNotMerged,
-                    Catalog.GetString("Invalid Data"),
-                    ErrorCodes.PETRAERRORCODE_PARTNERSTATUSMERGEDCHANGEUNDONE,
-                    TResultSeverity.Resv_Critical);
-            }
-            else
-            {
-                AVerificationResult = null;
             }
         }
 

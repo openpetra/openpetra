@@ -4,7 +4,7 @@
     Namespace: Ict.Petra.Client.MSysMan.Gui
     DetailTable: SUser
     DatasetType: Ict.Petra.Shared.MSysMan.Data.MaintainUsersTDS
-    UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data,Ict.Common.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data,Ict.Common.Data,Ict.Petra.Shared.MSysMan.Validation]
     FormType: edit
     Template: windowEdit
     Actions:
@@ -40,7 +40,7 @@
         txtDetailLastName:
         clbUserGroup:
             Label: This User can access
-            ColSpan: 3
+            ColSpan: 2
             Width: 500
             Height: 250
             #Enabled: cndChangePermissions

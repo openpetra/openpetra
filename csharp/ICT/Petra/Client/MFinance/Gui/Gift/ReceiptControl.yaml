@@ -1,0 +1,30 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Receipt Control
+    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    FormType: browse
+    Template: window
+    WindowWidth: 650
+    WindowHeight: 550
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [txtLedger,pnlDetails,pnlBtns]
+        txtLedger: {Label=Ledger, ReadOnly=true, Width=150}
+        pnlDetails:
+            Controls: [grdDetails]
+            Height:400
+        grdDetails:
+            Dock: Fill
+        pnlBtns:
+            Controls:
+                Row0: [btnPrint, btnRemove, btnRcptNumber, btnCloseForm]
+        btnPrint:
+            ActionClick:OnBtnPrint
+        btnRemove:
+            ActionClick:OnBtnRemove
+        btnRcptNumber:
+            ActionClick:OnBtnRcptNumber
+        btnCloseForm:
+            ActionClick:OnBtnClose
+            Label:Close

@@ -1,0 +1,4 @@
+    <ProjectReference Include="${reference-project-file-name}">
+      <Project>${reference-project-guid}</Project>
+      <Name>${reference-name}</Name>
+    </ProjectReference>

@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PInterestCategory
     CacheableTable: InterestCategoryList
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 713
@@ -42,8 +42,7 @@ RootNode:
             Controls: 
                 Row0: [txtDetailLevelDescriptions, txtDetailLevelRangeLow, txtDetailLevelRangeHigh]
             ColWidths: [3=Fixed:60]
-            ColSpan: 3
-        txtDetailCategory: {Label=Category}
+        txtDetailCategory: {Label=Category, CharacterCasing=Upper}
         txtDetailDescription: {Label=Description, Width=260}
         txtDetailLevelDescriptions:
         txtDetailLevelRangeLow: {Format=Integer, Label=Level Range Lower, Width=30}

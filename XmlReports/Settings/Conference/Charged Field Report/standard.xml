@@ -1,49 +1,49 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Conference\\chargedfieldreport.xml,Conference\\conference.xml" />
-  <Parameter id="currentReport" value="Charged Field Report" />
-  <Parameter id="MaxDisplayColumns" value="14" />
-  <Parameter id="param_conferenceselection" value="one conference" />
-  <Parameter id="param_attendeeselection" value="all attendees" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_conferencekey" value="0" />
-  <Parameter id="param_conferencename" value="" />
-  <Parameter id="param_extractname" value="" />
-  <Parameter id="param_calculation" column="14" value="DummyValue14" />
-  <Parameter id="param_report_detail" value="Full" />
-  <Parameter id="param_selected_keys_csv" value="" />
-  <Parameter id="param_chkFinancialReport" value="true" />
-  <Parameter id="param_chkAcceptedApplications" value="false" />
-  <Parameter id="param_chkExtraCosts" value="false" />
-  <Parameter id="param_cmbSignOffLines" value="no Sign Off Lines" />
-  <Parameter id="param_cmbChargedFields" value="leave data as it is" />
-  <Parameter id="param_calculation" column="0" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="0" value="3.5" />
-  <Parameter id="param_calculation" column="1" value="Gender" />
-  <Parameter id="ColumnWidth" column="1" value="1.2" />
-  <Parameter id="param_calculation" column="2" value="Marital Status" />
-  <Parameter id="ColumnWidth" column="2" value="1" />
-  <Parameter id="param_calculation" column="3" value="Passport Number" />
-  <Parameter id="ColumnWidth" column="3" value="3" />
-  <Parameter id="param_calculation" column="4" value="Age" />
-  <Parameter id="ColumnWidth" column="4" value="0.8" />
-  <Parameter id="param_calculation" column="5" value="Arrival Date" />
-  <Parameter id="ColumnWidth" column="5" value="1.8" />
-  <Parameter id="param_calculation" column="6" value="Departure Date" />
-  <Parameter id="ColumnWidth" column="6" value="1.8" />
-  <Parameter id="param_calculation" column="7" value="Conference Role" />
-  <Parameter id="ColumnWidth" column="7" value="1" />
-  <Parameter id="param_calculation" column="8" value="Application Status" />
-  <Parameter id="ColumnWidth" column="8" value="1" />
-  <Parameter id="param_calculation" column="9" value="Campaign Code" />
-  <Parameter id="ColumnWidth" column="9" value="3" />
-  <Parameter id="param_calculation" column="10" value="Fellowship Group" />
-  <Parameter id="ColumnWidth" column="10" value="1.5" />
-  <Parameter id="param_calculation" column="11" value="Driver Status" />
-  <Parameter id="ColumnWidth" column="11" value="2" />
-  <Parameter id="param_calculation" column="12" value="Missing Information" />
-  <Parameter id="ColumnWidth" column="12" value="3" />
-  <Parameter id="param_calculation" column="13" value="Finance Details" />
-  <Parameter id="ColumnWidth" column="13" value="3" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Conference\\chargedfieldreport.xml,Conference\\conference.xml" />
+  <Parameter id="currentReport" value="eString:Charged Field Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:14" />
+  <Parameter id="param_conferenceselection" value="eString:one conference" />
+  <Parameter id="param_attendeeselection" value="eString:all attendees" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_conferencekey" value="eInteger:0" />
+  <Parameter id="param_conferencename" value="eString:" />
+  <Parameter id="param_extractname" value="eString:" />
+  <Parameter id="param_calculation" column="14" value="eString:DummyValue14" />
+  <Parameter id="param_report_detail" value="eString:Full" />
+  <Parameter id="param_selected_keys_csv" value="eString:" />
+  <Parameter id="param_chkFinancialReport" value="eString:true" />
+  <Parameter id="param_chkAcceptedApplications" value="eString:false" />
+  <Parameter id="param_chkExtraCosts" value="eString:false" />
+  <Parameter id="param_cmbSignOffLines" value="eString:no Sign Off Lines" />
+  <Parameter id="param_cmbChargedFields" value="eString:leave data as it is" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_calculation" column="1" value="eString:Gender" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4608083138725491507" />
+  <Parameter id="param_calculation" column="2" value="eString:Marital Status" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:1" />
+  <Parameter id="param_calculation" column="3" value="eString:Passport Number" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
+  <Parameter id="param_calculation" column="4" value="eString:Age" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4605380978949069210" />
+  <Parameter id="param_calculation" column="5" value="eString:Arrival Date" />
+  <Parameter id="ColumnWidth" column="5" value="eDecimal:4610785298501913805" />
+  <Parameter id="param_calculation" column="6" value="eString:Departure Date" />
+  <Parameter id="ColumnWidth" column="6" value="eDecimal:4610785298501913805" />
+  <Parameter id="param_calculation" column="7" value="eString:Conference Role" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:1" />
+  <Parameter id="param_calculation" column="8" value="eString:Application Status" />
+  <Parameter id="ColumnWidth" column="8" value="eInteger:1" />
+  <Parameter id="param_calculation" column="9" value="eString:Outreach Code" />
+  <Parameter id="ColumnWidth" column="9" value="eInteger:3" />
+  <Parameter id="param_calculation" column="10" value="eString:Fellowship Group" />
+  <Parameter id="ColumnWidth" column="10" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="11" value="eString:Driver Status" />
+  <Parameter id="ColumnWidth" column="11" value="eInteger:2" />
+  <Parameter id="param_calculation" column="12" value="eString:Missing Information" />
+  <Parameter id="ColumnWidth" column="12" value="eInteger:3" />
+  <Parameter id="param_calculation" column="13" value="eString:Finance Details" />
+  <Parameter id="ColumnWidth" column="13" value="eInteger:3" />
 </Parameters>

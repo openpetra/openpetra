@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,10 +28,17 @@ using System.Diagnostics;
 
 namespace Ict.Tools.NAntTasks
 {
+    /// <summary>
+    /// execute a command on the shell or command line
+    /// </summary>
     [TaskName("ExecCmd")]
     public class ExecCmdTask : NAnt.Core.Tasks.ExecTask
     {
         private string FSuperUser = String.Empty;
+
+        /// <summary>
+        /// name of the privileged user
+        /// </summary>
         [TaskAttribute("superuser", Required = false)]
         public string SuperUser {
             get
@@ -44,6 +51,9 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        /// <summary>
+        /// run the task
+        /// </summary>
         protected override void ExecuteTask()
         {
             if (NAnt.Core.PlatformHelper.IsUnix)

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,7 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Shared.Interfaces.MReporting.LogicConnectors;
+using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.MReporting;
 using System.Collections.Specialized;
 using System.Collections;
@@ -30,6 +30,8 @@ using System.Runtime.Remoting.Lifetime;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using System.Data;
 using System.IO;
 using System.Threading;
@@ -55,9 +57,14 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>will be set by SetMaxDisplayColumns;</summary>
         protected Int32 MaxDisplayColumns;
 
+        /// <summary>
+        /// is this calculator used for a report or an extract
+        /// </summary>
+        protected bool FCalculatesExtract = false;
+
         /// <summary>how long did it take to calculate the report</summary>
         protected TimeSpan Duration;
-        private IReportGeneratorLogicConnector FReportingGenerator;
+        private IReportingUIConnectorsReportGenerator FReportingGenerator;
         private Boolean FKeepUpProgressCheck;
 
         /// <summary>
@@ -67,6 +74,22 @@ namespace Ict.Petra.Client.MReporting.Logic
         {
             Parameters = new TParameterList();
             MaxDisplayColumns = -1;
+        }
+
+        /// <summary>
+        /// get/set if this calculator is used for a report or an extract
+        /// </summary>
+        public bool CalculatesExtract
+        {
+            get
+            {
+                return FCalculatesExtract;
+            }
+
+            set
+            {
+                FCalculatesExtract = value;
+            }
         }
 
         /// <summary>
@@ -436,7 +459,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             Thread ProgressCheckThread;
 
             ReturnValue = false;
-            FReportingGenerator = TRemote.MReporting.LogicConnectors.ReportGenerator();
+            FReportingGenerator = TRemote.MReporting.UIConnectors.ReportGenerator();
             FKeepUpProgressCheck = true;
 
             // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
@@ -462,11 +485,20 @@ namespace Ict.Petra.Client.MReporting.Logic
                 Thread.Sleep(500);
             }
 
-            ReturnValue = FReportingGenerator.Success;
+            ReturnValue = FReportingGenerator.GetSuccess();
 
             if (ReturnValue)
             {
-                TLogging.Log("Report calculation finished", TLoggingType.ToStatusBar);
+                if (FCalculatesExtract)
+                {
+                    TLogging.Log("Extract calculation finished. Look for extract '" +
+                        Parameters.Get("param_extract_name").ToString() +
+                        "' in Extract Master List.", TLoggingType.ToStatusBar);
+                }
+                else
+                {
+                    TLogging.Log("Report calculation finished", TLoggingType.ToStatusBar);
+                }
             }
 
             return ReturnValue;
@@ -492,15 +524,15 @@ namespace Ict.Petra.Client.MReporting.Logic
                     case TAsyncExecProgressState.Aeps_Finished:
                         this.Duration = DateTime.Now - startTime;
 
-                        if (FReportingGenerator.Success == true)
+                        if (FReportingGenerator.GetSuccess() == true)
                         {
-                            this.Parameters.LoadFromDataTable(FReportingGenerator.Parameter);
-                            this.Results.LoadFromDataTable(FReportingGenerator.Result);
+                            this.Parameters.LoadFromDataTable(FReportingGenerator.GetParameter());
+                            this.Results.LoadFromDataTable(FReportingGenerator.GetResult());
                             this.Results.SetMaxDisplayColumns(this.Parameters.Get("MaxDisplayColumns").ToInt());
                         }
                         else
                         {
-                            TLogging.Log(FReportingGenerator.ErrorMessage);
+                            TLogging.Log(FReportingGenerator.GetErrorMessage());
                         }
 
                         // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer

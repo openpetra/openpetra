@@ -1,0 +1,52 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    DetailTable: PmGeneralApplication
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNewShortTerm: {ActionClick=NewRowShortTermApp}
+        actNewLongTerm: {ActionClick=NewRowLongTermApp}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlDetailGrid, pnlDetails]
+        pnlDetailGrid:
+            Dock: Fill
+            Controls:
+                Row0: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnNewShortTerm, btnNewLongTerm, btnDelete]
+        btnNewShortTerm: {Label=New (for Event), Stretch=horizontally, Action=actNewShortTerm}
+        btnNewLongTerm: {Label=New (for Field), Stretch=horizontally, Action=actNewLongTerm}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
+        grdDetails:
+            Dock: Fill
+            Columns: []
+            ActionFocusRow: FocusedRowChanged
+            
+        pnlDetails:
+            Dock: Bottom
+            Controls: [pnlApplicationEvent, pnlApplicationField]
+            Height: 350
+            
+        pnlApplicationEvent:
+            Dock: Fill
+            Controls: [ucoApplicationEvent]
+        pnlApplicationField:
+            Dock: Fill
+            Controls: [ucoApplicationField]
+
+
+        ucoApplicationEvent:
+            Dock: Fill
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_Application_Event
+        ucoApplicationField:
+            Dock: Fill
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_Application_Field
+            

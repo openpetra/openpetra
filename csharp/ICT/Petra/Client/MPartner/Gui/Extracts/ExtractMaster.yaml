@@ -1,0 +1,134 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Extract Master List
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    FormType: edit
+    Template: window
+    WindowWidth: 700
+    WindowHeight: 700
+    Actions:
+        actMaintainExtract: {ActionClick=MaintainExtract}      
+        actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}     
+        actPurgeExtracts: {ActionClick=PurgeExtracts}     
+        actCombineExtracts: {ActionClick=CombineExtracts}     
+        actIntersectExtracts: {ActionClick=IntersectExtracts}     
+        actSubtractExtracts: {ActionClick=SubtractExtracts}     
+        actActivateFilter: {ActionClick=FilterExtracts}     
+        actClearFilter: {ActionClick=ClearFilterExtracts}     
+        actUserFilterSelectionChanged: {ActionClick=FilterExtracts}     
+        
+        actCreateGeneralExtract: {ActionClick=CreateGeneralExtract}     
+        actCreateManualExtract: {ActionClick=CreateManualExtract}     
+        actCreatePartnerByCityExtract: {ActionClick=CreatePartnerByCityExtract}     
+        actCreatePartnerBySubscriptionExtract: {ActionClick=CreatePartnerBySubscriptionExtract}     
+        actCreatePartnerBySpecialTypeExtract: {ActionClick=CreatePartnerBySpecialTypeExtract}     
+        actCreateFamilyMembersExtract: {ActionClick=CreateFamilyMembersExtract}     
+        actCreateFamilyExtractForPersons: {ActionClick=CreateFamilyExtractForPersons}     
+        actCreatePartnerByConferenceExtract: {ActionClick=CreatePartnerByConferenceExtract}     
+        actCreatePartnerByOutreachExtract: {ActionClick=CreatePartnerByOutreachExtract}     
+        actCreatePartnerByCommitmentExtract: {ActionClick=CreatePartnerByCommitmentExtract}     
+        actCreatePartnerByFieldExtract: {ActionClick=CreatePartnerByFieldExtract}     
+        actCreateRecipientByFieldExtract: {ActionClick=CreateRecipientByFieldExtract}     
+        actCreateDonorByFieldExtract: {ActionClick=CreateDonorByFieldExtract}     
+        actCreateDonorByMotivationExtract: {ActionClick=CreateDonorByMotivationExtract}     
+        actCreateDonorByAmountExtract: {ActionClick=CreateDonorByAmountExtract}     
+        actCreateDonorByMiscellaneousExtract: {ActionClick=CreateDonorByMiscellaneousExtract}     
+        
+        actAddSubscription: {ActionClick=AddSubscription}     
+        actDeleteSubscription: {ActionClick=DeleteSubscription}     
+        actChangeSubscription: {ActionClick=ChangeSubscription}     
+        actAddPartnerType: {ActionClick=AddPartnerType}     
+        actDeletePartnerType: {ActionClick=DeletePartnerType}     
+        actUpdateSolicitationFlag: {ActionClick=UpdateSolicitationFlag}     
+        actUpdateReceiptFrequency: {ActionClick=UpdateReceiptFrequency}     
+        actUpdateEmailGiftStatement: {ActionClick=UpdateEmailGiftStatement}     
+        
+    Controls:
+        pnlContent:
+            Controls: [pnlFilter, pnlExtractMasterList]
+            Dock: Fill
+        pnlFilter: {ControlsOrientation=horizontal}
+            NoLabel: true
+            Controls: [grpNameFilter, rgrUserFilter]
+        grpNameFilter:
+            Label: Filter by Extract Name
+            Controls: 
+                Row0: [txtExtractNameFilter]
+                Row1: [btnActivateFilter, btnClearFilter]
+        pnlExtractMasterList:
+            Controls: [ucoExtractMasterList]
+               
+        txtExtractNameFilter:
+            NoLabel: true
+            ColSpan: 2
+            Width: 250
+        btnActivateFilter:
+            Label: Filter
+            Action: actActivateFilter
+        btnClearFilter:
+            Label: Clear Filter
+            Action: actClearFilter
+        rgrUserFilter: {Label=Filter by User}
+            Controls: [rbtAll, rbtCreatedBy, rbtModifiedBy]
+        rbtAll: {Label=All, Action=actUserFilterSelectionChanged}
+        rbtCreatedBy: {Label=Created by, Action=actUserFilterSelectionChanged}
+            Controls:[cmbUserCreatedBy]
+        rbtModifiedBy: {Label=Modified by, Action=actUserFilterSelectionChanged}
+            Controls:[cmbUserModifiedBy]
+        cmbUserCreatedBy: {NoLabel=true, List=UserList, OnChange=actUserFilterSelectionChanged}
+        cmbUserModifiedBy: {NoLabel=true, List=UserList, OnChange=actUserFilterSelectionChanged}
+        ucoExtractMasterList:
+            Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMasterList
+
+    Menu:
+        mniCreateExtract:
+            Label: &Create Extract
+            mniCreateGeneralExtract: {Label=General Extract, Action=actCreateGeneralExtract}
+            mniCreateManualExtract: {Label=Manual Extract, Action=actCreateManualExtract}
+            mniSeparator:
+            mniCreatePartnerByCityExtract: {Label=Partner by City, Action=actCreatePartnerByCityExtract}
+            mniCreatePartnerBySubscriptionExtract: {Label=Partner by Subscription, Action=actCreatePartnerBySubscriptionExtract}
+            mniCreatePartnerBySpecialTypeExtract: {Label=Partner by Special Type, Action=actCreatePartnerBySpecialTypeExtract}
+            mniSeparator:
+            mniCreateFamilyMembersExtract: {Label=Family Members Extract, Action=actCreateFamilyMembersExtract}
+            mniCreateFamilyExtractForPersons: {Label=Family Extract for Persons, Action=actCreateFamilyExtractForPersons}
+            mniSeparator:
+            mniCreatePartnerByConferenceExtract: {Label=Partner by Conference, Action=actCreatePartnerByConferenceExtract}
+            mniCreatePartnerByOutreachExtract: {Label=Partner by Outreach, Action=actCreatePartnerByOutreachExtract}
+            mniSeparator:
+            mniCreatePartnerByCommitmentExtract: {Label=Partner by Commitment, Action=actCreatePartnerByCommitmentExtract}
+            mniCreatePartnerByFieldExtract: {Label=Partner by Field, Action=actCreatePartnerByFieldExtract}
+            mniSeparator:
+            mniCreateDonorExtract:
+                Label: Donor Extract
+                mniCreateDonorByFieldExtract: {Label=Donor by Field, Action=actCreateDonorByFieldExtract}
+                mniCreateDonorByMotivationExtract: {Label=Donor by Motivation, Action=actCreateDonorByMotivationExtract}
+                mniCreateDonorByAmountExtract: {Label=Donor by Amount, Action=actCreateDonorByAmountExtract}
+                mniCreateDonorByMiscellaneousExtract: {Label=Donor by Miscellaneous, Action=actCreateDonorByMiscellaneousExtract}
+            mniCreateRecipientByFieldExtract: {Label=Recipient by Field, Action=actCreateRecipientByFieldExtract}
+        mniMaintain:
+            Label: &Maintain
+            mniMaintainExtract: {Label=Maintain Extract, Action=actMaintainExtract}
+            mniVerifyExtract: {Label=Verify and Update Extract, Action=actVerifyAndUpdateExtract}
+            mniPurgeExtracts: {Label=Purge Extracts, Action=actPurgeExtracts}
+            mniSeparator:
+            mniCombineExtracts: {Label=Combine Extracts, Action=actCombineExtracts}
+            mniIntersectExtracts: {Label=Intersect Extracts, Action=actIntersectExtracts}
+            mniSubtractExtracts: {Label=Subtract Extracts, Action=actSubtractExtracts}
+        mniUpdatePartners:
+            Label: &Update Partners
+            mniAddSubscription: {Label=Add Subscription, Action=actAddSubscription}
+            mniDeleteSubscription: {Label=Delete Subscription, Action=actDeleteSubscription}
+            mniChangeSubscription: {Label=Change Subscription, Action=actChangeSubscription}
+            mniSeparator:
+            mniAddPartnerType: {Label=Add Partner Type, Action=actAddPartnerType}
+            mniDeletePartnerType: {Label=Delete Partner Type, Action=actDeletePartnerType}
+            mniUpdateSolicitationFlag: {Label=No Solicitations Flag, Action=actUpdateSolicitationFlag}
+            mniSeparator:
+            mniUpdateReceiptFrequency: {Label=Receipt Frequency, Action=actUpdateReceiptFrequency}
+            mniUpdateEmailGiftStatement: {Label=Email Gift Statement, Action=actUpdateEmailGiftStatement}
+
+    Toolbar:
+

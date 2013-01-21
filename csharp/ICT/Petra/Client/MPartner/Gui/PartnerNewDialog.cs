@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,8 +32,7 @@ using GNU.Gettext;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common.Controls;
 using SourceGrid;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner;
@@ -41,6 +40,7 @@ using Ict.Common;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -50,25 +50,28 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public partial class TPartnerNewDialogWinForm : System.Windows.Forms.Form, IFrmPetra
     {
-        /// <summary>todoComment</summary>
-        public const String StrCantCreateNewPartner = "New Partner can't be created because there are " + "no Installed Sites available!" + "\r\n" +
-                                                      "Please set up at least one Installed Site in the " + "System Manager Module!";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyNeedsToBeSelected = "A Family needs to be selected when a new Par" +
-                                                         "tner of Partner Class 'PERSON' should be created!";
+        private static readonly string StrCantCreateNewPartner = Catalog.GetString(
+            "New Partner can't be created because there are no Installed Sites available!\r\n" +
+            "Please set up at least one Installed Site in the System Manager Module!");
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyNeedsToBeSelectedTitle = "Family Needed!";
+        private static readonly string StrFamilyNeedsToBeSelected = Catalog.GetString(
+            "A Family needs to be selected when a new Partner of Partner Class 'PERSON' should be created!");
 
-        /// <summary>todoComment</summary>
-        public const String StrAPartnerKeyExists1 = "A Partner with Partner Key ";
+        private static readonly string StrFamilyNeedsToBeSelectedTitle = Catalog.GetString("Family Needed!");
 
-        /// <summary>todoComment</summary>
-        public const String StrAPartnerKeyExists2 = " already exists." + "\r\n" + "Please choose a different Partner Key!";
+        private static readonly string StrCorrectFamilyKeyNeedsToBeEntered = Catalog.GetString(
+            "The correct key of an existing family needs to be entered when a new Partner of Partner Class 'PERSON' should be created!");
 
-        /// <summary>todoComment</summary>
-        public const String StrAPartnerKeyExistsTitle = "Partner Key already in use";
+        private static readonly string StrCorrectFamilyKeyNeedsToBeEnteredTitle = Catalog.GetString("A correct family key needs to be entered!");
+
+        private static readonly string StrAPartnerKeyExists = Catalog.GetString(
+            "A Partner with Partner Key {0} already exists.\r\nPlease choose a different Partner Key!");
+
+        private static readonly string StrAPartnerKeyExistsTitle = Catalog.GetString("Partner Key already in use");
+
+        #endregion
 
         private TPartnerNewDialogScreenLogic FLogic;
 
@@ -137,8 +140,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FFormSetupFinished)
             {
-                APartnerClass = cmbPartnerClass.SelectedItem.ToString();
-                AAcquisitionCode = cmbAcquisitionCode.SelectedItem.ToString();
+                APartnerClass = cmbPartnerClass.GetSelectedString();
+                AAcquisitionCode = cmbAcquisitionCode.GetSelectedString();
                 ASiteKey = FSiteKey;
                 APartnerKey = FPartnerKey;
                 APrivatePartner = chkPrivatePartner.Checked;
@@ -158,7 +161,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        public TPartnerNewDialogWinForm(IntPtr AParentFormHandle) : base()
+        public TPartnerNewDialogWinForm(Form AParentForm) : base()
         {
             //
             // Required for Windows Form Designer support
@@ -167,20 +170,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblSitesAvailable.Text = Catalog.GetString("S&ites Available") + ":";
+            this.lblPartnerKey.Text = Catalog.GetString("Partner &Key") + ":";
+            this.lblPartnerClass.Text = Catalog.GetString("Partner C&lass") + ":";
+            this.Label1.Text = Catalog.GetString("&Acquisition Code") + ":";
+            this.chkPrivatePartner.Text = Catalog.GetString("&Private Partner") + ":";
+            this.txtPartnerKey.LabelText = Catalog.GetString("Partner Key");
+            this.txtFamilyPartnerBox.ButtonText = Catalog.GetString("&Family...");
             this.btnOK.Text = Catalog.GetString("&OK");
             this.btnCancel.Text = Catalog.GetString("&Cancel");
             this.btnHelp.Text = Catalog.GetString("&Help");
-            this.lblSitesAvailable.Text = Catalog.GetString("S&ites Available:");
-            this.lblPartnerKey.Text = Catalog.GetString("Partner &Key:");
-            this.lblPartnerClass.Text = Catalog.GetString("Partner C&lass:");
-            this.Label1.Text = Catalog.GetString("&Acquisition Code:");
-            this.chkPrivatePartner.Text = Catalog.GetString("&Private Partner:");
-            this.txtPartnerKey.LabelText = Catalog.GetString("Partner Key");
-            this.txtFamilyPartnerBox.ButtonText = Catalog.GetString("&Family...");
             this.Text = Catalog.GetString("New Partner");
             #endregion
 
-            FPetraUtilsObject = new TFrmPetraUtils(AParentFormHandle, this, stbMain);
+            FPetraUtilsObject = new TFrmPetraUtils(AParentForm, this, stbMain);
             this.FPetraUtilsObject.SetStatusBarText(this.btnOK, Catalog.GetString("Accept data and continue"));
             this.FPetraUtilsObject.SetStatusBarText(this.btnCancel, Catalog.GetString("Cancel data entry and close"));
             this.FPetraUtilsObject.SetStatusBarText(this.btnHelp, Catalog.GetString("Help"));
@@ -210,7 +213,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FFormSetupFinished)
             {
-                if (cmbPartnerClass.SelectedValue.ToString() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+                if (cmbPartnerClass.GetSelectedString() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
                     ShowFamilyPartnerSelection(true);
                 }
@@ -249,19 +252,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int64 NewPartnerKey;
             String NewPartnerClass;
 
-            NewPartnerClass = cmbPartnerClass.SelectedItem.ToString();
+            NewPartnerClass = cmbPartnerClass.GetSelectedString();
 
             if (NewPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
             {
-                MessageBox.Show("We are planning to change the Person and Family system to something more easy to understand." +
-                    Environment.NewLine +
-                    "To avoid problems upgrading your database, please create a FAMILY partner rather than a PERSON partner!",
-                    "NO CREATION OF PERSONS AT THE MOMENT",
-                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                if (TAppSettingsManager.GetValue("AllowCreationPersonRecords", "true", false).ToLower() != "true")
+                {
+                    MessageBox.Show("We are planning to change the Person and Family system to something more easy to understand." +
+                        Environment.NewLine +
+                        "To avoid problems upgrading your database, please create a FAMILY partner rather than a PERSON partner!" +
+                        Environment.NewLine +
+                        "Otherwise, please add a parameter AllowCreationPersonRecords with value true to your config files.",
+                        "NO CREATION OF PERSONS AT THE MOMENT",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
 
-                return;
-
-#if TODO
                 FFamilyPartnerKey = Convert.ToInt32(txtFamilyPartnerBox.Text);
 
                 if (FFamilyPartnerKey == 0)
@@ -270,7 +276,29 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtFamilyPartnerBox.Focus();
                     return;
                 }
-#endif
+                else //check if a family with the given familyPartnerKey exists; if this is not the case then diplay a message box
+                {
+                    TPartnerClass[] AValidPartnerClasses = new TPartnerClass[1];
+                    AValidPartnerClasses[0] = TPartnerClass.FAMILY;
+                    bool APartnerExists;
+                    String APartnerShortName;
+                    TPartnerClass APartnerClass;
+                    Boolean AIsMergedPartner;
+
+                    if (!TServerLookup.TMPartner.VerifyPartner(FFamilyPartnerKey, AValidPartnerClasses,
+                            out APartnerExists,
+                            out APartnerShortName,
+                            out APartnerClass,
+                            out AIsMergedPartner))
+                    {
+                        MessageBox.Show(StrCorrectFamilyKeyNeedsToBeEntered,
+                            StrCorrectFamilyKeyNeedsToBeEnteredTitle,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation);
+                        txtFamilyPartnerBox.Focus();
+                        return;
+                    }
+                }
             }
 
             NewPartnerKey = txtPartnerKey.PartnerKey;
@@ -283,7 +311,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                MessageBox.Show(StrAPartnerKeyExists1 + txtPartnerKey.PartnerKey.ToString() + StrAPartnerKeyExists2, StrAPartnerKeyExistsTitle);
+                MessageBox.Show(String.Format(StrAPartnerKeyExists, txtPartnerKey.PartnerKey, StrAPartnerKeyExistsTitle));
                 txtPartnerKey.Focus();
             }
         }
@@ -292,22 +320,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FPartnerClass != "")
             {
-                cmbPartnerClass.SelectedItem = FPartnerClass;
+                cmbPartnerClass.SetSelectedString(FPartnerClass);
             }
             else
             {
                 // Default value: FAMILY
-                cmbPartnerClass.SelectedItem = "FAMILY";
+                cmbPartnerClass.SetSelectedString("FAMILY");
             }
 
             if (FAcquisitionCode != "")
             {
-                cmbAcquisitionCode.SelectedItem = FAcquisitionCode;
+                cmbAcquisitionCode.SetSelectedString(FAcquisitionCode);
             }
             else
             {
                 // Default value: UserDefault PARTNER_ACQUISITIONCODE
-                cmbAcquisitionCode.SelectedItem = TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_ACQUISITIONCODE, "MAILROOM");
+                cmbAcquisitionCode.SetSelectedString(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_ACQUISITIONCODE, "MAILROOM"));
             }
 
             // Default value: false (from SetParameters default)
@@ -360,7 +388,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                MessageBox.Show(StrCantCreateNewPartner, CommonResourcestrings.StrErrorNoInstalledSites);
+                MessageBox.Show(StrCantCreateNewPartner, MCommonResourcestrings.StrErrorNoInstalledSites);
                 DialogResult = System.Windows.Forms.DialogResult.Cancel;
                 Close();
                 return;

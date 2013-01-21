@@ -10,12 +10,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <title>Sample Registration</title>
 
-    <link rel="stylesheet" type="text/css" href="../../css/ext-all.css"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/ext-all.css"/>
     <script type="text/javascript" src="../../js/ext-base.js"></script>
     <script type="text/javascript" src="../../js/ext-all-debug.js"></script>
-
-    <link rel="stylesheet" type="text/css" href="../../css/fileuploadfield.css"/>
-    <script type="text/javascript" src="../../js/FileUploadField.js"></script>
 
     <script type="text/javascript" src="gen/main.js"></script>
     <style type=text/css>
@@ -33,10 +30,6 @@
         MainForm.render('mainFormDiv');
         UploadForm = new TUploadForm();
         UploadForm.render('uploadDiv');
-        var myDivDestination = Ext.get('photoPreview');
-        var myDivToMove = Ext.get('uploadDiv');
-        myDivToMove.moveTo(myDivDestination.getX() + myDivDestination.getWidth() + 10, myDivDestination.getY());
-        
         });
     -->
 </script>    
@@ -45,7 +38,6 @@
 <body>
 
 <div id="mainFormDiv"></div>
-<div id="uploadDiv"></div>
 
 </body>
 </html>

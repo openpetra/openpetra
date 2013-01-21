@@ -6,7 +6,7 @@
     WindowHeight: 480
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
-        XMLFILES: [Finance\\\\AP_agedsupplierlist.xml,Finance\\\\finance.xml,common.xml]
+        XMLFILES: [Finance/AccountsPayable/AP_agedsupplierlist.xml,Finance/finance.xml,common.xml]
         REPORTNAME: APAgedSupplierList
         CURRENTREPORT: APAgedSupplierList
         SETAVAILABLEFUNCTIONS:
@@ -23,15 +23,10 @@
             Label: General Settings
             Controls: [lblLedger, grpSelection]
             
-        uco_Columns:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
-            Dock: Fill
-            
         lblLedger:
             Label: Ledger
         grpSelection:
             Label: Settings
-            Dock: Top
             Controls: [dtpDateSelection, chkInvoice, chkDiscounted]
         
         dtpDateSelection:

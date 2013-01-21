@@ -52,6 +52,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             rbtPartner.Checked = true;
             txtExtract.Enabled = false;
             dtpCurrentStaff.Enabled = false;
+            lblCurrentStaff.Enabled = false;
         }
 
         /// <summary>
@@ -83,12 +84,23 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             else if (rbtAllStaff.Checked)
             {
-                ACalculator.AddParameter("param_selection", "all staff");
+                // set this to "all current staff" and use today's date (see below)
+                ACalculator.AddParameter("param_selection", "all current staff");
             }
 
             ACalculator.AddParameter("param_extract", txtExtract.Text);
             ACalculator.AddParameter("param_partnerkey", txtPartnerKey.Text);
-            ACalculator.AddParameter("param_currentstaffdate", dtpCurrentStaff.Date);
+
+            if (rbtAllStaff.Checked)
+            {
+                // in this case just use the current date
+                ACalculator.AddParameter("param_currentstaffdate", DateTime.Today);
+            }
+            else
+            {
+                // in all other cases use date from datetime picker
+                ACalculator.AddParameter("param_currentstaffdate", dtpCurrentStaff.Date);
+            }
 
             if ((AReportAction == TReportActionEnum.raGenerate)
                 && rbtCurrentStaff.Checked
@@ -167,6 +179,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             else if (RBtn.Name == "rbtCurrentStaff")
             {
                 dtpCurrentStaff.Enabled = RBtn.Checked;
+                lblCurrentStaff.Enabled = RBtn.Checked;
             }
         }
 
@@ -187,6 +200,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             rbtCurrentStaff.Visible = AValue;
             dtpCurrentStaff.Visible = AValue;
+            lblCurrentStaff.Visible = AValue;
         }
     }
 }

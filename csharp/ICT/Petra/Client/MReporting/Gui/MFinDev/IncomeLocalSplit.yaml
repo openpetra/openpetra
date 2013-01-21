@@ -21,12 +21,13 @@
         tpgGeneralSettings:
             Label: GeneralSettings
             Controls: [uco_Selection, rgrOrder]
-       
-        
+
         uco_Selection:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
             Dock: Top
+            Height: 240
         rgrOrder:
+            Dock: Top
             Label: Order By
             Controls: [rbtAccount, rbtMotivation]
             ParameterName: param_orderby

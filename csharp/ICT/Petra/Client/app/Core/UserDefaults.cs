@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,8 +27,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
+using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared;
 
@@ -41,12 +42,12 @@ namespace Ict.Petra.Client.App.Core
     /// @Comment The User Defaults are stored in the Database (s_user_defaults table)
     ///   on the Server.
     /// </summary>
-    public class TUserDefaults : object
+    public class TUserDefaults
     {
         /// <summary>
         /// todoComment
         /// </summary>
-        public class NamedDefaults : object
+        public class NamedDefaults
         {
             /// <summary>todoComment</summary>
             public const String WINDOW_POSITION_PREFIX = "WINDOW_POS_";
@@ -104,9 +105,6 @@ namespace Ict.Petra.Client.App.Core
 
             #endregion
         }
-
-        /// <summary>this cannot go into Ict.Petra.Client.App.Core.Shared, because this would give a circular reference; this file already requires Ict.Petra.Client.App.Core.Shared.UserInfo</summary>
-        public static TUserDefaults GUserDefaults;
 
         private static SUserDefaultsTable UUserDefaultsDataTable;
         private static DataView UUserDefaults;
@@ -208,6 +206,15 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         public const String PETRA_DISPLAYMODULEBACKGRDPICTURE = "DisplayPicture";
 
+        /// <summary>todoComment</summary>
+        public const String MAINMENU_VIEWOPTIONS_VIEWTASKS = "viewoptions_viewtasks";
+
+        /// <summary>todoComment</summary>
+        public const String MAINMENU_VIEWOPTIONS_TILESIZE = "viewoptions_tilesize";
+
+        /// <summary>todoComment</summary>
+        public const String MAINMENU_VIEWOPTIONS_SINGLECLICKEXECUTION = "viewoptions_singleclickexecution";
+
         /*------------------------------------------------------------------------------
          *  Partner User Default Constants
          * -------------------------------------------------------------------------------*/
@@ -281,6 +288,12 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         public const String FINANCE_REPORTING_SHOWDIFFFINANCIALYEARSELECTION = "ShowDiffFinancialYearSelection";
 
+        /// <summary>which plugin to use for importing bank statements</summary>
+        public const String FINANCE_BANKIMPORT_PLUGIN = "BankImportPlugin";
+
+        /// <summary>which bank account to use</summary>
+        public const String FINANCE_BANKIMPORT_BANKACCOUNT = "BankImportBankAccount";
+
         // Put other User Default Constants here as well.
 
         /// <summary>todoComment</summary>
@@ -295,12 +308,22 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>todoComment</summary>
         public const String USERDEFAULT_LASTPERSONCONFERENCE = "ConferenceLastPerson";
 
+
+        /*------------------------------------------------------------------------------
+         *  Finance User Default Constants
+         * -------------------------------------------------------------------------------*/
+
+        /// <summary>todoComment</summary>
+        public const String FINANCE_DEFAULT_LEDGERNUMBER = "a_default_ledger_number_i";
+
+
         /// <summary>
-        /// constructor
+        /// initialise static variables
         /// </summary>
-        public TUserDefaults() : base()
+        public static void InitUserDefaults()
         {
-            TRemote.MSysMan.Maintenance.UserDefaults.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID, out UUserDefaultsDataTable);
+            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                out UUserDefaultsDataTable);
             UUserDefaults = new DataView(UUserDefaultsDataTable);
             UUserDefaults.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
         }
@@ -349,7 +372,7 @@ namespace Ict.Petra.Client.App.Core
                     }
 
                     // MessageBox.Show('Saving single User Default ''' + DesiredUserDefaultsDataTable.Rows[0].Item['s_default_code_c'].ToString + '''');
-                    if (TRemote.MSysMan.Maintenance.UserDefaults.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                    if (TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
                             ref DesiredUserDefaultsDataTable,
                             out VerificationResult))
                     {
@@ -393,7 +416,7 @@ namespace Ict.Petra.Client.App.Core
             UserDefaultsDataTableChanges = UUserDefaultsDataTable.GetChangesTyped();
 
             // MessageBox.Show('Changed/added User Defaults: ' + UserDefaultsDataTableChanges.Rows.Count.ToString);
-            if (TRemote.MSysMan.Maintenance.UserDefaults.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+            if (TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
                     ref UserDefaultsDataTableChanges,
                     out VerificationResult))
             {
@@ -430,24 +453,16 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public static void RefreshCachedUserDefault(String AChangedUserDefaultCode, String AChangedUserDefaultValue, String AChangedUserDefaultModId)
         {
-            Int32 FoundInRow;
-            DataRowView Tmp;
-            Int16 Counter;
-
-            String[] ChangedUserDefaultCodes;
-            String[] ChangedUserDefaultValues;
-            String[] ChangedUserDefaultModIds;
-
             // TLogging.Log('Refreshing DefaultCode ''' + AChangedUserDefaultCode + ''' with Value: ''' + AChangedUserDefaultValue + '''');
             // Split String into String Array
-            ChangedUserDefaultCodes = AChangedUserDefaultCode.Split(new Char[TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
-            ChangedUserDefaultValues = AChangedUserDefaultValue.Split(new Char[TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
-            ChangedUserDefaultModIds = AChangedUserDefaultModId.Split(new Char[TClientTasksManager.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
+            String[] ChangedUserDefaultCodes = AChangedUserDefaultCode.Split(new Char[] { RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0] });
+            String[] ChangedUserDefaultValues = AChangedUserDefaultValue.Split(new Char[] { RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0] });
+            String[] ChangedUserDefaultModIds = AChangedUserDefaultModId.Split(new Char[] { RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0] });
 
-            for (Counter = 0; Counter <= ChangedUserDefaultCodes.Length - 1; Counter += 1)
+            for (Int16 Counter = 0; Counter <= ChangedUserDefaultCodes.Length - 1; Counter += 1)
             {
                 // TLogging.Log('Refreshing UserDefault ''' + ChangedUserDefaultCodes[Counter] + ''' with value ''' + ChangedUserDefaultValues[Counter] + ''' (ModificationID: ''' + ChangedUserDefaultModIds[Counter] + '''');
-                FoundInRow = UUserDefaults.Find(ChangedUserDefaultCodes[Counter]);
+                Int32 FoundInRow = UUserDefaults.Find(ChangedUserDefaultCodes[Counter]);
 
                 if (FoundInRow != -1)
                 {
@@ -462,7 +477,7 @@ namespace Ict.Petra.Client.App.Core
                         UUserDefaults[FoundInRow][SUserDefaultsTable.GetDefaultValueDBName()] = ChangedUserDefaultValues[Counter];
                     }
 
-                    UUserDefaults[FoundInRow][SUserDefaultsTable.GetModificationIdDBName()] = ChangedUserDefaultModIds[Counter];
+                    UUserDefaults[FoundInRow][SUserDefaultsTable.GetModificationIdDBName()] = Convert.ToDateTime(ChangedUserDefaultModIds[Counter]);
 
                     // Mark this refreshed UserDefault as unchanged
                     UUserDefaults[FoundInRow].Row.AcceptChanges();
@@ -471,7 +486,7 @@ namespace Ict.Petra.Client.App.Core
                 {
                     // User default not found, add it to the user defaults table
                     // TLogging.Log('UserDefault doesn''t exist yet > creating new one');
-                    Tmp = UUserDefaults.AddNew();
+                    DataRowView Tmp = UUserDefaults.AddNew();
                     Tmp[SUserDefaultsTable.GetUserIdDBName()] = Ict.Petra.Shared.UserInfo.GUserInfo.UserID;
                     Tmp[SUserDefaultsTable.GetDefaultCodeDBName()] = ChangedUserDefaultCodes[Counter];
                     Tmp[SUserDefaultsTable.GetDefaultValueDBName()] = ChangedUserDefaultValues[Counter];
@@ -500,7 +515,8 @@ namespace Ict.Petra.Client.App.Core
 
             // TODO 1 : ReaderWriterLock
             // reload user defaults from server
-            TRemote.MSysMan.Maintenance.UserDefaults.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID, out TempUserDefaultsDataTable);
+            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                out TempUserDefaultsDataTable);
 
             // merge the current table with the one requested from the server so that client changes are not lost
             UserDefaultsDS = new DataSet();
@@ -521,7 +537,8 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public static void ReloadCachedUserDefaultsOnServer()
         {
-            TRemote.MSysMan.Maintenance.UserDefaults.ReloadUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID, out UUserDefaultsDataTable);
+            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.ReloadUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                out UUserDefaultsDataTable);
             UUserDefaults = new DataView(UUserDefaultsDataTable);
             UUserDefaults.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
         }

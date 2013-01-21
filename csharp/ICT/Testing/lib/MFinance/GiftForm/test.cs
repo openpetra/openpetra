@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Matthiash
+//       Matthiash, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Common.IO;
 using Ict.Petra.Client.CommonForms;
 using Ict.Testing.NUnitForms;
 using Ict.Testing.NUnitPetraClient;
+using Ict.Testing.NUnitTools;
 using NUnit.Extensions.Forms;
 using NUnit.Framework;
 using Ict.Petra.Client.MFinance.Gui.Gift;
@@ -46,42 +47,13 @@ namespace Tests.MFinance.Client.Gift
 
         /// <summary>
         /// test for gift batch import
-        /// Attention! This resets your database
-        /// there is only one test possible in this class (perhaps nunit parallelizes the tests?)
         /// </summary>
         public override void Setup()
         {
             new TLogging("TestClient.log");
-            nant("stopPetraServer", false);
-            nant("loadDatabase -D:LoadDB.file=csharp\\ICT\\Testing\\lib\\MFinance\\GiftForm\\TestData\\withpartners.sql", true);
-            nant("startPetraServer", true);
 
-            TPetraConnector.Connect("../../../../../etc/TestClient.config");
-            FLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValueStatic("LedgerNumber"));
-        }
-
-        void nant(String argument, bool ignoreError)
-        {
-            Process NantProcess = new Process();
-
-            NantProcess.EnableRaisingEvents = false;
-            NantProcess.StartInfo.FileName = "cmd"; //if you have trouble and want to check the dos box try with cmd and /k nant xxx as arguments
-            NantProcess.StartInfo.Arguments = "/c nant " + argument;
-            NantProcess.StartInfo.CreateNoWindow = false;
-            NantProcess.StartInfo.WorkingDirectory = "../../../../..";
-            NantProcess.StartInfo.UseShellExecute = true;
-            NantProcess.EnableRaisingEvents = true;
-            NantProcess.StartInfo.ErrorDialog = true;
-
-            if (!NantProcess.Start())
-            {
-                Debug.Print("failed to start " + NantProcess.StartInfo.FileName);
-            }
-            else
-            {
-                NantProcess.WaitForExit(60000);
-                Debug.Print("OS says nant process ist finished");
-            }
+            TPetraConnector.Connect("../../etc/TestClient.config");
+            FLedgerNumber = Convert.ToInt32(TAppSettingsManager.GetValue("LedgerNumber", "43"));
         }
 
         /// <summary>
@@ -116,24 +88,10 @@ namespace Tests.MFinance.Client.Gift
 //            btnSave.Click();
 //        }
 
-        /// <summary>
-        /// test the import and export of gift batches
-        /// </summary>
-        [Test]
-        public void TestImportExportGiftBatch()
+        private void ImportGiftBatch(string TestFile)
         {
-            // create two test batches, with some strange figures, to test problem with double values
-            // export the 2 test batches, with summarize option
-            // compare the exported text file
-
-            string TestFile = TAppSettingsManager.GetValueStatic("Testing.Path") + "/MFinance/GiftForm/TestData/BatchImportTest.csv";
-
             TestFile = Path.GetFullPath(TestFile);
             Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
-            TFrmGiftBatch frmBatch = new TFrmGiftBatch(IntPtr.Zero);
-
-            frmBatch.LedgerNumber = FLedgerNumber;
-            frmBatch.Show();
 
             ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
             {
@@ -161,7 +119,29 @@ namespace Tests.MFinance.Client.Gift
             };
 
             ToolStripButtonTester btnImport = new ToolStripButtonTester("tbbImportBatches");
+
             btnImport.Click();
+        }
+
+        /// <summary>
+        /// test the import and export of gift batches
+        /// </summary>
+        [Test]
+        public void TestImportExportGiftBatch()
+        {
+            // create two test batches, with some strange figures, to test problem with double values
+            // TODO export the 2 test batches, with summarize option
+            // TODO compare the exported text file
+
+            string TestFile = CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/GiftForm/TestData/BatchImportTest.csv";
+
+            TFrmGiftBatch frmBatch = new TFrmGiftBatch(null);
+
+            frmBatch.LedgerNumber = FLedgerNumber;
+            frmBatch.Show();
+
+            ImportGiftBatch(TestFile);
+
             TabControlTester tabGiftBatch = new TabControlTester("tabGiftBatch");
             tabGiftBatch.SelectTab(1);
             TextBoxTester txtDetailGiftTransactionAmount = new TextBoxTester("txtDetailGiftTransactionAmount");
@@ -171,20 +151,26 @@ namespace Tests.MFinance.Client.Gift
         }
 
         /// <summary>
-        /// Generate a random string with 8 characters
+        /// test a problem with saving after you have posted a batch
         /// </summary>
-        /// <returns>random string</returns>
-        public String RandomString()
+        [Test]
+        public void TestPostAndSaveAfterwards()
         {
-            String s = "";
-            Random random = new Random();
+            string TestFile = CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/GiftForm/TestData/BatchImportTest.csv";
 
-            for (int i = 0; i < 8; i++)
-            {
-                s += Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
-            }
+            TFrmGiftBatch frmBatch = new TFrmGiftBatch(null);
 
-            return s;
+            frmBatch.LedgerNumber = FLedgerNumber;
+            frmBatch.Show();
+
+            ImportGiftBatch(TestFile);
+
+            TabControlTester tabGiftBatch = new TabControlTester("tabGiftBatch");
+            tabGiftBatch.SelectTab(1);
+            TextBoxTester txtDetailGiftTransactionAmount = new TextBoxTester("txtDetailGiftTransactionAmount");
+            Assert.AreEqual(Convert.ToDecimal(txtDetailGiftTransactionAmount.Properties.Text), 10000000000M);
+
+            frmBatch.Close();
         }
     }
 }

@@ -22,6 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Petra.Client.MPersonnel.Gui.Setup;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -49,5 +52,51 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
+
+        private void SetParentLabel(Int64 AParentUnitKey)
+        {
+            String PartnerShortName;
+
+            Shared.TPartnerClass PartnerClass;
+            TServerLookup.TMPartner.GetPartnerShortName(AParentUnitKey, out PartnerShortName, out PartnerClass, true);
+            FPetraUtilsObject.UnhookControl(lblParentName, false); // I don't want this change to cause SetChangedFlag.
+            lblParentName.Text = PartnerShortName;
+        }
+
+        private void ShowDataManual(PUnitRow UnitRow)
+        {
+            lblParentName.Left = 250;
+            btnOrganise.Left = 430;
+
+            if (FMainDS.UmUnitStructure.Rows.Count > 0)
+            {
+                txtParentKey.Text = FMainDS.UmUnitStructure[0].ParentUnitKey.ToString("D10");
+                SetParentLabel(FMainDS.UmUnitStructure[0].ParentUnitKey);
+                btnOrganise.Enabled = true;
+            }
+            else
+            {
+                btnOrganise.Enabled = false;
+            }
+        }
+
+        private void OpenUnitHierarchy(object sender, EventArgs e)
+        {
+            TFrmUnitHierarchy HierarchyForm = new TFrmUnitHierarchy(this.ParentForm);
+
+            HierarchyForm.Show();
+            HierarchyForm.ShowThisUnit(FMainDS.PPartner[0].PartnerKey);
+            HierarchyForm.ReassignEvent += new UnitReassignHandler(HierarchyForm_ReassignEvent);
+        }
+
+        void HierarchyForm_ReassignEvent(long ChildKey, long ParentKey)
+        {
+            if (ChildKey == FMainDS.PPartner[0].PartnerKey)
+            {
+                FPetraUtilsObject.UnhookControl(txtParentKey, false); // I don't want this change to cause SetChangedFlag.
+                txtParentKey.Text = ParentKey.ToString("D10");
+                SetParentLabel(ParentKey);
+            }
+        }
     }
 }

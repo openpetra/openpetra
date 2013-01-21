@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,12 +30,18 @@ using System.Xml;
 using System.IO;
 using System.Reflection;
 using System.Globalization;
+using System.Text;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 
 namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 {
@@ -133,6 +139,11 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             AModuleNode.AppendChild(tableNode);
 
+            if (table.Rows.Count == 0)
+            {
+                return;
+            }
+
             // for SQLite the table is not sorted by primary key. Therefore do it manually
             DataView v = table.DefaultView;
             DataTable t = (DataTable)AAsm.CreateInstance(ATableType.Namespace + "." + ATableType.Name);
@@ -164,7 +175,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 foreach (DataColumn col in table.Columns)
                 {
-                    if (row[col].GetType() != typeof(DBNull))
+                    if ((row[col].GetType() != typeof(DBNull)) && (col.ColumnName != "ModificationId"))
                     {
                         if (col.DataType == typeof(DateTime))
                         {
@@ -187,7 +198,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         }
                         else
                         {
-                            rowNode.SetAttribute(col.ColumnName, row[col].ToString());
+                            rowNode.SetAttribute(col.ColumnName, row[col].ToString().Replace("\"", "&quot;"));
                         }
                     }
                 }
@@ -227,29 +238,48 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         {
             List <string>tables = TTableList.GetDBNames();
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Importing database"),
+                tables.Count + 3);
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             try
             {
                 tables.Reverse();
 
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("deleting current data"),
+                    0);
+
                 foreach (string table in tables)
                 {
                     DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction, false);
                 }
 
-                TYml2Xml ymlParser = new TYml2Xml(PackTools.UnzipString(AZippedNewDatabaseData).Replace("\r", "").Split(new char[] { '\n' }));
-                XmlDocument doc = ymlParser.ParseYML2XML();
+                TSimpleYmlParser ymlParser = new TSimpleYmlParser(PackTools.UnzipString(AZippedNewDatabaseData));
+
+                ymlParser.ParseCaptions();
 
                 tables.Reverse();
 
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("loading initial tables"),
+                    1);
+
                 // one transaction to import the user table and user permissions. otherwise logging in will not be possible if other import fails?
                 bool success = true;
-                success = success && LoadTable("s_user", doc, Transaction);
-                success = success && LoadTable("s_module", doc, Transaction);
-                success = success && LoadTable("s_user_module_access_permission", doc, Transaction);
-                success = success && LoadTable("s_system_defaults", doc, Transaction);
-                success = success && LoadTable("s_system_status", doc, Transaction);
+                success = success && LoadTable("s_user", ymlParser, Transaction);
+                success = success && LoadTable("s_module", ymlParser, Transaction);
+                success = success && LoadTable("s_user_module_access_permission", ymlParser, Transaction);
+                success = success && LoadTable("s_system_defaults", ymlParser, Transaction);
+                success = success && LoadTable("s_system_status", ymlParser, Transaction);
+
+                // make sure we have the correct database version
+                TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(String.Format(
+                        "UPDATE PUB_s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                        serverExeInfo.ToString()), Transaction, false);
 
                 if (!success)
                 {
@@ -266,27 +296,45 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
+                int tableCounter = 2;
+
                 foreach (string table in tables)
                 {
-                    LoadTable(table, doc, Transaction);
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        String.Format(Catalog.GetString("loading table {0}"), table),
+                        tableCounter);
+
+                    tableCounter++;
+
+                    if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        return false;
+                    }
+
+                    LoadTable(table, ymlParser, Transaction);
                 }
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("loading sequences"),
+                    tables.Count + 5 + 3);
 
                 // set sequences appropriately, not lagging behind the imported data
                 foreach (string seq in TTableList.GetDBSequenceNames())
                 {
-                    LoadSequence(seq, doc, Transaction);
+                    LoadSequence(seq, ymlParser, Transaction);
                 }
 
-                // make sure we have the correct database version
-                TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
-                DBAccess.GDBAccessObj.ExecuteNonQuery(String.Format(
-                        "UPDATE PUB_s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                        serverExeInfo.ToString()), Transaction, false);
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("finish import"),
+                    tables.Count + 5 + 4);
 
                 DBAccess.GDBAccessObj.CommitTransaction();
 
                 // reset all cached tables
-                DomainManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
+                TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
+
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
             catch (Exception e)
             {
@@ -299,95 +347,79 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             return true;
         }
 
-        private static XmlNode FindNode(XmlDocument ADoc, string ATableName)
+        private static bool LoadSequence(string ASequenceName, TSimpleYmlParser AYmlParser, TDBTransaction ATransaction)
         {
-            XmlNode rootNode = ADoc.FirstChild.NextSibling;
-
-            foreach (XmlNode ModuleNode in rootNode.ChildNodes)
+            if (!AYmlParser.StartParseList("Sequences"))
             {
-                foreach (XmlNode TableNode in ModuleNode.ChildNodes)
+                return false;
+            }
+
+            SortedList <string, string>RowDetails;
+
+            while ((RowDetails = AYmlParser.GetNextLineAttributes()) != null)
+            {
+                if (RowDetails["RowName"] == StringHelper.UpperCamelCase(ASequenceName, false, false))
                 {
-                    if (TableNode.Name == ATableName)
-                    {
-                        return TableNode;
-                    }
+                    DBAccess.GDBAccessObj.RestartSequence(
+                        ASequenceName,
+                        ATransaction,
+                        Convert.ToInt64(RowDetails["value"]));
+
+                    return true;
                 }
             }
 
-            return null;
+            return false;
         }
 
-        private static bool LoadSequence(string ASequenceName, XmlDocument ADoc, TDBTransaction ATransaction)
+        private static bool LoadTable(string ATableName, TSimpleYmlParser AYmlParser, TDBTransaction ATransaction)
         {
-            XmlNode SequenceNode = FindNode(ADoc, StringHelper.UpperCamelCase(ASequenceName, false, false));
-
-            if (SequenceNode == null)
+            if (!AYmlParser.StartParseList(StringHelper.UpperCamelCase(ATableName, false, false) + "Table"))
             {
-                TLogging.Log("SequenceNode null: " + ASequenceName);
-                return false;
-            }
-
-            DBAccess.GDBAccessObj.RestartSequence(ASequenceName, ATransaction, Convert.ToInt64(TYml2Xml.GetAttribute(SequenceNode, "value")));
-
-            return true;
-        }
-
-        private static bool LoadTable(string ATableName, XmlDocument ADoc, TDBTransaction ATransaction)
-        {
-            XmlNode TableNode = FindNode(ADoc, StringHelper.UpperCamelCase(ATableName, false, false) + "Table");
-
-            if (TableNode == null)
-            {
-                // TLogging.Log("tablenode null: " + ATableName);
-                return false;
-            }
-
-            if (TableNode.ChildNodes.Count == 0)
-            {
-                // TLogging.Log("no children: " + ATableName);
+                // TLogging.Log("empty table " + ATableName + " " + StringHelper.UpperCamelCase(ATableName, false, false) + "Table");
                 return false;
             }
 
             DataTable table = DBAccess.GDBAccessObj.SelectDT("Select * from " + ATableName, ATableName, ATransaction);
             List <OdbcParameter>Parameters = new List <OdbcParameter>();
 
-            string InsertStatement = "INSERT INTO pub_" + ATableName + "() VALUES ";
-
-            string OrigInsertStatement = InsertStatement;
+            string OrigInsertStatement = "INSERT INTO pub_" + ATableName + "() VALUES ";
+            StringBuilder InsertStatement = new StringBuilder(OrigInsertStatement);
 
             ConvertColumnNames(table.Columns);
 
-            bool firstRow = true;
+            SortedList <string, string>RowDetails;
+            int count = 0;
 
-            foreach (XmlNode RowNode in TableNode.ChildNodes)
+            while ((RowDetails = AYmlParser.GetNextLineAttributes()) != null)
             {
-                if (!firstRow)
+                count++;
+
+                if (count != 1)
                 {
-                    if (CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite)
+                    if ((CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite) || ((count % 500) == 0))
                     {
                         // SQLite does not support INSERT of several rows at the same time
                         try
                         {
-                            DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement, ATransaction, false, Parameters.ToArray());
+                            DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, Parameters.ToArray());
                         }
                         catch (Exception e)
                         {
                             TLogging.Log("error in ResetDatabase, LoadTable " + ATableName + ":" + e.Message);
-                            throw e;
+                            throw;
                         }
 
-                        InsertStatement = OrigInsertStatement;
+                        InsertStatement = new StringBuilder(OrigInsertStatement);
                         Parameters = new List <OdbcParameter>();
                     }
                     else
                     {
-                        InsertStatement += ",";
+                        InsertStatement.Append(",");
                     }
                 }
 
-                firstRow = false;
-
-                InsertStatement += "(";
+                InsertStatement.Append("(");
 
                 bool firstColumn = true;
 
@@ -395,14 +427,14 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 {
                     if (!firstColumn)
                     {
-                        InsertStatement += ",";
+                        InsertStatement.Append(",");
                     }
 
                     firstColumn = false;
 
-                    if (TYml2Xml.HasAttribute(RowNode, col.ColumnName))
+                    if (RowDetails.ContainsKey(col.ColumnName))
                     {
-                        string strValue = TYml2Xml.GetAttribute(RowNode, col.ColumnName);
+                        string strValue = RowDetails[col.ColumnName];
 
                         if (col.DataType == typeof(DateTime))
                         {
@@ -424,7 +456,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         else if (col.DataType == typeof(String))
                         {
                             OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
-                            p.Value = strValue;
+                            p.Value = strValue.Replace("&quot;", "\"");
                             Parameters.Add(p);
                         }
                         else if (col.DataType == typeof(Int32))
@@ -463,25 +495,25 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                             throw new Exception("error in ResetDatabase, LoadTable: " + col.DataType.ToString() + " has not yet been implemented");
                         }
 
-                        InsertStatement += "?";
+                        InsertStatement.Append("?");
                     }
                     else
                     {
-                        InsertStatement += "NULL"; // DEFAULT
+                        InsertStatement.Append("NULL"); // DEFAULT
                     }
                 }
 
-                InsertStatement += ")";
+                InsertStatement.Append(")");
             }
 
             try
             {
-                DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement, ATransaction, false, Parameters.ToArray());
+                DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, Parameters.ToArray());
             }
             catch (Exception e)
             {
                 TLogging.Log("error in ResetDatabase, LoadTable " + ATableName + ":" + e.Message);
-                throw e;
+                throw;
             }
             return true;
         }
@@ -500,6 +532,47 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 col.ColumnName = colName;
             }
+        }
+
+        /// <summary>
+        /// Commits the given SampleDataConstructorTDS TDS to the database
+        /// </summary>
+        /// <remarks>
+        /// Why did I have to spend _several hours_ trying to get into how OpenPetra does things
+        /// just in order to add this one line?
+        /// </remarks>
+        /// <param name="dataTDS"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        [RequireModulePermission("SYSMAN")]
+        public static bool SaveTDS(SampleDataConstructorTDS dataTDS, out TVerificationResultCollection AVerificationResult)
+        {
+            return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
+        }
+    }
+}
+
+namespace Ict.Petra.Server.MSysMan.ImportExport
+{
+    /// <summary>
+    /// this manager is called from the server admin console
+    /// </summary>
+    public class TImportExportManager : IImportExportManager
+    {
+        /// <summary>
+        /// BackupDatabaseToYmlGZ
+        /// </summary>
+        public string BackupDatabaseToYmlGZ()
+        {
+            return TImportExportWebConnector.ExportAllTables();
+        }
+
+        /// <summary>
+        /// RestoreDatabaseFromYmlGZ
+        /// </summary>
+        public bool RestoreDatabaseFromYmlGZ(string AYmlGzData)
+        {
+            return TImportExportWebConnector.ResetDatabase(AYmlGzData);
         }
     }
 }

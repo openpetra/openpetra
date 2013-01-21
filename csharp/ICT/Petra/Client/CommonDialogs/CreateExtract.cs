@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,9 +28,11 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MPartner.Mailing;
+using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Client.CommonDialogs
 {
@@ -52,8 +54,8 @@ namespace Ict.Petra.Client.CommonDialogs
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.btnCreateExtract.Text = Catalog.GetString("Create Extract");
-            this.lblExtractName.Text = Catalog.GetString("Extract Name:");
-            this.lblDescription.Text = Catalog.GetString("Description:");
+            this.lblExtractName.Text = Catalog.GetString("Extract Name") + ":";
+            this.lblDescription.Text = Catalog.GetString("Description") + ":";
             this.btnCancel.Text = Catalog.GetString("Cancel");
             this.Text = Catalog.GetString("Create Extract");
             #endregion

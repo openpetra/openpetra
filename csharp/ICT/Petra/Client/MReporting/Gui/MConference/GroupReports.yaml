@@ -33,14 +33,14 @@ RootNode:
             Type: Ict.Petra.Client.MReporting.Gui.MConference.TFrmUC_ConferenceSelection
             Dock: Fill
         rgrGroups:
-            Label: Select Group
+            Label: Sort by Group Type
             Controls: [rbtAllGroups, rbtWorkGroups, rbtFellowshipGroups, rbtDiscoveryGroups]
         rgrParticipants:
             Label: Select Participants
             Controls: [rbtParticipantsAll, rbtParticipantsIgnoreNoGroup, rbtParticipantsIgnoreAll]
             
         rbtAllGroups:
-            Label: All Groups
+            Label: Participant Name - all group allocations
             OnChange: GroupSelectionChanged
         rbtWorkGroups:
             Label: Work Groups
@@ -54,9 +54,9 @@ RootNode:
         rbtParticipantsAll:
             Label: List all attendees
         rbtParticipantsIgnoreNoGroup:
-            Label: List only attendees whose role is a participant
+            Label: List only attendees whose role is as a normal participant
         rbtParticipantsIgnoreAll:
-            Label: List only attendees whose role is a participant and who have a group assigned to it
+            Label: List only attendees whose role is as a normal participant and who are assigned to a group
         
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para101:

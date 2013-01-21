@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Common;
 using Ict.Common.DB;
@@ -158,7 +159,8 @@ namespace Ict.Petra.Server.MReporting
         protected void CalculateColumnValue(System.Int32 col, ref TVariant[] precalculatedColumns)
         {
             TRptDataCalcValue rptDataCalcValue;
-            TRptGrpValue rptGrpValue;
+
+            List <TRptValue>rptGrpValue;
             TParameter parameter;
             String ColumnFormat;
             TVariant value;
@@ -178,7 +180,7 @@ namespace Ict.Petra.Server.MReporting
 
             if ((parameter != null) && (parameter.value.ToString() == "rptGrpValue") && (parameter.pRptGroup != null))
             {
-                rptGrpValue = (TRptGrpValue)parameter.pRptGroup;
+                rptGrpValue = (List <TRptValue> )parameter.pRptGroup;
                 rptDataCalcValue = new TRptDataCalcValue(this);
                 ColumnFormat = "";
 
@@ -218,7 +220,7 @@ namespace Ict.Petra.Server.MReporting
             int counter;
             String values;
             TRptDataCalcValue rptDataCalcValue;
-            TRptGrpValue rptGrpValue;
+            List <TRptValue>rptGrpValue;
             int maxDisplayColumns;
             int numberColumns;
             int ColumnPartnerName = -1;
@@ -319,7 +321,10 @@ namespace Ict.Petra.Server.MReporting
                     }
                 }
 
-                rptGrpValue = (TRptGrpValue)Parameters.GetGrpValue("ControlSource", ReportingConsts.HEADERCOLUMN + 1, Depth, eParameterFit.eExact);
+                rptGrpValue = (List <TRptValue> )Parameters.GetGrpValue("ControlSource",
+                    ReportingConsts.HEADERCOLUMN + 1,
+                    Depth,
+                    eParameterFit.eExact);
 
                 if (rptGrpValue != null)
                 {
@@ -329,7 +334,10 @@ namespace Ict.Petra.Server.MReporting
                     header[0] = rptDataCalcValue.Calculate(rptGrpValue);
                 }
 
-                rptGrpValue = (TRptGrpValue)Parameters.GetGrpValue("ControlSource", ReportingConsts.HEADERCOLUMN + 2, Depth, eParameterFit.eExact);
+                rptGrpValue = (List <TRptValue> )Parameters.GetGrpValue("ControlSource",
+                    ReportingConsts.HEADERCOLUMN + 2,
+                    Depth,
+                    eParameterFit.eExact);
 
                 if (rptGrpValue != null)
                 {
@@ -342,7 +350,7 @@ namespace Ict.Petra.Server.MReporting
                 for (counter = 0; counter <= 1; counter += 1)
                 {
                     column = counter - 10;
-                    rptGrpValue = (TRptGrpValue)Parameters.GetGrpValue("ControlSource", column, Depth, eParameterFit.eExact);
+                    rptGrpValue = (List <TRptValue> )Parameters.GetGrpValue("ControlSource", column, Depth, eParameterFit.eExact);
 
                     if (rptGrpValue != null)
                     {
@@ -514,7 +522,9 @@ namespace Ict.Petra.Server.MReporting
                         return ReturnValue;
                     }
 
-                    if ((ReturnValue.ToString().ToUpper().IndexOf("SELECT") >= 0) && (ReturnValue.ToString().ToUpper().IndexOf("SELECT") <= 3))
+                    int SelectPos = ReturnValue.ToString().ToUpper().IndexOf("SELECT");
+
+                    if ((SelectPos >= 0) && (SelectPos <= 3))
                     {
                         // this is an sql statement and not a function result
                         tab = DatabaseConnection.SelectDT(ReturnValue.ToString(), "", DatabaseConnection.Transaction);

@@ -25,33 +25,34 @@ using System;
 using System.Threading;
 using System.Windows.Forms;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.PetraClient;
 
-namespace Ict.Petra.Client.App.PetraClient
+namespace PetraClient
 {
 /// <summary>
 /// Class with program entry point.
 /// </summary>
-    internal sealed class Program
+internal sealed class Program
+{
+    /// <summary>
+    /// Program entry point.
+    /// </summary>
+    [STAThreadAttribute]
+    private static void Main(string[] args)
     {
-        /// <summary>
-        /// Program entry point.
-        /// </summary>
-        [STAThreadAttribute]
-        private static void Main(string[] args)
-        {
-            TUnhandledThreadExceptionHandler UnhandledThreadExceptionHandler;
+        TUnhandledThreadExceptionHandler UnhandledThreadExceptionHandler;
 
-            // Set up Handlers for 'UnhandledException'
-            // Note: BOTH handlers are needed for a WinForms Application!!!
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(ExceptionHandling.UnhandledExceptionHandler);
-            UnhandledThreadExceptionHandler = new TUnhandledThreadExceptionHandler();
+        // Set up Handlers for 'UnhandledException'
+        // Note: BOTH handlers are needed for a WinForms Application!!!
+        AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(ExceptionHandling.UnhandledExceptionHandler);
+        UnhandledThreadExceptionHandler = new TUnhandledThreadExceptionHandler();
 
-            Application.ThreadException += new ThreadExceptionEventHandler(UnhandledThreadExceptionHandler.OnThreadException);
+        Application.ThreadException += new ThreadExceptionEventHandler(UnhandledThreadExceptionHandler.OnThreadException);
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
 
-            TPetraClientMain.StartUp();
-        }
+        TPetraClientMain.StartUp();
     }
+}
 }

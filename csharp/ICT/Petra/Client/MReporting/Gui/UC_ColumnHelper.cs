@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -334,14 +334,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         public static void LoadDataToGrid(ref TSgrdDataGridPaged AGrid,
             ref DataTable AColumnTable)
         {
-            SourceGrid.Cells.ColumnHeader myColumnHeader;
-
             AGrid.Columns.Clear();
 
             for (int counter = 0; counter < AColumnTable.Columns.Count; ++counter)
             {
                 AGrid.AddTextColumn("Column " + Convert.ToString(counter + 1), AColumnTable.Columns[counter]);
-                myColumnHeader = (SourceGrid.Cells.ColumnHeader)AGrid.Columns[counter].HeaderCell;
+                // SourceGrid.Cells.ColumnHeader myColumnHeader = (SourceGrid.Cells.ColumnHeader)AGrid.Columns[counter].HeaderCell;
             }
 
             AGrid.DataSource = new DevAge.ComponentModel.BoundDataView(new DataView(AColumnTable));

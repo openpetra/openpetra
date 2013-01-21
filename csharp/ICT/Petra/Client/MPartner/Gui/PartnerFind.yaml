@@ -1,6 +1,5 @@
 RootNode:
-    BaseYaml: ../../CommonForms/PetraModuleForm.yaml
-    UtilObjectClass: TFrmPetraModuleUtils
+    BaseYaml: ../../CommonForms/PetraForm.yaml
     FormType: navigation
     Template: windowFind
     FormTitle: Partner Find OpenPetra.org
@@ -13,6 +12,16 @@ RootNode:
         Closed: {class=System.EventHandler, method=TPartnerFindScreen_Closed}
     Actions:
         actFileWorkWithLastPartner: {ActionClick=MniFile_Click}
+        actFileRecentPartner1: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner2: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner3: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner4: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner5: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner6: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner7: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner8: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner9: {ActionClick=MniFileRecentPartner_Click}
+        actFileRecentPartner10: {ActionClick=MniFileRecentPartner_Click}
         actFileNewPartner: {ActionClick=MniFile_Click, Image: NewPartner.ico}
         actFileEditPartner: {ActionClick=MniFile_Click, Image: EditPartner.ico}
         actFileMergePartners: {ActionClick=MniFile_Click, Image=MergePartner.ico}
@@ -27,26 +36,26 @@ RootNode:
         actEditCopyAddress: {ActionClick=MniEdit_Click, Image=CopyToClipboard_Address.ico}
         actEditCopyEmailAddress: {ActionClick=MniEdit_Click, Image=CopyToClipboard_EmailAddress.ico}
         
-        actMaintainAddresses: {Label=&Addresses, ActionClick=MniMaintain_Click, Image, Image: Address.ico}
-        actMaintainPartnerDetails: {Label=Partner &Details, ActionClick=MniMaintain_Click, Image: Details.ico}
-        actMaintainFoundationDetails: {Label=Foundation Details, ActionClick=MniMaintain_Click, Image: Foundations.ico}
-        actMaintainSubscriptions: {Label=&Subscriptions, ActionClick=MniMaintain_Click, Image: Subscriptions.ico}
-        actMaintainSpecialTypes: {Label=Special &Types, ActionClick=MniMaintain_Click, Image: Types.ico}
-        actMaintainContacts: {Label=&Contacts, ActionClick=MniMaintain_Click, Image: RecordedContacts.ico}
-        actMaintainFamilyMembers: {Label=Fa&mily Members, ActionClick=MniMaintain_Click, Image: FamilyMembers.ico}
-        actMaintainRelationships: {Label=&Relationships, ActionClick=MniMaintain_Click, Image: Relationships.ico}
-        actMaintainInterests: {Label=&Interests, ActionClick=MniMaintain_Click, Image: PartnerInterest.ico}
-        actMaintainReminders: {Label=&Reminders, ActionClick=MniMaintain_Click, Image: Reminders.ico}
-        actMaintainNotes: {Label=&Notes, ActionClick=MniMaintain_Click, Image: Notes.ico}
-        actMaintainLocalPartnerData: {Label=&Local Partner Data, ActionClick=MniMaintain_Click, Image: OfficeSpecific.ico}
-        actMaintainWorkerField: {Label=&Worker Field, ActionClick=MniMaintain_Click, Image: OMField.ico}
-        actMaintainPersonnelData: {Label=&Personnel/Individual Data, ActionClick=MniMaintain_Click, Image: personel_small.ico}
-        actMaintainDonorHistory: {Label=Donor &History, ActionClick=MniMaintain_Click}
-        actMaintainRecipientHistory: {Label=Recipient Histor&y, ActionClick=MniMaintain_Click}
-        actMaintainFinanceReports: {Label=Finance Report&s, ActionClick=MniMaintain_Click}
-        actMaintainBankAccounts: {Label=Ban&k Accounts, ActionClick=MniMaintain_Click}
-        actMaintainGiftReceipting: {Label=&Gift Receipting, ActionClick=MniMaintain_Click}
-        actMaintainFinanceDetails: {Label=&Finance Details, ActionClick=MniMaintain_Click, Image: FinanceDetails.ico}        
+        actMaintainAddresses: {Label=&Addresses..., ActionClick=MniMaintain_Click, Image, Image: Address.ico}
+        actMaintainPartnerDetails: {Label=Partner &Details..., ActionClick=MniMaintain_Click, Image: Details.ico}
+        actMaintainFoundationDetails: {Label=Foundation Details..., ActionClick=MniMaintain_Click, Image: Foundations.ico}
+        actMaintainSubscriptions: {Label=&Subscriptions..., ActionClick=MniMaintain_Click, Image: Subscriptions.ico}
+        actMaintainSpecialTypes: {Label=Special &Types..., ActionClick=MniMaintain_Click, Image: Types.ico}
+        actMaintainContacts: {Label=&Contacts..., ActionClick=MniMaintain_Click, Image: RecordedContacts.ico}
+        actMaintainFamilyMembers: {Label=Fa&mily Members..., ActionClick=MniMaintain_Click, Image: FamilyMembers.ico}
+        actMaintainRelationships: {Label=&Relationships..., ActionClick=MniMaintain_Click, Image: Relationships.ico}
+        actMaintainInterests: {Label=&Interests..., ActionClick=MniMaintain_Click, Image: PartnerInterest.ico}
+        actMaintainReminders: {Label=&Reminders..., ActionClick=MniMaintain_Click, Image: Reminders.ico}
+        actMaintainNotes: {Label=&Notes..., ActionClick=MniMaintain_Click, Image: Notes.ico}
+        actMaintainLocalPartnerData: {Label=&Local Partner Data..., ActionClick=MniMaintain_Click, Image: OfficeSpecific.ico}
+        actMaintainWorkerField: {Label=&Worker Field..., ActionClick=MniMaintain_Click, Image: OMField.ico}
+        actMaintainPersonnelData: {Label=&Personnel/Individual Data..., ActionClick=MniMaintain_Click, Image: personel_small.ico}
+        actMaintainDonorHistory: {Label=Donor &History..., ActionClick=MniMaintain_Click}
+        actMaintainRecipientHistory: {Label=Recipient Histor&y..., ActionClick=MniMaintain_Click}
+        actMaintainFinanceReports: {Label=Finance Report&s..., ActionClick=MniMaintain_Click}
+        actMaintainBankAccounts: {Label=Ban&k Accounts..., ActionClick=MniMaintain_Click}
+        actMaintainGiftReceipting: {Label=&Gift Receipting..., ActionClick=MniMaintain_Click}
+        actMaintainFinanceDetails: {Label=&Finance Details..., ActionClick=MniMaintain_Click, Image: FinanceDetails.ico}        
         
         actMailingGenerateExtract: {Label=&Generate Extract From Found Partners..., ActionClick=MniMailing_Click}
         actMailingExtracts: {Label=&Extracts..., ActionClick=MniMailing_Click}
@@ -59,6 +68,8 @@ RootNode:
         actViewPartnerInfo: {Label=Partner &Info Panel, ActionClick=MniView_Click, Image: FindAddress.ico}
         
         actToolsOptions: {Label=&Options..., ActionClick=MniTools_Click, Image: FindOptions.ico}
+        
+        actAccept: {ActionClick=BtnAccept_Click}
     Controls:
         pnlMain: 
             Dock: Fill
@@ -74,11 +85,17 @@ RootNode:
             Dock: Fill
         tpgFindBankDetails: {Label=Find by Bank Details}
         pnlModalButtons:
-            Dock: Fill
-            Controls: [btnHelp, btnCancel, btnFullyLoadData, btnAccept]
+            ControlsOrientation: horizontal
+            Dock: Bottom
+            Controls: [btnHelp, pnlAcceptCancelButtons]
+        pnlAcceptCancelButtons:
+            ControlsOrientation: horizontal
+            Controls: [btnAccept, btnCancel]
+            Align: right
+# btnFullyLoadData,             
         btnHelp: {Label=&Help}
-        btnFullyLoadData: {Label=Fully load Data}
-        btnAccept: {Label=&Accept}
+#        btnFullyLoadData: {Label=Fully load Data}
+        btnAccept: {Label=&Accept, Enabled=false}
         btnCancel: {Label=&Cancel}
     #todo: popup menu for address grid
     Menu:
@@ -96,35 +113,35 @@ RootNode:
                 mniFileRecentPartner8: {Label=7}
                 mniFileRecentPartner9: {Label=8}
                 mniFileRecentPartner10: {Label=9}
-            mniFileSeparator1: {Label=-}
+            mniSeparator: {Label=-}
             mniFileNewPartner: {Label=&New Partner...}
             mniFileNewPartnerWithShepherd: {Label=N&ew Partner (Shepherd)}
                 mniFileNewPartnerWithShepherdFamily: {Label=Add &Family with Shepherd...}
                 mniFileNewPartnerWithShepherdChurch: {Label=Add &Church with Shepherd...}
                 mniFileNewPartnerWithShepherdOrganisation: {Label=Add &Organisation with Shepherd...}
                 mniFileNewPartnerWithShepherdUnit: {Label=Add &Unit with Shepherd...}
-            mniFileEditPartner: {Label=&Edit Partner}
+            mniFileEditPartner: {Label=&Edit Partner...}
             mniFileMergePartners: {Label=Mer&ge Partners...}
-            mniFileDeletePartner: {Label=&Delete Partner}
-            mniFileSeparator2: {Label=-}
-            mniFileSendEmail: {Label=Send E&mail to Partner}
-            mniFileSeparator3: {Label=-}
-            mniFilePrintPartner: {Label=&Print Partner}
-            mniFileSeparator4: {Label=-}
-            mniFileExportPartner: {Label=E&xport Partner}
-            mniFileImportPartner: {Label=&Import Partner}
-            mniFileSeparator5: {Label=-}
+            mniFileDeletePartner: {Label=&Delete Partner...}
+            mniSeparator: {Label=-}
+            mniFileSendEmail: {Label=Send E&mail to Partner...}
+            mniSeparator: {Label=-}
+            mniFilePrintPartner: {Label=&Print Partner...}
+            mniSeparator: {Label=-}
+            mniFileExportPartner: {Label=E&xport Partner...}
+            mniFileImportPartner: {Label=&Import Partner...}
+            mniSeparator: {Label=-}
             
         mniEdit:
             Label: &Edit
             mniEditSearch: {Label=&Search}
-            mniEditSeparator: {Label=-}
+            mniSeparator: {Label=-}
             mniEditCopyPartnerKey: {Label=Copy Partner's Partner &Key}
             mniEditCopyAddress: {Label=Copy Partner\'s &Address...}
             mniEditCopyEmailAddress: {Label=Copy Partner\'s E&mail Address}
             
         mniMaintain: 
-            label: Ma&intain
+            Label: Ma&intain
             mniMaintainAddresses:
             mniMaintainPartnerDetails:
             mniMaintainFoundationDetails:
@@ -139,7 +156,7 @@ RootNode:
             mniMaintainLocalPartnerData:
             mniMaintainWorkerField:
             mniSeparator:
-            mniMaintainPersonnelData:
+            mniMaintainPersonnelData: {Label=&Personnel/Individual Data...}
             mniSeparator:
             mniMaintainDonorHistory:
             mniMaintainRecipientHistory:
@@ -151,11 +168,11 @@ RootNode:
             Label: &Mailing
             mniMailingGenerateExtract:
             mniMailingExtracts:
-            mniMailingSeparator1: {Label=-}
+            mniSeparator: {Label=-}
             mniMailingDuplicateAddressCheck:
             mniMailingMergeAddresses:
             mniMailingPartnersAtLocation:
-            mniMailingSeparator2: {Label=-}
+            mniSeparator: {Label=-}
             mniMailingSubscriptionExpNotice:
             mniMailingSubscriptionCancellation:
         mniTools: 

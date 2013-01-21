@@ -7,7 +7,7 @@ RootNode:
     Template: windowFind
     MasterTable: PcConference
     DetailTable: PPartner
-    UsingNamespaces: [Ict.Common.Data,Ict.Petra.Shared.MConference.Data]
+    UsingNamespaces: [Ict.Common.Data,Ict.Petra.Shared.MConference.Data,Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MConference.Validation,Ict.Petra.Shared.MPartner.Partner.Validation]
     TemplateParameters:
         INITMANUALCODE: InitGridManually();
     WindowWidth: 522
@@ -21,7 +21,11 @@ RootNode:
             Dock: Fill
             Controls: [grpFindConference, pnlButtons]
         grpFindConference:
-            Controls:[txtConference, txtPrefix, btnSearch, grdConferences]
+            Dock: Fill
+            Controls:[pnlFilter, grdConferences]
+        pnlFilter:
+            Dock: Top
+            Controls: [txtConference, txtPrefix, btnSearch]
         txtConference:
             Label: Conference
         txtPrefix:
@@ -31,15 +35,15 @@ RootNode:
             Action: actSearch
         grdConferences:
             Dock: Fill
-            Columns: [PPartner.PartnerShortName, PcConference.ConferenceKey, PcConference.XyzTbdPrefix, PcConference.Start, PcConference.End]
+            Columns: [PPartner.PartnerShortName, PcConference.ConferenceKey, PcConference.OutreachPrefix, PcConference.Start, PcConference.End]
             CustomColumns:
                 PartnerShortName: {Label=Conference Name}
                 ConferenceKey: {Label=Conference Key}
-                XyzTbdPrefix: {Label=Campaign Code Prefix}
-            ActionDoubleClick: actAccept
+                OutreachPrefix: {Label=Outreach Code Prefix}
             Width: 500
             Height: 200
         pnlButtons:
+            Dock: Bottom
             Controls:
                 Row1: [btnAccept, btnCancel]
         btnAccept:

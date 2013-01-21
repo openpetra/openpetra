@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,6 +34,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Petra.Server.MReporting.MFinance
 {
@@ -48,7 +49,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <summary>
         /// cache of exchange rates
         /// </summary>
-        public static TExchangeRateCache ExchangeRateCache = new TExchangeRateCache();
+        public static TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
 
         /// <summary>
         /// cache of sql results for exchange rates
@@ -151,7 +152,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             if (realGlmSequence != null)
             {
-                exchangeRateToIntl = LedgerStatus.ExchangeRateCache.GetExchangeRate(databaseConnection,
+                exchangeRateToIntl = LedgerStatus.ExchangeRateCache.GetCorporateExchangeRate(databaseConnection,
                     realGlmSequence.ledger_number,
                     realYear,
                     realPeriod,
@@ -482,7 +483,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// </param>
         /// <param name="debitCreditIndicator"></param>
         /// <returns></returns>
-        private bool GetAccountInfo(TDataBase databaseConnection,
+        private bool TAccountInfo(TDataBase databaseConnection,
             System.Int32 pv_ledger_number_i,
             String pv_account_code_c,
             out String accountType,
@@ -564,7 +565,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                     NextNegativeSequence = NextNegativeSequence - 1;
                 }
 
-                if (GetAccountInfo(databaseConnection, pv_ledger_number_i, pv_account_code_c, out accountType, out postingAccount,
+                if (TAccountInfo(databaseConnection, pv_ledger_number_i, pv_account_code_c, out accountType, out postingAccount,
                         out debitCreditIndicator))
                 {
                     TGlmSequence glmSequenceElement = new TGlmSequence(pv_ledger_number_i,
@@ -664,112 +665,6 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 }
             }
 
-            return ReturnValue;
-        }
-    }
-
-    /// <summary>
-    /// todoComment
-    /// </summary>
-    public class TExchangeRate
-    {
-        /// <summary>todoComment</summary>
-        public int ledger_number_i;
-
-        /// <summary>todoComment</summary>
-        public int period_i;
-
-        /// <summary>todoComment</summary>
-        public int year_i;
-
-        /// <summary>todoComment</summary>
-        public decimal rate_n;
-    }
-
-    /// <summary>
-    /// todoComment
-    /// </summary>
-    public class TExchangeRateCache
-    {
-        private ArrayList exchangeRates;
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TExchangeRateCache() : base()
-        {
-            exchangeRates = new ArrayList();
-        }
-
-        private decimal GetExchangeRateFromDB(TDataBase databaseConnection,
-            int pv_ledger_number_i,
-            int pv_year_i,
-            int pv_period_i,
-            int currentFinancialYear)
-        {
-            ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(pv_ledger_number_i, databaseConnection.Transaction);
-            AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(pv_ledger_number_i,
-                pv_period_i,
-                databaseConnection.Transaction);
-
-            if (AccountingPeriodTable.Rows.Count < 1)
-            {
-                return -1;
-            }
-
-            DateTime startOfPeriod = AccountingPeriodTable[0].PeriodStartDate;
-            DateTime endOfPeriod = AccountingPeriodTable[0].PeriodEndDate;
-
-            startOfPeriod = new DateTime(startOfPeriod.Year - (currentFinancialYear - pv_year_i), startOfPeriod.Month, startOfPeriod.Day);
-
-            if ((endOfPeriod.Month == 2) && (endOfPeriod.Day == 29)
-                && (((currentFinancialYear - pv_year_i)) % 4 != 0))
-            {
-                endOfPeriod = endOfPeriod.AddDays(-1);
-            }
-
-            endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - pv_year_i), endOfPeriod.Month, endOfPeriod.Day);
-
-            // get the corporate exchange rate between base and intl currency for the period
-            return TTransactionWebConnector.GetCorporateExchangeRate(ledgerTable[0].IntlCurrency,
-                ledgerTable[0].BaseCurrency,
-                startOfPeriod,
-                endOfPeriod);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="databaseConnection"></param>
-        /// <param name="pv_ledger_number_i"></param>
-        /// <param name="pv_year_i"></param>
-        /// <param name="pv_period_i"></param>
-        /// <param name="currentFinancialYear"></param>
-        /// <returns></returns>
-        public decimal GetExchangeRate(TDataBase databaseConnection,
-            int pv_ledger_number_i,
-            int pv_year_i,
-            int pv_period_i,
-            int currentFinancialYear)
-        {
-            decimal ReturnValue;
-
-            foreach (TExchangeRate exchangeRateElement in exchangeRates)
-            {
-                if ((exchangeRateElement.ledger_number_i == pv_ledger_number_i) && (exchangeRateElement.year_i == pv_year_i)
-                    && (exchangeRateElement.period_i == pv_period_i))
-                {
-                    return exchangeRateElement.rate_n;
-                }
-            }
-
-            ReturnValue = GetExchangeRateFromDB(databaseConnection, pv_ledger_number_i, pv_year_i, pv_period_i, currentFinancialYear);
-            TExchangeRate exchangeRateElement2 = new TExchangeRate();
-            exchangeRateElement2.ledger_number_i = pv_ledger_number_i;
-            exchangeRateElement2.year_i = pv_year_i;
-            exchangeRateElement2.period_i = pv_period_i;
-            exchangeRateElement2.rate_n = ReturnValue;
-            exchangeRates.Add(exchangeRateElement2);
             return ReturnValue;
         }
     }

@@ -1,10 +1,11 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +33,9 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Shared.MHospitality.Data;
+using System.Globalization;
+using Ict.Common.Remoting.Server;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MPartner.ImportExport
 {
@@ -40,28 +44,60 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     /// </summary>
     public class TPartnerFileExport : TImportExportTextFile
     {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>A string that will form the first two lines of a .ext file</returns>
+        public string ExtFileHeader()
+        {
+            String DateFormat = "dmy";
+            String UserDatePattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.ToLower();
+
+            if (UserDatePattern.IndexOf("m") < UserDatePattern.IndexOf("d"))
+            {
+                DateFormat = "mdy";
+            }
+
+            String PetraVersion = "3.0.0";  // TODO: I should be able to get this out of the system somewhere!
+            long MySiteKey = DomainManager.GSiteKey;
+            String SubVersion = "0";
+
+            String Header = string.Format("{0} \"{1}\" {2}\n{3}\n", DateFormat, PetraVersion, MySiteKey, SubVersion);
+
+            if (DateFormat == "dmy")
+            {
+                DATEFORMAT = "dd/MM/yyyy";
+            }
+            else
+            {
+                DATEFORMAT = "MM/dd/yyyy";
+            }
+
+            return Header;
+        }
+
         private void WriteLocation(PLocationRow ALocationRow, PPartnerLocationRow APartnerLocationRow)
         {
-            Write(ALocationRow.SiteKey);
-            Write(ALocationRow.Locality);
-            Write(ALocationRow.StreetName);
-            Write(ALocationRow.Address3);
+            Write(ALocationRow.IsSiteKeyNull() ? 0 : ALocationRow.SiteKey);
+            Write(ALocationRow.IsLocalityNull() ? "" : ALocationRow.Locality);
+            Write(ALocationRow.IsStreetNameNull() ? "" : ALocationRow.StreetName);
+            Write(ALocationRow.IsAddress3Null() ? "" : ALocationRow.Address3);
             WriteLine();
-            Write(ALocationRow.City);
-            Write(ALocationRow.County);
-            Write(ALocationRow.PostalCode);
-            Write(ALocationRow.CountryCode);
+            Write(ALocationRow.IsCityNull() ? "" : ALocationRow.City);
+            Write(ALocationRow.IsCountyNull() ? "" : ALocationRow.County);
+            Write(ALocationRow.IsPostalCodeNull() ? "" : ALocationRow.PostalCode);
+            Write(ALocationRow.IsCountryCodeNull() ? "" : ALocationRow.CountryCode);
             WriteLine();
 
-            Write(APartnerLocationRow.DateEffective);
-            Write(APartnerLocationRow.DateGoodUntil);
-            Write(APartnerLocationRow.LocationType);
-            Write(APartnerLocationRow.SendMail);
-            Write(APartnerLocationRow.EmailAddress);
-            Write(APartnerLocationRow.TelephoneNumber);
-            Write(APartnerLocationRow.Extension);
-            Write(APartnerLocationRow.FaxNumber);
-            Write(APartnerLocationRow.FaxExtension);
+            Write(APartnerLocationRow.IsDateEffectiveNull() ? "?" : APartnerLocationRow.DateEffective.Value.ToString(DATEFORMAT));
+            Write(APartnerLocationRow.IsDateGoodUntilNull() ? "?" : APartnerLocationRow.DateGoodUntil.Value.ToString(DATEFORMAT));
+            Write(APartnerLocationRow.IsLocationTypeNull() ? "" : APartnerLocationRow.LocationType);
+            Write(APartnerLocationRow.IsSendMailNull() ? false : APartnerLocationRow.SendMail);
+            Write(APartnerLocationRow.IsEmailAddressNull() ? "" : APartnerLocationRow.EmailAddress);
+            Write(APartnerLocationRow.IsTelephoneNumberNull() ? "" : APartnerLocationRow.TelephoneNumber);
+            Write(APartnerLocationRow.IsExtensionNull() ? 0 : APartnerLocationRow.Extension);
+            Write(APartnerLocationRow.IsFaxNumberNull() ? "" : APartnerLocationRow.FaxNumber);
+            Write(APartnerLocationRow.IsFaxExtensionNull() ? 0 : APartnerLocationRow.FaxExtension);
             WriteLine();
         }
 
@@ -79,124 +115,124 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (AMainDS.PmShortTermApplication.DefaultView.Count > 0)
             {
                 PmShortTermApplicationRow ShortTermApplicationRow = (PmShortTermApplicationRow)AMainDS.PmShortTermApplication.DefaultView[0].Row;
-                Write(ShortTermApplicationRow.ConfirmedOptionCode);
-                Write(ShortTermApplicationRow.Option1Code);
-                Write(ShortTermApplicationRow.Option2Code);
-                Write(ShortTermApplicationRow.FromCongTravelInfo);
+                Write(ShortTermApplicationRow.IsConfirmedOptionCodeNull() ? "" : ShortTermApplicationRow.ConfirmedOptionCode);
+                //Write(ShortTermApplicationRow.IsOption1CodeNull() ? "" : ShortTermApplicationRow.Option1Code);
+                //Write(ShortTermApplicationRow.IsOption2CodeNull() ? "" : ShortTermApplicationRow.Option2Code);
+                Write(ShortTermApplicationRow.IsFromCongTravelInfoNull() ? "" : ShortTermApplicationRow.FromCongTravelInfo);
                 WriteLine();
-                Write(ShortTermApplicationRow.Arrival);
-                Write(ShortTermApplicationRow.ArrivalHour);
-                Write(ShortTermApplicationRow.ArrivalMinute);
-                Write(ShortTermApplicationRow.Departure);
-                Write(ShortTermApplicationRow.DepartureHour);
-                Write(ShortTermApplicationRow.DepartureMinute);
+                Write(ShortTermApplicationRow.IsArrivalNull() ? "?" : ShortTermApplicationRow.Arrival.Value.ToString(DATEFORMAT));
+                Write(ShortTermApplicationRow.IsArrivalHourNull() ? 0 : ShortTermApplicationRow.ArrivalHour);
+                Write(ShortTermApplicationRow.IsArrivalMinuteNull() ? 0 : ShortTermApplicationRow.ArrivalMinute);
+                Write(ShortTermApplicationRow.IsDepartureNull() ? "?" : ShortTermApplicationRow.Departure.Value.ToString(DATEFORMAT));
+                Write(ShortTermApplicationRow.IsDepartureHourNull() ? 0 : ShortTermApplicationRow.DepartureHour);
+                Write(ShortTermApplicationRow.IsDepartureMinuteNull() ? 0 : ShortTermApplicationRow.DepartureMinute);
                 WriteLine();
-                Write(ShortTermApplicationRow.StApplicationHoldReason);
-                Write(ShortTermApplicationRow.StApplicationOnHold);
-                Write(ShortTermApplicationRow.StBasicDeleteFlag);
-                Write(ShortTermApplicationRow.StBookingFeeReceived);
-                Write(ShortTermApplicationRow.StXyzTbdOnlyFlag);
-                Write(ShortTermApplicationRow.StCmpgnSpecialCost);
-                Write(ShortTermApplicationRow.StCngrssSpecialCost);
+                Write(ShortTermApplicationRow.IsStApplicationHoldReasonNull() ? "" : ShortTermApplicationRow.StApplicationHoldReason);
+                Write(ShortTermApplicationRow.IsStApplicationOnHoldNull() ? false : ShortTermApplicationRow.StApplicationOnHold);
+                Write(ShortTermApplicationRow.IsStBasicDeleteFlagNull() ? false : ShortTermApplicationRow.StBasicDeleteFlag);
+                //Write(ShortTermApplicationRow.IsStBookingFeeReceivedNull() ? false : ShortTermApplicationRow.StBookingFeeReceived);
+                Write(ShortTermApplicationRow.IsStOutreachOnlyFlagNull() ? false : ShortTermApplicationRow.StOutreachOnlyFlag);
+                Write(ShortTermApplicationRow.IsStOutreachSpecialCostNull() ? 0 : ShortTermApplicationRow.StOutreachSpecialCost);
+                Write(ShortTermApplicationRow.IsStCngrssSpecialCostNull() ? 0 : ShortTermApplicationRow.StCngrssSpecialCost);
                 WriteLine();
-                Write(ShortTermApplicationRow.StComment);
+                //Write(ShortTermApplicationRow.IsStCommentNull() ? "" : ShortTermApplicationRow.StComment);
                 WriteLine();
-                Write(ShortTermApplicationRow.StConfirmedOption);
-                Write(ShortTermApplicationRow.StCongressCode);
-                Write(ShortTermApplicationRow.StCongressLanguage);
-                Write(ShortTermApplicationRow.StCountryPref);
-                Write(ShortTermApplicationRow.StCurrentField);
-                Write(ShortTermApplicationRow.XyzTbdRole);
+                Write(ShortTermApplicationRow.IsStConfirmedOptionNull() ? 0 : ShortTermApplicationRow.StConfirmedOption);
+                Write(ShortTermApplicationRow.IsStCongressCodeNull() ? "" : ShortTermApplicationRow.StCongressCode);
+                Write(ShortTermApplicationRow.IsStCongressLanguageNull() ? "" : ShortTermApplicationRow.StCongressLanguage);
+                //Write(ShortTermApplicationRow.IsStCountryPrefNull() ? "" : ShortTermApplicationRow.StCountryPref);
+                Write(ShortTermApplicationRow.IsStCurrentFieldNull() ? 0 : ShortTermApplicationRow.StCurrentField);
+                Write(ShortTermApplicationRow.IsOutreachRoleNull() ? "" : ShortTermApplicationRow.OutreachRole);
                 WriteLine();
-                Write(ShortTermApplicationRow.StFgCode);
-                Write(ShortTermApplicationRow.StFgLeader);
-                Write(ShortTermApplicationRow.StFieldCharged);
-                Write(ShortTermApplicationRow.StLeadershipRating);
-                Write(ShortTermApplicationRow.StOption1);
-                Write(ShortTermApplicationRow.StOption2);
+                Write(ShortTermApplicationRow.IsStFgCodeNull() ? "" : ShortTermApplicationRow.StFgCode);
+                Write(ShortTermApplicationRow.IsStFgLeaderNull() ? false : ShortTermApplicationRow.StFgLeader);
+                Write(ShortTermApplicationRow.IsStFieldChargedNull() ? 0 : ShortTermApplicationRow.StFieldCharged);
+                // Write(ShortTermApplicationRow.IsStLeadershipRatingNull()? "" : ShortTermApplicationRow.StLeadershipRating); // fields removed
+                // Write(ShortTermApplicationRow.IsStOption1Null()? 0 : ShortTermApplicationRow.StOption1);
+                // Write(ShortTermApplicationRow.IsStOption2Null()? 0 : ShortTermApplicationRow.StOption2);
                 WriteLine();
-                Write(ShortTermApplicationRow.StPartyContact);
-                Write(ShortTermApplicationRow.StPartyTogether);
-                Write(ShortTermApplicationRow.StPreCongressCode);
-                Write(ShortTermApplicationRow.StProgramFeeReceived);
-                Write(ShortTermApplicationRow.StRecruitEfforts);
-                Write(ShortTermApplicationRow.StScholarshipAmount);
-                Write(ShortTermApplicationRow.StScholarshipApprovedBy);
-                Write(ShortTermApplicationRow.StScholarshipPeriod);
-                Write(ShortTermApplicationRow.StScholarshipReviewDate);
+                // Write(ShortTermApplicationRow.IsStPartyContactNull()? 0 : ShortTermApplicationRow.StPartyContact);
+                // Write(ShortTermApplicationRow.IsStPartyTogetherNull()? "" :  ShortTermApplicationRow.StPartyTogether);
+                Write(ShortTermApplicationRow.IsStPreCongressCodeNull() ? "" : ShortTermApplicationRow.StPreCongressCode);
+                // Write(ShortTermApplicationRow.IsStProgramFeeReceivedNull()? false : ShortTermApplicationRow.StProgramFeeReceived);
+                // Write(ShortTermApplicationRow.IsStRecruitEffortsNull()? "" : ShortTermApplicationRow.StRecruitEfforts);
+                // Write(ShortTermApplicationRow.IsStScholarshipAmountNull()? 0 : ShortTermApplicationRow.StScholarshipAmount);
+                // Write(ShortTermApplicationRow.IsStScholarshipApprovedByNull()? "" : ShortTermApplicationRow.StScholarshipApprovedBy);
+                // Write(ShortTermApplicationRow.IsStScholarshipPeriodNull()? "" : ShortTermApplicationRow.StScholarshipPeriod);
+                // Write(ShortTermApplicationRow.IsStScholarshipReviewDateNull()? "?" : ShortTermApplicationRow.StScholarshipReviewDate.Value.ToString(DATEFORMAT));
                 WriteLine();
-                Write(ShortTermApplicationRow.StSpecialApplicant);
-                Write(ShortTermApplicationRow.StActivityPref);
-                Write(ShortTermApplicationRow.ToCongTravelInfo);
-                Write(ShortTermApplicationRow.ArrivalPointCode);
-                Write(ShortTermApplicationRow.DeparturePointCode);
-                Write(ShortTermApplicationRow.TravelTypeFromCongCode);
-                Write(ShortTermApplicationRow.TravelTypeToCongCode);
+                Write(ShortTermApplicationRow.IsStSpecialApplicantNull() ? "" : ShortTermApplicationRow.StSpecialApplicant);
+                //Write(ShortTermApplicationRow.IsStActivityPrefNull() ? "" : ShortTermApplicationRow.StActivityPref);
+                Write(ShortTermApplicationRow.IsToCongTravelInfoNull() ? "" : ShortTermApplicationRow.ToCongTravelInfo);
+                Write(ShortTermApplicationRow.IsArrivalPointCodeNull() ? "" : ShortTermApplicationRow.ArrivalPointCode);
+                Write(ShortTermApplicationRow.IsDeparturePointCodeNull() ? "" : ShortTermApplicationRow.DeparturePointCode);
+                Write(ShortTermApplicationRow.IsTravelTypeFromCongCodeNull() ? "" : ShortTermApplicationRow.TravelTypeFromCongCode);
+                Write(ShortTermApplicationRow.IsTravelTypeToCongCodeNull() ? "" : ShortTermApplicationRow.TravelTypeToCongCode);
                 WriteLine();
-                Write(ShortTermApplicationRow.ContactNumber);
-                Write(ShortTermApplicationRow.ArrivalDetailsStatus);
-                Write(ShortTermApplicationRow.ArrivalTransportNeeded);
-                Write(ShortTermApplicationRow.ArrivalExp);
-                Write(ShortTermApplicationRow.ArrivalExpHour);
-                Write(ShortTermApplicationRow.ArrivalExpMinute);
-                Write(ShortTermApplicationRow.ArrivalComments);
-                Write(ShortTermApplicationRow.TransportInterest);
+                //Write(ShortTermApplicationRow.IsContactNumberNull() ? "" : ShortTermApplicationRow.ContactNumber);
+                Write(ShortTermApplicationRow.IsArrivalDetailsStatusNull() ? "" : ShortTermApplicationRow.ArrivalDetailsStatus);
+                Write(ShortTermApplicationRow.IsArrivalTransportNeededNull() ? false : ShortTermApplicationRow.ArrivalTransportNeeded);
+                // Write(ShortTermApplicationRow.IsArrivalExpNull()? "?" : ShortTermApplicationRow.ArrivalExp.Value.ToString(DATEFORMAT));
+                // Write(ShortTermApplicationRow.IsArrivalExpHourNull()? 0 : ShortTermApplicationRow.ArrivalExpHour);
+                // Write(ShortTermApplicationRow.IsArrivalMinuteNull()? 0 : ShortTermApplicationRow.ArrivalExpMinute);
+                Write(ShortTermApplicationRow.IsArrivalCommentsNull() ? "" : ShortTermApplicationRow.ArrivalComments);
+                Write(ShortTermApplicationRow.IsTransportInterestNull() ? false : ShortTermApplicationRow.TransportInterest);
                 WriteLine();
-                Write(ShortTermApplicationRow.DepartureDetailsStatus);
-                Write(ShortTermApplicationRow.DepartureTransportNeeded);
-                Write(ShortTermApplicationRow.DepartureExp);
-                Write(ShortTermApplicationRow.DepartureExpHour);
-                Write(ShortTermApplicationRow.DepartureExpMinute);
-                Write(ShortTermApplicationRow.DepartureComments);
+                Write(ShortTermApplicationRow.IsDepartureDetailsStatusNull() ? "" : ShortTermApplicationRow.DepartureDetailsStatus);
+                Write(ShortTermApplicationRow.IsDepartureTransportNeededNull() ? false : ShortTermApplicationRow.DepartureTransportNeeded);
+                // Write(ShortTermApplicationRow.IsDepartureExpNull()? "?" : ShortTermApplicationRow.DepartureExp.Value.ToString(DATEFORMAT));
+                // Write(ShortTermApplicationRow.IsDepartureHourNull()? 0 : ShortTermApplicationRow.DepartureExpHour);
+                // Write(ShortTermApplicationRow.IsDepartureMinuteNull()? 0 : ShortTermApplicationRow.DepartureExpMinute);
+                Write(ShortTermApplicationRow.IsDepartureCommentsNull() ? "" : ShortTermApplicationRow.DepartureComments);
                 WriteLine();
             }
             else
             {
                 Write("");                 // ShortTermApplicationRow.ConfirmedOptionCode
-                Write("");                 // ShortTermApplicationRow.Option1Code
-                Write("");                 // ShortTermApplicationRow.Option2Code
+                //Write("");                 // ShortTermApplicationRow.Option1Code
+                //Write("");                 // ShortTermApplicationRow.Option2Code
                 Write("");                 // ShortTermApplicationRow.FromCongTravelInfo
                 WriteLine();
-                Write("?");                 // ShortTermApplicationRow.Arrival
-                Write("0");                 // ShortTermApplicationRow.ArrivalHour
-                Write("0");                 // ShortTermApplicationRow.ArrivalMinute
-                Write("?");                 // ShortTermApplicationRow.Departure
-                Write("0");                 // ShortTermApplicationRow.DepartureHour
-                Write("0");                 // ShortTermApplicationRow.DepartureMinute
+                Write("?");                // ShortTermApplicationRow.Arrival
+                Write(0);                  // ShortTermApplicationRow.ArrivalHour
+                Write(0);                  // ShortTermApplicationRow.ArrivalMinute
+                Write("?");                // ShortTermApplicationRow.Departure
+                Write(0);                  // ShortTermApplicationRow.DepartureHour
+                Write(0);                  // ShortTermApplicationRow.DepartureMinute
                 WriteLine();
                 Write("");                 // ShortTermApplicationRow.StApplicationHoldReason
-                Write(true);                 // ShortTermApplicationRow.StApplicationOnHold
-                Write(false);                 // ShortTermApplicationRow.StBasicDeleteFlag
-                Write(false);                 // ShortTermApplicationRow.StBookingFeeReceived
-                Write(false);                 // ShortTermApplicationRow.StXyzTbdOnlyFlag
-                Write(0);                 // ShortTermApplicationRow.StCmpgnSpecialCost
-                Write(0);                 // ShortTermApplicationRow.StCngrssSpecialCost
+                Write(true);               // ShortTermApplicationRow.StApplicationOnHold
+                Write(false);              // ShortTermApplicationRow.StBasicDeleteFlag
+                Write(false);              // ShortTermApplicationRow.StBookingFeeReceived
+                Write(false);              // ShortTermApplicationRow.StOutreachOnlyFlag
+                Write(0);                  // ShortTermApplicationRow.StOutreachSpecialCost
+                Write(0);                  // ShortTermApplicationRow.StCngrssSpecialCost
                 WriteLine();
                 Write("");                 // ShortTermApplicationRow.StComment
                 WriteLine();
-                Write(0);                 // ShortTermApplicationRow.StConfirmedOption
+                Write(0);                  // ShortTermApplicationRow.StConfirmedOption
                 Write("");                 // ShortTermApplicationRow.StCongressCode
                 Write("");                 // ShortTermApplicationRow.StCongressLanguage
                 Write("");                 // ShortTermApplicationRow.StCountryPref
-                Write(0);                 // ShortTermApplicationRow.StCurrentField
-                Write("");                 // ShortTermApplicationRow.XyzTbdRole
+                Write(0);                  // ShortTermApplicationRow.StCurrentField
+                Write("");                 // ShortTermApplicationRow.OutreachRole
                 WriteLine();
                 Write("");                 // ShortTermApplicationRow.StFgCode
-                Write(false);                 // ShortTermApplicationRow.StFgLeader
-                Write(0);                 // ShortTermApplicationRow.StFieldCharged
-                Write("");                 // ShortTermApplicationRow.StLeadershipRating
-                Write(0);                 // ShortTermApplicationRow.StOption1
-                Write(0);                 // ShortTermApplicationRow.StOption2
+                Write(false);              // ShortTermApplicationRow.StFgLeader
+                Write(0);                  // ShortTermApplicationRow.StFieldCharged
+                // Write("");              // ShortTermApplicationRow.StLeadershipRating removed
+                // Write(0);               // ShortTermApplicationRow.StOption1
+                // Write(0);               // ShortTermApplicationRow.StOption2
                 WriteLine();
-                Write(0);                 // ShortTermApplicationRow.StPartyContact
-                Write("");                 // ShortTermApplicationRow.StPartyTogether
+                // Write(0);               // ShortTermApplicationRow.StPartyContact
+                // Write("");              // ShortTermApplicationRow.StPartyTogether
                 Write("");                 // ShortTermApplicationRow.StPreCongressCode
-                Write(false);                 // ShortTermApplicationRow.StProgramFeeReceived
-                Write("");                 // ShortTermApplicationRow.StRecruitEfforts
-                Write(0);                 // ShortTermApplicationRow.StScholarshipAmount
-                Write("");                 // ShortTermApplicationRow.StScholarshipApprovedBy
-                Write("");                 // ShortTermApplicationRow.StScholarshipPeriod
-                Write("?");                 // ShortTermApplicationRow.StScholarshipReviewDate
+                // Write(false);           // ShortTermApplicationRow.StProgramFeeReceived
+                // Write("");              // ShortTermApplicationRow.StRecruitEfforts
+                // Write(0);               // ShortTermApplicationRow.StScholarshipAmount
+                // Write("");              // ShortTermApplicationRow.StScholarshipApprovedBy
+                // Write("");              // ShortTermApplicationRow.StScholarshipPeriod
+                // Write("?");             // ShortTermApplicationRow.StScholarshipReviewDate
                 WriteLine();
                 Write("");                 // ShortTermApplicationRow.StSpecialApplicant
                 Write("");                 // ShortTermApplicationRow.StActivityPref
@@ -208,18 +244,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 WriteLine();
                 Write("");                 // ShortTermApplicationRow.ContactNumber
                 Write("");                 // ShortTermApplicationRow.ArrivalDetailsStatus
-                Write(false);                 // ShortTermApplicationRow.ArrivalTransportNeeded
-                Write("?");                 // ShortTermApplicationRow.ArrivalExp
-                Write(0);                 // ShortTermApplicationRow.ArrivalExpHour
-                Write(0);                 // ShortTermApplicationRow.ArrivalExpMinute
+                Write(false);              // ShortTermApplicationRow.ArrivalTransportNeeded
+                // Write("?");             // ShortTermApplicationRow.ArrivalExp
+                // Write(0);               // ShortTermApplicationRow.ArrivalExpHour
+                // Write(0);               // ShortTermApplicationRow.ArrivalExpMinute
                 Write("");                 // ShortTermApplicationRow.ArrivalComments
-                Write(false);                 // ShortTermApplicationRow.TransportInterest
+                Write(false);              // ShortTermApplicationRow.TransportInterest
                 WriteLine();
                 Write("");                 // ShortTermApplicationRow.DepartureDetailsStatus
-                Write(false);                 // ShortTermApplicationRow.DepartureTransportNeeded
-                Write("?");                 // ShortTermApplicationRow.DepartureExp
-                Write(0);                 // ShortTermApplicationRow.DepartureExpHour
-                Write(0);                 // ShortTermApplicationRow.DepartureExpMinute
+                Write(false);              // ShortTermApplicationRow.DepartureTransportNeeded
+                // Write("?");             // ShortTermApplicationRow.DepartureExp
+                // Write(0);               // ShortTermApplicationRow.DepartureExpHour
+                // Write(0);               // ShortTermApplicationRow.DepartureExpMinute
                 Write("");                 // ShortTermApplicationRow.DepartureComments
                 WriteLine();
             }
@@ -227,9 +263,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void WriteLongApplicationForm(PartnerImportExportTDS AMainDS, PmGeneralApplicationRow AGeneralApplicationRow)
         {
-            // TODO: does filter work for the date?
+            // TODO: test that the filter works with the date
             AMainDS.PmYearProgramApplication.DefaultView.RowFilter =
-                String.Format("{0}={1} and {2}='{3}' and {4}={5}",
+                String.Format("{0}={1} and {2}='{3}' and {4}=#{5}#",
                     PmYearProgramApplicationTable.GetPartnerKeyDBName(),
                     AGeneralApplicationRow.PartnerKey,
                     PmYearProgramApplicationTable.GetYpBasicAppTypeDBName(),
@@ -237,55 +273,57 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     PmYearProgramApplicationTable.GetYpAppDateDBName(),
                     AGeneralApplicationRow.GenAppDate);
 
+            // The RowFilter above will be applied when the Count property is accessed.
+            //
             if (AMainDS.PmYearProgramApplication.DefaultView.Count > 0)
             {
-                PmYearProgramApplicationRow YearProgramApplicationRow =
+                PmYearProgramApplicationRow Row =
                     (PmYearProgramApplicationRow)AMainDS.PmYearProgramApplication.DefaultView[0].Row;
-                Write(YearProgramApplicationRow.HoOrientConfBookingKey);
-                Write(YearProgramApplicationRow.YpAgreedJoiningCharge);
-                Write(YearProgramApplicationRow.YpAgreedSupportFigure);
-                Write(YearProgramApplicationRow.YpAppFeeReceived);
-                Write(YearProgramApplicationRow.YpBasicDeleteFlag);
-                Write(YearProgramApplicationRow.YpJoiningConf);
-                Write(YearProgramApplicationRow.StartOfCommitment);
-                Write(YearProgramApplicationRow.EndOfCommitment);
-                Write(YearProgramApplicationRow.IntendedComLengthMonths);
-                Write(YearProgramApplicationRow.PositionName);
-                Write(YearProgramApplicationRow.PositionScope);
-                Write(YearProgramApplicationRow.AssistantTo);
+                Write(Row.IsHoOrientConfBookingKeyNull() ? "" : Row.HoOrientConfBookingKey);
+                Write(Row.IsYpAgreedJoiningChargeNull() ? 0 : Row.YpAgreedJoiningCharge);
+                Write(Row.IsYpAgreedSupportFigureNull() ? 0 : Row.YpAgreedSupportFigure);
+                // Write(Row.IsYpAppFeeReceivedNull()? false : Row.YpAppFeeReceived);  // Field removed
+                Write(Row.IsYpBasicDeleteFlagNull() ? false : Row.YpBasicDeleteFlag);
+                Write(Row.IsYpJoiningConfNull() ? 0 : Row.YpJoiningConf);
+                Write(Row.IsStartOfCommitmentNull() ? "?" : Row.StartOfCommitment.Value.ToString(DATEFORMAT));
+                Write(Row.IsEndOfCommitmentNull() ? "?" : Row.EndOfCommitment.Value.ToString(DATEFORMAT));
+                Write(Row.IsIntendedComLengthMonthsNull() ? 0 : Row.IntendedComLengthMonths);
+                Write(Row.IsPositionNameNull() ? "" : Row.PositionName);
+                Write(Row.IsPositionScopeNull() ? "" : Row.PositionScope);
+                Write(Row.IsAssistantToNull() ? false : Row.AssistantTo);
                 WriteLine();
-                Write(YearProgramApplicationRow.YpScholarshipAthrizedBy);
-                Write(YearProgramApplicationRow.YpScholarshipBeginDate);
-                Write(YearProgramApplicationRow.YpScholarshipEndDate);
-                Write(YearProgramApplicationRow.YpScholarship);
-                Write(YearProgramApplicationRow.YpScholarshipPeriod);
-                Write(YearProgramApplicationRow.YpScholarshipReviewDate);
-                Write(YearProgramApplicationRow.YpSupportPeriod);
+                // Write(Row.IsYpScholarshipAthrizedByNull()? "" : Row.YpScholarshipAthrizedBy);
+                // Write(Row.IsYpScholarshipBeginDateNull()? "?" : Row.YpScholarshipBeginDate.Value.ToString(DATEFORMAT));
+                // Write(Row.IsYpScholarshipEndDateNull()? "?" : Row.YpScholarshipEndDate.Value.ToString(DATEFORMAT));
+                // Write(Row.IsYpScholarshipNull()? 0 : Row.YpScholarship);
+                // Write(Row.IsYpScholarshipPeriodNull()? "" : Row.YpScholarshipPeriod);
+                // Write(Row.IsYpScholarshipReviewDateNull()? "?" : Row.YpScholarshipReviewDate.Value.ToString(DATEFORMAT));
+                Write(Row.IsYpSupportPeriodNull() ? "" : Row.YpSupportPeriod);
                 WriteLine();
             }
             else
             {
-                PmYearProgramApplicationRow YearProgramApplicationRow =
-                    (PmYearProgramApplicationRow)AMainDS.PmYearProgramApplication.DefaultView[0].Row;
+                // PmYearProgramApplicationRow YearProgramApplicationRow =
+                //    (PmYearProgramApplicationRow)AMainDS.PmYearProgramApplication.DefaultView[0].Row;
                 Write("");                 // YearProgramApplicationRow.HoOrientConfBookingKey
-                Write(0);                 // YearProgramApplicationRow.YpAgreedJoiningCharge
-                Write(0);                 // YearProgramApplicationRow.YpAgreedSupportFigure
-                Write(false);                 // YearProgramApplicationRow.YpAppFeeReceived
-                Write(false);                 // YearProgramApplicationRow.YpBasicDeleteFlag
-                Write(0);                 // YearProgramApplicationRow.YpJoiningConf
-                Write("?");                 // YearProgramApplicationRow.StartOfCommitment
-                Write("?");                 // YearProgramApplicationRow.EndOfCommitment
-                Write(0);                 // YearProgramApplicationRow.IntendedComLengthMonths
+                Write(0);                  // YearProgramApplicationRow.YpAgreedJoiningCharge
+                Write(0);                  // YearProgramApplicationRow.YpAgreedSupportFigure
+                // Write(false);           // YearProgramApplicationRow.YpAppFeeReceived
+                Write(false);              // YearProgramApplicationRow.YpBasicDeleteFlag
+                Write(0);                  // YearProgramApplicationRow.YpJoiningConf
+                Write("?");                // YearProgramApplicationRow.StartOfCommitment
+                Write("?");                // YearProgramApplicationRow.EndOfCommitment
+                Write(0);                  // YearProgramApplicationRow.IntendedComLengthMonths
                 Write("");                 // YearProgramApplicationRow.PositionName
                 Write("");                 // YearProgramApplicationRow.PositionScope
-                Write(false);                 // YearProgramApplicationRow.AssistantTo
+                Write(false);              // YearProgramApplicationRow.AssistantTo
                 WriteLine();
-                Write("");                 // YearProgramApplicationRow.YpScholarshipAthrizedBy
-                Write("?");                 // YearProgramApplicationRow.YpScholarshipBeginDate
-                Write("?");                 // YearProgramApplicationRow.YpScholarshipEndDate
-                Write(0);                 // YearProgramApplicationRow.YpScholarship
-                Write("");                 // YearProgramApplicationRow.YpScholarshipPeriod
-                Write("?");                 // YearProgramApplicationRow.YpScholarshipReviewDate
+                // Write("");              // YearProgramApplicationRow.YpScholarshipAthrizedBy
+                // Write("?");             // YearProgramApplicationRow.YpScholarshipBeginDate
+                // Write("?");             // YearProgramApplicationRow.YpScholarshipEndDate
+                // Write(0);               // YearProgramApplicationRow.YpScholarship
+                // Write("");              // YearProgramApplicationRow.YpScholarshipPeriod
+                // Write("?");             // YearProgramApplicationRow.YpScholarshipReviewDate
                 Write("");                 // YearProgramApplicationRow.YpSupportPeriod
                 WriteLine();
             }
@@ -305,40 +343,42 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     Write("APPLCTN");
                     WriteLine();
-                    Write(ApplicationTypeRow.AppFormType);
-                    Write(ApplicationTypeRow.AppTypeName);
-                    Write(ApplicationTypeRow.AppTypeDescr);
+                    Write(ApplicationTypeRow.IsAppFormTypeNull() ? "" : ApplicationTypeRow.AppFormType);
+                    Write(ApplicationTypeRow.IsAppTypeNameNull() ? "" : ApplicationTypeRow.AppTypeName);
+                    Write(ApplicationTypeRow.IsAppTypeDescrNull() ? "" : ApplicationTypeRow.AppTypeDescr);
                     WriteLine();
-                    Write(GeneralApplicationRow.GenAppDate);
-                    Write(GeneralApplicationRow.OldLink);
+                    Write(GeneralApplicationRow.IsGenAppDateNull() ? "?" : GeneralApplicationRow.GenAppDate.ToString(DATEFORMAT));
+                    Write(GeneralApplicationRow.IsOldLinkNull() ? "" : GeneralApplicationRow.OldLink);
                     WriteLine();
-                    Write(GeneralApplicationRow.GenApplicantType);
-                    Write(GeneralApplicationRow.GenApplicationHoldReason);
-                    Write(GeneralApplicationRow.GenApplicationOnHold);
-                    Write(GeneralApplicationRow.GenApplicationStatus);
-                    Write(GeneralApplicationRow.GenAppCancelled);
-                    Write(GeneralApplicationRow.GenAppCancelReason);
-                    Write(GeneralApplicationRow.GenAppDeleteFlag);
-                    Write(GeneralApplicationRow.Closed);
-                    Write(GeneralApplicationRow.ClosedBy);
-                    Write(GeneralApplicationRow.DateClosed);
+                    Write(GeneralApplicationRow.IsGenApplicantTypeNull() ? "" : GeneralApplicationRow.GenApplicantType);
+                    Write(GeneralApplicationRow.IsGenApplicationHoldReasonNull() ? "" : GeneralApplicationRow.GenApplicationHoldReason);
+                    Write(GeneralApplicationRow.IsGenApplicationOnHoldNull() ? false : GeneralApplicationRow.GenApplicationOnHold);
+                    Write(GeneralApplicationRow.IsGenApplicationStatusNull() ? "" : GeneralApplicationRow.GenApplicationStatus);
+                    Write(GeneralApplicationRow.IsGenAppCancelledNull() ? "?" : GeneralApplicationRow.GenAppCancelled.Value.ToString(DATEFORMAT));
+                    Write(GeneralApplicationRow.IsGenAppCancelReasonNull() ? "" : GeneralApplicationRow.GenAppCancelReason);
+                    Write(GeneralApplicationRow.IsGenAppDeleteFlagNull() ? false : GeneralApplicationRow.GenAppDeleteFlag);
+                    Write(GeneralApplicationRow.IsClosedNull() ? false : GeneralApplicationRow.Closed);
+                    Write(GeneralApplicationRow.IsClosedByNull() ? "" : GeneralApplicationRow.ClosedBy);
+                    Write(GeneralApplicationRow.IsDateClosedNull() ? "?" : GeneralApplicationRow.DateClosed.Value.ToString(DATEFORMAT));
                     WriteLine();
-                    Write(GeneralApplicationRow.GenAppPossSrvUnitKey);
-                    Write(GeneralApplicationRow.GenAppRecvgFldAccept);
-                    Write(GeneralApplicationRow.GenAppSrvFldAccept);
-                    Write(GeneralApplicationRow.GenAppSendFldAcceptDate);
-                    Write(GeneralApplicationRow.GenAppSendFldAccept);
-                    Write(GeneralApplicationRow.GenAppCurrencyCode);
-                    Write(GeneralApplicationRow.PlacementPartnerKey);
+                    Write(GeneralApplicationRow.IsGenAppPossSrvUnitKeyNull() ? 0 : GeneralApplicationRow.GenAppPossSrvUnitKey);
+                    Write(GeneralApplicationRow.IsGenAppRecvgFldAcceptNull() ? "?" : GeneralApplicationRow.GenAppRecvgFldAccept.Value.ToString(
+                            DATEFORMAT));
+                    Write(GeneralApplicationRow.IsGenAppSrvFldAcceptNull() ? false : GeneralApplicationRow.GenAppSrvFldAccept);
+                    Write(GeneralApplicationRow.IsGenAppSendFldAcceptDateNull() ? "?" : GeneralApplicationRow.GenAppSendFldAcceptDate.Value.ToString(
+                            DATEFORMAT));
+                    Write(GeneralApplicationRow.IsGenAppSendFldAcceptNull() ? false : GeneralApplicationRow.GenAppSendFldAccept);
+                    Write(GeneralApplicationRow.IsGenAppCurrencyCodeNull() ? "" : GeneralApplicationRow.GenAppCurrencyCode);
+                    Write(GeneralApplicationRow.IsPlacementPartnerKeyNull() ? 0 : GeneralApplicationRow.PlacementPartnerKey);
                     WriteLine();
-                    Write(GeneralApplicationRow.GenAppUpdate);
-                    Write(GeneralApplicationRow.GenCancelledApp);
-                    Write(GeneralApplicationRow.GenContact1);
-                    Write(GeneralApplicationRow.GenContact2);
-                    Write(GeneralApplicationRow.GenYearProgram);
-                    Write(GeneralApplicationRow.ApplicationKey);
-                    Write(GeneralApplicationRow.RegistrationOffice);
-                    WriteMultiLine(GeneralApplicationRow.Comment);
+                    Write(GeneralApplicationRow.IsGenAppUpdateNull() ? "?" : GeneralApplicationRow.GenAppUpdate.Value.ToString(DATEFORMAT));
+                    Write(GeneralApplicationRow.IsGenCancelledAppNull() ? false : GeneralApplicationRow.GenCancelledApp);
+                    Write(GeneralApplicationRow.IsGenContact1Null() ? "" : GeneralApplicationRow.GenContact1);
+                    Write(GeneralApplicationRow.IsGenContact2Null() ? "" : GeneralApplicationRow.GenContact2);
+                    //Write(GeneralApplicationRow.IsGenYearProgramNull() ? "" : GeneralApplicationRow.GenYearProgram);
+                    Write(GeneralApplicationRow.IsApplicationKeyNull() ? 0 : GeneralApplicationRow.ApplicationKey);
+                    Write(GeneralApplicationRow.IsRegistrationOfficeNull() ? 0 : GeneralApplicationRow.RegistrationOffice);
+                    WriteMultiLine(GeneralApplicationRow.IsCommentNull() ? "" : GeneralApplicationRow.Comment);
                     WriteLine();
 
                     if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_SHORTFORM)
@@ -349,37 +389,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     {
                         WriteLongApplicationForm(AMainDS, GeneralApplicationRow);
                     }
-
-                    AMainDS.PmApplicationForms.DefaultView.RowFilter =
-                        String.Format("{0}={1} and {2}={3} and {4}={5}",
-                            PmApplicationFormsTable.GetPartnerKeyDBName(),
-                            GeneralApplicationRow.PartnerKey,
-                            PmApplicationFormsTable.GetApplicationKeyDBName(),
-                            GeneralApplicationRow.ApplicationKey,
-                            PmApplicationFormsTable.GetRegistrationOfficeDBName(),
-                            GeneralApplicationRow.RegistrationOffice);
-
-                    foreach (DataRowView v in AMainDS.PmApplicationForms.DefaultView)
-                    {
-                        PmApplicationFormsRow ApplicationFormRow = (PmApplicationFormsRow)v.Row;
-                        Write("APPL-FORM");
-                        Write(ApplicationFormRow.FormName);
-                        WriteLine();
-                        Write(ApplicationFormRow.FormDeleteFlag);
-                        Write(ApplicationFormRow.FormEdited);
-                        Write(ApplicationFormRow.FormReceivedDate);
-                        Write(ApplicationFormRow.FormReceived);
-                        Write(ApplicationFormRow.FormSentDate);
-                        Write(ApplicationFormRow.FormSent);
-                        WriteLine();
-                        Write(ApplicationFormRow.ReferencePartnerKey);
-                        Write(ApplicationFormRow.Comment);
-                        WriteLine();
-                    }
-
-                    Write("END");
-                    Write("FORMS");
-                    WriteLine();
                 }
             }
         }
@@ -390,11 +399,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 Write("PERSONAL");
                 WriteLine();
-                Write(PersonalDataRow.DriverStatus);
-                Write(PersonalDataRow.GenDriverLicense);
-                Write(PersonalDataRow.DrivingLicenseNumber);
-                Write(PersonalDataRow.InternalDriverLicense);
+                Write(PersonalDataRow.IsBelieverSinceYearNull() ? 0 : PersonalDataRow.BelieverSinceYear);
+                Write(PersonalDataRow.IsBelieverSinceCommentNull() ? "" : PersonalDataRow.BelieverSinceComment);
+                Write(PersonalDataRow.IsBloodTypeNull() ? "" : PersonalDataRow.BloodType);
                 WriteLine();
+                // Write(PersonalDataRow.IsDriverStatusNull()? "" : PersonalDataRow.DriverStatus);
+                // Write(PersonalDataRow.IsGenDriverLicenseNull()? false : PersonalDataRow.GenDriverLicense);
+                // Write(PersonalDataRow.IsDrivingLicenseNumberNull()? "" : PersonalDataRow.DrivingLicenseNumber);
+                // Write(PersonalDataRow.IsInternalDriverLicenseNull()? false : PersonalDataRow.InternalDriverLicense);
+                // WriteLine();
             }
 
             foreach (PmPassportDetailsRow PassportDetailsRow in AMainDS.PmPassportDetails.Rows)
@@ -403,18 +416,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     Write("PASSPORT");
                     WriteLine();
-                    Write(PassportDetailsRow.PassportNumber);
+                    Write(PassportDetailsRow.IsPassportNumberNull() ? "" : PassportDetailsRow.PassportNumber);
                     WriteLine();
-                    Write(PassportDetailsRow.MainPassport);
-                    Write(PassportDetailsRow.CountryOfIssue);
-                    Write(PassportDetailsRow.DateOfExpiration);
-                    Write(PassportDetailsRow.DateOfIssue);
-                    Write(PassportDetailsRow.FullPassportName);
-                    Write(PassportDetailsRow.PassportNationalityCode);
-                    Write(PassportDetailsRow.PassportDetailsType);
-                    Write(PassportDetailsRow.PassportDob);
-                    Write(PassportDetailsRow.PlaceOfBirth);
-                    Write(PassportDetailsRow.PlaceOfIssue);
+                    Write(PassportDetailsRow.IsMainPassportNull() ? false : PassportDetailsRow.MainPassport);
+                    Write(PassportDetailsRow.IsCountryOfIssueNull() ? "" : PassportDetailsRow.CountryOfIssue);
+                    Write(PassportDetailsRow.IsDateOfExpirationNull() ? "?" : PassportDetailsRow.DateOfExpiration.Value.ToString(DATEFORMAT));
+                    Write(PassportDetailsRow.IsDateOfIssueNull() ? "?" : PassportDetailsRow.DateOfIssue.Value.ToString(DATEFORMAT));
+                    Write(PassportDetailsRow.IsFullPassportNameNull() ? "" : PassportDetailsRow.FullPassportName);
+                    Write(PassportDetailsRow.IsPassportNationalityCodeNull() ? "" : PassportDetailsRow.PassportNationalityCode);
+                    Write(PassportDetailsRow.IsPassportDetailsTypeNull() ? "" : PassportDetailsRow.PassportDetailsType);
+                    Write(PassportDetailsRow.IsPassportDobNull() ? "?" : PassportDetailsRow.PassportDob.Value.ToString(DATEFORMAT));
+                    Write(PassportDetailsRow.IsPlaceOfBirthNull() ? "" : PassportDetailsRow.PlaceOfBirth);
+                    Write(PassportDetailsRow.IsPlaceOfIssueNull() ? "" : PassportDetailsRow.PlaceOfIssue);
                     WriteLine();
                 }
             }
@@ -424,38 +437,40 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AMainDS.PmDocumentType.DefaultView.RowFilter = String.Format("{0}='{1}'",
                     PmDocumentTypeTable.GetDocCodeDBName(),
                     DocumentRow.DocCode);
+                PmDocumentTypeRow TypeRow = (PmDocumentTypeRow)AMainDS.PmDocumentType.DefaultView[0].Row;
+
                 Write("PERSDOCUMENT");
                 WriteLine();
-                Write(DocumentRow.SiteKey);
-                Write(DocumentRow.DocumentKey);
+                Write(DocumentRow.IsSiteKeyNull() ? 0 : DocumentRow.SiteKey);
+                Write(DocumentRow.IsDocumentKeyNull() ? 0 : DocumentRow.DocumentKey);
                 WriteLine();
-                Write(DocumentRow.DocCode);
-                Write(((PmDocumentTypeRow)AMainDS.PmDocumentType.DefaultView[0].Row).DocCategory);
-                Write(DocumentRow.DocumentId);
-                Write(DocumentRow.PlaceOfIssue);
-                Write(DocumentRow.DateOfIssue);
-                Write(DocumentRow.DateOfStart);
-                Write(DocumentRow.DateOfExpiration);
-                Write(DocumentRow.AssocDocId);
-                Write(DocumentRow.ContactPartnerKey);
+                Write(DocumentRow.IsDocCodeNull() ? "" : DocumentRow.DocCode);
+                Write(TypeRow.IsDocCategoryNull() ? "" : TypeRow.DocCategory);
+                Write(DocumentRow.IsDocumentIdNull() ? "" : DocumentRow.DocumentId);
+                Write(DocumentRow.IsPlaceOfIssueNull() ? "" : DocumentRow.PlaceOfIssue);
+                Write(DocumentRow.IsDateOfIssueNull() ? "?" : DocumentRow.DateOfIssue.Value.ToString(DATEFORMAT));
+                Write(DocumentRow.IsDateOfStartNull() ? "?" : DocumentRow.DateOfStart.Value.ToString(DATEFORMAT));
+                Write(DocumentRow.IsDateOfExpirationNull() ? "?" : DocumentRow.DateOfExpiration.Value.ToString(DATEFORMAT));
+                Write(DocumentRow.IsAssocDocIdNull() ? "" : DocumentRow.AssocDocId);
+                Write(DocumentRow.IsContactPartnerKeyNull() ? 0 : DocumentRow.ContactPartnerKey);
                 WriteLine();
-                Write(DocumentRow.DocComment);
+                Write(DocumentRow.IsDocCommentNull() ? "" : DocumentRow.DocComment);
                 WriteLine();
             }
 
-            foreach (PmPersonQualificationRow PersonQualificationRow in AMainDS.PmPersonQualification.Rows)
+            foreach (PmPersonQualificationRow Row in AMainDS.PmPersonQualification.Rows)
             {
                 Write("PROFESN");
                 WriteLine();
-                Write(PersonQualificationRow.QualificationAreaName);
+                Write(Row.IsQualificationAreaNameNull() ? "" : Row.QualificationAreaName);
                 WriteLine();
-                Write(PersonQualificationRow.QualificationLevel);
-                Write(PersonQualificationRow.InformalFlag);
-                Write(PersonQualificationRow.YearsOfExperience);
-                Write(PersonQualificationRow.YearsOfExperienceAsOf);
-                Write(PersonQualificationRow.Comment);
-                Write(PersonQualificationRow.QualificationDate);
-                Write(PersonQualificationRow.QualificationExpiry);
+                Write(Row.IsQualificationLevelNull() ? 0 : Row.QualificationLevel);
+                Write(Row.IsInformalFlagNull() ? false : Row.InformalFlag);
+                Write(Row.IsYearsOfExperienceNull() ? 0 : Row.YearsOfExperience);
+                Write(Row.IsYearsOfExperienceAsOfNull() ? "?" : Row.YearsOfExperienceAsOf.Value.ToString(DATEFORMAT));
+                Write(Row.IsCommentNull() ? "" : Row.Comment);
+                Write(Row.IsQualificationDateNull() ? "?" : Row.QualificationDate.Value.ToString(DATEFORMAT));
+                Write(Row.IsQualificationExpiryNull() ? "?" : Row.QualificationExpiry.Value.ToString(DATEFORMAT));
                 WriteLine();
             }
 
@@ -463,15 +478,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 Write("SPECNEED");
                 WriteLine();
-                Write(SpecialNeedRow.DateCreated);
-                Write(SpecialNeedRow.ContactHomeOffice);
-                Write(SpecialNeedRow.VegetarianFlag);
+                Write(SpecialNeedRow.IsDateCreatedNull() ? "?" : SpecialNeedRow.DateCreated.Value.ToString(DATEFORMAT));
+                // Write(false); // ContactHomeOffice is removed
+                Write(SpecialNeedRow.IsVegetarianFlagNull() ? false : SpecialNeedRow.VegetarianFlag);
                 WriteLine();
-                Write(SpecialNeedRow.DietaryComment);
+                Write(SpecialNeedRow.IsDietaryCommentNull() ? "" : SpecialNeedRow.DietaryComment);
                 WriteLine();
-                Write(SpecialNeedRow.MedicalComment);
+                Write(SpecialNeedRow.IsMedicalCommentNull() ? "" : SpecialNeedRow.MedicalComment);
                 WriteLine();
-                Write(SpecialNeedRow.OtherSpecialNeed);
+                Write(SpecialNeedRow.IsOtherSpecialNeedNull() ? "" : SpecialNeedRow.OtherSpecialNeed);
                 WriteLine();
             }
 
@@ -479,19 +494,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 Write("PREVEXP");
                 WriteLine();
-                Write(PastExperienceRow.SiteKey);
-                Write(PastExperienceRow.Key);
-                Write(PastExperienceRow.PrevLocation);
-                Write(PastExperienceRow.StartDate);
-                Write(PastExperienceRow.EndDate);
+                Write(PastExperienceRow.IsSiteKeyNull() ? 0 : PastExperienceRow.SiteKey);
+                Write(PastExperienceRow.IsKeyNull() ? 0 : PastExperienceRow.Key);
+                Write(PastExperienceRow.IsPrevLocationNull() ? "" : PastExperienceRow.PrevLocation);
+                Write(PastExperienceRow.IsStartDateNull() ? "?" : PastExperienceRow.StartDate.ToString(DATEFORMAT));
+                Write(PastExperienceRow.IsEndDateNull() ? "?" : PastExperienceRow.EndDate.ToString(DATEFORMAT));
                 WriteLine();
-                Write(PastExperienceRow.PrevWorkHere);
-                Write(PastExperienceRow.PrevWork);
-                Write(PastExperienceRow.OtherOrganisation);
-                Write(PastExperienceRow.PrevRole);
-                Write(PastExperienceRow.Category);
+                Write(PastExperienceRow.IsPrevWorkHereNull() ? false : PastExperienceRow.PrevWorkHere);
+                Write(PastExperienceRow.IsPrevWorkNull() ? false : PastExperienceRow.PrevWork);
+                Write(PastExperienceRow.IsOtherOrganisationNull() ? "" : PastExperienceRow.OtherOrganisation);
+                Write(PastExperienceRow.IsPrevRoleNull() ? "" : PastExperienceRow.PrevRole);
+                Write(PastExperienceRow.IsCategoryNull() ? "" : PastExperienceRow.Category);
                 WriteLine();
-                Write(PastExperienceRow.PastExpComments);
+                Write(PastExperienceRow.IsPastExpCommentsNull() ? "" : PastExperienceRow.PastExpComments);
                 WriteLine();
             }
 
@@ -499,15 +514,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 Write("LANGUAGE");
                 WriteLine();
-                Write(PersonLanguageRow.LanguageCode);
+                Write(PersonLanguageRow.IsLanguageCodeNull() ? "" : PersonLanguageRow.LanguageCode);
                 WriteLine();
-                Write(PersonLanguageRow.WillingToTranslate);
-                Write(PersonLanguageRow.TranslateInto);
-                Write(PersonLanguageRow.TranslateOutOf);
-                Write(PersonLanguageRow.YearsOfExperience);
-                Write(PersonLanguageRow.LanguageLevel);
-                Write(PersonLanguageRow.YearsOfExperienceAsOf);
-                Write(PersonLanguageRow.Comment);
+                // Write(PersonLanguageRow.IsWillingToTranslateNull()? false : PersonLanguageRow.WillingToTranslate);
+                // Write(PersonLanguageRow.IsTranslateIntoNull()? false : PersonLanguageRow.TranslateInto);
+                // Write(PersonLanguageRow.IsTranslateOutOfNull()? false : PersonLanguageRow.TranslateOutOf);
+                Write(PersonLanguageRow.IsYearsOfExperienceNull() ? 0 : PersonLanguageRow.YearsOfExperience);
+                Write(PersonLanguageRow.IsLanguageLevelNull() ? 0 : PersonLanguageRow.LanguageLevel);
+                Write(PersonLanguageRow.IsYearsOfExperienceAsOfNull() ? "?" : PersonLanguageRow.YearsOfExperienceAsOf.Value.ToString(DATEFORMAT));
+                Write(PersonLanguageRow.IsCommentNull() ? "" : PersonLanguageRow.Comment);
                 WriteLine();
             }
 
@@ -515,24 +530,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 Write("ABILITY");
                 WriteLine();
-                Write(PersonAbilityRow.AbilityAreaName);
-                Write(PersonAbilityRow.AbilityLevel);
+                Write(PersonAbilityRow.IsAbilityAreaNameNull() ? "" : PersonAbilityRow.AbilityAreaName);
+                Write(PersonAbilityRow.IsAbilityLevelNull() ? 0 : PersonAbilityRow.AbilityLevel);
                 WriteLine();
-                Write(PersonAbilityRow.YearsOfExperience);
-                Write(PersonAbilityRow.BringingInstrument);
-                Write(PersonAbilityRow.YearsOfExperienceAsOf);
-                Write(PersonAbilityRow.Comment);
-                WriteLine();
-            }
-
-            foreach (PmPersonVisionRow PersonVisionRow in AMainDS.PmPersonVision.Rows)
-            {
-                Write("VISION");
-                WriteLine();
-                Write(PersonVisionRow.VisionAreaName);
-                WriteLine();
-                Write(PersonVisionRow.VisionLevel);
-                Write(PersonVisionRow.VisionComment);
+                Write(PersonAbilityRow.IsYearsOfExperienceNull() ? 0 : PersonAbilityRow.YearsOfExperience);
+                Write(PersonAbilityRow.IsBringingInstrumentNull() ? false : PersonAbilityRow.BringingInstrument);
+                Write(PersonAbilityRow.IsYearsOfExperienceAsOfNull() ? "?" : PersonAbilityRow.YearsOfExperienceAsOf.Value.ToString(DATEFORMAT));
+                Write(PersonAbilityRow.IsCommentNull() ? "" : PersonAbilityRow.Comment);
                 WriteLine();
             }
 
@@ -540,55 +544,58 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 Write("COMMIT");
                 WriteLine();
-                Write(StaffDataRow.SiteKey);
-                Write(StaffDataRow.Key);
-                Write(StaffDataRow.StartOfCommitment);
-                Write(StaffDataRow.StartDateApprox);
-                Write(StaffDataRow.EndOfCommitment);
+                Write(StaffDataRow.IsSiteKeyNull() ? 0 : StaffDataRow.SiteKey);
+                Write(StaffDataRow.IsKeyNull() ? 0 : StaffDataRow.Key);
+                Write(StaffDataRow.IsStartOfCommitmentNull() ? "?" : StaffDataRow.StartOfCommitment.ToString(DATEFORMAT));
+                Write(StaffDataRow.IsStartDateApproxNull() ? false : StaffDataRow.StartDateApprox);
+                Write(StaffDataRow.IsEndOfCommitmentNull() ? "?" : StaffDataRow.EndOfCommitment.Value.ToString(DATEFORMAT));
                 WriteLine();
-                Write(StaffDataRow.StatusCode);
-                Write(StaffDataRow.ReceivingField);
-                Write(StaffDataRow.HomeOffice);
-                Write(StaffDataRow.OfficeRecruitedBy);
-                Write(StaffDataRow.ReceivingFieldOffice);
-                Write(StaffDataRow.JobTitle);
+                Write(StaffDataRow.IsStatusCodeNull() ? "" : StaffDataRow.StatusCode);
+                Write(StaffDataRow.IsReceivingFieldNull() ? 0 : StaffDataRow.ReceivingField);
+                Write(StaffDataRow.IsHomeOfficeNull() ? 0 : StaffDataRow.HomeOffice);
+                Write(StaffDataRow.IsOfficeRecruitedByNull() ? 0 : StaffDataRow.OfficeRecruitedBy);
+                Write(StaffDataRow.IsReceivingFieldOfficeNull() ? 0 : StaffDataRow.ReceivingFieldOffice);
+                Write(StaffDataRow.IsJobTitleNull() ? "" : StaffDataRow.JobTitle);
                 WriteLine();
-                Write(StaffDataRow.StaffDataComments);
-                WriteLine();
-            }
-
-            foreach (PmJobAssignmentRow JobAssignmentRow in AMainDS.PmJobAssignment.Rows)
-            {
-                Write("JOB");
-                WriteLine();
-                Write(JobAssignmentRow.FromDate);
-                Write(JobAssignmentRow.ToDate);
-                Write(JobAssignmentRow.PositionName);
-                Write(JobAssignmentRow.PositionScope);
-                Write(JobAssignmentRow.AssistantTo);
-                Write(JobAssignmentRow.JobKey);
-                Write(JobAssignmentRow.JobAssignmentKey);
-                WriteLine();
-                Write(JobAssignmentRow.UnitKey);
-                Write(JobAssignmentRow.AssignmentTypeCode);
-                Write(JobAssignmentRow.LeavingCode);
-                Write(JobAssignmentRow.LeavingCodeUpdatedDate);
+                Write(StaffDataRow.IsStaffDataCommentsNull() ? "" : StaffDataRow.StaffDataComments);
                 WriteLine();
             }
 
-            foreach (PmPersonEvaluationRow PersonEvaluationRow in AMainDS.PmPersonEvaluation.Rows)
+/*
+ * We don't do Job Assignments anymore.
+ *
+ *          foreach (PmJobAssignmentRow JobAssignmentRow in AMainDS.PmJobAssignment.Rows)
+ *          {
+ *              Write("JOB");
+ *              WriteLine();
+ *              Write(JobAssignmentRow.IsFromDateNull()? "?" : JobAssignmentRow.FromDate.ToString(DATEFORMAT));
+ *              Write(JobAssignmentRow.IsToDateNull()? "?" : JobAssignmentRow.ToDate.Value.ToString(DATEFORMAT));
+ *              Write(JobAssignmentRow.IsPositionNameNull()? "": JobAssignmentRow.PositionName);
+ *              Write(JobAssignmentRow.IsPositionScopeNull()? "" : JobAssignmentRow.PositionScope);
+ *              Write(JobAssignmentRow.IsAssistantToNull()? false : JobAssignmentRow.AssistantTo);
+ *              Write(JobAssignmentRow.IsJobKeyNull()? 0 : JobAssignmentRow.JobKey);
+ *              Write(JobAssignmentRow.IsJobAssignmentKeyNull()? 0 : JobAssignmentRow.JobAssignmentKey);
+ *              WriteLine();
+ *              Write(JobAssignmentRow.IsUnitKeyNull()? 0 : JobAssignmentRow.UnitKey);
+ *              Write(JobAssignmentRow.IsAssignmentTypeCodeNull()? "" : JobAssignmentRow.AssignmentTypeCode);
+ *              Write(JobAssignmentRow.IsLeavingCodeNull()? "" : JobAssignmentRow.LeavingCode);
+ *              Write(JobAssignmentRow.IsLeavingCodeUpdatedDateNull()? "?" : JobAssignmentRow.LeavingCodeUpdatedDate.Value.ToString(DATEFORMAT));
+ *              WriteLine();
+ *          }
+ */
+            foreach (PmPersonEvaluationRow Row in AMainDS.PmPersonEvaluation.Rows)
             {
                 Write("PROGREP");
                 WriteLine();
-                Write(PersonEvaluationRow.EvaluationDate);
-                Write(PersonEvaluationRow.Evaluator);
+                Write(Row.IsEvaluationDateNull() ? "?" : Row.EvaluationDate.ToString(DATEFORMAT));
+                Write(Row.IsEvaluatorNull() ? "" : Row.Evaluator);
                 WriteLine();
-                Write(PersonEvaluationRow.EvaluationType);
-                Write(PersonEvaluationRow.NextEvaluationDate);
+                Write(Row.IsEvaluationTypeNull() ? "" : Row.EvaluationType);
+                Write(Row.IsNextEvaluationDateNull() ? "?" : Row.NextEvaluationDate.Value.ToString(DATEFORMAT));
                 WriteLine();
-                Write(PersonEvaluationRow.EvaluationComments);
+                Write(Row.IsEvaluationCommentsNull() ? "" : Row.EvaluationComments);
                 WriteLine();
-                Write(PersonEvaluationRow.PersonEvalAction);
+                Write(Row.IsPersonEvalActionNull() ? "" : Row.PersonEvalAction);
                 WriteLine();
             }
 
@@ -601,167 +608,181 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 Write("U-STRUCT");
                 WriteLine();
-                Write(UnitStructureRow.ParentUnitKey);
+                Write(UnitStructureRow.IsParentUnitKeyNull() ? 0 : UnitStructureRow.ParentUnitKey);
                 WriteLine();
             }
 
-            foreach (UmUnitAbilityRow UnitAbilityRow in AMainDS.UmUnitAbility.Rows)
-            {
-                Write("U-ABILITY");
-                WriteLine();
-                Write(UnitAbilityRow.AbilityAreaName);
-                Write(UnitAbilityRow.AbilityLevel);
-                Write(UnitAbilityRow.YearsOfExperience);
-                WriteLine();
-            }
-
-            foreach (UmUnitLanguageRow UnitLanguageRow in AMainDS.UmUnitLanguage.Rows)
-            {
-                Write("U-LANG");
-                WriteLine();
-                Write(UnitLanguageRow.LanguageCode);
-                Write(UnitLanguageRow.LanguageLevel);
-                Write(UnitLanguageRow.YearsOfExperience);
-                Write(UnitLanguageRow.UnitLanguageReq);
-                WriteLine();
-                Write(UnitLanguageRow.UnitLangComment);
-                WriteLine();
-            }
-
-            foreach (UmUnitVisionRow UnitVisionRow in AMainDS.UmUnitVision.Rows)
-            {
-                Write("U-VISION");
-                WriteLine();
-                Write(UnitVisionRow.VisionAreaName);
-                Write(UnitVisionRow.VisionLevel);
-                WriteLine();
-            }
-
-            AMainDS.UmUnitCost.DefaultView.Sort = UmUnitCostTable.GetValidFromDateDBName() + " desc";
-
-            foreach (DataRowView v in AMainDS.UmUnitCost.DefaultView)
-            {
-                UmUnitCostRow UnitCostRow = (UmUnitCostRow)v.Row;
-
-                // only export current and future costs
-                if (UnitCostRow.ValidFromDate >= DateTime.Today)
-                {
-                    Write("U-COSTS");
-                    WriteLine();
-                    Write(UnitCostRow.ValidFromDate);
-                    Write(UnitCostRow.ChargePeriod);
-                    WriteLine();
-                    // only export values in international currency
-                    Write(UnitCostRow.CoupleJoiningChargeIntl);
-                    Write(UnitCostRow.AdultJoiningChargeIntl);
-                    Write(UnitCostRow.ChildJoiningChargeIntl);
-                    Write(UnitCostRow.CoupleCostsPeriodIntl);
-                    Write(UnitCostRow.SingleCostsPeriodIntl);
-                    Write(UnitCostRow.Child1CostsPeriodIntl);
-                    Write(UnitCostRow.Child2CostsPeriodIntl);
-                    Write(UnitCostRow.Child3CostsPeriodIntl);
-                    WriteLine();
-                }
-            }
-
-            AMainDS.UmJob.DefaultView.Sort = UmJobTable.GetToDateDBName() + " desc";
-
-            foreach (DataRowView v in AMainDS.UmJob.DefaultView)
-            {
-                UmJobRow JobRow = (UmJobRow)v.Row;
-
-                // only export current and future jobs
-                if (JobRow.ToDate >= DateTime.Today)
-                {
-                    Write("U-JOB");
-                    WriteLine();
-                    Write(JobRow.PositionName);
-                    Write(JobRow.PositionScope);
-                    Write(JobRow.JobKey);
-                    WriteLine();
-                    Write(JobRow.FromDate);
-                    Write(JobRow.ToDate);
-                    Write(JobRow.JobType);
-                    Write(JobRow.CommitmentPeriod);
-                    Write(JobRow.TrainingPeriod);
-                    Write(JobRow.PartTimeFlag);
-                    Write(JobRow.PreviousInternalExpReq);
-                    Write(JobRow.JobPublicity);
-                    Write(JobRow.PublicFlag);
-                    Write(JobRow.Maximum);
-                    Write(JobRow.Minimum);
-                    Write(JobRow.Present);
-                    Write(JobRow.PartTimers);
-                    WriteLine();
-
-                    foreach (UmJobRequirementRow JobRequirementRow in AMainDS.UmJobRequirement.Rows)
-                    {
-                        if ((JobRequirementRow.UnitKey == JobRow.UnitKey)
-                            && (JobRequirementRow.PositionName == JobRow.PositionName))
-                        {
-                            Write("UJ-ABIL");
-                            WriteLine();
-                            Write(JobRequirementRow.PositionName);
-                            Write(JobRequirementRow.PositionScope);
-                            Write(JobRequirementRow.JobKey);
-                            Write(JobRequirementRow.AbilityAreaName);
-                            Write(JobRequirementRow.AbilityLevel);
-                            Write(JobRequirementRow.YearsOfExperience);
-                            WriteLine();
-                        }
-                    }
-
-                    foreach (UmJobLanguageRow JobLanguageRow in AMainDS.UmJobLanguage.Rows)
-                    {
-                        if ((JobLanguageRow.UnitKey == JobRow.UnitKey)
-                            && (JobLanguageRow.PositionName == JobRow.PositionName))
-                        {
-                            Write("UJ-LANG");
-                            WriteLine();
-                            Write(JobLanguageRow.PositionName);
-                            Write(JobLanguageRow.PositionScope);
-                            Write(JobLanguageRow.JobKey);
-                            Write(JobLanguageRow.LanguageCode);
-                            Write(JobLanguageRow.LanguageLevel);
-                            Write(JobLanguageRow.YearsOfExperience);
-                            WriteLine();
-                        }
-                    }
-
-                    foreach (UmJobQualificationRow JobQualificationRow in AMainDS.UmJobQualification.Rows)
-                    {
-                        if ((JobQualificationRow.UnitKey == JobRow.UnitKey)
-                            && (JobQualificationRow.PositionName == JobRow.PositionName))
-                        {
-                            Write("UJ-QUAL");
-                            WriteLine();
-                            Write(JobQualificationRow.PositionName);
-                            Write(JobQualificationRow.PositionScope);
-                            Write(JobQualificationRow.JobKey);
-                            Write(JobQualificationRow.QualificationAreaName);
-                            Write(JobQualificationRow.QualificationLevel);
-                            Write(JobQualificationRow.YearsOfExperience);
-                            WriteLine();
-                        }
-                    }
-
-                    foreach (UmJobVisionRow JobVisionRow in AMainDS.UmJobVision.Rows)
-                    {
-                        if ((JobVisionRow.UnitKey == JobRow.UnitKey)
-                            && (JobVisionRow.PositionName == JobRow.PositionName))
-                        {
-                            Write("UJ-VISION");
-                            WriteLine();
-                            Write(JobVisionRow.PositionName);
-                            Write(JobVisionRow.PositionScope);
-                            Write(JobVisionRow.JobKey);
-                            Write(JobVisionRow.VisionAreaName);
-                            Write(JobVisionRow.VisionLevel);
-                            WriteLine();
-                        }
-                    }
-                }
-            }
+/*
+ *  There's a clutch of tables here we're not exporting anymore:
+ *
+ *          foreach (UmUnitAbilityRow UnitAbilityRow in AMainDS.UmUnitAbility.Rows)
+ *          {
+ *              Write("U-ABILITY");
+ *              WriteLine();
+ *              Write(UnitAbilityRow.IsAbilityAreaNameNull()? "" : UnitAbilityRow.AbilityAreaName);
+ *              Write(UnitAbilityRow.IsAbilityLevelNull()? 0 : UnitAbilityRow.AbilityLevel);
+ *              Write(UnitAbilityRow.IsYearsOfExperienceNull()? 0 : UnitAbilityRow.YearsOfExperience);
+ *              WriteLine();
+ *          }
+ *
+ *          foreach (UmUnitLanguageRow UnitLanguageRow in AMainDS.UmUnitLanguage.Rows)
+ *          {
+ *              Write("U-LANG");
+ *              WriteLine();
+ *              Write(UnitLanguageRow.IsLanguageCodeNull()? "" : UnitLanguageRow.LanguageCode);
+ *              Write(UnitLanguageRow.IsLanguageLevelNull()? 0 : UnitLanguageRow.LanguageLevel);
+ *              Write(UnitLanguageRow.IsYearsOfExperienceNull()? 0 : UnitLanguageRow.YearsOfExperience);
+ *              Write(UnitLanguageRow.IsUnitLanguageReqNull()? "" : UnitLanguageRow.UnitLanguageReq);
+ *              WriteLine();
+ *              Write(UnitLanguageRow.IsUnitLangCommentNull()? "" : UnitLanguageRow.UnitLangComment);
+ *              WriteLine();
+ *          }
+ *
+ *          // table dropped in OpenPetra
+ *          foreach (UmUnitVisionRow UnitVisionRow in AMainDS.UmUnitVision.Rows)
+ *          {
+ *              Write("U-VISION");
+ *              WriteLine();
+ *              Write(UnitVisionRow.IsVisionAreaNameNull()? "" : UnitVisionRow.VisionAreaName);
+ *              Write(UnitVisionRow.IsVisionLevelNull()? 0 : UnitVisionRow.VisionLevel);
+ *              WriteLine();
+ *          }
+ *
+ *          AMainDS.UmUnitCost.DefaultView.Sort = UmUnitCostTable.GetValidFromDateDBName() + " desc";
+ *          // TODO: A filter could be applied here, to get only current and future costs.
+ *
+ *          // AMainDS.UmUnitCost.DefaultView.RowFilter = String.Format ("{0} >= #{1}#",
+ *          //                                                         UmUnitCostTable.GetValidFromDateDBName(),
+ *          //                                                         DateTime.Today);
+ *
+ *          foreach (DataRowView v in AMainDS.UmUnitCost.DefaultView)
+ *          {
+ *              UmUnitCostRow UnitCostRow = (UmUnitCostRow)v.Row;
+ *
+ *              // only export current and future costs
+ *              if (UnitCostRow.ValidFromDate >= DateTime.Today)
+ *              {
+ *                  Write("U-COSTS");
+ *                  WriteLine();
+ *                  Write(UnitCostRow.IsValidFromDateNull()? "?" : UnitCostRow.ValidFromDate.ToString(DATEFORMAT));
+ *                  Write(UnitCostRow.IsChargePeriodNull()? "" : UnitCostRow.ChargePeriod);
+ *                  WriteLine();
+ *                  // only export values in international currency
+ *                  Write(UnitCostRow.IsCoupleJoiningChargeIntlNull()? 0 : UnitCostRow.CoupleJoiningChargeIntl);
+ *                  Write(UnitCostRow.IsAdultJoiningChargeIntlNull()? 0 : UnitCostRow.AdultJoiningChargeIntl);
+ *                  Write(UnitCostRow.IsChildJoiningChargeIntlNull()? 0 : UnitCostRow.ChildJoiningChargeIntl);
+ *                  Write(UnitCostRow.IsCoupleCostsPeriodIntlNull()? 0 : UnitCostRow.CoupleCostsPeriodIntl);
+ *                  Write(UnitCostRow.IsSingleCostsPeriodIntlNull()? 0 : UnitCostRow.SingleCostsPeriodIntl);
+ *                  Write(UnitCostRow.IsChild1CostsPeriodIntlNull()? 0 : UnitCostRow.Child1CostsPeriodIntl);
+ *                  Write(UnitCostRow.IsChild2CostsPeriodIntlNull()? 0 : UnitCostRow.Child2CostsPeriodIntl);
+ *                  Write(UnitCostRow.IsChild3CostsPeriodIntlNull()? 0 : UnitCostRow.Child3CostsPeriodIntl);
+ *                  WriteLine();
+ *              }
+ *          }
+ *
+ *          AMainDS.UmJob.DefaultView.Sort = UmJobTable.GetToDateDBName() + " desc";
+ *         // AMainDS.UmJob.DefaultView.RowFilter = String.Format ("{0} >= #{1}#",
+ *         //                                                          UmJobTable.GetToDateDBName(),
+ *         //                                                          DateTime.Today);
+ *
+ *          foreach (DataRowView v in AMainDS.UmJob.DefaultView)
+ *          {
+ *              UmJobRow JobRow = (UmJobRow)v.Row;
+ *
+ *              // only export current and future jobs
+ *              if (JobRow.ToDate >= DateTime.Today)
+ *              {
+ *                  Write("U-JOB");
+ *                  WriteLine();
+ *                  Write(JobRow.IsPositionNameNull()? "" : JobRow.PositionName);
+ *                  Write(JobRow.IsPositionScopeNull()? "" : JobRow.PositionScope);
+ *                  Write(JobRow.IsJobKeyNull()? 0 : JobRow.JobKey);
+ *                  WriteLine();
+ *                  Write(JobRow.IsFromDateNull()? "?" : JobRow.FromDate.Value.ToString(DATEFORMAT));
+ *                  Write(JobRow.IsToDateNull()? "?" : JobRow.ToDate.Value.ToString(DATEFORMAT));
+ *                  Write(JobRow.IsJobTypeNull()? "" : JobRow.JobType);
+ *                  Write(JobRow.IsCommitmentPeriodNull()? "" : JobRow.CommitmentPeriod);
+ *                  Write(JobRow.IsTrainingPeriodNull()? "" : JobRow.TrainingPeriod);
+ *                  Write(JobRow.IsPartTimeFlagNull()? false : JobRow.PartTimeFlag);
+ *                  Write(JobRow.IsPreviousInternalExpReqNull()? false : JobRow.PreviousInternalExpReq);
+ *                  Write(JobRow.IsJobPublicityNull()? 0 : JobRow.JobPublicity);
+ *                  Write(JobRow.IsPublicFlagNull()? false : JobRow.PublicFlag);
+ *                  Write(JobRow.IsMaximumNull()? 0 : JobRow.Maximum);
+ *                  Write(JobRow.IsMinimumNull()? 0 : JobRow.Minimum);
+ *                  Write(JobRow.IsPresentNull()? 0 : JobRow.Present);
+ *                  Write(JobRow.IsPartTimersNull()? 0 : JobRow.PartTimers);
+ *                  WriteLine();
+ *
+ *                  foreach (UmJobRequirementRow Row in AMainDS.UmJobRequirement.Rows)
+ *                  {
+ *                      if ((Row.UnitKey == JobRow.UnitKey)
+ *                          && (Row.PositionName == JobRow.PositionName))
+ *                      {
+ *                          Write("UJ-ABIL");
+ *                          WriteLine();
+ *                          Write(Row.IsPositionNameNull()? "" : Row.PositionName);
+ *                          Write(Row.IsPositionScopeNull()? "" : Row.PositionScope);
+ *                          Write(Row.IsJobKeyNull()? 0 : Row.JobKey);
+ *                          Write(Row.IsAbilityAreaNameNull()? "" : Row.AbilityAreaName);
+ *                          Write(Row.IsAbilityLevelNull()? 0 : Row.AbilityLevel);
+ *                          Write(Row.IsYearsOfExperienceNull()? 0 : Row.YearsOfExperience);
+ *                          WriteLine();
+ *                      }
+ *                  }
+ *
+ *                  foreach (UmJobLanguageRow JobLanguageRow in AMainDS.UmJobLanguage.Rows)
+ *                  {
+ *                      if ((JobLanguageRow.UnitKey == JobRow.UnitKey)
+ *                          && (JobLanguageRow.PositionName == JobRow.PositionName))
+ *                      {
+ *                          Write("UJ-LANG");
+ *                          WriteLine();
+ *                          Write(JobLanguageRow.IsPositionNameNull()? "" : JobLanguageRow.PositionName);
+ *                          Write(JobLanguageRow.IsPositionScopeNull()? "" : JobLanguageRow.PositionScope);
+ *                          Write(JobLanguageRow.IsJobKeyNull()? 0 : JobLanguageRow.JobKey);
+ *                          Write(JobLanguageRow.IsLanguageCodeNull()? "" : JobLanguageRow.LanguageCode);
+ *                          Write(JobLanguageRow.IsLanguageLevelNull()? 0 : JobLanguageRow.LanguageLevel);
+ *                          Write(JobLanguageRow.IsYearsOfExperienceNull()? 0 : JobLanguageRow.YearsOfExperience);
+ *                          WriteLine();
+ *                      }
+ *                  }
+ *
+ *                  foreach (UmJobQualificationRow Row in AMainDS.UmJobQualification.Rows)
+ *                  {
+ *                      if ((Row.UnitKey == JobRow.UnitKey)
+ *                          && (Row.PositionName == JobRow.PositionName))
+ *                      {
+ *                          Write("UJ-QUAL");
+ *                          WriteLine();
+ *                          Write(Row.IsPositionNameNull()? "" : Row.PositionName);
+ *                          Write(Row.IsPositionScopeNull()? "" : Row.PositionScope);
+ *                          Write(Row.IsJobKeyNull()? 0 : Row.JobKey);
+ *                          Write(Row.IsQualificationAreaNameNull()? "" : Row.QualificationAreaName);
+ *                          Write(Row.IsQualificationLevelNull()? 0 : Row.QualificationLevel);
+ *                          Write(Row.IsYearsOfExperienceNull()? 0 : Row.YearsOfExperience);
+ *                          WriteLine();
+ *                      }
+ *                  }
+ *
+ *                  // table dropped in OpenPetra
+ *                  foreach (UmJobVisionRow JobVisionRow in AMainDS.UmJobVision.Rows)
+ *                  {
+ *                      if ((JobVisionRow.UnitKey == JobRow.UnitKey)
+ *                          && (JobVisionRow.PositionName == JobRow.PositionName))
+ *                      {
+ *                          Write("UJ-VISION");
+ *                          WriteLine();
+ *                          Write(JobVisionRow.IsPositionNameNull()? "" : JobVisionRow.PositionName);
+ *                          Write(JobVisionRow.IsPositionScopeNull()? "" : JobVisionRow.PositionScope);
+ *                          Write(JobVisionRow.IsJobKeyNull()? 0 : JobVisionRow.JobKey);
+ *                          Write(JobVisionRow.IsVisionAreaNameNull()? "" : JobVisionRow.VisionAreaName);
+ *                          Write(JobVisionRow.IsVisionLevelNull()? 0 : JobVisionRow.VisionLevel);
+ *                          WriteLine();
+ *                      }
+ *                  }
+ *              }
+ *          }
+ */
         }
 
         private void WriteVenueData(PartnerImportExportTDS AMainDS, StringCollection ASpecificBuildingInfo)
@@ -772,8 +793,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     Write("V-BUILDING");
                     WriteLine();
-                    Write(BuildingRow.BuildingCode);
-                    Write(BuildingRow.BuildingDesc);
+                    Write(BuildingRow.IsBuildingCodeNull() ? "" : BuildingRow.BuildingCode);
+                    Write(BuildingRow.IsBuildingDescNull() ? "" : BuildingRow.BuildingDesc);
                     WriteLine();
 
                     foreach (PcRoomRow RoomRow in AMainDS.PcRoom.Rows)
@@ -782,13 +803,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         {
                             Write("V-ROOM");
                             WriteLine();
-                            Write(RoomRow.BuildingCode);
-                            Write(RoomRow.RoomNumber);
-                            Write(RoomRow.Beds);
-                            Write(RoomRow.BedCharge);
-                            Write(RoomRow.BedCost);
-                            Write(RoomRow.MaxOccupancy);
-                            Write(RoomRow.GenderPreference);
+                            Write(RoomRow.IsBuildingCodeNull() ? "" : RoomRow.BuildingCode);
+                            Write(RoomRow.IsRoomNumberNull() ? "" : RoomRow.RoomNumber);
+                            Write(RoomRow.IsBedsNull() ? 0 : RoomRow.Beds);
+                            Write(RoomRow.IsBedChargeNull() ? 0 : RoomRow.BedCharge);
+                            Write(RoomRow.IsBedCostNull() ? 0 : RoomRow.BedCost);
+                            Write(RoomRow.IsMaxOccupancyNull() ? 0 : RoomRow.MaxOccupancy);
+                            Write(RoomRow.IsGenderPreferenceNull() ? "" : RoomRow.GenderPreference);
                             WriteLine();
                         }
                     }
@@ -797,12 +818,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         }
 
         /// <summary>
-        /// export all data of a partner in a long string with newlines, using a format used by Petra 2.x.
+        /// Export all data of a partner in a long string with newlines, using a format used by Petra 2.x.
         /// containing: partner, person/family/church/etc record, valid locations, special types,
         ///             interests, personnel data, commitments, applications
-        /// for units there is more specific data, used eg. for the events file
+        /// For units there is more specific data, used eg. for the events file
         /// </summary>
-        public string ExportAllData(PartnerImportExportTDS AMainDS, Int32 ASiteKey, Int32 ALocationKey, StringCollection ASpecificBuildingInfo)
+        public string ExportPartnerExt(PartnerImportExportTDS AMainDS, Int32 ASiteKey, Int32 ALocationKey, StringCollection ASpecificBuildingInfo)
         {
             PPartnerRow PartnerRow = AMainDS.PPartner[0];
 
@@ -812,97 +833,106 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             WriteLine();
 
             Write(PartnerRow.PartnerKey);
-            Write(PartnerRow.PartnerClass);
-            Write(PartnerRow.PartnerShortName);
-            Write(PartnerRow.AcquisitionCode);
-            Write(PartnerRow.StatusCode);
-            Write(PartnerRow.PreviousName);
+            Write(PartnerRow.IsPartnerClassNull() ? "" : PartnerRow.PartnerClass);
+            Write(PartnerRow.IsPartnerShortNameNull() ? "" : PartnerRow.PartnerShortName);
+            Write(PartnerRow.IsAcquisitionCodeNull() ? "" : PartnerRow.AcquisitionCode);
+            Write(PartnerRow.IsStatusCodeNull() ? "" : PartnerRow.StatusCode);
+            Write(PartnerRow.IsPreviousNameNull() ? "" : PartnerRow.PreviousName);
             WriteLine();
 
-            Write(PartnerRow.LanguageCode);
-            Write(PartnerRow.AddresseeTypeCode);
-            Write(PartnerRow.ChildIndicator);
-            Write(PartnerRow.ReceiptEachGift);
-            Write(PartnerRow.ReceiptLetterFrequency);
+            Write(PartnerRow.IsLanguageCodeNull() ? "" : PartnerRow.LanguageCode);
+            Write(PartnerRow.IsAddresseeTypeCodeNull() ? "" : PartnerRow.AddresseeTypeCode);
+            Write(PartnerRow.IsChildIndicatorNull() ? false : PartnerRow.ChildIndicator);
+            Write(PartnerRow.IsReceiptEachGiftNull() ? false : PartnerRow.ReceiptEachGift);
+            Write(PartnerRow.IsReceiptLetterFrequencyNull() ? "" : PartnerRow.ReceiptLetterFrequency);
             WriteLine();
 
             if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_CHURCH)
             {
                 PChurchRow ChurchRow = AMainDS.PChurch[0];
-                Write(ChurchRow.ChurchName);
-                Write(ChurchRow.DenominationCode);
-                Write(ChurchRow.Accomodation);
-                Write(ChurchRow.AccomodationSize);
-                Write(ChurchRow.AccomodationType);
-                Write(ChurchRow.ApproximateSize);
+                Write(ChurchRow.IsChurchNameNull() ? "" : ChurchRow.ChurchName);
+                Write(ChurchRow.IsDenominationCodeNull() ? "" : ChurchRow.DenominationCode);
+                Write(ChurchRow.IsAccomodationNull() ? false : ChurchRow.Accomodation);
+                Write(ChurchRow.IsAccomodationSizeNull() ? 0 : ChurchRow.AccomodationSize);
+                Write(ChurchRow.IsAccomodationTypeNull() ? "" : ChurchRow.AccomodationType);
+                Write(ChurchRow.IsApproximateSizeNull() ? 0 : ChurchRow.ApproximateSize);
                 WriteLine();
             }
             else if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
             {
                 PFamilyRow FamilyRow = AMainDS.PFamily[0];
-                Write(FamilyRow.FamilyName);
-                Write(FamilyRow.FirstName);
-                Write(FamilyRow.Title);
-                Write(FamilyRow.FieldKey);
-                Write(FamilyRow.MaritalStatus);
-                Write(FamilyRow.MaritalStatusSince);
-                Write(FamilyRow.MaritalStatusComment);
+                Write(FamilyRow.IsFamilyNameNull() ? "" : FamilyRow.FamilyName);
+                Write(FamilyRow.IsFirstNameNull() ? "" : FamilyRow.FirstName);
+                Write(FamilyRow.IsTitleNull() ? "" : FamilyRow.Title);
+                Write(FamilyRow.IsFieldKeyNull() ? 0 : FamilyRow.FieldKey);
+                Write(FamilyRow.IsMaritalStatusNull() ? "" : FamilyRow.MaritalStatus);
+                Write(FamilyRow.IsMaritalStatusSinceNull() ? "?" : FamilyRow.MaritalStatusSince.Value.ToString(DATEFORMAT));
+                Write(FamilyRow.IsMaritalStatusCommentNull() ? "" : FamilyRow.MaritalStatusComment);
                 WriteLine();
             }
             else if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
             {
                 PPersonRow PersonRow = AMainDS.PPerson[0];
-                Write(PersonRow.FamilyName);
-                Write(PersonRow.FirstName);
-                Write(PersonRow.MiddleName1);
-                Write(PersonRow.Title);
-                Write(PersonRow.Decorations);
-                Write(PersonRow.PreferedName);
-                Write(PersonRow.DateOfBirth);
-                Write(PersonRow.Gender);
-                Write(PersonRow.MaritalStatus);
-                Write(PersonRow.MaritalStatusSince);
-                Write(PersonRow.MaritalStatusComment);
-                Write(PersonRow.BelieverSinceYear);
-                Write(PersonRow.BelieverSinceComment);
-                Write(PersonRow.OccupationCode);
-                Write(PersonRow.FieldKey);
-                Write(PersonRow.FamilyKey);
-                Write(PersonRow.FamilyId);
+                Write(PersonRow.IsFamilyNameNull() ? "" : PersonRow.FamilyName);
+                Write(PersonRow.IsFirstNameNull() ? "" : PersonRow.FirstName);
+                Write(PersonRow.IsMiddleName1Null() ? "" : PersonRow.MiddleName1);
+                Write(PersonRow.IsTitleNull() ? "" : PersonRow.Title);
+                WriteLine();  // Added Sept 2011 as per spec, and example
+
+                Write(PersonRow.IsDecorationsNull() ? "" : PersonRow.Decorations);
+                Write(PersonRow.IsPreferedNameNull() ? "" : PersonRow.PreferedName);
+                Write(PersonRow.IsDateOfBirthNull() ? "?" : PersonRow.DateOfBirth.Value.ToString(DATEFORMAT));
+                Write(PersonRow.IsGenderNull() ? "" : PersonRow.Gender);
+                Write(PersonRow.IsMaritalStatusNull() ? "" : PersonRow.MaritalStatus);
+                Write(PersonRow.IsMaritalStatusSinceNull() ? "?" : PersonRow.MaritalStatusSince.Value.ToString(DATEFORMAT));
+                Write(PersonRow.IsMaritalStatusCommentNull() ? "" : PersonRow.MaritalStatusComment);
+                Write(PersonRow.IsOccupationCodeNull() ? "" : PersonRow.OccupationCode);
+                Write(PersonRow.IsFieldKeyNull() ? 0 : PersonRow.FieldKey);
+                Write(PersonRow.IsFamilyKeyNull() ? 0 : PersonRow.FamilyKey);
+                Write(PersonRow.IsFamilyIdNull() ? 0 : PersonRow.FamilyId);
                 WriteLine();
             }
             else if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
             {
                 POrganisationRow OrganisationRow = AMainDS.POrganisation[0];
-                Write(OrganisationRow.OrganisationName);
-                Write(OrganisationRow.BusinessCode);
-                Write(OrganisationRow.Religious);
-                Write(OrganisationRow.Foundation);
+                Write(OrganisationRow.IsOrganisationNameNull() ? "" : OrganisationRow.OrganisationName);
+                Write(OrganisationRow.IsBusinessCodeNull() ? "" : OrganisationRow.BusinessCode);
+                Write(OrganisationRow.IsReligiousNull() ? false : OrganisationRow.Religious);
+                Write(OrganisationRow.IsFoundationNull() ? false : OrganisationRow.Foundation);
+                // spec says TODO: export/import table p_foundation if p_organisation.p_foundation_l is TRUE
                 WriteLine();
             }
             else if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
             {
                 PUnitRow UnitRow = AMainDS.PUnit[0];
-                Write(UnitRow.UnitName);
+                Write(UnitRow.IsUnitNameNull() ? "" : UnitRow.UnitName);
                 Write("");                 // was omss code
-                Write(UnitRow.XyzTbdCode);
-                Write(UnitRow.Description);
+                Write(UnitRow.IsOutreachCodeNull() ? "" : UnitRow.OutreachCode);
+                Write(UnitRow.IsDescriptionNull() ? "" : UnitRow.Description);
                 Write(0);                 // was um_default_entry_conf_key_n
-                Write(UnitRow.UnitTypeCode);
-                Write(UnitRow.CountryCode);
-                Write(UnitRow.XyzTbdCost);
-                Write(UnitRow.XyzTbdCostCurrencyCode);
-                Write(UnitRow.PrimaryOffice);
+                Write(UnitRow.IsUnitTypeCodeNull() ? "" : UnitRow.UnitTypeCode);
+                Write(UnitRow.IsCountryCodeNull() ? "" : UnitRow.CountryCode);
+                Write(UnitRow.IsOutreachCostNull() ? 0 : UnitRow.OutreachCost);
+                Write(UnitRow.IsOutreachCostCurrencyCodeNull() ? "" : UnitRow.OutreachCostCurrencyCode);
+                Write(UnitRow.IsPrimaryOfficeNull() ? 0 : UnitRow.PrimaryOffice);
                 WriteLine();
             }
             else if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_VENUE)
             {
                 PVenueRow VenueRow = AMainDS.PVenue[0];
-                Write(VenueRow.VenueName);
-                Write(VenueRow.VenueCode);
-                Write(VenueRow.CurrencyCode);
-                Write(VenueRow.ContactPartnerKey);
+                Write(VenueRow.IsVenueNameNull() ? "" : VenueRow.VenueName);
+                Write(VenueRow.IsVenueCodeNull() ? "" : VenueRow.VenueCode);
+                Write(VenueRow.IsCurrencyCodeNull() ? "" : VenueRow.CurrencyCode);
+                Write(VenueRow.IsContactPartnerKeyNull() ? 0 : VenueRow.ContactPartnerKey);
                 WriteLine();
+            }
+
+            //
+            // If I have not been given a locationKey, I can pull one out of the LocationTable now,
+            // so that the code below works.
+            if (ALocationKey == 0)
+            {
+                ALocationKey = ((PPartnerLocationRow)AMainDS.PPartnerLocation.DefaultView[0].Row).LocationKey;
             }
 
             AMainDS.PLocation.DefaultView.RowFilter =
@@ -918,8 +948,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     PPartnerLocationTable.GetLocationKeyDBName(),
                     ALocationKey);
 
-            WriteLocation((PLocationRow)AMainDS.PLocation.DefaultView[0].Row,
-                (PPartnerLocationRow)AMainDS.PPartnerLocation.DefaultView[0].Row);
+            Boolean FirstAddressWritten = false;
+
+            if (AMainDS.PLocation.DefaultView.Count > 0)
+            {
+                WriteLocation((PLocationRow)AMainDS.PLocation.DefaultView[0].Row,
+                    (PPartnerLocationRow)AMainDS.PPartnerLocation.DefaultView[0].Row);
+                FirstAddressWritten = true;
+            }
 
             AMainDS.PPartnerLocation.DefaultView.RowFilter = String.Empty;
 
@@ -929,8 +965,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                       && (PartnerLocationRow.SiteKey == ASiteKey))
                     && (PartnerLocationRow.IsDateGoodUntilNull() || (PartnerLocationRow.DateGoodUntil >= DateTime.Today)))
                 {
-                    Write("ADDRESS");
-                    WriteLine();
+                    if (FirstAddressWritten)
+                    {
+                        Write("ADDRESS");
+                        WriteLine();
+                    }
 
                     AMainDS.PLocation.DefaultView.RowFilter =
                         String.Format("{0}={1} and {2}={3}",
@@ -940,6 +979,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             PartnerLocationRow.LocationKey);
 
                     WriteLocation((PLocationRow)AMainDS.PLocation.DefaultView[0].Row, PartnerLocationRow);
+                    FirstAddressWritten = true;
                 }
             }
 
@@ -961,8 +1001,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 Write("COMMENTSEQ");
                 WriteLine();
-                Write(PartnerCommentRow.Sequence);
-                Write(PartnerCommentRow.Comment);
+                Write(PartnerCommentRow.IsSequenceNull() ? 0 : PartnerCommentRow.Sequence);
+                Write(PartnerCommentRow.IsCommentNull() ? "" : PartnerCommentRow.Comment);
                 WriteLine();
             }
 
@@ -970,9 +1010,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 Write("TYPE");
                 WriteLine();
-                Write(PartnerTypeRow.TypeCode);
-                Write(PartnerTypeRow.ValidFrom);
-                Write(PartnerTypeRow.ValidUntil);
+                Write(PartnerTypeRow.IsTypeCodeNull() ? "" : PartnerTypeRow.TypeCode);
+                Write(PartnerTypeRow.IsValidFromNull() ? "?" : PartnerTypeRow.ValidFrom.Value.ToString(DATEFORMAT));
+                Write(PartnerTypeRow.IsValidUntilNull() ? "?" : PartnerTypeRow.ValidUntil.Value.ToString(DATEFORMAT));
                 WriteLine();
             }
 
@@ -981,15 +1021,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AMainDS.PInterest.DefaultView.RowFilter = String.Format("{0}='{1}'",
                     PInterestTable.GetInterestDBName(),
                     PartnerInterestRow.Interest);
+                PInterestRow tempRow = (PInterestRow)AMainDS.PInterest.DefaultView[0].Row;
+
                 Write("INTEREST");
                 WriteLine();
-                Write(PartnerInterestRow.InterestNumber);
-                Write(PartnerInterestRow.FieldKey);
-                Write(PartnerInterestRow.Country);
-                Write(PartnerInterestRow.Interest);
-                Write(((PInterestRow)AMainDS.PInterest.DefaultView[0].Row).Category);
-                Write(PartnerInterestRow.Level);
-                Write(PartnerInterestRow.Comment);
+                Write(PartnerInterestRow.IsInterestNumberNull() ? 0 : PartnerInterestRow.InterestNumber);
+                Write(PartnerInterestRow.IsFieldKeyNull() ? 0 : PartnerInterestRow.FieldKey);
+                Write(PartnerInterestRow.IsCountryNull() ? "" : PartnerInterestRow.Country);
+                Write(PartnerInterestRow.IsInterestNull() ? "" : PartnerInterestRow.Interest);
+                Write(tempRow.IsCategoryNull() ? "" : tempRow.Category);
+                Write(PartnerInterestRow.IsLevelNull() ? 0 : PartnerInterestRow.Level);
+                Write(PartnerInterestRow.IsCommentNull() ? "" : PartnerInterestRow.Comment);
                 WriteLine();
             }
 

@@ -54,11 +54,11 @@ namespace Ict.Petra.Client.CommonForms
         private TShepherdNavigationHelper FShepherdNavigationHelper;
 
         ///<summary>Constructor</summary>
-        public TPetraShepherdConcreteForm(IntPtr AParentFormHandle)
+        public TPetraShepherdConcreteForm(Form AParentForm)
         {
             TLogging.Log("Entering TPetraShepherdConcreteForm Constructor...");
 
-            FPetraUtilsObject = new TFrmPetraEditUtils(AParentFormHandle, this, stbMain);
+            FPetraUtilsObject = new TFrmPetraEditUtils(AParentForm, this, stbMain);
             
             TLogging.Log("TPetraShepherdConcreteForm Constructor ran.");
         }
@@ -170,7 +170,7 @@ namespace Ict.Petra.Client.CommonForms
         	
         	TLogging.Log("Added a node to the task list.");
         
-        	pnlCollapsibleNavigation.InstantiateTaskList();
+//        	pnlCollapsibleNavigation.RealiseTaskListNow();
         	
             TLogging.Log("UpdateNavigation");
         }

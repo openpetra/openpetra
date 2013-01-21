@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PPublication
     CacheableTable: PublicationList
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 713
@@ -34,7 +34,7 @@ RootNode:
                 Row2: [cmbDetailFrequencyCode]
                 Row3: [chkDetailValidPublication]
         txtDetailPublicationCode: {Label=Publication Code, Width=100, CharacterCasing=Upper, OnLeave=UpdatePublicationLabelCode}
-        txtDetailPublicationDescription: {Width=228, ColSpan=3}
+        txtDetailPublicationDescription: {Width=228, ColSpan=2}
         txtDetailPublicationLabelCode: {Width=30}
         txtDetailNumberOfIssues: {Width=30}
         cmbDetailFrequencyCode: {List=FrequencyList, ColSpan=3}

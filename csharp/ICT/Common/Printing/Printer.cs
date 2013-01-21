@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,7 +45,10 @@ namespace Ict.Common.Printing
         eDefaultMargins,
 
         /// <summary>use the full printable area. the margins are managed by the rendering method, eg HTML renderer</summary>
-        ePrintableArea
+        ePrintableArea,
+
+        /// <summary>the margins have been set in SetPageSize</summary>
+        eCalculatedMargins
     };
 
     /// <summary>todoComment</summary>
@@ -97,7 +100,10 @@ namespace Ict.Common.Printing
         eHeadingFont,
 
         /// <summary>todoComment</summary>
-        eSmallPrintFont
+        eSmallPrintFont,
+
+        /// <summary>useful for printing bar codes. usually code128.ttf</summary>
+        eBarCodeFont
     };
 
     /// <summary>todoComment</summary>
@@ -119,6 +125,22 @@ namespace Ict.Common.Printing
         eFinished
     };
 
+    /// <summary>
+    /// specify for which axis the value is intended. needed for taking resolution in account
+    /// </summary>
+    public enum eResolution
+    {
+        /// <summary>
+        /// vertical
+        /// </summary>
+        eVertical,
+
+        /// <summary>
+        /// horizontal
+        /// </summary>
+        eHorizontal
+    }
+
     /// definition for current state of printer; useful with the stack
     public class TPrinterState
     {
@@ -137,11 +159,17 @@ namespace Ict.Common.Printing
         /// <summary>current y Position on page, in current display unit</summary>
         public float FCurrentYPos;
 
+        /// <summary>other elements can be printed relative to this position</summary>
+        public float FAnchorXPos;
+
+        /// <summary>other elements can be printed relative to this position</summary>
+        public float FAnchorYPos;
+
         /// <summary>todoComment</summary>
         public eFont FCurrentFont;
 
         /// relative number; 0 is normal size
-        public Int32 FCurrentRelativeFontSize = 0;
+        public float FCurrentRelativeFontSize = 0;
 
         /// <summary>todoComment</summary>
         public eAlignment FCurrentAlignment = eAlignment.eLeft;
@@ -158,6 +186,8 @@ namespace Ict.Common.Printing
             newState.FCurrentPageNr = FCurrentPageNr;
             newState.FCurrentXPos = FCurrentXPos;
             newState.FCurrentYPos = FCurrentYPos;
+            newState.FAnchorXPos = FAnchorXPos;
+            newState.FAnchorYPos = FAnchorYPos;
             newState.FCurrentFont = FCurrentFont;
             newState.FCurrentRelativeFontSize = FCurrentRelativeFontSize;
             newState.FCurrentAlignment = FCurrentAlignment;
@@ -279,6 +309,34 @@ namespace Ict.Common.Printing
             }
         }
 
+        /// <summary>other elements can be positioned relative to this position</summary>
+        public float AnchorXPos
+        {
+            get
+            {
+                return FCurrentState.FAnchorXPos;
+            }
+
+            set
+            {
+                FCurrentState.FAnchorXPos = value;
+            }
+        }
+
+        /// <summary>other elements can be positioned relative to this position</summary>
+        public float AnchorYPos
+        {
+            get
+            {
+                return FCurrentState.FAnchorYPos;
+            }
+
+            set
+            {
+                FCurrentState.FAnchorYPos = value;
+            }
+        }
+
         /// <summary>todoComment</summary>
         public float LeftMargin
         {
@@ -313,7 +371,7 @@ namespace Ict.Common.Printing
         /// <summary>
         /// the relative font size; 0 is default size
         /// </summary>
-        public Int32 CurrentRelativeFontSize
+        public float CurrentRelativeFontSize
         {
             get
             {
@@ -367,6 +425,27 @@ namespace Ict.Common.Printing
             {
                 return FPageFooterSpace;
             }
+        }
+
+        /// <summary>
+        /// save the state before a rotation etc
+        /// </summary>
+        public virtual void SaveState()
+        {
+        }
+
+        /// <summary>
+        /// restore the state after a rotation etc
+        /// </summary>
+        public virtual void RestoreState()
+        {
+        }
+
+        /// <summary>
+        /// rotate the following output by some degrees, at the given position
+        /// </summary>
+        public virtual void RotateAtTransform(double ADegrees, double XPos, double YPos)
+        {
         }
 
         /// <summary>
@@ -458,10 +537,18 @@ namespace Ict.Common.Printing
 
         /// <summary>
         /// Converts the given value in cm to the currently used measurement unit
-        ///
         /// </summary>
-        /// <returns>void</returns>
         public abstract float Cm(float AValueInCm);
+
+        /// <summary>
+        /// Converts the given value in pixel to the currently used measurement unit, using the horizontal resolution
+        /// </summary>
+        public abstract float PixelHorizontal(float AValueInPixel);
+
+        /// <summary>
+        /// Converts the given value in pixel to the currently used measurement unit, using the vertical resolution
+        /// </summary>
+        public abstract float PixelVertical(float AValueInPixel);
 
         #endregion
         #region Print String
@@ -522,6 +609,14 @@ namespace Ict.Common.Printing
         /// </summary>
         /// <returns>void</returns>
         public abstract Boolean DrawLine(float AXPos1, float AXPos2, eLinePosition ALinePosition, eFont AFont);
+
+        /// <summary>
+        /// Draws a line, at specified position
+        /// </summary>
+        public virtual void DrawLine(Int32 APenPixels, float AXPos1, float AYPos1, float AXPos2, float AYPos2)
+        {
+            // TTxtPrinter does not need this; so don't force implementation
+        }
 
         /// <summary>
         /// draws a rectangle
@@ -747,7 +842,50 @@ namespace Ict.Common.Printing
 
                     if (cell.borderWidth > 0)
                     {
-                        DrawRectangle(cell.borderWidth, currentXPos, CurrentYPos, cell.contentWidth, row.contentHeight);
+                        float horizontalDiff = Cm(0.1f);
+
+                        if (cell.borderBitField == (TTableCellGfx.BOTTOM | TTableCellGfx.TOP | TTableCellGfx.LEFT | TTableCellGfx.RIGHT))
+                        {
+                            DrawRectangle(cell.borderWidth, currentXPos, CurrentYPos - horizontalDiff, cell.contentWidth, row.contentHeight);
+                        }
+                        else
+                        {
+                            if ((cell.borderBitField & TTableCellGfx.TOP) != 0)
+                            {
+                                DrawLine(cell.borderWidth,
+                                    currentXPos,
+                                    CurrentYPos - horizontalDiff,
+                                    currentXPos + cell.contentWidth,
+                                    CurrentYPos - horizontalDiff);
+                            }
+
+                            if ((cell.borderBitField & TTableCellGfx.BOTTOM) != 0)
+                            {
+                                DrawLine(cell.borderWidth,
+                                    currentXPos,
+                                    CurrentYPos + row.contentHeight - horizontalDiff,
+                                    currentXPos + cell.contentWidth,
+                                    CurrentYPos + row.contentHeight - horizontalDiff);
+                            }
+
+                            if ((cell.borderBitField & TTableCellGfx.LEFT) != 0)
+                            {
+                                DrawLine(cell.borderWidth,
+                                    currentXPos,
+                                    CurrentYPos - 2,
+                                    currentXPos,
+                                    CurrentYPos + row.contentHeight - horizontalDiff);
+                            }
+
+                            if ((cell.borderBitField & TTableCellGfx.RIGHT) != 0)
+                            {
+                                DrawLine(cell.borderWidth,
+                                    currentXPos + cell.contentWidth,
+                                    CurrentYPos - horizontalDiff,
+                                    currentXPos + cell.contentWidth,
+                                    CurrentYPos + row.contentHeight - horizontalDiff);
+                            }
+                        }
                     }
 
                     currentXPos += cell.contentWidth;

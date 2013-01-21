@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,22 +26,22 @@ using System.IO;
 using System.Data;
 using System.Data.Common;
 using System.Data.Odbc;
-using System.Data.SQLite;
+using Mono.Data.Sqlite;
 using System.Collections;
 using Ict.Common;
+using Ict.Common.IO;
 using System.Text.RegularExpressions;
 
 namespace Ict.Common.DB
 {
     /// <summary>
-    /// this class allows access to SQLite databases
+    /// this class allows access to SQLite databases on Windows and Linux, using Mono.Data.Sqlite
     /// </summary>
     public class TSQLite : IDataBaseRDBMS
     {
         /// <summary>
-        /// Create a SQLite connection using
-        /// the ADO.NET 2.0 Provider for SQLite
-        /// from http://sourceforge.net/projects/sqlite-dotnet2
+        /// Create a SQLite connection using Mono.Data.Sqlite.
+        /// this works on Windows (with the sqlite3.dll) and on Linux
         /// </summary>
         /// <param name="AServer">The Database file</param>
         /// <param name="APort">the port that the db server is running on</param>
@@ -58,13 +58,8 @@ namespace Ict.Common.DB
             StateChangeEventHandler AStateChangeEventHandler)
         {
             ArrayList ExceptionList;
-            SQLiteConnection TheConnection = null;
 
-            if (AServer.Contains("{userappdata}"))
-            {
-                AServer = AServer.Replace("{userappdata}",
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-            }
+            SqliteConnection TheConnection = null;
 
             if (!File.Exists(AServer))
             {
@@ -74,8 +69,7 @@ namespace Ict.Common.DB
                 // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
 
                 // copy the base database
-                TAppSettingsManager settings = new TAppSettingsManager();
-                string baseDatabase = settings.GetValue("Server.BaseDatabase");
+                string baseDatabase = TAppSettingsManager.GetValue("Server.SQLiteBaseFile");
 
                 if (!Directory.Exists(Path.GetDirectoryName(AServer)))
                 {
@@ -87,7 +81,11 @@ namespace Ict.Common.DB
 
             if (AConnectionString == "")
             {
-                AConnectionString = "Data Source=" + AServer;
+                AConnectionString = "Data Source=" + Path.GetFullPath(AServer);
+
+                // sqlite on Windows does not support encryption with a password
+                // System.EntryPointNotFoundException: sqlite3_key
+                APassword = string.Empty;
 
                 if (APassword.Length > 0)
                 {
@@ -98,7 +96,7 @@ namespace Ict.Common.DB
             try
             {
                 // Now try to connect to the DB
-                TheConnection = new SQLiteConnection(AConnectionString + APassword);
+                TheConnection = new SqliteConnection(AConnectionString + APassword);
             }
             catch (Exception exp)
             {
@@ -110,7 +108,7 @@ namespace Ict.Common.DB
 
             if (TheConnection != null)
             {
-                ((SQLiteConnection)TheConnection).StateChange += AStateChangeEventHandler;
+                TheConnection.StateChange += AStateChangeEventHandler;
             }
 
             return TheConnection;
@@ -124,9 +122,9 @@ namespace Ict.Common.DB
         /// <returns>true if this is an SQLiteException</returns>
         public bool LogException(Exception AException, ref string AErrorMessage)
         {
-            if (AException is SQLiteException)
+            if (AException is SqliteException)
             {
-                AErrorMessage = AErrorMessage + ((SQLiteException)AException).ErrorCode.ToString() +
+                AErrorMessage = AErrorMessage + ((SqliteException)AException).ErrorCode.ToString() +
                                 Environment.NewLine;
                 return true;
             }
@@ -150,10 +148,21 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("pub.", "");
             ReturnValue = ReturnValue.Replace("\"", "'");
 
+            ReturnValue = ReturnValue.Replace("NOW()", "datetime('now')");
+
             ReturnValue = ReturnValue.Replace("= false", "= 0");
             ReturnValue = ReturnValue.Replace("= true", "= 1");
             ReturnValue = ReturnValue.Replace("=false", "=0");
             ReturnValue = ReturnValue.Replace("=true", "=1");
+            ReturnValue = ReturnValue.Replace("=FALSE", "=0");
+            ReturnValue = ReturnValue.Replace("=TRUE", "=1");
+            ReturnValue = ReturnValue.Replace("= FALSE", "= 0");
+            ReturnValue = ReturnValue.Replace("= TRUE", "= 1");
+            ReturnValue = ReturnValue.Replace(" as ", " AS ");
+            ReturnValue = ReturnValue.Replace("true AS ", "1 AS ");
+            ReturnValue = ReturnValue.Replace("false AS ", "0 AS ");
+            ReturnValue = ReturnValue.Replace("TRUE AS ", "1 AS ");
+            ReturnValue = ReturnValue.Replace("FALSE AS ", "0 AS ");
 
             // INSERT INTO table () VALUES
             ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");
@@ -189,22 +198,22 @@ namespace Ict.Common.DB
         /// <returns>Array of SQLiteParameter (converted from <paramref name="AParameterArray" />.</returns>
         public DbParameter[] ConvertOdbcParameters(DbParameter[] AParameterArray, ref string ASqlStatement)
         {
-            SQLiteParameter[] ReturnValue = new SQLiteParameter[AParameterArray.Length];
+            SqliteParameter[] ReturnValue = new SqliteParameter[AParameterArray.Length];
             OdbcParameter[] AParameterArrayOdbc;
 
-            if (!(AParameterArray is SQLiteParameter[]))
+            if (!(AParameterArray is SqliteParameter[]))
             {
                 AParameterArrayOdbc = (OdbcParameter[])AParameterArray;
 
                 for (int Counter = 0; Counter < AParameterArray.Length; Counter++)
                 {
-                    ReturnValue[Counter] = new SQLiteParameter();
+                    ReturnValue[Counter] = new SqliteParameter();
                     ReturnValue[Counter].Value = AParameterArrayOdbc[Counter].Value;
                 }
             }
             else
             {
-                ReturnValue = (SQLiteParameter[])AParameterArray;
+                ReturnValue = (SqliteParameter[])AParameterArray;
             }
 
             return ReturnValue;
@@ -225,24 +234,24 @@ namespace Ict.Common.DB
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
 
-            if (DBAccess.GDBAccessObj.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Query formatted for SQLite: " + ACommandText);
             }
 
-            SQLiteParameter[] SQLiteParametersArray = null;
+            SqliteParameter[] SQLiteParametersArray = null;
 
             if ((AParametersArray != null)
                 && (AParametersArray.Length > 0))
             {
                 if (AParametersArray != null)
                 {
-                    SQLiteParametersArray = (SQLiteParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
+                    SQLiteParametersArray = (SqliteParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
                 }
             }
 
-            ObjReturn = ((SQLiteConnection)AConnection).CreateCommand();
-            ((SQLiteCommand)ObjReturn).CommandText = ACommandText;
+            ObjReturn = ((SqliteConnection)AConnection).CreateCommand();
+            ((SqliteCommand)ObjReturn).CommandText = ACommandText;
 
             if (SQLiteParametersArray != null)
             {
@@ -262,7 +271,7 @@ namespace Ict.Common.DB
         /// <returns></returns>
         public IDbDataAdapter NewAdapter()
         {
-            IDbDataAdapter TheAdapter = new SQLiteDataAdapter();
+            IDbDataAdapter TheAdapter = new SqliteDataAdapter();
 
             return TheAdapter;
         }
@@ -281,7 +290,7 @@ namespace Ict.Common.DB
             Int32 AMaxRecords,
             string ADataTableName)
         {
-            ((SQLiteDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
+            ((SqliteDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
         }
 
         /// <summary>
@@ -297,7 +306,7 @@ namespace Ict.Common.DB
             Int32 AStartRecord,
             Int32 AMaxRecords)
         {
-            ((SQLiteDataAdapter)TheAdapter).Fill(AFillDataTable);
+            ((SqliteDataAdapter)TheAdapter).Fill(AFillDataTable);
         }
 
         /// <summary>
@@ -329,7 +338,7 @@ namespace Ict.Common.DB
         public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
             string stmt = "INSERT INTO " + ASequenceName + " VALUES(NULL, -1);";
-            SQLiteCommand cmd = new SQLiteCommand(stmt, (SQLiteConnection)AConnection);
+            SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection);
 
             cmd.ExecuteNonQuery();
             return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase, AConnection);
@@ -347,7 +356,7 @@ namespace Ict.Common.DB
         public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
             string stmt = "SELECT MAX(sequence) FROM " + ASequenceName + ";";
-            SQLiteCommand cmd = new SQLiteCommand(stmt, (SQLiteConnection)AConnection);
+            SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection);
 
             return Convert.ToInt64(cmd.ExecuteScalar());
         }
@@ -383,6 +392,86 @@ namespace Ict.Common.DB
 
             return ASqlCommand.Substring(0, StartIndex) + "strftime(%j, " +
                    ASqlCommand.Substring(StartIndex + 10);
+        }
+
+        /// <summary>
+        /// For standalone installations, we update the SQLite database on the fly
+        /// </summary>
+        public void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
+            string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword)
+        {
+            // we do not support updating standalone databases at the moment
+            if (AExeVersion.FileMajorPart == 0)
+            {
+                DBAccess.GDBAccessObj.CloseDBConnection();
+                throw new Exception(String.Format("Unsupported upgrade: Please rename your file {0} so that we can start with a fresh database!",
+                        AHostOrFile));
+            }
+
+            string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            ADBVersion.FilePrivatePart = 0;
+            AExeVersion.FilePrivatePart = 0;
+
+            try
+            {
+                // run all available patches. for each release there could be a patch file
+                string[] sqlFiles = Directory.GetFiles(dbpatchfilePath, "*.sql");
+
+                bool foundUpdate = true;
+
+                // run through all sql files until we have no matching update files anymore
+                while (foundUpdate)
+                {
+                    foundUpdate = false;
+
+                    foreach (string sqlFile in sqlFiles)
+                    {
+                        if (!sqlFile.EndsWith("pg.sql") && (new TPatchFileVersionInfo(ADBVersion)).PatchApplies(sqlFile, AExeVersion))
+                        {
+                            foundUpdate = true;
+                            StreamReader sr = new StreamReader(sqlFile);
+
+                            while (!sr.EndOfStream)
+                            {
+                                string line = sr.ReadLine().Trim();
+
+                                if (!line.StartsWith("--"))
+                                {
+                                    DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction, false);
+                                }
+                            }
+
+                            sr.Close();
+                            ADBVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(sqlFile);
+                        }
+                    }
+                }
+
+                if (ADBVersion.Compare(AExeVersion) == 0)
+                {
+                    // if patches have been applied successfully, update the database version
+                    string newVersionSql =
+                        String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
+                            AExeVersion.ToStringDotsHyphen());
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction, false);
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    throw new Exception(String.Format("Cannot connect to old database (version {0}), there are some missing sql patch files",
+                            ADBVersion));
+                }
+            }
+            catch (Exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
     }
 }

@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,8 +55,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             int ColumnCounter = 0;
             bool DatesAreValid = (dtpFromDate.ValidDate(false) && dtpToDate.ValidDate(false));
 
-            TimeSpan CheckLength = dtpToDate.Date.Value.Subtract(dtpFromDate.Date.Value);
-
             // Add the columns to the report
             ACalc.AddParameter("param_calculation", "Date", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
@@ -76,13 +74,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             ACalc.AddParameter("MaxDisplayColumns", ColumnCounter);
 
-            if (AReportAction == TReportActionEnum.raGenerate)
+            if ((AReportAction == TReportActionEnum.raGenerate) && DatesAreValid)
             {
                 if (dtpFromDate.Date > dtpToDate.Date)
                 {
                     TVerificationResult VerificationResult = new TVerificationResult(
                         Catalog.GetString("Change From-Date or To-Date"),
-                        Catalog.GetString("From Date must be smaller than To Date"),
+                        Catalog.GetString("From-Date must be earlier than To-Date"),
                         TResultSeverity.Resv_Critical);
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
@@ -91,8 +89,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             if (!DatesAreValid)
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("Enter valid To- and From-Date."),
-                    Catalog.GetString("Dates must be a valid date"),
+                    Catalog.GetString("Enter valid From-Date and To-Date."),
+                    Catalog.GetString("Dates must be valid"),
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }

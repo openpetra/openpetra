@@ -1,76 +1,40 @@
 <?xml version="1.0"?>
 <project name="Ict.Petra.Client-Build">
 
-<property name="Namespace" value="Ict.Petra.Client" />
-<property name="directories-with-yaml" 
-          value="MConference/Gui,
-                MCommon/Gui,
-                MCommon/Gui/Setup,
-                MPartner/Gui,
-                MPartner/Gui/Setup,
-                MPersonnel/Gui,
-                MPersonnel/Gui/Setup,
-                MReporting/Gui,
-                MReporting/Gui/MPartner,
-                MReporting/Gui/MPersonnel,
-                MReporting/Gui/MPersonnel/ShortTerm,
-                MReporting/Gui/MFinance,
-                MReporting/Gui/MFinDev,
-                MReporting/Gui/MConference,
-                MFinance/Gui,
-                MFinance/Gui/GL,
-                MFinance/Gui/Gift,
-                MFinance/Gui/AP,
-                MFinance/Gui/Common,
-                MFinance/Gui/Setup,
-                MSysMan/Gui,
-                MSysMan/Gui/Setup" overwrite="false" />
-
-
 <target name="custclean"> 
   <!-- Remove generated files from generateWinForms -->
-  <foreach item="String" property="yamldir" in="${directories-with-yaml}" delim="," trim="Both"><do>
-    <foreach item="File" property="yamlfile">
-        <in> <items>
-                <include name="${yamldir}/*.yaml" />
-        </items></in>
-        <do>
-          <loadfile file="${yamlfile}" property="yamlfilecontent"/>
-          <if test="${not string::contains(yamlfilecontent, 'FormType: abstract') }" >
-            <delete file="${path::change-extension(yamlfile, '-generated.cs')}" />
-            <delete file="${path::change-extension(yamlfile, '-generated.Designer.cs')}" />
-            <delete file="${path::change-extension(yamlfile, '-generated.resx')}" />
-            <!-- to avoid problems with older versions that did not have the -generated postfix yet -->
-            <delete file="${path::change-extension(yamlfile, '.cs')}" />
-            <delete file="${path::change-extension(yamlfile, '.Designer.cs')}" />
-            <delete file="${path::change-extension(yamlfile, '.resx')}" />
-          </if>
-        </do>
-    </foreach>
-  </do></foreach>  
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+  <property name="ClientPath" value="${dir.root}/csharp/ICT/Petra/Client"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:clean -ymldir:${ClientPath}"/>
 </target>
 
 <target name="custdepend">
   <!-- Generate winforms --> 
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="generateWinformsParameters" value="-TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${framework::get-target-framework()}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -Server.DebugLevel:${Server.DebugLevel}"/>
   <property name="ClientPath" value="${dir.root}/csharp/ICT/Petra/Client"/>
-  <foreach item="String" property="yamldir" in="${directories-with-yaml}" delim="," trim="Both"><do>
-    <ExecDotNet program="${tool-generateWinForms}" commandline="-ymlfile:${ClientPath}/${yamldir} ${generateWinformsParameters}"/>
-  </do></foreach>  
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymldir:${ClientPath} ${generateWinformsParameters}"/>
 </target>
 
 <target name="generateWinform">
   <!-- Generate winforms -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
-  <property name="generateWinformsParameters" value="-TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatform:${framework::get-target-framework()}"/>
-  <ExecDotNet program="${tool-generateWinForms}" commandline="-ymlfile:${file} ${generateWinformsParameters}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -Server.DebugLevel:${Server.DebugLevel}"/>
+  <property name="file_fullpath" value="${path::get-full-path(file)}"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymlfile:${file_fullpath} ${generateWinformsParameters}"/>
+  
+  <property name="file_fullpath" value="${path::get-full-path(file)}"/>
+  <CompileProject CSFile="${string::replace(file_fullpath,'.yaml', '-generated.cs')}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
 </target>
 
+<target name="previewWinform">
+  <!-- Generate winforms -->
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -Server.DebugLevel:${Server.DebugLevel}"/>
+  <property name="file_fullpath" value="${path::get-full-path(file)}"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:preview -ymlfile:${file_fullpath} ${generateWinformsParameters}"/>
+</target>
 
-
-  
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
-
  
 </project>

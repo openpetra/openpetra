@@ -187,7 +187,7 @@ namespace Ict.Petra.Client.CommonForms
         	this.pnlCollapsibleNavigation.TaskListNode = null;
         	this.pnlCollapsibleNavigation.UserControlClass = "";
         	this.pnlCollapsibleNavigation.UserControlNamespace = "";
-        	this.pnlCollapsibleNavigation.VisualStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
+        	this.pnlCollapsibleNavigation.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
         	// 
         	// pnlContent
         	// 

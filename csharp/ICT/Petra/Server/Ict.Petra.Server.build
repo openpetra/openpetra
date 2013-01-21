@@ -1,10 +1,6 @@
 <?xml version="1.0"?>
 <project name="Ict.Petra.Server-Build">
 
-<property name="Namespace" value="Ict.Petra.Server" />
-
-<property name="RunCsDepend" value="true" overwrite="true"/>
-
 <target name="custclean">
   <delete>
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/lib/data">
@@ -13,21 +9,20 @@
   </delete>
 </target>
 
-
 <target name="custdepend">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
   <ExecDotNet program="${tool-generateORM}" 
-   commandline="-do:dataaccess -petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Server -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/> 
+   commandline="-do:dataaccess -petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Server -TemplateDir:${dir.incdir.template.src}"/> 
    <!-- Server datasets -->
-  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MCommon/data/CommonTypedDataSets.xml -outputNamespace:Ict.Petra.Server.MCommon.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Common.DataSets.Access -StartTableId:5000 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MPartner/data/PartnerTypedDataSets.xml -outputNamespace:Ict.Petra.Server.MPartner.Partner.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Partner.DataSets.Access -StartTableId:5100 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MPersonnel/data/PersonnelTypedDataSets.xml -outputNamespace:Ict.Petra.Server.MPersonnel.Personnel.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Personnel.DataSets.Access -StartTableId:5200 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MHospitality/data/TypedDataSets.xml -outputNamespace:Ict.Petra.Server.MHospitality.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Hospitality.DataSets.Access -StartTableId:5300 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.AP.TypedDataSets.xml -outputNamespace:Ict.Petra.Server.MFinance.AP.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Finance.AP.DataSets.Access -StartTableId:5400 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.GL.TypedDataSets.xml -outputNamespace:Ict.Petra.Server.MFinance.GL.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Finance.GL.DataSets.Access -StartTableId:5500 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.Gift.TypedDataSets.xml -outputNamespace:Ict.Petra.Server.MFinance.Gift.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Finance.Gift.DataSets.Access -StartTableId:5600 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MSysMan/data/SysMan.TypedDataSets.xml -outputNamespace:Ict.Petra.Server.MSysMan.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:SysMan.DataSets.Access -StartTableId:5700 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MConference/data/ConferenceTypedDataSets.xml -outputNamespace:Ict.Petra.Server.MConference.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Conference.DataSets.Access -StartTableId:5800 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>        
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MCommon/data/CommonTypedDataSets.xml -outputNamespace:Ict.Petra.Server.MCommon.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Common.DataSets.Access -StartTableId:5000 -TemplateDir:${dir.incdir.template.src}"/>
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MPartner/data/PartnerTypedDataSets.xml -outputNamespace:Ict.Petra.Server.MPartner.Partner.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Partner.DataSets.Access -StartTableId:5100 -TemplateDir:${dir.incdir.template.src}"/>
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MPersonnel/data/PersonnelTypedDataSets.xml -outputNamespace:Ict.Petra.Server.MPersonnel.Personnel.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Personnel.DataSets.Access -StartTableId:5200 -TemplateDir:${dir.incdir.template.src}"/>
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MHospitality/data/Hospitality.TypedDataSets.xml -outputNamespace:Ict.Petra.Server.MHospitality.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Hospitality.DataSets.Access -StartTableId:5300 -TemplateDir:${dir.incdir.template.src}"/>
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.AP.TypedDataSets.xml -outputNamespace:Ict.Petra.Server.MFinance.AP.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Finance.AP.DataSets.Access -StartTableId:5400 -TemplateDir:${dir.incdir.template.src}"/>
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.GL.TypedDataSets.xml -outputNamespace:Ict.Petra.Server.MFinance.GL.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Finance.GL.DataSets.Access -StartTableId:5500 -TemplateDir:${dir.incdir.template.src}"/>
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.Gift.TypedDataSets.xml -outputNamespace:Ict.Petra.Server.MFinance.Gift.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Finance.Gift.DataSets.Access -StartTableId:5600 -TemplateDir:${dir.incdir.template.src}"/>
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MSysMan/data/SysMan.TypedDataSets.xml -outputNamespace:Ict.Petra.Server.MSysMan.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:SysMan.DataSets.Access -StartTableId:5700 -TemplateDir:${dir.incdir.template.src}"/>
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:datasetaccess -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MConference/data/ConferenceTypedDataSets.xml -outputNamespace:Ict.Petra.Server.MConference.Data -outputdir:${dir.root}/csharp/ICT/Petra/Server/lib/data -outputFilename:Conference.DataSets.Access -StartTableId:5800 -TemplateDir:${dir.incdir.template.src}"/>        
 </target>
 
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 

@@ -8,7 +8,7 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [grpSelectConference, grpSelectAttendees]
-            Dock: Top
+            Dock: Fill
         grpSelectConference:
             Label: Select Conference
             Controls:
@@ -25,7 +25,7 @@ RootNode:
                 Row0: [rbtAllAttendees]
                 Row1: [rbtExtract, txtExtract]
                 Row2: [rbtOneAttendee, txtOneAttendee]
-            Dock: Fill
+            Dock: Top
         rbtAllAttendees: {Label=All Attendees, OnChange=rbtAttendeeSelectionChange, Width=150}
         rbtExtract: {Label=From Extract, OnChange=rbtAttendeeSelectionChange}
         txtExtract: {NoLabel=true, Type=Extract, Width=400}

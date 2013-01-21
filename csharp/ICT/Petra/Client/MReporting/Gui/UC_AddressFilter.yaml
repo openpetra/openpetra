@@ -1,0 +1,32 @@
+RootNode:
+    BaseClass: UserControl
+    UtilObjectClass: TFrmPetraReportingUtils
+    Namespace: Ict.Petra.Client.MReporting.Gui  
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS
+    FormType: edit
+    Template: usercontrolUnbound
+    Controls:
+        grpAddress: {NoLabel=true}
+            Controls:
+                Row0: [chkCurrentAddressesOnly]
+                Row1: [txtCity]
+                Row2: [txtPostCodeFrom, txtPostCodeTo]
+                Row3: [cmbRegion]
+                Row4: [txtCounty]
+                Row5: [cmbCountry]
+                Row6: [dtpAddressStartFrom, dtpAddressStartTo]
+                Row7: [dtpAddressEndFrom, dtpAddressEndTo]
+		
+        chkCurrentAddressesOnly: {Label=Current Addresses only, ActionClick=OnCurrentAddressBoxChecked, ParameterName=param_only_addresses_valid_on}
+        txtCity: {Label=Town/City, ParameterName=param_city}
+        txtPostCodeFrom: {Label=Post Code From, ParameterName=param_postcode_from, Width=100}
+        txtPostCodeTo: {Label=To, ParameterName=param_postcode_to, Width=100}
+        cmbRegion: {Label=Region, List=PostCodeRegionList, ClearIfSettingEmpty=true, ParameterName=param_region, ColSpan=2, Width=300}
+        txtCounty: {Label=County/State, ParameterName=param_county}
+        cmbCountry: {Label=Country, List=CountryList, ClearIfSettingEmpty=true, ParameterName=param_country, ColSpan=2}
+        dtpAddressStartFrom: {Label=Valid From Date between, ClearIfSettingEmpty=true, ParameterName=param_address_start_from}
+        dtpAddressStartTo: {Label=and, ClearIfSettingEmpty=true, ParameterName=param_address_start_to}
+        dtpAddressEndFrom: {Label=Valid To Date between, ClearIfSettingEmpty=true, ParameterName=param_address_end_from}
+        dtpAddressEndTo: {Label=and, ClearIfSettingEmpty=true, ParameterName=param_address_end_to}
+        

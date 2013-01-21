@@ -28,9 +28,6 @@
 					<value text = "All current Staff at date "/>
 					<value variable = "param_currentstaffdate" format="formatteddate"/>
 				</fielddetail>
-				<fielddetail condition="eq({param_selection},all staff)">
-					<value text = "All Staff"/>
-				</fielddetail>
 			</field>
 			<field whichfield="descr2">
 				<fielddetail condition="ne({param_selection}, one partner)">
@@ -76,10 +73,6 @@
 							AND ( PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
 								OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )
 					</value></queryDetail>
-					<queryDetail condition="eq({param_selection},all staff)"><value>
-							, PUB_pm_staff_data
-						WHERE PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
-					</value></queryDetail>
 					<queryDetail><value>
 							AND PUB_p_partner.p_partner_key_n = PUB_pm_past_experience.p_partner_key_n
 					</value></queryDetail>
@@ -105,7 +98,7 @@
 				</query>
 			</calculation>
 				
-			<calculation id="Start Date" returnsFormat="formatteddate" returns="text">
+			<calculation id="Start Date" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Start Date"/></caption>
 				<query>
 					<queryDetail>
@@ -114,7 +107,7 @@
 				</query>
 			</calculation>
 			
-			<calculation id="End Date" returnsFormat="formatteddate" returns="text">
+			<calculation id="End Date" returnsFormat="formatteddate" returns="date">
 				<caption><value text="End Date"/></caption>
 				<query>
 					<queryDetail>
@@ -150,7 +143,7 @@
 				</query>
 			</calculation>
 
-			<calculation id="Next Report Date" returnsFormat="formatteddate" returns="text">
+			<calculation id="Next Report Date" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Next Report Date"/></caption>
 				<query>
 					<queryDetail>

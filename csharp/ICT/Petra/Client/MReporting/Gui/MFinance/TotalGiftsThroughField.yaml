@@ -26,7 +26,6 @@ RootNode:
             Label: Ledger
         grpSelection:
             Label: Selection
-            Dock: Top
             Controls: [cmbCurrency, txtYears]
         cmbCurrency:
             ParameterName: param_currency

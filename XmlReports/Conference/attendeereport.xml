@@ -47,7 +47,7 @@
 	<field whichfield="period2">
 		<fielddetail>
 			<switch><case condition="eq({param_conferenceselection}, one conference)">
-				<value text="Selected Campaign Options: "></value>
+				<value text="Selected Outreach Options: "></value>
 				<value variable="param_conferenceoptionscode"></value>
 			</case></switch>
 		</fielddetail>

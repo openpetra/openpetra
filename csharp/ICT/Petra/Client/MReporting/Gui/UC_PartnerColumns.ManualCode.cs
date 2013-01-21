@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       berndr, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,7 +42,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MReporting;
-
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -67,8 +67,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
-            btnDummy.Visible = false;
-
             FPetraUtilsObject = APetraUtilsObject;
 
             FColumnParameters = new TParameterList();

@@ -1,0 +1,68 @@
+﻿RootNode:
+    BaseYaml: PersonnelReportingForm.yaml
+    FormType: report
+    FormTitle: Partner By Event
+    WindowWidth: 750
+    WindowHeight: 650
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
+    TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPersonnel.queries.QueryPartnerByEvent.CalculateExtract
+        ISOLATIONLEVEL: serializable
+        #REPORTNAME: will be set in cs files later on as it covers both 'Partner By Conference' and 'Partner By Outreach'
+        REPORTNAME:
+        CURRENTREPORT: Partner By Event 
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        # TODO: the following things have to be set by generator
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Actions:
+    Controls:
+        tpgGeneralSettings: {ControlsOrientation=vertical}
+            Label: General Settings
+            Controls: [pnlFilter, pnlMiddle, pnlBottom]
+        pnlFilter: {ControlsOrientation=horizontal}
+            Dock: Top
+            Height: 140
+            Controls: [ucoFilter]
+        pnlMiddle:
+            Dock: Fill
+            Controls: [clbEvent, pnlDockChkBoxs]
+        pnlBottom: {ControlsOrientation=horizontal}
+            Dock: Bottom
+            Controls: [ucoAddress, ucoChkFilter]
+        pnlDockChkBoxs:
+            Controls: [grpChkBoxs]
+            Dock: Right
+        grpChkBoxs:
+            Label: Appl. Status
+            Controls:
+                Row0:[chkAccepted]
+                Row1:[chkCancelled]
+                Row2:[chkHold]
+                Row3:[chkEnquiry]
+                Row4:[chkRejected]
+        clbEvent:
+            Dock: Fill
+            NoLabel: true 
+            ParameterName: param_events
+        chkCancelled: {Label=Cancelled, CheckBoxAttachedLabel=right, ParameterName=param_status_cancelled}
+        chkRejected: {Label=Rejected, CheckBoxAttachedLabel=right, ParameterName=param_status_rejected}
+        chkAccepted: {Label=Accepted, CheckBoxAttachedLabel=right, ParameterName=param_status_accepted}
+        chkHold: {Label=Hold, CheckBoxAttachedLabel=right, ParameterName=param_status_hold}
+        chkEnquiry:{Label=Enquiry, CheckBoxAttachedLabel=right, ParameterName=param_status_enquiry}
+        ucoFilter:
+            Dock: Fill
+            Type: Ict.Petra.Client.MCommon.Gui.TUC_EventFilter
+            NoParameter: true
+        ucoAddress:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+            Width: 470
+            Height: 180
+        ucoChkFilter:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Width: 205
+            Height: 160

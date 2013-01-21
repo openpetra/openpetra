@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using Ict.Common.IO;
 using System.Collections;
+using System.Collections.Generic;
 using Ict.Common;
 
 namespace Ict.Petra.Server.MReporting
@@ -31,175 +32,19 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptGrpCalculation : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpCalculation(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptGrpCase : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpCase(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptGrpDetail : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpDetail(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptGrpField : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpField(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptGrpFieldDetail : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpFieldDetail(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptGrpLevel : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpLevel(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptGrpLowerLevel : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpLowerLevel(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptGrpParameter : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpParameter(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptGrpQuery : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpQuery(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptGrpSwitch : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpSwitch(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptGrpValue : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpValue(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptGrpDetailReport : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TRptGrpDetailReport(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// todoCommment
-    /// </summary>
-    public class TRptCalculation : TXMLElement
+    public class TRptCalculation
     {
         /// <summary>todoComment</summary>
-        public TRptGrpValue rptGrpCaption;
+        public List <TRptValue>rptGrpCaption;
 
         /// <summary>todoComment</summary>
-        public TRptGrpValue rptGrpShortCaption;
+        public List <TRptValue>rptGrpShortCaption;
 
         /// <summary>todoComment</summary>
-        public TRptGrpQuery rptGrpTemplate;
+        public List <TRptQuery>rptGrpTemplate;
 
         /// <summary>todoComment</summary>
-        public TRptGrpQuery rptGrpQuery;
+        public List <TRptQuery>rptGrpQuery;
 
         /// <summary>todoComment</summary>
         public string strReturns;
@@ -216,7 +61,7 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptCalculation(int order) : base(order)
+        public TRptCalculation(int order)
         {
             rptGrpCaption = null;
             rptGrpShortCaption = null;
@@ -228,16 +73,16 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptCase : TXMLElement
+    public class TRptCase
     {
         /// <summary>todoComment</summary>
-        public TRptGrpLowerLevel rptGrpLowerLevel;
+        public List <TRptLowerLevel>rptGrpLowerLevel;
 
         /// <summary>todoComment</summary>
-        public TRptGrpField rptGrpField;
+        public List <TRptField>rptGrpField;
 
         /// <summary>todoComment</summary>
-        public TRptGrpValue rptGrpValue;
+        public List <TRptValue>rptGrpValue;
 
         /// <summary>todoComment</summary>
         public TRptSwitch rptSwitch;
@@ -248,7 +93,7 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptCase(int order) : base(order)
+        public TRptCase(int order)
         {
             rptGrpLowerLevel = null;
             rptGrpField = null;
@@ -260,21 +105,21 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptDetail : TXMLElement
+    public class TRptDetail
     {
         /// <summary>todoComment</summary>
         public TRptSwitch rptSwitch;
 
         /// <summary>todoComment</summary>
-        public TRptGrpLowerLevel rptGrpLowerLevel;
+        public List <TRptLowerLevel>rptGrpLowerLevel;
 
         /// <summary>todoComment</summary>
-        public TRptGrpField rptGrpField;
+        public List <TRptField>rptGrpField;
 
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptDetail(int order) : base(order)
+        public TRptDetail(int order)
         {
             rptSwitch = null;
             rptGrpLowerLevel = null;
@@ -285,13 +130,13 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptField : TXMLElement
+    public class TRptField
     {
         /// <summary>todoComment</summary>
-        public TRptGrpValue rptGrpValue;
+        public List <TRptValue>rptGrpValue;
 
         /// <summary>todoComment</summary>
-        public TRptGrpFieldDetail rptGrpFieldDetail;
+        public List <TRptFieldDetail>rptGrpFieldDetail;
 
         /// <summary>todoComment</summary>
         public string strWhichfield;
@@ -317,7 +162,7 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptField(int order) : base(order)
+        public TRptField(int order)
         {
             rptGrpValue = null;
             rptGrpFieldDetail = null;
@@ -327,7 +172,7 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptFieldDetail : TXMLElement
+    public class TRptFieldDetail
     {
         /// <summary>todoComment</summary>
         public TRptSwitch rptSwitch;
@@ -336,7 +181,7 @@ namespace Ict.Petra.Server.MReporting
         public TRptSwitch rptIf;
 
         /// <summary>todoComment</summary>
-        public TRptGrpValue rptGrpValue;
+        public List <TRptValue>rptGrpValue;
 
         /// <summary>todoComment</summary>
         public string strCondition;
@@ -344,7 +189,7 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptFieldDetail(int order) : base(order)
+        public TRptFieldDetail(int order)
         {
             rptSwitch = null;
             rptIf = null;
@@ -355,19 +200,19 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptLevel : TXMLElement
+    public class TRptLevel
     {
         /// <summary>todoComment</summary>
-        public TRptGrpField rptGrpHeaderField;
+        public List <TRptField>rptGrpHeaderField;
 
         /// <summary>todoComment</summary>
-        public TRptGrpSwitch rptGrpHeaderSwitch;
+        public List <TRptSwitch>rptGrpHeaderSwitch;
 
         /// <summary>todoComment</summary>
-        public TRptGrpField rptGrpFooterField;
+        public List <TRptField>rptGrpFooterField;
 
         /// <summary>todoComment</summary>
-        public TRptGrpSwitch rptGrpFooterSwitch;
+        public List <TRptSwitch>rptGrpFooterSwitch;
 
         /// <summary>todoComment</summary>
         public TRptDetail rptDetail;
@@ -390,7 +235,7 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptLevel(int order) : base(order)
+        public TRptLevel(int order)
         {
             rptGrpHeaderField = null;
             rptGrpHeaderSwitch = null;
@@ -403,10 +248,10 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptLowerLevel : TXMLElement
+    public class TRptLowerLevel
     {
         /// <summary>todoComment</summary>
-        public TRptGrpParameter rptGrpParameter;
+        public List <TRptParameter>rptGrpParameter;
 
         /// <summary>todoComment</summary>
         public string strLevel;
@@ -420,7 +265,7 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptLowerLevel(int order) : base(order)
+        public TRptLowerLevel(int order)
         {
             rptGrpParameter = null;
         }
@@ -429,10 +274,10 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptParameter : TXMLElement
+    public class TRptParameter
     {
         /// <summary>todoComment</summary>
-        public TRptGrpValue rptGrpValue;
+        public List <TRptValue>rptGrpValue;
 
         /// <summary>todoComment</summary>
         public string strName;
@@ -443,7 +288,7 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptParameter(int order) : base(order)
+        public TRptParameter(int order)
         {
             rptGrpValue = null;
         }
@@ -452,16 +297,16 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptQuery : TXMLElement
+    public class TRptQuery
     {
         /// <summary>todoComment</summary>
-        public TRptGrpValue rptGrpValue;
+        public List <TRptValue>rptGrpValue;
 
         /// <summary>todoComment</summary>
-        public TRptGrpParameter rptGrpParameter;
+        public List <TRptParameter>rptGrpParameter;
 
         /// <summary>todoComment</summary>
-        public TRptGrpSwitch rptGrpSwitch;
+        public List <TRptSwitch>rptGrpSwitch;
 
         /// <summary>todoComment</summary>
         public string strCondition;
@@ -469,7 +314,7 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptQuery(int order) : base(order)
+        public TRptQuery(int order)
         {
             rptGrpValue = null;
             rptGrpParameter = null;
@@ -480,10 +325,10 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptSwitch : TXMLElement
+    public class TRptSwitch
     {
         /// <summary>todoComment</summary>
-        public TRptGrpCase rptGrpCases;
+        public List <TRptCase>rptGrpCases;
 
         /// <summary>todoComment</summary>
         public TRptCase rptDefault;
@@ -491,7 +336,7 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptSwitch(int order) : base(order)
+        public TRptSwitch(int order)
         {
             rptGrpCases = null;
             rptDefault = null;
@@ -501,7 +346,7 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptValue : TXMLElement
+    public class TRptValue
     {
         /// <summary>todoComment</summary>
         public string strCondition;
@@ -524,7 +369,7 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptValue(int order) : base(order)
+        public TRptValue(int order)
         {
         }
     }
@@ -532,7 +377,7 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptDetailReport : TXMLElement
+    public class TRptDetailReport
     {
         /// <summary>todoComment</summary>
         public string strId;
@@ -544,12 +389,12 @@ namespace Ict.Petra.Server.MReporting
         public string strQuery;
 
         /// <summary>todoComment</summary>
-        public TRptGrpParameter rptGrpParameter;
+        public List <TRptParameter>rptGrpParameter;
 
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptDetailReport(string AID) : base(-1)
+        public TRptDetailReport(string AID)
         {
             strId = AID;
             rptGrpParameter = null;
@@ -559,36 +404,36 @@ namespace Ict.Petra.Server.MReporting
     /// <summary>
     /// todoCommment
     /// </summary>
-    public class TRptReport : TXMLElement
+    public class TRptReport
     {
         /// <summary>todoComment</summary>
         public string name;
 
         /// <summary>todoComment</summary>
-        public TRptGrpField reportfield;
+        public List <TRptField>reportfield;
 
         /// <summary>todoComment</summary>
-        public TRptGrpField pagefield;
+        public List <TRptField>pagefield;
 
         /// <summary>todoComment</summary>
-        public TRptGrpSwitch reportswitch;
+        public List <TRptSwitch>reportswitch;
 
         /// <summary>todoComment</summary>
-        public TRptGrpSwitch pageswitch;
+        public List <TRptSwitch>pageswitch;
 
         /// <summary>todoComment</summary>
-        public TRptGrpDetailReport rptGrpDetailReport;
+        public List <TRptDetailReport>rptGrpDetailReport;
 
         /// <summary>todoComment</summary>
-        public TRptGrpCalculation rptGrpCalculation;
+        public List <TRptCalculation>rptGrpCalculation;
 
         /// <summary>todoComment</summary>
-        public TRptGrpLevel rptGrpLevel;
+        public List <TRptLevel>rptGrpLevel;
 
         /// <summary>
         /// constructor
         /// </summary>
-        public TRptReport(string name) : base(-1)
+        public TRptReport(string name)
         {
             reportfield = null;
             reportswitch = null;
@@ -614,9 +459,9 @@ namespace Ict.Petra.Server.MReporting
                 return null;
             }
 
-            while (counter < rptGrpLevel.List.Count)
+            while (counter < rptGrpLevel.Count)
             {
-                element = (TRptLevel)rptGrpLevel.List[counter];
+                element = (TRptLevel)rptGrpLevel[counter];
 
                 if (element.strName == name)
                 {
@@ -649,9 +494,9 @@ namespace Ict.Petra.Server.MReporting
                 return null;
             }
 
-            while (counter < rptGrpCalculation.List.Count)
+            while (counter < rptGrpCalculation.Count)
             {
-                element = (TRptCalculation)rptGrpCalculation.List[counter];
+                element = (TRptCalculation)rptGrpCalculation[counter];
 
                 if (element.strId.ToLower() == name.ToLower())
                 {
@@ -779,14 +624,12 @@ namespace Ict.Petra.Server.MReporting
         /// </summary>
         public void Clear()
         {
-            TReportDefinition element;
             int counter;
 
             counter = 0;
 
             while (counter < reports.Count)
             {
-                element = (TReportDefinition)reports[counter];
                 reports.RemoveAt(counter);
                 counter = 0;
             }

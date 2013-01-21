@@ -1,3 +1,15 @@
+msgid "OpenPetra x.x.x.x Application Error"
+msgstr "do not translate"
+
+msgid "DBTable"
+msgstr "do not translate"
+
+msgid "DBOperation"
+msgstr "do not translate"
+
+msgid "LastModificationUser"
+msgstr "do not translate"
+
 msgid "0000000000"
 msgstr "do not translate"
 
@@ -48,6 +60,7 @@ msgid ""
 "(pnlPartnerNotes) i"
 msgstr "do not translate"
 
+msgid ""
 "The UserControl is added dynamically at runtime to this Panel (pnlContacts) "
 "in Pr"
 msgstr "do not translate"
@@ -154,4 +167,46 @@ msgid "Markus' World"
 msgstr "do not translate"
 
 msgid "PRIVATE {MARLENE}"
+msgstr "do not translate"
+
+msgid "todo"
+msgstr "do not translate"
+
+msgid "dummy button"
+msgstr "do not translate"
+
+msgid "dummybutton"
+msgstr "do not translate"
+
+msgid "99"
+msgstr "do not translate"
+
+msgid "Info 1 Text"
+msgstr "do not translate"
+
+msgid "Title Text"
+msgstr "do not translate"
+
+msgid "Info 2 Text"
+msgstr "do not translate"
+
+msgid "Info 3 Text"
+msgstr "do not translate"
+
+msgid "NEWCODE"
+msgstr "do not translate"
+
+msgid "Text Output"
+msgstr "do not translate"
+
+msgid "eg. \"TEN,01\",\"TEN,02\""
+msgstr "do not translate"
+
+msgid "eg. \"TEN,01\",\"TEN,02\""
+msgstr "do not translate"
+
+msgid "%"
+msgstr "do not translate"
+
+msgid "OpenPetra"
 msgstr "do not translate"

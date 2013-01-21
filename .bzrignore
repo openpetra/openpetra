@@ -3,6 +3,7 @@
 *-generated.resx
 *-generated.Designer.cs
 csharp/ICT/Petra/Client/generatewinforms.log
+csharp/ICT/Petra/PetraClient/generatewinforms.log
 setup/petra0300/dbdoc
 setup/petra0300/i18n
 setup/petra0300/ndoc
@@ -12,6 +13,8 @@ setup/petra0300/*.db
 db/basedb_progress
 *.ico.gif
 *.local
+*.local.ben.xml
+demodata/generated
 OpenPetra.build.config
 *.exe.config
 /etc/*.config
@@ -21,6 +24,7 @@ app.config
 _bin
 obj
 *.yaml.xml
+*.yml.xml
 *.cs.error
 *.error
 *.new
@@ -46,6 +50,7 @@ csharp/ICT/experimenting/treasurerEmails/obj
 /csharp/ICT/PetraTools/GenerateWinForms/YamlEdit/*
 *Setup-*.exe
 /tmp
+/var
 /delivery
 /data
 *.patch
@@ -56,3 +61,8 @@ csharp/ICT/experimenting/treasurerEmails/obj
 csharp/ICT/Petra/Server/lib/data/*.cs
 csharp/ICT/Petra/Shared/lib/data/*.cs
 *lang-template.js
+inc/cfg/benerator/benerator.log
+i18n/template.pot.withallsources
+*.de-DE.yaml
+*.da-DK.yaml
+*.es-ES.yaml

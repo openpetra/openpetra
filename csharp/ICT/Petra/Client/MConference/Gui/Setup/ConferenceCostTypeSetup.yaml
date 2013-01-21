@@ -1,0 +1,46 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Conference Cost Types
+    Namespace: Ict.Petra.Client.MConference.Gui.Setup
+    DetailTable: PcCostType
+    CacheableTable: ConferenceCostTypeList
+    UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference.Validation, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 800
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailCostTypeCode, DetailCostTypeDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            CustomColumns:
+                DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
+                DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+                DetailDeletableFlag: {Label=Deletable, Type=Boolean}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailCostTypeCode, txtDetailCostTypeDescription]
+                Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row2: [chkDetailDeletableFlag]
+        txtDetailCostTypeCode: {Label=Cost Type Code, CharacterCasing=Upper, Width=160}
+        txtDetailCostTypeDescription: {Label=Description, Width=315}
+        chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
+        chkDetailDeletableFlag: {Label=Deletable}
+    Toolbar:
+        tbbNew:
+            Label: New Cost Type

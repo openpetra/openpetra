@@ -32,9 +32,6 @@
 				<value text = "All current Staff at date "/>
 					<value variable = "param_currentstaffdate" format="formatteddate"/>
 			</fielddetail>
-			<fielddetail condition="eq({param_selection},all staff)">
-				<value text = "All Staff"/>
-			</fielddetail>
 		</field>
 		<field whichfield="descr2">
 			<fielddetail condition="ne({param_selection}, one partner)">
@@ -78,10 +75,6 @@
 					AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
 					AND ( PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
 						OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )
-			</value></queryDetail>
-			<queryDetail condition="eq({param_selection},all staff)"><value>
-					, PUB_pm_staff_data
-				WHERE PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
 			</value></queryDetail>
 			<queryDetail><value>
 					AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n

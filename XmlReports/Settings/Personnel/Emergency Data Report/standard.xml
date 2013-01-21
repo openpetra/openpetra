@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\emergencydatareport.xml,Personnel\\commonpersonnel.xml" />
-  <Parameter id="currentReport" value="Emergency Data Report" />
-  <Parameter id="MaxDisplayColumns" value="1" />
-  <Parameter id="param_selection" value="one partner" />
-  <Parameter id="param_extract" value="" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_chkFamilyMembers" value="true" />
-  <Parameter id="param_chkAddress" value="true" />
-  <Parameter id="param_chkPassport" value="true" />
-  <Parameter id="param_chkPersonalDocuments" value="true" />
-  <Parameter id="param_chkDriverLicense" value="true" />
-  <Parameter id="param_chkOtherEmergencyData" value="true" />
-  <Parameter id="param_chkSpecialNeeds" value="true" />
-  <Parameter id="param_chkAbilities" value="true" />
-  <Parameter id="param_chkLanguages" value="true" />
-  <Parameter id="param_chkEmergencyContacts" value="true" />
-  <Parameter id="param_chkProofQuestion" value="true" />
-  <Parameter id="ColumnPosition" column="0" value="0" />
-  <Parameter id="ColumnPositionIndented" column="0" value="0" />
-  <Parameter id="ColumnWidth" column="0" value="19" />
-  <Parameter id="param_calculation" column="0" value="Emergency Data" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\emergencydatareport.xml,Personnel\\commonpersonnel.xml" />
+  <Parameter id="currentReport" value="eString:Emergency Data Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:1" />
+  <Parameter id="param_selection" value="eString:one partner" />
+  <Parameter id="param_extract" value="eString:" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_chkFamilyMembers" value="eString:true" />
+  <Parameter id="param_chkAddress" value="eString:true" />
+  <Parameter id="param_chkPassport" value="eString:true" />
+  <Parameter id="param_chkPersonalDocuments" value="eString:true" />
+  <Parameter id="param_chkDriverLicense" value="eString:true" />
+  <Parameter id="param_chkOtherEmergencyData" value="eString:true" />
+  <Parameter id="param_chkSpecialNeeds" value="eString:true" />
+  <Parameter id="param_chkAbilities" value="eString:true" />
+  <Parameter id="param_chkLanguages" value="eString:true" />
+  <Parameter id="param_chkEmergencyContacts" value="eString:true" />
+  <Parameter id="param_chkProofQuestion" value="eString:true" />
+  <Parameter id="ColumnPosition" column="0" value="eInteger:0" />
+  <Parameter id="ColumnPositionIndented" column="0" value="eInteger:0" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:19" />
+  <Parameter id="param_calculation" column="0" value="eString:Emergency Data" />
 </Parameters>

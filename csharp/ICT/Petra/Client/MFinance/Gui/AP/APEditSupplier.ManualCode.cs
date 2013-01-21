@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,17 +32,22 @@ using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
 using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.AP.Data;
-using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -49,6 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     {
         AccountsPayableTDS FMainDS;
         Int32 FLedgerNumber;
+        ALedgerRow FLedgerRow = null;
 
         /// <summary>
         /// todoComment
@@ -66,6 +73,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             set
             {
                 FLedgerNumber = value;
+                ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
+                FLedgerRow = Tbl[0];
 
                 TFinanceControls.InitialiseAccountList(ref cmbAPAccount, FLedgerNumber, true, false, false, false);
                 TFinanceControls.InitialiseAccountList(ref cmbDefaultBankAccount, FLedgerNumber, true, false, false, true);
@@ -97,9 +106,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             AApSupplierRow row = FMainDS.AApSupplier.NewRowTyped();
             row.PartnerKey = APartnerKey;
 
-            // TODO: use currency code from ledger
-            // TODO: verification: don't store with currency NULL value
-            row.CurrencyCode = "EUR";
+            row.CurrencyCode = FLedgerRow.BaseCurrency;
+            row.DefaultApAccount = "9100";      // If the user doesn't want this, she should have a good reason..
+            row.DefaultCreditTerms = 28;        // 28 credit might not be universal, but it's better than 0.
+            row.PreferredScreenDisplay = 36;    // show my invoices for 36 months
             FMainDS.AApSupplier.Rows.Add(row);
 
             ShowData(row);
@@ -129,7 +139,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             try
             {
-                TFrmPartnerEdit frm = new TFrmPartnerEdit(this.Handle);
+                TFrmPartnerEdit frm = new TFrmPartnerEdit(this);
                 frm.SetParameters(TScreenMode.smEdit, FMainDS.AApSupplier[0].PartnerKey);
                 frm.Show();
             }
@@ -139,32 +149,138 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
+        /// <summary>If this is a foreign currency supplier, it must be linked to accounts in that currency.
+        /// (And if it's not, it mustn't be!)</summary>
+        /// <param name="AccountRef"></param>
+        /// <param name="AccountType"></param>
+        /// <returns>true if the default back account is OK.</returns>
+        private bool ValidateAccountCurrency(string AccountRef, string AccountType)
+        {
+            bool CurrencyIsOk = true;
+
+            if (AccountRef == "") // I've not been given a default bank account. Perhaps this is OK?
+            {
+                return CurrencyIsOk;
+            }
+
+            AAccountTable AccountList = (AAccountTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
+                FLedgerNumber);
+
+            AccountList.DefaultView.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_c='{1}'",
+                FLedgerNumber, AccountRef);
+
+            if (AccountList.DefaultView.Count == 1)
+            {
+                AAccountRow AccountDetail = (AAccountRow)AccountList.DefaultView[0].Row;
+
+                if (FMainDS.AApSupplier[0].CurrencyCode == FLedgerRow.BaseCurrency)
+                {
+                    CurrencyIsOk = (AccountDetail.ForeignCurrencyFlag == false);
+                }
+                else
+                {
+                    CurrencyIsOk =
+                        ((AccountDetail.ForeignCurrencyFlag == true) && (AccountDetail.ForeignCurrencyCode == FMainDS.AApSupplier[0].CurrencyCode));
+                }
+
+                if (!CurrencyIsOk)
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString("The {0} must be a {1} currency account."),
+                            AccountType, FMainDS.AApSupplier[0].CurrencyCode), "Validation");
+                    FMainDS.AApSupplier.Rows[0].EndEdit();
+
+                    // This call isn't really useful, because although the user may go and create the required account,
+                    // she won't have done so yet...
+                    TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber); // scrub the cache so that I'll notice if the user makes a change
+                }
+            }
+            else
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("Unable to access {0} account {1}"),
+                        AccountType, AccountRef), "Error");
+                FMainDS.AApSupplier.Rows[0].EndEdit();
+                TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList); // scrub the cache - perhaps I'll get a different answer next time!
+                CurrencyIsOk = false;
+            }
+
+            return CurrencyIsOk;
+        }
+
         /// <summary>
         /// save the changes on the screen
         /// </summary>
         /// <returns></returns>
         public bool SaveChanges()
         {
+            Boolean ReturnValue;
+
             FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
             // Don't allow saving if user is still editing a Detail of a List
             if (FPetraUtilsObject.InDetailEditMode())
             {
-                return false;
+                ReturnValue = false;
+                return ReturnValue;
             }
 
-            FMainDS.AApSupplier.Rows[0].BeginEdit();
-            GetDataFromControls(FMainDS.AApSupplier[0]);
+            // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+            FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            // TODO: enforce AP account
-            if (FMainDS.AApSupplier[0].IsDefaultApAccountNull())
+            if (ValidateAllData(false, true))
             {
-                MessageBox.Show(Catalog.GetString("Please select an AP account (eg. 9100)"));
-                FMainDS.AApSupplier.Rows[0].EndEdit();
-                return false;
+                FMainDS.AApSupplier.Rows[0].BeginEdit();
+                GetDataFromControls(FMainDS.AApSupplier[0]);
+
+                if (FMainDS.AApSupplier[0].IsDefaultApAccountNull())
+                {
+                    MessageBox.Show(Catalog.GetString("Please select an AP account (eg. 9100)"));
+                    FMainDS.AApSupplier.Rows[0].EndEdit();
+
+                    ReturnValue = false;
+                    return ReturnValue;
+                }
+
+                // The account would usually be 9100-AP account.
+                if (FMainDS.AApSupplier[0].DefaultApAccount != "9100")
+                {
+                    if (MessageBox.Show(Catalog.GetString("You are not using the standard AP account (9100) - is this OK?"),
+                            "Verification", MessageBoxButtons.YesNo)
+                        != System.Windows.Forms.DialogResult.Yes)
+                    {
+                        FMainDS.AApSupplier.Rows[0].EndEdit();
+                        return false;
+                    }
+                }
+
+                // Don't store with invalid currency value.
+                //
+                if (FMainDS.AApSupplier[0].CurrencyCode == "")
+                {
+                    FMainDS.AApSupplier[0].CurrencyCode = FLedgerRow.BaseCurrency;
+                }
+
+                // If this is a foreign currency supplier, it must be linked to accounts in that currency.
+                // (And if it's not, it mustn't be!)
+                if (!ValidateAccountCurrency(FMainDS.AApSupplier[0].DefaultBankAccount, "Bank"))
+                {
+                    return false;
+                }
+
+                /*
+                 * If we wanted to have only expense accounts in a single currency, we could have this,
+                 * but that's probably not what we want...
+                 *
+                 *          if (!ValidateAccountCurrency(FMainDS.AApSupplier[0].DefaultExpAccount, "Expense"))
+                 *          {
+                 *              return false;
+                 *          }
+                 */
             }
 
-            if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType());
+
+            if (ReturnValue)
             {
                 foreach (DataTable InspectDT in FMainDS.Tables)
                 {
@@ -176,7 +292,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 if (FPetraUtilsObject.HasChanges)
                 {
-                    FPetraUtilsObject.WriteToStatusBar("Saving data...");
+                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataInProgress);
                     this.Cursor = Cursors.WaitCursor;
 
                     AccountsPayableTDS SubmitDS = FMainDS.GetChangesTyped(true);
@@ -189,57 +305,43 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     {
                         SubmissionResult = FUIConnector.SubmitChanges(ref SubmitDS, out VerificationResult);
                     }
-                    catch (System.Net.Sockets.SocketException)
+                    catch (ESecurityDBTableAccessDeniedException Exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
-                        MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
-                            "No Server response",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Stop);
-                        bool ReturnValue = false;
+                        TMessages.MsgSecurityException(Exp, this.GetType());
 
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        ReturnValue = false;
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
-/* TODO ESecurityDBTableAccessDeniedException
- *                  catch (ESecurityDBTableAccessDeniedException Exp)
- *                  {
- *                      FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
- *                      this.Cursor = Cursors.Default;
- *                      // TODO TMessages.MsgSecurityException(Exp, this.GetType());
- *                      bool ReturnValue = false;
- *                      // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
- *                      return ReturnValue;
- *                  }
- */
-                    catch (EDBConcurrencyException)
+                    catch (EDBConcurrencyException Exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
+                        TMessages.MsgDBConcurrencyException(Exp, this.GetType());
 
-                        // TODO TMessages.MsgDBConcurrencyException(Exp, this.GetType());
-                        bool ReturnValue = false;
-
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        ReturnValue = false;
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
                     catch (Exception exp)
                     {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                         this.Cursor = Cursors.Default;
                         TLogging.Log(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+                            Catalog.GetString(
+                                "An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine + exp.ToString(),
                             TLoggingType.ToLogfile);
                         MessageBox.Show(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
+                            Catalog.GetString("An error occurred while trying to connect to the OpenPetra Server!") + Environment.NewLine +
                             "For details see the log file: " + TLogging.GetLogFileName(),
                             "Server connection error",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Stop);
-                        bool ReturnValue = false;
 
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        ReturnValue = false;
+                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         return ReturnValue;
                     }
 
@@ -257,36 +359,66 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             FMainDS.AcceptChanges();
 
                             // Update UI
-                            FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
+                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
                             this.Cursor = Cursors.Default;
-
-                            // TODO EnableSave(false);
 
                             // We don't have unsaved changes anymore
                             FPetraUtilsObject.DisableSaveButton();
 
-                            // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                            return true;
+                            ReturnValue = true;
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                            break;
 
                         case TSubmitChangesResult.scrError:
+                            this.Cursor = Cursors.Default;
+                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
 
-                            // TODO scrError
+                            MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult));
+
+                            FPetraUtilsObject.SubmitChangesContinue = false;
+
+                            ReturnValue = false;
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                             break;
 
                         case TSubmitChangesResult.scrNothingToBeSaved:
+                            this.Cursor = Cursors.Default;
+                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
 
-                            // TODO scrNothingToBeSaved
+                            // We don't have unsaved changes anymore
+                            FPetraUtilsObject.DisableSaveButton();
+
+                            ReturnValue = true;
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                             break;
 
                         case TSubmitChangesResult.scrInfoNeeded:
 
                             // TODO scrInfoNeeded
+                            this.Cursor = Cursors.Default;
                             break;
                     }
                 }
+                else
+                {
+                    // Update UI
+                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
+                    this.Cursor = Cursors.Default;
+                    FPetraUtilsObject.DisableSaveButton();
+
+                    // We don't have unsaved changes anymore
+                    FPetraUtilsObject.HasChanges = false;
+
+                    ReturnValue = true;
+                    FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                }
+            }
+            else
+            {
+                FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
             }
 
-            return false;
+            return ReturnValue;
         }
     }
 }

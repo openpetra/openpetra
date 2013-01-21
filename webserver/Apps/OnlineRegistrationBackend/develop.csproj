@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{62041597-B10A-4A4B-9E78-1F8BC269ACB6}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -8,6 +9,8 @@
     <AssemblyName>Ict.Petra.WebServer.MConference</AssemblyName>
     <OutputPath>bin\</OutputPath>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21}%3b{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <TargetFrameworkProfile />
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -31,6 +34,9 @@
     <Reference Include="Ext.Net">
       <HintPath>..\..\..\csharp\ThirdParty\ext.net\Ext.Net.dll</HintPath>
     </Reference>
+    <Reference Include="Ext.Net.Utilities">
+      <HintPath>..\..\..\csharp\ThirdParty\ext.net\Ext.Net.Utilities.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common">
       <HintPath>..\..\..\delivery\bin\Ict.Common.dll</HintPath>
     </Reference>
@@ -48,6 +54,9 @@
     </Reference>
     <Reference Include="Ict.Petra.Server.lib.MConference">
       <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MConference.dll</HintPath>
+    </Reference>
+    <Reference Include="Ict.Petra.Server.lib.MPartner.Common">
+      <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MPartner.Common.dll</HintPath>
     </Reference>
     <Reference Include="Ict.Petra.Server.lib.MPersonnel">
       <HintPath>..\..\..\delivery\bin\Ict.Petra.Server.lib.MPersonnel.dll</HintPath>
@@ -67,17 +76,55 @@
     <Reference Include="Ict.Petra.Shared.lib.MPersonnel">
       <HintPath>..\..\..\delivery\bin\Ict.Petra.Shared.lib.MPersonnel.dll</HintPath>
     </Reference>
+    <Reference Include="Jayrock.Json">
+      <HintPath>..\..\..\csharp\ThirdParty\Jayrock\Jayrock.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Desktop.aspx" />
-    <Compile Include="Desktop.aspx.cs">
-      <DependentUpon>Desktop.aspx</DependentUpon>
+    <None Include="ChangePassword.aspx">
+      <DependentUpon>ChangePassword.aspx.cs</DependentUpon>
+    </None>
+    <None Include="CreateGiftBatch.aspx">
+      <DependentUpon>CreateGiftBatch.aspx.cs</DependentUpon>
+    </None>
+    <None Include="Desktop.aspx">
+      <DependentUpon>Desktop.aspx.cs</DependentUpon>
+    </None>
+    <None Include="ImportFellowshipGroups.aspx">
+      <DependentUpon>ImportFellowshipGroups.aspx.cs</DependentUpon>
+    </None>
+    <None Include="ImportPrintedBadges.aspx">
+      <DependentUpon>ImportPrintedBadges.aspx.cs</DependentUpon>
+    </None>
+    <None Include="ManualRegistration.aspx">
+      <DependentUpon>ManualRegistration.aspx.cs</DependentUpon>
+    </None>
+    <None Include="PrintBadgeLabelsByKey.aspx">
+      <DependentUpon>PrintBadgeLabelsByKey.aspx.cs</DependentUpon>
+    </None>
+    <Compile Include="ChangePassword.aspx.cs">
     </Compile>
+    <Compile Include="CreateGiftBatch.aspx.cs" />
+    <Compile Include="Desktop.aspx.cs">
+    </Compile>
+    <Compile Include="ImportFellowshipGroups.aspx.cs" />
+    <Compile Include="ImportPrintedBadges.aspx.cs" />
+    <Compile Include="ManualRegistration.aspx.cs" />
+    <Compile Include="PrintBadgeLabelsByKey.aspx.cs" />
   </ItemGroup>
 </Project>

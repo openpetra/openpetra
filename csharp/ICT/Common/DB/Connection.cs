@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,13 +45,6 @@ namespace Ict.Common.DB
     /// </remarks>
     internal sealed class TDBConnection : object
     {
-        /// <summary>The ODBC DSN (Data Source Name), or the PosgreSQL DB Server Name
-        /// when connecting to PostgreSQL using the Npgsql .NET Data Provider.</summary>
-        private static string FDsnOrServer;
-
-        /// <summary>Username with which the connection gets established.</summary>
-        private static string FUsername;
-
         /// <summary>Used internally to make sure that only one instance of
         /// <see cref="TDBConnection" /> is created.</summary>
         /// <seealso cref="GetInstance" />
@@ -110,8 +103,6 @@ namespace Ict.Common.DB
             String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler)
         {
-            FDsnOrServer = AServer;
-            FUsername = AUsername;
             FConnectionString = AConnectionString;
 
             return ADataBaseRDBMS.GetConnection(AServer, APort,

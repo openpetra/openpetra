@@ -1,0 +1,47 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Job Assignment Types
+    Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
+    DetailTable: PtAssignmentType
+    CacheableTable: JobAssignmentTypeList
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MPersonnel.Units.Data,Ict.Petra.Shared.MPersonnel.Units.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 800
+    WindowHeight: 450
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailAssignmentTypeCode, DetailAssignmentCodeDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            CustomColumns:
+                DetailAssignmentTypeCode: {Label=Job Assignment Type}
+                DetailAssignmentCodeDescr: {Label=Description}
+                DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
+                DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailAssignmentTypeCode, txtDetailAssignmentCodeDescr]
+                Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row2: [chkDetailDeletableFlag]
+        txtDetailAssignmentTypeCode: {Label=Job Assignment Type, CharacterCasing=Upper, Width=60}
+        txtDetailAssignmentCodeDescr: {Label=Description, Width=385}
+        chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
+        chkDetailDeletableFlag: {Label=Deletable}
+    Toolbar:
+        tbbNew:
+            Label: New Job Assignment Type

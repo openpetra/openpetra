@@ -1,35 +1,35 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Conference\\groupreports.xml,Conference\\conference.xml" />
-  <Parameter id="currentReport" value="Group Reports" />
-  <Parameter id="MaxDisplayColumns" value="10" />
-  <Parameter id="param_conferenceselection" value="one conference" />
-  <Parameter id="param_attendeeselection" value="all attendees" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_conferencekey" value="0" />
-  <Parameter id="param_conferencename" value="" />
-  <Parameter id="param_extractname" value="" />
-  <Parameter id="param_rgrGroups" value="DiscoveryGroups" />
-  <Parameter id="param_rgrParticipants" value="ListOnlyAttendeesWhoseRoleIsAParticipant" />
-  <Parameter id="param_calculation" column="0" value="First Name" />
-  <Parameter id="ColumnWidth" column="0" value="3.5" />
-  <Parameter id="param_calculation" column="1" value="Preferred Name" />
-  <Parameter id="ColumnWidth" column="1" value="3.5" />
-  <Parameter id="param_calculation" column="2" value="Last Name" />
-  <Parameter id="ColumnWidth" column="2" value="3.5" />
-  <Parameter id="param_calculation" column="3" value="Nationality" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_calculation" column="4" value="Age" />
-  <Parameter id="ColumnWidth" column="4" value="1" />
-  <Parameter id="param_calculation" column="5" value="Gender" />
-  <Parameter id="ColumnWidth" column="5" value="1.5" />
-  <Parameter id="param_calculation" column="6" value="Family Key" />
-  <Parameter id="ColumnWidth" column="6" value="2.5" />
-  <Parameter id="param_calculation" column="7" value="Fellowship Group" />
-  <Parameter id="ColumnWidth" column="7" value="2" />
-  <Parameter id="param_calculation" column="8" value="Discovery Group" />
-  <Parameter id="ColumnWidth" column="8" value="2.5" />
-  <Parameter id="param_calculation" column="9" value="Work Group" />
-  <Parameter id="ColumnWidth" column="9" value="2.5" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Conference\\groupreports.xml,Conference\\conference.xml" />
+  <Parameter id="currentReport" value="eString:Group Reports" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:10" />
+  <Parameter id="param_conferenceselection" value="eString:one conference" />
+  <Parameter id="param_attendeeselection" value="eString:all attendees" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_conferencekey" value="eInteger:0" />
+  <Parameter id="param_conferencename" value="eString:" />
+  <Parameter id="param_extractname" value="eString:" />
+  <Parameter id="param_rgrGroups" value="eString:DiscoveryGroups" />
+  <Parameter id="param_rgrParticipants" value="eString:ListOnlyAttendeesWhoseRoleIsAParticipant" />
+  <Parameter id="param_calculation" column="0" value="eString:First Name" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_calculation" column="1" value="eString:Preferred Name" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_calculation" column="2" value="eString:Last Name" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_calculation" column="3" value="eString:Nationality" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_calculation" column="4" value="eString:Age" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:1" />
+  <Parameter id="param_calculation" column="5" value="eString:Gender" />
+  <Parameter id="ColumnWidth" column="5" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="6" value="eString:Family Key" />
+  <Parameter id="ColumnWidth" column="6" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_calculation" column="7" value="eString:Fellowship Group" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
+  <Parameter id="param_calculation" column="8" value="eString:Discovery Group" />
+  <Parameter id="ColumnWidth" column="8" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_calculation" column="9" value="eString:Work Group" />
+  <Parameter id="ColumnWidth" column="9" value="eDecimal:4612811918334230528" />
 </Parameters>

@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -105,7 +105,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                     out PartnerKey,
                     out ResultStringLbl,
                     out ResultLocationPK,
-                    this.Handle))
+                    this))
             {
                 txtPartnerKey.Text = PartnerKey.ToString();
             }

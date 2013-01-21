@@ -1,51 +1,51 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="FinancialDevelopment/totalgiftsperdonor.xml,common.xml" />
-  <Parameter id="currentReport" value="TotalGiftsPerDonor" />
-  <Parameter id="MaxDisplayColumns" value="9" />
-  <Parameter id="param_diff_period_i" value="0" />
-  <Parameter id="param_account_hierarchy_c" value="STANDARD" />
-  <Parameter id="param_currency" value="base" />
-  <Parameter id="param_quarter" value="false" />
-  <Parameter id="param_period" value="false" />
-  <Parameter id="param_date_checked" value="true" />
-  <Parameter id="param_year_i" value="0" />
-  <Parameter id="param_chkOnlyFromCountry" value="false" />
-  <Parameter id="param_calculation" column="0" value="DonorKey" />
-  <Parameter id="ColumnWidth" column="0" value="2.5" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="param_calculation" column="1" value="Firstname" />
-  <Parameter id="ColumnWidth" column="1" value="3" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="Surname" />
-  <Parameter id="ColumnWidth" column="2" value="3" />
-  <Parameter id="param_ytd" column="2" value="false" />
-  <Parameter id="param_calculation" column="3" value="Address line 1" />
-  <Parameter id="ColumnWidth" column="3" value="2.5" />
-  <Parameter id="param_ytd" column="3" value="false" />
-  <Parameter id="param_calculation" column="4" value="Street" />
-  <Parameter id="ColumnWidth" column="4" value="3.5" />
-  <Parameter id="param_ytd" column="4" value="false" />
-  <Parameter id="param_calculation" column="5" value="Post Code" />
-  <Parameter id="ColumnWidth" column="5" value="2" />
-  <Parameter id="param_ytd" column="5" value="false" />
-  <Parameter id="param_calculation" column="6" value="City" />
-  <Parameter id="ColumnWidth" column="6" value="3.5" />
-  <Parameter id="param_ytd" column="6" value="false" />
-  <Parameter id="param_calculation" column="7" value="Country" />
-  <Parameter id="ColumnWidth" column="7" value="2" />
-  <Parameter id="param_ytd" column="7" value="false" />
-  <Parameter id="param_calculation" column="8" value="Total Given" />
-  <Parameter id="ColumnWidth" column="8" value="3" />
-  <Parameter id="param_ytd" column="8" value="false" />
-  <Parameter id="orderby0" value="DonorKey" />
-  <Parameter id="orderby1" value="Surname" />
-  <Parameter id="orderby2" value="Firstname" />
-  <Parameter id="param_sortby_readable" value="DonorKey, Surname, Firstname" />
-  <Parameter id="param_sortby_columns" value="0,2,1" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_ytd" value="mixed" />
-  <Parameter id="param_depth" value="standard" />
-  <Parameter id="param_country_code" value="*" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:FinancialDevelopment/totalgiftsperdonor.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:TotalGiftsPerDonor" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:9" />
+  <Parameter id="param_diff_period_i" value="eInteger:0" />
+  <Parameter id="param_account_hierarchy_c" value="eString:STANDARD" />
+  <Parameter id="param_currency" value="eString:base" />
+  <Parameter id="param_quarter" value="eString:false" />
+  <Parameter id="param_period" value="eString:false" />
+  <Parameter id="param_date_checked" value="eString:true" />
+  <Parameter id="param_year_i" value="eInteger:0" />
+  <Parameter id="param_chkOnlyFromCountry" value="eString:false" />
+  <Parameter id="param_calculation" column="0" value="eString:DonorKey" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Firstname" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Surname" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:3" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:Address line 1" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Street" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_ytd" column="4" value="eString:false" />
+  <Parameter id="param_calculation" column="5" value="eString:Post Code" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="param_ytd" column="5" value="eString:false" />
+  <Parameter id="param_calculation" column="6" value="eString:City" />
+  <Parameter id="ColumnWidth" column="6" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_ytd" column="6" value="eString:false" />
+  <Parameter id="param_calculation" column="7" value="eString:Country" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
+  <Parameter id="param_ytd" column="7" value="eString:false" />
+  <Parameter id="param_calculation" column="8" value="eString:Total Given" />
+  <Parameter id="ColumnWidth" column="8" value="eInteger:3" />
+  <Parameter id="param_ytd" column="8" value="eString:false" />
+  <Parameter id="orderby0" value="eString:DonorKey" />
+  <Parameter id="orderby1" value="eString:Surname" />
+  <Parameter id="orderby2" value="eString:Firstname" />
+  <Parameter id="param_sortby_readable" value="eString:DonorKey, Surname, Firstname" />
+  <Parameter id="param_sortby_columns" value="eString:0,2,1" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_ytd" value="eString:mixed" />
+  <Parameter id="param_depth" value="eString:standard" />
+  <Parameter id="param_country_code" value="eString:*" />
 </Parameters>

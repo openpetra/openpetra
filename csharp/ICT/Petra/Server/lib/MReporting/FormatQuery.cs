@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -109,10 +109,8 @@ namespace Ict.Petra.Server.MReporting
             this.depth = depth;
         }
 
-#if DEBUGMODE
         // do not print warning too many times for the same variable
         private static SortedList <string, Int32>VariablesNotFound = new SortedList <string, int>();
-#endif
 
         /// <summary>
         /// todoComment
@@ -200,8 +198,6 @@ namespace Ict.Petra.Server.MReporting
                     {
                         newvalue = new TVariant(parameter);
                     }
-
-#if DEBUGMODE
                     else
                     {
                         int CountWarning = 1;
@@ -231,7 +227,6 @@ namespace Ict.Petra.Server.MReporting
                             TLogging.Log("20 times: Variable " + parameter + " could not be found.");
                         }
                     }
-#endif
                 }
 
                 try

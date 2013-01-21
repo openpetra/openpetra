@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       berndr, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using SourceGrid.Selection;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
@@ -55,10 +56,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             FLedgerNumber = -1;
             FReportWithBalance = true;
-            rbtAccountRange.Checked = false;
-            clbAccountCodes.Enabled = false;
-            rbtCostCentreRange.Checked = false;
-            clbCostCentres.Enabled = false;
+            rbtAccountRange.Checked = true;
+            rbtAccountFromListCheckedChanged(null, null);
+            rbtCostCentreRange.Checked = true;
+            rbtCostCentreFromListCheckedChanged(null, null);
         }
 
         /// <summary>
@@ -73,6 +74,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             TFinanceControls.InitialiseAccountList(ref cmbToAccountCode, FLedgerNumber, true, false, false, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbFromCostCentre, FLedgerNumber, true, false, false, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbToCostCentre, FLedgerNumber, true, false, false, false);
+            TFinanceControls.InitialiseCostCentreList(ref cmbSummaryCostCentres, FLedgerNumber, false, true, false, false);
             TFinanceControls.InitialiseAccountList(ref clbAccountCodes, FLedgerNumber, true, false, false, false);
             TFinanceControls.InitialiseCostCentreList(ref clbCostCentres, FLedgerNumber, true, false, false, false);
 
@@ -133,7 +135,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_account_code_end", cmbToAccountCode.GetSelectedString());
                 ACalculator.AddParameter("param_rgrAccounts", "AccountRange");
 
-                VerificationResult = TStringChecks.FirstLesserEqualThanSecond(
+                VerificationResult = TStringChecks.FirstLesserOrEqualThanSecondString(
                     cmbFromAccountCode.GetSelectedString(),
                     cmbToAccountCode.GetSelectedString(),
                     Catalog.GetString("Account Range From"),
@@ -168,7 +170,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_cost_centre_code_start", cmbFromCostCentre.GetSelectedString());
                 ACalculator.AddParameter("param_cost_centre_code_end", cmbToCostCentre.GetSelectedString());
 
-                VerificationResult = TStringChecks.FirstLesserEqualThanSecond(
+                VerificationResult = TStringChecks.FirstLesserOrEqualThanSecondString(
                     cmbFromCostCentre.GetSelectedString(),
                     cmbToCostCentre.GetSelectedString(),
                     Catalog.GetString("Cost Centre Range From"),
@@ -223,6 +225,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// <returns>void</returns>
         public void SetControls(TParameterList AParameters)
         {
+            if (FLedgerNumber == -1)
+            {
+                // we will wait until the ledger number has been set
+                return;
+            }
+
             /* cost centre options */
 
             FCostCenterCodesDuringLoad = AParameters.Get("param_cost_centre_codes").ToString();
@@ -237,6 +245,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 rbtAccountRange.Checked = true;
                 cmbFromAccountCode.SetSelectedString(AParameters.Get("param_account_code_start").ToString());
                 cmbToAccountCode.SetSelectedString(AParameters.Get("param_account_code_end").ToString());
+
+                if (cmbFromAccountCode.GetSelectedString().Length == 0)
+                {
+                    // select first valid entry
+                    cmbFromAccountCode.SelectedIndex = 1;
+                }
+
+                if (cmbToAccountCode.GetSelectedString().Length == 0)
+                {
+                    // select last valid entry
+                    cmbToAccountCode.SelectedIndex = cmbToAccountCode.Count - 1;
+                }
             }
 
             if (AParameters.Get("param_rgrCostCentres").ToString() == "CostCentreList")
@@ -254,6 +274,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 rbtCostCentreRange.Checked = true;
                 cmbFromCostCentre.SetSelectedString(AParameters.Get("param_cost_centre_code_start").ToString());
                 cmbToCostCentre.SetSelectedString(AParameters.Get("param_cost_centre_code_end").ToString());
+
+                if (cmbFromCostCentre.GetSelectedString().Length == 0)
+                {
+                    // select first valid entry
+                    cmbFromCostCentre.SelectedIndex = 1;
+                }
+
+                if (cmbToCostCentre.GetSelectedString().Length == 0)
+                {
+                    // select last valid entry
+                    cmbToCostCentre.SelectedIndex = cmbToCostCentre.Count - 1;
+                }
             }
 
             if (FLedgerNumber != -1)
@@ -272,6 +304,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void UnselectAllAccountCodes(System.Object sender, System.EventArgs e)
         {
             clbAccountCodes.ClearSelected();
+        }
+
+        private void SelectAllReportingCostCentres(System.Object sender, System.EventArgs e)
+        {
+            string SelectedCostCentres = clbCostCentres.GetCheckedStringList();
+
+            SelectedCostCentres = StringHelper.ConcatCSV(SelectedCostCentres,
+                TRemote.MFinance.Reporting.WebConnectors.GetReportingCostCentres(
+                    FLedgerNumber,
+                    cmbSummaryCostCentres.GetSelectedString(),
+                    string.Empty));
+            clbCostCentres.SetCheckedStringList(SelectedCostCentres);
         }
 
         #endregion

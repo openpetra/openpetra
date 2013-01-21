@@ -1,0 +1,50 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    DetailTable: PPartnerRelationship
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+        actEditOtherPartner: {Label=&Edit Other Partner, ActionClick=EditOtherPartner}      
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails,pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew,btnDelete,btnEditOtherPartner]
+        btnNew: {Stretch=horizontally}
+            Action: actNew
+        btnDelete: {Stretch=horizontally}
+            Action: actDelete
+        btnEditOtherPartner: {Stretch=horizontally}
+            Action: actEditOtherPartner
+        grdDetails:
+            Dock: Fill
+            Columns: []
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtPPartnerRelationshipPartnerKey]
+                Row1: [cmbPPartnerRelationshipRelationName]
+                Row2: [txtPPartnerRelationshipRelationKey]
+                Row3: [txtPPartnerRelationshipComment]
+        txtPPartnerRelationshipPartnerKey:
+            Label: Partner
+            Type: PartnerKey
+            Validation: true
+        cmbPPartnerRelationshipRelationName: {Label=Relation, List=RelationList, Validation=true}
+        txtPPartnerRelationshipRelationKey:
+            Label: Another Partner
+            Type: PartnerKey
+            Validation: Pair(txtPPartnerRelationshipPartnerKey)
+        txtPPartnerRelationshipComment: {Label=Comment, Multiline=true, Stretch=fully}

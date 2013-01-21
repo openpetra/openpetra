@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtPosition
     CacheableTable: PositionList
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Units.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Units.Data,Ict.Petra.Shared.MPersonnel.Units.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
@@ -38,7 +38,7 @@ RootNode:
         txtDetailPositionName: {Label=Position, CharacterCasing=Upper}
         txtDetailPositionDescr: {Label=Description, Width=290}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -477,7 +477,6 @@ namespace Ict.Common.Controls
             StringFormat TextStringFormat;
             String TabName;
             Brush TextBrush;
-            Bitmap TheIcon;
             Int16 OffsetLeft;
             Int16 OffsetLeftIcon;
             Int16 OffsetTop;
@@ -635,9 +634,6 @@ namespace Ict.Common.Controls
             // Determine Text rectangle, draw Icon
             if ((this.TabPages[e.Index].ImageIndex != -1) && (this.ImageList != null))
             {
-                // Icon is present
-                TheIcon = (Bitmap) this.ImageList.Images[TabPages[e.Index].ImageIndex];
-
                 // Smaller text rectangle because Icon is present
                 if (DisplayedVertical)
                 {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,8 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using Ict.Common.IO;
 using Ict.Common;
+using Ict.Common.Remoting.Server;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections;
@@ -241,9 +243,10 @@ namespace Ict.Petra.Shared.MReporting
                         Convert.ToInt32(row["column"]), Convert.ToInt32(row["level"]), Convert.ToInt16(row["subreport"])));
             }
 
-#if DEBUGMODE
-            Save("param.xml");
-#endif
+            if ((TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING) && (TSrvSetting.ServerLogFile.Length > 0))
+            {
+                Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "param.xml");
+            }
         }
 
         /// <summary>
@@ -337,7 +340,14 @@ namespace Ict.Petra.Shared.MReporting
         {
             foreach (TParameter param in AOtherList.parameters)
             {
-                if (!Exists(param.name))
+                /*
+                 * Do not use ParameterList.Exists() because that
+                 * function should be renamed to
+                 * ParameterList.ExistsOrEmpty(). We only actually
+                 * want to check ParamterList.Exists() here. Instead,
+                 * just check if GetParamter() returns null.
+                 */
+                if (GetParameter(param.name) == null)
                 {
                     Add(param.name, param.value, param.column);
                 }
@@ -1007,7 +1017,6 @@ namespace Ict.Petra.Shared.MReporting
             int levelNr;
             int columnNr;
             int subreport;
-            String potentialDecimal;
 
             myDoc = new TXMLParser(filename, false);
             try
@@ -1038,19 +1047,9 @@ namespace Ict.Petra.Shared.MReporting
                                 levelNr = (int)StringHelper.StrToInt(level);
                             }
 
-                            // decimals are always stored with decimal point; need to adjust to local settings
-                            potentialDecimal = TXMLParser.GetAttribute(node, "value").Replace(".",
-                                CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator);
-
-                            if (new TVariant(potentialDecimal).TypeVariant == eVariantTypes.eDecimal)
-                            {
-                                Add(TXMLParser.GetAttribute(node, "id"), new TVariant(potentialDecimal), columnNr, levelNr, subreport);
-                            }
-                            else
-                            {
-                                Add(TXMLParser.GetAttribute(node, "id"), new TVariant(TXMLParser.GetAttribute(node,
-                                            "value")), columnNr, levelNr, subreport);
-                            }
+                            Add(TXMLParser.GetAttribute(node, "id"),
+                                TVariant.DecodeFromString(TXMLParser.GetAttribute(node, "value")),
+                                columnNr, levelNr, subreport);
                         }
 
                         node = node.NextSibling;
@@ -1119,32 +1118,7 @@ namespace Ict.Petra.Shared.MReporting
                         textWriter.WriteEndAttribute();
                     }
 
-                    textWriter.WriteStartAttribute("value", "");
-
-                    if (element.value.TypeVariant == eVariantTypes.eDateTime)
-                    {
-                        // store the date not in its string representation (e.g. with month name), but independent of local format
-                        textWriter.WriteString(element.value.DateToString("#yyyyMMdd#"));
-                    }
-                    else if (element.value.TypeVariant == eVariantTypes.eDecimal)
-                    {
-                        // store always with decimal point, don't use localized settings
-                        textWriter.WriteString(element.value.ToString().Replace(CultureInfo.CurrentCulture.NumberFormat.CurrencyGroupSeparator,
-                                "").Replace(CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator, "."));
-                    }
-                    else
-                    {
-                        if (AWithDebugInfo == true)
-                        {
-                            textWriter.WriteString(element.value.EncodeToString());
-                        }
-                        else
-                        {
-                            textWriter.WriteString(element.value.ToString());
-                        }
-                    }
-
-                    textWriter.WriteEndAttribute();
+                    textWriter.WriteAttributeString("value", element.value.EncodeToString());
                     textWriter.WriteEndElement();
                     textWriter.WriteWhitespace(new String((char)10, 1));
                 }

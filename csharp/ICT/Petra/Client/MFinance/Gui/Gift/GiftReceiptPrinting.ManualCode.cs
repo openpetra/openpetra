@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,7 +30,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Printing;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -58,7 +58,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FNumberOfPages = 0;
         private TGfxPrinter FGfxPrinter = null;
 
-        private void GenerateLetters(System.Object sender, EventArgs e)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AllLetters">HTML text (could be several pages)</param>
+        /// <param name="APathForImagesBase">Could be null if I'm not printing images!</param>
+        public void PreviewOrPrint(String AllLetters, String APathForImagesBase)
         {
             System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
             bool printerInstalled = printDocument.PrinterSettings.IsValid;
@@ -66,6 +71,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (!printerInstalled)
             {
                 MessageBox.Show(Catalog.GetString("There is no printer, so printing is not possible"));
+                return;
+            }
+
+            FGfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+            try
+            {
+                TPrinterHtml htmlPrinter = new TPrinterHtml(AllLetters,
+                    APathForImagesBase,
+                    FGfxPrinter);
+                FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+                this.ppvLetters.InvalidatePreview();
+                this.ppvLetters.Document = FGfxPrinter.Document;
+                this.ppvLetters.Zoom = 1;
+                FGfxPrinter.Document.EndPrint += new PrintEventHandler(this.EndPrint);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void GenerateLetters(System.Object sender, EventArgs e)
+        {
+            if ((!dtpStartDate.Date.HasValue) || (!dtpEndDate.Date.HasValue))
+            {
+                MessageBox.Show(Catalog.GetString("Please supply valid Start and End dates."));
                 return;
             }
 
@@ -99,22 +130,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FGfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
-            try
-            {
-                TPrinterHtml htmlPrinter = new TPrinterHtml(AllLetters,
-                    System.IO.Path.GetDirectoryName(letterTemplateFilename),
-                    FGfxPrinter);
-                FGfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
-                this.ppvLetters.InvalidatePreview();
-                this.ppvLetters.Document = FGfxPrinter.Document;
-                this.ppvLetters.Zoom = 1;
-                FGfxPrinter.Document.EndPrint += new PrintEventHandler(this.EndPrint);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            PreviewOrPrint(AllLetters, System.IO.Path.GetDirectoryName(letterTemplateFilename));
         }
 
         private void EndPrint(object ASender, PrintEventArgs AEv)

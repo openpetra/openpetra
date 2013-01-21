@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PMethodOfContact
     CacheableTable: MethodOfContactList
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 660
@@ -30,13 +30,8 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailMethodOfContactCode, txtDetailDescription]
-                Row1: [pnlTypeAndCheck]            
-        pnlTypeAndCheck:
-            Controls: 
-                Row0: [txtDetailContactType, chkDetailValidMethod]
-                Row1: [chkDetailDeletable]
-            Margin: 30,0,0,0
-            ColSpan: 3
+                Row1: [txtDetailContactType, chkDetailValidMethod]
+                Row2: [chkDetailDeletable]
         txtDetailMethodOfContactCode: {Label=Method Of Contact}
         txtDetailDescription:{Width=210}
         txtDetailContactType:

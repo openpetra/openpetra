@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timh
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,10 +36,10 @@ using SourceGrid;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.RemotedExceptions;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner;
@@ -64,14 +64,27 @@ namespace Ict.Petra.Client.MPartner.Gui
     ///     search results (to reduce data transfer on slow dial-up connections)
     public partial class TPartnerFindScreen
     {
-        /// <summary>String for the title</summary>
-        public const String StrTitleFirstPart = "Partner";
+        #region Resourcestrings
+
+// TODO        private static readonly string StrPartnersAddedToExtractText = Catalog.GetString(
+// TODO            "{0} Partner was added to the new Extract.");
+
+// TODO        private static readonly string StrPartnersAddedToExtractPluralText = Catalog.GetString(
+// TODO            "{0} Partners were added to the new Extract.");
+
+// TODO        private static readonly string StrPartnersAddedToExtractTitle = Catalog.GetString(
+// TODO            "Generate Extract From Found Partners");
 
         /// <summary>String for the title</summary>
-        public const String StrTitleLastPart = " Find";
+        private static readonly string StrTitleFirstPart = Catalog.GetString("Partner");
 
         /// <summary>String for the title</summary>
-        public const String StrTitleRecipient = "Recipient";
+        private static readonly string StrTitleLastPart = Catalog.GetString(" Find");
+
+        /// <summary>String for the title</summary>
+        private static readonly string StrTitleRecipient = Catalog.GetString("Recipient");
+
+        #endregion
 
         /// <summary>String for the partner find</summary>
         public const String WINDOWSETTINGSDEFAULT_NAME = "PartnerFind";
@@ -99,12 +112,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitializeManualCode()
         {
             FFormSetupFinished = false;
-            FRunAsModalForm = this.Modal;
 
             ArrangeMenuItemsAndToolBarButtons();
-            SetupGridContextMenu();
-            SetupFileMenu();
-            SetupMaintainMenu();
+
+            CancelButton = btnCancel;
 
             tbbEditPartner.Enabled = false;
             mniFileEditPartner.Enabled = false;
@@ -113,8 +124,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             FRestrictToPartnerClasses = new string[0];
 
             // Set status bar texts
-            FPetraUtilsObject.SetStatusBarText(btnAccept, Resourcestrings.StrAcceptButtonHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
-            FPetraUtilsObject.SetStatusBarText(btnCancel, Resourcestrings.StrCancelButtonHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
+            FPetraUtilsObject.SetStatusBarText(btnAccept,
+                MPartnerResourcestrings.StrAcceptButtonHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+            FPetraUtilsObject.SetStatusBarText(btnCancel,
+                MPartnerResourcestrings.StrCancelButtonHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
 
             // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
             this.KeyPreview = true;
@@ -132,6 +145,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ucoFindByPartnerDetails_SearchOperationStateChange);
             ucoFindByPartnerDetails.PartnerInfoPaneCollapsed += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneCollapsed);
             ucoFindByPartnerDetails.PartnerInfoPaneExpanded += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneExpanded);
+            ucoFindByPartnerDetails.EnableAcceptButton += new EventHandler(ucoFindByPartnerDetails_EnableAcceptButton);
+            ucoFindByPartnerDetails.DisableAcceptButton += new EventHandler(ucoFindByPartnerDetails_DisableAcceptButton);
 
             ucoFindByPartnerDetails.SetupPartnerInfoPane();
         }
@@ -140,11 +155,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.SearchOperationIsRunning)
             {
-                mniEditSearch.Text = Resourcestrings.StrSearchMenuItemStopText;
+                mniEditSearch.Text = MPartnerResourcestrings.StrSearchMenuItemStopText;
             }
             else
             {
-                mniEditSearch.Text = Resourcestrings.StrSearchButtonText;
+                mniEditSearch.Text = MPartnerResourcestrings.StrSearchButtonText;
             }
         }
 
@@ -220,6 +235,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void MniFileRecentPartner_DropDownOpening(System.Object sender, System.EventArgs e)
         {
             this.SetupRecentlyUsedPartnersMenu();
+        }
+
+        private void MniFileRecentPartner_Click(System.Object sender, System.EventArgs e)
+        {
+            String ClickedMenuItemText = ((ToolStripMenuItem)sender).Text;
+
+            foreach (ToolStripDropDownItem CurrentMenu in mniFileRecentPartners.DropDownItems)
+            {
+                if (CurrentMenu.Text == ClickedMenuItemText)
+                {
+                    ucoFindByPartnerDetails.OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpDefault, (long)CurrentMenu.Tag, true);
+                }
+            }
         }
 
         void MniEdit_DropDownOpening(object sender, EventArgs e)
@@ -316,15 +344,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             if (ExtractPartners == 1)
                             {
-                                MessageText = Resourcestrings.StrPartnersAddedToExtractText;
+                                MessageText = MPartnerResourcestrings.StrPartnersAddedToExtractText;
                             }
                             else
                             {
-                                MessageText = Resourcestrings.StrPartnersAddedToExtractPluralText;
+                                MessageText = MPartnerResourcestrings.StrPartnersAddedToExtractPluralText;
                             }
 
                             MessageBox.Show(String.Format(MessageText,
-                                    ExtractPartners), Resourcestrings.StrPartnersAddedToExtractTitle, MessageBoxButtons.OK,
+                                    ExtractPartners), MPartnerResourcestrings.StrPartnersAddedToExtractTitle, MessageBoxButtons.OK,
                                 MessageBoxIcon.Information);
 
                             Success = true;
@@ -360,64 +388,64 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MniMaintain_DropDownOpening(System.Object sender, System.EventArgs e)
         {
-// TODO MniMaintain_Popup
-#if TODO
             DataRowView[] GridRows;
             String PartnerClass = "";
-            System.Windows.Forms.Menu.MenuItemCollection MenuItemCollectionEnum;
-            Boolean SenderIsContextMenu;
+            ToolStripItemCollection MenuItemCollection = mniMaintain.DropDownItems;
+            Boolean SenderIsContextMenu = false;
 
             // Is the Maintain Menu or the ContextMenu calling us?
             if (sender == mniMaintain)
             {
-                MenuItemCollectionEnum = mniMaintain.MenuItems;
+                MenuItemCollection = mniMaintain.DropDownItems;
                 SenderIsContextMenu = false;
             }
-            else
-            {
-                MenuItemCollectionEnum = mnuPartnerFindContext.MenuItems;
-                SenderIsContextMenu = true;
-            }
 
-            GridRows = grdResult.SelectedDataRowsAsDataRowView;
+// TODO Context Menu
+//            else
+//            {
+//                MenuItemCollection = mnuPartnerFindContext.DropDownItems;
+//                SenderIsContextMenu = true;
+//            }
+
+            GridRows = ucoFindByPartnerDetails.SelectedDataRowsAsDataRowView;
 
             // Check if a Grid Row is selected
             if (GridRows.Length <= 0)
             {
                 // No Row is selected > disable all MenuItems
-                foreach (MenuItem IndividualMenuItem in MenuItemCollectionEnum)
+                foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                 {
                     IndividualMenuItem.Enabled = false;
                 }
 
                 // Only need to work on the Maintain Menu, and not the ContextMenu
                 // (ContextMenu can't be activated when there are no Rows)
-                mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText;
             }
             else
             {
                 // A Row is selected.
                 // Start off with all MenuItems enabled
-                foreach (MenuItem IndividualMenuItem in MenuItemCollectionEnum)
+                foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                 {
                     IndividualMenuItem.Enabled = true;
 
                     if (SenderIsContextMenu)
                     {
-                        if (IndividualMenuItem.Text == Resourcestrings.StrPersonnelUnitMenuItemText)
+                        if (IndividualMenuItem.Text == MPartnerResourcestrings.StrPersonnelUnitMenuItemText)
                         {
-                            IndividualMenuItem.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
+                            IndividualMenuItem.Text = MPartnerResourcestrings.StrPersonnelPersonMenuItemText;
                         }
                     }
                 }
 
-                mniMaintainPersonnelIndividualData.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
+                mniMaintainPersonnelData.Text = MPartnerResourcestrings.StrPersonnelPersonMenuItemText;
 
                 /*
                  * Set the Maintain Menu and ContextMenu MenuItems up - according to the
-                 * PartnerClass of Partner of the selected Grid Row.
+                 * Partner Class of Partner of the selected Grid Row.
                  */
-                PartnerClass = GridRows[0]["p_partner_class_c"].ToString();
+                PartnerClass = GridRows[0][PPartnerTable.GetPartnerClassDBName()].ToString();
 
                 if (PartnerClass == "FAMILY")
                 {
@@ -428,17 +456,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Work on Context Menu
                         Int32 Counter = 0;
 
-                        foreach (MenuItem IndividualMenuItem in MenuItemCollectionEnum)
+                        foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                         {
-                            if ((IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText)
-                                || (IndividualMenuItem.Text == mniMaintainPersonnelIndividualData.Text))
+                            if ((IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMenuItemText)
+                                || (IndividualMenuItem.Text == mniMaintainPersonnelData.Text))
                             {
-                                if (IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText)
+                                if (IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMenuItemText)
                                 {
-                                    IndividualMenuItem.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                                    IndividualMenuItem.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText;
 
                                     // Exchange the 'Family' icon with the 'Family Members' icon!
-                                    this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter], imlMenuHelper.Images[1]);
+                                    //
+// TODO                                                           this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter], imlMenuHelper.Images[1]);
                                     break;
                                 }
                                 else
@@ -453,12 +482,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     else
                     {
                         // Work on Maintain Menu
-                        mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                        mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText;
 
                         // Exchange the 'Family' icon with the 'Family Members' icon!
-                        this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[1]);
-                        mniMaintainPersonnelIndividualData.Text = Resourcestrings.StrPersonnelPersonMenuItemText;
-                        mniMaintainPersonnelIndividualData.Enabled = false;
+// TODO                   this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[1]);
+                        mniMaintainPersonnelData.Text = MPartnerResourcestrings.StrPersonnelPersonMenuItemText;
+                        mniMaintainPersonnelData.Enabled = false;
                     }
                 }
                 else if (PartnerClass == "PERSON")
@@ -470,14 +499,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Work on Context Menu
                         Int32 Counter = 0;
 
-                        foreach (MenuItem IndividualMenuItem in MenuItemCollectionEnum)
+                        foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                         {
-                            if (IndividualMenuItem.Text == Resourcestrings.StrFamilyMembersMenuItemText)
+                            if (IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMembersMenuItemText)
                             {
-                                IndividualMenuItem.Text = Resourcestrings.StrFamilyMenuItemText;
+                                IndividualMenuItem.Text = MPartnerResourcestrings.StrFamilyMenuItemText;
 
                                 // Exchange the 'Family Members' icon with the 'Family' icon!
-                                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter], imlMenuHelper.Images[0]);
+// TODO                           this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter], imlMenuHelper.Images[0]);
+
+                                if (!UserHasPersonnelAccess())
+                                {
+                                    IndividualMenuItem.Enabled = false;
+                                }
+
                                 break;
                             }
 
@@ -487,10 +522,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     else
                     {
                         // Work on Maintain Menu
-                        mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMenuItemText;
+                        mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMenuItemText;
 
                         // Exchange the 'Family Members' icon with the 'Family' icon!
-                        this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
+// TODO                   this.XPMenuItemExtender.SetMenuGlyph(this.mniMaintainFamilyMembers, imlMenuHelper.Images[0]);
+
+                        if (!UserHasPersonnelAccess())
+                        {
+                            mniMaintainFamilyMembers.Enabled = false;
+                        }
                     }
                 }
                 else if (PartnerClass == "UNIT")
@@ -500,20 +540,25 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (SenderIsContextMenu)
                     {
                         // Work on Context Menu
-                        foreach (MenuItem IndividualMenuItem in MenuItemCollectionEnum)
+                        foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                         {
-                            if ((IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText)
-                                || (IndividualMenuItem.Text == Resourcestrings.StrFamilyMembersMenuItemText)
-                                || (IndividualMenuItem.Text == Resourcestrings.StrPersonnelPersonMenuItemText)
+                            if ((IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMenuItemText)
+                                || (IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMembersMenuItemText)
+                                || (IndividualMenuItem.Text == MPartnerResourcestrings.StrPersonnelPersonMenuItemText)
                                 || (IndividualMenuItem.Text == mniMaintainWorkerField.Text))
                             {
-                                if (IndividualMenuItem.Text != Resourcestrings.StrPersonnelPersonMenuItemText)
+                                if (IndividualMenuItem.Text != MPartnerResourcestrings.StrPersonnelPersonMenuItemText)
                                 {
                                     IndividualMenuItem.Enabled = false;
                                 }
                                 else
                                 {
-                                    IndividualMenuItem.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
+                                    IndividualMenuItem.Text = MPartnerResourcestrings.StrPersonnelUnitMenuItemText;
+
+                                    if (!UserHasPersonnelAccess())
+                                    {
+                                        IndividualMenuItem.Enabled = false;
+                                    }
                                 }
                             }
                         }
@@ -523,7 +568,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Work on Maintain Menu
                         mniMaintainFamilyMembers.Enabled = false;
                         mniMaintainWorkerField.Enabled = false;
-                        mniMaintainPersonnelIndividualData.Text = Resourcestrings.StrPersonnelUnitMenuItemText;
+                        mniMaintainPersonnelData.Text = MPartnerResourcestrings.StrPersonnelUnitMenuItemText;
+
+                        if (!UserHasPersonnelAccess())
+                        {
+                            mniMaintainPersonnelData.Enabled = false;
+                        }
                     }
                 }
                 else
@@ -532,17 +582,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (SenderIsContextMenu)
                     {
                         // Work on Context Menu
-                        foreach (MenuItem IndividualMenuItem in MenuItemCollectionEnum)
+                        foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                         {
                             // MessageBox.Show('FAMILY: SenderIsContextMenu: ' + SenderIsContextMenu.ToString);
-                            if ((IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText)
-                                || (IndividualMenuItem.Text == Resourcestrings.StrFamilyMembersMenuItemText)
-                                || (IndividualMenuItem.Text == mniMaintainPersonnelIndividualData.Text)
+                            if ((IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMenuItemText)
+                                || (IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMembersMenuItemText)
+                                || (IndividualMenuItem.Text == mniMaintainPersonnelData.Text)
                                 || (IndividualMenuItem.Text == mniMaintainWorkerField.Text))
                             {
-                                if (IndividualMenuItem.Text == Resourcestrings.StrFamilyMenuItemText)
+                                if (IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMenuItemText)
                                 {
-                                    IndividualMenuItem.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                                    IndividualMenuItem.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText;
                                     IndividualMenuItem.Enabled = false;
                                 }
                                 else
@@ -555,9 +605,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     else
                     {
                         // Work on Maintain Menu
-                        mniMaintainFamilyMembers.Text = Resourcestrings.StrFamilyMembersMenuItemText;
+                        mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText;
                         mniMaintainFamilyMembers.Enabled = false;
-                        mniMaintainPersonnelIndividualData.Enabled = false;
+                        mniMaintainPersonnelData.Enabled = false;
                         mniMaintainWorkerField.Enabled = false;
                     }
                 }
@@ -567,7 +617,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if ((PartnerClass == "ORGANISATION"))
             {
-                FLogic.DetermineCurrentFoundationStatus(out IsFoundation);
+// TODO Foundations              FLogic.DetermineCurrentFoundationStatus(out IsFoundation);
             }
 
             if (IsFoundation)
@@ -575,7 +625,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 mniMaintainFoundationDetails.Enabled = true;
 
                 // Work on Context Menu
-                foreach (MenuItem IndividualMenuItem in MenuItemCollectionEnum)
+                foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                 {
                     if (IndividualMenuItem.Text == mniMaintainFoundationDetails.Text)
                     {
@@ -588,7 +638,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 mniMaintainFoundationDetails.Enabled = false;
 
                 // Work on Context Menu
-                foreach (MenuItem IndividualMenuItem in MenuItemCollectionEnum)
+                foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
                 {
                     if (IndividualMenuItem.Text == mniMaintainFoundationDetails.Text)
                     {
@@ -596,7 +646,27 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
-#endif
+
+            // Disable 'Local Partner Data' MenuItem if there are no DataLabels for the Partner's PartnerClass available
+            if (!Checks.HasPartnerClassLocalPartnerDataLabels(SharedTypes.PartnerClassStringToEnum(PartnerClass),
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelsForPartnerClassesList)))
+            {
+                if (SenderIsContextMenu)
+                {
+                    /* Work on Context Menu */
+                    foreach (ToolStripItem IndividualMenuItem in MenuItemCollection)
+                    {
+                        if (IndividualMenuItem.Text == mniMaintainLocalPartnerData.Text)
+                        {
+                            IndividualMenuItem.Enabled = false;
+                        }
+                    }
+                }
+                else
+                {
+                    mniMaintainLocalPartnerData.Enabled = false;
+                }
+            }
         }
 
         #region Menu/ToolBar command handling
@@ -613,7 +683,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MniMaintain_Click(System.Object sender, System.EventArgs e)
         {
-            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniEdit, (ToolStripItem)sender, FRunAsModalForm);
+            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniMaintain, (ToolStripItem)sender, FRunAsModalForm);
         }
 
         private void MniMailing_Click(System.Object sender, System.EventArgs e)
@@ -629,34 +699,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void MniView_Click(System.Object sender, System.EventArgs e)
         {
             ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniView, (ToolStripItem)sender, FRunAsModalForm);
-        }
-
-        private void MniFileRecentPartner_Click(System.Object sender, System.EventArgs e)
-        {
-// TODO MniFileRecentPartner_Click
-#if TODO
-            String ClickedMenuItemText = ((MenuItem)sender).Text;
-
-            foreach (MenuItem CurrentMenu in mniFileRecentPartners.MenuItems)
-            {
-                if (CurrentMenu.Text == ClickedMenuItemText)
-                {
-                    // Set partner to the "last used person"
-                    TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, CurrentMenu.Tag);
-
-                    // Open the Partner Edit screen
-                    TFrmPartnerEdit frmPEDS;
-
-                    this.Cursor = Cursors.WaitCursor;
-
-                    frmPEDS = new TFrmPartnerEdit(this.Handle);
-                    frmPEDS.SetParameters(TScreenMode.smEdit, (long)CurrentMenu.Tag);
-                    frmPEDS.Show();
-
-                    this.Cursor = Cursors.Default;
-                }
-            }
-#endif
         }
 
         #endregion
@@ -754,6 +796,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             MessageBox.Show("Sorry, this function is not yet implemented...", TitlePrefix + "Not Yet Implemented");
         }
 
+        private bool UserHasPersonnelAccess()
+        {
+            return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
+        }
+
         private void TPartnerFindScreen_Activated(System.Object sender, System.EventArgs e)
         {
             if (FFormSetupFinished)
@@ -786,7 +833,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             int Counter1;
             int Counter2;
 
-            if (!TPartnerFindScreen.URunAsModalForm)
+            if (!FRunAsModalForm)
             {
                 /*
                  * The non-Modal ContextMenu contains all MenuItems from the 'Maintain' Menu
@@ -794,12 +841,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // Copy over all MenuItems  including their Events (using CloneMenu()) and
                 // Icons
-                for (Counter1 = 0; Counter1 <= mniMaintain.MenuItems.Count - 1; Counter1 += 1)
+                for (Counter1 = 0; Counter1 <= mniMaintain.DropDownItems.Count - 1; Counter1 += 1)
                 {
-                    mnuPartnerFindContext.MenuItems.Add(mniMaintain.MenuItems[Counter1].CloneMenu());
-                    this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter1],
-                        this.XPMenuItemExtender.GetMenuGlyph(mniMaintain.MenuItems[Counter1]));
-                    this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter1], true);
+                    mnuPartnerFindContext.DropDownItems.Add(mniMaintain.DropDownItems[Counter1].CloneMenu());
+// TODO                    this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter1],
+// TODO                        this.XPMenuItemExtender.GetMenuGlyph(mniMaintain.MenuItems[Counter1]));
+// TODO                    this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter1], true);
                 }
 
                 AddCopyContextMenuEntries(mnuPartnerFindContext);
@@ -817,28 +864,28 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // Edit Partner...
                 mnuPartnerFindContext.MenuItems.Add(mniFileEditPartner.CloneMenu());
-                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
-                    this.XPMenuItemExtender.GetMenuGlyph(mniFileEditPartner));
-                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
+// TODO                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
+// TODO                    this.XPMenuItemExtender.GetMenuGlyph(mniFileEditPartner));
+// TODO                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
                 Counter2++;
 
                 // Separator
                 mnuPartnerFindContext.MenuItems.Add("-");
-                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
+// TODO                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
                 Counter2++;
 
                 // Donor History
                 mnuPartnerFindContext.MenuItems.Add(mniMaintainDonorHistory.CloneMenu());
-                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
-                    this.XPMenuItemExtender.GetMenuGlyph(mniMaintainDonorHistory));
-                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
+// TODO                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
+// TODO                    this.XPMenuItemExtender.GetMenuGlyph(mniMaintainDonorHistory));
+// TODO                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
                 Counter2++;
 
                 // Recipient History
                 mnuPartnerFindContext.MenuItems.Add(mniMaintainRecipientHistory.CloneMenu());
-                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
-                    this.XPMenuItemExtender.GetMenuGlyph(mniMaintainRecipientHistory));
-                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
+// TODO                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
+// TODO                    this.XPMenuItemExtender.GetMenuGlyph(mniMaintainRecipientHistory));
+// TODO                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
                 AddCopyContextMenuEntries(mnuPartnerFindContext);
             }
 #endif
@@ -857,14 +904,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </remarks>
         private void SetupMaintainMenu()
         {
-// TODO SetupMaintainMenu
-#if TODO
-            if (TPartnerFindScreen.URunAsModalForm)
+            if (FRunAsModalForm)
             {
-                /*
-                 * Hide the menu items that are in "HiddenItems"
-                 */
-
+                // Hide the menu items that are in "HiddenItems"
                 ArrayList HiddenItems = new ArrayList();
                 HiddenItems.Add("mniMaintainAddresses");
                 HiddenItems.Add("mniMaintainPartnerDetails");
@@ -877,26 +919,25 @@ namespace Ict.Petra.Client.MPartner.Gui
                 HiddenItems.Add("mniMaintainInterests");
                 HiddenItems.Add("mniMaintainReminders");
                 HiddenItems.Add("mniMaintainNotes");
-                HiddenItems.Add("mniMaintainOfficeSpecific");
+                HiddenItems.Add("mniMaintainLocalPartnerData");
                 HiddenItems.Add("mniMaintainWorkerField");
-                HiddenItems.Add("mniMaintainPersonnelIndividualData");
+                HiddenItems.Add("mniMaintainPersonnelData");
                 HiddenItems.Add("mniMaintainFinanceDetails");
-                HiddenItems.Add("mniMaintainSeparator1");
-                HiddenItems.Add("mniMaintainSeparator2");
+                HiddenItems.Add("mniSeparator0");
+                HiddenItems.Add("mniSeparator1");
 
-                for (int Counter = 0; Counter < mniMaintain.MenuItems.Count; ++Counter)
+                for (int Counter = 0; Counter < mniMaintain.DropDownItems.Count; ++Counter)
                 {
-                    if (HiddenItems.Contains(mniMaintain.MenuItems[Counter].Name))
+                    if (HiddenItems.Contains(mniMaintain.DropDownItems[Counter].Name))
                     {
-                        mniMaintain.MenuItems[Counter].Visible = false;
+                        mniMaintain.DropDownItems[Counter].Visible = false;
                     }
                     else
                     {
-                        mniMaintain.MenuItems[Counter].Visible = true;
+                        mniMaintain.DropDownItems[Counter].Visible = true;
                     }
                 }
             }
-#endif
         }
 
         /// <summary>
@@ -912,39 +953,31 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </remarks>
         private void SetupFileMenu()
         {
-// TODO SetupFileMenu
-#if TODO
-            if (TPartnerFindScreen.URunAsModalForm)
+            if (FRunAsModalForm)
             {
-                /*
-                 * Hide the menu items that are in "HiddenItems"
-                 */
-
+                // Hide the menu items that are in "HiddenItems"
                 ArrayList HiddenItems = new ArrayList();
-                HiddenItems.Add("mniFileSearch");
-                HiddenItems.Add("mniFileSeparator1");
                 HiddenItems.Add("mniFileWorkWithLastPartner");
                 HiddenItems.Add("mniFileRecentPartners");
-                HiddenItems.Add("mniFileSeparator2");
+                HiddenItems.Add("mniFileSeparator1");
                 HiddenItems.Add("mniFileNewPartner");
                 HiddenItems.Add("mniFileMergePartners");
                 HiddenItems.Add("mniFileDeletePartner");
                 HiddenItems.Add("mniFilePrintPartner");
-                HiddenItems.Add("mniFileSeparator5");
+                HiddenItems.Add("mniFileSeparator4");
 
-                for (int Counter = 0; Counter < mniFile.MenuItems.Count; ++Counter)
+                for (int Counter = 0; Counter < mniFile.DropDownItems.Count; ++Counter)
                 {
-                    if (HiddenItems.Contains(mniFile.MenuItems[Counter].Name))
+                    if (HiddenItems.Contains(mniFile.DropDownItems[Counter].Name))
                     {
-                        mniFile.MenuItems[Counter].Visible = false;
+                        mniFile.DropDownItems[Counter].Visible = false;
                     }
                     else
                     {
-                        mniFile.MenuItems[Counter].Visible = true;
+                        mniFile.DropDownItems[Counter].Visible = true;
                     }
                 }
             }
-#endif
         }
 
         /// <summary>
@@ -953,24 +986,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void SetupRecentlyUsedPartnersMenu()
         {
-// TODO SetupRecentlyUsedPartnersMenu
-#if TODO
             Dictionary <long, string>RecentlyUsedPartners;
             ArrayList PartnerClasses = new ArrayList();
 
             PartnerClasses.Add("*");
 
-            int MaxPartnersCount = mniFileRecentPartners.MenuItems.Count;
+            int MaxPartnersCount = mniFileRecentPartners.DropDownItems.Count;
             TServerLookup.TMPartner.GetRecentlyUsedPartners(MaxPartnersCount, PartnerClasses, out RecentlyUsedPartners);
 
             int Counter = 0;
 
             foreach (KeyValuePair <long, string>CurrentEntry in RecentlyUsedPartners)
             {
-                mniFileRecentPartners.MenuItems[Counter].Text = Counter.ToString() + " - " + CurrentEntry.Value;
-                mniFileRecentPartners.MenuItems[Counter].Tag = CurrentEntry.Key;
-                mniFileRecentPartners.MenuItems[Counter].Enabled = true;
-                mniFileRecentPartners.MenuItems[Counter].Visible = true;
+                mniFileRecentPartners.DropDownItems[Counter].Text = Counter.ToString() + " - " + CurrentEntry.Value;
+                mniFileRecentPartners.DropDownItems[Counter].Tag = CurrentEntry.Key;
+                mniFileRecentPartners.DropDownItems[Counter].Enabled = true;
+                mniFileRecentPartners.DropDownItems[Counter].Visible = true;
 
                 ++Counter;
             }
@@ -978,19 +1009,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             // If there a less partners than menu items, then disable them
             for (; Counter < MaxPartnersCount; ++Counter)
             {
-                mniFileRecentPartners.MenuItems[Counter].Enabled = false;
-                mniFileRecentPartners.MenuItems[Counter].Visible = false;
+                mniFileRecentPartners.DropDownItems[Counter].Enabled = false;
+                mniFileRecentPartners.DropDownItems[Counter].Visible = false;
             }
 
             // If there are no recently used partners at all show a message
             if (RecentlyUsedPartners.Count == 0)
             {
-                mniFileRecentPartners.MenuItems[0].Text = "No partners used yet";
-                mniFileRecentPartners.MenuItems[0].Tag = -1;
-                mniFileRecentPartners.MenuItems[0].Enabled = false;
-                mniFileRecentPartners.MenuItems[0].Visible = true;
+                mniFileRecentPartners.DropDownItems[0].Text = "No partners used yet";
+                mniFileRecentPartners.DropDownItems[0].Tag = -1;
+                mniFileRecentPartners.DropDownItems[0].Enabled = false;
+                mniFileRecentPartners.DropDownItems[0].Visible = true;
             }
-#endif
         }
 
         private void ReleaseServerObject()
@@ -1105,6 +1135,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TPartnerFindScreen_Load(System.Object sender, System.EventArgs e)
         {
+            FPetraUtilsObject.TFrmPetra_Load(sender, e);
+
             this.Cursor = Cursors.WaitCursor;
 
             // Restore Window Position and Size
@@ -1115,9 +1147,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             RestoreSplitterSettings();
 #endif
 
-            TPartnerFindScreen.URunAsModalForm = this.Modal;
-#if TODO
-            if (!TPartnerFindScreen.URunAsModalForm)
+            FRunAsModalForm = this.Modal;
+            ucoFindByPartnerDetails.RunnningInsideModalForm = FRunAsModalForm;
+
+            SetupGridContextMenu();
+            SetupFileMenu();
+            SetupMaintainMenu();
+
+            if (!FRunAsModalForm)
             {
                 pnlModalButtons.Visible = false;
 
@@ -1126,12 +1163,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                //                pnlModalButtons.BringToFront();
-                //tabPartnerFindMethods
-                // TODO? stbMain.SendToBack();
+                this.mnuMain.Visible = false;  // Modal Dialogs don't have menus
                 pnlModalButtons.Visible = true;
+                pnlModalButtons.SendToBack();
+                pnlModalButtons.AutoScroll = false;
+
+                // Modify auto-generated appearance of Panels
+                pnlModalButtons.Height = 33;
+                pnlAcceptCancelButtons.Location = new System.Drawing.Point(this.Width - pnlAcceptCancelButtons.Width - 10, 0);
+
+                // Modify auto-generated appearance of Buttons
+                btnHelp.Location = new System.Drawing.Point(btnHelp.Location.X, 5);
+                btnAccept.Location = new System.Drawing.Point(btnAccept.Location.X, 5);
+                btnCancel.Location = new System.Drawing.Point(btnCancel.Location.X, 5);
+                btnHelp.Height = 23;
+                btnAccept.Height = 23;
+                btnCancel.Height = 23;
+
+                // Modify automatic TabIndexes so that the Help Button comes last
+                btnHelp.TabIndex = 1;
+                pnlAcceptCancelButtons.TabIndex = 0;
             }
 
+#if TODO
             // Menu temporarily shown so we can test implemented 4GL calls from menus
             // TODO 1 oChristianK cModal : Menu needs to be hidden as soon 4GL can make nonmodal calls to this Form!
             // self.Menu:=nil;
@@ -1178,6 +1232,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             tbbPartnerInfo.Checked = false;
             mniViewPartnerInfo.Checked = false;
+        }
+
+        void ucoFindByPartnerDetails_EnableAcceptButton(object sender, EventArgs e)
+        {
+            btnAccept.Enabled = true;
+        }
+
+        void ucoFindByPartnerDetails_DisableAcceptButton(object sender, EventArgs e)
+        {
+            btnAccept.Enabled = false;
         }
 
         private void BtnFullyLoadData_Click(System.Object sender, System.EventArgs e)
@@ -1232,13 +1296,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// if there was no running Instance, otherwise it will just activate any Instance of
         /// the Partner Find Screen if finds.</para>
         /// </remarks>
-        /// <param name="AParentFormHandle"></param>
+        /// <param name="AParentForm"></param>
         /// <returns>void</returns>
-        public static void OpenNewOrExistingForm(IntPtr AParentFormHandle)
+        public static void OpenNewOrExistingForm(Form AParentForm)
         {
             bool FormWasAlreadyOpened;
 
-            OpenNewOrExistingForm(out FormWasAlreadyOpened, AParentFormHandle);
+            OpenNewOrExistingForm(out FormWasAlreadyOpened, AParentForm);
         }
 
         /// <summary>
@@ -1249,10 +1313,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// the Partner Find Screen if finds.</remarks>
         /// <param name="AFormWasAlreadyOpened">False if a new Partner Find Screen was opened,
         /// false if an existing Instance of the Partner Find Screen was activated.</param>
-        /// <param name="AParentFormHandle"></param>
+        /// <param name="AParentForm"></param>
         /// <returns>An Instance of the Partner Find Screen (either newly created or
         /// just activated).</returns>
-        public static Form OpenNewOrExistingForm(out bool AFormWasAlreadyOpened, IntPtr AParentFormHandle)
+        public static Form OpenNewOrExistingForm(out bool AFormWasAlreadyOpened, Form AParentForm)
         {
             Form OpenFindScreen;
             Form NewFindScreen;
@@ -1271,7 +1335,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                NewFindScreen = new TPartnerFindScreen(AParentFormHandle);
+                NewFindScreen = new TPartnerFindScreen(AParentForm);
                 NewFindScreen.Show();
                 return NewFindScreen;
             }
@@ -1287,14 +1351,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="APartnerKey">PartnerKey of the found Partner.</param>
         /// <param name="AShortName">Partner ShortName of the found Partner.</param>
         /// <param name="ALocationPK">LocationKey of the found Partner.</param>
-        /// <param name="AParentFormHandle"></param>
+        /// <param name="AParentForm"></param>
         /// <returns>True if a Partner was found and accepted by the user,
         /// otherwise false.</returns>
         public static bool OpenModalForm(String ARestrictToPartnerClasses,
             out Int64 APartnerKey,
             out String AShortName,
             out TLocationPK ALocationPK,
-            IntPtr AParentFormHandle)
+            Form AParentForm)
         {
             TPartnerFindScreen PartnerFindForm;
             DialogResult dlgResult;
@@ -1303,7 +1367,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             AShortName = String.Empty;
             ALocationPK = new TLocationPK(-1, -1);
 
-            PartnerFindForm = new TPartnerFindScreen(AParentFormHandle);
+            PartnerFindForm = new TPartnerFindScreen(AParentForm);
             PartnerFindForm.SetParameters(ARestrictToPartnerClasses);
 
             dlgResult = PartnerFindForm.ShowDialog();

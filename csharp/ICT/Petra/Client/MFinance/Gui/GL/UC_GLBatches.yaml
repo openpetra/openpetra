@@ -4,13 +4,14 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     DetailTable: ABatch
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
         actCancel: {Label=&Cancel, ActionClick=CancelRow}
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
+        actTestPostBatch: {Label=&Test Batch, ActionClick=TestPostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
@@ -19,31 +20,35 @@ RootNode:
             Dock: Fill
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
         pnlInfo: 
-            Controls: [pnlLedgerInfo, rgrShowBatches]
+            ControlsOrientation: horizontal
+            Controls: [rgrShowBatches, pnlPeriodFilter]
             Dock: Top
         rgrShowBatches: 
             Label: Show batches available for
             ControlsOrientation: horizontal
             SuppressChangeDetection: true
             OptionalValues: [Posting, =Editing, All]
-            OnChange: ChangeBatchFilter
-        pnlLedgerInfo:
-            Controls: [txtLedgerNumber]
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+            OnChange: RefreshFilter
+        cmbYearFilter: {List: UserDefinedList, OnChange:RefreshPeriods, SuppressChangeDetection: true, Width=100}
+        cmbPeriodFilter: {List: UserDefinedList, OnChange:RefreshFilter, SuppressChangeDetection: true, Width=250}
+        pnlPeriodFilter:
+            Controls: [cmbYearFilter, cmbPeriodFilter]
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnNew, btnCancel, btnPostBatch]
-        btnNew: {Action=actNew}
-        btnCancel: {Action=actCancel}
-        btnPostBatch: {Action=actPostBatch}
+            Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnCancel: {Action=actCancel, Stretch=horizontally}
+        btnPostBatch: {Action=actPostBatch, Stretch=horizontally}
+        btnTestPostBatch: {Stretch=horizontally}
         grdDetails:
             Dock: Fill
             Columns: [ABatch.BatchNumber, ABatch.BatchStatus, ABatch.DateEffective, ABatch.BatchDebitTotal, ABatch.BatchCreditTotal, ABatch.BatchControlTotal, ABatch.BatchDescription]
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowJournalTab
+            ActionEnterKeyPressed: ShowJournalTab
             SortOrder: ABatch.BatchNumber DESC
         pnlDetails:
             Dock: Bottom
@@ -52,20 +57,22 @@ RootNode:
                 Row1: [txtDetailBatchControlTotal]
                 Row2: [dtpDetailDateEffective, lblValidDateRange]
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
-        txtDetailBatchControlTotal: {Label=Batch Hash Total, Type=Currency, Format=Currency}
-        lblValidDateRange:
-        dtpDetailDateEffective: {Label=Effective Date}
+        txtDetailBatchControlTotal: {Label=Batch Hash Total, Format=Decimal, Width=115, NullValueAllowed=false}
+        lblValidDateRange: {Width=300}
+        dtpDetailDateEffective: {Label=Effective Date, OnChange=UpdateBatchPeriod, Validation = true}
         tbrTabPage: {NoAttribute=true}
         mnuTabPage: {NoAttribute=true}
     Menu:
         mniBatch:
             Label: &Batch
-            mniPost: {Action=actPostBatch}
-            mniImportFromSpreadSheet:
+            mniPostBatch:
+            mniTestPostBatch:
+            #mniImportFromSpreadSheet:
             mniImportBatches:
             mniExportBatches:
     Toolbar:
+        tbbTestPostBatch:
         tbbPostBatch:
-        tbbImportFromSpreadSheet:
+        #tbbImportFromSpreadSheet:
         tbbImportBatches:
         tbbExportBatches:

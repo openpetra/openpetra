@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="ThirdParty-Build">
 
-<include buildfile="../../inc/nant/OpenPetra.references.xml"/> 
+<include buildfile="../../inc/nant/OpenPetra.common.xml"/>
 
 <target name="clean" >
   <delete>
@@ -16,20 +16,41 @@
   <!-- nothing to do here -->
 </target>
 
+<target name="indent">
+  <!-- nothing to do here -->
+</target>
+
+<patternset id="3rdPartyPattern">
+  <include name="GNU.Gettext.dll"/>
+  <include name="SourceGrid.dll"/>
+  <include name="PdfSharp.dll"/>
+  <include name="Npgsql.dll"/>
+  <include name="Mono.Security.dll" /> <!-- Needed for Npgsql.dll -->
+  <include name="MySql.Data.dll"/>
+  <include name="Mono.Data.Sqlite.dll"/>
+  <include name="sqlite3.dll"/>
+  <include name="ICSharpCode.SharpZipLib.dll"/>
+  <include name="ExcelLibrary.dll"/>
+  <include name="Jayrock.Json.dll"/>
+  <include name="ICSharpCode.NRefactory.dll"/> <!-- Winforms Generator -->
+  <include name="CustomControl.OrientedTextControls.dll"/>
+  <include name="Owf.Controls.A1Panel.dll"/>
+</patternset>
+
+<patternset id="NunitPattern">
+  <include name="nunit.framework.dll"/>
+  <include name="NUnitForms.dll"/>
+</patternset>
+
 <target name="compile" description="Copy Thirdparty DLLs to bin directory">
   <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
     <copy todir="${dir.bin}">
       <fileset basedir="${foldername}">
         <patternset refid="3rdPartyPattern" />
         <patternset refid="NunitPattern" />
-        <!-- for mono we need to take the managed only version -->        
-        <exclude name="System.Data.SQLite.dll" />
       </fileset>
     </copy>
   </foreach>
-  <!-- copy SQLite depending on the platform -->
-  <copy file="SQLite/System.Data.SQLite.dll" tofile="${dir.bin}/System.Data.SQLite.dll" if="${platform::is-windows()}" />
-  <copy file="SQLite/System.Data.SQLite.ManagedOnly.dll" tofile="${dir.bin}/System.Data.SQLite.dll" if="${not platform::is-windows()}" />
 </target>
 
 <target name="prepareProjects"/>
@@ -37,6 +58,5 @@
 <target name="generateCsproject" />
 
 <target name="generateCsprojectNoCompile" />
-
 
 </project>

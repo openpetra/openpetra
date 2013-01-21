@@ -23,10 +23,10 @@
 //
 using System;
 using System.Data;
+using Ict.Common;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.RemotedExceptions;
-using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
@@ -644,7 +644,7 @@ namespace Ict.Petra.Client.MCommon
             }
             else
             {
-                NewPartnerLocationRow.LocationType = GetDefaultLocationType(APartnerClass);
+                NewPartnerLocationRow.LocationType = TSharedAddressHandling.GetDefaultLocationType(APartnerClass);
 
                 // Copy over Columns of the Row specified with ACopyFromPartnerLocationKey?
                 if (ACopyFromPartnerLocationKey != -99)
@@ -975,64 +975,6 @@ namespace Ict.Petra.Client.MCommon
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="APartnerClass"></param>
-        /// <returns></returns>
-        public static String GetDefaultLocationType(TPartnerClass APartnerClass)
-        {
-            String ReturnValue = "";
-
-            // No copying > assign values of columns manually
-            switch (APartnerClass)
-            {
-                case TPartnerClass.PERSON:
-                case TPartnerClass.FAMILY:
-                    ReturnValue = "HOME";
-                    break;
-
-                case TPartnerClass.CHURCH:
-                    ReturnValue = "CHURCH";
-                    break;
-
-                case TPartnerClass.ORGANISATION:
-                case TPartnerClass.BANK:
-                case TPartnerClass.VENUE:
-                    ReturnValue = "BUSINESS";
-                    break;
-
-                case TPartnerClass.UNIT:
-                    ReturnValue = "FIELD";
-                    break;
-            }
-
-            return ReturnValue;
-        }
-
-        /// returns the default addressee type for the given Partner class
-        public static String GetDefaultAddresseeType(TPartnerClass APartnerClass)
-        {
-            switch (APartnerClass)
-            {
-                case TPartnerClass.PERSON:
-                case TPartnerClass.FAMILY:
-                    return "FAMILY";
-
-                case TPartnerClass.CHURCH:
-                    return "CHURCH";
-
-                case TPartnerClass.ORGANISATION:
-                case TPartnerClass.BANK:
-                case TPartnerClass.UNIT:
-                    return "ORGANISA";
-
-                case TPartnerClass.VENUE:
-                    return "VENUE";
-            }
-
-            return "";
         }
 
         #endregion

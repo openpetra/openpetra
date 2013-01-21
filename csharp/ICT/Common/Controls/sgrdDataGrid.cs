@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using DevAge.ComponentModel;
@@ -139,6 +140,23 @@ namespace Ict.Common.Controls
         ///
         /// </summary>
         private Boolean FAutoFindListRebuildNeeded;
+
+        /// <summary>
+        /// A flag that is true during the 'Sorted' event.
+        /// </summary>
+        private Boolean FSorting;
+
+        /// <summary>
+        /// Returns true when the grid is re-ordering rows after a sort operation.  Can be used to ignore updates from a panel to the grid
+        /// because the sort operation never changes the selected row.
+        /// </summary>
+        public Boolean Sorting
+        {
+            get
+            {
+                return FSorting;
+            }
+        }
 
         /// <summary>
         /// Read access to the View for the ColumnHeaders of this Grid (used by
@@ -896,6 +914,173 @@ namespace Ict.Common.Controls
             AddTextColumn(AColumnTitle, ADataColumn, -1, null, CurrencyEditor, null, view, selectedConditionNegative);
         }
 
+        class BooleanConverter : System.ComponentModel.TypeConverter
+        {
+            /// <summary>
+            /// text that should be displayed if the value is true
+            /// </summary>
+            protected string FTextTrue;
+
+            /// <summary>
+            /// text that should be displayed if the value is false
+            /// </summary>
+            protected string FTextFalse;
+
+            /// <summary>
+            /// constructor
+            /// </summary>
+            public BooleanConverter(string ATextTrue, string ATextFalse)
+            {
+                FTextTrue = ATextTrue;
+                FTextFalse = ATextFalse;
+            }
+
+            /// <summary>
+            /// we don't need conversions to boolean, but somehow we need to return true so that the conversion works the other way
+            /// </summary>
+            public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context,
+                Type sourceType)
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// allow all conversions from boolean
+            /// </summary>
+            public override bool CanConvertTo(System.ComponentModel.ITypeDescriptorContext context,
+                Type destinationType)
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// convert boolean to string, the destinationType is ignored
+            /// </summary>
+            public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context,
+                System.Globalization.CultureInfo culture,
+                object value,
+                Type destinationType)
+            {
+                if ((bool)value == true)
+                {
+                    return FTextTrue;
+                }
+
+                return FTextFalse;
+            }
+        }
+
+        /// <summary>
+        /// add a column that shows a boolean value.
+        /// this allows to show a specific text for true and another text for false.
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="ATextTrue">text to be displayed in the column if the value is true</param>
+        /// <param name="ATextFalse">text to be displayed in the column if the value is false</param>
+        public void AddBooleanColumn(String AColumnTitle, DataColumn ADataColumn, string ATextTrue, string ATextFalse)
+        {
+            SourceGrid.Cells.Editors.TextBox BooleanEditor = new SourceGrid.Cells.Editors.TextBox(typeof(bool));
+            BooleanEditor.TypeConverter = new BooleanConverter(ATextTrue, ATextFalse);
+
+            BooleanEditor.EditableMode = EditableMode.None;
+
+            AddTextColumn(AColumnTitle, ADataColumn, -1, null, BooleanEditor, null, null, null);
+        }
+
+        class PartnerKeyConverter : System.ComponentModel.TypeConverter
+        {
+            /// <summary>
+            /// constructor
+            /// </summary>
+            public PartnerKeyConverter()
+            {
+            }
+
+            /// <summary>
+            /// we don't need conversions to PartnerKey, but somehow we need to return true so that the conversion works the other way
+            /// </summary>
+            public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context,
+                Type sourceType)
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// allow all conversions from PartnerKey
+            /// </summary>
+            public override bool CanConvertTo(System.ComponentModel.ITypeDescriptorContext context,
+                Type destinationType)
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// convert PartnerKey to string, the destinationType is ignored
+            /// </summary>
+            public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context,
+                System.Globalization.CultureInfo culture,
+                object value,
+                Type destinationType)
+            {
+                return String.Format("{0:0000000000}", (Int64)value);
+            }
+        }
+
+        /// <summary>
+        /// add a column that shows a PartnerKey value (include leading zeros to display a 10 digit number)
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        public void AddPartnerKeyColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+            AddPartnerKeyColumn(AColumnTitle, ADataColumn, -1);
+        }
+
+        /// <summary>
+        /// add a column that shows a PartnerKey value (include leading zeros to display a 10 digit number)
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        public void AddPartnerKeyColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth)
+        {
+            SourceGrid.Cells.Editors.TextBox PartnerKeyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(Int64));
+            PartnerKeyEditor.TypeConverter = new PartnerKeyConverter();
+
+            PartnerKeyEditor.EditableMode = EditableMode.None;
+
+            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, PartnerKeyEditor, null, null, null);
+        }
+
+        /// <summary>
+        /// Add a column that shows a time value in localised short string format.  Data should be in the form of a numeric seconds, or a parsable HH:MM:SS string.
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        public void AddShortTimeColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+            SourceGrid.Cells.Editors.TextBoxUITypeEditor TimeEditor = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(DateTime));
+            TimeEditor.EditableMode = EditableMode.None;
+            TimeEditor.TypeConverter = new Ict.Common.TypeConverter.TShortTimeConverter();
+
+            AddTextColumn(AColumnTitle, ADataColumn, -1, TimeEditor);
+        }
+
+        /// <summary>
+        /// Add a column that shows a time value in localised long string format.  Data should be in the form of a numeric seconds, or a parsable HH:MM string.
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        public void AddLongTimeColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+            SourceGrid.Cells.Editors.TextBoxUITypeEditor TimeEditor = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(DateTime));
+            TimeEditor.EditableMode = EditableMode.None;
+            TimeEditor.TypeConverter = new Ict.Common.TypeConverter.TLongTimeConverter();
+
+            AddTextColumn(AColumnTitle, ADataColumn, -1, TimeEditor);
+        }
+
         #endregion
 
         #region Overridden Events
@@ -929,20 +1114,19 @@ namespace Ict.Common.Controls
         {
             base.OnSortedRangeRows(e);
 
-            // MessageBox.Show('Length(FRowsSelectedBeforeSort): ' + Convert.ToString(Length(FRowsSelectedBeforeSort)));
+            FSorting = true;
+
             if (FRowsSelectedBeforeSort.Length > 0)
             {
                 if (FKeepRowSelectedAfterSort)
                 {
-                    this.Selection.ResetSelection(false);
-                    this.Selection.Focus(Position.Empty, true);
-                    this.Selection.SelectRow(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, true);
+                    this.SelectRowInGrid(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, false);
                 }
 
                 this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 0), true);
             }
 
-            // MessageBox.Show('TSgrdDataGrid.OnSortedRangeRows');
+            FSorting = false;
         }
 
         /// <summary>
@@ -1160,14 +1344,24 @@ namespace Ict.Common.Controls
         ///
         /// DataSourceRowToIndex2 manually iterates through the Grid's DataView and compares Rows objects. This works!
         /// </summary>
-        /// <returns>void</returns>
+        /// <returns>The 0-based index of the specified DataRowView in the grid's DataView</returns>
         public int DataSourceRowToIndex2(DataRowView ADataRowView)
+        {
+            return DataSourceRowToIndex2(ADataRowView.Row);
+        }
+
+        /// <summary>
+        /// This overload takes a DataRow as the parameter in place of a DataRowView.  See also the comment for the DataRowView overload.
+        /// </summary>
+        /// <param name="ADataRow">The Row object whose rowindex is required</param>
+        /// <returns>The 0-based index of the specified DataRow in the grid's DataView</returns>
+        public int DataSourceRowToIndex2(DataRow ADataRow)
         {
             int RowIndex = -1;
 
             for (int Counter2 = 0; Counter2 < (this.DataSource as BoundDataView).DataView.Count; Counter2++)
             {
-                if ((this.DataSource as BoundDataView).DataView[Counter2].Row == ADataRowView.Row)
+                if ((this.DataSource as BoundDataView).DataView[Counter2].Row == ADataRow)
                 {
                     RowIndex = Counter2;
                 }
@@ -1176,19 +1370,112 @@ namespace Ict.Common.Controls
             return RowIndex;
         }
 
-        /// select a row in the grid, and invoke the even for FocusedRowChanged
+        /// <summary>
+        /// Returns the index of the currently selected row or -1 if no row is selected
+        /// </summary>
+        /// <returns>int</returns>
+        public int SelectedRowIndex()
+        {
+            int rowIndex = -1;
+
+            SourceGrid.RangeRegion selectedRegion = Selection.GetSelectionRegion();
+
+            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            {
+                rowIndex = selectedRegion.GetRowsIndex()[0];
+            }
+
+            return rowIndex;
+        }
+
+        /// select a row in the grid without checking the bounds
         public void SelectRowInGrid(Int32 ARowNumberInGrid)
         {
+            SelectRowInGrid(ARowNumberInGrid, false);
+        }
+
+        /// select a row in the grid.  By default generate the event(s) for focus changes.
+        public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit)
+        {
+            if (Rows.Count <= 1)
+            {
+                return;
+            }
+
+            if (ASelectBorderIfOutsideLimit)
+            {
+                if (ARowNumberInGrid >= Rows.Count)
+                {
+                    ARowNumberInGrid = Rows.Count - 1;
+                }
+
+                if ((ARowNumberInGrid < 1) && (Rows.Count > 1))
+                {
+                    ARowNumberInGrid = 1;
+                }
+            }
+
+            // These two calls will generate rowLeaving events ONLY WHEN the grid is the current focussed control.
+            // Normally when this is called from manual code the grid will not have the focus.  Instead the control
+            // whose click event you are responding to will be focussed, so these calls will simply select the desired row without
+            // any consequent events.
+            // When events are fired they will probably result in updating a details panel
+            // When events are not fired you may need to update the details manually
             this.Selection.ResetSelection(false);
             this.Selection.SelectRow(ARowNumberInGrid, true);
 
             // scroll to the row
-            this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
+            ShowCell(ARowNumberInGrid);
+        }
 
-            // invoke the event for FocusedRowChanged
-            this.Selection.FocusRow(ARowNumberInGrid);
+        /// <summary>
+        /// This is the OpenPetra override.  It scrolls the window so that the specified row is shown.
+        /// The standard grid behaviour would be simply to ensure the selected row is within the grid.
+        /// With this method, where possible there is always one unselected row above or one row below.
+        /// </summary>
+        /// <param name="ARowNumberInGrid">The grid row number that needs to be inside the viewport</param>
+        /// <returns>False if the grid scrolls to a new position.  True if the specified row is already in the view port</returns>
+        public bool ShowCell(int ARowNumberInGrid)
+        {
+            // Assume we will show the specified row
+            int rowToShow = ARowNumberInGrid;
 
-            //FocusRowEntered.Invoke(this, new SourceGrid.RowEventArgs(ARowNumberInGrid));
+            // Get the list of displayed rows, not including partial rows
+            Rectangle displayRectangle = this.DisplayRectangle;
+
+            List <int>displayedRows = this.Rows.RowsInsideRegion(displayRectangle.Y, displayRectangle.Height, false, false);
+
+            if (displayedRows.Count >= 3)
+            {
+                // If the row to show is the current top row or above, we ensure that we show the row above the selected one
+                // If the row to show is the current bottom row or below, we ensure we show the row below the selected one
+                if (rowToShow <= displayedRows[0])
+                {
+                    rowToShow = Math.Max(rowToShow - 1, 1);
+                }
+                else if (rowToShow >= displayedRows[displayedRows.Count - 1])
+                {
+                    rowToShow = Math.Min(rowToShow + 1, Rows.Count - 1);
+                }
+                else
+                {
+                    // It is in the view port already
+                    return true;
+                }
+            }
+
+            // So use the standard grid call to show the row we have come up with.
+            // Note: this call is misleading!  Intellisense has the boolean as 'ignorePartial', but actually the parameter is passed direct to
+            //  the call to list all rows in the viewport and INCLUDE partial!!  Having got this list, the decision is made whether to scroll.
+            //  So we pass false so as not to include partial rows in this decision.
+            return this.ShowCell(new SourceGrid.Position(rowToShow, 0), false);
+        }
+
+        /// make sure the grid scrolls to the selected row to have it in the visible area
+        public void ViewSelectedRow()
+        {
+            // scroll to the row
+            ShowCell(this.SelectedRowIndex());
         }
 
         /// <summary>
@@ -1324,8 +1611,8 @@ namespace Ict.Common.Controls
                 if (NewSelectedItemRow != -1)
                 {
                     // A matching Row was found after the currently selected row, so select it
-                    // Scroll grid to line where the new record is now displayed
-                    this.ShowCell(new Position(NewSelectedItemRow + 1, 0), false);
+                    // Scroll grid to line where the new record is now displayed and keep the focus on the grid
+                    this.ShowCell(NewSelectedItemRow + 1);
                     this.Selection.Focus(new Position(NewSelectedItemRow + 1, 0), true);
                 }
                 else
@@ -1345,8 +1632,8 @@ namespace Ict.Common.Controls
 
                     //                  MessageBox.Show("Only found Row above CurrentGridRow! NewSelectedItemRow: " + NewSelectedItemRow.ToString());
 
-                    // Scroll grid to line where the new record is now displayed
-                    this.ShowCell(new Position(NewSelectedItemRow + 1, 0), false);
+                    // Scroll grid to line where the new record is now displayed and keep the focus on the grid
+                    this.ShowCell(NewSelectedItemRow + 1);
                     this.Selection.Focus(new Position(NewSelectedItemRow + 1, 0), true);
                 }
             }
@@ -1369,29 +1656,19 @@ namespace Ict.Common.Controls
             {
                 // Key for scrolling to and selecting the first row in the Grid
                 // MessageBox.Show('Home pressed!');
-                this.Selection.ResetSelection(false);
-                this.Selection.Focus(Position.Empty, false);
-                this.Selection.SelectRow(1, true);
+                SelectRowInGrid(1);
 
-                // Scroll grid to line where the selection is now displayed
-                this.ShowCell(new Position(1, 0), false);
-
-                // Give focus to the rows so that Cursor keys, PageUp/PageDown, etc. work
-                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 1), false);
+                // keep the focus on the grid
+                this.Selection.Focus(new Position(1, 0), true);
             }
             // Key for scrolling to and selecting the last row in the Grid
             else if (AKeyEventArgs.KeyCode == Keys.End)
             {
                 // MessageBox.Show('End pressed!  Rows: ' + this.Rows.Count.ToString);
-                this.Selection.ResetSelection(false);
-                this.Selection.Focus(Position.Empty, false);
-                this.Selection.SelectRow(this.Rows.Count - 1, true);
+                SelectRowInGrid(this.Rows.Count - 1);
 
-                // Scroll grid to line where the selection is now displayed
-                this.ShowCell(new Position(this.Rows.Count - 1, 0), false);
-
-                // Give focus to the rows so that Cursor keys, PageUp/PageDown, etc. work
-                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 1), false);
+                // keep the focus on the grid
+                this.Selection.Focus(new Position(this.Rows.Count - 1, 0), true);
             }
             // Key for firing OnInsertKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Insert)
@@ -1408,6 +1685,14 @@ namespace Ict.Common.Controls
                 }
 
                 this.OnInsertKeyPressed(new RowEventArgs(SelectedDataRow));
+
+                //TODO: check if this will work for tabbed forms that contain subforms
+                //If a New button exists call its code.
+                if (this.FindForm().Controls.Find("btnNew", true).Length > 0)
+                {
+                    System.Windows.Forms.Button insertButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnNew", true)[0];
+                    insertButton.PerformClick();
+                }
             }
             // Key for firing OnDeleteKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Delete)
@@ -1424,6 +1709,14 @@ namespace Ict.Common.Controls
                 }
 
                 this.OnDeleteKeyPressed(new RowEventArgs(SelectedDataRow));
+
+                //TODO: check if this will work for tabbed forms that contain subforms
+                //If a Delete button exists call its code.
+                if (this.FindForm().Controls.Find("btnDelete", true).Length > 0)
+                {
+                    System.Windows.Forms.Button deleteButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnDelete", true)[0];
+                    deleteButton.PerformClick();
+                }
             }
             // Keys that can trigger AutoFind
             else if (((AKeyEventArgs.KeyCode >= Keys.A)

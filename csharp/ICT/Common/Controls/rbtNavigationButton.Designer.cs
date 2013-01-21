@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,10 +56,9 @@ namespace Ict.Common.Controls
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TRbtNavigationButton));
+            new System.ComponentModel.ComponentResourceManager(typeof(TRbtNavigationButton));
 
             this.lblCaption = new System.Windows.Forms.Label();
-            this.pbxIcon = new System.Windows.Forms.PictureBox();
 
             this.SuspendLayout();
 
@@ -73,19 +72,11 @@ namespace Ict.Common.Controls
             this.lblCaption.Size = new System.Drawing.Size(168, 22);
 
             //
-            // pbxIcon
-            //
-            this.pbxIcon.BackColor = System.Drawing.Color.Transparent;
-            this.pbxIcon.Location = new System.Drawing.Point(8, 5);
-            this.pbxIcon.Name = "pbxIcon";
-            this.pbxIcon.Size = new System.Drawing.Size(32, 32);
-
-            //
             // TRbtNavigationButton
             //
             this.Size = new System.Drawing.Size(184, 28);
             this.Controls.Add(lblCaption);
-            this.Controls.Add(pbxIcon);
+            this.DoubleBuffered = true;
             this.Name = "TRbtNavigationButton";
 
             this.ResumeLayout(false);
@@ -93,6 +84,5 @@ namespace Ict.Common.Controls
         }
 
         private System.Windows.Forms.Label lblCaption;
-        private System.Windows.Forms.PictureBox pbxIcon;
     }
 }

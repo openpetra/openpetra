@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="currentReport" value="eString:Partner by Outreach" />
+  <Parameter id="param_events" value="eString:" />
+  <Parameter id="param_status_cancelled" value="eBoolean:true" />
+  <Parameter id="param_status_rejected" value="eBoolean:false" />
+  <Parameter id="param_status_accepted" value="eBoolean:true" />
+  <Parameter id="param_status_hold" value="eBoolean:true" />
+  <Parameter id="param_status_enquiry" value="eBoolean:false" />
+  <Parameter id="param_active" value="eBoolean:true" />
+  <Parameter id="param_mailing_addresses_only" value="eBoolean:false" />
+  <Parameter id="param_families_only" value="eBoolean:false" />
+  <Parameter id="param_exclude_no_solicitations" value="eBoolean:true" />
+</Parameters>

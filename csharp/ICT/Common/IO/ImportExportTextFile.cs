@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,9 +34,12 @@ namespace Ict.Common.IO
     /// </summary>
     public class TImportExportTextFile
     {
+        /// <summary>
+        /// This can be used (and changed) from outside
+        /// </summary>
+        private string dateFormat = "dd/MM/yyyy";
         private const string QUOTE_MARKS = "\"";
         private const string SPACE = "  ";
-        private string DATEFORMAT = "dd/MM/yyyy";
 
         /// <summary>
         /// this contains the context of the text file, all Write functions write into this string,
@@ -55,6 +58,42 @@ namespace Ict.Common.IO
 
         private String FCurrentLine;
         private Int32 FCurrentLineCounter;
+
+        /// <summary>
+        /// read the current line counter
+        /// </summary>
+        public Int32 CurrentLineCounter
+        {
+            get
+            {
+                return FCurrentLineCounter;
+            }
+        }
+
+        /// <summary>
+        /// Access the current Date Format for import / export
+        /// </summary>
+        public string DATEFORMAT
+        {
+            get
+            {
+                return dateFormat;
+            }
+            set
+            {
+                dateFormat = value;
+            }
+        }
+        /// <summary>
+        /// read the current line
+        /// </summary>
+        public string CurrentLine
+        {
+            get
+            {
+                return FCurrentLine;
+            }
+        }
 
         /// <summary>
         /// initialise the stringbuilder for writing a new file
@@ -88,11 +127,11 @@ namespace Ict.Common.IO
 
             if (DateTimeFormat.ToLower() == "dmy")
             {
-                DATEFORMAT = "dd/MM/yyyy";
+                dateFormat = "dd/MM/yyyy";
             }
             else if (DateTimeFormat.ToLower() == "mdy")
             {
-                DATEFORMAT = "MM/dd/yyyy";
+                dateFormat = "MM/dd/yyyy";
             }
             else
             {
@@ -124,7 +163,37 @@ namespace Ict.Common.IO
                 throw new Exception("ReadNextStringItem: there is no data anymore");
             }
 
-            string NextStringItem = StringHelper.GetNextCSV(ref FCurrentLine, SPACE);
+            string NextStringItem = string.Empty;
+
+            // sometimes strings go across several lines
+            if (FCurrentLine[0] == '"')
+            {
+                bool AcrossSeveralLines = false;
+
+                do
+                {
+                    if (AcrossSeveralLines)
+                    {
+                        FCurrentLineCounter++;
+                        FCurrentLine += Environment.NewLine + FLinesToParse[FCurrentLineCounter].TrimEnd();
+                    }
+
+                    try
+                    {
+                        NextStringItem = StringHelper.GetNextCSV(ref FCurrentLine, SPACE);
+                        AcrossSeveralLines = false;
+                    }
+                    catch (System.IndexOutOfRangeException)
+                    {
+                        // the current data row is across several lines
+                        AcrossSeveralLines = true;
+                    }
+                } while (AcrossSeveralLines);
+            }
+            else
+            {
+                NextStringItem = StringHelper.GetNextCSV(ref FCurrentLine, SPACE);
+            }
 
             while (FCurrentLine.Length == 0 && FCurrentLineCounter < FLinesToParse.Length - 1)
             {
@@ -196,6 +265,11 @@ namespace Ict.Common.IO
             if (NextItem.StartsWith(QUOTE_MARKS))
             {
                 NextItem = NextItem.Substring(QUOTE_MARKS.Length, NextItem.Length - 2 * QUOTE_MARKS.Length);
+            }
+
+            if (NextItem == "?")
+            {
+                return "";
             }
 
             return NextItem;
@@ -305,6 +379,21 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// read an Int64 value
+        /// </summary>
+        public Int64 ? ReadNullableInt64()
+        {
+            string s = ReadNextStringItem();
+
+            if (s == "?")
+            {
+                return new Nullable <Int64>();
+            }
+
+            return Convert.ToInt64(s);
+        }
+
+        /// <summary>
         /// write an Int32 value
         /// </summary>
         /// <param name="AValue"></param>
@@ -325,7 +414,24 @@ namespace Ict.Common.IO
         /// </summary>
         public Int32 ReadInt32()
         {
-            return Convert.ToInt32(ReadNextStringItem());
+            string s = ReadNextStringItem();
+
+            return Convert.ToInt32(s);
+        }
+
+        /// <summary>
+        /// read an Int32 value
+        /// </summary>
+        public Int32 ? ReadNullableInt32()
+        {
+            string s = ReadNextStringItem();
+
+            if (s == "?")
+            {
+                return new Nullable <Int32>();
+            }
+
+            return Convert.ToInt32(s);
         }
 
         /// <summary>
@@ -350,7 +456,9 @@ namespace Ict.Common.IO
         /// </summary>
         public decimal ReadDecimal()
         {
-            return Convert.ToDecimal(ReadNextStringItem(), CultureInfo.InvariantCulture);
+            string s = ReadNextStringItem();
+
+            return Convert.ToDecimal(s, CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -373,7 +481,7 @@ namespace Ict.Common.IO
             else
             {
                 FTextToWrite.Append(QUOTE_MARKS);
-                FTextToWrite.Append(AValue.Value.ToString(DATEFORMAT));
+                FTextToWrite.Append(AValue.Value.ToString(dateFormat));
                 FTextToWrite.Append(QUOTE_MARKS);
             }
 
@@ -387,12 +495,18 @@ namespace Ict.Common.IO
         {
             string NextItem = ReadString();
 
-            if (NextItem == "?")
+            if (NextItem.Length == 0)
             {
                 return new Nullable <DateTime>();
             }
 
-            return DateTime.ParseExact(NextItem, DATEFORMAT, CultureInfo.InvariantCulture);
+            if (NextItem.Length != dateFormat.Length)
+            {
+                // eg. pm_special_need.s_date_created_d is stored with just two digits for the year
+                return DateTime.ParseExact(NextItem, dateFormat.Replace("yyyy", "yy"), CultureInfo.InvariantCulture);
+            }
+
+            return DateTime.ParseExact(NextItem, dateFormat, CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -407,7 +521,7 @@ namespace Ict.Common.IO
             }
 
             FTextToWrite.Append(QUOTE_MARKS);
-            FTextToWrite.Append(AValue.ToString(DATEFORMAT));
+            FTextToWrite.Append(AValue.ToString(dateFormat));
             FTextToWrite.Append(QUOTE_MARKS);
 
             FStartOfLine = false;
@@ -420,7 +534,7 @@ namespace Ict.Common.IO
         {
             string NextItem = ReadString();
 
-            return DateTime.ParseExact(NextItem, DATEFORMAT, CultureInfo.InvariantCulture);
+            return DateTime.ParseExact(NextItem, dateFormat, CultureInfo.InvariantCulture);
         }
     }
 }

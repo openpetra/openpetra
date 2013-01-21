@@ -28,57 +28,57 @@ using System.Globalization;
 using GNU.Gettext;
 using Ict.Common;
 
-namespace I18N
+namespace Ict.Testing.I18N
 {
-/// <summary>
-/// see http://www.gnu.org/software/gettext/manual/gettext.html#C_0023
-/// c:\programme\poedit\bin\xgettext.exe --strict --no-location --from-code=UTF-8 u:\csharp\ICT\Testing\Common\I18N\Program.cs -o u:\csharp\ICT\Testing\Testing\Common\I18N\de.po
-/// use -j for second time
-/// --no-location, because if code changes, the lines will change, and -j will add a new position line
-/// in Notepad++: change format to UTF-8 without BOM
-/// in mono shell, or with mono bin path in PATH: PATH=%PATH%;c:\Programme\Mono-2.4.3\bin;c:\Programme\Poedit\bin
-///     msgfmt csharp\Ict\Testing\Common\I18N\de.po -d csharp\ICT\Testing\_bin\Debug --locale=de-DE --resource=OpenPetra --csharp
-/// to merge a custom language file (eg. organisation specific), use msgcat:
-///     msgcat csharp\Ict\Testing\Common\I18N\de-custom.po csharp\Ict\Testing\Common\I18N\de.po --use-first -o csharp\Ict\Testing\Common\I18N\de-test.po
-/// </summary>
-class Program
-{
-    public static void Main(string[] args)
+    /// <summary>
+    /// see http://www.gnu.org/software/gettext/manual/gettext.html#C_0023
+    /// c:\programme\poedit\bin\xgettext.exe --strict --no-location --from-code=UTF-8 u:\csharp\ICT\Testing\Common\I18N\Program.cs -o u:\csharp\ICT\Testing\Testing\Common\I18N\de.po
+    /// use -j for second time
+    /// --no-location, because if code changes, the lines will change, and -j will add a new position line
+    /// in Notepad++: change format to UTF-8 without BOM
+    /// in mono shell, or with mono bin path in PATH: PATH=%PATH%;c:\Programme\Mono-2.4.3\bin;c:\Programme\Poedit\bin
+    ///     msgfmt csharp\Ict\Testing\Common\I18N\de.po -d csharp\ICT\Testing\_bin\Debug --locale=de-DE --resource=OpenPetra --csharp
+    /// to merge a custom language file (eg. organisation specific), use msgcat:
+    ///     msgcat csharp\Ict\Testing\Common\I18N\de-custom.po csharp\Ict\Testing\Common\I18N\de.po --use-first -o csharp\Ict\Testing\Common\I18N\de-test.po
+    /// </summary>
+    class Program
     {
-        try
+        public static void Main(string[] args)
         {
-            if (!File.Exists("de-DE/OpenPetra.resources.dll"))
+            try
             {
-                if (!Directory.Exists("de-DE"))
+                if (!File.Exists("de-DE/OpenPetra.resources.dll"))
                 {
-                    Directory.CreateDirectory("de-DE");
+                    if (!Directory.Exists("de-DE"))
+                    {
+                        Directory.CreateDirectory("de-DE");
+                    }
+
+                    File.Copy("../../Common/I18N/Sample-de-DE/OpenPetra.resources.dll", "de-DE/OpenPetra.resources.dll");
                 }
 
-                File.Copy("../../Common/I18N/Sample-de-DE/OpenPetra.resources.dll", "de-DE/OpenPetra.resources.dll");
+                Catalog.Init("de-DE", "de-DE");
+                Console.WriteLine(Thread.CurrentThread.CurrentCulture.ToString());
+                Console.WriteLine(Catalog.GetString("Hello World!"));
+                Console.WriteLine(Catalog.GetString("Test for two lines\n" + "second line"));
+                Catalog.Init("en-GB", "en-GB");
+                Console.WriteLine(Catalog.GetString("Hello World!"));
+                Console.WriteLine(Catalog.GetString("Test for two lines\n" + "second line"));
             }
-
-            Catalog.Init("de-DE", "de-DE");
-            Console.WriteLine(Thread.CurrentThread.CurrentCulture.ToString());
-            Console.WriteLine(Catalog.GetString("Hello World!"));
-            Console.WriteLine(Catalog.GetString("Test for two lines\n" + "second line"));
-            Catalog.Init("en-GB", "en-GB");
-            Console.WriteLine(Catalog.GetString("Hello World!"));
-            Console.WriteLine(Catalog.GetString("Test for two lines\n" + "second line"));
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-
-            if (e.InnerException != null)
+            catch (Exception e)
             {
-                Console.WriteLine(e.InnerException.Message);
+                Console.WriteLine(e.Message);
+
+                if (e.InnerException != null)
+                {
+                    Console.WriteLine(e.InnerException.Message);
+                }
+
+                Console.WriteLine(e.StackTrace);
             }
 
-            Console.WriteLine(e.StackTrace);
+            Console.Write(Catalog.GetString("Press any key to continue . . . "));
+            // Console.ReadKey(true);
         }
-
-        Console.Write(Catalog.GetString("Press any key to continue . . . "));
-        // Console.ReadKey(true);
     }
-}
 }

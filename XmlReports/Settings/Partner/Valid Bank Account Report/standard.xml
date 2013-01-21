@@ -1,27 +1,27 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Partner\\validbankaccountreport.xml" />
-  <Parameter id="currentReport" value="Valid Bank Account Report" />
-  <Parameter id="MaxDisplayColumns" value="5" />
-  <Parameter id="param_selection" value="one partner" />
-  <Parameter id="param_extract" value="" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="orderby0" value="Partner Class" />
-  <Parameter id="orderby1" value="Reason" />
-  <Parameter id="orderby2" value="Account No" />
-  <Parameter id="param_sortby_readable" value="Partner Class, Reason, Account No" />
-  <Parameter id="param_calculation" column="5" value="Reason" />
-  <Parameter id="param_calculation" column="6" value="Account No" />
-  <Parameter id="param_sortby_columns" value="4,5,6" />
-  <Parameter id="param_calculation" column="0" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="0" value="2.3" />
-  <Parameter id="param_calculation" column="1" value="Partner Class" />
-  <Parameter id="ColumnWidth" column="1" value="1" />
-  <Parameter id="param_calculation" column="2" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="2" value="4" />
-  <Parameter id="param_calculation" column="3" value="Account No" />
-  <Parameter id="ColumnWidth" column="3" value="2.5" />
-  <Parameter id="param_calculation" column="4" value="Reason" />
-  <Parameter id="ColumnWidth" column="4" value="12" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Partner\\validbankaccountreport.xml" />
+  <Parameter id="currentReport" value="eString:Valid Bank Account Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:5" />
+  <Parameter id="param_selection" value="eString:an extract" />
+  <Parameter id="param_extract" value="eString:" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="orderby0" value="eString:Partner Class" />
+  <Parameter id="orderby1" value="eString:Reason" />
+  <Parameter id="orderby2" value="eString:Account No" />
+  <Parameter id="param_sortby_readable" value="eString:Partner Class, Reason, Account No" />
+  <Parameter id="param_calculation" column="5" value="eString:Reason" />
+  <Parameter id="param_calculation" column="6" value="eString:Account No" />
+  <Parameter id="param_sortby_columns" value="eString:4,5,6" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4612361558371493478" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Class" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:1" />
+  <Parameter id="param_calculation" column="2" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:4" />
+  <Parameter id="param_calculation" column="3" value="eString:Account No" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_calculation" column="4" value="eString:Reason" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:12" />
 </Parameters>

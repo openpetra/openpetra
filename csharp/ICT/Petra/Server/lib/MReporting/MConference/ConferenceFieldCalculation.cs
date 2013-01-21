@@ -47,7 +47,7 @@ namespace Ict.Petra.Server.MReporting.MConference
     {
         private enum TConferenceCostTypeEnum
         {
-            cctPerDay, cctPerNight, cctPerCampaign
+            cctPerDay, cctPerNight, cctPerOutreach
         };
 
         #region member variables
@@ -63,10 +63,12 @@ namespace Ict.Petra.Server.MReporting.MConference
         private decimal FVolunteerDiscountConferenceConference;
         private decimal FRoleDiscountAccommodationPre;
         private decimal FRoleDiscountAccommodationConference;
-        private decimal FRoleDiscountAccommodationPost;
         private decimal FRoleDiscountConferencePre;
         private decimal FRoleDiscountConferenceConference;
         private decimal FRoleDiscountConferencePost;
+
+        // this does not seem to be used anywhere, see Mantis #412
+        // private decimal FRoleDiscountAccommodationPost;
 
         private decimal FConferenceDayRate;
         private decimal FConferenceRate;
@@ -85,7 +87,7 @@ namespace Ict.Petra.Server.MReporting.MConference
         private decimal FExtraCost;
 
         private decimal FCongressCosts;
-        private decimal FCampaignCosts;
+        private decimal FOutreachCosts;
         private decimal FAccommodationCosts;
         private decimal FPreAccommodationCosts;
         private decimal FPreConferenceCosts;
@@ -96,7 +98,7 @@ namespace Ict.Petra.Server.MReporting.MConference
         private bool FIsCongressVolunteer;
         private bool FIsCongressRole;
         private bool FIsCongressOnly;
-        private bool FIsCampaignOnly;
+        private bool FIsOutreachOnly;
 
         // store in this string the flags like 'P' PreConference, 'T' PostConference, 'C' Child, 'O' Omer, 'E' Early, 'L' Late
         private String FConferenceFlags;
@@ -151,7 +153,7 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// <param name="AApplicationKey"></param>
         /// <param name="ARegistrationOfficeKey"></param>
         /// <param name="AHomeOfficeKey"></param>
-        /// <param name="ACampaignType"></param>
+        /// <param name="AOutreachType"></param>
         /// <param name="ARegistrationDate"></param>
         /// <param name="AFinanceDetails">Returns the conference costs</param>
         /// <param name="AAccommodation">Returns the accommodation costs</param>
@@ -159,7 +161,7 @@ namespace Ict.Petra.Server.MReporting.MConference
         public bool CalculateOneAttendeeFieldCost(ref TRptSituation ASituation, int AAge, long APartnerKey,
             int AApplicationKey, long ARegistrationOfficeKey,
             long AHomeOfficeKey,
-            String ACampaignType, DateTime ARegistrationDate,
+            String AOutreachType, DateTime ARegistrationDate,
             out String AFinanceDetails, out String AAccommodation)
         {
             FCongressCosts = 0;
@@ -174,7 +176,7 @@ namespace Ict.Petra.Server.MReporting.MConference
             FIsCongressVolunteer = false;
             FIsCongressRole = false;
             FIsCongressOnly = false;
-            FIsCampaignOnly = false;
+            FIsOutreachOnly = false;
 
             decimal ChildDiscount;
             decimal ChildDiscountAccommodation;
@@ -264,9 +266,9 @@ namespace Ict.Petra.Server.MReporting.MConference
                 }
             }
 
-            DetermineConferenceBasicCharges(ref ASituation, ref ShortTermerRow, ACampaignType);
+            DetermineConferenceBasicCharges(ref ASituation, ref ShortTermerRow, AOutreachType);
 
-            DetermineCampaignSupplements(ref ASituation, ACampaignType, ShortTermerRow.StCongressCode, ChildDiscount);
+            DetermineOutreachSupplements(ref ASituation, AOutreachType, ShortTermerRow.StCongressCode, ChildDiscount);
 
             DetermineExtraCosts(ref ASituation, ShortTermerRow.PartnerKey);
 
@@ -290,7 +292,7 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             int CalculationDays = 0;
 
-            if (FConferenceCostType != TConferenceCostTypeEnum.cctPerCampaign)
+            if (FConferenceCostType != TConferenceCostTypeEnum.cctPerOutreach)
             {
                 /*
                  * Calculations when charge by the day for all
@@ -318,16 +320,16 @@ namespace Ict.Petra.Server.MReporting.MConference
                     }
                 }
 
-                FCampaignCosts = 0;
+                FOutreachCosts = 0;
             }
             else
             {
                 /*
-                 * Calculations when charging by campaign length
+                 * Calculations when charging by outreach length
                  * Note: volunteers and short stays override this calculation
                  * Note: this does not include pre and post congress stays
                  */
-                decimal TmpCost = GetCampaignCost(ref ASituation);
+                decimal TmpCost = GetOutreachCost(ref ASituation);
 
                 FCongressCosts = FConferenceRate * (100 - ChildDiscount) / 100;
 
@@ -341,8 +343,8 @@ namespace Ict.Petra.Server.MReporting.MConference
                         GeneralDiscountApplied = true;
                     }
 
-                    // No child discount for campaign
-                    FCampaignCosts = (TmpCost - FConferenceRate) *
+                    // No child discount for outreach
+                    FOutreachCosts = (TmpCost - FConferenceRate) *
                                      (100 - FRoleDiscountConferencePost) / 100;
 
                     if (FRoleDiscountConferencePost != 0)
@@ -352,9 +354,9 @@ namespace Ict.Petra.Server.MReporting.MConference
                 }
             }
 
-            if (ShortTermerRow.StXyzTbdOnlyFlag)
+            if (ShortTermerRow.StOutreachOnlyFlag)
             {
-                // Reset when campaign only
+                // Reset when outreach only
                 FCongressCosts = 0;
             }
 
@@ -503,12 +505,12 @@ namespace Ict.Petra.Server.MReporting.MConference
              * Short stay.   NOTE: overrides all the above charges
              * NOTE: will override an above calculation for the congress charge
              */
-            if (FConferenceCostType == TConferenceCostTypeEnum.cctPerCampaign)
+            if (FConferenceCostType == TConferenceCostTypeEnum.cctPerOutreach)
             {
                 // consider short stay only if it is not on a daily basis
                 if (((ShortTermerRow.Departure.Value.Subtract(ShortTermerRow.Arrival.Value).Days * 2) <= FConferenceDays)
                     && (ShortTermerRow.StCongressCode != "VOL")
-                    && (!ShortTermerRow.StXyzTbdOnlyFlag))
+                    && (!ShortTermerRow.StOutreachOnlyFlag))
                 {
                     FCongressCosts = ShortTermerRow.Departure.Value.Subtract(ShortTermerRow.Arrival.Value).Days * FConferenceDayRate *
                                      (100 - ChildDiscount) / 100;
@@ -542,12 +544,12 @@ namespace Ict.Petra.Server.MReporting.MConference
                 FCongressCosts = 0;
             }
 
-            if (FCampaignCosts < 0)
+            if (FOutreachCosts < 0)
             {
-                FCampaignCosts = 0;
+                FOutreachCosts = 0;
             }
 
-            AFinanceDetails = (FCampaignCosts + FCongressCosts + FExtraCost + FSupportCost + FPreConferenceCosts + FPostConferenceCosts).ToString(
+            AFinanceDetails = (FOutreachCosts + FCongressCosts + FExtraCost + FSupportCost + FPreConferenceCosts + FPostConferenceCosts).ToString(
                 "#0.00");
             AAccommodation = (FAccommodationCosts + FPreAccommodationCosts + FPostAccommodationCosts).ToString("#0.00") + " ";
 
@@ -856,7 +858,7 @@ namespace Ict.Petra.Server.MReporting.MConference
         }
 
         /// <summary>
-        /// Determine the conference cost type. Either per day, per night, by campaign.
+        /// Determine the conference cost type. Either per day, per night, by outreach.
         /// </summary>
         /// <param name="ASituation">Current report situation. Used to get a database transacion</param>
         /// <param name="AConferenceKey">Unique partner key of the conference</param>
@@ -867,7 +869,7 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             ConferenceOptionTable = PcConferenceOptionAccess.LoadViaPcConference(AConferenceKey, ASituation.GetDatabaseConnection().Transaction);
 
-            FConferenceCostType = TConferenceCostTypeEnum.cctPerCampaign;
+            FConferenceCostType = TConferenceCostTypeEnum.cctPerOutreach;
 
             foreach (DataRow Row in ConferenceOptionTable.Rows)
             {
@@ -931,7 +933,6 @@ namespace Ict.Petra.Server.MReporting.MConference
             FParticipantDiscountAccommodationPre = 0;
             FParticipantDiscountConferencePre = 0;
             FRoleDiscountAccommodationConference = 0;
-            FRoleDiscountAccommodationPost = 0;
             FRoleDiscountAccommodationPre = 0;
             FRoleDiscountConferenceConference = 0;
             FRoleDiscountConferencePost = 0;
@@ -940,6 +941,9 @@ namespace Ict.Petra.Server.MReporting.MConference
             FVolunteerDiscountAccommodationPre = 0;
             FVolunteerDiscountConferenceConference = 0;
             FVolunteerDiscountConferencePre = 0;
+
+            // this does not seem to be used anywhere, see Mantis #412
+            // FRoleDiscountAccommodationPost = 0;
 
             DiscountTable = PcDiscountAccess.LoadViaPcConference(AConferenceKey, ASituation.GetDatabaseConnection().Transaction);
 
@@ -974,7 +978,8 @@ namespace Ict.Petra.Server.MReporting.MConference
                         }
                         else if (Row.Validity == "POST")
                         {
-                            FRoleDiscountAccommodationPost = Row.Discount;
+                            // this does not seem to be used anywhere, see Mantis #412
+                            // FRoleDiscountAccommodationPost = Row.Discount;
                         }
                     }
                 }
@@ -1030,10 +1035,10 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// </summary>
         /// <param name="ASituation"></param>
         /// <param name="AShortTermerRow">The row of the attendee from the personnel short termer table</param>
-        /// <param name="ACampaignType"></param>
+        /// <param name="AOutreachType"></param>
         /// <returns></returns>
         private bool DetermineConferenceBasicCharges(ref TRptSituation ASituation, ref PmShortTermApplicationRow AShortTermerRow,
-            String ACampaignType)
+            String AOutreachType)
         {
             FAttendeeStartDate = FConferenceStartDate;
             FAttendeeEndDate = FConferenceEndDate;
@@ -1052,50 +1057,30 @@ namespace Ict.Petra.Server.MReporting.MConference
                 FConferenceRate = 0;
             }
 
-            //Find the campaign length for this individual
+            //Find the outreach length for this individual
             // use the confirmed option code (the last two characters should give the number of days
             FAttendeeDays = 0;
-            long CampaignOption = 0;
+            long OutreachOption = 0;
             FIsCongressOnly = false;
 
             FAttendeeDays = GetConferenceLengthFromConferenceCode(AShortTermerRow.ConfirmedOptionCode);
 
             if (FAttendeeDays > 0)
             {
-                CampaignOption = AShortTermerRow.StConfirmedOption;
-            }
-            else
-            {
-                // If the confirmed option has not given us a valid campaign length then use option 1
-                FAttendeeDays = GetConferenceLengthFromConferenceCode(AShortTermerRow.Option1Code);
-
-                if (FAttendeeDays > 0)
-                {
-                    CampaignOption = AShortTermerRow.StOption1;
-                }
-                else
-                {
-                    // If the option 1 has not given us a valid campaign length then use option 2
-                    FAttendeeDays = GetConferenceLengthFromConferenceCode(AShortTermerRow.Option2Code);
-
-                    if (FAttendeeDays > 0)
-                    {
-                        CampaignOption = AShortTermerRow.StOption2;
-                    }
-                }
+                OutreachOption = AShortTermerRow.StConfirmedOption;
             }
 
             if (FAttendeeDays == 0)
             {
                 // None of the options has given us a valid number of days so start with the conference length
                 FAttendeeDays = FConferenceDays;
-                CampaignOption = FConferenceKey;
+                OutreachOption = FConferenceKey;
             }
 
             if (FIsCongressOnly
-                && (ACampaignType != "CNGRSS"))
+                && (AOutreachType != "CNGRSS"))
             {
-                GetCongressOptionRates(ref ASituation, CampaignOption, ref AShortTermerRow);
+                GetCongressOptionRates(ref ASituation, OutreachOption, ref AShortTermerRow);
             }
 
             return true;
@@ -1106,21 +1091,21 @@ namespace Ict.Petra.Server.MReporting.MConference
         #region Get Applicant specific conference data
 
         /// <summary>
-        /// Returns the length of the conference based on the campaign code
+        /// Returns the length of the conference based on the outreach code
         /// </summary>
-        /// <param name="ACampaignCode"></param>
+        /// <param name="AOutreachCode"></param>
         /// <returns></returns>
-        private int GetConferenceLengthFromConferenceCode(String ACampaignCode)
+        private int GetConferenceLengthFromConferenceCode(String AOutreachCode)
         {
             int NumberOfDays = 0;
 
             FIsCongressOnly = false;
 
-            if (ACampaignCode.Length >= 13)
+            if (AOutreachCode.Length >= 13)
             {
                 try
                 {
-                    NumberOfDays = Convert.ToInt32(ACampaignCode.Substring(11, 2));
+                    NumberOfDays = Convert.ToInt32(AOutreachCode.Substring(11, 2));
                 }
                 catch
                 {
@@ -1128,8 +1113,8 @@ namespace Ict.Petra.Server.MReporting.MConference
                 }
             }
 
-            if ((ACampaignCode.Length >= 8)
-                && (ACampaignCode.Substring(5, 3) == "CNG"))
+            if ((AOutreachCode.Length >= 8)
+                && (AOutreachCode.Substring(5, 3) == "CNG"))
             {
                 FIsCongressOnly = true;
             }
@@ -1143,15 +1128,15 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// The conference rate and arrival/departure need to be adjusted
         /// </summary>
         /// <param name="ASituation"></param>
-        /// <param name="ACampaignOption">The unit key of the campaign</param>
+        /// <param name="AOutreachOption">The unit key of the outreach</param>
         /// <param name="AShortTermerRow">The row of the attendee from the personnel short termer table</param>
         /// <returns></returns>
-        private bool GetCongressOptionRates(ref TRptSituation ASituation, long ACampaignOption,
+        private bool GetCongressOptionRates(ref TRptSituation ASituation, long AOutreachOption,
             ref PmShortTermApplicationRow AShortTermerRow)
         {
             PPartnerLocationTable PartnerLocationTable;
 
-            PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(ACampaignOption, ASituation.GetDatabaseConnection().Transaction);
+            PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(AOutreachOption, ASituation.GetDatabaseConnection().Transaction);
 
             if (PartnerLocationTable.Rows.Count < 1)
             {
@@ -1177,7 +1162,7 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             PcConferenceCostTable ConferenceCostTable;
 
-            ConferenceCostTable = PcConferenceCostAccess.LoadByPrimaryKey(ACampaignOption,
+            ConferenceCostTable = PcConferenceCostAccess.LoadByPrimaryKey(AOutreachOption,
                 FAttendeeDays, ASituation.GetDatabaseConnection().Transaction);
 
             if (ConferenceCostTable.Rows.Count > 0)
@@ -1189,21 +1174,21 @@ namespace Ict.Petra.Server.MReporting.MConference
         }
 
         /// <summary>
-        /// Find any applicable campaign supplement and puts them into FSupportCost member
+        /// Find any applicable outreach supplement and puts them into FSupportCost member
         /// </summary>
         /// <param name="ASituation"></param>
-        /// <param name="ACampaignType"></param>
+        /// <param name="AOutreachType"></param>
         /// <param name="ACongressCode"></param>
         /// <param name="AChildDiscount"></param>
         /// <returns></returns>
-        private bool DetermineCampaignSupplements(ref TRptSituation ASituation, String ACampaignType,
+        private bool DetermineOutreachSupplements(ref TRptSituation ASituation, String AOutreachType,
             String ACongressCode, decimal AChildDiscount)
         {
             PcSupplementTable SupplementTable;
 
             FSupportCost = 0;
 
-            SupplementTable = PcSupplementAccess.LoadByPrimaryKey(FConferenceKey, ACampaignType, ASituation.GetDatabaseConnection().Transaction);
+            SupplementTable = PcSupplementAccess.LoadByPrimaryKey(FConferenceKey, AOutreachType, ASituation.GetDatabaseConnection().Transaction);
 
             if (SupplementTable.Rows.Count > 0)
             {
@@ -1435,12 +1420,12 @@ namespace Ict.Petra.Server.MReporting.MConference
         }
 
         /// <summary>
-        /// Returns the cost for the campaign. There might be different charges of the campaign
+        /// Returns the cost for the outreach. There might be different charges of the outreach
         /// depending how long the attendee takes part.
         /// </summary>
         /// <param name="ASituation"></param>
         /// <returns></returns>
-        private decimal GetCampaignCost(ref TRptSituation ASituation)
+        private decimal GetOutreachCost(ref TRptSituation ASituation)
         {
             PcConferenceCostTable ConferenceCostTable;
 
@@ -1609,13 +1594,13 @@ namespace Ict.Petra.Server.MReporting.MConference
             newColumn = new DataColumn("Total", Type.GetType("System.Int32"));
             newColumn.DefaultValue = 0;
             FResultDataTable.Columns.Add(newColumn);
-            newColumn = new DataColumn("Campaign Only", Type.GetType("System.Int32"));
+            newColumn = new DataColumn("Outreach Only", Type.GetType("System.Int32"));
             newColumn.DefaultValue = 0;
             FResultDataTable.Columns.Add(newColumn);
             newColumn = new DataColumn("Conference Fees", Type.GetType("System.Decimal"));
             newColumn.DefaultValue = 0;
             FResultDataTable.Columns.Add(newColumn);
-            newColumn = new DataColumn("Campaign Fees", Type.GetType("System.Decimal"));
+            newColumn = new DataColumn("Outreach Fees", Type.GetType("System.Decimal"));
             newColumn.DefaultValue = 0;
             FResultDataTable.Columns.Add(newColumn);
             newColumn = new DataColumn("Supplement", Type.GetType("System.Decimal"));
@@ -1659,13 +1644,13 @@ namespace Ict.Petra.Server.MReporting.MConference
             decimal TotalFees = 0;
             // Add the costs
             CurrentRow["Conference Fees"] = (decimal)CurrentRow["Conference Fees"] + FCongressCosts + FPreConferenceCosts + FPostConferenceCosts;
-            CurrentRow["Campaign Fees"] = (decimal)CurrentRow["Campaign Fees"] + FCampaignCosts;
+            CurrentRow["Outreach Fees"] = (decimal)CurrentRow["Outreach Fees"] + FOutreachCosts;
             CurrentRow["Supplement"] = (decimal)CurrentRow["Supplement"] + FSupportCost;
             CurrentRow["Extra Costs"] = (decimal)CurrentRow["Extra Costs"] + FExtraCost;
             CurrentRow["Accommodation"] = (decimal)CurrentRow["Accommodation"] + FAccommodationCosts + FPreAccommodationCosts +
                                           FPostAccommodationCosts;
             TotalFees = FCongressCosts + FPreConferenceCosts + FPostConferenceCosts +
-                        FCampaignCosts + FSupportCost + FExtraCost + FAccommodationCosts + FPreAccommodationCosts + FPostAccommodationCosts;
+                        FOutreachCosts + FSupportCost + FExtraCost + FAccommodationCosts + FPreAccommodationCosts + FPostAccommodationCosts;
             CurrentRow["Total Fees"] = (decimal)CurrentRow["Total Fees"] + TotalFees;
 
             // Add the counts of the attendees
@@ -1679,9 +1664,9 @@ namespace Ict.Petra.Server.MReporting.MConference
             {
                 CurrentRow["Congress Only"] = (Int32)CurrentRow["Congress Only"] + 1;
             }
-            else if (FIsCampaignOnly)
+            else if (FIsOutreachOnly)
             {
-                CurrentRow["Campaign Only"] = (Int32)CurrentRow["Campaign Only"] + 1;
+                CurrentRow["Outreach Only"] = (Int32)CurrentRow["Outreach Only"] + 1;
             }
             else if (FIsCongressRole)
             {
@@ -1709,7 +1694,7 @@ namespace Ict.Petra.Server.MReporting.MConference
             DataRow TotalRow = FResultDataTable.Rows[ResultTableRowIndex];
 
             TotalRow["Conference Fees"] = (decimal)TotalRow["Conference Fees"] + FCongressCosts + FPreConferenceCosts + FPostConferenceCosts;
-            TotalRow["Campaign Fees"] = (decimal)TotalRow["Campaign Fees"] + FCampaignCosts;
+            TotalRow["Outreach Fees"] = (decimal)TotalRow["Outreach Fees"] + FOutreachCosts;
             TotalRow["Supplement"] = (decimal)TotalRow["Supplement"] + FSupportCost;
             TotalRow["Extra Costs"] = (decimal)TotalRow["Extra Costs"] + FExtraCost;
             TotalRow["Accommodation"] = (decimal)TotalRow["Accommodation"] + FAccommodationCosts + FPreAccommodationCosts + FPostAccommodationCosts;
@@ -1725,9 +1710,9 @@ namespace Ict.Petra.Server.MReporting.MConference
             {
                 TotalRow["Congress Only"] = (Int32)TotalRow["Congress Only"] + 1;
             }
-            else if (FIsCampaignOnly)
+            else if (FIsOutreachOnly)
             {
-                TotalRow["Campaign Only"] = (Int32)TotalRow["Campaign Only"] + 1;
+                TotalRow["Outreach Only"] = (Int32)TotalRow["Outreach Only"] + 1;
             }
             else if (FIsCongressRole)
             {
@@ -2004,7 +1989,7 @@ namespace Ict.Petra.Server.MReporting.MConference
             Columns[6] = new TVariant("Total");
             Columns[7] = new TVariant("Campgn Only");
             Columns[8] = new TVariant("Conf. Fees");
-            Columns[9] = new TVariant("Campaign Fees");
+            Columns[9] = new TVariant("Outreach Fees");
             Columns[10] = new TVariant("Supplement");
             Columns[11] = new TVariant("Extra Costs");
             Columns[12] = new TVariant("Accommodation");
@@ -2049,9 +2034,9 @@ namespace Ict.Petra.Server.MReporting.MConference
             Columns[4] = new TVariant(AResultRow["Congress Special Role"]);
             Columns[5] = new TVariant(AResultRow["Congress Only"]);
             Columns[6] = new TVariant(AResultRow["Total"]);
-            Columns[7] = new TVariant(AResultRow["Campaign Only"]);
+            Columns[7] = new TVariant(AResultRow["Outreach Only"]);
             Columns[8] = new TVariant(AResultRow["Conference Fees"]);
-            Columns[9] = new TVariant(AResultRow["Campaign Fees"]);
+            Columns[9] = new TVariant(AResultRow["Outreach Fees"]);
             Columns[10] = new TVariant(AResultRow["Supplement"]);
             Columns[11] = new TVariant(AResultRow["Extra Costs"]);
             Columns[12] = new TVariant(AResultRow["Accommodation"]);

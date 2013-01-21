@@ -2,10 +2,8 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraForm.yaml
     FormTitle: Supplier Transactions
     Namespace: Ict.Petra.Client.MFinance.Gui.AP
-    DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
     MasterTable: AApSupplier
-    DetailTable: AApDocument
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
     FormType: browse
     Template: windowFind
     WindowWidth: 754
@@ -13,62 +11,68 @@ RootNode:
     Actions:
         actNewInvoice: {Label=New &Invoice, ShortCut=Ctrl+I, ActionClick=CreateInvoice}        
         actNewCreditNote:{Label=New &Credit Note, ShortCut=Ctrl+R, ActionClick=CreateCreditNote}
-        actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedApDocument}
-        actReverseSelected: {Label=Re&verse Selected, ShortCut=F5}
-        actApproveTagged: {Label=&Approve Tagged, ShortCut=F6}
+        actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedTransaction}
+        actReverseSelected: {Label=Re&verse Selected, ShortCut=F5, ActionClick=ReverseSelected}
+        #actApproveTagged: {Label=&Approve Tagged, ShortCut=F6}
         actPostTagged: {Label=&Post Tagged, ShortCut=F7, ActionClick=PostTaggedDocuments}
-        actAddTaggedToPayment: {Label=Add Tagged to Pa&yment, ShortCut=F8, ActionClick=AddTaggedToPayment}
+        actAddTaggedToPayment: {Label=Pay Tagged, ShortCut=F8, ActionClick=AddTaggedToPayment}
+        actTagPayable: {ActionClick=TagAllPayable}
+        actTagPostable: {ActionClick=TagAllPostable}
         actUntagAll: {Label=&Untag All, ActionClick=UntagAll}
+        actReloadList: {ActionClick=DoRefreshButton}
+        actReprintPaymentReport: {ActionClick=PaymentReport}
     Controls:
         pnlContent:
             Dock: Fill
             Controls: [pnlCurrentSupplierInfo, pnlFilter1, pnlFilter2, pnlButtons, grdResult, pnlDisplayedBalance]
         pnlCurrentSupplierInfo:
-            Controls: [txtCurrentSupplierName, txtCurrentSupplierCurrency]
+            Controls: [txtSupplierName, txtSupplierCurrency]
             ControlsOrientation: horizontal
             Dock:Top
-        txtCurrentSupplierName: {Label=Current Supplier, ReadOnly=true, PartnerShortNameLookup=AApSupplier.PartnerKey}
-        txtCurrentSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
+        txtSupplierName: {Label=Supplier, ReadOnly=true, PartnerShortNameLookup=AApSupplier.PartnerKey}
+        txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
         pnlDisplayedBalance: 
             Controls: [txtDisplayedBalance]
             Dock: Bottom
         txtDisplayedBalance: {Label=Displayed Balance, ReadOnly=true}
         pnlFilter1:
-            Controls: [cmbType, cmbDate, cmbDateField]
+#            Controls: [cmbType, cmbDate, cmbDateField]
+            Controls: [cmbType]
             ControlsOrientation: horizontal
             Dock:Top
         cmbType: {Label=&Type}
-        cmbDate: {Label=&Date}
-        cmbDateField: {Label=Date &Field}
+            OptionalValues: [=All, Invoice, Credit Note, Payment]
+            OnChange: TypeFilterChange
+#        cmbDate: {Label=&Date}
+#        cmbDateField: {Label=Date &Field}
         pnlFilter2:
             Controls: [cmbStatus, chkHideAgedTransactions]
             ControlsOrientation: horizontal
             Dock:Top
         cmbStatus: {Label=&Status}
+            OptionalValues: [=All, OPEN,APPROVED,POSTED,PARTPAID,PAID]
+            OnChange: StatusFilterChange
         chkHideAgedTransactions: {Label=Hide &Aged Transactions, CheckBoxAttachedLabel=right}
         pnlButtons:
-            Controls: [btnTagApprovable, btnTagPostable, btnTagPayable, btnUntagAll, txtSumOfTagged]
+            Controls: [btnTagPostable, btnTagPayable, btnUntagAll, txtSumOfTagged, btnReloadList]
             ControlsOrientation: horizontal
             Dock:Top
-        btnTagApprovable: {Label=Tag all Appro&vable}
+        #btnTagApprovable: {Label=Tag all Appro&vable}
         btnTagPostable: {Label=Tag all P&ostable}
         btnTagPayable: {Label=Tag all Paya&ble}
         btnUntagAll:
         txtSumOfTagged: {Label=Sum of Tagged, ReadOnly=true}
+        btnReloadList: {Label=Reload List}
         grdResult: 
             Dock: Fill
-            TableName: AApDocument
             ActionDoubleClick: actOpenSelected
-            Columns: [Tagged, ApNumber, DocumentCode, DocumentStatus, DateIssued, TotalAmount, DateDue]
-            CustomColumns:
-                Tagged: {Label=, Type=Boolean}
-                DateDue: {Label=Date Due, Type=DateTime}
     Menu:
         mniFile:
+            mniReloadList:
+            mniSeparator: {Label=-}
             mniReprintRemittanceAdvice: {Label=Reprint Re&mittance Advice}
             mniReprintCheque: {Label=Reprint &Cheque}
             mniReprintPaymentReport: {Label=Reprint Pa&yment Report}
-            mniSeparator: {Label=-}
         mniAction:
             Label: &Action
             mniActionNew:
@@ -88,6 +92,6 @@ RootNode:
         tbbOpenSelected:
         tbbReverseSelected:
         tbbSeparator: {Label=-}
-        tbbApproveTagged:
+        #tbbApproveTagged:
         tbbPostTagged:
         tbbAddTaggedToPayment:

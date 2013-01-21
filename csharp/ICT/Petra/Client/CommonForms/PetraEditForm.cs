@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using System.Resources;
 using System.Runtime.Remoting.Lifetime;
 using System.Runtime.InteropServices;
 using GNU.Gettext;
+using SourceGrid;
 
 using Ict.Common;
 using Ict.Common.Verification;
@@ -56,11 +57,14 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public partial class TFrmPetraEditUtils : TFrmPetraUtils
     {
-        /// <summary>todoComment</summary>
-        public const String StrFormCaptionPrefixNew = "NEW: ";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrFormCaptionPrefixReadonly = "READ-ONLY: ";
+        /// <summary>This Resourcestring needs to be public becaused it is used elsewhere as well.</summary>
+        public static readonly string StrFormCaptionPrefixNew = Catalog.GetString("NEW: ");
+
+// TODO        private static readonly string StrFormCaptionPrefixReadonly = Catalog.GetString("READ-ONLY: ");
+
+        #endregion
 
         /// Tells which mode the screen should be opened in
         protected TScreenMode FScreenMode;
@@ -74,6 +78,9 @@ namespace Ict.Petra.Client.CommonForms
         /// Tells whether the Screen is working with new data (is not editing existing data)
         protected Boolean FHasNewData;
 
+        /// <summary>Controls whether the SaveChanges function saves the changes or continues a begun save operation.</summary>
+        protected Boolean FSubmitChangesContinue;
+
         /// Tells whether the check if the Form can be closed has already been run
         protected Boolean FCloseFormCheckRun;
 
@@ -82,9 +89,6 @@ namespace Ict.Petra.Client.CommonForms
 
         /// Tells whether a Detail of a list of Items is in protected mode (readonly)
         protected Boolean FDetailProtectedMode;
-
-        /// Used for keeping track of data verification errors
-        protected TVerificationResultCollection FVerificationResultCollection;
 
         /// Set this to true to prevent the Save button and MenuItem beeing autoenabled when data changes in the form
         protected Boolean FNoAutoEnableOfSaving;
@@ -101,16 +105,17 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>todoComment</summary>
         public event TDataSavedHandler DataSaved;
 
-        /// Used for keeping track of data verification errors
-        public TVerificationResultCollection VerificationResultCollection
+        /// <summary>Controls whether the SaveChanges function saves the changes or continues a begun save operation.</summary>
+        public bool SubmitChangesContinue
         {
             get
             {
-                return FVerificationResultCollection;
+                return FSubmitChangesContinue;
             }
+
             set
             {
-                FVerificationResultCollection = value;
+                FSubmitChangesContinue = value;
             }
         }
 
@@ -186,14 +191,13 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ACallerWindowHandle">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
+        /// <param name="ACallerForm">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>"
-        public TFrmPetraEditUtils(IntPtr ACallerWindowHandle, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerWindowHandle,
-                                                                                                                          (IFrmPetra)ATheForm,
-                                                                                                                          AStatusBar)
+        public TFrmPetraEditUtils(Form ACallerForm, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerForm,
+                                                                                                                (IFrmPetra)ATheForm,
+                                                                                                                AStatusBar)
         {
-            FVerificationResultCollection = new TVerificationResultCollection();
             FCloseFormCheckRun = false;
             FFormLoadedTime = DateTime.Now;
 
@@ -206,6 +210,7 @@ namespace Ict.Petra.Client.CommonForms
         public override void HookupAllInContainer(Control container)
         {
             FAllControls = new ArrayList();
+            FControlsWithChildren = new ArrayList();
             base.EnumerateControls(container);
             HookupSomeControls();
         }
@@ -214,6 +219,7 @@ namespace Ict.Petra.Client.CommonForms
         public override void HookupAllControls()
         {
             FAllControls = new ArrayList();
+            FControlsWithChildren = new ArrayList();
             base.HookupAllControls();
             HookupSomeControls();
         }
@@ -267,10 +273,16 @@ namespace Ict.Petra.Client.CommonForms
                 else if (ctrl.GetType() == typeof(TCmbVersatile))
                 {
                     ((TCmbVersatile)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
+                    ((TCmbVersatile)ctrl).TextChanged += new EventHandler(this.MultiEventHandler);
+                }
+                else if (ctrl.GetType() == typeof(TClbVersatile))
+                {
+                    ((TClbVersatile)ctrl).ValueChanged += new EventHandler(MultiEventHandler);
                 }
                 else if (ctrl.GetType() == typeof(TtxtPetraDate))
                 {
-                    ((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);
+                    //((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);
+                    ((TtxtPetraDate)ctrl).TextChanged += new EventHandler(MultiEventHandler);
                 }
                 else if (ctrl.GetType() == typeof(Ict.Common.Controls.TTxtNumericTextBox))
                 {
@@ -285,6 +297,7 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(System.Windows.Forms.ToolStrip))
                          || (ctrl.GetType() == typeof(System.Windows.Forms.MenuStrip))
                          || (ctrl.GetType() == typeof(Label))
+                         || (ctrl.GetType() == typeof(LinkLabel))
                          || (ctrl.GetType() == typeof(TabPage))
                          || (ctrl.GetType() == typeof(Splitter))
                          || (ctrl.GetType() == typeof(Panel))
@@ -297,7 +310,8 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(TreeView))
                          || (ctrl.GetType() == typeof(TTrvTreeView))
                          || (ctrl.GetType() == typeof(TbtnCreated))
-                         || (ctrl.GetType() == typeof(System.Windows.Forms.TableLayoutPanel)))
+                         || ((ctrl.GetType() == typeof(System.Windows.Forms.TableLayoutPanel))
+                             || (ctrl.GetType() == typeof(DevAge.Windows.Forms.Line))))
                 {
                     // nothing to do
                 }
@@ -318,9 +332,77 @@ namespace Ict.Petra.Client.CommonForms
             if (otherCount > 0)
             {
                 // warn the developer
-#if DEBUGMODE
                 MessageBox.Show(otherString, "The following controls are not checked for live changes in PetraEditBaseForm:");
-#endif
+            }
+        }
+
+        /// <summary>todoComment</summary>
+        private void UnhookControl(Control AControl)
+        {
+            if (AControl.GetType() == typeof(TextBox))
+            {
+                ((TextBox)AControl).TextChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(TTxtMaskedTextBox))
+            {
+                ((TTxtMaskedTextBox)AControl).TextChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl is DateTimePicker)
+            {
+                ((DateTimePicker)AControl).ValueChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(RadioButton))
+            {
+                ((RadioButton)AControl).CheckedChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(ComboBox))
+            {
+                ((ComboBox)AControl).SelectedValueChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(CheckBox))
+            {
+                ((CheckBox)AControl).CheckedChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl is NumericUpDown)
+            {
+                ((NumericUpDown)AControl).ValueChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(TCmbAutoComplete))
+            {
+                ((TCmbAutoComplete)AControl).SelectedValueChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(TCmbVersatile))
+            {
+                ((TCmbVersatile)AControl).SelectedValueChanged -= new EventHandler(this.MultiEventHandler);
+                ((TCmbVersatile)AControl).TextChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(TClbVersatile))
+            {
+                ((TClbVersatile)AControl).ValueChanged -= new EventHandler(MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(TtxtPetraDate))
+            {
+                //((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);
+                ((TtxtPetraDate)AControl).TextChanged -= new EventHandler(MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(Ict.Common.Controls.TTxtNumericTextBox))
+            {
+                ((Ict.Common.Controls.TTxtNumericTextBox)AControl).TextChanged -= new EventHandler(this.MultiEventHandler);
+            }
+        }
+
+        /// <summary>todoComment</summary>
+        public void UnhookControl(Control AControl, Boolean AUnhookChildren)
+        {
+            UnhookControl(AControl);
+
+            if (AUnhookChildren)
+            {
+                // recursive loop to catch all nested child controls
+                foreach (Control ctrl in AControl.Controls)
+                {
+                    UnhookControl(ctrl, AUnhookChildren);
+                }
             }
         }
 
@@ -345,7 +427,6 @@ namespace Ict.Petra.Client.CommonForms
         {
             Control ctrl = (Control)sender;
             string ctrlname = ctrl.Name;
-            string ctrltype = sender.GetType().FullName;
 
 //TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Handler.  SuppressChangeDetection: " + this.SuppressChangeDetection);
             if (ctrlname == "lblLabel")
@@ -355,14 +436,16 @@ namespace Ict.Petra.Client.CommonForms
             }
 
             if ((this.SuppressChangeDetection == false)
-                && ((ctrl.Tag == null) || (ctrl.Tag.GetType() != typeof(string)) || !((string)ctrl.Tag).Contains("SuppressChangeDetection"))
+                && ((ctrl.Tag == null) || (ctrl.Tag.GetType() != typeof(string))
+                    || !((string)ctrl.Tag).Contains(MCommonResourcestrings.StrCtrlSuppressChangeDetection))
                 && ((Control)sender).Visible
                 && ((Control)sender).Enabled)
             {
                 LocalControlValueChanged();
                 ControlValueChanged();
 
-//TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Ctrl: " + ctrlname + " Type: " + ctrltype);
+                // string ctrltype = sender.GetType().FullName;
+                //  TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Ctrl: " + ctrlname + " Type: " + ctrltype);
             }
         }
 
@@ -481,11 +564,14 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// todoComment
+        /// Enables the 'Save' ToolBarButton and the 'File->Save' MenuItem and sets the Form in a state where it contains changes
+        /// (<see cref="HasChanges" />).
         /// </summary>
+        /// <remarks>Useful when manual code needs to do these actions (that are normally automatically handled in a Form).</remarks>
         public void SetChangedFlag()
         {
             EnableAction("actSave", true);
+
             FHasChanges = true;
         }
 
@@ -498,11 +584,14 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// todoComment
+        /// Disanables the 'Save' ToolBarButton and the 'File->Save' MenuItem and sets the Form in a state where it doesn't contains changes
+        /// (<see cref="HasChanges" />).
         /// </summary>
+        /// <remarks>Useful when manual code needs to do these actions (that are normally automatically handled in a Form).</remarks>
         public void DisableSaveButton()
         {
             EnableAction("actSave", false);
+
             FHasChanges = false;
         }
 
@@ -569,10 +658,10 @@ namespace Ict.Petra.Client.CommonForms
                 }
 
                 // still unsaved data in the DataSet
-                System.Windows.Forms.DialogResult SaveQuestionAnswer = MessageBox.Show(CommonResourcestrings.StrFormHasUnsavedChanges +
+                System.Windows.Forms.DialogResult SaveQuestionAnswer = MessageBox.Show(MCommonResourcestrings.StrFormHasUnsavedChanges +
                     Environment.NewLine + Environment.NewLine +
-                    CommonResourcestrings.StrFormHasUnsavedChangesQuestion,
-                    CommonResourcestrings.StrGenericWarning,
+                    MCommonResourcestrings.StrFormHasUnsavedChangesQuestion,
+                    MCommonResourcestrings.StrGenericWarning,
                     MessageBoxButtons.YesNoCancel,
                     MessageBoxIcon.Warning,
                     MessageBoxDefaultButton.Button1);
@@ -595,10 +684,10 @@ namespace Ict.Petra.Client.CommonForms
                     catch (CancelSaveException)
                     {
                     }
-                    catch (Exception exp)
+                    catch (Exception)
                     {
-                        MessageBox.Show("Exception occured during saving of data: " + exp.ToString());
                         CloseFormCheckRun = false;
+                        throw;
                     }
 
                     ReturnValue = true;
@@ -710,7 +799,7 @@ namespace Ict.Petra.Client.CommonForms
                 CaptionPrefix = StrFormCaptionPrefixNew;
             }
 
-            FWinForm.Text = CaptionPrefix + Catalog.GetString("New Petra Screen");
+            FWinForm.Text = CaptionPrefix + Catalog.GetString("New OpenPetra Screen");
         }
 
         #endregion

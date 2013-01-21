@@ -2,9 +2,9 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Maintain Country/Event Preference Levels
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
-    DetailTable: PtXyzTbdPreferenceLevel
-    CacheableTable: XyzTbdPreferenceLevelList
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    DetailTable: PtOutreachPreferenceLevel
+    CacheableTable: OutreachPreferenceLevelList
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 660
@@ -38,7 +38,7 @@ RootNode:
         txtDetailCode: {Label=Level Code, Width=30}
         txtDetailDescription: {Label=Description, Width=323}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable, Enabled=false}
     Toolbar:
         tbbNew:

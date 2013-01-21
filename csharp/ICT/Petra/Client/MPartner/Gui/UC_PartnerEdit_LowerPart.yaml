@@ -8,7 +8,7 @@ RootNode:
     Template: usercontrolUnbound
     Controls:
         pnlContent:
-            Controls: [ucoPartnerTabSet]
+            Controls: [ucoPartnerTabSet, ucoPersonnelTabSet]
             Padding: 0, 2, 0, 0
             BackColor: System.Drawing.Color.LightSteelBlue 
             Dock: Fill
@@ -16,4 +16,11 @@ RootNode:
         ucoPartnerTabSet:
            BackColor: System.Drawing.Color.LightSteelBlue
            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PartnerTabSet            
+#           Visible: false
            Dock: Fill
+
+        ucoPersonnelTabSet:
+           BackColor: System.Drawing.Color.LightSteelBlue
+           Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_PersonnelTabSet            
+           Dock: Fill
+           Visible: false

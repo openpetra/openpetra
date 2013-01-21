@@ -1,23 +1,7 @@
 <?xml version="1.0"?>
 <project name="Ict.Petra.Server-Build">
 
-<property name="Namespace" value="Ict.Petra.ServerAdmin" />
-
-<target name="app" depends="" >
-  <nant inheritall="false" target="${target}" 
-        buildfile="app/Ict.Petra.ServerAdmin.App.Core.build" />
-</target>
-
-<target name="PetraServerAdminConsole" depends="app" >
-  <nant inheritall="false" target="${target}"
-        buildfile="PetraServerAdminConsole/PetraServerAdminConsole.build" />
-</target>
-
-<target name="internal-subdirs" 
-        depends="app,
-                 PetraServerAdminConsole" />
-
 <!-- Include default implementation -->
-<include buildfile="../../../../inc/nant/OpenPetra.subdirs.xml"/>  
+<include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
  
 </project>

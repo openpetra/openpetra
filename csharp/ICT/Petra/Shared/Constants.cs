@@ -39,7 +39,7 @@ namespace Ict.Petra.Shared
         /// <summary>Registry Keys for Petra</summary>
         public const String PETRA_REGISTRY_POSITIONS_KEY = "Positions";
 
-        /// <summary>Petra Modules Conference Module</summary>
+        /// <summary>OpenPetra Modules Conference Module</summary>
         public const String PETRAMODULE_CONFERENCE = "CONFERENCE";
 
         /// <summary>Financial Development User Level Access</summary>
@@ -72,7 +72,7 @@ namespace Ict.Petra.Shared
         /// <summary>System Manager</summary>
         public const String PETRAMODULE_SYSADMIN = "SYSMAN";
 
-        /// <summary>Petra Groups Conference User</summary>
+        /// <summary>OpenPetra Groups Conference User</summary>
         public const String PETRAGROUP_CONFUSER = "CONF-USER";
 
         /// <summary>Development User</summary>
@@ -87,7 +87,7 @@ namespace Ict.Petra.Shared
         /// <summary>Advanced Finance</summary>
         public const String PETRAGROUP_FINANCE3 = "FINANCE-3";
 
-        /// <summary>Petra Read Only Access</summary>
+        /// <summary>OpenPetra Read Only Access</summary>
         public const String PETRAGROUP_GUEST = "GUEST";
 
         /// <summary>Personnel Administrator</summary>
@@ -108,7 +108,7 @@ namespace Ict.Petra.Shared
         /// <summary>System Administrator</summary>
         public const String PETRAGROUP_SYSADMIN = "SYSADMIN";
 
-        /// <summary>General Petra Access</summary>
+        /// <summary>General OpenPetra Access</summary>
         public const String PETRAGROUP_USER = "USER";
 
         /// <summary>Key-Min used in Units</summary>
@@ -116,12 +116,6 @@ namespace Ict.Petra.Shared
 
         /// <summary>Address View/Edit for CANs</summary>
         public const String PETRAGROUP_ADDRESSCAN = "ADDRESSCAN";
-
-        /// <summary>Remoting URL Identifiers</summary>
-        public const String REMOTINGURL_IDENTIFIER_TESTOBJECT = "TestObject";
-
-        /// <summary>Remoting URL Identifiers</summary>
-        public const String REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS = "PollClientTasks";
 
         /// <summary>Remoting URL Identifiers</summary>
         public const String REMOTINGURL_IDENTIFIER_MSYSMAN = "MSysMan";
@@ -170,6 +164,12 @@ namespace Ict.Petra.Shared
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_GIFTBANKACCOUNT = "GiftBankAccount";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_PURGEEXTRACTS = "PurgeExtracts";
+
+        /// <summary>ClientTask TaskGroups</summary>
+        public const String CLIENTTASKGROUP_DISCONNECT = "DISCONNECT";
 
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_USERMESSAGE = "USERMESSAGE";

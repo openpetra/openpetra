@@ -359,7 +359,7 @@ TODO: move statusbar texts to constructor
             this.btnReset.Location = new System.Drawing.Point(180, 4);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(75, 23);
-            this.sbtForm.SetStatusBarText(this.btnReset, "Reset Find Criteria to Petra default");
+            this.sbtForm.SetStatusBarText(this.btnReset, "Reset Find Criteria to OpenPetra default");
             this.btnReset.TabIndex = 2;
             this.btnReset.Text = "&Reset";
             this.btnReset.Click += new System.EventHandler(this.BtnReset_Click);

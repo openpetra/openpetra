@@ -33,6 +33,7 @@ CachedTables:
                 FoundationOwnerList: {Comment=list of users that are associated with foundations}
                 InstalledSitesList: {Comment=list of installed sites}
                 CountryListFromExistingLocations: {Comment="list of countries that are actually used in the database (smaller than the full country list)"}
+                DataLabelsForPartnerClassesList: {Comment="list of available DataLabels for PartnerClasses"}
         Mailing:
             DatabaseTables:
                 PContactAttribute:
@@ -45,10 +46,12 @@ CachedTables:
                 PostCodeRegionList:
         Subscriptions:
             DatabaseTables:
+                PPublication:
                 PPublicationCost:
-                PPublication: {Comment=available publications}
                 PReasonSubscriptionGiven:
                 PReasonSubscriptionCancelled:
+            CalculatedLists:
+                PublicationInfoList: {Comment=available publications}
     Common:
         Common:
             DatabaseTables:
@@ -57,14 +60,13 @@ CachedTables:
                 PLanguage: {Enum=LanguageCodeList}
     Personnel:
         Unit:
-            CalculatedLists:
-                CampaignList: {Comment=List of all campaigns}
-                ConferenceList: {Comment=List of all conferences}
-                
             DatabaseTables:
                 PtPosition: {Comment="Contains the different position which exist within our organisation, e.g. Field Leader, Book Keeper, Computer support"}
                 PtAssignmentType: {Enum=JobAssignmentTypeList, Comment="Describes whether a person is full-time, part-time, etc"}
                 PtLeavingCode: {Comment=Describes the reason a person left a particular position}                
+            CalculatedLists:
+                OutreachList: {Comment=List of all outreaches}
+                ConferenceList: {Comment=List of all conferences}
 
         Person:
             DatabaseTables:
@@ -74,21 +76,23 @@ CachedTables:
                 PtAbilityArea: {Comment=Contains the codes that indicate the areas of ability for a Person}
                 PtAbilityLevel: {Comment="Contains the degrees to which an ability is possessed, e.g. a little or professional"}
                 PtApplicantStatus: {Comment=Contains the different codes that indicate where an applicant is in the application continuum}
+                PtApplicationType: {Comment=Contains the different codes that indicate the type of application}
                 PtArrivalPoint: {Enum=ArrivalDeparturePointList, Comment=Contains the codes used to indicate where the conferee is arriving or departing}                
-                PtCongressCode: {Enum=EventRoleList, Comment=Contains the codes that indicate a person's role and/or position at conferences and xyz_tbds}                
+                PtCongressCode: {Enum=EventRoleList, Comment=Contains the codes that indicate a person's role and/or position at conferences and outreaches}                
                 PtContact: {Comment=Contains the various methods by which a person learns of our organsiation. This table can be changed to fit any field's partiular awareness programs}
                 PtDriverStatus: {Comment=Contains the codes that indicate the level of ability a drive has}
                 PtLanguageLevel: {Comment="Contains the degrees to which a language is spoken, e.g. a little, phrases, fluent"}
                 PtLeadershipRating: {Comment=Contains the codes indicating the leadership potential of someone}
-                PtPartyType: {Comment=Contains the codes indicating whether groups should be together and for how long}
                 PtPassportType: {Comment=Contains the codes that indicate the type of passport a person holds}
                 PtTravelType: {Enum=TransportTypeList, Comment=Contains the codes that indicate the mode of travel being used}
                 PtQualificationArea: {Comment="Contains the areas in which a person may posess a qualification, e.g. computing or accountancy"}
                 PtQualificationLevel: {Comment="Contains the levels to which a qualifications is possessed, e.g. Secondary education, Master's Degree"}
-                PtValuableItem: {Comment="Contains the item(s) of value a person may possess which need to be accounted for various purposes, e.g. customs, or insurance"}
-                PtVisionArea: {Comment="Contains the areas a person may have vision for, e.g. children's work or a particular country"}
-                PtVisionLevel: {Comment="Contains the levels  to which a vision is possessed, e.g. a possibility, do nothing else"}
-                PtXyzTbdPreferenceLevel: {Comment=Describes the importance of the country and target choices}
+                PtSkillCategory: {Comment="Contains the categories in which a person may posess a skill, e.g. music or leading small groups"}
+                PtSkillLevel: {Comment="Contains the levels to which a skill is possessed, e.g. beginner or accomplished"}
+                PtOutreachPreferenceLevel: {Comment=Describes the importance of the country and target choices}
+            CalculatedLists:
+                EventApplicationTypeList: {Comment=Contains application types for event (short term) applications}
+                FieldApplicationTypeList: {Comment=Contains application types for field (long term) applications}
 
     Finance:
         Finance:
@@ -98,11 +102,15 @@ CachedTables:
                 AAnalysisAttribute: {Comment=Relationsship between account and analysis type }
                 ABudgetType:
                 ACostCentreTypes:
+                AEmailDestination:
                 AMethodOfGiving: {Comment="Special payment programs the donor may give money through. (ie, Gift Aid in the UK)"}
                 AMethodOfPayment:
-                AMotivationGroup: {Comment="This is used to track a partner's reason for contacting the organisation/sending money. Divided into Motivation Detail codes"}
+                AValidLedgerNumber:
+                AMotivationGroup: {Enum=MotivationGroupList, Comment="This is used to track a partner's reason for contacting the organisation/sending money. Divided into Motivation Detail codes", DependsOnLedger=true}
                 AMotivationDetail: {Enum=MotivationList, Comment="list of motivations (for gifts)", DependsOnLedger=true}
-                
+                AFeesPayable: {DependsOnLedger=true}
+                AFeesReceivable: {DependsOnLedger=true}
+
             CalculatedLists: {DependsOnLedger=true}
                 AccountingPeriodList:
                 LedgerNameList: {Comment=names of available ledgers, DependsOnLedger=false}
@@ -114,4 +122,10 @@ CachedTables:
         Conference:
             DatabaseTables:
                 PcConferenceOptionType:
-    #SysMan:
+                PcCostType: {Enum=ConferenceCostTypeList}
+    SysMan:
+        SysMan:
+            DatabaseTables:
+                SLanguageSpecific:
+            CalculatedLists:
+                UserList:

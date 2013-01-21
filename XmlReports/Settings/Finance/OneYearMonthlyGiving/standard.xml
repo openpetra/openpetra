@@ -1,57 +1,57 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Finance\\oneyearmonthlygiving.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="OneYearMonthlyGiving" />
-  <Parameter id="MaxDisplayColumns" value="15" />
-  <Parameter id="param_donor" value="one_partner" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_calculation" column="0" value="Donor Key" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="param_calculation" column="1" value="Donor Name" />
-  <Parameter id="ColumnWidth" column="1" value="3.5" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="January" />
-  <Parameter id="ColumnWidth" column="2" value="1.5" />
-  <Parameter id="param_ytd" column="2" value="false" />
-  <Parameter id="param_calculation" column="3" value="February" />
-  <Parameter id="ColumnWidth" column="3" value="1.5" />
-  <Parameter id="param_ytd" column="3" value="false" />
-  <Parameter id="param_calculation" column="4" value="March" />
-  <Parameter id="ColumnWidth" column="4" value="1.5" />
-  <Parameter id="param_ytd" column="4" value="false" />
-  <Parameter id="param_calculation" column="5" value="April" />
-  <Parameter id="ColumnWidth" column="5" value="1.5" />
-  <Parameter id="param_ytd" column="5" value="false" />
-  <Parameter id="param_calculation" column="6" value="May" />
-  <Parameter id="ColumnWidth" column="6" value="1.5" />
-  <Parameter id="param_ytd" column="6" value="false" />
-  <Parameter id="param_calculation" column="7" value="June" />
-  <Parameter id="ColumnWidth" column="7" value="1.5" />
-  <Parameter id="param_ytd" column="7" value="false" />
-  <Parameter id="param_calculation" column="8" value="July" />
-  <Parameter id="ColumnWidth" column="8" value="1.5" />
-  <Parameter id="param_ytd" column="8" value="false" />
-  <Parameter id="param_calculation" column="9" value="August" />
-  <Parameter id="ColumnWidth" column="9" value="1.5" />
-  <Parameter id="param_ytd" column="9" value="false" />
-  <Parameter id="param_calculation" column="10" value="September" />
-  <Parameter id="ColumnWidth" column="10" value="1.5" />
-  <Parameter id="param_ytd" column="10" value="false" />
-  <Parameter id="param_calculation" column="11" value="October" />
-  <Parameter id="ColumnWidth" column="11" value="1.5" />
-  <Parameter id="param_ytd" column="11" value="false" />
-  <Parameter id="param_calculation" column="12" value="November" />
-  <Parameter id="ColumnWidth" column="12" value="1.5" />
-  <Parameter id="param_ytd" column="12" value="false" />
-  <Parameter id="param_calculation" column="13" value="December" />
-  <Parameter id="ColumnWidth" column="13" value="1.5" />
-  <Parameter id="param_ytd" column="13" value="false" />
-  <Parameter id="param_calculation" column="14" value="Total" />
-  <Parameter id="ColumnWidth" column="14" value="2" />
-  <Parameter id="param_ytd" column="14" value="false" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_recipient_key" value="0" />
-  <Parameter id="param_extract_name" value="" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\oneyearmonthlygiving.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:OneYearMonthlyGiving" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:15" />
+  <Parameter id="param_donor" value="eString:one_partner" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_calculation" column="0" value="eString:Donor Key" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Donor Name" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:January" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:February" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_calculation" column="4" value="eString:March" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="4" value="eString:false" />
+  <Parameter id="param_calculation" column="5" value="eString:April" />
+  <Parameter id="ColumnWidth" column="5" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="5" value="eString:false" />
+  <Parameter id="param_calculation" column="6" value="eString:May" />
+  <Parameter id="ColumnWidth" column="6" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="6" value="eString:false" />
+  <Parameter id="param_calculation" column="7" value="eString:June" />
+  <Parameter id="ColumnWidth" column="7" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="7" value="eString:false" />
+  <Parameter id="param_calculation" column="8" value="eString:July" />
+  <Parameter id="ColumnWidth" column="8" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="8" value="eString:false" />
+  <Parameter id="param_calculation" column="9" value="eString:August" />
+  <Parameter id="ColumnWidth" column="9" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="9" value="eString:false" />
+  <Parameter id="param_calculation" column="10" value="eString:September" />
+  <Parameter id="ColumnWidth" column="10" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="10" value="eString:false" />
+  <Parameter id="param_calculation" column="11" value="eString:October" />
+  <Parameter id="ColumnWidth" column="11" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="11" value="eString:false" />
+  <Parameter id="param_calculation" column="12" value="eString:November" />
+  <Parameter id="ColumnWidth" column="12" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="12" value="eString:false" />
+  <Parameter id="param_calculation" column="13" value="eString:December" />
+  <Parameter id="ColumnWidth" column="13" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="13" value="eString:false" />
+  <Parameter id="param_calculation" column="14" value="eString:Total" />
+  <Parameter id="ColumnWidth" column="14" value="eInteger:2" />
+  <Parameter id="param_ytd" column="14" value="eString:false" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_recipient_key" value="eInteger:0" />
+  <Parameter id="param_extract_name" value="eString:" />
 </Parameters>

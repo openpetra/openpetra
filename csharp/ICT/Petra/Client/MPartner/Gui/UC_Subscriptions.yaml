@@ -1,0 +1,40 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    DetailTable: PSubscription
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+        actCancelAllSubscriptions: {Label=&Cancel All Subscriptions, ActionClick=CancelAllSubscriptions}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails,pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete, btnCancelAllSubscriptions]
+        btnNew: {Stretch=horizontally}
+            Action: actNew
+        btnDelete: {Stretch=horizontally}
+            Action: actDelete
+        btnCancelAllSubscriptions: {Stretch=horizontally}
+            Action: actCancelAllSubscriptions
+        grdDetails:
+            Dock: Fill
+            Columns: [PSubscription.PublicationCode, PSubscription.SubscriptionStatus, PSubscription.GratisSubscription]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails: 
+            Dock: Bottom
+            Height: 300
+            Controls: [ucoDetails]
+        ucoDetails:
+            Dock: Fill
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_Subscription

@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
     DetailTable: AAnalysisAttribute
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: controlMaintainTable
     Actions:
@@ -13,9 +13,9 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
         pnlGrid:
-            Width: 300
-            Height: 250
+            Dock: Fill
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
@@ -29,9 +29,10 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [cmbDetailAnalysisTypeCode]
+                Row0: [cmbDetailAnalTypeCode]
                 Row1: [chkDetailActive]
-        cmbDetailAnalysisTypeCode: {List=AnalysisTypeList}
+        cmbDetailAnalTypeCode:
+            OnChange: OnDetailAnalysisTypeCodeChange
         chkDetailActive: {Label=Active}
     Toolbar:
         tbbNew:

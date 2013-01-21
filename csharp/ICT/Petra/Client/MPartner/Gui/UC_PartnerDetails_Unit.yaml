@@ -2,14 +2,14 @@ RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MPartner.Gui   
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: usercontrol
     MasterTable: PUnit
     Controls:
         pnlContent:
-            Controls: [grpNames, grpMisc, grpCampaignInfo]
+            Controls: [grpNames, grpMisc, grpOutreachInfo]
             Dock: Fill
 
         grpNames: {Dock=Top}
@@ -29,6 +29,7 @@ RootNode:
                 Row1: [cmbUnitTypeCode]
                 Row2: [cmbLanguageCode]
                 Row3: [cmbAcquisitionCode]
+                Row4: [txtParentKey, lblParentName, btnOrganise]
             ColWidths: [0=Fixed:120]
             
         cmbCountryCode: {List=CountryList}
@@ -39,20 +40,32 @@ RootNode:
         
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
 
-        grpCampaignInfo: {Label=Campaign Information, Dock=Top}
+        txtParentKey:
+            Width: 100
+            ReadOnly: true
+            Validation: false
+            Label: Parent
+        lblParentName:
+            Width: 170
+            Nolabel: true
+        btnOrganise:
+            ActionClick: OpenUnitHierarchy
+            Label: Organise..
+
+        grpOutreachInfo: {Label=Outreach Information, Dock=Top}
             Controls: 
-                Row0: [txtXyzTbdCode]
-                Row1: [txtXyzTbdCost, cmbXyzTbdCostCurrencyCode]
+                Row0: [txtOutreachCode]
+                Row1: [txtOutreachCost, cmbOutreachCostCurrencyCode]
             ColWidths: [0=Fixed:120, 1=Fixed:100, 2=Fixed:65]
             
-        txtXyzTbdCode:
+        txtOutreachCode:
             Witdh: 170
             ColSpan: 2
             
-        txtXyzTbdCost:
+        txtOutreachCost:
             Width: 90
 
-        cmbXyzTbdCostCurrencyCode: {List=CurrencyCodeList}
+        cmbOutreachCostCurrencyCode: {List=CurrencyCodeList}
             Width: 60
 
             NoLabel: true

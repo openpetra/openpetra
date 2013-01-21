@@ -1,56 +1,66 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Import Bank Statements
+    UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MFinance.Gui.Common
-    FormType: browse
-    Template: window
-    WindowWidth: 754
-    WindowHeight: 623
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.BankImportTDS
+    FormType: edit
+    Template: windowEdit
+    WindowWidth: 1000
+    WindowHeight: 723
     Actions:
-        actImportNewStatement:
-            Label: &Import new statement
-            ActionClick: ImportNewStatement
-        actDeleteStatement:
-            ActionClick: DeleteStatement
+        actSave:
+            Label: Save Matches
         actAddGiftDetail:
             Label: &Add
             ActionClick: AddGiftDetail
         actRemoveGiftDetail:
             Label: &Delete
             ActionClick: RemoveGiftDetail
-        actSaveMatches:
-            ActionClick: SaveMatches
         actCreateGiftBatch:
             ActionClick: CreateGiftBatch
         actCreateGLBatch:
             ActionClick: CreateGLBatch
+        actExportGiftBatch:
+            ActionClick: ExportGiftBatch
+        actPrintReport:
+            ActionClick: PrintReport
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [cmbSelectBankAccount, pnlFilter, sptTransactionDetails]
+            Controls: [pnlFilterTop1, pnlFilter, sptTransactionDetails]
             # add to Controls: pnlStatementInfo
-        cmbSelectBankAccount: {List=UserDefinedList}
+        cmbBankAccount: {ReadOnly=true, List=UserDefinedList, ColSpan=2, SuppressChangeDetection=true}
+        txtBankStatement: {ReadOnly=true, Width=300, SuppressChangeDetection=true}
+        dtpBankStatementDate: {ReadOnly=true, SuppressChangeDetection=true}
+        pnlFilterTop1:
+            Dock: Top
+            Controls: 
+                Row0: [cmbBankAccount]
+                Row1: [txtBankStatement, dtpBankStatementDate]
         pnlFilter:
             Dock: Top
             Controls:
-                Row0: [rgrSelectTransaction, pnlSum]
+                Row0: [rgrSelectTransaction]
+                Row1: [pnlSum]
         pnlSum:
             Controls:
-                Row0: [txtCreditSum]
+                Row0: [txtCreditSum, txtTransactionCount]
                 Row1: [txtDebitSum]
         rgrSelectTransaction:
-            OptionalValues: [ListAll, ListUnmatched, ListGift, ListGL, ListIgnored]
+            OptionalValues: [ListAll, =ListUnmatchedGift, ListGift, ListUnmatchedGL, ListGL, ListIgnored]
             ControlsOrientation: horizontal
             NoLabel: true
             OnChange: TransactionFilterChanged
-        txtCreditSum: {Format=Currency, ReadOnly=true}
-        txtDebitSum: {Format=Currency, ReadOnly=true}
-        pnlStatementInfo:
+        txtCreditSum: {Format=Currency, ReadOnly=true, SuppressChangeDetection=true}
+        txtDebitSum: {Format=Currency, ReadOnly=true, SuppressChangeDetection=true}
+        txtTransactionCount: {Label=Number of Transactions, ReadOnly=true, SuppressChangeDetection=true}
+        # pnlStatementInfo:
             # Controls: [txtStartBalance, txtEndBalance, txtSumDebit, txtSumCredit, txtNumberMatchedTransactions]
         sptTransactionDetails:
             Panel1: grdAllTransactions
             Panel2: pnlDetails
-            SplitterDistance: 50
+            SplitterDistance: 40
             SplitterOrientation: horizontal
             Dock: Fill
         grdAllTransactions:
@@ -71,7 +81,7 @@ RootNode:
             Dock: Fill
         pnlGiftEdit:
             Dock: Fill
-            Visible: true
+            Visible: false
             Controls: [txtDonorKey, pnlDetailGrid, pnlEditGiftDetail]
         txtDonorKey: {Label=Donor, Type=PartnerKey, Dock=Top}
         pnlDetailGrid:
@@ -85,13 +95,24 @@ RootNode:
             ActionFocusRow: GiftDetailsFocusedRowChanged
         pnlEditGiftDetail: 
             Dock:Bottom
-            Controls: [txtAmount, cmbMotivationDetail, cmbGiftAccount, cmbGiftCostCentre]
+            Controls: 
+                Row0: [txtAmount]
+                Row1: [cmbMotivationGroup, txtGiftAccount]
+                Row2: [cmbMotivationDetail, txtGiftCostCentre]
+                Row3: [txtRecipientKey]
+                Row6: [txtField,chkDetailChargeFlag]
+                Row7: [cmbMinistry]
         btnAddGiftDetail:
         btnRemoveGiftDetail:
-        txtAmount: {Format=Currency}
-        cmbMotivationDetail: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}
-        cmbGiftAccount: {Label=Account, List=UserDefinedList, ReadOnly=true}
-        cmbGiftCostCentre: {Label=Cost Centre, List=UserDefinedList}
+        txtAmount: {Format=Currency, ColSpan=2}
+        cmbMotivationGroup: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail, Width=200}
+        cmbMotivationDetail: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged, Width=200}
+        txtRecipientKey: {Label=Recipient, Type=PartnerKey, ColSpan=2}
+        txtField: {Label=Field, Type=PartnerKey, ReadOnly=true, SuppressChangeDetection=true}
+        chkDetailChargeFlag: {Label=Admin Grants?}
+        cmbMinistry: {Label=Key Ministry, ColSpan=2, Width=250, List=UserDefinedList, OnChange=KeyMinistryChanged}
+        txtGiftAccount: {Label=Account, ReadOnly=true, SuppressChangeDetection=true}
+        txtGiftCostCentre: {Label=Cost Centre, ReadOnly=true, SuppressChangeDetection=true}
         pnlGLEdit:
             Dock: Fill
             Visible: false
@@ -104,11 +125,8 @@ RootNode:
         mniFile:
             mniImportNewStatement:
     Toolbar:
-        tbbImportNewStatement:
-        tbbSeparator:
-        cmbSelectStatement: {Width=250}
-        tbbDeleteStatement:
-        tbbSeparator:
-        tbbSaveMatches:
         tbbCreateGiftBatch:
         tbbCreateGLBatch:
+        tbbExportGiftBatch:
+        tbbPrintReport:
+        

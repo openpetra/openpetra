@@ -5,7 +5,7 @@ RootNode:
     MasterTable: AApDocument
     DetailTable: AApDocumentDetail
     DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
     FormType: edit
     Template: windowEditWebConnectorMasterDetail
     WindowWidth: 750
@@ -13,7 +13,12 @@ RootNode:
     Actions:
         cndDiscountEnabled: {InitialValue=false}
         actNewDetail: {Label=Add De&tail, ActionClick=NewDetail}
-        actPostDocument: {Label=Post Document, ActionClick=PostDocument}
+        actRemoveDetail:  {Label=&Remove Detail, ActionClick=RemoveDetail}
+        actAnalyse: {ActionClick=Analyse}
+        actPostDocument: {Label=Post, ActionClick=PostDocument}
+        actPayDocument: {Label=Pay, ActionClick=PayDocument}
+        actUseTaxAccount: {ActionClick=UseTaxAccount}
+        actLookupExchangeRate: {ActionClick=LookupExchangeRate}
     Controls:
         pnlContent:
             Controls: [pnlSupplierInfo, grpDocumentInfo, grpDetails]
@@ -31,9 +36,9 @@ RootNode:
                 Row1: [txtReference]
                 Row2: [dtpDateIssued, dtpDateDue, nudCreditTerms]
                 Row3: [nudDiscountDays, txtDiscountPercentage]
-                Row4: [txtTotalAmount, txtExchangeRateToBase]
+                Row4: [txtTotalAmount, txtExchangeRateToBase, btnLookupExchangeRate]
             Dock: Top
-        txtDocumentCode: {Label=Invoice &Number}
+        txtDocumentCode: {Label=Invoice &Number, Validation=true}
         cmbDocumentType:
             OptionalValues: [=Invoice, Credit Note]
             Label: T&ype
@@ -48,13 +53,15 @@ RootNode:
             Label: Date D&ue
             Tooltip: Credit Terms is the number of days between date issued and due date
             OnChange: UpdateCreditTerms
-        nudDiscountDays: {Label=Discount &Days, PositiveValueActivates=cndDiscountEnabled}
-        txtDiscountPercentage: {Label=Discount &Value (%), Enabled=cndDiscountEnabled}
+        nudDiscountDays: {Label=Discount &Days, PositiveValueActivates=cndDiscountEnabled, Format: Integer}
+        txtDiscountPercentage: {Label=Discount, Enabled=cndDiscountEnabled, Format: PercentDecimal(1)}
         txtTotalAmount:
             Label: &Amount
+            Format: Currency(2)
         txtExchangeRateToBase:
             Label: E&xchange Rate
-            # TODO: default value from daily exchange rate? update daily exchange rate?
+            Format: Decimal(5)
+        btnLookupExchangeRate: {Label=Lookup}
         grpDetails:
             Label: Details
             Dock: Fill
@@ -64,51 +71,59 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnAddDetail, btnRemoveDetail, btnAnalysisAttributes]
+            Controls: [btnAddDetail, btnRemoveDetail]
         grdDetails:
             Dock: Fill
-            Columns: [AApDocumentDetail.Amount, AApDocumentDetail.Narrative, AApDocumentDetail.ItemRef]
+            TableName:AApDocumentDetail
+            Columns: [Amount, Narrative, ItemRef, AccountCode, AnalAttr]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailNarrative]
                 Row1: [txtDetailItemRef]
-                Row2: [txtDetailAmount, cmbDetailCostCentreCode, btnUseTaxAccountCostCentre]
+                Row2: [txtDetailAmount, cmbDetailCostCentreCode]
                 Row3: [txtDetailBaseAmount, cmbDetailAccountCode]
-        txtDetailNarrative:
-            ColSpan: 2
+                Row4: [Empty1, pnlItemButtons]
+        txtDetailNarrative: {ColSpan=2}
             Width: 350
             Label: Narrati&ve
-        txtDetailItemRef:
-            ColSpan: 2
+        txtDetailItemRef: {ColSpan=2}
             Width: 350
             Label: Detail &Ref
         txtDetailAmount:
+            Format: Currency(2)
             Label: A&mount
+            Validation: true
         txtDetailBaseAmount:
             Label: Base
+            Format: Currency(2)
             ReadOnly: true
             #TODO: calculate using exchange rate from document
+        Empty1:
+
 # TODO: Approval completely disabled for the moment
 #        dtpDetailApprovalDate:
 #            Label: Approved On
 #            ReadOnly: true
         cmbDetailCostCentreCode: {Label=C&ost Centre, List=UserDefinedList}
-        cmbDetailAccountCode: {Label=Accou&nt, List=UserDefinedList}
-        btnUseTaxAccountCostCentre:
-            Label: Use Ta&x Acct+CC
-            #TODO
+        cmbDetailAccountCode: {Label=Accou&nt, List=UserDefinedList, OnChange=CheckAccountRequiredAttr}
+        pnlItemButtons: {ControlsOrientation = horizontal}
+            Controls: [btnUseTaxAccount, btnAnalysisAttributes]
+        btnUseTaxAccount:
+            Label: Use Ta&x Acct
+            Action: actUseTaxAccount
+        btnAnalysisAttributes:
+            Label: Anal Attri&b
+            Action: actAnalyse
         btnAddDetail:
             Width: 100
             Action: actNewDetail
         btnRemoveDetail:
+            Enabled: false
             Label: &Remove Detail
             Width: 100
             Action: actRemoveDetail
-        btnAnalysisAttributes:
-            Label: Analysis Attri&b.
-            Width: 100
 # TODO: Approval completely disabled for the moment
 #        btnApproveDetail:
 #            Label: A&pprove Detail
@@ -117,3 +132,6 @@ RootNode:
 #            Enabled: false
     Toolbar:
         tbbPostDocument:
+            Action: actPostDocument
+        tbbPayDocument:
+            Action: actPayDocument

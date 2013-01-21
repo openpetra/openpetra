@@ -1,35 +1,35 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Partner\\partnercontactreport.xml" />
-  <Parameter id="currentReport" value="Partner Contact" />
-  <Parameter id="MaxDisplayColumns" value="10" />
-  <Parameter id="param_selection" value="one partner" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_order_by_name" value="PartnerName" />
-  <Parameter id="param_cmbContactor" value="*" />
-  <Parameter id="param_cmbContact" value="*" />
-  <Parameter id="param_contact_attributes" value=" " />
-  <Parameter id="NumberOfAddresses" value="0" />
-  <Parameter id="param_number_of_contact_attributes" value="0" />
-  <Parameter id="param_calculation" column="0" value="Contactor" />
-  <Parameter id="ColumnWidth" column="0" value="1.5" />
-  <Parameter id="param_calculation" column="1" value="Method" />
-  <Parameter id="ColumnWidth" column="1" value="1.5" />
-  <Parameter id="param_calculation" column="2" value="Contact ID" />
-  <Parameter id="ColumnWidth" column="2" value="2" />
-  <Parameter id="param_calculation" column="3" value="Contact Date" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_calculation" column="4" value="Contact Time" />
-  <Parameter id="ColumnWidth" column="4" value="1.5" />
-  <Parameter id="param_calculation" column="5" value="Mailing" />
-  <Parameter id="ColumnWidth" column="5" value="3" />
-  <Parameter id="param_calculation" column="6" value="Notes" />
-  <Parameter id="ColumnWidth" column="6" value="5" />
-  <Parameter id="param_calculation" column="7" value="Contact Attribute" />
-  <Parameter id="ColumnWidth" column="7" value="3" />
-  <Parameter id="param_calculation" column="8" value="Contact Detail" />
-  <Parameter id="ColumnWidth" column="8" value="3" />
-  <Parameter id="param_calculation" column="9" value="Contact Detail Description" />
-  <Parameter id="ColumnWidth" column="9" value="4" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Partner\\partnercontactreport.xml" />
+  <Parameter id="currentReport" value="eString:Partner Contact" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:10" />
+  <Parameter id="param_selection" value="eString:an extract" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_order_by_name" value="eString:PartnerName" />
+  <Parameter id="param_cmbContactor" value="eString:*" />
+  <Parameter id="param_cmbContact" value="eString:*" />
+  <Parameter id="param_contact_attributes" value="eString: " />
+  <Parameter id="NumberOfAddresses" value="eInteger:0" />
+  <Parameter id="param_number_of_contact_attributes" value="eInteger:0" />
+  <Parameter id="param_calculation" column="0" value="eString:Contactor" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="1" value="eString:Method" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="2" value="eString:Contact ID" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_calculation" column="3" value="eString:Contact Date" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_calculation" column="4" value="eString:Contact Time" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="5" value="eString:Mailing" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
+  <Parameter id="param_calculation" column="6" value="eString:Notes" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:5" />
+  <Parameter id="param_calculation" column="7" value="eString:Contact Attribute" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:3" />
+  <Parameter id="param_calculation" column="8" value="eString:Contact Detail" />
+  <Parameter id="ColumnWidth" column="8" value="eInteger:3" />
+  <Parameter id="param_calculation" column="9" value="eString:Contact Detail Description" />
+  <Parameter id="ColumnWidth" column="9" value="eInteger:4" />
 </Parameters>

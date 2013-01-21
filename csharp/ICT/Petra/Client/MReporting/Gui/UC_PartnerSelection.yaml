@@ -8,17 +8,21 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [grpSelection]
+        pnlCurrentStaff:
+            Controls:
+                Row1: [dtpCurrentStaff, lblCurrentStaff]
         grpSelection:
             Label: Selection
             Controls:
                 Row0: [rbtPartner, txtPartnerKey]
                 Row1: [rbtExtract, txtExtract]
-                Row2: [rbtCurrentStaff, dtpCurrentStaff]
+                Row2: [rbtCurrentStaff, pnlCurrentStaff]
                 Row3: [rbtAllStaff]
         rbtPartner: {Label=Partner, OnChange=rbtSelectionChange}
-        txtPartnerKey: {NoLabel=true, Type=PartnerKey}
+        txtPartnerKey: {NoLabel=true, Type=PartnerKey, PartnerClass=PERSON}
         rbtExtract: {Label=Extract, OnChange=rbtSelectionChange}
         txtExtract: {NoLabel=true, Type=Extract}
         rbtCurrentStaff:{Label=Staff at, OnChange=rbtSelectionChange}
         dtpCurrentStaff: {NoLabel=true}
-        rbtAllStaff:{Label=All Staff, OnChange=rbtSelectionChange}
+        lblCurrentStaff: {Text=(have commitment at this date)}
+        rbtAllStaff:{Label=Staff with a commitment today, OnChange=rbtSelectionChange}

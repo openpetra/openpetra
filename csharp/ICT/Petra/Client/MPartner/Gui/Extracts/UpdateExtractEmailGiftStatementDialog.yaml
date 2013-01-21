@@ -1,0 +1,25 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Update Email Gift Statement
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    FormType: dialog
+    Template: window
+    WindowWidth: 400
+    WindowHeight: 200
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent:
+            Controls:
+                Row0: [lblExtractName]
+                Row1: [Empty]
+                Row2: [chkEmailGiftStatement]
+                
+        lblExtractName:
+            
+        Empty:
+
+        chkEmailGiftStatement: {CheckBoxAttachedLabel=right}
+            Label: Email Gift Statement

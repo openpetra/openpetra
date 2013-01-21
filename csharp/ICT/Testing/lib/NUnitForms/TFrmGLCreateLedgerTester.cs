@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,17 +43,47 @@ namespace Ict.Testing.NUnitForms
     /// </summary>
     public sealed class TFrmGLCreateLedgerTester
     {
+        /// <summary>
+        /// ...
+        /// </summary>
         public TCmbAutoPopulatedTester cmbCountryCode;
+        /// <summary>
+        /// ...
+        /// </summary>
         public TCmbAutoPopulatedTester cmbBaseCurrency;
+        /// <summary>
+        /// ...
+        /// </summary>
         public TCmbAutoPopulatedTester cmbIntlCurrency;
+        /// <summary>
+        /// ...
+        /// </summary>
         public TextBoxTester txtLedgerName;
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public TextBoxTester dtpCalendarStartDate;
+        /// <summary>
+        /// ...
+        /// </summary>
         public NumericUpDownTester nudLedgerNumber;
+        /// <summary>
+        /// ...
+        /// </summary>
         public NumericUpDownTester nudNumberOfPeriods;
+        /// <summary>
+        /// ...
+        /// </summary>
         public NumericUpDownTester nudCurrentPeriod;
+        /// <summary>
+        /// ...
+        /// </summary>
         public NumericUpDownTester nudNumberOfFwdPostingPeriods;
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public ToolStripButtonTester tbbCreate;
 
         TFrmGLCreateLedger tFrmGLCreateLedger;
@@ -61,6 +91,9 @@ namespace Ict.Testing.NUnitForms
         private static TFrmGLCreateLedgerTester instance = new TFrmGLCreateLedgerTester();
 
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public static TFrmGLCreateLedgerTester Instance {
             get
             {
@@ -70,7 +103,7 @@ namespace Ict.Testing.NUnitForms
 
         private TFrmGLCreateLedgerTester()
         {
-            tFrmGLCreateLedger = new TFrmGLCreateLedger(IntPtr.Zero);
+            tFrmGLCreateLedger = new TFrmGLCreateLedger(null);
 
             nudLedgerNumber = new NumericUpDownTester("nudLedgerNumber", tFrmGLCreateLedger);
 
@@ -80,7 +113,7 @@ namespace Ict.Testing.NUnitForms
             cmbBaseCurrency = new TCmbAutoPopulatedTester("cmbBaseCurrency", tFrmGLCreateLedger);
             cmbIntlCurrency = new TCmbAutoPopulatedTester("cmbIntlCurrency", tFrmGLCreateLedger);
 
-            TextBoxTester dtpCalendarStartDate = new TextBoxTester("dtpCalendarStartDate", tFrmGLCreateLedger);
+            // TextBoxTester dtpCalendarStartDate = new TextBoxTester("dtpCalendarStartDate", tFrmGLCreateLedger);
 
             nudNumberOfPeriods = new NumericUpDownTester("nudNumberOfPeriods", tFrmGLCreateLedger);
             nudCurrentPeriod = new NumericUpDownTester("nudCurrentPeriod", tFrmGLCreateLedger);

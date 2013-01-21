@@ -28,7 +28,6 @@
         txtLedger: {ReadOnly=true, NoParameter=true}
         rgrPeriod:
             Controls: [rbtPeriodRange, rbtQuarter]
-            Dock: Top
         rbtPeriodRange:
             Controls: [txtEndPeriod, cmbPeriodYear]
             NoLabel: true

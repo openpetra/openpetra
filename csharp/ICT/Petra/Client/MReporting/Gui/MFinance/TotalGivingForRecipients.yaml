@@ -16,7 +16,7 @@ RootNode:
         READCONTROLSLOCALVARS: BLANK
         SETCONTROLSLOCALVARS: BLANK
         REPORTSETTINGSDIRECTORY: Finance
-        INITUSERCONTROLS: InitReceivingFieldList();
+        #INITUSERCONTROLS: InitReceivingFieldList(); - will be called before ledger is set, so leave out
     Security:
         ModulePermissionRequired: [FINANCE-1]
     Actions:
@@ -37,12 +37,10 @@ RootNode:
             Label: Ledger
         rgrDonorSelection:
             Label: Select Donors
-            Dock: Top
             Controls: [rbtPartner, rbtExtract, rbtAllRecipients]
             ParameterName: param_recipient
         grpCurrencySelection:
             Label: Gift Limit
-            Dock: Top
             Controls: [cmbCurrency]
         
         rbtExtract:
@@ -109,7 +107,6 @@ RootNode:
         clbFields:
             List: UserDefinedList
             NoLabel:true
-            Dock: Fill
             Width: 365
             Height: 300
         btnSelectAllFields:
@@ -143,7 +140,6 @@ RootNode:
         clbTypes:
             List: UserDefinedList
             NoLabel:true
-            Dock: Fill
             Width: 365
             Height: 300
         btnSelectAllTypes:

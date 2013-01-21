@@ -26,6 +26,7 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
@@ -35,7 +36,7 @@ namespace Ict.Petra.Server.App.Core.Security
     /// <summary>
     /// Reads and saves entries in the Error Log table.
     /// </summary>
-    public class TErrorLog
+    public class TErrorLog : IErrorLog
     {
         /// <summary>
         /// todoComment
@@ -47,7 +48,7 @@ namespace Ict.Petra.Server.App.Core.Security
         /// <param name="AMessageLine3"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        public static Boolean AddErrorLogEntry(String AErrorCode,
+        public Boolean AddErrorLogEntry(String AErrorCode,
             String AContext,
             String AMessageLine1,
             String AMessageLine2,
@@ -81,7 +82,7 @@ namespace Ict.Petra.Server.App.Core.Security
         /// <param name="AProcessID"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        public static Boolean AddErrorLogEntry(String AErrorCode,
+        public Boolean AddErrorLogEntry(String AErrorCode,
             String AContext,
             String AMessageLine1,
             String AMessageLine2,

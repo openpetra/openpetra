@@ -5,22 +5,28 @@ RootNode:
     MasterTable: AApSupplier
     DetailTable: AApDocumentPayment
     DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
     FormType: browse
     Template: window
-    WindowWidth: 750
+    WindowWidth: 770
     WindowHeight: 600
     Actions:
         actMakePayment: {Label=&Make Payment, ActionClick=MakePayment}
+        actPrintReport: {Label=Reprint report, ActionClick=PrintPaymentReport}
+        actPayPartial:
+            ActionClick: EnablePartialPayment
     Controls:
         pnlContent:
-            Controls: [grpPaymentList, pnlSupplierDetails, grpDetails]
             Dock: Fill
+            Controls: 
+                Row0: [grpPaymentList, pnlSupplierDetails]
+                Row1: [grpDetails]
         grpPaymentList:
-            RowSpan: 2
             Label: Suppliers to Pay
             Controls: [grdPayments]
             Dock: Left
             Width: 200
+            Height: 250
         grdPayments:
             Dock: Fill
             ActionFocusRow: FocusedRowChanged
@@ -28,13 +34,14 @@ RootNode:
             Controls: 
                 Row0: [txtCurrency, cmbPaymentType]
                 Row1: [txtTotalAmount, txtExchangeRate]
-                Row2: [cmbBankAccount]
+                Row2: [txtBaseAmount, cmbBankAccount]
                 Row3: [txtReference]
                 Row4: [chkPrintRemittance, chkPrintLabel]
                 Row5: [chkPrintCheque, txtChequeNumber]
             Padding: 5,0,10,0
             # todo: electronic payment; 
             # todo: pay by transfer (select another supplier; payment will create another invoice with the other supplier, at a given exchange rate, with the given invoice number)
+            Height: 170
             Dock:Top
         chkPrintRemittance:
             CheckBoxAttachedLabel: right
@@ -43,6 +50,7 @@ RootNode:
         chkPrintCheque:
             CheckBoxAttachedLabel: right
         txtChequeNumber:
+            Width: 80
         grpDetails:
             Controls: [grdDetails, pnlDetails]
             Label: Invoices in this payment
@@ -50,32 +58,42 @@ RootNode:
         grdDetails:
             Dock: Fill
             DetailTable: true
-            #Columns: [AApDocumentPayment.Amount, AApDocumentDetail.Narrative, AApDocumentDetail.ItemRef]
             ActionFocusRow: FocusedRowChangedDetails
         pnlDetails:
             Controls: [rgrAmountToPay, chkClaimDiscount, txtAmountToPay]
             Dock: Bottom
         rgrAmountToPay:
             OptionalValues: [PayFullOutstandingAmount, PayAPartialAmount]
+            Action: actPayPartial
         chkClaimDiscount:
             # TODO: allow discounts
             CheckBoxAttachedLabel: right
             ReadOnly: true
         txtAmountToPay:
-            # TODO: allow partial payments
+        txtCurrency:
+            Label: Currency
             ReadOnly: true
-        txtCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
+            DataField: AApSupplier.CurrencyCode
+            Width: 80
         cmbPaymentType:
             OptionalValues: [=Cash, Cheque]
             # TODO: Transfer, Electronic
             Label: Payment T&ype
-            Width: 130
+            Width: 120
         txtReference: {Label=&Reference, ColSpan=2, DataField=AApPayment.Reference}
-        cmbBankAccount: {List=UserDefinedList, ColSpan=2}
+        cmbBankAccount:
+            List: UserDefinedList
+            Width: 200
         txtExchangeRate:
+            Format: Decimal(5)
         txtTotalAmount:
-            Label: &Amount
+            Label: Amount
             ReadOnly: true
+            Format: Decimal(2)
+        txtBaseAmount:
+            Label: Amount in Base
+            ReadOnly: true
+            Format: Decimal(2)
     Toolbar:
         tbbMakePayment:
-        tbbSplitByInvoice:
+        tbbPrintReport:

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -77,7 +77,7 @@ namespace Ict.Common.Printing
             // FWidth: don't try to fit on a page at the moment
             FWidth = DEFAULT_LENGTH_LINE;
             FLeftMargin = 0;
-            FRightMargin = FWidth - FLeftMargin;
+            FRightMargin = 0;
             CurrentPageNr = 1;
         }
 
@@ -231,6 +231,26 @@ namespace Ict.Common.Printing
 
             // the cm in the xml file are targeted towards graphics output, the text output needs more space
             return ReturnValue * FACTOR_CM_2_LETTER;
+        }
+
+        /// <summary>
+        /// convert pixels to inches or other unit used for output
+        /// </summary>
+        /// <param name="AWidth"></param>
+        /// <returns></returns>
+        public override float PixelHorizontal(float AWidth)
+        {
+            // TODO not implemented yet
+            return AWidth;
+        }
+
+        /// <summary>
+        /// convert pixels to inches or other unit used for output
+        /// </summary>
+        public override float PixelVertical(float AHeight)
+        {
+            // TODO not implemented yet
+            return AHeight;
         }
 
         #endregion

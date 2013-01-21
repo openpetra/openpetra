@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,11 +28,11 @@ using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 
@@ -99,6 +99,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 FMainDS.SUser.DefaultView.AllowNew = false;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.SUser.DefaultView);
+                grdDetails.Selection.SelectRow(1, true);
             }
         }
 
@@ -136,8 +137,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     SUserModuleAccessPermissionTable.GetUserIdDBName(),
                     ARow.UserId);
             string currentPermissions = clbUserGroup.GetCheckedStringList();
-            string permissionsToDelete = string.Empty;
-            string permissionsToAdd = string.Empty;
             StringCollection CSVValues = StringHelper.StrSplit(currentPermissions, ",");
 
             foreach (DataRowView rv in FMainDS.SUserModuleAccessPermission.DefaultView)
@@ -173,47 +172,27 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
         }
 
-        /// <summary>
-        /// create a user. this is a temporary function. should be replaced by a fully functional user and permission management screen.
-        /// assigns permissions to all modules at the moment.
-        /// </summary>
         private void NewUser(Object Sender, EventArgs e)
         {
-            if (this.FPetraUtilsObject.HasChanges)
+            CreateNewSUser();
+        }
+
+        private void NewRowManual(ref SUserRow ARow)
+        {
+            string newName = Catalog.GetString("NEWUSER");
+            Int32 countNewDetail = 0;
+
+            if (FMainDS.SUser.Rows.Find(new object[] { newName }) != null)
             {
-                MessageBox.Show(Catalog.GetString("Please save the current changes first before creating a new user."));
-                return;
-            }
-
-            PetraInputBox input = new PetraInputBox(
-                Catalog.GetString("Create a new user"),
-                Catalog.GetString("Please enter the user name:"),
-                "", false);
-
-            if (input.ShowDialog() == DialogResult.OK)
-            {
-                string username = input.GetAnswer();
-                input = new PetraInputBox(
-                    Catalog.GetString("Set the password of a user"),
-                    Catalog.GetString("Please enter the new password:"),
-                    "", true);
-
-                if (input.ShowDialog() == DialogResult.OK)
+                while (FMainDS.SUser.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
                 {
-                    string password = input.GetAnswer();
-
-                    // TODO: select module permissions
-                    if (TRemote.MSysMan.Maintenance.WebConnectors.CreateUser(username, password, SharedConstants.PETRAGROUP_PTNRUSER))
-                    {
-                        LoadUsers();
-                        MessageBox.Show(String.Format(Catalog.GetString("User {0} has been created successfully."), username));
-                    }
-                    else
-                    {
-                        MessageBox.Show(String.Format(Catalog.GetString("There was a problem creating the user {0}"), username));
-                    }
+                    countNewDetail++;
                 }
+
+                newName += countNewDetail.ToString();
             }
+
+            ARow.UserId = newName;
         }
 
         private void RetireUser(Object Sender, EventArgs e)
@@ -232,7 +211,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             string username = GetSelectedDetailRow().UserId;
 
-            // TODO: enter new password twice to be sure it is correct
+            // only request the password once, since this is the sysadmin changing it.
+            // see http://bazaar.launchpad.net/~openpetracore/openpetraorg/trunkhosted/view/head:/csharp/ICT/Petra/Client/MSysMan/Gui/SysManMain.cs
+            // for the change password dialog for the normal user
             PetraInputBox input = new PetraInputBox(
                 Catalog.GetString("Change the password"),
                 String.Format(Catalog.GetString("Please enter the new password for user {0}:"), username),

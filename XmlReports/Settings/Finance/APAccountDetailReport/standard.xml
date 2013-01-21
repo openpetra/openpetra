@@ -1,38 +1,38 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Finance\\AP_accountdetail.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="APAccountDetailReport" />
-  <Parameter id="MaxDisplayColumns" value="5" />
-  <Parameter id="param_account_from" value="9100" />
-  <Parameter id="param_account_to" value="9200" />
-  <Parameter id="param_calculation" column="0" value="Date" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="param_calculation" column="1" value="Reference Number" />
-  <Parameter id="ColumnWidth" column="1" value="3" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="Credits" />
-  <Parameter id="ColumnWidth" column="2" value="2" />
-  <Parameter id="param_ytd" column="2" value="false" />
-  <Parameter id="param_calculation" column="3" value="Debits" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_ytd" column="3" value="false" />
-  <Parameter id="param_calculation" column="4" value="Detail" />
-  <Parameter id="ColumnWidth" column="4" value="6" />
-  <Parameter id="param_ytd" column="4" value="false" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_ledger_number_i" value="29" />
-  <Parameter id="CostCentreCredit" value="0" />
-  <Parameter id="CostCentreDebit" value="0" />
-  <Parameter id="AccountCodeCredit" value="0" />
-  <Parameter id="AccountCodeDebit" value="0" />
-  <Parameter id="TotalCredit" value="0" />
-  <Parameter id="TotalDebit" value="0" />
-  <Parameter id="param_column_Date" value="0" />
-  <Parameter id="param_column_Reference Number" value="1" />
-  <Parameter id="param_column_Credits" value="2" />
-  <Parameter id="param_column_Debits" value="3" />
-  <Parameter id="param_column_Detail" value="4" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\AP_accountdetail.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:APAccountDetailReport" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:5" />
+  <Parameter id="param_account_from" value="eInteger:9100" />
+  <Parameter id="param_account_to" value="eInteger:9200" />
+  <Parameter id="param_calculation" column="0" value="eString:Date" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Reference Number" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Credits" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:Debits" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Detail" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:6" />
+  <Parameter id="param_ytd" column="4" value="eString:false" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_ledger_number_i" value="eInteger:29" />
+  <Parameter id="CostCentreCredit" value="eInteger:0" />
+  <Parameter id="CostCentreDebit" value="eInteger:0" />
+  <Parameter id="AccountCodeCredit" value="eInteger:0" />
+  <Parameter id="AccountCodeDebit" value="eInteger:0" />
+  <Parameter id="TotalCredit" value="eInteger:0" />
+  <Parameter id="TotalDebit" value="eInteger:0" />
+  <Parameter id="param_column_Date" value="eInteger:0" />
+  <Parameter id="param_column_Reference Number" value="eInteger:1" />
+  <Parameter id="param_column_Credits" value="eInteger:2" />
+  <Parameter id="param_column_Debits" value="eInteger:3" />
+  <Parameter id="param_column_Detail" value="eInteger:4" />
 </Parameters>

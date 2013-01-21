@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Data;
@@ -45,8 +46,7 @@ namespace Ict.Common.Controls
         private System.Data.DataView FDataView;
         private System.Data.DataTable FDataTable;
         private String FCheckedColumn;
-        private String FKeyColumn;
-        private String FLabelColumn;
+        private List <String>FKeyColumns;
 
         /// <summary>
         /// the number of checked items
@@ -76,7 +76,7 @@ namespace Ict.Common.Controls
         /// allows popping up a question whether to check the CheckBox
         ///
         /// </summary>
-        public event TDataColumnChangedEventHandler DataColumnChanged;
+        public event EventHandler ValueChanged;
 
         #region Creation and Disposal
 
@@ -86,6 +86,7 @@ namespace Ict.Common.Controls
         public TClbVersatile() : base()
         {
             InitializeComponent();
+            FKeyColumns = new List <String>();
         }
 
         private void InitializeComponent()
@@ -101,21 +102,30 @@ namespace Ict.Common.Controls
         {
             Int32 Row = e.CellContext.Position.Row;
 
-            FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            if (FDataView[Row][FCheckedColumn].GetType() != typeof(System.DBNull))
+            {
+                FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            }
         }
 
         private void Clb_EnterKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
             Int32 Row = e.Row;
 
-            FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            if (FDataView[Row][FCheckedColumn].GetType() != typeof(System.DBNull))
+            {
+                FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            }
         }
 
         private void Clb_SpaceKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
             Int32 Row = e.Row;
 
-            FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            if (FDataView[Row][FCheckedColumn].GetType() != typeof(System.DBNull))
+            {
+                FDataView[Row][FCheckedColumn] = (System.Object)(!Convert.ToBoolean(FDataView[Row][FCheckedColumn]));
+            }
         }
 
         /// <summary>
@@ -134,12 +144,34 @@ namespace Ict.Common.Controls
             bool AAllowEdit,
             bool AAllowDelete)
         {
+            List <String>KeyColumns = new List <String>();
+            KeyColumns.Add(AKeyColumn);
+
+            DataBindGrid(ATable, ASortColumn, ACheckedColumn, KeyColumns, ALabelColumn,
+                AAllowNew, AAllowEdit, AAllowDelete);
+        }
+
+        /// <summary>
+        /// This will bind the table to the grid, using the first column for the checked boxes,
+        /// and sorting the rest of the grid by ASortColumn.
+        /// If you want to use the event DataColumnChanged, first assign the property DataColumnChanged before calling this procedure.
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public void DataBindGrid(System.Data.DataTable ATable,
+            String ASortColumn,
+            String ACheckedColumn,
+            List <String>AKeyColumns,
+            String ALabelColumn,
+            bool AAllowNew,
+            bool AAllowEdit,
+            bool AAllowDelete)
+        {
             FDataTable = ATable;
             FDataView = FDataTable.DefaultView;
             FDataView.Sort = ASortColumn;
             FCheckedColumn = ACheckedColumn;
-            FKeyColumn = AKeyColumn;
-            FLabelColumn = ALabelColumn;
+            FKeyColumns = new List <String>(AKeyColumns);
             FDataView.AllowNew = AAllowNew;
             FDataView.AllowEdit = AAllowEdit;
             FDataView.AllowDelete = AAllowDelete;
@@ -148,45 +180,48 @@ namespace Ict.Common.Controls
             DataSource = new DevAge.ComponentModel.BoundDataView(FDataView);
 
             // Hook event that allows popping up a question whether to check the CheckBox
-            if ((DataColumnChanged != null) && (!(DesignMode)))
+            if (!DesignMode)
             {
-                FDataTable.ColumnChanged += new DataColumnChangeEventHandler(this.DataColumnChanged);
+                FDataTable.ColumnChanged += MyDataColumnChangedEventHandler;
             }
         }
 
-        private DataRowView FindString(DataTable ATable, String AColumn, String ANeedle)
+        private void MyDataColumnChangedEventHandler(object sender, DataColumnChangeEventArgs e)
         {
-            DataRowView ReturnValue;
-            DataView View;
-
-            ReturnValue = null;
-            View = new DataView(ATable);
-            View.RowFilter = AColumn + " = '" + ANeedle + "'";
-
-            if (View.Count > 0)
+            if (this.ValueChanged != null)
             {
-                ReturnValue = View[0];
+                ValueChanged(this, null);
             }
-
-            return ReturnValue;
         }
 
-        private DataRowView FindInt32(DataTable ATable, String AColumn, System.Int32 ANeedle)
+        private DataRowView FindRow(DataTable ATable, List <String>AColumns, List <String>ANeedles)
         {
             DataRowView ReturnValue;
             DataView View;
+            String Filter = "";
+            int Counter = 0;
 
             ReturnValue = null;
             View = new DataView(ATable);
 
-            if (ATable.Columns[AColumn].DataType == typeof(String))
+            for (Counter = 0; Counter < AColumns.Count; Counter++)
             {
-                View.RowFilter = AColumn + " = '" + ANeedle.ToString() + "'";
+                if (Counter > 0)
+                {
+                    Filter = Filter + " AND ";
+                }
+
+                if (ATable.Columns[AColumns[Counter]].DataType == typeof(String))
+                {
+                    Filter = Filter + AColumns[Counter] + " = '" + ANeedles[Counter] + "'";
+                }
+                else
+                {
+                    Filter = Filter + AColumns[Counter] + " = " + ANeedles[Counter];
+                }
             }
-            else
-            {
-                View.RowFilter = AColumn + " = " + ANeedle.ToString();
-            }
+
+            View.RowFilter = Filter;
 
             if (View.Count > 0)
             {
@@ -198,7 +233,7 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// This function returns the comma separated list of the currently selected row,
-        /// identified by their codes (using FKeyColumn)
+        /// identified by their codes (using FKeyColumns)
         ///
         /// </summary>
         /// <returns>void</returns>
@@ -212,11 +247,17 @@ namespace Ict.Common.Controls
             {
                 foreach (DataRowView Row in FDataView)
                 {
-                    if (Convert.ToBoolean(Row[FCheckedColumn]) == true)
+                    if (Row[FCheckedColumn].GetType() != typeof(System.DBNull))
                     {
-                        // notice: the value in the string list might be in pairs, comma separated; addCSV will put quotes around it
-                        // eg. motivation group and detail
-                        ReturnValue = StringHelper.AddCSV(ReturnValue, Row[FKeyColumn].ToString());
+                        if (Convert.ToBoolean(Row[FCheckedColumn]) == true)
+                        {
+                            // notice: the value in the string list might be in pairs, comma separated; addCSV will put quotes around it
+                            // eg. motivation group and detail
+                            foreach (String KeyColumn in FKeyColumns)
+                            {
+                                ReturnValue = StringHelper.AddCSV(ReturnValue, Row[KeyColumn].ToString());
+                            }
+                        }
                     }
                 }
             }
@@ -226,7 +267,7 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// This function returns the comma separated list of all row,
-        /// identified by their codes (using FKeyColumn)
+        /// identified by their codes (using FKeyColumns)
         ///
         /// </summary>
         /// <returns>String</returns>
@@ -242,7 +283,10 @@ namespace Ict.Common.Controls
                 {
                     // notice: the value in the string list might be in pairs, comma separated; addCSV will put quotes around it
                     // eg. motivation group and detail
-                    ReturnValue = StringHelper.AddCSV(ReturnValue, Row[FKeyColumn].ToString());
+                    foreach (String KeyColumn in FKeyColumns)
+                    {
+                        ReturnValue = StringHelper.AddCSV(ReturnValue, Row[KeyColumn].ToString());
+                    }
                 }
             }
 
@@ -266,6 +310,22 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Clear the checked state for all items
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public void SelectAll()
+        {
+            if (FDataView != null)
+            {
+                foreach (DataRowView Row in FDataView)
+                {
+                    Row[FCheckedColumn] = (System.Object)true;
+                }
+            }
+        }
+
+        /// <summary>
         /// This function selects the strings retrieved from the parameter AStringsToCheck;
         /// All other items are unselected.
         /// </summary>
@@ -275,39 +335,42 @@ namespace Ict.Common.Controls
         public bool SetCheckedStringList(String AStringsToCheck)
         {
             bool ReturnValue;
-            String itemString;
+
+            List <String>ItemStringList = new List <String>();;
             DataRowView RowView;
+            int Counter;
 
             ReturnValue = true;
 
             // clear checked state for all items
             ClearSelected();
 
-            while (AStringsToCheck.Length > 0)
+            if (FKeyColumns.Count == 0)
             {
-                itemString = StringHelper.GetNextCSV(ref AStringsToCheck);
-                RowView = FindString(FDataTable, FKeyColumn, itemString);
+                ReturnValue = false;
+            }
 
-                if (RowView == null)
+            if (ReturnValue != false)
+            {
+                while (AStringsToCheck.Length > 0)
                 {
-                    try
-                    {
-                        // Convert.ToInt32 might fail, if not a integer in the string
-                        RowView = FindInt32(FDataTable, FKeyColumn, Convert.ToInt32(itemString));
-                    }
-                    catch (System.FormatException)
-                    {
-                        RowView = null;
-                    }
-                }
+                    ItemStringList.Clear();
 
-                if (RowView != null)
-                {
-                    RowView[FCheckedColumn] = (System.Object)true;
-                }
-                else
-                {
-                    ReturnValue = false;
+                    for (Counter = 0; Counter < FKeyColumns.Count; Counter++)
+                    {
+                        ItemStringList.Add(StringHelper.GetNextCSV(ref AStringsToCheck));
+                    }
+
+                    RowView = FindRow(FDataTable, FKeyColumns, ItemStringList);
+
+                    if (RowView != null)
+                    {
+                        RowView[FCheckedColumn] = (System.Object)true;
+                    }
+                    else
+                    {
+                        ReturnValue = false;
+                    }
                 }
             }
 

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -114,12 +114,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 8)
-                    {
-                        Console.WriteLine("TModuleAccessManager.LoadUserModules: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(8, "TModuleAccessManager.LoadUserModules: committed own transaction.");
                 }
             }
             return ReturnValue;
@@ -206,6 +201,13 @@ namespace Ict.Petra.Server.App.Core.Security
         /// this uses a custom attribute associated with the method of the connector
         static public bool CheckUserPermissionsForMethod(System.Type AConnectorType, string AMethodName, string AParameterTypes)
         {
+            return CheckUserPermissionsForMethod(AConnectorType, AMethodName, AParameterTypes, -1);
+        }
+
+        /// throws an exception if the current user does not have enough permission to access the method;
+        /// this uses a custom attribute associated with the method of the connector
+        static public bool CheckUserPermissionsForMethod(System.Type AConnectorType, string AMethodName, string AParameterTypes, Int32 ALedgerNumber)
+        {
             MethodInfo[] methods = AConnectorType.GetMethods();
 
             MethodInfo MethodToTest = null;
@@ -222,16 +224,19 @@ namespace Ict.Petra.Server.App.Core.Security
                     {
                         string ParameterName = Parameter.ParameterType.ToString().Replace("&", "");
 
+                        ParameterName = ParameterName.Replace("System.", string.Empty);
+
                         if (ParameterName.Contains("."))
                         {
                             ParameterName = ParameterName.Substring(ParameterName.LastIndexOf(".") + 1);
                         }
 
+                        ParameterName = ParameterName.Replace("`1", string.Empty);
+                        ParameterName = ParameterName.Replace("`2", string.Empty);
                         ParameterName = ParameterName.Replace("Boolean", "bool");
                         ParameterName = ParameterName.Replace("Int32", "int");
                         ParameterName = ParameterName.Replace("Int64", "long");
                         ParameterName = ParameterName.Replace("[]", ".Array");
-                        ParameterName = ParameterName.Replace("]", "?");
 
                         ParameterTypes += ParameterName + ";";
                     }
@@ -241,6 +246,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     if (ParameterTypes == AParameterTypes)
                     {
                         MethodToTest = method;
+                        break;
                     }
                 }
             }
@@ -262,7 +268,12 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     try
                     {
-                        bool hasPermission = CheckUserModulePermissions(moduleExpression);
+                        CheckUserModulePermissions(moduleExpression);
+
+                        if (ALedgerNumber != -1)
+                        {
+                            CheckUserModulePermissions("LEDGER" + ALedgerNumber.ToString("0000"));
+                        }
                     }
                     catch (EvaluateException evException)
                     {

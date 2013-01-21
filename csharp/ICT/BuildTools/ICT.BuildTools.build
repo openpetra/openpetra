@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<project name="ICT-buildtools-Build">
+
+<include buildfile="../../../inc/nant/OpenPetra.csharp.xml"/> 
+
+</project>

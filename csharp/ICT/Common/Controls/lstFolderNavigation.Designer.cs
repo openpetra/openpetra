@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,44 +57,14 @@ namespace Ict.Common.Controls
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TRbtNavigationButton));
+            new System.ComponentModel.ComponentResourceManager(typeof(TRbtNavigationButton));
 
             this.sptNavigation = new System.Windows.Forms.SplitContainer();
-            this.pnlMoreButtons = new System.Windows.Forms.Panel();
-            this.pnlNavigationCaption = new Ict.Common.Controls.TPnlGradient();
-            this.lblNavigationCaption = new System.Windows.Forms.Label();
-            this.btnCollapseNavigation = new System.Windows.Forms.Button();
-
+            this.pnlMoreButtons = new TPnlGradient();
             this.sptNavigation.Panel1.SuspendLayout();
             this.sptNavigation.Panel2.SuspendLayout();
             this.sptNavigation.SuspendLayout();
             this.SuspendLayout();
-
-            //
-            // lblNavigationCaption
-            //
-            this.lblNavigationCaption.Font = new System.Drawing.Font("Tahoma",
-                11.50F,
-                System.Drawing.FontStyle.Bold,
-                System.Drawing.GraphicsUnit.Point,
-                0);
-            this.lblNavigationCaption.ForeColor = System.Drawing.Color.FromArgb(0, 0, 0x84);
-            this.lblNavigationCaption.Location = new System.Drawing.Point(11, 2);
-            this.lblNavigationCaption.Name = "lblNavigationCaption";
-            this.lblNavigationCaption.Size = new System.Drawing.Size(200 - 30, 24);
-            this.lblNavigationCaption.TabIndex = 0;
-            this.lblNavigationCaption.BackColor = System.Drawing.Color.Transparent;
-            this.lblNavigationCaption.Text = "Caption";
-
-            //
-            // btnCollapseNavigation
-            //
-            this.btnCollapseNavigation.Location = new System.Drawing.Point(200 - 27, 0);
-            this.btnCollapseNavigation.Name = "btnCollapseNavigation";
-            this.btnCollapseNavigation.Size = new System.Drawing.Size(27, 27);
-            this.btnCollapseNavigation.TabIndex = 1;
-            this.btnCollapseNavigation.Text = "";
-            this.btnCollapseNavigation.UseVisualStyleBackColor = true;
 
             //
             // pnlMoreButtons
@@ -104,18 +74,6 @@ namespace Ict.Common.Controls
             this.pnlMoreButtons.Name = "pnlMoreButtons";
             this.pnlMoreButtons.Size = new System.Drawing.Size(200, 28);
             this.pnlMoreButtons.TabIndex = 2;
-            this.pnlMoreButtons.BorderStyle = BorderStyle.FixedSingle;
-
-            //
-            // pnlNavigationCaption
-            //
-            this.pnlNavigationCaption.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlNavigationCaption.Location = new System.Drawing.Point(0, 0);
-            this.pnlNavigationCaption.Name = "pnlNavigationCaption";
-            this.pnlNavigationCaption.Size = new System.Drawing.Size(200, 27);
-            this.pnlNavigationCaption.TabIndex = 7;
-            this.pnlNavigationCaption.Controls.Add(this.btnCollapseNavigation);
-            this.pnlNavigationCaption.Controls.Add(this.lblNavigationCaption);
 
             //
             // sptNavigation
@@ -147,8 +105,7 @@ namespace Ict.Common.Controls
             //
             this.Controls.Add(this.sptNavigation);
             this.Controls.Add(this.pnlMoreButtons);
-            this.Controls.Add(this.pnlNavigationCaption);
-
+            this.DoubleBuffered = true;
             this.sptNavigation.Panel1.ResumeLayout(false);
             this.sptNavigation.Panel2.ResumeLayout(false);
             this.sptNavigation.ResumeLayout(false);
@@ -156,10 +113,7 @@ namespace Ict.Common.Controls
             this.PerformLayout();
         }
 
-        private System.Windows.Forms.Label lblNavigationCaption;
-        private System.Windows.Forms.Button btnCollapseNavigation;
         private System.Windows.Forms.SplitContainer sptNavigation;
-        private Ict.Common.Controls.TPnlGradient pnlNavigationCaption;
-        private System.Windows.Forms.Panel pnlMoreButtons;
+        private TPnlGradient pnlMoreButtons;
     }
 }

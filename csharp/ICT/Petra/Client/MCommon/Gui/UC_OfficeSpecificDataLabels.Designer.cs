@@ -30,7 +30,7 @@ using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MCommon.Gui
 {
-    partial class TUCOfficeSpecificDataLabels
+    partial class TUC_LocalDataLabelValues
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -63,48 +63,36 @@ namespace Ict.Petra.Client.MCommon.Gui
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.lblInfo = new System.Windows.Forms.Label();
-            this.grdOfficeSpecificGrid = new SourceGrid.Grid();
-
-// TODO            this.sbtUCOfficeSpecificDataLabels = new EWSoftware.StatusBarText.StatusBarTextProvider(this.components);
+            this.grdLocalDataLabelValues = new SourceGrid.Grid();
             this.SuspendLayout();
-
-            //
-            // lblInfo
-            //
-            this.lblInfo.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, (byte)0);
-            this.lblInfo.Location = new System.Drawing.Point(6, 6);
-            this.lblInfo.Name = "lblInfo";
-            this.lblInfo.Size = new System.Drawing.Size(196, 14);
-            this.lblInfo.TabIndex = 0;
-            this.lblInfo.Text = "Office Specific Data Labels";
 
             //
             // grdOfficeSpecificGrid
             //
-            this.grdOfficeSpecificGrid.Anchor =
-                ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
-                                                        System.Windows.Forms.AnchorStyles.Bottom) |
-                                                       System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.grdOfficeSpecificGrid.Location = new System.Drawing.Point(0, 0);
-            this.grdOfficeSpecificGrid.Name = "grdOfficeSpecificGrid";
-            this.grdOfficeSpecificGrid.Size = new System.Drawing.Size(512, 386);
-            this.grdOfficeSpecificGrid.SpecialKeys = SourceGrid.GridSpecialKeys.Default;
-            this.grdOfficeSpecificGrid.TabIndex = 0;
+            this.grdLocalDataLabelValues.Location = new System.Drawing.Point(0, 0);
+            this.grdLocalDataLabelValues.Name = "grdLocalDataLabelValues";
+            //this.grdLocalDataLabelValues.Size = new System.Drawing.Size(512, 386);
+            this.grdLocalDataLabelValues.SpecialKeys = SourceGrid.GridSpecialKeys.Default;
+            this.grdLocalDataLabelValues.TabIndex = 0;
+            this.grdLocalDataLabelValues.Dock = System.Windows.Forms.DockStyle.Fill;
+
 
             //
             // TUCOfficeSpecificDataLabels
             //
-            this.Controls.Add(this.grdOfficeSpecificGrid);
-            this.Controls.Add(this.lblInfo);
+            this.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
+                                                        System.Windows.Forms.AnchorStyles.Bottom) |
+                                                       System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.Controls.Add(this.grdLocalDataLabelValues);
             this.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
-            this.Name = "TUCOfficeSpecificDataLabels";
-            this.Size = new System.Drawing.Size(526, 400);
-            this.SizeChanged += new System.EventHandler(this.GrdOfficeSpecificGrid_SizeChanged);
+            this.Name = "TUC_LocalDataLabelValues";
+            //this.Size = new System.Drawing.Size(526, 400);
+            this.SizeChanged += new System.EventHandler(this.GrdLocalDataLabelValues_SizeChanged);
             this.ResumeLayout(false);
+            this.Dock = System.Windows.Forms.DockStyle.Fill;
         }
 
-        private System.Windows.Forms.Label lblInfo;
-        private SourceGrid.Grid grdOfficeSpecificGrid;
+        private SourceGrid.Grid grdLocalDataLabelValues;
     }
 }

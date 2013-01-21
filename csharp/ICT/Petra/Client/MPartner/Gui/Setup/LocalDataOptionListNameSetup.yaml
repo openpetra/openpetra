@@ -1,0 +1,41 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Local Data List Names
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PDataLabelLookupCategory
+    CacheableTable: DataLabelLookupCategoryList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 700
+    WindowHeight: 450
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailCategoryCode, DetailCategoryDesc]
+            CustomColumns:
+                DetailCategoryCode: {Label=List Name}
+                DetailCategoryDesc: {Label=Description}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailCategoryCode, txtDetailCategoryDesc]
+        txtDetailCategoryCode: {Label=List Name, CharacterCasing=Upper}
+        txtDetailCategoryDesc: {Label=Description, Width=300}
+
+    Toolbar:
+        tbbNew: 
+            Label: New List Name

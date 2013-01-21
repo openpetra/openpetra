@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,51 +76,209 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnHelp = new System.Windows.Forms.Button();
             this.pnlBtnOKCancelHelpLayout = new System.Windows.Forms.Panel();
-            this.stbMain = new TExtStatusBarHelp();
+            this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
             this.pnlBtnOKCancelHelpLayout.SuspendLayout();
-            this.stbMain.SuspendLayout();
             this.SuspendLayout();
-
+            //
+            // lblSitesAvailable
+            //
+            this.lblSitesAvailable.Location = new System.Drawing.Point(10, 15);
+            this.lblSitesAvailable.Name = "lblSitesAvailable";
+            this.lblSitesAvailable.Size = new System.Drawing.Size(83, 15);
+            this.lblSitesAvailable.TabIndex = 0;
+            this.lblSitesAvailable.Text = "S&ites Available:";
+            this.lblSitesAvailable.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // lblPartnerKey
+            //
+            this.lblPartnerKey.Location = new System.Drawing.Point(15, 184);
+            this.lblPartnerKey.Name = "lblPartnerKey";
+            this.lblPartnerKey.Size = new System.Drawing.Size(78, 21);
+            this.lblPartnerKey.TabIndex = 2;
+            this.lblPartnerKey.Text = "Partner &Key:";
+            this.lblPartnerKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // lblPartnerClass
+            //
+            this.lblPartnerClass.Location = new System.Drawing.Point(18, 206);
+            this.lblPartnerClass.Name = "lblPartnerClass";
+            this.lblPartnerClass.Size = new System.Drawing.Size(75, 21);
+            this.lblPartnerClass.TabIndex = 4;
+            this.lblPartnerClass.Text = "Partner C&lass:";
+            this.lblPartnerClass.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // Label1
+            //
+            this.Label1.Location = new System.Drawing.Point(-7, 227);
+            this.Label1.Name = "Label1";
+            this.Label1.Size = new System.Drawing.Size(100, 18);
+            this.Label1.TabIndex = 7;
+            this.Label1.Text = "&Acquisition Code:";
+            this.Label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            //
+            // cmbAcquisitionCode
+            //
+            this.cmbAcquisitionCode.BackColor = System.Drawing.SystemColors.Control;
+            this.cmbAcquisitionCode.CaseSensitiveSearch = false;
+            this.cmbAcquisitionCode.ColumnWidthCol1 = 100;
+            this.cmbAcquisitionCode.ColumnWidthCol2 = 350;
+            this.cmbAcquisitionCode.ColumnWidthCol3 = 0;
+            this.cmbAcquisitionCode.ColumnWidthCol4 = 0;
+            this.cmbAcquisitionCode.ComboBoxWidth = 83;
+            this.cmbAcquisitionCode.DisplayMember = "";
+            this.cmbAcquisitionCode.Filter = null;
+            this.cmbAcquisitionCode.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbAcquisitionCode.ImageColumn = 0;
+            this.cmbAcquisitionCode.Images = null;
+            this.cmbAcquisitionCode.LabelDisplaysColumn = null;
+            this.cmbAcquisitionCode.ListTable = Ict.Petra.Client.CommonControls.TCmbAutoPopulated.TListTableEnum.AcquisitionCodeList;
+            this.cmbAcquisitionCode.Location = new System.Drawing.Point(98, 225);
+            this.cmbAcquisitionCode.Name = "cmbAcquisitionCode";
+            this.cmbAcquisitionCode.SelectedIndex = -1;
+            this.cmbAcquisitionCode.Size = new System.Drawing.Size(320, 22);
+            this.cmbAcquisitionCode.SuppressSelectionColor = true;
+            this.cmbAcquisitionCode.TabIndex = 8;
+            this.cmbAcquisitionCode.ValueMember = "";
+            //
+            // grdInstalledSites
+            //
+            this.grdInstalledSites.AlternatingBackgroundColour =
+                System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.grdInstalledSites.AutoFindColumn = ((short)(-1));
+            this.grdInstalledSites.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.grdInstalledSites.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.grdInstalledSites.DeleteQuestionMessage = "You have chosen to delete this record.\'#13#10#13#10\'Do you really want to delete " +
+                                                           "it?";
+            this.grdInstalledSites.EnableSort = false;
+            this.grdInstalledSites.FixedRows = 1;
+            this.grdInstalledSites.Location = new System.Drawing.Point(98, 13);
+            this.grdInstalledSites.Name = "grdInstalledSites";
+            this.grdInstalledSites.SelectionMode = SourceGrid.GridSelectionMode.Row;
+            this.grdInstalledSites.Size = new System.Drawing.Size(364, 163);
+            this.grdInstalledSites.SpecialKeys =
+                ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows | SourceGrid.GridSpecialKeys.PageDownUp) |
+                                                  SourceGrid.GridSpecialKeys.Enter) |
+                                                 SourceGrid.GridSpecialKeys.Escape) |
+                                                SourceGrid.GridSpecialKeys.Control) |
+                                               SourceGrid.GridSpecialKeys.Shift)));
+            this.grdInstalledSites.TabIndex = 1;
+            this.grdInstalledSites.TabStop = true;
+            this.grdInstalledSites.ToolTipText = "";
+            this.grdInstalledSites.ToolTipTextDelegate = null;
+            //
+            // cmbPartnerClass
+            //
+            this.cmbPartnerClass.BackColor = System.Drawing.SystemColors.Control;
+            this.cmbPartnerClass.CaseSensitiveSearch = false;
+            this.cmbPartnerClass.ColumnWidthCol1 = 130;
+            this.cmbPartnerClass.ColumnWidthCol2 = 0;
+            this.cmbPartnerClass.ColumnWidthCol3 = 0;
+            this.cmbPartnerClass.ColumnWidthCol4 = 0;
+            this.cmbPartnerClass.ComboBoxWidth = 108;
+            this.cmbPartnerClass.DisplayMember = "";
+            this.cmbPartnerClass.Filter = null;
+            this.cmbPartnerClass.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbPartnerClass.ImageColumn = 0;
+            this.cmbPartnerClass.Images = null;
+            this.cmbPartnerClass.LabelDisplaysColumn = null;
+            this.cmbPartnerClass.ListTable = Ict.Petra.Client.CommonControls.TCmbAutoPopulated.TListTableEnum.PartnerClassList;
+            this.cmbPartnerClass.Location = new System.Drawing.Point(98, 203);
+            this.cmbPartnerClass.Name = "cmbPartnerClass";
+            this.cmbPartnerClass.SelectedIndex = -1;
+            this.cmbPartnerClass.Size = new System.Drawing.Size(110, 22);
+            this.cmbPartnerClass.SuppressSelectionColor = true;
+            this.cmbPartnerClass.TabIndex = 5;
+            this.cmbPartnerClass.ValueMember = "";
+            this.cmbPartnerClass.SelectedValueChanged += new System.EventHandler(this.CmbPartnerClass_SelectedValueChanged);
+            //
+            // chkPrivatePartner
+            //
+            this.chkPrivatePartner.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.chkPrivatePartner.Location = new System.Drawing.Point(8, 243);
+            this.chkPrivatePartner.Name = "chkPrivatePartner";
+            this.chkPrivatePartner.Size = new System.Drawing.Size(102, 23);
+            this.chkPrivatePartner.TabIndex = 9;
+            this.chkPrivatePartner.Text = "&Private Partner:";
+            this.chkPrivatePartner.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.chkPrivatePartner.Visible = false;
+            //
+            // txtPartnerKey
+            //
+            this.txtPartnerKey.BackColor = System.Drawing.SystemColors.Control;
+            this.txtPartnerKey.DelegateFallbackLabel = true;
+            this.txtPartnerKey.Font = new System.Drawing.Font("Courier New", 9.25F, System.Drawing.FontStyle.Bold);
+            this.txtPartnerKey.LabelText = "Partner Key";
+            this.txtPartnerKey.Location = new System.Drawing.Point(98, 182);
+            this.txtPartnerKey.MaxLength = 10;
+            this.txtPartnerKey.Name = "txtPartnerKey";
+            this.txtPartnerKey.PartnerKey = ((long)(0));
+            this.txtPartnerKey.ReadOnly = false;
+            this.txtPartnerKey.ShowLabel = false;
+            this.txtPartnerKey.Size = new System.Drawing.Size(90, 22);
+            this.txtPartnerKey.TabIndex = 3;
+            this.txtPartnerKey.TextBoxReadOnly = false;
+            this.txtPartnerKey.TextBoxWidth = 80;
+            //
+            // txtFamilyPartnerBox
+            //
+            this.txtFamilyPartnerBox.ASpecialSetting = true;
+            this.txtFamilyPartnerBox.AutomaticallyUpdateDataSource = false;
+            this.txtFamilyPartnerBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.txtFamilyPartnerBox.ButtonText = "&Family...";
+            this.txtFamilyPartnerBox.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtFamilyPartnerBox.ButtonWidth = 70;
+            this.txtFamilyPartnerBox.ListTable = Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
+            this.txtFamilyPartnerBox.Location = new System.Drawing.Point(213, 202);
+            this.txtFamilyPartnerBox.MaxLength = 32767;
+            this.txtFamilyPartnerBox.Name = "txtFamilyPartnerBox";
+            this.txtFamilyPartnerBox.PartnerClass = "FAMILY";
+            this.txtFamilyPartnerBox.PreventFaultyLeaving = false;
+            this.txtFamilyPartnerBox.ReadOnly = false;
+            this.txtFamilyPartnerBox.ShowLabel = true;
+            this.txtFamilyPartnerBox.Size = new System.Drawing.Size(245, 23);
+            this.txtFamilyPartnerBox.TabIndex = 6;
+            this.txtFamilyPartnerBox.TextBoxWidth = 80;
+            this.txtFamilyPartnerBox.VerificationResultCollection = null;
+            this.txtFamilyPartnerBox.Visible = false;
+            this.txtFamilyPartnerBox.PartnerFound += new Ict.Petra.Client.CommonControls.TDelegatePartnerFound(this.TxtFamilyPartnerBox_PartnerFound);
             //
             // btnOK
             //
             this.btnOK.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnOK.Location = new System.Drawing.Point(396, 8);
+            this.btnOK.Location = new System.Drawing.Point(423, 7);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(75, 20);
+            this.btnOK.Size = new System.Drawing.Size(62, 19);
             this.btnOK.TabIndex = 997;
             this.btnOK.Text = "&OK";
             this.btnOK.Click += new System.EventHandler(this.BtnOK_Click);
-
             //
             // btnCancel
             //
             this.btnCancel.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnCancel.Location = new System.Drawing.Point(478, 8);
+            this.btnCancel.Location = new System.Drawing.Point(491, 7);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 20);
+            this.btnCancel.Size = new System.Drawing.Size(63, 19);
             this.btnCancel.TabIndex = 998;
             this.btnCancel.Text = "&Cancel";
-
-
             //
             // btnHelp
             //
             this.btnHelp.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnHelp.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnHelp.Location = new System.Drawing.Point(8, 10);
+            this.btnHelp.Location = new System.Drawing.Point(7, 9);
             this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Size = new System.Drawing.Size(75, 20);
+            this.btnHelp.Size = new System.Drawing.Size(62, 19);
             this.btnHelp.TabIndex = 996;
             this.btnHelp.Text = "&Help";
             this.btnHelp.Click += new System.EventHandler(this.BtnHelp_Click);
-
             //
             // pnlBtnOKCancelHelpLayout
             //
@@ -128,156 +286,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlBtnOKCancelHelpLayout.Controls.Add(this.btnOK);
             this.pnlBtnOKCancelHelpLayout.Controls.Add(this.btnHelp);
             this.pnlBtnOKCancelHelpLayout.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlBtnOKCancelHelpLayout.Location = new System.Drawing.Point(0, 290);
+            this.pnlBtnOKCancelHelpLayout.Location = new System.Drawing.Point(0, 292);
             this.pnlBtnOKCancelHelpLayout.Name = "pnlBtnOKCancelHelpLayout";
-            this.pnlBtnOKCancelHelpLayout.Size = new System.Drawing.Size(560, 34);
+            this.pnlBtnOKCancelHelpLayout.Size = new System.Drawing.Size(560, 32);
             this.pnlBtnOKCancelHelpLayout.TabIndex = 996;
-
-            //
-            // lblSitesAvailable
-            //
-            this.lblSitesAvailable.Location = new System.Drawing.Point(12, 16);
-            this.lblSitesAvailable.Name = "lblSitesAvailable";
-            this.lblSitesAvailable.Size = new System.Drawing.Size(100, 16);
-            this.lblSitesAvailable.TabIndex = 0;
-            this.lblSitesAvailable.Text = "S&ites Available:";
-            this.lblSitesAvailable.TextAlign = System.Drawing.ContentAlignment.TopRight;
-
-            //
-            // lblPartnerKey
-            //
-            this.lblPartnerKey.Location = new System.Drawing.Point(18, 198);
-            this.lblPartnerKey.Name = "lblPartnerKey";
-            this.lblPartnerKey.Size = new System.Drawing.Size(94, 23);
-            this.lblPartnerKey.TabIndex = 2;
-            this.lblPartnerKey.Text = "Partner &Key:";
-            this.lblPartnerKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
-
-            //
-            // lblPartnerClass
-            //
-            this.lblPartnerClass.Location = new System.Drawing.Point(22, 222);
-            this.lblPartnerClass.Name = "lblPartnerClass";
-            this.lblPartnerClass.Size = new System.Drawing.Size(90, 23);
-            this.lblPartnerClass.TabIndex = 4;
-            this.lblPartnerClass.Text = "Partner C&lass:";
-            this.lblPartnerClass.TextAlign = System.Drawing.ContentAlignment.TopRight;
-
-            //
-            // Label1
-            //
-            this.Label1.Location = new System.Drawing.Point(-8, 244);
-            this.Label1.Name = "Label1";
-            this.Label1.Size = new System.Drawing.Size(120, 20);
-            this.Label1.TabIndex = 7;
-            this.Label1.Text = "&Acquisition Code:";
-            this.Label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
-
-            //
-            // cmbAcquisitionCode
-            //
-            this.cmbAcquisitionCode.ComboBoxWidth = 95;
-            this.cmbAcquisitionCode.ListTable = TCmbAutoPopulated.TListTableEnum.AcquisitionCodeList;
-            this.cmbAcquisitionCode.Location = new System.Drawing.Point(118, 242);
-            this.cmbAcquisitionCode.Name = "cmbAcquisitionCode";
-            this.cmbAcquisitionCode.SelectedItem = ((System.Object)(resources.GetObject('c' + "mbAcquisitionCode.SelectedItem")));
-            this.cmbAcquisitionCode.SelectedValue = null;
-            this.cmbAcquisitionCode.Size = new System.Drawing.Size(384, 22);
-            this.cmbAcquisitionCode.TabIndex = 8;
-
-            //
-            // grdInstalledSites
-            //
-            this.grdInstalledSites.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
-            this.grdInstalledSites.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.grdInstalledSites.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.grdInstalledSites.DeleteQuestionMessage = "You have chosen to delete" +
-                                                           " this record.'#13#10#13#10'Do you really want to delete it?";
-            this.grdInstalledSites.FixedRows = 1;
-            this.grdInstalledSites.Location = new System.Drawing.Point(118, 14);
-            this.grdInstalledSites.MinimumHeight = 19;
-            this.grdInstalledSites.Name = "grdInstalledSites";
-            this.grdInstalledSites.Size = new System.Drawing.Size(436, 176);
-            this.grdInstalledSites.SpecialKeys =
-                ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |
-                                                   SourceGrid.GridSpecialKeys.PageDownUp) |
-                                                  SourceGrid.GridSpecialKeys.Enter) |
-                                                 SourceGrid.GridSpecialKeys.Escape) |
-                                                SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
-            this.grdInstalledSites.TabIndex = 1;
-            this.grdInstalledSites.TabStop = true;
-
-            //
-            // cmbPartnerClass
-            //
-            this.cmbPartnerClass.ComboBoxWidth = 130;
-            this.cmbPartnerClass.ListTable = TCmbAutoPopulated.TListTableEnum.PartnerClassList;
-            this.cmbPartnerClass.Location = new System.Drawing.Point(118, 219);
-            this.cmbPartnerClass.Name = "cmbPartnerClass";
-            this.cmbPartnerClass.SelectedItem = ((System.Object)(resources.GetObject('c' + "mbPartnerClass.SelectedItem")));
-            this.cmbPartnerClass.SelectedValue = null;
-            this.cmbPartnerClass.Size = new System.Drawing.Size(132, 22);
-            this.cmbPartnerClass.TabIndex = 5;
-            this.cmbPartnerClass.SelectedValueChanged += new System.EventHandler(this.CmbPartnerClass_SelectedValueChanged);
-
-            //
-            // chkPrivatePartner
-            //
-            this.chkPrivatePartner.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkPrivatePartner.Location = new System.Drawing.Point(10, 262);
-            this.chkPrivatePartner.Name = "chkPrivatePartner";
-            this.chkPrivatePartner.Size = new System.Drawing.Size(122, 24);
-            this.chkPrivatePartner.TabIndex = 9;
-            this.chkPrivatePartner.Text = "&Private Partner:";
-            this.chkPrivatePartner.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.chkPrivatePartner.Visible = false;
-
-            //
-            // txtPartnerKey
-            //
-            this.txtPartnerKey.BackColor = System.Drawing.SystemColors.Control;
-            this.txtPartnerKey.DelegateFallbackLabel = true;
-            this.txtPartnerKey.Font = new System.Drawing.Font("Courier New", 9.25f, System.Drawing.FontStyle.Bold);
-            this.txtPartnerKey.LabelText = "Partner Key";
-            this.txtPartnerKey.Location = new System.Drawing.Point(118, 196);
-            this.txtPartnerKey.MaxLength = 10;
-            this.txtPartnerKey.Name = "txtPartnerKey";
-            this.txtPartnerKey.PartnerKey = (Int64)0;
-            this.txtPartnerKey.ReadOnly = false;
-            this.txtPartnerKey.Size = new System.Drawing.Size(92, 22);
-            this.txtPartnerKey.TabIndex = 3;
-            this.txtPartnerKey.TextBoxReadOnly = false;
-            this.txtPartnerKey.TextBoxWidth = 88;
-
-            //
-            // txtFamilyPartnerBox
-            //
-            this.txtFamilyPartnerBox.ASpecialSetting = true;
-            this.txtFamilyPartnerBox.ButtonText = "&Family...";
-            this.txtFamilyPartnerBox.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.txtFamilyPartnerBox.ButtonWidth = 70;
-            this.txtFamilyPartnerBox.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.PartnerKey;
-            this.txtFamilyPartnerBox.Location = new System.Drawing.Point(256, 218);
-            this.txtFamilyPartnerBox.MaxLength = 32767;
-            this.txtFamilyPartnerBox.Name = "txtFamilyPartnerBox";
-            this.txtFamilyPartnerBox.PartnerClass = "FAMILY";
-            this.txtFamilyPartnerBox.ReadOnly = true;
-            this.txtFamilyPartnerBox.Size = new System.Drawing.Size(294, 23);
-            this.txtFamilyPartnerBox.TabIndex = 6;
-            this.txtFamilyPartnerBox.TextBoxWidth = 80;
-            this.txtFamilyPartnerBox.Visible = false;
-            this.txtFamilyPartnerBox.PartnerFound += new TDelegatePartnerFound(this.TxtFamilyPartnerBox_PartnerFound);
-
             //
             // stbMain
             //
+            this.stbMain.Location = new System.Drawing.Point(0, 324);
             this.stbMain.Name = "stbMain";
-            this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
-
+            this.stbMain.Size = new System.Drawing.Size(560, 22);
+            this.stbMain.TabIndex = 997;
             //
             // TPartnerNewDialogWinForm
             //
-            this.AutoScaleBaseSize = new System.Drawing.Size(6, 14);
+            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(560, 346);
             this.Controls.Add(this.txtFamilyPartnerBox);
             this.Controls.Add(this.txtPartnerKey);
@@ -287,28 +310,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Controls.Add(this.lblPartnerClass);
             this.Controls.Add(this.lblPartnerKey);
             this.Controls.Add(this.lblSitesAvailable);
+            this.Controls.Add(this.pnlBtnOKCancelHelpLayout);
             this.Controls.Add(this.cmbPartnerClass);
             this.Controls.Add(this.chkPrivatePartner);
-            this.Controls.Add(this.pnlBtnOKCancelHelpLayout);
             this.Controls.Add(this.stbMain);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TPartnerNewDialogWinForm";
             this.Text = "New Partner";
             this.Load += new System.EventHandler(this.TPartnerNewDialogWinForm_Load);
-            this.Controls.SetChildIndex(this.chkPrivatePartner, 0);
-            this.Controls.SetChildIndex(this.cmbPartnerClass, 0);
-            this.Controls.SetChildIndex(this.pnlBtnOKCancelHelpLayout, 0);
-            this.Controls.SetChildIndex(this.lblSitesAvailable, 0);
-            this.Controls.SetChildIndex(this.lblPartnerKey, 0);
-            this.Controls.SetChildIndex(this.lblPartnerClass, 0);
-            this.Controls.SetChildIndex(this.Label1, 0);
-            this.Controls.SetChildIndex(this.cmbAcquisitionCode, 0);
-            this.Controls.SetChildIndex(this.grdInstalledSites, 0);
-            this.Controls.SetChildIndex(this.txtPartnerKey, 0);
-            this.Controls.SetChildIndex(this.txtFamilyPartnerBox, 0);
-            this.stbMain.ResumeLayout(false);
             this.pnlBtnOKCancelHelpLayout.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
         }
 
         private System.Windows.Forms.Label lblSitesAvailable;

@@ -30,6 +30,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 using GNU.Gettext;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -49,7 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FLedgerNumber = value;
 
                 Ict.Common.Data.TTypedDataTable TypedTable;
-                TRemote.MCommon.DataReader.GetData(AAnalysisTypeTable.GetTableDBName(), null, out TypedTable);
+                TRemote.MCommon.DataReader.WebConnectors.GetData(AAnalysisTypeTable.GetTableDBName(), null, out TypedTable);
                 FMainDS.AAnalysisType.Merge(TypedTable);
 
                 ucoValues.LedgerNumber = value;
@@ -59,6 +60,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewAAnalysisType();
+
             ucoValues.Enabled = true;
             txtDetailAnalysisTypeCode.Enabled = true;
         }
@@ -117,14 +119,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have choosen to delete thistype ({0}).\n\nDo you really want to delete it?"),
+                                "You have chosen to delete this type ({0}).\n\nDo you really want to delete it?"),
                             FPreviouslySelectedDetailRow.AnalysisTypeCode), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
-                int rowIndex = CurrentRowIndex();
+                int rowIndex = grdDetails.SelectedRowIndex();
                 FPreviouslySelectedDetailRow.Delete();
                 FPetraUtilsObject.SetChangedFlag();
-                SelectByIndex(rowIndex);
+                SelectRowInGrid(rowIndex);
             }
         }
 
@@ -150,44 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 pnlDetails.Enabled = true;
                 ucoValues.Enabled = true;
                 ucoValues.TypeCode = ARow.AnalysisTypeCode;
-            }
-        }
-
-        private int CurrentRowIndex()
-        {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
+                txtDetailAnalysisTypeCode.Enabled = ucoValues.Count == 0;
             }
         }
 

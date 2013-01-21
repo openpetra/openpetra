@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,7 +27,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using System.Windows.Forms;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
+using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.App.Core
@@ -49,7 +49,7 @@ namespace Ict.Petra.Client.App.Core
 
             try
             {
-                Ict.Petra.Shared.UserInfo.GUserInfo = TRemote.MSysMan.Security.UserManager.ReloadCachedUserInfo();
+                Ict.Petra.Shared.UserInfo.GUserInfo = TRemote.MSysMan.Security.UserManager.WebConnectors.ReloadCachedUserInfo();
             }
             catch (EDBConnectionNotAvailableException Exp)
             {
@@ -78,10 +78,6 @@ namespace Ict.Petra.Client.App.Core
             if (ErrorText != "")
             {
                 TLogging.Log(ErrorText);
-
-#if DEBUGMODE
-                MessageBox.Show(ErrorText, "Developer Message");
-#endif
             }
         }
 
@@ -95,7 +91,7 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public static void SignalReloadCachedUserInfo(String AUserID)
         {
-            TRemote.MSysMan.Security.UserManager.SignalReloadCachedUserInfo(AUserID);
+            TRemote.MSysMan.Security.UserManager.WebConnectors.SignalReloadCachedUserInfo(AUserID);
         }
     }
 }

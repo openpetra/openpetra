@@ -11,7 +11,7 @@ RootNode:
             Dock: Fill
 
         tabPartners:
-            DragTabPageEnabled: true
+            DragTabPageEnabled: false
             ShowToolTips: true
             LoadPagesDynamically: true
             IgnoreFirstTabPageSelectionChange: true
@@ -33,27 +33,33 @@ RootNode:
             Label: Foundation Details
             Image: Foundations.ico
            
-        tpgSubscriptions: 
-# TODO {LoadPageDynamically=true}
+        tpgSubscriptions: {LoadPageDynamically=true}
             Label: Subscriptions ({0})
             Image: Subscriptions.ico
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_Subscriptions
                        
         tpgPartnerTypes: {LoadPageDynamically=true}
             Label: Special Types ({0})
             Image: Types.ico
             DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUCPartnerTypes
             
-        tpgFamilyMembers:
-# TODO {LoadPageDynamically=true}
+        tpgFamilyMembers: {LoadPageDynamically=true}
             Label: Family Members
             Image: FamilyMembers.ico
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_FamilyMembers
+
+        tpgPartnerRelationships: {LoadPageDynamically=true}
+            Label: Relationships ({0})
+            Image: Relationships.ico
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerRelationships
 
         tpgNotes: {LoadPageDynamically=true}
             Label: Notes ({0})
             Image: Notes.ico
             DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerNotes
             
-        tpgOfficeSpecific:
-# TODO {LoadPageDynamically=true}        
+        tpgOfficeSpecific: {LoadPageDynamically=true}        
             Label: Local Data
             Image: OfficeSpecific.ico            
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_LocalPartnerData
+            

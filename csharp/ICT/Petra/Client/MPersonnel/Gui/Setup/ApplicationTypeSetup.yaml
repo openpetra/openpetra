@@ -3,7 +3,7 @@ RootNode:
     FormTitle: Maintain Application Types
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtApplicationType
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.Interfaces.MCommon]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation,Ict.Petra.Shared.Interfaces.MCommon]
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 750
@@ -23,10 +23,7 @@ RootNode:
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailAppTypeName, DetailAppTypeDescr, DetailAppFormType, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
-            CustomColumns:
-                DetailAppTypeName: {Label=Application Type}
-                DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            Columns: []
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
@@ -36,14 +33,20 @@ RootNode:
                 Row2: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row3: [chkDetailDeletableFlag]                
         rgrDetailAppFormType:
-            OptionalValues: ["SHORT FORM", "LONG FORM"]
-            Label: Form Type
+            Controls: [rbtEvent, rbtField]
+            Label: Application for
             BorderVisible: false
             ControlsOrientation: horizontal
+        rbtEvent:
+            Label: Event
+            ParameterValue: SHORT FORM
+        rbtField:
+            Label: Field
+            ParameterValue: LONG FORM
         txtDetailAppTypeName: {Label=Application Type, CharacterCasing=Upper}
         txtDetailAppTypeDescr: {Label=Description, Width=110}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

@@ -6,354 +6,482 @@
   <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MHospitality.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
-  
-    <DataSet name="PartnerEditTDS">
-        <Table sqltable="p_partner"/>
-        <Table sqltable="p_partner_type"/>
-        <Table sqltable="p_subscription"/>     
-        <Table sqltable="p_location"/>
-        <Table sqltable="p_partner_location">
-          <CustomField name="BestAddress" type="bool"/>  
-          <CustomField name="Icon" type="Int32"/>
-        </Table>
-        <Table sqltable="p_family">
-          <Field sqltable="p_unit" sqlfield="p_unit_name_c"/> 
-        </Table>
-        <Table sqltable="p_person">
-          <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
-        </Table>
-        <Table sqltable="p_unit"/>
-        <Table sqltable="um_unit_structure"/>
-        <Table sqltable="p_organisation"/>
-        <Table sqltable="p_church"/>
-        <Table sqltable="p_bank"/>
-        <Table sqltable="p_banking_details"/>
-        <Table sqltable="p_partner_banking_details"/>
-        <Table sqltable="p_venue"/>
-        <Table sqltable="p_foundation"/>
-        <Table sqltable="p_foundation_deadline"/>
-        <Table sqltable="p_foundation_proposal"/>
-        <Table sqltable="p_foundation_proposal_detail"/>  
-        <Table sqltable="p_partner_interest"/>
-        <Table sqltable="p_interest"/>                              <!-- will not be filled on the server, but using the cached table. needed for the relation PartnerInterestCategory, which is needed for the grid for partner interests -->
-        <Table sqltable="p_partner_reminder"/>                      <!-- not in use yet! -->
-        <Table sqltable="p_partner_relationship"/>                  <!-- not in use yet! -->
-        <Table sqltable="p_partner_contact"/>                       <!-- not in use yet! -->
-        <Table sqltable="p_data_label_value_application"/>
-        <Table sqltable="p_data_label_value_partner"/>
-        <CustomTable name="MiscellaneousData">
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-            <Field name="SelectedSiteKey" sqltable="p_partner_location" sqlfield="p_site_key_n"/>
-            <Field name="SelectedLocationKey" sqltable="p_partner_location" sqlfield="p_location_key_i"/>
-            <CustomField name="LastGiftDate" type="DateTime"/>
-            <CustomField name="LastGiftInfo" type="string"/>
-            <CustomField name="LastContactDate" type="DateTime"/>     
-            <CustomField name="ItemsCountAddresses" type="Int32"/>
-            <CustomField name="ItemsCountAddressesActive" type="Int32"/>
-            <CustomField name="ItemsCountSubscriptions" type="Int32"/>
-            <CustomField name="ItemsCountSubscriptionsActive" type="Int32"/>          
-            <CustomField name="ItemsCountPartnerTypes" type="Int32"/>
-            <CustomField name="ItemsCountFamilyMembers" type="Int32"/>
-            <CustomField name="ItemsCountInterests" type="Int32"/>
-            <CustomField name="ItemsCountReminders" type="Int32"/>            <!-- not in use yet! -->
-            <CustomField name="ItemsCountRelationships" type="Int32"/>        <!-- not in use yet! -->
-            <CustomField name="ItemsCountContacts" type="Int32"/>         <!-- not in use yet! -->            
-            <CustomField name="OfficeSpecificDataLabelsAvailable" type="bool"/>
-            <CustomField name="FoundationOwner1Key" type="Int64"/>
-            <CustomField name="FoundationOwner2Key" type="Int64"/>
-            <CustomField name="HasEXWORKERPartnerType" type="bool"/>
-            <PrimaryKey thisFields="PartnerKey"/>
-        </CustomTable>
-        <CustomTable name="FamilyMembers">
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-            <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
-            <Field sqltable="p_person" sqlfield="p_family_id_i"/>
-            <Field sqltable="p_person" sqlfield="p_gender_c"/>
-            <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
-            <CustomField name="TypeCodeModify" type="bool"/>             
-            <CustomField name="TypeCodePresent" type="bool"/>              
-            <CustomField name="OtherTypeCodes" type="string"/>
-            <PrimaryKey thisFields="PartnerKey"/>
-        </CustomTable>
-        <CustomTable name="FamilyMembersInfoForStatusChange">
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-        </CustomTable>        
-        <CustomTable name="PartnerTypeChangeFamilyMembersPromotion">
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-            <CustomField name="TypeCode" type="string"/>
-            <CustomField name="AddTypeCode" type="bool"/>              
-            <CustomField name="RemoveTypeCode" type="bool"/>
-            <PrimaryKey thisFields="PartnerKey,TypeCode,AddTypeCode"/>
-        </CustomTable>
-        <CustomRelation name="Address" 
-            parentTable="PPartnerLocation" parentFields="SiteKey,LocationKey"
-            childTable="PLocation" childFields="SiteKey,LocationKey"
-            createConstraints="false"/>         
-        <CustomRelation name="PartnerInterestCategory"
-                childTable="PPartnerInterest" childFields="Interest"
-                parentTable="PInterest" parentFields="Interest"
-                createConstraints="false"/>
-    </DataSet>
 
-    <DataSet name="PartnerAddressAggregateTDS">
-     <!-- Used for p_location add, p_location change and p_partner_location Promotion screens -->
-    
-        <Table name="SimilarLocationParameters" sqltable="p_location">
-         <!-- Table is used for showing Location data of a Location that is similar to the one the user has chosen: holds only one record -->
+  <DataSet name="PartnerEditTDS">
+    <Table sqltable="p_partner"/>
+    <Table sqltable="p_partner_type"/>
+    <Table sqltable="p_subscription"/>
+    <Table sqltable="p_location"/>
+    <Table sqltable="p_partner_location">
+      <CustomField name="BestAddress" type="bool"/>
+      <CustomField name="Icon" type="Int32"/>
+    </Table>
+    <Table sqltable="p_family">
+      <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
+    </Table>
+    <Table sqltable="p_person">
+      <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
+    </Table>
+    <Table sqltable="p_unit"/>
+    <Table sqltable="um_unit_structure"/>
+    <Table sqltable="p_organisation"/>
+    <Table sqltable="p_church"/>
+    <Table sqltable="p_bank"/>
+    <Table sqltable="p_banking_details"/>
+    <Table sqltable="p_partner_banking_details"/>
+    <Table sqltable="p_banking_details_usage"/>
+    <Table sqltable="p_venue"/>
+    <Table sqltable="p_foundation"/>
+    <Table sqltable="p_foundation_deadline"/>
+    <Table sqltable="p_foundation_proposal"/>
+    <Table sqltable="p_foundation_proposal_detail"/>
+    <Table sqltable="p_partner_interest"/>
+    <Table sqltable="p_interest"/>
+    <!-- will not be filled on the server, but using the cached table. needed for the relation PartnerInterestCategory, which is needed for the grid for partner interests -->
+    <Table sqltable="p_partner_reminder"/>
+    <!-- not in use yet! -->
+    <Table sqltable="p_partner_relationship">
+      <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+      <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
+    </Table>
+    <Table sqltable="p_relation"/>
+    <Table sqltable="p_partner_contact"/>
+    <!-- not in use yet! -->
+    <Table sqltable="p_data_label_value_application"/>
+    <Table sqltable="p_data_label_value_partner"/>
+    <CustomTable name="MiscellaneousData">
+      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+      <Field name="SelectedSiteKey" sqltable="p_partner_location" sqlfield="p_site_key_n"/>
+      <Field name="SelectedLocationKey" sqltable="p_partner_location" sqlfield="p_location_key_i"/>
+      <CustomField name="LastGiftDate" type="DateTime"/>
+      <CustomField name="LastGiftInfo" type="string"/>
+      <CustomField name="LastContactDate" type="DateTime"/>
+      <CustomField name="ItemsCountAddresses" type="Int32"/>
+      <CustomField name="ItemsCountAddressesActive" type="Int32"/>
+      <CustomField name="ItemsCountSubscriptions" type="Int32"/>
+      <CustomField name="ItemsCountSubscriptionsActive" type="Int32"/>
+      <CustomField name="ItemsCountPartnerTypes" type="Int32"/>
+      <CustomField name="ItemsCountFamilyMembers" type="Int32"/>
+      <CustomField name="ItemsCountInterests" type="Int32"/>
+      <CustomField name="ItemsCountReminders" type="Int32"/>
+      <!-- not in use yet! -->
+      <CustomField name="ItemsCountPartnerRelationships" type="Int32"/>
+      <!-- not in use yet! -->
+      <CustomField name="ItemsCountContacts" type="Int32"/>
+      <!-- not in use yet! -->
+      <CustomField name="OfficeSpecificDataLabelsAvailable" type="bool"/>
+      <CustomField name="FoundationOwner1Key" type="Int64"/>
+      <CustomField name="FoundationOwner2Key" type="Int64"/>
+      <CustomField name="HasEXWORKERPartnerType" type="bool"/>
+      <PrimaryKey thisFields="PartnerKey"/>
+    </CustomTable>
+    <CustomTable name="FamilyMembers">
+      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+      <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+      <Field sqltable="p_person" sqlfield="p_family_id_i"/>
+      <Field sqltable="p_person" sqlfield="p_gender_c"/>
+      <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
+      <CustomField name="TypeCodeModify" type="bool"/>
+      <CustomField name="TypeCodePresent" type="bool"/>
+      <CustomField name="OtherTypeCodes" type="string"/>
+      <PrimaryKey thisFields="PartnerKey"/>
+    </CustomTable>
+    <CustomTable name="FamilyMembersInfoForStatusChange">
+      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+    </CustomTable>
+    <CustomTable name="PartnerTypeChangeFamilyMembersPromotion">
+      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+      <CustomField name="TypeCode" type="string"/>
+      <CustomField name="AddTypeCode" type="bool"/>
+      <CustomField name="RemoveTypeCode" type="bool"/>
+      <PrimaryKey thisFields="PartnerKey,TypeCode,AddTypeCode"/>
+    </CustomTable>
+    <CustomRelation name="Address"
+        parentTable="PPartnerLocation" parentFields="SiteKey,LocationKey"
+        childTable="PLocation" childFields="SiteKey,LocationKey"
+        createConstraints="false"/>
+    <CustomRelation name="PartnerInterestCategory"
+            childTable="PPartnerInterest" childFields="Interest"
+            parentTable="PInterest" parentFields="Interest"
+            createConstraints="false"/>
+    <CustomRelation name="PartnerRelation"
+            parentTable="PRelation" parentFields="RelationName"
+            childTable="PPartnerRelationship" childFields="RelationName"
+            createConstraints="false"/>
+  </DataSet>
 
-          <CustomField name="SiteKeyOfSimilarLocation" type="Int64"/>           <!-- SiteKey of the Location that is similar -->
-          <CustomField name="LocationKeyOfSimilarLocation" type="Int32"/>       <!-- LocationKey of the Location that is similar -->          
-          <CustomField name="UsedByNOtherPartners" type="Int32"/>         <!-- Used for displaying how many other partners are referencing this Location -->
-          <CustomField name="AnswerReuse" type="bool"/>              <!-- User's choice when he is finished with the screen; gets set by the PetraClient and processed by the PetraServer -->
-          <CustomField name="AnswerProcessedClientSide" type="bool"/>        <!-- Processing Status of the record: only set by the PetraServer -->
-          <CustomField name="AnswerProcessedServerSide" type="bool"/>        <!-- Processing Status of the record: only set by the PetraServer -->
-        </Table>        
+  <DataSet name="PartnerAddressAggregateTDS">
+    <!-- Used for p_location add, p_location change and p_partner_location Promotion screens -->
 
-        <CustomTable name="ChangePromotionParameters">                  
-     <!-- Table is used for p_location and p_partner_location Change Promotion screens: will hold 'n' records depending on how many 
+    <Table name="SimilarLocationParameters" sqltable="p_location">
+      <!-- Table is used for showing Location data of a Location that is similar to the one the user has chosen: holds only one record -->
+
+      <CustomField name="SiteKeyOfSimilarLocation" type="Int64"/>
+      <!-- SiteKey of the Location that is similar -->
+      <CustomField name="LocationKeyOfSimilarLocation" type="Int32"/>
+      <!-- LocationKey of the Location that is similar -->
+      <CustomField name="UsedByNOtherPartners" type="Int32"/>
+      <!-- Used for displaying how many other partners are referencing this Location -->
+      <CustomField name="AnswerReuse" type="bool"/>
+      <!-- User's choice when he is finished with the screen; gets set by the PetraClient and processed by the PetraServer -->
+      <CustomField name="AnswerProcessedClientSide" type="bool"/>
+      <!-- Processing Status of the record: only set by the PetraServer -->
+      <CustomField name="AnswerProcessedServerSide" type="bool"/>
+      <!-- Processing Status of the record: only set by the PetraServer -->
+    </Table>
+
+    <CustomTable name="ChangePromotionParameters">
+      <!-- Table is used for p_location and p_partner_location Change Promotion screens: will hold 'n' records depending on how many 
           Partners could possibly be affected by the change; only sent by the PetraServer to the PetraClient -->
-        
-          <Field sqltable="p_partner_location" sqlfield="p_partner_key_n"/>     <!-- DB table key field -->
-          <Field sqltable="p_partner_location" sqlfield="p_site_key_n"/>        <!-- DB table key field -->
-          <Field sqltable="p_partner_location" sqlfield="p_location_key_i"/>            <!-- DB table key field -->
-          <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>       <!-- used for displaying Partner Short Name in Grid -->
-          <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>            <!-- used for displaying Partner Class in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>    <!-- used for displaying Telephone Number in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_extension_i"/>       <!-- used for displaying Telephone Extension in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_fax_number_c"/>      <!-- used for displaying Fax Number in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_fax_extension_i"/>       <!-- used for displaying Fax Extension in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_alternate_telephone_c"/> <!-- used for displaying Alternate Telephone Number in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_mobile_number_c"/>       <!-- used for displaying Mobile Number in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>       <!-- used for displaying e-mail Address in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_url_c"/>         <!-- used for displaying Internet URL in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_send_mail_l"/>       <!-- used for displaying Mailing Address in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_date_effective_d"/>      <!-- used for displaying Valid From in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_date_good_until_d"/>     <!-- used for displaying Valid To in Grid -->
-          <Field sqltable="p_partner_location" sqlfield="p_location_type_c"/>       <!-- used for displaying Location Type in Grid -->
-          <CustomField name="SiteKeyOfEditedRecord" type="Int64"/>
-          <CustomField name="LocationKeyOfEditedRecord" type="Int32"/>
-        </CustomTable> 
-        
-        <CustomTable name="AddressAddedOrChangedPromotion">
-         <!-- Table is used for p_location add, p_location change and p_partner_location Promotion screens: will hold one record per possible
+
+      <Field sqltable="p_partner_location" sqlfield="p_partner_key_n"/>
+      <!-- DB table key field -->
+      <Field sqltable="p_partner_location" sqlfield="p_site_key_n"/>
+      <!-- DB table key field -->
+      <Field sqltable="p_partner_location" sqlfield="p_location_key_i"/>
+      <!-- DB table key field -->
+      <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+      <!-- used for displaying Partner Short Name in Grid -->
+      <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
+      <!-- used for displaying Partner Class in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>
+      <!-- used for displaying Telephone Number in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_extension_i"/>
+      <!-- used for displaying Telephone Extension in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_fax_number_c"/>
+      <!-- used for displaying Fax Number in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_fax_extension_i"/>
+      <!-- used for displaying Fax Extension in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_alternate_telephone_c"/>
+      <!-- used for displaying Alternate Telephone Number in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_mobile_number_c"/>
+      <!-- used for displaying Mobile Number in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
+      <!-- used for displaying e-mail Address in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_url_c"/>
+      <!-- used for displaying Internet URL in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_send_mail_l"/>
+      <!-- used for displaying Mailing Address in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_date_effective_d"/>
+      <!-- used for displaying Valid From in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_date_good_until_d"/>
+      <!-- used for displaying Valid To in Grid -->
+      <Field sqltable="p_partner_location" sqlfield="p_location_type_c"/>
+      <!-- used for displaying Location Type in Grid -->
+      <CustomField name="SiteKeyOfEditedRecord" type="Int64"/>
+      <CustomField name="LocationKeyOfEditedRecord" type="Int32"/>
+    </CustomTable>
+
+    <CustomTable name="AddressAddedOrChangedPromotion">
+      <!-- Table is used for p_location add, p_location change and p_partner_location Promotion screens: will hold one record per possible
               screen and change combination and is sent both by the PetraServer and the PetraClient -->
-             
-          <Field sqltable="p_location" sqlfield="p_site_key_n"/>            <!-- DB table key field -->
-          <Field sqltable="p_location" sqlfield="p_location_key_i"/>            <!-- DB table key field -->
-          <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>          <!-- DB table key field -->
-          <CustomField name="LocationChange" type="bool"/>                   <!-- determines for which screen the data is: Location Change -->
-          <CustomField name="PartnerLocationChange" type="bool"/>                <!-- determines for which screen the data is: Partner Location Change -->
-          <CustomField name="LocationAdded" type="bool"/>                <!-- determines for which screen the data is: Location Added -->
-          <CustomField name="ChangedFields" type="string"/>             <!-- changed fields + their original value and changed value (only used for p_partner_location Change Promotion screen) -->
-          <CustomField name="UserAnswer" type="string"/>                <!-- user's choice when he is finished with the screen; gets set by the PetraClient and processed by the PetraServer -->
-          <CustomField name="AnswerProcessedClientSide" type="bool"/>        <!-- Processing Status of the record: only set by the PetraServer -->
-          <CustomField name="AnswerProcessedServerSide" type="bool"/>        <!-- Processing status of the record: only set by the PetraServer -->
-        </CustomTable>        
-    </DataSet>    
 
-    <DataSet name="PartnerInfoTDS">
-     <!-- Used for data transfer to the Partner Info UserControl -->
+      <Field sqltable="p_location" sqlfield="p_site_key_n"/>
+      <!-- DB table key field -->
+      <Field sqltable="p_location" sqlfield="p_location_key_i"/>
+      <!-- DB table key field -->
+      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+      <!-- DB table key field -->
+      <CustomField name="LocationChange" type="bool"/>
+      <!-- determines for which screen the data is: Location Change -->
+      <CustomField name="PartnerLocationChange" type="bool"/>
+      <!-- determines for which screen the data is: Partner Location Change -->
+      <CustomField name="LocationAdded" type="bool"/>
+      <!-- determines for which screen the data is: Location Added -->
+      <CustomField name="ChangedFields" type="string"/>
+      <!-- changed fields + their original value and changed value (only used for p_partner_location Change Promotion screen) -->
+      <CustomField name="UserAnswer" type="string"/>
+      <!-- user's choice when he is finished with the screen; gets set by the PetraClient and processed by the PetraServer -->
+      <CustomField name="AnswerProcessedClientSide" type="bool"/>
+      <!-- Processing Status of the record: only set by the PetraServer -->
+      <CustomField name="AnswerProcessedServerSide" type="bool"/>
+      <!-- Processing status of the record: only set by the PetraServer -->
+    </CustomTable>
+  </DataSet>
 
-         <CustomTable name="PartnerHeadInfo">                  
-         <!-- Table is used for displaying the main data about a Partner (above the Tab Control) -->
-         
-          <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>                             <!-- used for displaying Partner Key -->
-          <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>                      <!-- used for displaying Partner Short Name -->
-          <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>                           <!-- used for displaying Partner Class -->
-          <Field sqltable="p_partner" sqlfield="p_status_code_c"/>                             <!-- used for displaying Partner Status -->         
-          <Field sqltable="p_partner" sqlfield="p_acquisition_code_c"/>                        <!-- used for displaying Acquired -->
-          <Field name="PrivatePartnerOwner" sqltable="p_partner" sqlfield="p_user_id_c"/>       <!-- used for displaying Username if Partner Status 'PRIVATE' -->
-        </CustomTable> 
+  <DataSet name="PartnerInfoTDS">
+    <!-- Used for data transfer to the Partner Info UserControl -->
 
-        <CustomTable name="PartnerAdditionalInfo">                  
-        <!-- Table is used for displaying additional data about a Partner (on 'Other' Tab) -->
-         
-          <CustomField name="MainLanguages" type="string"/>                                   <!-- used for displaying 'Speaks (Language)' -->
-          <CustomField name="AdditionalLanguages" type="string"/>                              <!-- used for displaying 'Speaks (Language)' (only for a PERSON, comes from Personnel Data)-->
-          <Field name="LastContact" sqltable="p_partner_contact" sqlfield="s_contact_date_d"/>  <!-- used for displaying Last Contact -->
-          <Field sqltable="p_partner" sqlfield="s_date_created_d"/>                            <!-- used for displaying 'Partner Updated' field -->          
-          <Field sqltable="p_partner" sqlfield="s_date_modified_d"/>                           <!-- used for displaying 'Partner Updated' field -->
-          <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>                            <!-- used for displaying 'Date of Birth' field (on 'Person' Tab) -->
-          <Field name="Family" sqltable="p_partner" sqlfield="p_partner_short_name_c"/>         <!-- used for displaying Family (only for a PERSON) -->
-          <Field name="FamilyKey" sqltable="p_person" sqlfield="p_family_key_n"/>               <!-- used for displaying Family PartnerKey (only for a PERSON) -->
-          <Field sqltable="p_partner" sqlfield="p_previous_name_c"/>                            <!-- used for displaying 'Previous Name' field -->          
-          <Field name="Field" sqltable="p_unit" sqlfield="p_unit_name_c"/>                      <!-- used for displaying Field -->
-          <Field name="FieldKey" sqltable="p_unit" sqlfield="p_partner_key_n"/>                 <!-- used for displaying Field PartnerKey-->
-          <Field name="Notes" sqltable="p_partner" sqlfield="p_comment_c"/>                     <!-- used for displaying (Partner) Notes -->
-        </CustomTable> 
-        
-        <CustomTable name="UnitInfo">                  
-        <!-- Table is used for displaying additional data about a Partner (on 'Other' Tab) -->
-          <Field name="ParentUnitKey" sqltable="p_unit" sqlfield="p_partner_key_n"/>            <!-- used for displaying Parent Unit Name-->
-          <Field name="ParentUnitName" sqltable="p_unit" sqlfield="p_unit_name_c"/>             <!-- used for displaying Parent Unit Key -->
-        </CustomTable> 
-        
-        <Table sqltable="p_location"/>
-        <Table sqltable="p_partner_location"/>
-        <Table sqltable="p_partner_type"/>
-        <Table sqltable="p_subscription"/>
-        
-        <CustomTable name="FamilyMembers">
-        <!-- Table is used for displaying Family Members of a Partner's Family (on 'Person / Family' Tab) -->
-     
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-            <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
-            <Field sqltable="p_person" sqlfield="p_family_id_i"/>
-            <PrimaryKey thisFields="PartnerKey"/>
-        </CustomTable>        
-    </DataSet>    
-    
-    <DataSet name="PartnerFindTDS">
-        <CustomTable name="SearchCriteria">
-            <CustomField name="PartnerName" type="string"/>
-            <CustomField name="PartnerNameMatch" type="string" initial="BEGINS"/>
-            <CustomField name="PersonalName" type="string"/>
-            <CustomField name="PersonalNameMatch" type="string" initial="BEGINS"/>
-            <CustomField name="PreviousName" type="string"/>
-            <CustomField name="PreviousNameMatch" type="string" initial="BEGINS"/>
-            <CustomField name="Address1" type="string"/>
-            <CustomField name="Address1Match" type="string" initial="BEGINS"/>
-            <CustomField name="City" type="string"/>
-            <CustomField name="CityMatch" type="string" initial="BEGINS"/>
-            <CustomField name="PostCode" type="string"/>
-            <CustomField name="PostCodeMatch" type="string" initial="BEGINS"/>
-            <CustomField name="County" type="string"/>
-            <CustomField name="CountyMatch" type="string" initial="BEGINS"/>
-            <CustomField name="Country" type="string"/>
-            <CustomField name="MailingAddressOnly" type="bool" initial="false"/>
-            <CustomField name="PartnerClass" type="string"/>
-            <CustomField name="PartnerKey" type="Int64" initial="0"/>
-            <CustomField name="PartnerStatus" type="string" initial="ACTIVE"/>
-            <CustomField name="Email" type="string"/>
-            <CustomField name="EmailMatch" type="string" initial="BEGINS"/>
-            <CustomField name="Address2" type="string"/>
-            <CustomField name="Address2Match" type="string" initial="BEGINS"/>
-            <CustomField name="Address3" type="string"/>
-            <CustomField name="Address3Match" type="string" initial="BEGINS"/>
-            <CustomField name="LocationKey" type="string"/>
-            <CustomField name="WorkerFamOnly" type="bool" initial="false"/>
-            <CustomField name="ExactPartnerKeyMatch" type="bool" initial="false"/>
-            <CustomField name="PhoneNumber" type="string"/>
-            <CustomField name="PhoneNumberMatch" type="string" initial="BEGINS"/>
-        </CustomTable>
-        <CustomTable name="SearchResult">
-            <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
-            <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
-            <Field sqltable="p_partner" sqlfield="p_status_code_c"/>
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-            <Field sqltable="p_partner" sqlfield="p_previous_name_c"/>
-            <Field sqltable="p_partner" sqlfield="p_acquisition_code_c"/>
-            <Field sqltable="p_person" sqlfield="p_first_name_c"/>
-            <Field sqltable="p_person" sqlfield="p_family_name_c"/>
-            <Field sqltable="p_person" sqlfield="p_family_key_n"/>
-            <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>
-            <Field sqltable="p_partner_location" sqlfield="p_location_type_c"/>
-            <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
-            <Field sqltable="p_partner_location" sqlfield="p_site_key_n"/>
-            <Field sqltable="p_location" sqlfield="p_city_c"/>
-            <Field sqltable="p_location" sqlfield="p_postal_code_c"/>
-            <Field sqltable="p_location" sqlfield="p_locality_c"/>
-            <Field sqltable="p_location" sqlfield="p_street_name_c"/>
-            <Field sqltable="p_location" sqlfield="p_address_3_c"/>
-            <Field sqltable="p_location" sqlfield="p_county_c"/>
-            <Field sqltable="p_location" sqlfield="p_country_code_c"/>
-            <Field sqltable="p_location" sqlfield="p_location_key_i"/>
-        </CustomTable>
-    </DataSet>
+    <CustomTable name="PartnerHeadInfo">
+      <!-- Table is used for displaying the main data about a Partner (above the Tab Control) -->
 
-    <DataSet name="BestAddressTDS">
-        <Table sqltable="p_location" name="Location">
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-            <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
-            <CustomField name="ValidAddress" type="Boolean"/>
-            <CustomField name="CountryName" type="string"/>
-            <PrimaryKey thisFields="p_partner_key_n"/>
-        </Table>
-    </DataSet>
+      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+      <!-- used for displaying Partner Key -->
+      <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+      <!-- used for displaying Partner Short Name -->
+      <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
+      <!-- used for displaying Partner Class -->
+      <Field sqltable="p_partner" sqlfield="p_status_code_c"/>
+      <!-- used for displaying Partner Status -->
+      <Field sqltable="p_partner" sqlfield="p_acquisition_code_c"/>
+      <!-- used for displaying Acquired -->
+      <Field name="PrivatePartnerOwner" sqltable="p_partner" sqlfield="p_user_id_c"/>
+      <!-- used for displaying Username if Partner Status 'PRIVATE' -->
+    </CustomTable>
 
-    <DataSet name="PartnerSetupTDS">
-        <Table sqltable="p_country"/>
-        <Table sqltable="p_language"/>
-        <Table sqltable="p_partner_status"/>
-        <Table sqltable="p_acquisition"/>
-        <Table sqltable="p_type"/>
-        <Table sqltable="p_email"/>
-        
-        <Table sqltable="p_denomination"/>
-        
-        <Table sqltable="p_occupation"/>
-        <Table sqltable="pt_marital_status"/>
-        
-        <Table sqltable="a_frequency"/>
-        
-        <Table sqltable="p_relation"/>
-        <Table sqltable="p_relation_category"/>
+    <CustomTable name="PartnerAdditionalInfo">
+      <!-- Table is used for displaying additional data about a Partner (on 'Other' Tab) -->
 
-        <Table sqltable="p_interest"/>
-        <Table sqltable="p_interest_category"/>
+      <CustomField name="MainLanguages" type="string"/>
+      <!-- used for displaying 'Speaks (Language)' -->
+      <CustomField name="AdditionalLanguages" type="string"/>
+      <!-- used for displaying 'Speaks (Language)' (only for a PERSON, comes from Personnel Data)-->
+      <Field name="LastContact" sqltable="p_partner_contact" sqlfield="s_contact_date_d"/>
+      <!-- used for displaying Last Contact -->
+      <Field sqltable="p_partner" sqlfield="s_date_created_d"/>
+      <!-- used for displaying 'Partner Updated' field -->
+      <Field sqltable="p_partner" sqlfield="s_date_modified_d"/>
+      <!-- used for displaying 'Partner Updated' field -->
+      <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
+      <!-- used for displaying 'Date of Birth' field (on 'Person' Tab) -->
+      <Field name="Family" sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+      <!-- used for displaying Family (only for a PERSON) -->
+      <Field name="FamilyKey" sqltable="p_person" sqlfield="p_family_key_n"/>
+      <!-- used for displaying Family PartnerKey (only for a PERSON) -->
+      <Field sqltable="p_partner" sqlfield="p_previous_name_c"/>
+      <!-- used for displaying 'Previous Name' field -->
+      <Field name="Field" sqltable="p_unit" sqlfield="p_unit_name_c"/>
+      <!-- used for displaying Field -->
+      <Field name="FieldKey" sqltable="p_unit" sqlfield="p_partner_key_n"/>
+      <!-- used for displaying Field PartnerKey-->
+      <Field name="Notes" sqltable="p_partner" sqlfield="p_comment_c"/>
+      <!-- used for displaying (Partner) Notes -->
+    </CustomTable>
 
-        <Table sqltable="p_method_of_contact"/>
-        <Table sqltable="p_contact_attribute"/>
+    <CustomTable name="UnitInfo">
+      <!-- Table is used for displaying additional data about a Partner (on 'Other' Tab) -->
+      <Field name="ParentUnitKey" sqltable="p_unit" sqlfield="p_partner_key_n"/>
+      <!-- used for displaying Parent Unit Name-->
+      <Field name="ParentUnitName" sqltable="p_unit" sqlfield="p_unit_name_c"/>
+      <!-- used for displaying Parent Unit Key -->
+    </CustomTable>
 
-        <Table sqltable="p_publication"/>
-        <Table sqltable="p_publication_cost"/>
-        <Table sqltable="p_reason_subscription_given"/>
-        <Table sqltable="p_reason_subscription_cancelled"/>
-    </DataSet>
+    <Table sqltable="p_location"/>
+    <Table sqltable="p_partner_location"/>
+    <Table sqltable="p_partner_type"/>
+    <Table sqltable="p_subscription"/>
 
-    <DataSet name="PartnerImportExportTDS">
-        <Table sqltable="p_partner"/>
-        <Table sqltable="p_location"/>
-        <Table sqltable="p_partner_location"/>
+    <CustomTable name="FamilyMembers">
+      <!-- Table is used for displaying Family Members of a Partner's Family (on 'Person / Family' Tab) -->
 
-        <Table sqltable="p_person"/>
-        <Table sqltable="p_family"/>
-        <Table sqltable="p_unit"/>
-        <Table sqltable="p_organisation"/>
-        <Table sqltable="p_church"/>
-        <Table sqltable="p_bank"/>
-        <Table sqltable="p_venue"/>
+      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+      <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+      <Field sqltable="p_person" sqlfield="p_family_id_i"/>
+      <PrimaryKey thisFields="PartnerKey"/>
+    </CustomTable>
+  </DataSet>
 
-        <Table sqltable="p_partner_comment"/>
-        <Table sqltable="p_partner_type"/>
-        <Table sqltable="p_partner_interest"/>
-        <Table sqltable="p_interest"/>
+  <DataSet name="PartnerFindTDS">
+    <CustomTable name="SearchCriteria">
+      <CustomField name="PartnerName" type="string"/>
+      <CustomField name="PartnerNameMatch" type="string" initial="BEGINS"/>
+      <CustomField name="PersonalName" type="string"/>
+      <CustomField name="PersonalNameMatch" type="string" initial="BEGINS"/>
+      <CustomField name="PreviousName" type="string"/>
+      <CustomField name="PreviousNameMatch" type="string" initial="BEGINS"/>
+      <CustomField name="Address1" type="string"/>
+      <CustomField name="Address1Match" type="string" initial="BEGINS"/>
+      <CustomField name="City" type="string"/>
+      <CustomField name="CityMatch" type="string" initial="BEGINS"/>
+      <CustomField name="PostCode" type="string"/>
+      <CustomField name="PostCodeMatch" type="string" initial="BEGINS"/>
+      <CustomField name="County" type="string"/>
+      <CustomField name="CountyMatch" type="string" initial="BEGINS"/>
+      <CustomField name="Country" type="string"/>
+      <CustomField name="MailingAddressOnly" type="bool" initial="false"/>
+      <CustomField name="PartnerClass" type="string"/>
+      <CustomField name="PartnerKey" type="Int64" initial="0"/>
+      <CustomField name="PartnerStatus" type="string" initial="ACTIVE"/>
+      <CustomField name="Email" type="string"/>
+      <CustomField name="EmailMatch" type="string" initial="BEGINS"/>
+      <CustomField name="Address2" type="string"/>
+      <CustomField name="Address2Match" type="string" initial="BEGINS"/>
+      <CustomField name="Address3" type="string"/>
+      <CustomField name="Address3Match" type="string" initial="BEGINS"/>
+      <CustomField name="LocationKey" type="string"/>
+      <CustomField name="WorkerFamOnly" type="bool" initial="false"/>
+      <CustomField name="ExactPartnerKeyMatch" type="bool" initial="false"/>
+      <CustomField name="PhoneNumber" type="string"/>
+      <CustomField name="PhoneNumberMatch" type="string" initial="BEGINS"/>
+    </CustomTable>
+    <CustomTable name="SearchResult">
+      <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
+      <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+      <Field sqltable="p_partner" sqlfield="p_status_code_c"/>
+      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+      <Field sqltable="p_partner" sqlfield="p_previous_name_c"/>
+      <Field sqltable="p_partner" sqlfield="p_acquisition_code_c"/>
 
-        <Table sqltable="p_publication"/>
-        <Table sqltable="p_subscription"/>
+      <Field sqltable="p_partner" sqlfield="s_created_by_c"/>
+      <Field sqltable="p_partner" sqlfield="s_date_created_d"/>
+      <Field sqltable="p_partner" sqlfield="s_modification_id_t"/>
 
-        <Table sqltable="pm_personal_data"/>
-        <Table sqltable="pm_passport_details"/>
-        <Table sqltable="pm_document"/>
-        <Table sqltable="pm_document_type"/>
-        <Table sqltable="pm_person_qualification"/>
-        <Table sqltable="pm_special_need"/>
-        <Table sqltable="pm_past_experience"/>
-        <Table sqltable="pm_person_language"/>
-        <Table sqltable="pm_person_ability"/>
-        <Table sqltable="pm_person_vision"/>
-        <Table sqltable="pm_staff_data"/>
-        <Table sqltable="pm_job_assignment"/>
-        <Table sqltable="pm_person_evaluation"/>
-        <Table sqltable="pm_general_application"/>
-        <Table sqltable="pt_application_type"/>
-        <Table sqltable="pm_short_term_application"/>
-        <Table sqltable="pm_year_program_application"/>
-        <Table sqltable="pm_application_forms"/>
-        
-        <Table sqltable="um_unit_structure"/>
-        <Table sqltable="um_unit_ability"/>
-        <Table sqltable="um_unit_language"/>
-        <Table sqltable="um_unit_vision"/>
-        <Table sqltable="um_unit_cost"/>
-        <Table sqltable="um_job"/>
-        <Table sqltable="um_job_requirement"/>
-        <Table sqltable="um_job_language"/>
-        <Table sqltable="um_job_qualification"/>
-        <Table sqltable="um_job_vision"/>
-        
-        <Table sqltable="pc_building"/>
-        <Table sqltable="pc_room"/>
-    </DataSet>    
+      <Field sqltable="p_person" sqlfield="p_first_name_c"/>
+      <Field sqltable="p_person" sqlfield="p_family_name_c"/>
+      <Field sqltable="p_person" sqlfield="p_family_key_n"/>
+      <Field sqltable="p_partner_location" sqlfield="p_telephone_number_c"/>
+      <Field sqltable="p_partner_location" sqlfield="p_location_type_c"/>
+      <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
+      <Field sqltable="p_partner_location" sqlfield="p_site_key_n"/>
+      <Field sqltable="p_location" sqlfield="p_city_c"/>
+      <Field sqltable="p_location" sqlfield="p_postal_code_c"/>
+      <Field sqltable="p_location" sqlfield="p_locality_c"/>
+      <Field sqltable="p_location" sqlfield="p_street_name_c"/>
+      <Field sqltable="p_location" sqlfield="p_address_3_c"/>
+      <Field sqltable="p_location" sqlfield="p_county_c"/>
+      <Field sqltable="p_location" sqlfield="p_country_code_c"/>
+      <Field sqltable="p_location" sqlfield="p_location_key_i"/>
+    </CustomTable>
+  </DataSet>
 
+  <DataSet name="BestAddressTDS">
+    <Table sqltable="p_location" name="Location">
+      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+      <Field sqltable="p_partner_location" sqlfield="p_email_address_c"/>
+      <CustomField name="ValidAddress" type="Boolean"/>
+      <CustomField name="CountryName" type="string"/>
+      <PrimaryKey thisFields="p_partner_key_n"/>
+    </Table>
+  </DataSet>
+
+  <DataSet name="PartnerSetupTDS">
+    <Table sqltable="p_country"/>
+    <Table sqltable="p_language"/>
+    <Table sqltable="p_partner_status"/>
+    <Table sqltable="p_acquisition"/>
+    <Table sqltable="p_type"/>
+    <Table sqltable="p_email"/>
+
+    <Table sqltable="p_denomination"/>
+
+    <Table sqltable="p_occupation"/>
+    <Table sqltable="pt_marital_status"/>
+
+    <Table sqltable="a_frequency"/>
+
+    <Table sqltable="p_relation"/>
+    <Table sqltable="p_relation_category"/>
+
+    <Table sqltable="p_interest"/>
+    <Table sqltable="p_interest_category"/>
+
+    <Table sqltable="p_method_of_contact"/>
+    <Table sqltable="p_contact_attribute"/>
+
+    <Table sqltable="p_publication"/>
+    <Table sqltable="p_publication_cost"/>
+    <Table sqltable="p_reason_subscription_given"/>
+    <Table sqltable="p_reason_subscription_cancelled"/>
+  </DataSet>
+
+  <DataSet name="PartnerImportExportTDS">
+    <Table sqltable="p_acquisition"/>
+    <Table sqltable="p_occupation"/>
+    <Table sqltable="p_language"/>
+    <Table sqltable="p_addressee_type"/>
+
+    <Table sqltable="p_partner"/>
+    <Table sqltable="p_location_type"/>
+    <Table sqltable="p_location"/>
+    <Table sqltable="p_partner_location"/>
+
+    <Table sqltable="u_unit_type"/>
+    <Table sqltable="p_unit"/>
+    <Table sqltable="pt_marital_status"/>
+    <Table sqltable="p_family"/>
+    <Table sqltable="p_person"/>
+    <Table sqltable="p_business"/>
+    <Table sqltable="p_organisation"/>
+    <Table sqltable="p_denomination"/>
+    <Table sqltable="p_church"/>
+    <Table sqltable="p_bank"/>
+    <Table sqltable="p_venue"/>
+
+    <Table sqltable="p_banking_details"/>
+    <Table sqltable="p_partner_banking_details"/>
+
+    <Table sqltable="p_method_of_contact"/>
+    <Table sqltable="p_contact_attribute"/>
+    <Table sqltable="p_contact_attribute_detail"/>
+    <Table sqltable="p_partner_contact">
+      <CustomField name="ContactAttr" type="string"/>
+      <CustomField name="ContactDetail" type="string"/>
+	</Table>
+    <Table sqltable="p_partner_contact_attribute"/>
+
+    <Table sqltable="p_publication"/>
+    <Table sqltable="p_reason_subscription_given"/>
+    <Table sqltable="p_reason_subscription_cancelled"/>
+    <Table sqltable="p_subscription"/>
+    <Table sqltable="p_partner_comment"/>
+    <Table sqltable="p_type"/>
+    <Table sqltable="p_partner_type"/>
+    <Table sqltable="p_interest_category"/>
+    <Table sqltable="p_interest"/>
+    <Table sqltable="p_partner_interest">
+      <CustomField name="Category" type="string"/>
+    </Table>
+
+    <Table sqltable="pm_personal_data"/>
+    <Table sqltable="pt_passport_type"/>
+    <Table sqltable="pm_passport_details"/>
+    <Table sqltable="pm_document_type"/>
+    <Table sqltable="pm_document_category"/>
+    <Table sqltable="pm_document">
+      <CustomField name="DocCategory" type="string"/>
+    </Table>
+    <Table sqltable="pt_qualification_area"/>
+    <Table sqltable="pt_qualification_level"/>
+    <Table sqltable="pm_person_qualification"/>
+    <Table sqltable="pm_special_need"/>
+    <Table sqltable="pm_past_experience"/>
+    <Table sqltable="pm_person_language"/>
+    <Table sqltable="pt_ability_area"/>
+    <Table sqltable="pm_person_ability"/>
+    <Table sqltable="pm_commitment_status"/>
+    <Table sqltable="pm_staff_data"/>
+    <Table sqltable="pm_person_evaluation"/>
+    <Table sqltable="pt_arrival_point"/>
+    <Table sqltable="pt_travel_type"/>
+    <Table sqltable="pt_applicant_status"/>
+    <Table sqltable="pt_application_type"/>
+    <Table sqltable="pt_contact"/>
+    <Table sqltable="pm_general_application"/>
+    <Table sqltable="pt_congress_code"/>
+    <Table sqltable="pt_position"/>
+    <Table sqltable="pt_special_applicant"/>
+    <Table sqltable="pt_leadership_rating"/>
+    <Table sqltable="pm_short_term_application"/>
+    <Table sqltable="pm_year_program_application"/>
+
+    <Table sqltable="um_unit_structure"/>
+    <Table sqltable="um_unit_ability"/>
+    <Table sqltable="um_unit_language"/>
+    <Table sqltable="um_unit_cost"/>
+    <Table sqltable="um_job"/>
+    <Table sqltable="um_job_requirement"/>
+    <Table sqltable="um_job_language"/>
+    <Table sqltable="um_job_qualification"/>
+    <Table sqltable="pc_building"/>
+    <Table sqltable="pc_room"/>
+  </DataSet>
+
+  <DataSet name="ExtractTDS">
+    <Table sqltable="m_extract_master"/>
+    <Table sqltable="m_extract">
+      <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+      <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
+    </Table>
+    <Table sqltable="m_extract_type"/>	
+    <Table sqltable="m_extract_parameter"/>	
+  </DataSet>   
+
+  <DataSet name="ContactTDS">
+    <Table sqltable="p_method_of_contact"/>
+    <Table sqltable="p_partner_contact"/>
+    <Table sqltable="p_partner_contact_attribute"/>
+    <Table sqltable="p_contact_attribute"/>
+    <Table sqltable="p_contact_attribute_detail"/>
+  </DataSet>   
+  
 </PetraDataSets>

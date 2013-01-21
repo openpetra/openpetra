@@ -1,18 +1,31 @@
 <?xml version="1.0"?>
 <project name="inc-nanttasks-Build">
 
-<property name="Namespace" value="Ict.Tools.NAntTasks" />
-<property name="ProjectGuid" value="{A5090592-78DD-4F41-9B96-8F02F61A6CDE}" />
-
-<property name="RunCsDepend" value="false" />
-
-
-
 <include buildfile="../nant/OpenPetra.csharp.xml"/> 
 
-<patternset id="references">
-  <!-- Add NAnt.Core.dll -->
-  <include name="${assembly::get-location(task::get-assembly('echo'))}" />
-</patternset>
+<target name="custdepend">
+    <csc target="library" output="${dir.bin}/Ict.Tools.NAntTasks.dll">
+        <sources>
+            <include name="*.cs" />
+        </sources>
+        <references>
+            <include name="System.dll" />
+            <include name="System.Data.dll" />
+            <include name="System.Windows.Forms.dll" />
+
+            <!-- Add NAnt.Core.dll -->
+            <include name="${assembly::get-location(task::get-assembly('echo'))}" />
+
+            <!-- Add NAnt.DotNetTasks.dll -->
+            <include name="${string::replace(assembly::get-location(task::get-assembly('echo')), 'NAnt.Core', 'NAnt.DotNetTasks')}" />
+
+            <!-- Add NAnt.NUnit.dll -->
+            <include name="${string::replace(assembly::get-location(task::get-assembly('echo')), 'NAnt.Core', 'NAnt.NUnit')}" />
+
+            <!-- Add NAnt.NUnit2Tasks.dll -->
+            <include name="${string::replace(assembly::get-location(task::get-assembly('echo')), 'NAnt.Core', 'NAnt.NUnit2Tasks')}" />
+        </references>
+    </csc>
+</target>
 
 </project>

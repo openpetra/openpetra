@@ -1,33 +1,33 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="FinancialDevelopment\\topdonorreport.xml,common.xml" />
-  <Parameter id="currentReport" value="TopDonorReport" />
-  <Parameter id="MaxDisplayColumns" value="7" />
-  <Parameter id="param_percentage" value="20" />
-  <Parameter id="param_to_percentage" value="0" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_motivation_group" value="%" />
-  <Parameter id="param_motivation_detail" value="%" />
-  <Parameter id="param_all_partners" value="true" />
-  <Parameter id="param_extract" value="false" />
-  <Parameter id="param_recipientkey" value="0" />
-  <Parameter id="param_donor_type" value="top" />
-  <Parameter id="param_calculation" column="0" value="Donor Key" />
-  <Parameter id="ColumnWidth" column="0" value="2,2" />
-  <Parameter id="param_calculation" column="1" value="Partner Class" />
-  <Parameter id="ColumnWidth" column="1" value="2" />
-  <Parameter id="param_calculation" column="2" value="Donor Name" />
-  <Parameter id="ColumnWidth" column="2" value="4,5" />
-  <Parameter id="param_calculation" column="3" value="Total Gifts" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_calculation" column="4" value="%of Total" />
-  <Parameter id="ColumnWidth" column="4" value="1,5" />
-  <Parameter id="param_calculation" column="5" value="Cumulative %" />
-  <Parameter id="ColumnWidth" column="5" value="1,8" />
-  <Parameter id="param_calculation" column="6" value="Address" />
-  <Parameter id="ColumnWidth" column="6" value="12" />
-  <Parameter id="param_extract_name" value="" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_ytd" column="0" value="false" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:FinancialDevelopment\\topdonorreport.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:TopDonorReport" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:7" />
+  <Parameter id="param_percentage" value="eInteger:20" />
+  <Parameter id="param_to_percentage" value="eInteger:0" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_motivation_group" value="eString:%" />
+  <Parameter id="param_motivation_detail" value="eString:%" />
+  <Parameter id="param_all_partners" value="eString:true" />
+  <Parameter id="param_extract" value="eString:false" />
+  <Parameter id="param_recipientkey" value="eInteger:0" />
+  <Parameter id="param_donor_type" value="eString:top" />
+  <Parameter id="param_calculation" column="0" value="eString:Donor Key" />
+  <Parameter id="ColumnWidth" column="0" value="eString:2,2" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Class" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="param_calculation" column="2" value="eString:Donor Name" />
+  <Parameter id="ColumnWidth" column="2" value="eString:4,5" />
+  <Parameter id="param_calculation" column="3" value="eString:Total Gifts" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_calculation" column="4" value="eString:%of Total" />
+  <Parameter id="ColumnWidth" column="4" value="eString:1,5" />
+  <Parameter id="param_calculation" column="5" value="eString:Cumulative %" />
+  <Parameter id="ColumnWidth" column="5" value="eString:1,8" />
+  <Parameter id="param_calculation" column="6" value="eString:Address" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:12" />
+  <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
 </Parameters>

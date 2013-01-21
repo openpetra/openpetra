@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -71,15 +71,13 @@ namespace Ict.Common.Controls
     /// - ImageColumn:
     ///   The column number of the drop down's column which holds the image indices.
     ///   Please note: 0 refers to no column!, 1 to column 1 ... 4 to column 4.
-    /// TODO: Known features from .Net:
-    /// The databinding is a little bit troublesome. You can use it if the rows of the
-    /// DataSource table have been added with the routine 'Add'. Otherwise the databinding
-    /// just breaks. For additional information on this topic visit the Petra - Wiki.
-    /// TODO: Here is the link to the complete article:
-    /// http://ict.om.org/PetraWiki/current/index.php?title=Problems_in_DataBinding_a_View_to_a_ComboBox
     /// </summary>
     public class TCmbLabelled : System.Windows.Forms.UserControl
     {
+        private const Int32 UNIT_HEIGHT = 22;
+        private const Int32 UNIT_LABEL_LEFT_OFFSET = 5;
+        private const Int32 UNIT_LABEL_TOP_OFFSET = 3;
+
         /// <summary>
         /// the Combobox that is part of this user control
         /// </summary>
@@ -130,70 +128,62 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This property manages the width of a column within the ComboBox.
-        ///
+        /// set the width of a column within the ComboBox.
         /// </summary>
         public int ColumnWidthCol1
         {
-            get
-            {
-                return this.cmbCombobox.ColumnWidthCol1;
-            }
-
             set
             {
-                this.cmbCombobox.ColumnWidthCol1 = value;
+                this.cmbCombobox.SetColumnWidth(0, value);
+            }
+            get
+            {
+                return this.cmbCombobox.GetColumnWidth(0);
             }
         }
 
         /// <summary>
-        /// This property manages the width of a column within the ComboBox.
-        ///
+        /// set the width of a column within the ComboBox.
         /// </summary>
         public int ColumnWidthCol2
         {
-            get
-            {
-                return this.cmbCombobox.ColumnWidthCol2;
-            }
-
             set
             {
-                this.cmbCombobox.ColumnWidthCol2 = value;
+                this.cmbCombobox.SetColumnWidth(1, value);
+            }
+            get
+            {
+                return this.cmbCombobox.GetColumnWidth(1);
             }
         }
 
         /// <summary>
-        /// This property manages the width of a column within the ComboBox.
-        ///
+        /// set the width of a column within the ComboBox.
         /// </summary>
         public int ColumnWidthCol3
         {
-            get
-            {
-                return this.cmbCombobox.ColumnWidthCol3;
-            }
-
             set
             {
-                this.cmbCombobox.ColumnWidthCol3 = value;
+                this.cmbCombobox.SetColumnWidth(2, value);
+            }
+            get
+            {
+                return this.cmbCombobox.GetColumnWidth(2);
             }
         }
 
         /// <summary>
-        /// This property manages the width of a column within the ComboBox.
-        ///
+        /// set the width of a column within the ComboBox.
         /// </summary>
         public int ColumnWidthCol4
         {
-            get
-            {
-                return this.cmbCombobox.ColumnWidthCol4;
-            }
-
             set
             {
-                this.cmbCombobox.ColumnWidthCol4 = value;
+                this.cmbCombobox.SetColumnWidth(3, value);
+            }
+            get
+            {
+                return this.cmbCombobox.GetColumnWidth(3);
             }
         }
 
@@ -213,79 +203,67 @@ namespace Ict.Common.Controls
                 this.cmbCombobox.SetBounds(this.cmbCombobox.Bounds.X,
                     this.cmbCombobox.Bounds.Y,
                     value,
-                    cmbLabelledComboBox.UNIT_HEIGHT);
-                this.lblDescription.SetBounds(this.cmbCombobox.Bounds.X + value,
-                    this.cmbCombobox.Bounds.Y,
-                    this.Bounds.Width - value,
-                    cmbLabelledComboBox.UNIT_HEIGHT);
+                    UNIT_HEIGHT);
+
+                if (lblDescription.Visible)
+                {
+                    this.lblDescription.SetBounds(this.cmbCombobox.Bounds.X + value,
+                        this.cmbCombobox.Bounds.Y,
+                        this.Bounds.Width - value,
+                        UNIT_HEIGHT);
+                }
             }
         }
 
         /// <summary>
-        /// This property manages the content of the 1st column in the combobox
-        ///
+        /// set the content of a column in the combobox
+        /// </summary>
+        public void DisplayInColumn(int AColumnNr, string ADisplay)
+        {
+            this.cmbCombobox.DisplayInColumn(AColumnNr, ADisplay);
+        }
+
+        /// <summary>
+        /// set the content of the column
         /// </summary>
         public string DisplayInColumn1
         {
-            get
-            {
-                return cmbCombobox.DisplayInColumn1;
-            }
-
             set
             {
-                this.cmbCombobox.DisplayInColumn1 = value;
+                DisplayInColumn(0, value);
             }
         }
 
         /// <summary>
-        /// This property manages the content of the 2nd column in the combobox
-        ///
+        /// set the content of the column
         /// </summary>
         public string DisplayInColumn2
         {
-            get
-            {
-                return this.cmbCombobox.DisplayInColumn2;
-            }
-
             set
             {
-                this.cmbCombobox.DisplayInColumn2 = value;
+                DisplayInColumn(1, value);
             }
         }
 
         /// <summary>
-        /// This property manages the content of the 3rd column in the combobox
-        ///
+        /// set the content of the column
         /// </summary>
         public string DisplayInColumn3
         {
-            get
-            {
-                return this.cmbCombobox.DisplayInColumn3;
-            }
-
             set
             {
-                this.cmbCombobox.DisplayInColumn3 = value;
+                DisplayInColumn(2, value);
             }
         }
 
         /// <summary>
-        /// This property manages the content of the 4th column in the combobox
-        ///
+        /// set the content of the column
         /// </summary>
         public string DisplayInColumn4
         {
-            get
-            {
-                return this.cmbCombobox.DisplayInColumn4;
-            }
-
             set
             {
-                this.cmbCombobox.DisplayInColumn4 = value;
+                DisplayInColumn(3, value);
             }
         }
 
@@ -408,6 +386,108 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// drop down the combobox
+        public void DropDown()
+        {
+            cmbCombobox.DroppedDown = true;
+        }
+
+        /// pass through the SelectedIndex property from the combobox
+        public Int32 SelectedIndex
+        {
+            get
+            {
+                return this.cmbCombobox.SelectedIndex;
+            }
+            set
+            {
+                this.cmbCombobox.SelectedIndex = value;
+            }
+        }
+
+        /// the number of items in the combobox items list
+        public Int32 Count
+        {
+            get
+            {
+                return cmbCombobox.Items.Count;
+            }
+        }
+
+        /// <summary>
+        /// set the string that should be selected;
+        /// uses TCmbVersatile.SetSelectedString
+        /// </summary>
+        public bool SetSelectedString(string ASelectedString, Int32 ADefaultIndex)
+        {
+            return this.cmbCombobox.SetSelectedString(ASelectedString, ADefaultIndex);
+        }
+
+        /// <summary>
+        /// set the string that should be selected;
+        /// uses TCmbVersatile.SetSelectedString
+        /// </summary>
+        /// <param name="ASelectedString"></param>
+        public bool SetSelectedString(string ASelectedString)
+        {
+            return this.cmbCombobox.SetSelectedString(ASelectedString);
+        }
+
+        /// <summary>
+        /// get the selected string
+        /// uses TCmbVersatile.GetSelectedString
+        /// </summary>
+        public string GetSelectedString()
+        {
+            return this.cmbCombobox.GetSelectedString();
+        }
+
+        /// <summary>
+        /// get the selected description
+        /// uses TCmbVersatile.GetSelectedDescription
+        /// </summary>
+        public string GetSelectedDescription()
+        {
+            return this.cmbCombobox.GetSelectedDescription();
+        }
+
+        /// <summary>
+        /// Selects an item with the given Int32 value in the first column. Selects first element if the Int32 value is not existing.
+        /// uses TCmbVersatile.SetSelectedInt32
+        /// </summary>
+        /// <param name="ANr"></param>
+        public void SetSelectedInt32(System.Int32 ANr)
+        {
+            this.cmbCombobox.SetSelectedInt32(ANr);
+        }
+
+        /// <summary>
+        /// gets the Int32 value of the selected item, first column
+        /// uses TCmbVersatile.GetSelectedInt32
+        /// </summary>
+        public Int32 GetSelectedInt32()
+        {
+            return this.cmbCombobox.GetSelectedInt32();
+        }
+
+        /// <summary>
+        /// Selects an item with the given Int64 value in the first column. Selects first element if the Int64 value is not existing.
+        /// uses TCmbVersatile.SetSelectedInt64
+        /// </summary>
+        /// <param name="ANr"></param>
+        public void SetSelectedInt64(System.Int64 ANr)
+        {
+            this.cmbCombobox.SetSelectedInt64(ANr);
+        }
+
+        /// <summary>
+        /// gets the Int32 value of the selected item, first column
+        /// uses TCmbVersatile.GetSelectedInt32
+        /// </summary>
+        public Int64 GetSelectedInt64()
+        {
+            return this.cmbCombobox.GetSelectedInt64();
+        }
 
         #region Windows Form Designer generated code
 
@@ -464,11 +544,9 @@ namespace Ict.Common.Controls
 
             InitializeComponent();
 
-            this.Height = cmbLabelledComboBox.UNIT_HEIGHT;
+            this.Height = UNIT_HEIGHT;
 
             this.SetDefaultProperties();
-
-            // TLogging.Log('cmbVersatile log starts... ' + this.GetType().ToString);
         }
 
         /// <summary>
@@ -486,10 +564,6 @@ namespace Ict.Common.Controls
             // cmbCombobox
             //
             this.cmbCombobox.DataSource = null;
-            this.cmbCombobox.DisplayInColumn1 = null;
-            this.cmbCombobox.DisplayInColumn2 = null;
-            this.cmbCombobox.DisplayInColumn3 = null;
-            this.cmbCombobox.DisplayInColumn4 = null;
             this.cmbCombobox.Dock = System.Windows.Forms.DockStyle.Left;
             this.cmbCombobox.GridLineColor = System.Drawing.SystemColors.ControlLight;
             this.cmbCombobox.Images = null;
@@ -498,52 +572,7 @@ namespace Ict.Common.Controls
             this.cmbCombobox.Size = new System.Drawing.Size(121, 21);
             this.cmbCombobox.TabIndex = 0;
             this.cmbCombobox.Text = "";
-            this.cmbCombobox.DataSourceChanged += new System.EventHandler(this.TCmbLabelled_DataSourceChanged);
             this.cmbCombobox.SelectionChangeCommitted += new System.EventHandler(this.TCmbLabelled_SelectionChangeCommitted);
-        }
-
-        /// <summary>
-        /// This procedure adds this colomn to the DataBindings of the lblDescription.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private void DataBindLabel(String AColumnName)
-        {
-            String mColumnToBind;
-            Binding oldBinding;
-
-            if (!(DesignMode))
-            {
-                if (this.cmbCombobox.DataSourceContainsColumn(AColumnName) == true)
-                {
-                    mColumnToBind = AColumnName;
-                }
-                else
-                {
-                    mColumnToBind = this.cmbCombobox.DisplayMember;
-                }
-
-                // Do the databinding
-                // this.lblDescription.DataBindings.Clear;
-                // don't add the binding twice; so first try to find the binding and remove it
-                // otherwise the cmbcombobox.valuemember gets lost
-                oldBinding = this.lblDescription.DataBindings["Text"];
-
-                if (oldBinding != null)
-                {
-                    this.lblDescription.DataBindings.Remove(oldBinding);
-                }
-
-                this.lblDescription.DataBindings.Add("Text", this.cmbCombobox.DataSource, mColumnToBind);
-                oldBinding = this.DataBindings["Text"];
-
-                if (oldBinding != null)
-                {
-                    this.DataBindings.Remove(oldBinding);
-                }
-
-                this.DataBindings.Add("Text", this.cmbCombobox.DataSource, mColumnToBind);
-            }
         }
 
         /// <summary>
@@ -566,46 +595,31 @@ namespace Ict.Common.Controls
         /// <summary>
         /// This function calculates the area of the label.
         /// </summary>
-        /// <returns>The RectangleF of the label.
+        /// <returns>The Rectangle of the label.
         /// </returns>
-        protected System.Drawing.RectangleF GetLabelRectangleF()
+        protected System.Drawing.Rectangle GetLabelRectangle()
         {
-            System.Single mFloatX;
-            System.Single mFloatY;
-            System.Single mWidth;
-            System.Single mHeight;
-            System.Drawing.RectangleF mRectangle;
-            mFloatX = System.Convert.ToSingle(0);
-            mFloatY = System.Convert.ToSingle(0);
-            mWidth = System.Convert.ToSingle(this.GetLabelWidth());
-            mHeight = System.Convert.ToSingle(cmbLabelledComboBox.UNIT_HEIGHT);
-            mRectangle = new System.Drawing.RectangleF(mFloatX, mFloatY, mWidth, mHeight);
-            return mRectangle;
+            return new System.Drawing.Rectangle(
+                0, 0, this.GetLabelWidth(), UNIT_HEIGHT);
         }
 
         /// <summary>
         /// This function calculates the width of the label.
         /// </summary>
-        /// <returns>The width of the label.
-        /// </returns>
+        /// <returns>The width of the label.</returns>
         protected int GetLabelWidth()
         {
-            System.Int32 mControlWidth;
-            System.Int32 mComboBoxWidth;
-            mControlWidth = this.Size.Width;
-            mComboBoxWidth = this.cmbCombobox.Width;
-            return mControlWidth - mComboBoxWidth;
+            return this.Size.Width - this.cmbCombobox.Width;
         }
 
         /// <summary>
         /// This procedure sets the default height for this UserControl.
-        ///
         /// </summary>
         /// <returns>void</returns>
         private void SetDefaultHeight()
         {
-            this.lblDescription.Height = cmbLabelledComboBox.UNIT_HEIGHT;
-            this.Height = cmbLabelledComboBox.UNIT_HEIGHT;
+            this.lblDescription.Height = UNIT_HEIGHT;
+            this.Height = UNIT_HEIGHT;
         }
 
         /// <summary>
@@ -616,25 +630,20 @@ namespace Ict.Common.Controls
         private void SetDefaultProperties()
         {
             this.SetDefaultHeight();
-            this.Set_LabelWidth();
+            this.SetLabelWidth();
             this.Invalidate();
         }
 
         #endregion
 
         /// <summary>
-        /// This function writes the width of the Label.
+        /// This function sets the width of the Label.
         ///
         /// </summary>
         /// <returns>void</returns>
-        protected void Set_LabelWidth()
+        protected void SetLabelWidth()
         {
-            System.Int32 mComboBoxWidth;
-            System.Int32 mTotalWidth;
-            System.Int32 mLabelWidth;
-            mComboBoxWidth = this.ComboBoxWidth;
-            mTotalWidth = this.Size.Width;
-            mLabelWidth = mTotalWidth - mComboBoxWidth;
+            Int32 mLabelWidth = this.Size.Width - this.ComboBoxWidth;
 
             if (mLabelWidth < 0)
             {
@@ -644,7 +653,22 @@ namespace Ict.Common.Controls
             this.lblDescription.Width = mLabelWidth;
         }
 
+        /// <summary>
+        /// in some cases, we don't want the labelled combobox, the description and the display are the same
+        /// </summary>
+        public void RemoveDescriptionLabel()
+        {
+            cmbCombobox.Width = this.Width;
+            lblDescription.Visible = false;
+            this.Invalidate();
+        }
+
         #region Event handling
+
+        private void RefreshLabel(object sender, EventArgs e)
+        {
+            this.lblDescription.Text = cmbCombobox.GetSelectedDescription();
+        }
 
         /// <summary>
         /// This event occurs when the control is created.
@@ -663,10 +687,9 @@ namespace Ict.Common.Controls
                 System.Drawing.Font mLabelFont = new System.Drawing.Font(this.Font.FontFamily, (this.Font.Size - 1), System.Drawing.FontStyle.Regular);
                 this.lblDescription.Font = mLabelFont;
 
-                if (this.cmbCombobox.DataSource != null)
-                {
-                    DataBindLabel(this.FLabelDisplaysColumn);
-                }
+                this.cmbCombobox.DescriptionMember = this.FLabelDisplaysColumn;
+                this.lblDescription.Text = this.cmbCombobox.GetSelectedDescription();
+                this.cmbCombobox.SelectedIndexChanged += RefreshLabel;
             }
         }
 
@@ -678,32 +701,11 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         protected override void OnResize(System.EventArgs e)
         {
-            System.Drawing.Size mSize;
-            System.Int32 mComboBoxWidth;
-            mComboBoxWidth = this.ComboBoxWidth;
-            this.ComboBoxWidth = mComboBoxWidth;
-            mSize = this.Size;
-            mSize.Height = cmbLabelledComboBox.UNIT_HEIGHT;
-            this.Size = mSize;
+            this.Size = new Size(this.Size.Width, UNIT_HEIGHT);
         }
 
         /// <summary>
-        /// This event goes off when the DataSource is fired.
-        /// </summary>
-        /// <param name="sender">The sender of this event.</param>
-        /// <param name="e">The event arguments.
-        /// </param>
-        /// <returns>void</returns>
-        protected void TCmbLabelled_DataSourceChanged(System.Object sender, System.EventArgs e)
-        {
-            if (!(DesignMode))
-            {
-                DataBindLabel(this.FLabelDisplaysColumn);
-            }
-        }
-
-        /// <summary>
-        /// This procedure ensures that the height of this control cannot be changed.
+        /// This procedure ensures that the background color cannot be changed.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e">Event Arguments
@@ -715,7 +717,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This procedure ensures that the height of this control cannot be changed.
+        /// This procedure ensures that the foreground color cannot be changed.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e">Event Arguments</param>
@@ -736,17 +738,9 @@ namespace Ict.Common.Controls
         /// <param name="e"></param>
         protected void LblDescription_Paint(System.Object sender, System.Windows.Forms.PaintEventArgs e)
         {
-            System.Drawing.Font mFont;
-            System.Drawing.RectangleF mRectangleF;
-            System.Drawing.PointF mPoint;
-            System.Single mXCoord;
-            System.Single mYCoord;
-            System.Drawing.Brush mBrush;
-            System.Drawing.StringFormat mStringFormat;
-
             // Getting all sorts of things for drawing the string
-            mFont = this.lblDescription.Font;
-            mStringFormat = new System.Drawing.StringFormat();
+            StringFormat mStringFormat = new System.Drawing.StringFormat();
+
             mStringFormat.FormatFlags |= System.Drawing.StringFormatFlags.NoWrap;
 
             if (this.cmbCombobox.SelectedIndex == -1)
@@ -754,17 +748,23 @@ namespace Ict.Common.Controls
                 this.lblDescription.Text = "";
             }
 
-            mRectangleF = this.GetLabelRectangleF();
-            mXCoord = mRectangleF.Left + System.Convert.ToSingle(cmbLabelledComboBox.UNIT_LABEL_LEFT_OFFSET);
-            mYCoord = mRectangleF.Top + System.Convert.ToSingle(cmbLabelledComboBox.UNIT_LABEL_TOP_OFFSET);
-            mPoint = new System.Drawing.PointF(mXCoord, mYCoord);
-            mBrush = new System.Drawing.SolidBrush(this.lblDescription.ForeColor);
+            Rectangle mRectangle = this.GetLabelRectangle();
+            int mXCoord = mRectangle.Left + UNIT_LABEL_LEFT_OFFSET;
+            int mYCoord = mRectangle.Top + UNIT_LABEL_TOP_OFFSET;
 
             // Clear background
             e.Graphics.Clear(this.lblDescription.BackColor);
 
             // Draw String
-            e.Graphics.DrawString(this.lblDescription.Text, mFont, mBrush, mPoint, mStringFormat);
+            if (lblDescription.Visible)
+            {
+                e.Graphics.DrawString(
+                    this.lblDescription.Text,
+                    this.lblDescription.Font,
+                    new System.Drawing.SolidBrush(this.lblDescription.ForeColor),
+                    new System.Drawing.PointF(mXCoord, mYCoord),
+                    mStringFormat);
+            }
         }
 
         /// <summary>
@@ -791,7 +791,6 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         protected void TCmbLabelled_SelectionChangeCommitted(System.Object sender, System.EventArgs e)
         {
-            this.lblDescription.Invalidate();
             this.cmbCombobox.SetSelectionColorLength();
         }
 
@@ -808,13 +807,5 @@ namespace Ict.Common.Controls
         }
 
         #endregion
-    }
-
-
-    class cmbLabelledComboBox
-    {
-        public const Int32 UNIT_HEIGHT = 22;
-        public const Int32 UNIT_LABEL_LEFT_OFFSET = 5;
-        public const Int32 UNIT_LABEL_TOP_OFFSET = 3;
     }
 }

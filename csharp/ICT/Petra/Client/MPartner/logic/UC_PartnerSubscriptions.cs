@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,11 +27,9 @@ using System.Collections;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Verification;
-using Ict.Petra.Shared.Interfaces.AsynchronousExecution;
-using Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
-using Ict.Petra.Shared.Interfaces.MPartner.Extracts;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Common.Controls;
@@ -44,7 +42,6 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
-using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Petra.Client.MPartner
 {
@@ -53,29 +50,22 @@ namespace Ict.Petra.Client.MPartner
     /// </summary>
     public class TUCPartnerSubscriptionsLogic : IDisposable
     {
-        /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionLine1 = "Are you sure you want to remove this Subscription";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionShared = "from this partner?";
+        private static readonly string StrDeleteQuestionLine = Catalog.GetString(
+            "Are you sure you want to remove this Subscription from the database?");
 
-        /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionNotShared = "from the database?";
+        private static readonly string StrDeleteQuestionTitle = Catalog.GetString("Delete Subscription?");
 
-        /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionTitle = "Delete Subscription?";
+        private static readonly string StrPartnerReActivationBecauseOfNewSubscr = Catalog.GetString(" because you have added\r\na new Subscription!");
 
-        /// <summary>todoComment</summary>
-        public const String StrSubscriptionValueCancelled = "CANCELLED";
+        private static readonly string StrSubscriptionValueCancelled = Catalog.GetString("CANCELLED");
 
-        /// <summary>todoComment</summary>
-        public const String StrSubscriptionValueExpired = "EXPIRED";
+        private static readonly string StrSubscriptionValueExpired = Catalog.GetString("EXPIRED");
 
-        /// <summary>todoComment</summary>
-        public const String StrPartnerReActivationBecauseOfNewSubscr = " because you have added" + "\r\n" + "a new Subscription!";
+        private static readonly string StrInactive = Catalog.GetString(" (inactive)");
 
-        /// <summary>todoComment</summary>
-        public const String StrInactive = " (inactive)";
+        #endregion
 
         private PartnerEditTDS FMultiTableDS;
 
@@ -400,7 +390,7 @@ namespace Ict.Petra.Client.MPartner
             catch (Exception Exp)
             {
                 SubmitException = new ApplicationException(
-                    "An error occured when Petra tried adding Subscription '" + ASubscriptionTable[0].PublicationCode +
+                    "An error occured when OpenPetra tried adding Subscription '" + ASubscriptionTable[0].PublicationCode +
                     "' to Partners in Extract with ID '" + ExtractID.ToString() + "'!",
                     Exp);
                 throw SubmitException;
@@ -560,10 +550,10 @@ namespace Ict.Petra.Client.MPartner
                         // isn't ACTIVE, set it to ACTIVE automatically.
                         // Note: The 4GL Petra screen didn't set the StatusCode to active when a
                         // new Subscription was added.
-                        MessageBox.Show(String.Format(CommonResourcestrings.StrPartnerStatusChange + StrPartnerReActivationBecauseOfNewSubscr,
+                        MessageBox.Show(String.Format(MCommonResourcestrings.StrPartnerStatusChange + StrPartnerReActivationBecauseOfNewSubscr,
                                 FMultiTableDS.PPartner[0].StatusCode,
                                 SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE)),
-                            CommonResourcestrings.StrPartnerReActivationTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MCommonResourcestrings.StrPartnerReActivationTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         FMultiTableDS.PPartner[0].StatusCode = SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE);
                     }
                 }
@@ -830,7 +820,7 @@ namespace Ict.Petra.Client.MPartner
             catch (Exception)
             {
             }
-            DeleteQuestion = StrDeleteQuestionLine1 + "\r\n" + StrDeleteQuestionNotShared;
+            DeleteQuestion = StrDeleteQuestionLine;
             Chosen = MessageBox.Show(DeleteQuestion,
                 StrDeleteQuestionTitle,
                 MessageBoxButtons.YesNo,

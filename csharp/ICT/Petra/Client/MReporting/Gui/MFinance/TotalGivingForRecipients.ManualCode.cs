@@ -28,6 +28,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
@@ -51,16 +52,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 FLedgerNumber = value;
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
+                PopulateReceivingFieldList();
             }
         }
 
-        private void InitReceivingFieldList()
+        private void PopulateReceivingFieldList()
         {
             string CheckedMember = "CHECKED";
             string DisplayMember = "Field Name";
             string ValueMember = "Field Key";
 
-            FFieldTable = TRemote.MFinance.Reporting.UIConnectors.GetReceivingFields(out DisplayMember, out ValueMember);
+            FFieldTable = TRemote.MFinance.Reporting.WebConnectors.GetReceivingFields(FLedgerNumber, out DisplayMember, out ValueMember);
 
             DataColumn FirstColumn = new DataColumn(CheckedMember, typeof(bool));
 

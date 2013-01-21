@@ -1,10 +1,10 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,17 +39,18 @@ namespace Ict.Petra.Client.App.Formatting
     /// </summary>
     public class DataBinding
     {
-        /// <summary>todoComment</summary>
-        public const String StrMonthDayExchangedInfo = "The entered Date is not valid - the month is greater than 12." + "\r\n" +
-                                                       "It seems you have inadvertedly exchanged month" +
-                                                       " and day. Petra will exchange month and day for you to make a valid date " +
-                                                       "- please check that the corrected date is the date you intended to enter!";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrMonthDayExchangedInfoTitle = "Invalid date - Petra tries correcting";
+        private static readonly string StrMonthDayExchangedInfo = Catalog.GetString(
+            "The entered Date is not valid - the month is greater than 12.\r\n" +
+            "It seems you have inadvertedly exchanged month" +
+            " and day. OpenPetra will exchange month and day for you to make a valid date " +
+            "- please check that the corrected date is the date you intended to enter!");
 
-        /// <summary>todoComment</summary>
-        public const String StrInvalidDateEntered = "Invalid Date entered!";
+        private static readonly string StrMonthDayExchangedInfoTitle = Catalog.GetString("Invalid date - OpenPetra tries correcting");
+
+
+        #endregion
 
         /// <summary>
         /// todoComment
@@ -60,7 +61,7 @@ namespace Ict.Petra.Client.App.Formatting
         /// <param name="AShowVerificationError"></param>
         /// <param name="ATypeWhichCallsVerification"></param>
         /// <returns></returns>
-        public static Boolean LongDateStringToDateTimeInternal(String AParseDate,
+        private static Boolean LongDateStringToDateTimeInternal(String AParseDate,
             String ADescription,
             out object AParsedDate,
             Boolean AShowVerificationError,
@@ -73,9 +74,15 @@ namespace Ict.Petra.Client.App.Formatting
             String TmpDay;
             String TmpMonthDayExchange = "";
             String TmpShortDatePattern;
-            String TmpDateSeparator;
             Int16 YearStart = 0;
             Int16 RestStart = 0;
+
+            // see StringHelper.DateToLocalizedString
+            // Mono and .Net return different strings for month of March in german culture
+            if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de")
+            {
+                AParseDate = AParseDate.Replace("MÄR", "MRZ");
+            }
 
             AParsedDate = null;
             DateTimeFormatInfo CurrentDateTimeFormatInfo;
@@ -108,12 +115,17 @@ namespace Ict.Petra.Client.App.Formatting
                         else
                         {
                             // characters following the + or  are not an Int32
-                            TMessages.MsgGeneralError(TDateChecks.GetInvalidDateVerificationResult(ADescription), ATypeWhichCallsVerification);
+                            if (AShowVerificationError)
+                            {
+                                TMessages.MsgGeneralError(TDateChecks.GetInvalidDateVerificationResult(ADescription), ATypeWhichCallsVerification);
+                            }
+
                             return ReturnValue;
                         }
                     }
-                    else if (((AParseDate.Length <= 6)
-                              || (AParseDate.Length <= 8)) && (AParseDate.Length != 1) && (TNumericalChecks.IsValidInteger(AParseDate, "") == null))
+                    else if ((AParseDate.Length <= 8)
+                             && (AParseDate.Length != 1)
+                             && (TNumericalChecks.IsValidInteger(AParseDate, "") == null))
                     {
 //                        MessageBox.Show("Checking for dates entered like eg. 211105 or 21112005 ...");
 
@@ -131,9 +143,6 @@ namespace Ict.Petra.Client.App.Formatting
                          */
                         CurrentDateTimeFormatInfo = DateTimeFormatInfo.CurrentInfo;
                         TmpShortDatePattern = CurrentDateTimeFormatInfo.ShortDatePattern.ToUpper();
-
-                        // TmpShortDatePattern := "MM DD";      // For testing purposes only
-                        TmpDateSeparator = CurrentDateTimeFormatInfo.DateSeparator;
 
                         if (TmpShortDatePattern.StartsWith("Y"))
                         {
@@ -211,8 +220,6 @@ namespace Ict.Petra.Client.App.Formatting
                             {
                                 TmpYear = DateTime.Now.Year.ToString();
                             }
-
-//MessageBox.Show("TmpYear: " + TmpYear);
                         }
                         else
                         {
@@ -235,7 +242,11 @@ namespace Ict.Petra.Client.App.Formatting
                         else
                         {
                             // format with other number of digits not supported
-                            TMessages.MsgGeneralError(TDateChecks.GetInvalidDateVerificationResult(ADescription), ATypeWhichCallsVerification);
+                            if (AShowVerificationError)
+                            {
+                                TMessages.MsgGeneralError(TDateChecks.GetInvalidDateVerificationResult(ADescription), ATypeWhichCallsVerification);
+                            }
+
                             return ReturnValue;
                         }
 
@@ -260,8 +271,11 @@ namespace Ict.Petra.Client.App.Formatting
                         }
                         catch (Exception)
                         {
-                            // $IFDEF DEBUGMODE MessageBox.Show('Exception occured in LongDateStringToDateTime: ' + Exp.ToString); $ENDIF
-                            TMessages.MsgGeneralError(TDateChecks.GetInvalidDateVerificationResult(ADescription), ATypeWhichCallsVerification);
+                            if (AShowVerificationError)
+                            {
+                                TMessages.MsgGeneralError(TDateChecks.GetInvalidDateVerificationResult(ADescription), ATypeWhichCallsVerification);
+                            }
+
                             return ReturnValue;
                         }
 
@@ -272,9 +286,8 @@ namespace Ict.Petra.Client.App.Formatting
                         ReturnValue = true;
                         return ReturnValue;
                     }
-                    else if (AParseDate == "")
+                    else if (AParseDate == string.Empty)
                     {
-//MessageBox.Show("Value = \"");
                         AParsedDate = DBNull.Value;
                         ReturnValue = true;
                         return ReturnValue;
@@ -301,16 +314,12 @@ namespace Ict.Petra.Client.App.Formatting
                 AParsedDate = DateTime.Parse(AParseDate).ToString("D");
                 ReturnValue = true;
             }
-#if DEBUGMODE
-            catch (Exception Exp)
+            catch (Exception /* Exp */)
             {
-                MessageBox.Show("Exception occured in LongDateStringToDateTimeInternal: " + Exp.ToString());
-#else
-            catch (Exception)
-            {
-#endif
-
-                TMessages.MsgGeneralError(TDateChecks.GetInvalidDateVerificationResult(ADescription), ATypeWhichCallsVerification);
+                if (AShowVerificationError)
+                {
+                    TMessages.MsgGeneralError(TDateChecks.GetInvalidDateVerificationResult(ADescription), ATypeWhichCallsVerification);
+                }
             }
 
             return ReturnValue;
@@ -324,7 +333,7 @@ namespace Ict.Petra.Client.App.Formatting
         /// <param name="AParsedDate"></param>
         /// <param name="AShowVerificationError"></param>
         /// <returns></returns>
-        public static Boolean LongDateStringToDateTimeInternal(String AParseDate,
+        private static Boolean LongDateStringToDateTimeInternal(String AParseDate,
             String ADescription,
             out object AParsedDate,
             Boolean AShowVerificationError)
@@ -339,7 +348,7 @@ namespace Ict.Petra.Client.App.Formatting
         /// <param name="ADescription"></param>
         /// <param name="AParsedDate"></param>
         /// <returns></returns>
-        public static Boolean LongDateStringToDateTimeInternal(String AParseDate, String ADescription, out object AParsedDate)
+        private static Boolean LongDateStringToDateTimeInternal(String AParseDate, String ADescription, out object AParsedDate)
         {
             return LongDateStringToDateTimeInternal(AParseDate, ADescription, out AParsedDate, true, null);
         }
@@ -359,7 +368,7 @@ namespace Ict.Petra.Client.App.Formatting
         }
 
         /// <summary>
-        /// todoComment
+        /// parse a date for the txtPetraDate control
         /// </summary>
         /// <param name="AParseDate"></param>
         /// <param name="ADescription"></param>
@@ -373,48 +382,29 @@ namespace Ict.Petra.Client.App.Formatting
             Boolean AShowVerificationError,
             System.Type ATypeWhichCallsVerification)
         {
-            DateTime ReturnValue;
+            object ResultObj = null;
 
-            // DateConvertEventArgs: ConvertEventArgs;
-            object ResultObj;
-
-            ResultObj = null;
             AVerificationResult = null;
 
-            // Result := DateTime.MinValue;
-            //
             // Convert TextBox's Text to Date
-            // DateConvertEventArgs := new ConvertEventArgs(AParseDate, System.Type.GetType('System.DateTime'));
-            // LongDateStringToDateTime(nil, DateConvertEventArgs);
-            //
-            // AVerificationResult := TDateChecks.IsValidDateTime(
-            // DateConvertEventArgs.Value.ToString, '');
-            //
-            // if AVerificationResult = nil then
-            // begin
-            // Conversion was successful > return the Date
-            // Result := Convert.ToDateTime(DateConvertEventArgs.Value);
-            // end;
             if (LongDateStringToDateTimeInternal(AParseDate, ADescription, out ResultObj, AShowVerificationError, ATypeWhichCallsVerification))
             {
-                // MessageBox.Show('LongDateStringToDateTime2: date is valid: ' + ResultObj.ToString);
+                // date is valid
                 if (ResultObj != DBNull.Value)
                 {
-                    ReturnValue = Convert.ToDateTime(ResultObj);
+                    return Convert.ToDateTime(ResultObj);
                 }
                 else
                 {
-                    ReturnValue = DateTime.MinValue;
+                    return DateTime.MinValue;
                 }
             }
             else
             {
-                // MessageBox.Show('LongDateStringToDateTime2: date is INvalid!');
+                // date is invalid
                 AVerificationResult = TDateChecks.IsValidDateTime(AParseDate, ADescription);
-                ReturnValue = DateTime.MinValue;
+                return DateTime.MinValue;
             }
-
-            return ReturnValue;
         }
 
         /// <summary>

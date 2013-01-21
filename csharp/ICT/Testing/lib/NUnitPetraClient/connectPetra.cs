@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using Ict.Petra.Client.App.Core;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
@@ -29,9 +30,15 @@ using System.Threading;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Shared.MCommon;
-using Ict.Petra.Shared.RemotedExceptions;
+using Ict.Testing.NUnitTools;
 
 namespace Ict.Testing.NUnitPetraClient
 {
@@ -44,9 +51,7 @@ namespace Ict.Testing.NUnitPetraClient
 /// AutoLoginPasswd
     public class TPetraConnector
     {
-        public static TServerInfo ServerInfo;
-        public static TUserDefaults UserDefaults;
-
+        /// connect to the server
         public static void Connect(string AConfigName)
         {
             TUnhandledThreadExceptionHandler UnhandledThreadExceptionHandler;
@@ -58,17 +63,30 @@ namespace Ict.Testing.NUnitPetraClient
 
             Application.ThreadException += new ThreadExceptionEventHandler(UnhandledThreadExceptionHandler.OnThreadException);
 
-            TAppSettingsManager Config = new TAppSettingsManager(AConfigName);
+            new TAppSettingsManager(AConfigName);
+
+            CommonNUnitFunctions.InitRootPath();
 
             Catalog.Init();
+            TClientTasksQueue.ClientTasksInstanceType = typeof(TClientTaskInstance);
+            TConnectionManagementBase.ConnectorType = typeof(TConnector);
+            TConnectionManagementBase.GConnectionManagement = new TConnectionManagement();
 
             new TClientSettings();
-            TClientInfo.InitVersion();
+            TClientInfo.InitializeUnit();
             TCacheableTablesManager.InitializeUnit();
-            Connect(Config.GetValue("AutoLogin"), Config.GetValue("AutoLoginPasswd"), Config.GetInt64("SiteKey"));
+
+            // Set up Data Validation Delegates
+            TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
+            TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TServerLookup.TMPartner.VerifyPartner;
+            TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TServerLookup.TMFinance.GetCurrentPostingRangeDates;
+            TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TServerLookup.TMFinance.GetCurrentPeriodDates;
+
+            Connect(TAppSettingsManager.GetValue("AutoLogin"), TAppSettingsManager.GetValue("AutoLoginPasswd"),
+                TAppSettingsManager.GetInt64("SiteKey"));
         }
 
-        public static void Connect(String AUserName, String APassword, Int64 ASiteKey)
+        private static void Connect(String AUserName, String APassword, Int64 ASiteKey)
         {
             bool ConnectionResult;
             String WelcomeMessage;
@@ -79,7 +97,8 @@ namespace Ict.Testing.NUnitPetraClient
             TLogging.Log("connecting UserId: " + AUserName + " to Server...");
             try
             {
-                ConnectionResult = TConnectionManagement.GConnectionManagement.ConnectToServer(AUserName.ToUpper(), APassword,
+                ConnectionResult = ((TConnectionManagement)TConnectionManagement.GConnectionManagement).ConnectToServer(
+                    AUserName.ToUpper(), APassword,
                     out ProcessID,
                     out WelcomeMessage,
                     out SystemEnabled,
@@ -115,13 +134,14 @@ namespace Ict.Testing.NUnitPetraClient
             {
                 throw;
             }
-            UserDefaults = new TUserDefaults();
-            ServerInfo = new TServerInfo(Utilities.DetermineExecutingOS());
+            TUserDefaults.InitUserDefaults();
+            new TServerInfo(Utilities.DetermineExecutingOS());
             TLogging.Log(
                 "client is connected ClientID: " + TConnectionManagement.GConnectionManagement.ClientID.ToString() + " UserId: " + AUserName +
                 " to Server...");
         }
 
+        /// disconnect from the server
         public static void Disconnect()
         {
             String CantDisconnectReason;

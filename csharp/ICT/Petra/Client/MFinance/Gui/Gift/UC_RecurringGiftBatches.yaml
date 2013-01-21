@@ -2,9 +2,9 @@ RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
-    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.RecurringGiftBatchTDS
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     DetailTable: ARecurringGiftBatch
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data,Ict.Petra.Shared.MFinance.Gift.Validation]
     FormType: edit
     Template: controlMaintainTable
     Actions:
@@ -36,6 +36,7 @@ RootNode:
             Columns: [BatchNumber, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType, DateModified]
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
+            ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: BatchNumber DESC
         pnlDetails:
             Dock: Bottom
@@ -46,12 +47,12 @@ RootNode:
                 Row3: [txtDetailHashTotal, cmbDetailCurrencyCode]
                 Row4: [cmbDetailMethodOfPaymentCode]
                 Row5: [rgrDetailGiftType]
-        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=3}
+        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
         cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
         cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
-        txtDetailHashTotal: {Label=Hash Total, Format=Currency, OnChange=HashTotalChanged}
+        txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged, Validation=true}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
-        cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList,OnChange=MethodOfPaymentChanged}
+        cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList, OnChange=MethodOfPaymentChanged}
         rgrDetailGiftType:
             OptionalValues: [=Gift,Gift In Kind,Other]
             ControlsOrientation: Horizontal

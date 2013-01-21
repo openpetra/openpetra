@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -110,15 +110,31 @@ namespace Ict.Common
                 SWriter = new StreamWriter(FStream);
 
                 SWriter.BaseStream.Seek(0, SeekOrigin.End);
-                SWriter.WriteLine(
-                    Environment.NewLine + DateTime.Now.ToLongDateString() + ", " + DateTime.Now.ToLongTimeString() + ULogtextPrefix + " : " +
-                    strMessage);
+
+                if (TLogging.DebugLevel > 0)
+                {
+                    SWriter.WriteLine(Environment.NewLine + DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") + "  " + ULogtextPrefix + " : " +
+                        strMessage);
+                }
+                else
+                {
+                    SWriter.WriteLine(
+                        Environment.NewLine + DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss") + ULogtextPrefix + " : " +
+                        strMessage);
+                }
+
                 SWriter.Flush();
                 SWriter.Close();
                 FStream.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                // eg cannot find directory
+                Console.WriteLine("TLogWriter:Log was not able to write to the log file");
+                Console.WriteLine(e.ToString());
+
+                // do not throw, this causes somehow problems on running nant test on ci-win
+                // throw;
             }
         }
 
@@ -169,6 +185,8 @@ namespace Ict.Common
             }
             catch (Exception)
             {
+                // eg cannot find directory
+                throw;
             }
         }
 

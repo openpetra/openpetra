@@ -144,7 +144,7 @@
 				</query>
 			</calculation>
 
-  			<calculation id="Start Date" returnsFormat="formatteddate" returns="text">
+  			<calculation id="Start Date" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Start Date"/></caption>
 				<query>
 					<queryDetail>
@@ -153,7 +153,7 @@
 				</query>
 			</calculation>
 
-			<calculation id="End Date" returnsFormat="formatteddate" returns="text">
+			<calculation id="End Date" returnsFormat="formatteddate" returns="date">
 				<caption><value text="End Date"/></caption>
 				<query>
 					<queryDetail>

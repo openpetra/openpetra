@@ -1,40 +1,40 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\languagesreport.xml" />
-  <Parameter id="currentReport" value="Languages Report" />
-  <Parameter id="MaxDisplayColumns" value="8" />
-  <Parameter id="param_source" value="Event" />
-  <Parameter id="param_event_selection" value="this" />
-  <Parameter id="param_event_code" value="" />
-  <Parameter id="param_event_name" value="Event Name:" />
-  <Parameter id="param_extract_name" value="" />
-  <Parameter id="param_conference_code" value="" />
-  <Parameter id="param_unit_key" value="0" />
-  <Parameter id="param_application_status_accepted" value="true" />
-  <Parameter id="param_application_status_cancelled" value="false" />
-  <Parameter id="param_application_status_enquiry" value="false" />
-  <Parameter id="param_application_status_hold" value="false" />
-  <Parameter id="param_application_status_rejected" value="false" />
-  <Parameter id="orderby0" value="Language" />
-  <Parameter id="orderby1" value="Translate" />
-  <Parameter id="orderby2" value="Experience" />
-  <Parameter id="param_sortby_readable" value="Language, Translate, Experience" />
-  <Parameter id="param_sortby_columns" value="0,1,2" />
-  <Parameter id="param_calculation" column="0" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_calculation" column="1" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="1" value="4" />
-  <Parameter id="param_calculation" column="2" value="Language" />
-  <Parameter id="ColumnWidth" column="2" value="4" />
-  <Parameter id="param_calculation" column="3" value="Experience" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_calculation" column="4" value="Level" />
-  <Parameter id="ColumnWidth" column="4" value="1.5" />
-  <Parameter id="param_calculation" column="5" value="Translate" />
-  <Parameter id="ColumnWidth" column="5" value="2" />
-  <Parameter id="param_calculation" column="6" value="Into" />
-  <Parameter id="ColumnWidth" column="6" value="1.5" />
-  <Parameter id="param_calculation" column="7" value="Out Of" />
-  <Parameter id="ColumnWidth" column="7" value="1.5" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\languagesreport.xml" />
+  <Parameter id="currentReport" value="eString:Languages Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:8" />
+  <Parameter id="param_source" value="eString:Event" />
+  <Parameter id="param_event_selection" value="eString:this" />
+  <Parameter id="param_event_code" value="eString:" />
+  <Parameter id="param_event_name" value="eString:&quot;Event Name:&quot;" />
+  <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="param_conference_code" value="eString:" />
+  <Parameter id="param_unit_key" value="eInteger:0" />
+  <Parameter id="param_application_status_accepted" value="eString:true" />
+  <Parameter id="param_application_status_cancelled" value="eString:false" />
+  <Parameter id="param_application_status_enquiry" value="eString:false" />
+  <Parameter id="param_application_status_hold" value="eString:false" />
+  <Parameter id="param_application_status_rejected" value="eString:false" />
+  <Parameter id="orderby0" value="eString:Language" />
+  <Parameter id="orderby1" value="eString:Translate" />
+  <Parameter id="orderby2" value="eString:Experience" />
+  <Parameter id="param_sortby_readable" value="eString:Language, Translate, Experience" />
+  <Parameter id="param_sortby_columns" value="eString:0,1,2" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:4" />
+  <Parameter id="param_calculation" column="2" value="eString:Language" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:4" />
+  <Parameter id="param_calculation" column="3" value="eString:Experience" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_calculation" column="4" value="eString:Level" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="5" value="eString:Translate" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="param_calculation" column="6" value="eString:Into" />
+  <Parameter id="ColumnWidth" column="6" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="7" value="eString:Out Of" />
+  <Parameter id="ColumnWidth" column="7" value="eDecimal:4609434218613702656" />
 </Parameters>

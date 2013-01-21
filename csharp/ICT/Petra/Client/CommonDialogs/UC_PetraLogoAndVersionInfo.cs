@@ -1,10 +1,10 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       berndr, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,11 +28,12 @@ using System.Windows.Forms;
 using Ict.Petra.Client.App.Core;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.CommonDialogs
 {
     /// <summary>
-    /// UserControl that features a big Petra Logo and Version Infomation.
+    /// UserControl that features a big Petra Logo and Version Information.
     /// </summary>
     public partial class TUCPetraLogoAndVersionInfo : UserControl
     {
@@ -48,9 +49,9 @@ namespace Ict.Petra.Client.CommonDialogs
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblPetra.Text = Catalog.GetString(" O P E N P E T R A ");
+            this.lblPetra.Text = Catalog.GetString("OpenPetra");
             this.lblPetraVersion.Text = Catalog.GetString("Version");
-            this.lblCopyrightNotice.Text = Catalog.GetString("© 1995 - 2009 by OM International");
+            this.lblCopyrightNotice.Text = Catalog.GetString("© 1995 - 2013 by OM International");
             this.lblInstallationKind.Text = Catalog.GetString("Standalone / Network / Remote");
             #endregion
         }
@@ -97,6 +98,47 @@ namespace Ict.Petra.Client.CommonDialogs
 
             pnlTextBoxContainer.Cursor = newCursor;
             pbxPetraLogo.Cursor = newCursor;
+        }
+
+        private TFrmPetraUtils utils;
+
+        /// <summary>
+        /// implement dummy functions so that we can use this control on a yaml form
+        /// </summary>
+        public TFrmPetraUtils PetraUtilsObject
+        {
+            get
+            {
+                return utils;
+            }
+            set
+            {
+                utils = value;
+            }
+        }
+
+        /// <summary>
+        /// implement dummy functions so that we can use this control on a yaml form
+        /// </summary>
+        public void InitUserControl()
+        {
+            // not implemented
+        }
+
+        /// <summary>
+        /// implement dummy functions so that we can use this control on a yaml form
+        /// </summary>
+        public void GetDataFromControls()
+        {
+            // not implemented
+        }
+
+        /// <summary>
+        /// implement dummy functions so that we can use this control on a yaml form
+        /// </summary>
+        public void ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+        {
+            // not implemented
         }
     }
 }

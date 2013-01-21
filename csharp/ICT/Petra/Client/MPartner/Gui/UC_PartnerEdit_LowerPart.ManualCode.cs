@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,11 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Petra.Client.App.Gui;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Client.MPartner.Logic;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
@@ -36,14 +39,15 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         #region Fields
 
-        private TFrmPartnerEdit.TModuleSwitchEnum FCurrentModuleTabGroup;
+        private TPartnerEditScreenLogic.TModuleTabGroupEnum FCurrentModuleTabGroup;
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
         private TPartnerEditTabPageEnum FCurrentlySelectedTabPage;
+        private List <string>FInitialisedChildUCs = new List <string>(3);
 
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
-        private TDelegateIsNewPartner FDelegateIsNewPartner;
+        // private TDelegateIsNewPartner FDelegateIsNewPartner;
 
         #endregion
 
@@ -52,21 +56,73 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event THookupDataChangeEventHandler HookupDataChange;
 
+        /// <summary>
+        /// Raises Event HookupDataChange.
+        /// </summary>
+        /// <param name="e">Event parameters</param>
+        /// <returns>void</returns>
+        protected void OnHookupDataChange(System.EventArgs e)
+        {
+            if (HookupDataChange != null)
+            {
+                HookupDataChange(this, e);
+            }
+        }
+
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupPartnerEditDataChange;
+
+        /// <summary>
+        /// Raises Event HookupPartnerEditDataChange.
+        /// </summary>
+        /// <param name="e">Event parameters</param>
+        /// <returns>void</returns>
+        protected void OnHookupPartnerEditDataChange(THookupPartnerEditDataChangeEventArgs e)
+        {
+            if (HookupPartnerEditDataChange != null)
+            {
+                HookupPartnerEditDataChange(this, e);
+            }
+        }
 
         /// <summary>todoComment</summary>
         public event TEnableDisableScreenPartsEventHandler EnableDisableOtherScreenParts;
 
+        /// <summary>
+        /// Raises Event EnableDisableOtherScreenParts.
+        /// </summary>
+        /// <param name="e">Event parameters</param>
+        /// <returns>void</returns>
+        protected void OnEnableDisableOtherScreenParts(TEnableDisableEventArgs e)
+        {
+            if (EnableDisableOtherScreenParts != null)
+            {
+                EnableDisableOtherScreenParts(this, e);
+            }
+        }
+
         /// <summary>todoComment</summary>
         public event TShowTabEventHandler ShowTab;
+
+        /// <summary>
+        /// Raises Event ShowTab.
+        /// </summary>
+        /// <param name="e">Event parameters</param>
+        /// <returns>void</returns>
+        protected void OnShowTab(TShowTabEventArgs e)
+        {
+            if (ShowTab != null)
+            {
+                ShowTab(this, e);
+            }
+        }
 
         #endregion
 
         #region Properties
 
         /// <summary>todoComment</summary>
-        public TFrmPartnerEdit.TModuleSwitchEnum CurrentModuleTabGroup
+        public TPartnerEditScreenLogic.TModuleTabGroupEnum CurrentModuleTabGroup
         {
             get
             {
@@ -121,6 +177,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// Returns the PLocation DataRow of the currently selected Address.
+        /// </summary>
+        /// <remarks>Performs all necessary initialisations in case the Partner TabGroup and/or
+        /// the Address Tab haven't been initialised before.</remarks>
+        public PLocationRow LocationDataRowOfCurrentlySelectedAddress
+        {
+            get
+            {
+                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
+                {
+                    InitChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner);
+
+                    // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                    ucoPartnerTabSet.SetUpPartnerAddress();
+                }
+
+                return ucoPartnerTabSet.LocationDataRowOfCurrentlySelectedAddress;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -128,22 +205,135 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Initialises the UserControl that has the Tabs for the currently selected Tab.
         /// </summary>
-        public void InitChildUserControl()
+        private void InitChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum AModuleTabGroup)
         {
-            switch (FCurrentModuleTabGroup)
+            switch (AModuleTabGroup)
             {
-                case TFrmPartnerEdit.TModuleSwitchEnum.msPartner:
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
 
-                    ucoPartnerTabSet.PetraUtilsObject = FPetraUtilsObject;
-                    ucoPartnerTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
-                    ucoPartnerTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
-                    ucoPartnerTabSet.MainDS = FMainDS;
-                    ucoPartnerTabSet.SpecialInitUserControl();
+                    if (!FInitialisedChildUCs.Contains(ucoPartnerTabSet.GetType().Name))
+                    {
+                        FInitialisedChildUCs.Add(ucoPartnerTabSet.GetType().Name);
+
+                        this.ParentForm.Cursor = Cursors.WaitCursor;
+
+                        ucoPartnerTabSet.PetraUtilsObject = FPetraUtilsObject;
+                        ucoPartnerTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
+
+                        if (!FInitialisedChildUCs.Contains(ucoPersonnelTabSet.GetType().Name))
+                        {
+                            ucoPartnerTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
+                        }
+                        else
+                        {
+                            ucoPartnerTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
+                        }
+
+                        ucoPartnerTabSet.MainDS = FMainDS;
+                        ucoPartnerTabSet.SpecialInitUserControl();
+                        ucoPartnerTabSet.HookupDataChange += new THookupDataChangeEventHandler(ucoPartnerTabSet_HookupDataChange);
+                        ucoPartnerTabSet.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
+                            ucoPartnerTabSet_HookupPartnerEditDataChange);
+
+                        this.ParentForm.Cursor = Cursors.Default;
+                    }
+
+                    break;
+
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
+
+                    if (!FInitialisedChildUCs.Contains(ucoPersonnelTabSet.GetType().Name))
+                    {
+                        FInitialisedChildUCs.Add(ucoPersonnelTabSet.GetType().Name);
+
+                        this.ParentForm.Cursor = Cursors.WaitCursor;
+
+                        ucoPersonnelTabSet.PetraUtilsObject = FPetraUtilsObject;
+                        ucoPersonnelTabSet.PartnerEditUIConnector = FPartnerEditUIConnector;
+
+                        if (!FInitialisedChildUCs.Contains(ucoPartnerTabSet.GetType().Name))
+                        {
+                            ucoPersonnelTabSet.InitiallySelectedTabPage = FInitiallySelectedTabPage;
+                        }
+                        else
+                        {
+                            ucoPersonnelTabSet.InitiallySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelIndividualData;
+                        }
+
+                        ucoPersonnelTabSet.MainDS = FMainDS;
+                        ucoPersonnelTabSet.SpecialInitUserControl();
+
+                        this.ParentForm.Cursor = Cursors.Default;
+                    }
 
                     break;
             }
 
-            // TODO Other TabSets (Personnel Data, Finance Data)
+            // TODO Other TabSets (Finance Data)
+
+            FCurrentModuleTabGroup = AModuleTabGroup;
+        }
+
+        /// <summary>
+        /// Shows the UserControl that has the Tabs for the currently selected Tab. If needed, initialisation
+        /// of the UserContol is done.
+        /// </summary>
+        public void ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum AModuleTabGroup)
+        {
+            InitChildUserControl(AModuleTabGroup);
+
+            switch (AModuleTabGroup)
+            {
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
+
+                    ucoPartnerTabSet.Visible = true;
+                    ucoPersonnelTabSet.Visible = false;
+
+                    break;
+
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
+
+                    ucoPersonnelTabSet.Visible = true;
+                    ucoPartnerTabSet.Visible = false;
+
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Switches to the corresponding TabPage.
+        /// </summary>
+        /// <remarks>If the TabPage is on a different TabGroup than the one that is currently
+        /// shown, the TabGroup is first switched to (and it is initialised, if needed).</remarks>
+        /// <param name="ATabPage">TapPage to switch to.</param>
+        public void SelectTabPage(TPartnerEditTabPageEnum ATabPage)
+        {
+            TPartnerEditScreenLogic.TModuleTabGroupEnum ModuleTabGroup = TPartnerEditScreenLogic.DetermineTabGroup(ATabPage);
+
+            ShowChildUserControl(ModuleTabGroup);
+
+            switch (ModuleTabGroup)
+            {
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
+                    ucoPartnerTabSet.SelectTabPage(ATabPage);
+                    break;
+
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
+                    ucoPersonnelTabSet.SelectTabPage(ATabPage);
+                    break;
+
+                    // TODO Other TabSets (Finance Data)
+            }
+        }
+
+        void ucoPartnerTabSet_HookupPartnerEditDataChange(object Sender, THookupPartnerEditDataChangeEventArgs e)
+        {
+            OnHookupPartnerEditDataChange(e);
+        }
+
+        void ucoPartnerTabSet_HookupDataChange(object Sender, EventArgs e)
+        {
+            OnHookupDataChange(e);
         }
 
         /// <summary>
@@ -153,7 +343,70 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitialiseDelegateIsNewPartner(TDelegateIsNewPartner ADelegateFunction)
         {
             // set the delegate function from the calling System.Object
-            FDelegateIsNewPartner = ADelegateFunction;
+            ucoPartnerTabSet.InitialiseDelegateIsNewPartner(ADelegateFunction);
+        }
+
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
+        {
+            bool ReturnValue = false;
+
+            ReturnValue = ucoPartnerTabSet.ValidateAllData(AProcessAnyDataValidationErrors);
+
+            if (ReturnValue)
+            {
+                ReturnValue = ucoPersonnelTabSet.ValidateAllData(AProcessAnyDataValidationErrors);
+            }
+
+            if (ReturnValue)
+            {
+                // TODO Other TabSets (Finance Data)
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Performs data validation for the currently displayed module tab group
+        /// </summary>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateCurrentModuleTabGroupData()
+        {
+            bool ReturnValue = true;
+
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
+            switch (CurrentModuleTabGroup)
+            {
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner:
+                    ucoPartnerTabSet.ValidateAllData(false);
+                    break;
+
+                case TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel:
+                    ucoPersonnelTabSet.ValidateAllData(false);
+                    break;
+
+                default:
+                    break;
+            }
+
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType(), null, true);
+
+            if (ReturnValue)
+            {
+                // Remove a possibly shown Validation ToolTip as the data validation succeeded
+                FPetraUtilsObject.ValidationToolTip.RemoveAll();
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -164,8 +417,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void GetDataFromControls()
         {
             ucoPartnerTabSet.GetDataFromControls();
+            ucoPersonnelTabSet.GetDataFromControls();
 
-            // TODO Other TabSets (Personnel Data, Finance Data)
+            // TODO Other TabSets (Finance Data)
         }
 
         /// <summary>
@@ -173,7 +427,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void DisableNewButtonOnAutoCreatedAddress()
         {
-            if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
+            if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
             {
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
@@ -190,7 +444,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void CleanupAddressesBeforeMerge()
         {
-            if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
+            if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
             {
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
@@ -207,7 +461,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void RefreshAddressesAfterMerge()
         {
-            if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
+            if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
             {
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
@@ -225,7 +479,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AParameterDT"></param>
         public void SimilarLocationsProcessing(PartnerAddressAggregateTDSSimilarLocationParametersTable AParameterDT)
         {
-            if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
+            if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
             {
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
@@ -245,7 +499,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void AddressAddedOrChangedProcessing(PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddedOrChangedPromotionDT,
             PartnerAddressAggregateTDSChangePromotionParametersTable AParameterDT)
         {
-            if (FCurrentModuleTabGroup == TFrmPartnerEdit.TModuleSwitchEnum.msPartner)
+            if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
             {
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
@@ -255,6 +509,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 ucoPartnerTabSet.ProcessServerResponseAddressAddedOrChanged(AAddedOrChangedPromotionDT, AParameterDT);
             }
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
+        {
+            ucoPersonnelTabSet.RefreshPersonnelDataAfterMerge(AAddressesOrRelationsChanged);
         }
 
         #endregion

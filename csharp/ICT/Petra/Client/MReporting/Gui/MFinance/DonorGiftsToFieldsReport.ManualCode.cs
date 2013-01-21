@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,8 @@
 using System;
 using System.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Shared.Interfaces; // Implicit reference
+using Ict.Common.Remoting.Shared;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -55,7 +56,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             string DisplayMember = "Field Name";
             string ValueMember = "Field Key";
 
-            DataTable Table = TRemote.MFinance.Reporting.UIConnectors.GetReceivingFields(out DisplayMember, out ValueMember);
+            DataTable Table = TRemote.MFinance.Reporting.WebConnectors.GetReceivingFields(FLedgerNumber, out DisplayMember, out ValueMember);
 
             DataColumn FirstColumn = new DataColumn(CheckedMember, typeof(bool));
 

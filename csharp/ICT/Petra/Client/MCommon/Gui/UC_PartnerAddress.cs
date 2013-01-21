@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using System.Data;
 using System.Resources;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.MCommon;
@@ -75,9 +76,6 @@ namespace Ict.Petra.Client.MCommon.Gui
 
         /// <summary>DataView for the p_partner_location record we are working with</summary>
         private DataView FPartnerLocationDV;
-
-        /// <summary>dmBrowse for readonly mode or dmEdit for edit mode of the UserControl</summary>
-        private TDataModeEnum FDataMode;
 
         /// <summary>Current Address Order (used for optimising the number of TabIndex changes of certain Controls)</summary>
         private Int32 FCurrentAddressOrder;
@@ -138,17 +136,17 @@ namespace Ict.Petra.Client.MCommon.Gui
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.lblDateGoodUntil.Text = Catalog.GetString("Valid To:");
-            this.lblDateEffective.Text = Catalog.GetString("Vali&d From:");
-            this.lblTelephoneNo.Text = Catalog.GetString("&Phone:");
-            this.lblLocationType.Text = Catalog.GetString("&Location Type:");
-            this.lblCounty.Text = Catalog.GetString("County/St&ate:");
-            this.lblCountry.Text = Catalog.GetString("Co&untry:");
-            this.lblPostalCode.Text = Catalog.GetString("Po&st Code:");
-            this.lblCity.Text = Catalog.GetString("Cit&y/Town:");
-            this.lblAddLine3.Text = Catalog.GetString("Addr&3:");
-            this.lblStreetName.Text = Catalog.GetString("Street-&2:");
-            this.lblLocality.Text = Catalog.GetString("Addr&1:");
+            this.lblDateGoodUntil.Text = Catalog.GetString("Valid To") + ":";
+            this.lblDateEffective.Text = Catalog.GetString("Vali&d From") + ":";
+            this.lblTelephoneNo.Text = Catalog.GetString("&Phone") + ":";
+            this.lblLocationType.Text = Catalog.GetString("&Location Type") + ":";
+            this.lblCounty.Text = Catalog.GetString("County/St&ate") + ":";
+            this.lblCountry.Text = Catalog.GetString("Co&untry") + ":";
+            this.lblPostalCode.Text = Catalog.GetString("Po&st Code") + ":";
+            this.lblCity.Text = Catalog.GetString("Cit&y/Town") + ":";
+            this.lblAddLine3.Text = Catalog.GetString("Addr&3") + ":";
+            this.lblStreetName.Text = Catalog.GetString("Street-&2") + ":";
+            this.lblLocality.Text = Catalog.GetString("Addr&1") + ":";
             this.txtTelephoneExt.Text = Catalog.GetString("TelExt");
             this.txtTelephoneNo.Text = Catalog.GetString("Phone No");
             this.txtPostalCode.Text = Catalog.GetString("Postal Code");
@@ -157,21 +155,21 @@ namespace Ict.Petra.Client.MCommon.Gui
             this.txtAddLine3.Text = Catalog.GetString("Address Line 3");
             this.txtStreetName.Text = Catalog.GetString("Street Name");
             this.txtLocality.Text = Catalog.GetString("Locality");
-            this.lblFaxNo.Text = Catalog.GetString("Fa&x:");
+            this.lblFaxNo.Text = Catalog.GetString("Fa&x") + ":";
             this.txtFaxNo.Text = Catalog.GetString("Fax No");
             this.txtFaxExt.Text = Catalog.GetString("FaxExt");
-            this.lblEmail.Text = Catalog.GetString("E&mail:");
+            this.lblEmail.Text = Catalog.GetString("E&mail") + ":";
             this.txtEmail.Text = Catalog.GetString("Email");
-            this.lblURL.Text = Catalog.GetString("Websi&te:");
+            this.lblURL.Text = Catalog.GetString("Websi&te") + ":";
             this.txtURL.Text = Catalog.GetString("Web URL");
-            this.lblAltTelephoneNo.Text = Catalog.GetString("Alte&rnate:");
+            this.lblAltTelephoneNo.Text = Catalog.GetString("Alte&rnate") + ":";
             this.txtAltTelephoneNo.Text = Catalog.GetString("Alternate Phone No");
             this.txtMobileTelephoneNo.Text = Catalog.GetString("Mobile Phone No");
-            this.lblMobileTelephoneNo.Text = Catalog.GetString("Mo&bile:");
+            this.lblMobileTelephoneNo.Text = Catalog.GetString("Mo&bile") + ":";
             this.grpAddress.Text = Catalog.GetString("Address");
             this.grpPartnerLocation.Text = Catalog.GetString("Partner-specific Data for this Address");
             this.txtValidFrom.Text = Catalog.GetString("Valid From");
-            this.lblMailingAddress.Text = Catalog.GetString("Mailin&g Address:");
+            this.lblMailingAddress.Text = Catalog.GetString("Mailin&g Address") + ":";
             this.txtValidTo.Text = Catalog.GetString("Valid To");
             #endregion
 
@@ -201,6 +199,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             set
             {
                 FPetraUtilsObject = value;
+                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(DataSavingStartedHandler);
             }
         }
 
@@ -328,7 +327,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             TVerificationResult VerificationResultReturned;
             TScreenVerificationResult VerificationResultEntry;
-            Control BoundControl;
+            Control BoundControl = null;
 
             // MessageBox.Show('Column ''' + e.Column.ToString + ''' is changing...');
             try
@@ -336,21 +335,14 @@ namespace Ict.Petra.Client.MCommon.Gui
                 if (TPartnerAddressVerification.VerifyPartnerLocationData(e, FPetraUtilsObject.VerificationResultCollection,
                         out VerificationResultReturned) == false)
                 {
-                    if (VerificationResultReturned.ResultCode != ErrorCodes.PETRAERRORCODE_VALUEUNASSIGNABLE)
+                    if (VerificationResultReturned.ResultCode != PetraErrorCodes.ERR_VALUEUNASSIGNABLE)
                     {
-                        // TODO 1 ochristiank cUI : Make a message library and call a method there to show verification errors.
-                        MessageBox.Show(
-                            VerificationResultReturned.ResultText + Environment.NewLine + Environment.NewLine + "Message Number: " +
-                            VerificationResultReturned.ResultCode + Environment.NewLine + "Context: " + this.GetType().ToString() +
-                            Environment.NewLine +
-                            "Release: ",
-                            VerificationResultReturned.ResultTextCaption,
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerLocationDV], e.Column);
+                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
+
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerLocationDV], e.Column);
 
                         // MessageBox.Show('Bound control: ' + BoundControl.ToString);
-                        BoundControl.Focus();
+// TODO                        BoundControl.Focus();
 
                         if (FPetraUtilsObject.VerificationResultCollection.Contains(e.Column))
                         {
@@ -376,11 +368,11 @@ namespace Ict.Petra.Client.MCommon.Gui
                         e.ProposedValue = e.Row[e.Column.ColumnName];
 
                         // need to assign this to make the change actually visible...
-                        cmbLocationType.SelectedItem = e.ProposedValue.ToString();
-                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerLocationDV], e.Column);
+                        cmbLocationType.SetSelectedString(e.ProposedValue.ToString());
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerLocationDV], e.Column);
 
                         // MessageBox.Show('Bound control: ' + BoundControl.ToString);
-                        BoundControl.Focus();
+// TODO                        BoundControl.Focus();
                     }
                 }
                 else
@@ -573,6 +565,11 @@ namespace Ict.Petra.Client.MCommon.Gui
             }
         }
 
+        private void DataSavingStartedHandler(System.Object obj, EventArgs e)
+        {
+            SaveUnboundControlData();
+        }
+
         /// <summary>
         /// Used to store the values of any unbound controls back to the dataviews.
         /// </summary>
@@ -587,13 +584,13 @@ namespace Ict.Petra.Client.MCommon.Gui
                 ((PLocationRow)FLocationDV[0].Row).CountryCode = cmbCountry.SelectedValue.ToString();
             }
 
-            if (cmbLocationType.SelectedValue == null)
+            if (cmbLocationType.SelectedIndex == -1)
             {
                 ((PPartnerLocationRow)FPartnerLocationDV[0].Row).SetLocationTypeNull();
             }
             else
             {
-                ((PPartnerLocationRow)FPartnerLocationDV[0].Row).LocationType = cmbLocationType.SelectedValue.ToString();
+                ((PPartnerLocationRow)FPartnerLocationDV[0].Row).LocationType = cmbLocationType.GetSelectedString();
             }
         }
 
@@ -606,8 +603,6 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// <returns>void</returns>
         public void SetMode(TDataModeEnum ADataMode)
         {
-            FDataMode = ADataMode;
-
             // messagebox.show('SetMode (' + aDataMode.ToString("G") + ')');
             if (ADataMode == TDataModeEnum.dmBrowse)
             {
@@ -644,97 +639,6 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                 // Set the Focus on the clicked control (it is stored in the senders (=Label's) Tag Property...)
                 ((Control)((Control)sender).Tag).Focus();
-            }
-        }
-
-        /// <summary>
-        /// Revert all changes made since BeginEdit was called on a DataRow. This
-        /// affects the data in the DataTables to which the Controls are DataBound to
-        /// and the displayed information in the DataBound Controls.
-        ///
-        /// Based on the two parameters the procedure also determines whether it needs to
-        /// delete the affected DataRows as well.
-        ///
-        /// </summary>
-        /// <param name="ANewFromLocation0">Set to true if a new record was just created when
-        /// there was only the Location0 record in the Grid</param>
-        /// <param name="ARecordAdded">Set to true if a new there was just created
-        /// </param>
-        /// <returns>void</returns>
-        public void CancelEditing(Boolean ANewFromLocation0, Boolean ARecordAdded)
-        {
-            System.Windows.Forms.CurrencyManager LocationCurrencyManager;
-            System.Windows.Forms.CurrencyManager PartnerLocationCurrencyManager;
-            DataRow FPartnerLocationDR;
-            DataRow FLocationsDR;
-            Boolean DeleteRows;
-
-            // Get CurrencyManager that is associated with the DataTables to which the
-            // Controls are DataBound.
-            LocationCurrencyManager = (System.Windows.Forms.CurrencyManager)BindingContext[FLocationDV];
-            PartnerLocationCurrencyManager = (System.Windows.Forms.CurrencyManager)BindingContext[FPartnerLocationDV];
-
-            // Revert all changes made since BeginEdit was called on a DataRow. This
-            // affects the data in the DataTables to which the Controls are DataBound to
-            // and the displayed information in the DataBound Controls.
-            LocationCurrencyManager.CancelCurrentEdit();
-            PartnerLocationCurrencyManager.CancelCurrentEdit();
-            DeleteRows = false;
-
-            // Determine whether we need to delete the affected DataRows as well
-            if (FPartnerLocationDV[0].Row.RowState == DataRowState.Added)
-            {
-                if (!FMainDS.PPartner[0].HasVersion(DataRowVersion.Original))
-                {
-                    // Cancelling Editing with a New Partner
-                    // MessageBox.Show('Cancelling Editing with a New Partner...');
-                    if (((new DataView(FMainDS.PPartnerLocation, "", "",
-                              DataViewRowState.CurrentRows).Count > 1) || (ANewFromLocation0)) && ARecordAdded)
-                    {
-                        /*
-                         * Both Location and PartnerLocation Rows will be deleted since the
-                         * Address is new and it is not the last Address or the new Address was
-                         * created when there was only Location 0
-                         */
-
-                        // MessageBox.Show('Location and PartnerLocation Rows will be deleted since the Address is new and it' + "\r\n" + 'is not the last Address or the new Address was created when there was only Location 0!');
-                        DeleteRows = true;
-                    }
-                    else
-                    {
-                    }
-
-                    /*
-                     * Both Location and PartnerLocation Rows won't be deleted since the
-                     * Address is either not new or it is the last Address
-                     */
-
-                    // MessageBox.Show('Location and PartnerLocation Rows won''t be deleted since the Address is either' + "\r\n" + 'not new or it is the last Address!');
-                }
-                else
-                {
-                    // Cancelling Editing with an existing Partner
-                    // MessageBox.Show('Cancelling Editing with an existing Partner...');
-                    if (ARecordAdded)
-                    {
-                        /*
-                         * Both Location and PartnerLocation Rows will be deleted since the
-                         * Address is new
-                         */
-
-                        // MessageBox.Show('Location and PartnerLocation Rows will be deleted since the Address is new!');
-                        DeleteRows = true;
-                    }
-                }
-
-                if (DeleteRows)
-                {
-                    // In addition to cancelling the Edit, we also delete the DataRows
-                    FPartnerLocationDR = FPartnerLocationDV[0].Row;
-                    FLocationsDR = FLocationDV[0].Row;
-                    FPartnerLocationDV.Table.Rows.Remove(FPartnerLocationDR);
-                    FLocationDV.Table.Rows.Remove(FLocationsDR);
-                }
             }
         }
     }

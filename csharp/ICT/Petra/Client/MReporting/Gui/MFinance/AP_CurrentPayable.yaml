@@ -1,0 +1,26 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Current Accounts Payable
+    WindowWidth: 500
+    WindowHeight: 300
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        XMLFILES: [Finance/AccountsPayable/AP_CurrentPayable.xml,Finance/finance.xml,common.xml]
+        REPORTNAME: APCurrentPayable
+        CURRENTREPORT: APCurrentPayable
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION:BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+        REPORTSETTINGSDIRECTORY: Finance
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgReportSpecific:
+            Controls: [dtpReportDate]
+        dtpReportDate:
+            ParameterName: param_payment_date
+            

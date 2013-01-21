@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,7 +34,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared.MPartner;
@@ -43,6 +43,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MFinance.Gui.Gift;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -87,10 +88,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IPartnerUIConnectorsPartnerFind FPartnerFindObject;
 
 //TODO        private Int32 FSplitterDistForm;
-        private Int32 FSplitterDistFindByDetails;
+//TODO        private Int32 FSplitterDistFindByDetails;
         private bool FPartnerInfoPaneOpen = false;
         private bool FPartnerTasksPaneOpen = false;
         private TUC_PartnerInfo FPartnerInfoUC;
+
+        private Boolean FRunningInsideModalForm;
+
         /// <summary>
         /// event for when the search result changes, and more or less partners match the search criteria
         /// </summary>
@@ -114,6 +118,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>todoComment</summary>
         public event System.EventHandler PartnerInfoPaneExpanded;
+
+        /// <summary>todoComment</summary>
+        public event System.EventHandler EnableAcceptButton;
+
+        /// <summary>todoComment</summary>
+        public event System.EventHandler DisableAcceptButton;
 
         private void OnPartnerInfoPaneCollapsed()
         {
@@ -144,6 +154,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (SearchOperationStateChange != null)
             {
                 SearchOperationStateChange(new TSearchOperationStateChangeEventArgs(ASearchOperationIsRunning));
+            }
+        }
+
+        private void OnEnableAcceptButton()
+        {
+            if (EnableAcceptButton != null)
+            {
+                EnableAcceptButton(this, new EventArgs());
+            }
+        }
+
+        private void OnDisableAcceptButton()
+        {
+            if (DisableAcceptButton != null)
+            {
+                DisableAcceptButton(this, new EventArgs());
             }
         }
 
@@ -181,6 +207,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Whether this UserControl is running inside a Modal Form, or not.
+        /// </summary>
+        public bool RunnningInsideModalForm
+        {
+            get
+            {
+                return FRunningInsideModalForm;
+            }
+
+            set
+            {
+                FRunningInsideModalForm = value;
+            }
+        }
+
+        /// <summary>
         /// constructor
         /// </summary>
         public TUC_PartnerFind_ByPartnerDetails()
@@ -197,9 +239,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnClearCriteria.Text = Catalog.GetString("Clea&r");
             this.grpCriteria.Text = Catalog.GetString("Find Criteria");
             this.btnCustomCriteriaDemo.Text = Catalog.GetString("Custom Criteria Demo");
+            this.ucoPartnerInfo.Text = Catalog.GetString("Partner Info");
             this.grpResult.Text = Catalog.GetString("Fin&d Result");
             this.lblSearchInfo.Text = Catalog.GetString("Searching...");
             #endregion
+
+            // on Mono: we need to change the AutoSize so that the results will be displayed
+            if (Ict.Common.Utilities.DetermineExecutingCLR() == TExecutingCLREnum.eclrMono)
+            {
+                this.pnlPartnerInfoContainer.AutoSize = false;
+            }
 
             // Define the screen's Logic
             FLogic = new TPartnerFindScreenLogic();
@@ -211,6 +260,25 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         private TFrmPetraUtils FPetraUtilsObject;
+
+        /// Doesn't do anything, but needs to be present as the Template requires this Method to be present...
+        public void GetDataFromControls()
+        {
+            // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
+        }
+
+        /// <summary>
+        /// // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
+        /// </summary>
+        /// <param name="ARecordChangeVerification"></param>
+        /// <param name="AProcessAnyDataValidationErrors"></param>
+        /// <returns></returns>
+        public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+        {
+            // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
+
+            return true;
+        }
 
         /// <summary>
         /// this provides general functionality for edit screens
@@ -226,21 +294,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPetraUtilsObject = value;
 
 // todo: no resourcestrings
-                FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearchButtonHelpText);
-                FPetraUtilsObject.SetStatusBarText(btnClearCriteria, Resourcestrings.StrClearCriteriaButtonHelpText);
-                FPetraUtilsObject.SetStatusBarText(grdResult, Resourcestrings.StrResultGridHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
-                FPetraUtilsObject.SetStatusBarText(chkDetailedResults, Resourcestrings.StrDetailedResultsHelpText);
+                FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
+                FPetraUtilsObject.SetStatusBarText(btnClearCriteria, MPartnerResourcestrings.StrClearCriteriaButtonHelpText);
+                FPetraUtilsObject.SetStatusBarText(grdResult,
+                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+                FPetraUtilsObject.SetStatusBarText(chkDetailedResults, MPartnerResourcestrings.StrDetailedResultsHelpText);
             }
         }
 
         /// <summary>
         /// needed for generated code
         /// </summary>
-        public void InitUserControl()            
+        public void InitUserControl()
         {
             ucoPartnerInfo.HostedControlKind = THostedControlKind.hckUserControl;
-		    ucoPartnerInfo.UserControlClass = "TUC_PartnerInfo";  // TUC_PartnerInfo
-		    ucoPartnerInfo.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";            
+            ucoPartnerInfo.UserControlClass = "TUC_PartnerInfo";          // TUC_PartnerInfo
+            ucoPartnerInfo.UserControlNamespace = "Ict.Petra.Client.MPartner.Gui";
         }
 
         /// <summary>
@@ -335,7 +404,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GrdResult_DoubleClickCell(System.Object Sender, SourceGrid.CellContextEventArgs e)
         {
-            if (TPartnerFindScreen.URunAsModalForm == true)
+            if (FRunningInsideModalForm == true)
             {
                 BtnAccept_Click(this, null);
             }
@@ -347,7 +416,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GrdResult_EnterKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
-            if (TPartnerFindScreen.URunAsModalForm == true)
+            if (FRunningInsideModalForm == true)
             {
                 BtnAccept_Click(this, null);
             }
@@ -401,8 +470,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (e.DataPage > 0)
             {
                 this.Cursor = Cursors.WaitCursor;
-                FPetraUtilsObject.WriteToStatusBar(Resourcestrings.StrTransferringDataForPageText + e.DataPage.ToString() + ')');
-                FPetraUtilsObject.SetStatusBarText(grdResult, Resourcestrings.StrTransferringDataForPageText + e.DataPage.ToString() + ')');
+                FPetraUtilsObject.WriteToStatusBar(MPartnerResourcestrings.StrTransferringDataForPageText + e.DataPage.ToString() + ')');
+                FPetraUtilsObject.SetStatusBarText(grdResult, MPartnerResourcestrings.StrTransferringDataForPageText + e.DataPage.ToString() + ')');
             }
         }
 
@@ -412,8 +481,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (e.DataPage > 0)
             {
                 this.Cursor = Cursors.Default;
-                FPetraUtilsObject.WriteToStatusBar(Resourcestrings.StrResultGridHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
-                FPetraUtilsObject.SetStatusBarText(grdResult, Resourcestrings.StrResultGridHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
+                FPetraUtilsObject.WriteToStatusBar(
+                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+                FPetraUtilsObject.SetStatusBarText(grdResult,
+                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
             }
         }
 
@@ -439,6 +510,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #region Menu/ToolBar command handling
+
         /// <summary>
         /// Menu/ToolBar command handling: call functions for each menu item/toolbar button
         /// </summary>
@@ -485,10 +557,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpAddresses);
             }
+            else if (AToolStripItem.Name == "mniFileDeletePartner")
+            {
+                TPartnerMain.DeletePartner(FLogic.PartnerKey);
+            }
             else if ((AToolStripItem.Name == "mniFileWorkWithLastPartner")
                      || (AToolStripItem.Name == "mniFileWorkWithLastPartner"))
             {
-                OpenLastUsedPartnerEditScreen();
+                TPartnerMain.OpenLastUsedPartnerEditScreen(this.ParentForm);
             }
             else
             {
@@ -557,6 +633,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 BtnSearch_Click(this, new EventArgs());
             }
+            else if (AToolStripItem.Name == "mniMaintainDonorHistory")
+            {
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,
+                    PartnerKey,
+                    FPetraUtilsObject.GetForm());
+            }
+            else if (AToolStripItem.Name == "mniMaintainRecipientHistory")
+            {
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,
+                    PartnerKey,
+                    FPetraUtilsObject.GetForm());
+            }
             else
             {
                 throw new NotImplementedException();
@@ -584,84 +672,104 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         void HandleMaintainMenuItemOrToolBarButton(ToolStripItem AToolStripItem)
         {
-            throw new NotImplementedException();
-#if TODO
-            String ClickedMenuItemText;
+            string ClickedMenuItemName = AToolStripItem.Name;
 
-            ClickedMenuItemText = ((MenuItem)sender).Text;
-
-            if (ClickedMenuItemText == mniMaintainAddresses.Text)
+            if (ClickedMenuItemName == "mniMaintainAddresses")
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpAddresses);
             }
-            else if (ClickedMenuItemText == mniMaintainPartnerDetails.Text)
+            else if (ClickedMenuItemName == "mniMaintainPartnerDetails")
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpDetails);
             }
-            else if (ClickedMenuItemText == mniMaintainFoundationDetails.Text)
+            else if (ClickedMenuItemName == "mniMaintainFoundationDetails")
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpFoundationDetails);
             }
-            else if (ClickedMenuItemText == mniMaintainSubscriptions.Text)
+            else if (ClickedMenuItemName == "mniMaintainSubscriptions")
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpSubscriptions);
             }
-            else if (ClickedMenuItemText == mniMaintainSpecialTypes.Text)
+            else if (ClickedMenuItemName == "mniMaintainSpecialTypes")
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpPartnerTypes);
             }
-            else if (ClickedMenuItemText == mniMaintainContacts.Text)
+            else if (ClickedMenuItemName == "mniMaintainContacts")
             {
-                TMenuFunctions.OpenPartnerContacts();
+                throw new NotImplementedException();
             }
-            else if ((ClickedMenuItemText == Resourcestrings.StrFamilyMembersMenuItemText)
-                     || (ClickedMenuItemText == Resourcestrings.StrFamilyMenuItemText))
+            else if (ClickedMenuItemName == "mniMaintainFamilyMembers")
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpFamilyMembers);
             }
-            else if (ClickedMenuItemText == mniMaintainRelationships.Text)
+            else if (ClickedMenuItemName == "mniMaintainRelationships")
             {
-                TMenuFunctions.OpenPartnerRelationships();
+                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpPartnerRelationships);
             }
-            else if (ClickedMenuItemText == mniMaintainInterests.Text)
+            else if (ClickedMenuItemName == "mniMaintainInterests")
             {
-                TMenuFunctions.OpenPartnerInterests();
-                SetUserDefaultLastPartnerWorkedWith();
+                throw new NotImplementedException();
             }
-            else if (ClickedMenuItemText == mniMaintainReminders.Text)
+            else if (ClickedMenuItemName == "mniMaintainReminders")
             {
-                TMenuFunctions.OpenPartnerReminders();
+                throw new NotImplementedException();
             }
-            else if (ClickedMenuItemText == mniMaintainNotes.Text)
+            else if (ClickedMenuItemName == "mniMaintainNotes")
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpNotes);
             }
-            else if (ClickedMenuItemText == mniMaintainOfficeSpecific.Text)
+            else if (ClickedMenuItemName == "mniMaintainLocalPartnerData")
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpOfficeSpecific);
             }
-            else if (ClickedMenuItemText == mniMaintainWorkerField.Text)
+            else if (ClickedMenuItemName == "mniMaintainWorkerField")
             {
-                TMenuFunctions.OpenWorkerField();
+                TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
+
+                staffDataForm.PartnerKey = FLogic.PartnerKey;
+                staffDataForm.Show();
             }
-            else if ((ClickedMenuItemText == Resourcestrings.StrPersonnelPersonMenuItemText)
-                     || (ClickedMenuItemText == Resourcestrings.StrPersonnelUnitMenuItemText))
+            else if (AToolStripItem.Name == MPartnerResourcestrings.StrPersonnelPersonMenuItemText)
             {
-                TMenuFunctions.OpenPersonnelIndivData();
+                if (FLogic.DetermineCurrentPartnerClass() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+                {
+                    OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpPersonnelIndividualData);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
             }
-            else if (ClickedMenuItemText == mniMaintainDonorHistory.Text)
+            else if (ClickedMenuItemName == "mniMaintainDonorHistory")
             {
-                TMenuFunctions.OpenDonorGiftHistory(this);
+//              TMenuFunctions.OpenDonorGiftHistory(this);
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainDonorHistory",
+                    PartnerKey,
+                    FPetraUtilsObject.GetForm());
             }
-            else if (ClickedMenuItemText == mniMaintainRecipientHistory.Text)
+            else if (ClickedMenuItemName == "mniMaintainRecipientHistory")
             {
-                TMenuFunctions.OpenRecipientGiftHistory(this);
+//              TMenuFunctions.OpenRecipientGiftHistory(this);
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainRecipientHistory",
+                    PartnerKey,
+                    FPetraUtilsObject.GetForm());
             }
-            else if (ClickedMenuItemText == mniMaintainFinanceDetails.Text)
+            else if (ClickedMenuItemName == "mniMaintainFinanceReports")
             {
-                TMenuFunctions.OpenPartnerFinanceDetails();
+                throw new NotImplementedException();
             }
-#endif
+            else if (ClickedMenuItemName == "mniMaintainBankAccounts")
+            {
+                throw new NotImplementedException();
+            }
+            else if (ClickedMenuItemName == "mniMaintainGiftReceipting")
+            {
+                throw new NotImplementedException();
+            }
+            else if (ClickedMenuItemName == "mniMaintainFinanceDetails")
+            {
+                throw new NotImplementedException();
+            }
         }
 
         void HandleMailingMenuItemOrToolBarButton(ToolStripItem AToolStripItem)
@@ -795,14 +903,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         void UcoPartnerInfo_Collapsed(object sender, EventArgs e)
         {
             //            MessageBox.Show("UcoPartnerInfo_Collapsed");
-            ClosePartnerInfoPane();
+            ClosePartnerInfoPane(true);
         }
 
         void UcoPartnerInfo_Expanded(object sender, EventArgs e)
         {
             //            MessageBox.Show("UcoPartnerInfo_Expanded");
 
-            OpenPartnerInfoPane();
+            OpenPartnerInfoPane(true);
         }
 
         void TogglePartnerInfoPane()
@@ -817,17 +925,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void OpenPartnerInfoPane()
+        private void OpenPartnerInfoPane(bool AUserControlIsArleadyExpanded = false)
         {
             OnPartnerInfoPaneExpanded();
 
-            ucoPartnerInfo.Expand();
-            
+            if (!AUserControlIsArleadyExpanded)
+            {
+                ucoPartnerInfo.Expand();
+            }
+
             if (FPartnerInfoUC == null)
             {
-                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));    
-            }            
-            
+                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));
+            }
+
             UpdatePartnerInfoPanel();
 
             //            MessageBox.Show("FCurrentGridRow: " + FCurrentGridRow.ToString());
@@ -866,11 +977,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPartnerInfoPaneOpen = true;
         }
 
-        private void ClosePartnerInfoPane()
+        private void ClosePartnerInfoPane(bool AUserControlIsArleadyCollapsed = false)
         {
             OnPartnerInfoPaneCollapsed();
 
-            ucoPartnerInfo.Collapse();
+            if (!AUserControlIsArleadyCollapsed)
+            {
+                ucoPartnerInfo.Collapse();
+            }
 
             FPartnerInfoPaneOpen = false;
         }
@@ -1009,7 +1123,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             spcPartnerFindByDetails.SplitterDistance = TUserDefaults.GetInt32Default(
                 TUserDefaults.PARTNER_FIND_SPLITPOS_FINDBYDETAILS, 233);
-            FSplitterDistFindByDetails = spcPartnerFindByDetails.SplitterDistance;
+            // TODO FSplitterDistFindByDetails = spcPartnerFindByDetails.SplitterDistance;
         }
 
         /// <summary>
@@ -1021,8 +1135,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (!FKeepUpSearchFinishedCheck)
             {
-                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));                
-                
+                FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));
+
                 // get the data from the currently edited control;
                 // otherwise there are not the right search criteria when hitting the enter key
                 ucoPartnerFindCriteria.CompleteBindings();
@@ -1031,7 +1145,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (!ucoPartnerFindCriteria.HasSearchCriteria())
                 {
-                    MessageBox.Show(Resourcestrings.StrNoCriteriaSpecified);
+                    MessageBox.Show(MPartnerResourcestrings.StrNoCriteriaSpecified);
                     return;
                 }
 
@@ -1042,15 +1156,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // used to destory server object here
                 // Update UI
                 grdResult.SendToBack();
-                grpResult.Text = Resourcestrings.StrSearchResult;
-                
+                grpResult.Text = MPartnerResourcestrings.StrSearchResult;
+
                 if (FPartnerInfoUC != null)
                 {
-                    FPartnerInfoUC.ClearControls();    
+                    FPartnerInfoUC.ClearControls();
                 }
-                
-                lblSearchInfo.Text = Resourcestrings.StrSearching;
-                FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearching);
+
+                lblSearchInfo.Text = MPartnerResourcestrings.StrSearching;
+                FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearching);
 
                 //                stbMain.Panels[stbMain.Panels.IndexOf(stpInfo)].Text = Resourcestrings.StrSearching;
 
@@ -1059,15 +1173,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 EnableDisableUI(false);
                 Application.DoEvents();
 
-                // If ctrl held down, show the dataset
-#if DEBUGMODE
-                if (System.Windows.Forms.Form.ModifierKeys == Keys.Control)
-                {
-                    MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetXml().ToString());
-                    MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetChanges().GetXml().ToString());
-                }
-#endif
-
+/*
+ *              // If ctrl held down, show the dataset
+ *              if (System.Windows.Forms.Form.ModifierKeys == Keys.Control)
+ *              {
+ *                  MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetXml().ToString());
+ *                  MessageBox.Show(ucoPartnerFindCriteria.CriteriaData.DataSet.GetChanges().GetXml().ToString());
+ *              }
+ */
                 // Clear result table
                 try
                 {
@@ -1091,9 +1204,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 // Asynchronous search operation is being interrupted
                 btnSearch.Enabled = false;
-                lblSearchInfo.Text = Resourcestrings.StrStoppingSearch;
-                FPetraUtilsObject.WriteToStatusBar(Resourcestrings.StrStoppingSearch);
-                FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrStoppingSearch);
+                lblSearchInfo.Text = MPartnerResourcestrings.StrStoppingSearch;
+                FPetraUtilsObject.WriteToStatusBar(MPartnerResourcestrings.StrStoppingSearch);
+                FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrStoppingSearch);
 
                 Application.DoEvents();
 
@@ -1105,13 +1218,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void BtnClearCriteria_Click(System.Object sender, System.EventArgs e)
         {
             ucoPartnerFindCriteria.ResetSearchCriteriaValuesToDefault();
-            FPartnerInfoUC.ClearControls();
+
+            if (FPartnerInfoUC != null)
+            {
+                FPartnerInfoUC.ClearControls();
+            }
+
             lblSearchInfo.Text = "";
-            grpResult.Text = Resourcestrings.StrSearchResult;
+            grpResult.Text = MPartnerResourcestrings.StrSearchResult;
             grdResult.SendToBack();
 
             OnPartnerAvailable(false);
-// TODO            btnAccept.Enabled = false;
+            OnDisableAcceptButton();
 
             ucoPartnerFindCriteria.Focus();
 
@@ -1121,44 +1239,57 @@ namespace Ict.Petra.Client.MPartner.Gui
             FCurrentGridRow = -1;
         }
 
+        /// <summary>
+        /// Opens the Partner Edit Screen.
+        /// </summary>
+        /// <param name="AShowTabPage">Tab Page to open the Partner Edit screen on.</param>
         private void OpenPartnerEditScreen(TPartnerEditTabPageEnum AShowTabPage)
+        {
+            OpenPartnerEditScreen(AShowTabPage, FLogic.PartnerKey, false);
+        }
+
+        /// <summary>
+        /// Opens the Partner Edit Screen.
+        /// </summary>
+        /// <param name="AShowTabPage">Tab Page to open the Partner Edit screen on.</param>
+        /// <param name="APartnerKey">PartnerKey for which the Partner Edit screen should be openened.</param>
+        /// <param name="AOpenOnBestLocation">Set to true to open the Partner with the 'Best Address' selected (affects the Addresses Tab only).</param>
+        public void OpenPartnerEditScreen(TPartnerEditTabPageEnum AShowTabPage, Int64 APartnerKey, bool AOpenOnBestLocation)
         {
             FPetraUtilsObject.WriteToStatusBar("Opening Partner in Partner Edit screen...");
             FPetraUtilsObject.SetStatusBarText(grdResult, "Opening Partner in Partner Edit screen...");
             this.Cursor = Cursors.WaitCursor;
 
+            // Set Partner to be the "Last Used Partner"
+            TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, APartnerKey);
+
             try
             {
-                // If ALT held down, show the conventional screen, otherwise the new, generated one.
-                if (System.Windows.Forms.Form.ModifierKeys != Keys.Alt)
-                {
-                    TFrmPartnerEdit frm = new TFrmPartnerEdit(this.Handle);
+                TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-                    frm.SetParameters(TScreenMode.smEdit, FLogic.PartnerKey,
+                if (!AOpenOnBestLocation)
+                {
+                    frm.SetParameters(TScreenMode.smEdit, APartnerKey,
                         FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, AShowTabPage);
-                    frm.Show();
                 }
                 else
                 {
-                    TFrmPartnerEdit frm = new TFrmPartnerEdit(this.Handle);
-
-                    frm.SetParameters(TScreenMode.smEdit, FLogic.PartnerKey,
-                        FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, AShowTabPage);
-                    frm.Show();
+                    frm.SetParameters(TScreenMode.smEdit, APartnerKey);
                 }
+
+                frm.Show();
             }
             finally
             {
                 this.Cursor = Cursors.Default;
-                FPetraUtilsObject.SetStatusBarText(grdResult, Resourcestrings.StrResultGridHelpText + Resourcestrings.StrPartnerFindSearchTargetText);
+                FPetraUtilsObject.SetStatusBarText(grdResult,
+                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
             }
         }
 
         private void OpenNewPartnerEditScreen(bool ARunAsModalForm)
         {
             string PartnerClass = String.Empty;
-            string CountryCode = String.Empty;
-            string CallerContext = String.Empty;
             TFrmPartnerEdit frm;
 
             this.Cursor = Cursors.WaitCursor;
@@ -1172,16 +1303,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else
                 {
                     // Modal. May have restrictions, may not.
+                    // Default behavior is to allow all Partner Classes
 
-                    // default behavior is to allow all
-                    PartnerClass = "";
-
-// TODO
-//                    if (FRestrictToPartnerClasses.Length > 0)
-//                    {
-//                        /* at least one entry so use first one */
-//                        PartnerClass = FRestrictToPartnerClasses[0];
-//                    }
+                    if (ucoPartnerFindCriteria.RestrictedPartnerClass.Length > 0)
+                    {
+                        /* at least one entry so use first one */
+                        PartnerClass = ucoPartnerFindCriteria.RestrictedPartnerClass[0];
+                    }
 
                     /*
                      * Create (and remember!) a GUID that we pass to the 'Partner Edit' screen
@@ -1189,17 +1317,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * determine whether the 'Form Message' received is for *this* Instance
                      * of the Modal Partner Find screen.
                      */
-// TODO                    FNewPartnerContext = System.Guid.NewGuid().ToString();
-                    CallerContext = System.Guid.NewGuid().ToString();
+// TODO             FNewPartnerContext = System.Guid.NewGuid().ToString();
 
                     PartnerClass = PartnerClass.Replace("OM-FAM", "FAMILY");
                 }
 
-                frm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(this.Handle);
+                frm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
                 frm.SetParameters(TScreenMode.smNew,
-                    PartnerClass, -1, -1, CountryCode);
-// TODO                frm.CallerContext = CallerContext;
+                    PartnerClass, -1, -1, String.Empty);
+// TODO                frm.CallerContext = FNewPartnerContext;
 
                 if (!ARunAsModalForm)
                 {
@@ -1303,7 +1430,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             this.Cursor = Cursors.WaitCursor;
             LocationPK = FLogic.DetermineCurrentLocationPK();
-            frmPF = new TPartnerFindScreen(this.Handle);
+            frmPF = new TPartnerFindScreen(FPetraUtilsObject.GetForm());
             frmPF.SetParameters(true, LocationPK.LocationKey);
             frmPF.Show();
             this.Cursor = Cursors.Default;
@@ -1318,68 +1445,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         public bool CanAccessPartner(Int64 APartnerKey)
         {
             return FLogic.CanAccessPartner(APartnerKey);
-        }
-
-        /// <summary>
-        /// Checks if the the partner is merged. If so then show a dialog where the user can
-        /// choose to work with the current partner or the merged partner.
-        /// </summary>
-        /// <param name="APartnerKey">The current partner to be checked</param>
-        /// <param name="AMergedIntoPartnerKey">If the partner is merged the merged partner key.
-        /// If the partner is not merged: -1</param>
-        /// <returns>True if the user wants to work with the merged partner, otherwise false.</returns>
-        public bool MergedPartnerHandling(Int64 APartnerKey,
-            out Int64 AMergedIntoPartnerKey)
-        {
-            bool ReturnValue = false;
-
-            AMergedIntoPartnerKey = -1;
-
-// TODO MergedPartnerHandling
-#if TODO
-            bool IsMergedPartner;
-            string MergedPartnerPartnerShortName;
-            string MergedIntoPartnerShortName;
-            TPartnerClass MergedPartnerPartnerClass;
-            TPartnerClass MergedIntoPartnerClass;
-            string MergedBy;
-            DateTime MergeDate;
-
-            IsMergedPartner = TServerLookup.TMPartner.MergedPartnerDetails(APartnerKey,
-                out MergedPartnerPartnerShortName,
-                out MergedPartnerPartnerClass,
-                out AMergedIntoPartnerKey,
-                out MergedIntoPartnerShortName,
-                out MergedIntoPartnerClass,
-                out MergedBy,
-                out MergeDate);
-
-            if (IsMergedPartner)
-            {
-                // Open the 'Merged Partner Info' Dialog
-                using (TPartnerMergedPartnerInfoDialog MergedPartnerInfoDialog = new TPartnerMergedPartnerInfoDialog())
-                {
-                    MergedPartnerInfoDialog.SetParameters(APartnerKey,
-                        MergedPartnerPartnerShortName,
-                        MergedPartnerPartnerClass,
-                        AMergedIntoPartnerKey,
-                        MergedIntoPartnerShortName,
-                        MergedIntoPartnerClass,
-                        MergedBy,
-                        MergeDate);
-
-                    if (MergedPartnerInfoDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        ReturnValue = true;
-                    }
-                    else
-                    {
-                        ReturnValue = false;
-                    }
-                }
-            }
-#endif
-            return ReturnValue;
         }
 
         /// <summary>
@@ -1445,15 +1510,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // Display the number of found Partners/Locations
                             if (grdResult.TotalRecords > 1)
                             {
-                                SearchTarget = Resourcestrings.StrPartnerFindSearchTargetPluralText;
+                                SearchTarget = MPartnerResourcestrings.StrPartnerFindSearchTargetPluralText;
                             }
                             else
                             {
-                                SearchTarget = Resourcestrings.StrPartnerFindSearchTargetText;
+                                SearchTarget = MPartnerResourcestrings.StrPartnerFindSearchTargetText;
                             }
 
-                            grpResult.Text = Resourcestrings.StrSearchResult + ": " + grdResult.TotalRecords.ToString() + ' ' + SearchTarget + ' ' +
-                                             Resourcestrings.StrFoundText;
+                            grpResult.Text = MPartnerResourcestrings.StrSearchResult + ": " + grdResult.TotalRecords.ToString() + ' ' +
+                                             SearchTarget + ' ' +
+                                             MPartnerResourcestrings.StrFoundText;
                         }
                         else
                         {
@@ -1465,7 +1531,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                              */
                             if ((Int64)FCriteriaData.Rows[0]["PartnerKey"] != 0)
                             {
-                                if (MergedPartnerHandling(
+                                if (TPartnerMain.MergedPartnerHandling(
                                         (Int64)FCriteriaData.Rows[0]["PartnerKey"],
                                         out MergedPartnerKey))
                                 {
@@ -1486,15 +1552,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if (UpdateUI)
                             {
                                 this.Cursor = Cursors.Default;
-                                grpResult.Text = Resourcestrings.StrSearchResult;
-                                lblSearchInfo.Text = Resourcestrings.StrNoRecordsFound1Text + ' ' + Resourcestrings.StrPartnerFindSearchTarget2Text +
-                                                     Resourcestrings.StrNoRecordsFound2Text;
+                                grpResult.Text = MPartnerResourcestrings.StrSearchResult;
+                                lblSearchInfo.Text = MPartnerResourcestrings.StrNoRecordsFound1Text + ' ' +
+                                                     MPartnerResourcestrings.StrPartnerFindSearchTarget2Text +
+                                                     MPartnerResourcestrings.StrNoRecordsFound2Text;
 
+                                OnDisableAcceptButton();
                                 OnPartnerAvailable(false);
 
                                 // StatusBar update
-                                FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrGenericReady);
-                                FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearchButtonHelpText);
+                                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrGenericReady);
+                                FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
 
                                 FCurrentGridRow = -1;
                             }
@@ -1515,8 +1583,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Search operation interrupted by user
                         // used to release server System.Object here
                         this.Cursor = Cursors.Default;
-                        grpResult.Text = Resourcestrings.StrSearchResult;
-                        lblSearchInfo.Text = Resourcestrings.StrSearchStopped;
+                        grpResult.Text = MPartnerResourcestrings.StrSearchResult;
+                        lblSearchInfo.Text = MPartnerResourcestrings.StrSearchStopped;
 
                         OnPartnerAvailable(false);
                         btnSearch.Enabled = true;
@@ -1524,7 +1592,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // StatusBar update
 
                         //                        WriteToStatusBar(CommonResourcestrings.StrGenericReady);
-                        FPetraUtilsObject.SetStatusBarText(btnSearch, Resourcestrings.StrSearchButtonHelpText);
+                        FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
 
                         FCurrentGridRow = -1;
                     }
@@ -1538,12 +1606,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Set search button text
                 if (Convert.ToBoolean(AEnable))
                 {
-                    btnSearch.Text = Resourcestrings.StrSearchButtonText;
+                    btnSearch.Text = MPartnerResourcestrings.StrSearchButtonText;
                     OnSearchOperationStateChange(false);
                 }
                 else
                 {
-                    btnSearch.Text = Resourcestrings.StrSearchButtonStopText;
+                    btnSearch.Text = MPartnerResourcestrings.StrSearchButtonStopText;
                     OnSearchOperationStateChange(true);
                 }
 
@@ -1606,7 +1674,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         void spcPartnerFindByDetails_SplitterMoved(System.Object sender, System.Windows.Forms.SplitterEventArgs e)
         {
-            FSplitterDistFindByDetails = ((SplitContainer)sender).SplitterDistance;
+            // TODO FSplitterDistFindByDetails = ((SplitContainer)sender).SplitterDistance;
         }
 
         private void GrpCriteria_Enter(System.Object sender, System.EventArgs e)
@@ -1655,11 +1723,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Scroll grid to first line (the grid might have been scrolled before to another position)
                     grdResult.ShowCell(new Position(1, 1), true);
 
-                    // TODO btnAccept.Enabled = true;
+                    OnEnableAcceptButton();
                 }
                 else
                 {
-                    // TODO btnAccept.Enabled = false;
+                    OnDisableAcceptButton();
                 }
             }
             catch (Exception exp)
@@ -1708,49 +1776,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_PARTNERTASKS_OPEN, FPartnerTasksPaneOpen);
         }
 
-        /// <summary>
-        /// Opens the partner edit screen with the last partner worked on.
-        /// Checks if the partner is merged.
-        /// </summary>
-        private void OpenLastUsedPartnerEditScreen()
-        {
-//#if TODO
-            long MergedPartnerKey = 0;
-            long LastPartnerKey = TUserDefaults.GetInt64Default(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, 0);
-
-            // we don't need to validate the partner key
-            // because it's done in the mnuFile_Popup function.
-            // If we don't have a valid partner key, this code can't be called from the file menu.
-
-            if (MergedPartnerHandling(LastPartnerKey, out MergedPartnerKey))
-            {
-                // work with the merged partner
-                LastPartnerKey = MergedPartnerKey;
-            }
-            else if (MergedPartnerKey > 0)
-            {
-                // The partner is merged but user cancelled the action
-                return;
-            }
-
-            // Open the Partner Edit screen
-            TFrmPartnerEdit frmPEDS;
-
-            this.Cursor = Cursors.WaitCursor;
-
-            frmPEDS = new TFrmPartnerEdit(this.Handle);
-            frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
-            frmPEDS.Show();
-
-            this.Cursor = Cursors.Default;
-//#endif
-        }
-
         /// <summary>todoComment</summary>
         public void StopTimer()
         {
             if (FPartnerInfoUC != null)
-            {            
+            {
                 FPartnerInfoUC.StopTimer();
             }
         }

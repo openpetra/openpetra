@@ -6,17 +6,15 @@ RootNode:
     Template: windowFind
     WindowWidth: 754
     WindowHeight: 623
+    Events:
+        Closed: {class=System.EventHandler, method=Form_Closed}
     Actions:
         cndSelectedSupplier: {InitialValue=false}
+        actShowInvoice:
+            ActionClick: ShowInvoice
         actSearch:
             Label: &Search
-            ActionClick: SearchForSupplier
-        actSupplierTransactions:
-            Label: Open Transactions
-            ActionClick: SupplierTransactions
-            Tooltip: Open the transactions of the supplier
-            ShortCut: Ctrl+O
-            Enabled: cndSelectedSupplier
+            ActionClick: DoSearch
         actNewSupplier:
             Label: &New Supplier
             ActionClick: NewSupplier
@@ -27,6 +25,12 @@ RootNode:
             ActionClick: EditSupplier
             Tooltip: Change the details and settings of an existing supplier
             ShortCut: Ctrl+E
+            Enabled: cndSelectedSupplier
+        actSupplierTransactions:
+            Label: &Open Transactions
+            ActionClick: SupplierTransactions
+            Tooltip: Open the transactions of the supplier
+            ShortCut: Ctrl+O
             Enabled: cndSelectedSupplier
         actCreateInvoice:
             Label: Create &Invoice
@@ -41,57 +45,111 @@ RootNode:
         actFindInvoice:
             Label: &Find Invoice...
             ShortCut: Ctrl+F
+        actPostTagged:
+            Enabled: cndCanPost
+            ActionClick: PostAllTagged
+        actOpenTagged:
+            Enabled: cndCanOpen
+            ActionClick: OpenAllTagged
+        actPayTagged:
+            Enabled: cndCanPay
+            ActionClick: PayAllTagged
+        actReverseTagged:
+            Enabled: cndCanReverse
+            ActionClick: ReverseAllTagged
+        actDeleteTagged:
+            Enabled: cndCanDelete
+            ActionClick: DeleteAllTagged
+        actTagAllPostable:
+            ActionClick: TagAllPostable
+        actTagAllPayable:
+            ActionClick: TagAllPayable
+        actUntagAll:
+            ActionClick: UntagAll
+        actTabChange:
+            ActionClick: TabChange
+
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [cmbSupplierCode, pnlSearchFilter, pnlSearchButtons, tabSearchResult]
+            Controls: [pnlDockSupplierCode, pnlSearchFilter, pnlSearchButtons, tabSearchResult]
+        pnlDockSupplierCode:
+            Controls: [cmbSupplierCode]
+            Dock: Top
+            Margin: 0
         cmbSupplierCode: {Label=S&earch Supplier, AutoComplete=SupplierSearchHistory, Tooltip=Search by supplier name or partner key}
         pnlSearchFilter:
             Dock: Top
+            Margin: 0
             Controls: [chkDueToday, chkOverdue, chkDueFuture]
             ControlsOrientation: horizontal
-        chkDueToday: {Label=Due &Today}
+        chkDueToday: {OnChange=SetDueFilters, Label=Due &Today}
             CheckBoxAttachedLabel: right
-        chkOverdue: {Label=&Overdue, CheckBoxAttachedLabel=right}        
-        chkDueFuture:
-            Label: Due &Within Future
+        chkOverdue: {OnChange=SetDueFilters, Label=&Overdue, CheckBoxAttachedLabel=right}        
+        chkDueFuture: {OnChange=SetDueFilters}
+            Label: Due &Within
             CheckBoxAttachedLabel: right
             Controls: [nudNumberTimeUnits, cmbTimeUnit]
             ControlsOrientation: horizontal
-        nudNumberTimeUnits: {NoLabel=true}
-        cmbTimeUnit:
+            
+        nudNumberTimeUnits: {OnChange=SetDueFilters, NoLabel=true}
+            Width:50
+        cmbTimeUnit: {OnChange=SetDueFilters}
             NoLabel: true
             OptionalValues: [=Days, Weeks, Months]
+            Width:70
         pnlSearchButtons:
-            Controls: [btnSearch, btnReset]
+            Controls: [btnSearch]
             ControlsOrientation: horizontal
+            Dock: Top
+            Margin: 0
         btnSearch: {Action=actSearch, AcceptButton=true}
-        btnReset: {Label=&Reset Criteria}
         tabSearchResult:
             Controls: [tpgSuppliers, tpgOutstandingInvoices]
             Dock: Fill
+            Action:actTabChange
         tpgSuppliers:
-            # todo: different toolbar
             Controls: [pnlSupplierOptions, grdSupplierResult]
         tpgOutstandingInvoices:
-            # todo: different toolbar
             Controls: [pnlTaggingOptions, grdInvoiceResult]
         pnlSupplierOptions:
+            ControlsOrientation: horizontal
             Controls: [chkShowOutstandingAmounts, chkHideInactiveSuppliers, cmbSupplierCurrency]
-            ControlsOrientation: horizontal
+            Dock: Top
+            Height: 30
+            Margin: 0
         grdSupplierResult: {Dock=Fill, ActionDoubleClick=actSupplierTransactions, SelectedRowActivates=cndSelectedSupplier}
-        grdInvoiceResult: {Dock=Fill}
-        chkShowOutstandingAmounts: {Label=Show Outstanding &Amounts, CheckBoxAttachedLabel=right}
-        chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers, CheckBoxAttachedLabel=right}
-        cmbSupplierCurrency: {Label=C&urrency}
+
+        grdInvoiceResult: {Dock=Fill, ActionDoubleClick=actShowInvoice}
+        chkShowOutstandingAmounts: {Label=Show Outstanding &Amounts, CheckBoxAttachedLabel=right,  OnChange=SupplierOutstandingOpt, Enabled=false}
+        chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers, CheckBoxAttachedLabel=right,  OnChange=SetSupplierFilters}
+        cmbSupplierCurrency: {Label=C&urrency, List=CurrencyCodeList, OnChange=SetSupplierFilters, Width=200}
         pnlTaggingOptions:
-            Controls: [btnTagAllApprovable, btnTagAllPostable, btnTagAllPayable, btnUntagAll, txtSumTagged]
+            Controls: [btnTagAllPostable, btnTagAllPayable, btnUntagAll, txtSumTagged, btnTagAllApprovable]
             ControlsOrientation: horizontal
-        btnTagAllApprovable: {Label=Tag all Appro&vable}
+            Dock: Top
+            Height: 30
+            Margin: 0
+        btnTagAllApprovable: {Label=Tag all Appro&vable, Visible=false}
         btnTagAllPostable: {Label=Tag a&ll Postable}
+            Action: actTagAllPostable
         btnTagAllPayable: {Label=Tag all Paya&ble}
+            Action: actTagAllPayable
         btnUntagAll: {Label=&Untag all}
+            Action: actUntagAll
         txtSumTagged: {Label=Sum of Tagged, ReadOnly=true}
+    Toolbar:
+        tbbNewSupplier: {Action=actNewSupplier}
+        tbbEditSupplier: {Action=actEditSupplier}
+        tbbSeparator: {Label=-}
+        tbbTransactions: {Action=actSupplierTransactions}
+        tbbSeparator: {Label=-}
+        tbbCreateInvoice: {Action=actCreateInvoice}
+        tbbCreateCreditNote: {Action=actCreateCreditNote}
+        tbbOpenTagged: {Action=actOpenTagged}
+        tbbPostTagged: {Action=actPostTagged}
+        tbbPayTagged: {Action=actPayTagged}
+        tbbReverseTagged: {Action=actReverseTagged}
     Menu:
         mniFile:
             mniReports: {Label=&Reports}
@@ -104,19 +162,15 @@ RootNode:
             mniSeparator: {Label=-}
         mniSupplier:
             mniNewSupplier: {Action=actNewSupplier}
-            mniTransactions: {Action=actSupplierTransactions}
             mniEditSupplier: {Action=actEditSupplier}
             mniSeparator: {Label=-}
+            mniTransactions: {Action=actSupplierTransactions}
             mniCreateInvoice: {Action=actCreateInvoice}
             mniCreateCreditNote: {Action=actCreateCreditNote}
-        mniFind:
-            mniFindInvoice: {Action=actFindInvoice}
-    # todo: multiple toolbars, depending on selected tpg?
-    Toolbar:
-        tbbTransactions: {Action=actSupplierTransactions}
-        tbbEditSupplier: {Action=actEditSupplier}
-        tbbSeparator: {Label=-}
-        tbbNewSupplier: {Action=actNewSupplier}
-        tbbSeparator: {Label=-}
-        tbbCreateInvoice: {Action=actCreateInvoice}
-        tbbCreateCreditNote: {Action=actCreateCreditNote}
+        mniInvoice:
+            mniFind: {Action=actFindInvoice}
+            mniOpenTagged: {Action=actOpenTagged}
+            mniPostTagged: {Action=actPostTagged}
+            mniPayTagged: {Action=actPayTagged}
+            mniReverseTagged: {Action=actReverseTagged}
+            mniDeleteTagged: {Action=actDeleteTagged}

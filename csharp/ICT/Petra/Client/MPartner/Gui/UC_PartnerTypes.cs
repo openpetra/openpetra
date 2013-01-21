@@ -28,8 +28,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using Ict.Common;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner;
@@ -179,7 +178,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             FLogic.MultiTableDS = (PartnerEditTDS)FMainDS;
             FLogic.PartnerEditUIConnector = FPartnerEditUIConnector;
             FLogic.PetraUtilsObject = FPetraUtilsObject;
+// TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
+#if TODO
             FLogic.InitialiseDelegatePartnerTypePropagationSelection(@OpenPartnerTypePropagationSelection);
+#endif
             FLogic.DataGrid = grdPartnerTypes;
             FLogic.LoadTypes();
             FLogic.LoadDataOnDemand();
@@ -234,6 +236,81 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // it is necessary to reassign the width because the columns don't take up the maximum width
             grdPartnerTypes.Width = 510;
+        }
+
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing
+        /// to another record, otherwise set it to false.</param>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
+        /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
+        /// <para>
+        /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+        /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+        /// this Argument.
+        /// </para>
+        /// </param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        {
+            bool ReturnValue = true;
+
+// TODO
+//            bool ReturnValue = false;
+//            Control ControlToValidate;
+//            PSubscriptionRow CurrentRow;
+//
+//            CurrentRow = GetSelectedDetailRow();
+//
+//            if (CurrentRow != null)
+//            {
+//                if (AValidateSpecificControl != null)
+//                {
+//                    ControlToValidate = AValidateSpecificControl;
+//                }
+//                else
+//                {
+//                    ControlToValidate = this.ActiveControl;
+//                }
+//
+//                GetDetailsFromControls(CurrentRow);
+//
+//                // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+//                ValidateDataDetailsManual(CurrentRow);
+//
+//                if (AProcessAnyDataValidationErrors)
+//                {
+//                    // Only process the Data Validations here if ControlToValidate is not null.
+//                    // It can be null if this.ActiveControl yields null - this would happen if no Control
+//                    // on this UserControl has got the Focus.
+//                    if(ControlToValidate.FindUserControlOrForm(true) == this)
+//                    {
+//                        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+//                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+//                    }
+//                    else
+//                    {
+//                        ReturnValue = true;
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                ReturnValue = true;
+//            }
+//
+//            if(ReturnValue)
+//            {
+//                // Remove a possibly shown Validation ToolTip as the data validation succeeded
+//                FPetraUtilsObject.ValidationToolTip.RemoveAll();
+//            }
+
+            return ReturnValue;
         }
     }
 }

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       markusm
+//       markusm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -188,17 +188,6 @@ namespace Ict.Common.Controls
                 this.txtTextBox.ReadOnly = value;
             }
         }
-
-
-        /**
-         * This property is currently not functional!!!
-         */
-        [Category("Data"),
-         RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
-         Description("CURRENTLY NOT FUNCTIONAL!!! - Here the hosting form has to provide a String for the TextBox using a delegate function"),
-         ReadOnly(false),
-         Browsable(false)]
-        public new event TDelegateTextBoxString TextBoxDelegate;
 
         /**
          * This property gets the DelegateFallbackTextBox value. This value determines

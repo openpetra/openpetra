@@ -1,0 +1,50 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS
+    DetailTable: MExtract
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation,Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: controlMaintainTable
+    #Template: window
+    Actions:
+        actAdd: {Label=&Add, ActionClick=AddPartner}
+        actDelete: {Label=&Delete, ActionClick=DeletePartner}
+        actEdit: {Label=&Edit, ActionClick=EditPartner}
+    Controls:
+        pnlContent: {ControlsOrientation=vertical}
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnEdit, btnAdd, btnDelete]
+        btnEdit: {Stretch=horizontally}
+            Label: Edit Partner
+            Action: actEdit
+        btnAdd: {Stretch=horizontally}
+            Label: Add Partner
+            Action: actAdd
+        btnDelete: {Stretch=horizontally}
+            Label: Delete
+            Action: actDelete
+        grdDetails:
+            Dock: Fill
+            Columns: []
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [ucoPartnerInfo]
+                Row1: [txtCreatedBy]
+               
+        txtCreatedBy:
+        
+        ucoPartnerInfo:
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo
+            Height: 150
+            
+

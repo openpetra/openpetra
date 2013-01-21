@@ -4,34 +4,39 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     FormType: browse
     Template: window
-    WindowWidth: 660
-    WindowHeight: 700
+    WindowWidth: 410
+    WindowHeight: 230
     Actions:
         actSubmitBatch: {Label=&OK, ActionClick=SubmitBatch}
         actClose: {Label=&Cancel, ActionClick=BtnCloseClick}
         actHelp: {Label=&Help, ActionClick=BtnHelpClick}
+        actSetExchangeRate:{Label=Get/Set Exchange Rate, ActionClick=SetExchangeRateValue}
     Controls:
         pnlContent:
+            Controls: [pnlTop, pnlButtons]
+            Dock: Fill
+        pnlTop:
+            Dock: Top
             Controls:
                 Row0: [lblValidDateRange]
                 Row1: [dtpEffectiveDate]
-                Row2: [txtExchangeRateToBase]
+                Row2: [txtExchangeRateToBase, btnGetSetExchangeRate]
                 Row3: [txtCurrencyCodeFrom]
                 Row4: [txtCurrencyCodeTo]
-                Row5: [pnlButtons]
-            Dock: Fill
+            Dock: Top
         pnlButtons:
-            Dock:Top
+            Dock:Bottom
             Controls:
                 Row0: [btnHelp, btnOK, btnClose]
-            ColWidths: [0=Fixed:400,1=Fixed:100,2=Fixed:100]    
+            ColWidths: [0=Fixed:245,1=Fixed:30,2=Fixed:50]    
         btnHelp: {Action=actHelp}
         btnClose: {Action=actClose}
         btnOK: {Action=actSubmitBatch}   
         lblValidDateRange:             
-        dtpEffectiveDate: {Label=Enter the Gift Batch Date to use}
+        dtpEffectiveDate: {Label=Enter the Gift Batch Date to use, OnLeave=CheckBatchEffectiveDate, Validation=true}
         txtCurrencyCodeFrom: {Label=From, ReadOnly=true}
         txtCurrencyCodeTo: {Label=To, ReadOnly=true}
-        txtExchangeRateToBase: {Label= Exchange Rate, Type=Decimal}
+        txtExchangeRateToBase: {Label=Exchange Rate, ReadOnly=true, Type=Decimal}
+        btnGetSetExchangeRate: {Label=..., Height=22, Action=actSetExchangeRate}
     Toolbar:
         

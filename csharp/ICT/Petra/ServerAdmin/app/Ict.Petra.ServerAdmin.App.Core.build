@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<project name="OpenPetra-csharp-Ict.Petra.ServerAdmin.App-build">
-<property name="Namespace" value="Ict.Petra.ServerAdmin.App" />
-
-
-<include buildfile="../../../../../inc/nant/OpenPetra.csharp.xml"/> 
-
-
-</project>

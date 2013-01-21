@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,37 +22,60 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.MPartner.Verification;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Petra.Shared.MPartner.Partner.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
+    /// <summary>Delegate declaration</summary>
+    public delegate void TDelegateMaintainWorkerField();
+
+    /// <summary>
+    /// Event Arguments declaration
+    /// </summary>
+    public class TPartnerClassMainDataChangedEventArgs : System.EventArgs
+    {
+        /// <summary>todoComment</summary>
+        public String PartnerClass;
+    }
+
+    /// <summary>Event handler declaration</summary>
+    public delegate void TPartnerClassMainDataChangedHandler(System.Object Sender, TPartnerClassMainDataChangedEventArgs e);
+
+
     public partial class TUC_PartnerEdit_TopPart
     {
         #region Fields
+
+        private System.Windows.Forms.ToolTip FTipMain;
 
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
         private String FPartnerClass;
 
-        /// <summary>Used for keeping track of data verification errors</summary>
-        private TVerificationResultCollection FVerificationResultCollection;
-
-        /// <summary>
-        /// Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
-        /// </summary>
-        /// <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
+        // <summary>
+        // Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
+        // </summary>
+        // <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
         private TDelegateMaintainWorkerField FDelegateMaintainWorkerField;
+
+        private bool FIgnorePartnerStatusChange = true;
+
         #endregion
 
         #region Events
@@ -86,12 +109,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             get
             {
-                return FVerificationResultCollection;
+                return FPetraUtilsObject.VerificationResultCollection;
             }
 
             set
             {
-                FVerificationResultCollection = value;
+                FPetraUtilsObject.VerificationResultCollection = value;
             }
         }
 
@@ -103,6 +126,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// arrange the panels and controls according to the partner class
         public void InitialiseUserControl()
         {
+            FIgnorePartnerStatusChange = false;
+
+            // Set up ToolTip
+            this.components = new System.ComponentModel.Container();
+            FTipMain = new System.Windows.Forms.ToolTip(this.components);
+            FTipMain.AutoPopDelay = 4000;
+            FTipMain.InitialDelay = 500;
+            FTipMain.ReshowDelay = 100;
+
+            BuildValidationControlsDict();
+
             #region Show fields according to Partner Class
 
             switch (SharedTypes.PartnerClassStringToEnum(FPartnerClass))
@@ -110,16 +144,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerClass.PERSON:
                     pnlPerson.Visible = true;
                     pnlWorkerField.Visible = true;
-                    pnlSpacer.Visible = false;
+                    pnlPerson2ndLine.Visible = true;
                     txtPartnerClass.BackColor = System.Drawing.Color.Yellow;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
-#if TODO
-                    tipMain.SetToolTip(this.txtPersonTitle, PPersonTable.GetTitleHelp());
-                    tipMain.SetToolTip(this.txtPersonFirstName, PPersonTable.GetFirstNameHelp());
-                    tipMain.SetToolTip(this.txtPersonMiddleName, PPersonTable.GetMiddleName1Help());
-                    tipMain.SetToolTip(this.txtPersonFamilyName, PPersonTable.GetFamilyNameHelp());
-#endif
+                    FTipMain.SetToolTip(this.txtPersonTitle, PPersonTable.GetTitleHelp());
+                    FTipMain.SetToolTip(this.txtPersonFirstName, PPersonTable.GetFirstNameHelp());
+                    FTipMain.SetToolTip(this.txtPersonMiddleName, PPersonTable.GetMiddleName1Help());
+                    FTipMain.SetToolTip(this.txtPersonFamilyName, PPersonTable.GetFamilyNameHelp());
+
                     txtPersonTitle.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     txtPersonFirstName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     txtPersonMiddleName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
@@ -131,14 +164,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerClass.FAMILY:
                     pnlFamily.Visible = true;
                     pnlWorkerField.Visible = true;
-                    pnlSpacer.Visible = false;
+                    pnlFamily2ndLine.Visible = true;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
-#if TODO
-                    tipMain.SetToolTip(this.txtFamilyTitle, PFamilyTable.GetTitleHelp());
-                    tipMain.SetToolTip(this.txtFamilyFirstName, PFamilyTable.GetFirstNameHelp());
-                    tipMain.SetToolTip(this.txtFamilyFamilyName, PFamilyTable.GetFamilyNameHelp());
-#endif
+                    FTipMain.SetToolTip(this.txtFamilyTitle, PFamilyTable.GetTitleHelp());
+                    FTipMain.SetToolTip(this.txtFamilyFirstName, PFamilyTable.GetFirstNameHelp());
+                    FTipMain.SetToolTip(this.txtFamilyFamilyName, PFamilyTable.GetFamilyNameHelp());
+
                     txtFamilyTitle.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     txtFamilyFirstName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     txtFamilyFamilyName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
@@ -147,7 +179,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerClass.CHURCH:
                     pnlChurch.Visible = true;
-                    pnlOther.Visible = true;
+                    pnlOther2ndLine.Visible = true;
 
                     txtChurchName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
@@ -155,7 +187,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerClass.ORGANISATION:
                     pnlOrganisation.Visible = true;
-                    pnlOther.Visible = true;
+                    pnlOther2ndLine.Visible = true;
 
                     txtOrganisationName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
@@ -163,16 +195,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerClass.UNIT:
                     pnlUnit.Visible = true;
-                    pnlOther.Visible = true;
+                    pnlOther2ndLine.Visible = true;
 
                     txtUnitName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
-//                    FMainDS.PUnit.ColumnChanging += new DataColumnChangeEventHandler(this.OnUnitDataColumnChanging);
+                    FMainDS.PUnit.ColumnChanging += new DataColumnChangeEventHandler(OnUnitDataColumnChanging);
 
                     break;
 
                 case TPartnerClass.BANK:
                     pnlBank.Visible = true;
-                    pnlOther.Visible = true;
+                    pnlOther2ndLine.Visible = true;
 
                     txtBranchName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
@@ -180,7 +212,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerClass.VENUE:
                     pnlVenue.Visible = true;
-                    pnlOther.Visible = true;
+                    pnlOther2ndLine.Visible = true;
 
                     txtVenueName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
@@ -264,6 +296,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Private Methods
 
+        private void ShowDataManual(PPartnerRow ARow)
+        {
+            // Ensure that the PartnerKey, which is the PrimaryKey of the p_partner Table, is always read-only
+            // (Read-Only gets set to false in ShowData() for a NEW Partner because it is the PrimaryKey).
+            txtPartnerKey.ReadOnly = true;
+        }
+
         private void GetDataFromControlsExtra(PPartnerRow ARow)
         {
             /*
@@ -330,7 +369,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PPartnerTable.GetTableDBName()))
             {
                 // need to disable all Fields that are DataBound to p_partner. This continues in the switch statments!
-                CustomEnablingDisabling.DisableControlGroup(pnlRight);
+                // timop: I have disabled all controls. usually you have p_partner modify permissions, or none
+                CustomEnablingDisabling.DisableControlGroup(pnlContent);
             }
 
             switch (SharedTypes.PartnerClassStringToEnum(FPartnerClass))
@@ -372,11 +412,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PChurchTable.GetTableDBName()))
                     {
                         // need to disable all Fields that are DataBound to p_partner
-                        CustomEnablingDisabling.DisableControl(pnlOther, cmbOtherAddresseeTypeCode);
-                        CustomEnablingDisabling.DisableControl(pnlOther, chkOtherNoSolicitations);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, cmbOtherAddresseeTypeCode);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, chkOtherNoSolicitations);
 
                         // need to disable all Fields that are DataBound to p_church
-                        CustomEnablingDisabling.DisableControlGroup(pnlOther);
+                        CustomEnablingDisabling.DisableControlGroup(pnlOther2ndLine);
 
                         cmbOtherAddresseeTypeCode.Focus();
                     }
@@ -388,11 +428,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, POrganisationTable.GetTableDBName()))
                     {
                         // need to disable all Fields that are DataBound to p_partner
-                        CustomEnablingDisabling.DisableControl(pnlOther, cmbOtherAddresseeTypeCode);
-                        CustomEnablingDisabling.DisableControl(pnlOther, chkOtherNoSolicitations);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, cmbOtherAddresseeTypeCode);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, chkOtherNoSolicitations);
 
                         // need to disable all Fields that are DataBound to p_organisation
-                        CustomEnablingDisabling.DisableControlGroup(pnlOther);
+                        CustomEnablingDisabling.DisableControlGroup(pnlOther2ndLine);
 
                         cmbOtherAddresseeTypeCode.Focus();
                     }
@@ -404,11 +444,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PUnitTable.GetTableDBName()))
                     {
                         // need to disable all Fields that are DataBound to p_partner
-                        CustomEnablingDisabling.DisableControl(pnlOther, cmbOtherAddresseeTypeCode);
-                        CustomEnablingDisabling.DisableControl(pnlOther, chkOtherNoSolicitations);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, cmbOtherAddresseeTypeCode);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, chkOtherNoSolicitations);
 
                         // need to disable all Fields that are DataBound to p_unit
-                        CustomEnablingDisabling.DisableControlGroup(pnlOther);
+                        CustomEnablingDisabling.DisableControlGroup(pnlOther2ndLine);
 
                         cmbOtherAddresseeTypeCode.Focus();
                     }
@@ -420,11 +460,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PBankTable.GetTableDBName()))
                     {
                         // need to disable all Fields that are DataBound to p_partner
-                        CustomEnablingDisabling.DisableControl(pnlOther, cmbOtherAddresseeTypeCode);
-                        CustomEnablingDisabling.DisableControl(pnlOther, chkOtherNoSolicitations);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, cmbOtherAddresseeTypeCode);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, chkOtherNoSolicitations);
 
                         // need to disable all Fields that are DataBound to p_bank
-                        CustomEnablingDisabling.DisableControlGroup(pnlOther);
+                        CustomEnablingDisabling.DisableControlGroup(pnlOther2ndLine);
 
                         cmbOtherAddresseeTypeCode.Focus();
                     }
@@ -436,11 +476,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PVenueTable.GetTableDBName()))
                     {
                         // need to disable all Fields that are DataBound to p_partner
-                        CustomEnablingDisabling.DisableControl(pnlOther, cmbOtherAddresseeTypeCode);
-                        CustomEnablingDisabling.DisableControl(pnlOther, chkOtherNoSolicitations);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, cmbOtherAddresseeTypeCode);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, chkOtherNoSolicitations);
 
                         // need to disable all Fields that are DataBound to p_venue
-                        CustomEnablingDisabling.DisableControlGroup(pnlOther);
+                        CustomEnablingDisabling.DisableControlGroup(pnlOther2ndLine);
 
                         cmbOtherAddresseeTypeCode.Focus();
                     }
@@ -451,6 +491,108 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBox.Show(String.Format(Catalog.GetString("Unrecognised Partner Class '{0}'!"), FPartnerClass));
                     break;
             }
+        }
+
+        private Boolean PartnerStatusCodeChangePromotion(string ANewPartnerStatusCode)
+        {
+            Boolean ReturnValue;
+            String FamilyMembersText;
+            PartnerEditTDSFamilyMembersTable FamilyMembersDT;
+            Int32 Counter;
+            Int32 Counter2;
+            PartnerEditTDSFamilyMembersRow FamilyMembersDR;
+            PartnerEditTDSFamilyMembersInfoForStatusChangeRow FamilyMembersInfoDR;
+            DialogResult FamilyMembersResult;
+            DataView FamilyMembersDV;
+
+            ReturnValue = true;
+            FamilyMembersText = "";
+
+            /* Retrieve Family Members from the PetraServer */
+            FamilyMembersDT = FPartnerEditUIConnector.GetDataFamilyMembers(FMainDS.PPartner[0].PartnerKey, "");
+            FamilyMembersDV = new DataView(FamilyMembersDT, "", PPersonTable.GetFamilyIdDBName() + " ASC", DataViewRowState.CurrentRows);
+
+            /* Build a formatted String of Family Members' PartnerKeys and ShortNames */
+            for (Counter = 0; Counter <= FamilyMembersDV.Count - 1; Counter += 1)
+            {
+                FamilyMembersDR = (PartnerEditTDSFamilyMembersRow)FamilyMembersDV[Counter].Row;
+                FamilyMembersText = FamilyMembersText + "   " + StringHelper.FormatStrToPartnerKeyString(FamilyMembersDR.PartnerKey.ToString()) +
+                                    "   " + FamilyMembersDR.PartnerShortName + Environment.NewLine;
+            }
+
+            /* If there are Family Members, ... */
+            if (FamilyMembersText != "")
+            {
+                /* show MessageBox with Family Members to the user, asking whether to promote. */
+                FamilyMembersResult =
+                    MessageBox.Show(
+                        String.Format(
+                            Catalog.GetString("Partner Status change to '{0}': \r\n" +
+                                "Should OpenPetra apply this change to all Family Members of this Family?"),
+                            ANewPartnerStatusCode) + Environment.NewLine + Environment.NewLine +
+                        Catalog.GetString("The Family has the following Family Members:") + Environment.NewLine +
+                        FamilyMembersText + Environment.NewLine +
+                        Catalog.GetString("(Choose 'Cancel' to cancel the change of the Partner Status\r\n" +
+                            "for this Partner)."),
+                        Catalog.GetString("Promote Partner Status Change to All Family Members?"),
+                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+                /* Check User's response */
+                switch (FamilyMembersResult)
+                {
+                    case System.Windows.Forms.DialogResult.Yes:
+
+                        /*
+                         * User wants to promote the Partner StatusCode change to Family
+                         * Members: add new DataTable for that purpose if it doesn't exist yet.
+                         */
+                        if (FMainDS.FamilyMembersInfoForStatusChange == null)
+                        {
+                            FMainDS.Tables.Add(new PartnerEditTDSFamilyMembersInfoForStatusChangeTable());
+                            FMainDS.InitVars();
+                        }
+
+                        /*
+                         * Remove any existing DataRows so we start from a 'clean slate'
+                         * (the user could change the Partner StatusCode more than once...)
+                         */
+                        FMainDS.FamilyMembersInfoForStatusChange.Rows.Clear();
+
+                        /*
+                         * Add the PartnerKeys of the Family Members that we have just displayed
+                         * to the user to the DataTable.
+                         *
+                         * Note: This DataTable will be sent to the PetraServer when the user
+                         * saves the Partner. The UIConnector will pick it up and process it.
+                         */
+                        for (Counter2 = 0; Counter2 <= FamilyMembersDV.Count - 1; Counter2 += 1)
+                        {
+                            FamilyMembersDR = (PartnerEditTDSFamilyMembersRow)FamilyMembersDV[Counter2].Row;
+                            FamilyMembersInfoDR = FMainDS.FamilyMembersInfoForStatusChange.NewRowTyped(false);
+                            FamilyMembersInfoDR.PartnerKey = FamilyMembersDR.PartnerKey;
+                            FMainDS.FamilyMembersInfoForStatusChange.Rows.Add(FamilyMembersInfoDR);
+                        }
+
+                        break;
+
+                    case System.Windows.Forms.DialogResult.No:
+
+                        /* no promotion wanted > nothing to do */
+                        /* (StatusCode will be changed only for the Family) */
+                        break;
+
+                    case System.Windows.Forms.DialogResult.Cancel:
+                        ReturnValue = false;
+                        break;
+                }
+            }
+            else
+            {
+            }
+
+            /* no promotion needed since there are no Family Members */
+            /* (StatusCode will be changed only for the Family) */
+            return ReturnValue;
         }
 
         #endregion
@@ -536,15 +678,156 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void ValidateDataManual(PPartnerRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidatePartnerManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+
+            if (FPartnerClass == "PERSON")
+            {
+                PPersonValidation.Validate(this, FMainDS.PPerson[0], ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+            else if (FPartnerClass == "FAMILY")
+            {
+                PFamilyValidation.Validate(this, FMainDS.PFamily[0], ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+            else if (FPartnerClass == "CHURCH")
+            {
+                PChurchValidation.Validate(this, FMainDS.PChurch[0], ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+            else if (FPartnerClass == "ORGANISATION")
+            {
+                POrganisationValidation.Validate(this, FMainDS.POrganisation[0], ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+            else if (FPartnerClass == "UNIT")
+            {
+                PUnitValidation.Validate(this, FMainDS.PUnit[0], ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+            else if (FPartnerClass == "BANK")
+            {
+                PBankValidation.Validate(this, FMainDS.PBank[0], ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+            else if (FPartnerClass == "VENUE")
+            {
+                PVenueValidation.Validate(this, FMainDS.PVenue[0], ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+        }
+
+        private void PartnerStatusCodeChangePromotion(System.Object sender, EventArgs e)
+        {
+            string PartnerStatus = cmbPartnerStatus.GetSelectedString();
+
+            // Business Rule: if the Partner's StatusCode changes, give the user the
+            // option to promote the change to all Family Members (if the Partner is
+            // a FAMILY and has Family Members).
+            if ((FMainDS != null)
+                && (!FIgnorePartnerStatusChange)
+                && (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY)))
+            {
+                if (PartnerStatus != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED))
+                {
+                    if (PartnerStatusCodeChangePromotion(PartnerStatus))
+                    {
+                        // Set the StatusChange date (this would be done on the server side
+                        // automatically, but we want to display it now for immediate user feedback)
+                        FMainDS.PPartner[0].StatusChange = DateTime.Today;
+                    }
+                    else
+                    {
+                        // User wants to cancel the change of the Partner StatusCode
+                        // Undo the change in the DataColumn
+                        FIgnorePartnerStatusChange = true;
+
+                        UndoData(FMainDS.PPartner[0], cmbPartnerStatus);
+                        cmbPartnerStatus.SelectNextControl(cmbPartnerStatus, true, true, true, true);
+
+                        FIgnorePartnerStatusChange = false;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// TODO: Replace this with the Data Validation Framework - once it supports user interaction as needed
+        /// in this case (=asking the user to make a decision).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnUnitDataColumnChanging(System.Object sender, DataColumnChangeEventArgs e)
+        {
+            TVerificationResult VerificationResultReturned;
+            TScreenVerificationResult VerificationResultEntry;
+            Control BoundControl;
+
+            // MessageBox.Show('Column ''' + e.Column.ToString + ''' is changing...');
+            try
+            {
+                if (TPartnerVerification.VerifyUnitData(e, FMainDS, out VerificationResultReturned) == false)
+                {
+                    if (VerificationResultReturned.ResultCode != PetraErrorCodes.ERR_UNITNAMECHANGEUNDONE)
+                    {
+                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
+
+                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PUnit], e.Column);
+
+                        // MessageBox.Show('Bound control: ' + BoundControl.ToString);
+// TODO                        BoundControl.Focus();
+                        VerificationResultEntry = new TScreenVerificationResult(this,
+                            e.Column,
+                            VerificationResultReturned.ResultText,
+                            VerificationResultReturned.ResultTextCaption,
+                            VerificationResultReturned.ResultCode,
+                            BoundControl,
+                            VerificationResultReturned.ResultSeverity);
+                        FPetraUtilsObject.VerificationResultCollection.Add(VerificationResultEntry);
+
+                        // MessageBox.Show('After setting the error: ' + e.ProposedValue.ToString);
+                    }
+                    else
+                    {
+                        // undo the change in the DataColumn
+                        e.ProposedValue = e.Row[e.Column.ColumnName, DataRowVersion.Original];
+
+                        // need to assign this to make the change actually visible...
+                        txtUnitName.Text = e.ProposedValue.ToString();
+// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PUnit], e.Column);
+
+                        // MessageBox.Show('Bound control: ' + BoundControl.ToString);
+// TODO                        BoundControl.Focus();
+                    }
+                }
+                else
+                {
+                    if (FPetraUtilsObject.VerificationResultCollection.Contains(e.Column))
+                    {
+                        FPetraUtilsObject.VerificationResultCollection.Remove(e.Column);
+                    }
+                }
+            }
+            catch (Exception Exp)
+            {
+                MessageBox.Show(Exp.ToString());
+            }
+        }
+
         private void CmbPersonGender_SelectedValueChanged(System.Object sender, System.EventArgs e)
         {
-            if (cmbPersonGender.SelectedItem.ToString() == "Female")
+            if (cmbPersonGender.GetSelectedString() == "Female")
             {
-                cmbPersonAddresseeTypeCode.SelectedItem = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFEMALE);
+                cmbPersonAddresseeTypeCode.SetSelectedString(SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcFEMALE));
             }
-            else if (cmbPersonGender.SelectedItem.ToString() == "Male")
+            else if (cmbPersonGender.GetSelectedString() == "Male")
             {
-                cmbPersonAddresseeTypeCode.SelectedItem = SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcMALE);
+                cmbPersonAddresseeTypeCode.SetSelectedString(SharedTypes.StdAddresseeTypeCodeEnumToString(TStdAddresseeTypeCode.satcMALE));
             }
 
 //            /*
@@ -582,21 +865,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
-
-#if TODO
             if (this.FDelegateMaintainWorkerField != null)
             {
-                try
-                {
-                    this.FDelegateMaintainWorkerField();
-                }
-                finally
-                {
-                    throw new EVerificationMissing(Catalog.GetString("this.FDelegateGetPartnerShortName could not be called!"));
-                }
+                this.FDelegateMaintainWorkerField();
             }
-#endif
+            else
+            {
+                throw new EVerificationMissing("FDelegateMaintainWorkerField");
+            }
         }
 
         #endregion

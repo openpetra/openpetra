@@ -1,28 +1,28 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Finance\\totalgiftsthroughfield.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="TotalGiftsThroughField" />
-  <Parameter id="MaxDisplayColumns" value="9" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_txtYears" value="4" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_calculation" column="0" value="Month" />
-  <Parameter id="ColumnWidth" column="0" value="3" />
-  <Parameter id="param_calculation" column="1" value="AmountWorker" />
-  <Parameter id="ColumnWidth" column="1" value="3" />
-  <Parameter id="param_calculation" column="2" value="CountWorker" />
-  <Parameter id="ColumnWidth" column="2" value="1" />
-  <Parameter id="param_calculation" column="3" value="AmountField" />
-  <Parameter id="ColumnWidth" column="3" value="3" />
-  <Parameter id="param_calculation" column="4" value="CountField" />
-  <Parameter id="ColumnWidth" column="4" value="1" />
-  <Parameter id="param_calculation" column="5" value="AmountCombined" />
-  <Parameter id="ColumnWidth" column="5" value="3" />
-  <Parameter id="param_calculation" column="6" value="CountCombined" />
-  <Parameter id="ColumnWidth" column="6" value="1" />
-  <Parameter id="param_calculation" column="7" value="AmountAverage" />
-  <Parameter id="ColumnWidth" column="7" value="3" />
-  <Parameter id="param_calculation" column="8" value="CountAverage" />
-  <Parameter id="ColumnWidth" column="8" value="1.8" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\totalgiftsthroughfield.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:TotalGiftsThroughField" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:9" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_txtYears" value="eInteger:4" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_calculation" column="0" value="eString:Month" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:3" />
+  <Parameter id="param_calculation" column="1" value="eString:AmountWorker" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
+  <Parameter id="param_calculation" column="2" value="eString:CountWorker" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:1" />
+  <Parameter id="param_calculation" column="3" value="eString:AmountField" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
+  <Parameter id="param_calculation" column="4" value="eString:CountField" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:1" />
+  <Parameter id="param_calculation" column="5" value="eString:AmountCombined" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
+  <Parameter id="param_calculation" column="6" value="eString:CountCombined" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:1" />
+  <Parameter id="param_calculation" column="7" value="eString:AmountAverage" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:3" />
+  <Parameter id="param_calculation" column="8" value="eString:CountAverage" />
+  <Parameter id="ColumnWidth" column="8" value="eDecimal:4610785298501913805" />
 </Parameters>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -197,6 +197,30 @@ namespace Ict.Common.Data
         /// </summary>
         public abstract void InitVars();
 
+        private bool FThrowAwayAfterSubmitChanges = false;
+
+        /// <summary>
+        /// if you want the dataset to be cleared after submitchanges.
+        /// This will increase the speed significantly: no updating of modificationID, no slow AcceptChanges.
+        /// </summary>
+        public bool ThrowAwayAfterSubmitChanges
+        {
+            set
+            {
+                FThrowAwayAfterSubmitChanges = value;
+
+                foreach (TTypedDataTable table in this.Tables)
+                {
+                    table.ThrowAwayAfterSubmitChanges = value;
+                }
+            }
+
+            get
+            {
+                return FThrowAwayAfterSubmitChanges;
+            }
+        }
+
         /// <summary>
         /// default constructor
         /// </summary>
@@ -224,6 +248,9 @@ namespace Ict.Common.Data
         public void MyOwnGetSerializationData(String strSchema, String diffGram)
         {
             XmlTextReader reader;
+
+            strSchema = strSchema.Replace("msdata:ThrowAwayAfterSubmitChanges=\"False\"", string.Empty);
+            strSchema = strSchema.Replace("msdata:ThrowAwayAfterSubmitChanges=\"True\"", string.Empty);
 
             reader = new XmlTextReader(new StringReader(strSchema));
             ReadXmlSchema(reader);
@@ -256,7 +283,6 @@ namespace Ict.Common.Data
             Int32 i;
             String strSchema;
             String diffGram;
-            String strSchemaWithKeys;
 
             // Console.Writeline('DataSet Serialization constructor');
             try
@@ -283,7 +309,6 @@ namespace Ict.Common.Data
  */
 
                     // it seems if the primary key constraint gets removed, then we are in trouble for deleted rows
-                    strSchemaWithKeys = strSchema;
                     strSchema = TypedDataSet.RemoveConstraintsFromSchema(strSchema);
 
                     // TLogging.Log("after: " + strSchema, TLoggingType.ToLogfile);
@@ -390,7 +415,7 @@ namespace Ict.Common.Data
             {
                 TLogging.Log("PROBLEM: " + e.Message, TLoggingType.ToLogfile);
                 TLogging.Log("PROBLEM: " + e.StackTrace, TLoggingType.ToLogfile);
-                throw e;
+                throw;
             }
         }
 
@@ -473,6 +498,15 @@ namespace Ict.Common.Data
         public new void Merge(DataSet ADataSet)
         {
             base.Merge(ADataSet);
+            MapTables();
+        }
+
+        /// <summary>
+        /// overload that makes sure that the typed tables are mapped again
+        /// </summary>
+        public new void Merge(DataSet ADataSet, bool APreserveChanges)
+        {
+            base.Merge(ADataSet, APreserveChanges);
             MapTables();
         }
 
@@ -633,7 +667,7 @@ namespace Ict.Common.Data
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void EnableRelation(TTypedRelation ARelation)
+        protected void EnableRelation(TTypedRelation ARelation)
         {
             DataTable Table1;
             DataTable Table2;
@@ -738,6 +772,8 @@ namespace Ict.Common.Data
 
             ds.InitVars();
             ds.MapTables();
+
+            ds.ThrowAwayAfterSubmitChanges = ThrowAwayAfterSubmitChanges;
 
             // need to copy over the enabled/disabled status of relations
             foreach (TTypedRelation relNew in ds.FRelations)

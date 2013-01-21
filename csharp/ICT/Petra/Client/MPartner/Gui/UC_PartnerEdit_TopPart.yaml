@@ -2,7 +2,7 @@ RootNode:
     BaseClass: TGrpCollapsible
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MPartner.Gui   
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: usercontrol
@@ -17,98 +17,101 @@ RootNode:
             Dock: Fill
 
         grpCollapsible:
-            Controls: [pnlLeft, pnlRight]
-            ControlsOrientation: horizontal
+            Controls:
+                Row0: [pnlPartnerInfo, pnlWorkerField]
+                Row1: [pnlClassSpecificName, cmbPartnerStatus]
+                Row2: [pnlClassSpecificDetails, txtStatusUpdated]
+                Row3: [pnlAdditionalInfo, txtLastContact]
+            ColWidths: [0=Fixed:550, 1=Fixed:200]
             Label: Key Partner Data
-            Dock: Top  
-            Padding: 3,0,3,4
-            
-        pnlLeft:
-            Controls: [pnlPartnerInfo, pnlFamily, pnlPerson, pnlChurch, pnlOrganisation, pnlUnit, pnlBank, pnlVenue, pnlOther, pnlAdditionalInfo]
             Dock: Fill
-
+            
+        pnlClassSpecificName:
+            Controls: [pnlFamily, pnlPerson, pnlChurch, pnlOrganisation, pnlUnit, pnlBank, pnlVenue]
+            Margin: 0
+            Height: 22
+            Width: 540
+        pnlClassSpecificDetails:
+            Controls: [pnlFamily2ndLine, pnlPerson2ndLine, pnlOther2ndLine]
+            Margin: 0
+            Height: 22
+            Width: 540
             
 # Right-hand Panel (misc. information)            
-        pnlRight:
-            Controls: [pnlWorkerField, pnlSpacer, cmbPartnerStatus, txtStatusUpdated, txtLastContact]
-            ColWidths: [0=Fixed:110]
-            RowHeights: [2=Fixed:28, 3=Fixed:24, 4=Fixed:24]
-            Dock: Right
-            Width: 215
-            
         pnlWorkerField: {Visible=false}
             Controls: 
                 Row0: [btnWorkerField, txtWorkerField] 
-            RowHeights: [0=Fixed:27]
-            Margin: 0,0,0,0
-            Padding: 0,0,5,0
-            Dock: Top
+            Height: 30
         btnWorkerField:
             Action: actMaintainWorkerField
             Width: 100
-            Align: right
+            Height: 22
         txtWorkerField:
             ReadOnly: true
             NoLabel: true
-            Dock: Top
             BorderStyle: None
+            Tooltip: Field where the Partner is working
+            Width: 100
             
-        pnlSpacer:
-            Controls: [Empty]
-            Height: 18
-        Empty:
-            
-        cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, Width=100}
+        cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, Width=100, Validation=true, OnChange=PartnerStatusCodeChangePromotion}
         txtStatusUpdated:
             ReadOnly: true
             Width: 100
+            Tooltip: Date of the last change of the Partner Status
             BorderStyle: None
         txtLastContact:
             DataField: MiscellaneousData.LastContactDate
             ReadOnly: true
+            Tooltip: Date when the last contact was made with this Partner
             Width: 100
             BorderStyle: None
 
             
 # Header (Partner 'Head' Data)
-        pnlPartnerInfo:
-            Controls: 
-                Row0: [txtPartnerKey, txtPartnerClass]      
-            ColWidths: [0=Fixed:80, 1=Fixed:218]  
-            RowHeights: [0=Fixed:25]            
-            Dock: Top
+        pnlPartnerInfo: {ControlsOrientation=horizontal}
+            Controls: [txtPartnerKey, txtPartnerClass]      
+            ColWidths: [0=Fixed:80,1=Fixed:100,2=Fixed:80,3=Fixed:100]
+            Height: 22
+            Margin: 0
 
         txtPartnerKey:
             ReadOnly: true
             Label: Key
+            LabelWidth: 80
             Type: PartnerKey
             ShowLabel: false
-            TabStop: false                      
+            TabStop: false
+            Tooltip: Partner Key
+            Width: 100
         txtPartnerClass:
             ReadOnly: true
             Label: Class
-            BorderStyle: None                        
+            #DefaultValue: test
+            BorderStyle: None
+            Tooltip: Partner Class
+            Width: 100
 
 
 # Footer (Gift Information)
         pnlAdditionalInfo: {ControlsOrientation=horizontal}
             Controls: [txtLastGiftDetailsDate, txtLastGiftDetails]
             ColWidths: [0=Fixed:80]
-            RowHeights: [0=Fixed:20]
-            Dock: Bottom
+            Margin: 0
 
         txtLastGiftDetailsDate:
             Label: Last Gift
+            LabelWidth: 80
             DataField: MiscellaneousData.LastGiftDate
             ReadOnly: true
             Width: 88
+            Tooltip: Date when this Partner has last given a gift
             BorderStyle: None        
         txtLastGiftDetails:
             NoLabel: true
             DataField: MiscellaneousData.LastGiftInfo
             ReadOnly: true
             Width: 328
-            Dock: Top
+            Tooltip: Amount and to whom the gift was given to
             BorderStyle: None
                             
  
@@ -116,31 +119,31 @@ RootNode:
         pnlFamily: {Visible=false}
             Controls: 
                 Row1: [txtFamilyTitle, txtFamilyFirstName, txtFamilyFamilyName]
-                Row2: [pnlFamily2ndLine]
-            Dock: Top                          
+            Margin: 0
+            Dock: Fill
+
         txtFamilyTitle:
             Label: Title/Na&me            
+            LabelWidth: 80
             Width: 90
             DataField: PFamily.Title
+
         txtFamilyFirstName:
             NoLabel: true
             Width: 160
-            Dock: Top
             DataField: PFamily.FirstName            
         txtFamilyFamilyName:
             NoLabel: true
-            Dock: Top
             DataField: PFamily.FamilyName
 
         pnlFamily2ndLine:        
-            Controls: [cmbFamilyAddresseeTypeCode, chkFamilyNoSolicitations]
+            Controls: [EmptyFamily, cmbFamilyAddresseeTypeCode, chkFamilyNoSolicitations]
             ControlsOrientation: horizontal
-            ColWidths: [0=Fixed:300, 1=Fixed:115]
-            RowHeights: [0=Fixed:28]
-            Margin: 0,0,0,0
-            ColSpan: 6
+            ColWidths: [0=Fixed:80, 1=Fixed:220, 2=Fixed:120]
+            Visible: false
+            Margin: 0
             Dock: Fill
-            
+
         cmbFamilyAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}
         chkFamilyNoSolicitations:
             Label: No Solicitations
@@ -151,22 +154,20 @@ RootNode:
 
             
 # Data Fields for Partner Class PERSON
-        pnlPerson: {Visible=false}
+        pnlPerson:
             Controls: 
                 Row1: [txtPersonTitle, txtPersonFirstName, txtPersonMiddleName, txtPersonFamilyName]
-                Row2: [pnlPerson2ndLine]
-            ColWidths: [0=Fixed:80]
-            RowHeights: [0=Fixed:25]
-            Dock: Top
-            Visible: False
+            Dock: Fill
+            Margin: 0
+            Visible: false
  
         txtPersonTitle:
             Label: Title/Na&me
+            LabelWidth: 80
             DataField: PPerson.Title            
             Width: 88
         txtPersonFirstName:
             NoLabel: true
-            Dock: Top
             DataField: PPerson.FirstName
             Width: 124
         txtPersonMiddleName:
@@ -175,24 +176,23 @@ RootNode:
             Width: 30
         txtPersonFamilyName:
             NoLabel: true
-            Dock: Top
             DataField: PPerson.FamilyName
 
         pnlPerson2ndLine:        
             Controls: [cmbPersonGender, cmbPersonAddresseeTypeCode, chkPersonNoSolicitations]
             ControlsOrientation: horizontal
-            ColWidths: [0=Fixed:80, 2=Fixed:115]
-            RowHeights: [0=Fixed:28]
-            Margin: 0,0,0,0
-            ColSpan: 6
+            ColWidths: [0=Fixed:80, 1=Fixed:100, 2=Fixed:120, 3=Fixed:80, 4=Fixed:60, 5=Fixed:50]
+            Visible: false
+            Margin: 0
             Dock: Fill
 
-        cmbPersonGender: {Label=&Gender, DataField=PPerson.Gender, List=GenderList, Width=88}
-        cmbPersonAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105, Dock: Right}
+        cmbPersonGender: {Label=&Gender, LabelWidth: 80, DataField=PPerson.Gender, List=GenderList, Width=88}
+        cmbPersonAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}
         chkPersonNoSolicitations:
             Label: No Solicitations
             CheckBoxAttachedLabel: right
-            Align: right
+            #Align: right
+            Width: 120
             DataField: NoSolicitations
             OnChange: UpdateNoSolicitationsColouring
             
@@ -200,10 +200,12 @@ RootNode:
 # Data Fields for Partner Class CHURCH            
         pnlChurch: {Visible=false}
             Controls: [txtChurchName]
-            ColWidths: [0=Fixed:80]
-            Dock: Top
+            Dock: Fill
+            Margin: 0
+
         txtChurchName:
             Label: Na&me            
+            LabelWidth: 80
             Width: 428
             Stretch: horizontally
             
@@ -211,21 +213,24 @@ RootNode:
 # Data Fields for Partner Class ORGANISATION      
         pnlOrganisation: {Visible=false}
             Controls: [txtOrganisationName]
-            ColWidths: [0=Fixed:80]
-            Dock: Top
+            Dock: Fill
+            Margin: 0
         txtOrganisationName:
             Label: Na&me            
+            LabelWidth: 80
             Width: 428
+            LabelWidth: 80
             Stretch: horizontally
             
             
 # Data Fields for Partner Class UNIT
         pnlUnit: {Visible=false}
             Controls: [txtUnitName]
-            ColWidths: [0=Fixed:80]
-            Dock: Top
+            Dock: Fill
+            Margin: 0
         txtUnitName:
             Label: Na&me            
+            LabelWidth: 80
             Width: 428
             Stretch: horizontally
             DataField: PUnit.UnitName
@@ -234,10 +239,11 @@ RootNode:
 # Data Fields for Partner Class BANK
         pnlBank: {Visible=false}
             Controls: [txtBranchName]
-            ColWidths: [0=Fixed:80]
-            Dock: Top
+            Dock: Fill
+            Margin: 0
         txtBranchName:
             Label: Na&me            
+            LabelWidth: 80
             Width: 428
             Stretch: horizontally
             
@@ -245,21 +251,19 @@ RootNode:
 # Data Fields for Partner Class VENUE
         pnlVenue: {Visible=false}
             Controls: [txtVenueName]
-            ColWidths: [0=Fixed:80]
-            Dock: Top
+            Dock: Fill
+            Margin: 0
         txtVenueName:
             Label: Na&me            
+            LabelWidth: 80
             Width: 428
             Stretch: horizontally
             
-			
 # Data Fields for all other Partner Classes
-        pnlOther: {ControlsOrientation=horizontal, Visible=false}
-            Controls: [cmbOtherAddresseeTypeCode, chkOtherNoSolicitations]
-            ColWidths: [0=Fixed:300, 1=Fixed:115]
-            RowHeights: [0=Fixed:28]
-            Margin: 0,0,0,0
-            ColSpan: 6
+        pnlOther2ndLine: {ControlsOrientation=horizontal, Visible=false}
+            Controls: [Empty, cmbOtherAddresseeTypeCode, chkOtherNoSolicitations]
+            ColWidths: [0=Fixed:80, 1=Fixed:220, 2=Fixed:120]
+            Margin: 0
             Dock: Fill
 
         cmbOtherAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}

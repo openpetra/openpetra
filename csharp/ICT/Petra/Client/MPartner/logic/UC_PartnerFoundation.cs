@@ -4,7 +4,7 @@
 // @Authors:
 //       morayh
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,8 +27,9 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using SourceGrid;
 using SourceGrid.Cells;
@@ -36,7 +37,6 @@ using SourceGrid.Cells.Editors;
 using Ict.Common.Controls;
 using DevAge.ComponentModel.Validator;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.RemotedExceptions;
 
 namespace Ict.Petra.Client.MPartner
 {

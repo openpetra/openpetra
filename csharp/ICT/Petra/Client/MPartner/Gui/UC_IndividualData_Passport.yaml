@@ -1,0 +1,67 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    DetailTable: PmPassportDetails
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actPassportNameHelp: {ActionClick=PassportNameHelp, Image: Help2.ico}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlDetailGrid, pnlDetails]
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
+        grdDetails:
+            Dock: Fill
+            TableName: PmPassportDetails
+            Columns: []
+            CustomColumns:
+                PassportNumber: {Label=Passport Number}
+                PassportDetailsType: {Label=Type}
+                CountryOfIssue: {Label=Passport Nationality}
+                DateOfExpiration: {Label=Expiration Date, Type=DateTime}
+                DateOfIssue: {Label=Issue Date, Type=DateTime}
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: PassportNumber ASC
+            
+        pnlDetails:
+            Dock: Bottom
+#            Width: 500
+#            Height: 400
+            Controls:
+                Row0: [txtPassportNumber]
+                Row1: [cmbPassportType]
+                Row2: [txtPassportName, btnPassportNameHelp]
+                Row3: [txtPlaceOfBirth]
+                Row4: [dtpDateOfBirth]
+                Row5: [cmbPassportNationality]
+                Row6: [txtPlaceOfIssue]
+                Row7: [dtpDateOfIssue]
+                Row8: [dtpDateOfExpiration]
+                
+        txtPassportNumber: {Label=Passport Number, DataField=PmPassportDetails.PassportNumber, Width=180, Validation=true}
+        cmbPassportType: {Label=Type, DataField=PmPassportDetails.PassportDetailsType, List=PassportDetailsTypeList, Width=200, Validation=true}
+        txtPassportName: {Label=Passport Name, DataField=PmPassportDetails.FullPassportName, Width=300, OnEnter=SuggestPassportName}
+        btnPassportNameHelp: {NoLabel=true}
+            Action: actPassportNameHelp
+            Help: Passport Name explained
+            Width: 50
+        txtPlaceOfBirth:{Label=Place of Birth, DataField=PmPassportDetails.PlaceOfBirth, Width=200}
+        dtpDateOfBirth: {Label=Date of Birth, DataField=PmPassportDetails.PassportDob, Enabled=false}
+        cmbPassportNationality: {Label=Passport Nationality, DataField=PmPassportDetails.PassportNationalityCode, List=PassportNationalityCodeList, Width=300}
+        txtPlaceOfIssue: {Label=Place of Issue, Width=160, DataField=PmPassportDetails.PlaceOfIssue}
+        dtpDateOfIssue: {Label=Date of Issue, DataField=PmPassportDetails.DateOfIssue, Validation=true}
+        dtpDateOfExpiration: {Label=Date of Expiration, DataField=PmPassportDetails.DateOfExpiration, Validation=Pair(dtpDateOfIssue)}
+        

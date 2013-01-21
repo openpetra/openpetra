@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,11 +27,12 @@ using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.Interfaces.MPersonnel;
+using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
@@ -85,12 +86,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         /// <returns>void</returns>
         public TOfficeSpecificDataLabelsUIConnector(Int64 APartnerKey, TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
+            TLogging.LogAtLevel(9, "TOfficeSpecificDataLabelsUIConnector created: Instance hash is " + this.GetHashCode().ToString());
             FPartnerKey = APartnerKey;
             FOfficeSpecificDataLabelUse = AOfficeSpecificDataLabelUse;
         }
@@ -103,7 +99,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         /// <param name="AReadTransaction">Transaction for the SELECT COUNT statement</param>
         /// <returns>Number of Labels available for a certain LabelUse.
         /// </returns>
-        /// [NO-REMOTING]
+        [NoRemoting]
         public Int32 CountLabelUse(String ALabelUse, TDBTransaction AReadTransaction)
         {
             Int32 ReturnValue;
@@ -114,12 +110,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             TemplateRow = TmpDT.NewRowTyped(false);
             TemplateRow.Use = ALabelUse;
             ReturnValue = PDataLabelUseAccess.CountUsingTemplate(TemplateRow, null, AReadTransaction);
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 10)
-            {
-                Console.WriteLine(this.GetType().FullName + " CountLabelUse Result: " + ReturnValue.ToString());
-            }
-#endif
+            TLogging.LogAtLevel(10, "TOfficeSpecificDataLabelsUIConnector.CountLabelUse Result: " + ReturnValue.ToString());
             return ReturnValue;
         }
 
@@ -140,32 +131,12 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             Int64 ARegistrationOffice,
             TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
+            TLogging.LogAtLevel(9, "TOfficeSpecificDataLabelsUIConnector created: Instance hash is " + this.GetHashCode().ToString());
             FPartnerKey = APartnerKey;
             FOfficeSpecificDataLabelUse = AOfficeSpecificDataLabelUse;
             FApplicationKey = AApplicationKey;
             FRegistrationOffice = ARegistrationOffice;
         }
-
-#if DEBUGMODE
-        /// <summary>
-        /// destructor
-        /// </summary>
-        ~TOfficeSpecificDataLabelsUIConnector()
-        {
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
-            }
-        }
-#endif
-
-
 
         /// <summary>
         /// Check if a data row is obsolete. It does not need to be saved if there is no
@@ -359,18 +330,18 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".GetData: committed own transaction.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TOfficeSpecificDataLabelsUIConnector.GetData: committed own transaction.");
             }
 
             return ReturnValue;
         }
 
-        /// [NO-REMOTING]
+        /// <summary>
+        /// Passes data as a Typed DataSet to the Screen, containing multiple DataTables.
+        /// </summary>
+        /// <param name="AReadTransaction"></param>
+        /// <returns></returns>
+        [NoRemoting]
         public OfficeSpecificDataLabelsTDS GetData(TDBTransaction AReadTransaction)
         {
             PDataLabelUseTable DataLabelUseDT;
@@ -435,91 +406,6 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         }
 
         /// <summary>
-        /// Saves data from the Office Specific Data Label Edit Screen (contained in a DataSet).
-        ///
-        /// All DataTables contained in the DataSet are inspected for added, changed or
-        /// deleted rows by submitting them to the Business Objects that relate to them.
-        /// The Business Objects check the DataRow(s) that belong to them for validity
-        /// before saving the data by calling Stored Procedures for inserting, updating
-        /// or deleting data are called.
-        ///
-        /// </summary>
-        /// <param name="AInspectDS">DataSet that needs to contain known DataTables</param>
-        /// <param name="AVerificationResult">Nil if all verifications are OK and all DB calls
-        /// succeded, otherwise filled with 1..n TVerificationResult objects
-        /// (can also contain DB call exceptions)</param>
-        /// <returns>true if all verifications are OK and all DB calls succeeded, false if
-        /// any verification or DB call failed
-        /// </returns>
-        public TSubmitChangesResult SubmitChanges(ref OfficeSpecificDataLabelsTDS AInspectDS, out TVerificationResultCollection AVerificationResult)
-        {
-            TSubmitChangesResult SubmissionResult;
-            TDBTransaction SubmitChangesTransaction;
-            DataTable ValueTable;
-
-            AVerificationResult = null;
-            SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
-            SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            try
-            {
-                // Submit can only be done either for partner of application values
-                if (AInspectDS.Tables.Contains(PDataLabelValuePartnerTable.GetTableName()))
-                {
-                    ValueTable = (DataTable)AInspectDS.PDataLabelValuePartner;
-                    SubmissionResult = SubmitChangesServerSide(ref ValueTable, SubmitChangesTransaction, out AVerificationResult);
-                }
-                else if (AInspectDS.Tables.Contains(PDataLabelValueApplicationTable.GetTableName()))
-                {
-                    ValueTable = (DataTable)AInspectDS.PDataLabelValueApplication;
-                    SubmissionResult = SubmitChangesServerSide(ref ValueTable, SubmitChangesTransaction, out AVerificationResult);
-                }
-            }
-#if DEBUGMODE
-            catch (Exception Exp)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                if (TSrvSetting.DL >= 8)
-                {
-                    Console.WriteLine(
-                        this.GetType().FullName + ".SubmitChanges: Exception occured, Transaction ROLLED BACK. Exception: " + Exp.ToString());
-                }
-
-                throw;
-            }
-#else
-            catch (Exception)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
-            }
-#endif
-
-            if (SubmissionResult == TSubmitChangesResult.scrOK)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Transaction committed!");
-                }
-#endif
-            }
-            else
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
-                {
-                    Console.WriteLine(this.GetType().FullName + ".SubmitChanges: Transaction ROLLED BACK!");
-                }
-#endif
-            }
-
-            return SubmissionResult;
-        }
-
-        /// <summary>
         /// Saves data from the Office Specific Data Label Edit Screen (contained in a DataTable).
         ///
         /// The DataTable is inspected for added, changed or
@@ -530,45 +416,31 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         ///
         /// </summary>
         /// <param name="AInspectDT">DataTable that needs to be submitted</param>
-        /// <param name="ASubmitChangesTransaction">Current Transaction</param>
-        /// <param name="AVerificationResult">Nil if all verifications are OK and all DB calls
-        /// succeded, otherwise filled with 1..n TVerificationResult objects
-        /// (can also contain DB call exceptions)</param>
+        /// <param name="AReadTransaction">Current Transaction</param>
         /// <returns>true if all verifications are OK and all DB calls succeeded, false if
         /// any verification or DB call failed
         /// </returns>
-        /// [NO-REMOTING]
-        public TSubmitChangesResult SubmitChangesServerSide(ref DataTable AInspectDT,
-            TDBTransaction ASubmitChangesTransaction,
-            out TVerificationResultCollection AVerificationResult)
+        [NoRemoting]
+        public TSubmitChangesResult PrepareChangesServerSide(
+            DataTable AInspectDT,
+            TDBTransaction AReadTransaction)
         {
-            TSubmitChangesResult SubmissionResult;
-            TVerificationResultCollection SingleVerificationResultCollection;
-            PDataLabelValuePartnerTable DataLabelValuePartnerTableSubmit;
-            PDataLabelValueApplicationTable DataLabelValueApplicationTableSubmit;
-            PDataLabelTable DataLabelDT;
-            DataRow InspectedDataRow;
-            int RowIndex;
-            int NumRows;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrOK;
 
             // TODO: once we have centrally cached data tables on the server then get the data
             // from there. Until then just load it on the spot here!
-            DataLabelDT = PDataLabelAccess.LoadAll(ASubmitChangesTransaction);
-
-            AVerificationResult = new TVerificationResultCollection();
+            PDataLabelTable DataLabelDT = PDataLabelAccess.LoadAll(AReadTransaction);
 
             if (AInspectDT != null)
             {
-                SubmissionResult = TSubmitChangesResult.scrError;
-
                 // Run through all rows of the value table and see if the significant column is empty/null. If so
                 // then delete the row from the table (these rows are not needed any longer in order to save space
                 // in the database)
-                NumRows = AInspectDT.Rows.Count;
+                int NumRows = AInspectDT.Rows.Count;
 
-                for (RowIndex = NumRows - 1; RowIndex >= 0; RowIndex -= 1)
+                for (int RowIndex = NumRows - 1; RowIndex >= 0; RowIndex -= 1)
                 {
-                    InspectedDataRow = AInspectDT.Rows[RowIndex];
+                    DataRow InspectedDataRow = AInspectDT.Rows[RowIndex];
 
                     // only check modified or added rows because the deleted ones are deleted anyway
                     if ((InspectedDataRow.RowState == DataRowState.Modified) || (InspectedDataRow.RowState == DataRowState.Added))
@@ -579,60 +451,10 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
                         }
                     }
                 }
-
-                if (AInspectDT.TableName == PDataLabelValuePartnerTable.GetTableName())
-                {
-                    DataLabelValuePartnerTableSubmit = (PDataLabelValuePartnerTable)AInspectDT;
-
-                    if (PDataLabelValuePartnerAccess.SubmitChanges(DataLabelValuePartnerTableSubmit, ASubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrOK;
-                    }
-                    else
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 9)
-                        {
-                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
-                                    "TOfficeSpecificDataLabelsUIConnector.SubmitChanges VerificationResult: ", AVerificationResult));
-                        }
-#endif
-                    }
-                }
-                else if (AInspectDT.TableName == PDataLabelValueApplicationTable.GetTableName())
-                {
-                    DataLabelValueApplicationTableSubmit = (PDataLabelValueApplicationTable)AInspectDT;
-
-                    if (PDataLabelValueApplicationAccess.SubmitChanges(DataLabelValueApplicationTableSubmit, ASubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrOK;
-                    }
-                    else
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
-#if DEBUGMODE
-                        if (TSrvSetting.DL >= 9)
-                        {
-                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
-                                    "TOfficeSpecificDataLabelsUIConnector.SubmitChanges VerificationResult: ", AVerificationResult));
-                        }
-#endif
-                    }
-                }
             }
             else
             {
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 8)
-                {
-                    Console.WriteLine("AInspectDS = nil!");
-                }
-#endif
+                TLogging.LogAtLevel(8, "AInspectDS = null!");
                 SubmissionResult = TSubmitChangesResult.scrNothingToBeSaved;
             }
 
@@ -656,6 +478,39 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             TStdPartnerStatusCode PartnerStatus;
 
             return MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
+        }
+
+        /// <summary>
+        /// get the local partner data
+        /// </summary>
+        [NoRemoting]
+        public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues(Int64 APartnerKey, out Boolean ALabelsAvailable,
+            Boolean ACountOnly, TDBTransaction AReadTransaction)
+        {
+            PDataLabelValuePartnerTable DataLabelValuePartnerDT;
+            OfficeSpecificDataLabelsTDS OfficeSpecificDataLabels;
+
+            ALabelsAvailable = false;
+
+            DataLabelValuePartnerDT = new PDataLabelValuePartnerTable();
+
+            try
+            {
+                OfficeSpecificDataLabels = GetData();
+                //ALabelsAvailable =
+                //  (CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), AReadTransaction) != 0);
+
+                if (!ACountOnly)
+                {
+                    DataLabelValuePartnerDT.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
+                }
+            }
+            catch (Exception)
+            {
+                // TODO: Exception processing
+            }
+
+            return DataLabelValuePartnerDT;
         }
 
         #endregion

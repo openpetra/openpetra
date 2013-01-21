@@ -19,12 +19,9 @@
             <CustomField name="MethodOfGivingCode" type="String"/>
             <CustomField name="MethodOfPaymentCode" type="String"/>
             <CustomField name="AccountCode" type="String"/>
+            <CustomField name="Reference" type="String"/>
         </Table>
-        <Table sqltable="a_motivation_group"/>
-        <Table sqltable="a_motivation_detail"/>
-    </DataSet>
-    <DataSet name="RecurringGiftBatchTDS">
-        <Table sqltable="a_ledger"/>
+
         <Table sqltable="a_recurring_gift_batch"/>
         <Table sqltable="a_recurring_gift"/>
         <Table sqltable="a_recurring_gift_detail">
@@ -40,11 +37,26 @@
             <CustomField name="MethodOfPaymentCode" type="String"/>
             <CustomField name="AccountCode" type="String"/>
         </Table>
+
         <Table sqltable="a_motivation_group"/>
         <Table sqltable="a_motivation_detail"/>
-    </DataSet>  
+		<Table sqltable="a_motivation_detail_fee"/>
+		<Table sqltable="a_fees_payable"/>
+		<Table sqltable="a_fees_receivable"/>
+		<Table sqltable="a_processed_fee"/>
+        <Table sqltable="p_partner" name="RecipientPartners"/>
+        <Table sqltable="p_partner" name="DonorPartners"/>
+        <Table sqltable="p_family" name="RecipientFamily"/>
+        <Table sqltable="p_person" name="RecipientPerson"/>
+        <Table sqltable="p_unit" name="RecipientUnit"/>
+        <Table sqltable="p_partner_type" name="LedgerPartnerTypes"/>
+        <Table sqltable="um_unit_structure"/>
+    </DataSet>
 
     <DataSet name="BankImportTDS">
+        <Table sqltable="a_gift">
+            <CustomField name="TotalAmount" type="Decimal"/>
+        </Table>
         <Table sqltable="a_gift_detail">
             <CustomField name="DonorKey" type="Int64"/>
             <CustomField name="DonorShortName" type="string"/>
@@ -54,24 +66,18 @@
         </Table>
         <Table sqltable="p_banking_details">
             <CustomField name="PartnerKey" type="Int64"/>
+            <CustomField name="BankSortCode" type="string"/>
         </Table>
         <Table sqltable="a_ep_statement"/>
+        <Table sqltable="a_ep_match">
+            <CustomField name="CostCentreName" type="string"/>
+        </Table>
         <Table sqltable="a_ep_transaction">
-            <CustomField name = "MatchAction" type="string"/>
-<!--            <CustomField name="NumberOnStatement" type="Int32"/>
-            <CustomField name="DetailKey" type="Int32"/>
-            <CustomField name="OriginalAmountOnStatement" type="Double"/>
+            <CustomField name="MatchAction" type="string"/>
             <CustomField name="GiftLedgerNumber" type="Int32"/>
             <CustomField name="GiftBatchNumber" type="Int32"/>
             <CustomField name="GiftTransactionNumber" type="Int32"/>
-            <CustomField name="GiftDetailNumber" type="Int32"/>
             <CustomField name="DonorKey" type="Int64"/>
-            <CustomField name="DonorShortName" type="string"/>
-            <CustomField name="RecipientDescription" type="string"/>
-            <PrimaryKey thisFields="a_statement_key_i, a_order_i, DetailKey"/> -->
-        </Table>
-        <Table sqltable="a_ep_match">
-            <CustomField name="CostCentreName" type="string"/>
         </Table>
         <Table sqltable="a_cost_centre"/>
         <Table sqltable="a_motivation_detail"/>

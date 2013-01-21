@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash,timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Collections;
 using System.IO;
 using System.Windows.Forms;
 
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
@@ -141,7 +142,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 cmbNumberFormat.SelectedIndex = impOptions.Substring(1) == "American" ? 0 : 1;
             }
 
-            cmbDateFormat.SelectedItem = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+            string DateFormatDefault = TUserDefaults.GetStringDefault("Imp Date", "yyyy-MM-dd");
+
+            // mdy and dmy have been the old default settings in Petra 2.x
+            if (DateFormatDefault.ToLower() == "mdy")
+            {
+                DateFormatDefault = "MM/dd/yyyy";
+            }
+
+            if (DateFormatDefault.ToLower() == "dmy")
+            {
+                DateFormatDefault = "dd/MM/yyyy";
+            }
+
+            cmbDateFormat.SetSelectedString(DateFormatDefault);
         }
 
         private void SaveUserDefaults()
@@ -154,7 +168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             String impOptions = ConvertDelimiter((String)cmbDelimiter.SelectedItem, false);
             impOptions += ConvertNumberFormat(cmbNumberFormat);
             TUserDefaults.SetDefault("Imp Options", impOptions);
-            TUserDefaults.SetDefault("Imp Date", (String)cmbDateFormat.SelectedItem);
+            TUserDefaults.SetDefault("Imp Date", cmbDateFormat.GetSelectedString());
             TUserDefaults.SaveChangedUserDefaults();
         }
 
@@ -169,13 +183,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             try
             {
                 String fileName = txtFilename.Text;
-                String dateFormatString = cmbDateFormat.SelectedItem.ToString();
+                String dateFormatString = cmbDateFormat.GetSelectedString();
 
                 // might be called from the main navigation window (FMainDS is null), or from the GL Batch screen (reusing MainDS)
                 if (FMainDS == null)
                 {
                     FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS();
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, -1, -1));
                 }
 
                 Hashtable requestParams = new Hashtable();
@@ -227,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 requestParams.Add("BaseCurrency", FMainDS.ALedger[0].BaseCurrency);
                 requestParams.Add("TransactionsOnly", chkTransactionsOnly.Checked);
                 requestParams.Add("bDontSummarize", chkDontSummarize.Checked);
-                requestParams.Add("DontSummarizeAccount", cmbDontSummarizeAccount.SelectedItem);
+                requestParams.Add("DontSummarizeAccount", cmbDontSummarizeAccount.GetSelectedString());
                 requestParams.Add("DateForSummary", dtpDateSummary.Date);
                 requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
 

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="param_fields" value="eString:" />
+  <Parameter id="param_field_dates" value="eString:DateNow" />
+  <Parameter id="param_sending_receiving" value="eString:ReceivingField" />
+  <Parameter id="param_commitments_and_worker_field" value="eString:CommitmentsAndWorkerField" />
+  <Parameter id="param_city" value="eString:" />
+  <Parameter id="param_postcode_from" value="eString:" />
+  <Parameter id="param_postcode_to" value="eString:" />
+  <Parameter id="param_region" value="eString:" />
+  <Parameter id="param_country" value="eString:" />
+  <Parameter id="param_only_addresses_valid_on" value="eBoolean:false" />
+  <Parameter id="param_active" value="eBoolean:true" />
+  <Parameter id="param_mailing_addresses_only" value="eBoolean:false" />
+  <Parameter id="param_families_only" value="eBoolean:false" />
+  <Parameter id="param_exclude_no_solicitations" value="eBoolean:true" />
+</Parameters>

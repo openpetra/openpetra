@@ -25,7 +25,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Common;
 using SourceGrid;
 using SourceGrid.Cells;

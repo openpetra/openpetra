@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using GNU.Gettext;
+using Ict.Petra.Client.MFinance.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -46,7 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                txtHeaderLedgerNumber.Text = "" + value;
+                txtHeaderLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             }
         }
         private String FTypeCode;
@@ -59,19 +60,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FTypeCode = value;
                 //save the position of the actual row
-                int rowIndex = CurrentRowIndex();
+                int rowIndex = grdDetails.SelectedRowIndex();
                 FMainDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                     AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                     FTypeCode);
-                SelectByIndex(rowIndex);
+                SelectRowInGrid(rowIndex);
             }
         }
         private void NewRow(System.Object sender, EventArgs e)
         {
-            GetDataFromControls();
             TypeCode = ((TFrmSetupAnalysisTypes)ParentForm).FreezeTypeCode();
             this.CreateNewAFreeformAnalysis();
-            pnlDetails.Enabled = true;
         }
 
         private void NewRowManual(ref AFreeformAnalysisRow ARow)
@@ -114,14 +113,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                                "You have chosen to delete this value ({0}).\n\nDo you really want to delete it?"),
                             FPreviouslySelectedDetailRow.AnalysisValue), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
-                int rowIndex = CurrentRowIndex();
+                int rowIndex = grdDetails.SelectedRowIndex();
                 FPreviouslySelectedDetailRow.Delete();
                 FPetraUtilsObject.SetChangedFlag();
-                SelectByIndex(rowIndex);
+                SelectRowInGrid(rowIndex);
             }
         }
 
@@ -144,43 +143,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //FMainDS.AFreeformAnalysis.Merge(TRemote.MFinance.Setup.WebConnectors.LoadValues(FLedgerNumber).AFreeformAnalysis);
         }
 
-        private int CurrentRowIndex()
+        /// <summary>
+        /// The number of values in the grid for the current Type
+        /// </summary>
+        public int Count
         {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            get
             {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-                txtDetailAnalysisValue.ResetText();
-                chkDetailActive.Checked = false;
+                return grdDetails.Rows.Count - 1;
             }
         }
     }

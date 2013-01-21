@@ -22,20 +22,52 @@
   </delete>
 </target>
 
-<target name="startPetraServer" depends="" description="Starts a local Petra Server">
-  <!-- Create config files, if missing -->
-  <copy file="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"
-        tofile="${ServerConfigFile}">
+<target name="initConfigFiles-internal">
+  <copy file="${templateFile}"
+        tofile="${configFile}" overwrite="true" outputencoding="utf-8" if="${not file::exists(templateFile + '.my')}">
     <filterchain>
       <expandproperties />
     </filterchain>
   </copy>
+  <property name="templateFile" value="${templateFile}.my"/>
+  <copy file="${templateFile}"
+        tofile="${configFile}" overwrite="true" outputencoding="utf-8" if="${file::exists(templateFile)}">
+    <filterchain>
+      <expandproperties />
+    </filterchain>
+  </copy>
+</target>
+
+<target name="initConfigFiles" description="write and overwrite the config files for client, server and testing, and the version.txt">
+  <property name="templateFile" value="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"/>
+  <property name="configFile" value="${ServerConfigFile}"/>
+  <call target="initConfigFiles-internal"/>
+
+  <property name="templateFile" value="${dir.incdir.template.etc}/ServerAdmin.config"/>
+  <property name="configFile" value="${ServerAdminConfigFile}"/>
+  <call target="initConfigFiles-internal"/>
+  
+  <property name="templateFile" value="${dir.incdir.template.etc}/Client.config"/>
+  <property name="configFile" value="${ClientConfigFile}"/>
+  <call target="initConfigFiles-internal"/>
+
+  <property name="templateFile" value="${dir.incdir.template.etc}/TestServer.config"/>
+  <property name="configFile" value="${path::combine(dir.etc, 'TestServer.config')}"/>
+  <call target="initConfigFiles-internal"/>
+  
+  <property name="templateFile" value="${dir.incdir.template.etc}/TestClient.config"/>
+  <property name="configFile" value="${path::combine(dir.etc, 'TestClient.config')}"/>
+  <call target="initConfigFiles-internal"/>
 
 <!-- MGR: TODO: Remove copy. Should be during database work! -->
   <copy file="${path::combine(dir.db.patches, 'version.txt')}"
       tofile="${path::combine(dir.bin, 'version.txt')}" 
       overwrite="true"/>
 
+  <mkdir dir="${dir.log}" failonerror="false"/>
+</target>
+
+<target name="startPetraServer" depends="initConfigFiles" description="Starts a local Petra Server">
   <if test="${platform::is-windows()}">
     <exec program="cmd.exe" 
           workingdir="${dir.bin}"
@@ -55,29 +87,21 @@
   </if>
 
   <if test="${not platform::is-windows()}">
-   <!-- Open a xterm with OpenPetra Server? -->
-   <fail>For Unix this is not implemented until now!</fail>
-      <exec program="${framework::get-runtime-engine(framework::get-target-framework())}" 
-              workingdir="${dir.bin}"
-              commandline="PetraServerConsole.exe -RunWithoutMenu:true -C:${ServerConfigFile}"
-              spawn="true">
-        <!--      todo: install newer version of nant that knows spawn;
-                   unfortunately, RunWithoutMenu:false would not work, because there is no extra window opened, and System.Console.ReadLine fails -->
-         <environment>
-            <variable name="LANGUAGE" value="${SelectedLanguage}"/>
-         </environment>
-      </exec>
+     <!-- TODO: Open a xterm with OpenPetra Server? -->
+    <exec program="${MonoExecutable.file}" 
+          workingdir="${dir.bin}"
+          commandline="PetraServerConsole.exe -RunWithoutMenu:true -C:${ServerConfigFile}"
+          spawn="true">
+    <!--      todo: install newer version of nant that knows spawn;
+               unfortunately, RunWithoutMenu:false would not work, because there is no extra window opened, and System.Console.ReadLine fails -->
+     <environment>
+        <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+     </environment>
+    </exec>
   </if>
 </target>
 
-<target name="stopPetraServer" depends="" description="stop the local Petra Server">
-  <copy file="${dir.incdir.template.etc}/ServerAdmin.config"
-        tofile="${ServerAdminConfigFile}">
-    <filterchain>
-      <expandproperties />
-    </filterchain>  
-  </copy>
-  
+<target name="stopPetraServer" depends="initConfigFiles" description="stop the local Petra Server">
   <if test="${platform::is-windows()}" >
       <exec program="PetraServerAdminConsole.exe" 
             basedir="${dir.bin}" 
@@ -85,8 +109,7 @@
             commandline="-Command:Stop -C:${ServerAdminConfigFile}"/>
   </if>
   <if test="${not platform::is-windows()}">
-   <fail>For Unix this is not implemented until now!</fail>
-      <exec program="${framework::get-runtime-engine(framework::get-target-framework())}" 
+      <exec program="${MonoExecutable.file}" 
               workingdir="${dir.bin}"
               commandline="PetraServerAdminConsole.exe -Command:Stop -C:${ServerAdminConfigFile}"
               spawn="false">
@@ -97,24 +120,10 @@
   </if>
 </target>
 
-<target name="startPetraClient" depends="" description="start the Petra Client"> 
-  <copy file="${dir.incdir.template.etc}/Client.config"
-        tofile="${ClientConfigFile}">
-    <filterchain>
-      <expandproperties />
-    </filterchain>  
-  </copy>
-  <mkdir dir="${dir.log}/PetraClient" />
-    
-<!-- MGR: TODO: Remove copy. Should be during database work! -->
-  <copy file="${path::combine(dir.db.patches, 'version.txt')}"
-      tofile="${path::combine(dir.bin, 'version.txt')}" 
-      overwrite="true"/>
-
+<target name="startPetraClient" depends="initConfigFiles" description="start the Petra Client"> 
   <if test="${platform::is-windows()}">
     <exec program="cmd.exe" 
           workingdir="${dir.bin}"
-          commandline="-RunWithoutMenu:false -C:${ServerConfigFile}"
           spawn="true">
        <environment>
           <variable name="LANGUAGE" value="${SelectedLanguage}"/>
@@ -128,18 +137,18 @@
 
   <if test="${not platform::is-windows()}">
    <!-- Open a xterm with OpenPetra Server? -->
-   <fail>For Unix this is not implemented until now!</fail>
-      <exec program="${framework::get-runtime-engine(framework::get-target-framework())}" 
+   <exec program="${MonoExecutable.file}" 
               workingdir="${dir.bin}"
               commandline="PetraClient.exe -C:${ClientConfigFile}"
               spawn="true">
-        <!--      todo: install newer version of nant that knows spawn;
-                   unfortunately, RunWithoutMenu:false would not work, because there is no extra window opened, and System.Console.ReadLine fails -->
          <environment>
             <variable name="LANGUAGE" value="${SelectedLanguage}"/>
          </environment>
-      </exec>
+   </exec>
   </if>
 </target> 
+
+<target name="start" depends="initConfigFiles, startPetraServer, startPetraClient">
+</target>
 
 </project>

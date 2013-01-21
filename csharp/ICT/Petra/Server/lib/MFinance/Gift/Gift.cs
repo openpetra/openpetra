@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Data;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
@@ -35,8 +36,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Shared.RemotedExceptions;
-using Ict.Petra.Server.App.ClientDomain;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.Gift
 {
@@ -53,7 +53,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <summary>
         /// constant for split gifts
         /// </summary>
-        public const String StrSplitGift = "Split Gift";
+        private static readonly string StrSplitGift = Catalog.GetString("Split Gift");
 
         /// <summary>
         /// get the details of the last gift of the partner
@@ -92,7 +92,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 ALastGiftDate = LastGiftDate;
 
-                if (DomainManager.GSystemDefaultsCache.GetStringDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTAMOUNT) == "true")
+                if (TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTAMOUNT) == "true")
                 {
                     if ((UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE1))
                         || (UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE2))
@@ -113,8 +113,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                 if (LastGiftGivenToPartnerKey == -1)
                 {
                     // Split Gift
-                    if ((DomainManager.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
-                        || (DomainManager.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD)))
+                    if ((TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
+                        || (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD)))
                     {
                         AGiftInfo = AGiftInfo + StrSplitGift;
                     }
@@ -122,7 +122,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 else
                 {
                     // Not a Split Gift
-                    if (DomainManager.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
+                    if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
                     {
                         if (LastGiftGivenToPartnerKey != -1)
                         {
@@ -134,7 +134,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
                     }
 
-                    if (DomainManager.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD))
+                    if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD))
                     {
                         if (LastGiftRecipientLedger != -1)
                         {
@@ -454,13 +454,63 @@ namespace Ict.Petra.Server.MFinance.Gift
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    Console.WriteLine("GetLastGiftDetails: committed own transaction.");
-#endif
+                    TLogging.LogAtLevel(7, "TGift.GetLastGiftDetails: committed own transaction.");
                 }
             }
 
             return AccessToGift;
+        }
+
+        /// <summary>
+        /// Check if a gift is really restricted or if the user belongs to the group that is allowed
+        /// to access the gift
+        /// </summary>
+        /// <param name="gift">the gift we want to check for restriction</param>
+        /// <param name="ATransaction">A TDBTransaction object for reuse</param>
+        /// <returns>true if the user has no permission and the gift is restricted
+        ///</returns>
+        public static bool GiftRestricted(AGiftRow gift, TDBTransaction ATransaction)
+        {
+            SGroupGiftTable GroupGiftDT;
+            SUserGroupTable UserGroupDT;
+            Int16 Counter;
+
+            DataRow[] FoundUserGroups;
+
+            if (gift.Restricted)
+            {
+                GroupGiftDT = SGroupGiftAccess.LoadViaAGift(
+                    gift.LedgerNumber,
+                    gift.BatchNumber,
+                    gift.GiftTransactionNumber,
+                    ATransaction);
+                UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, ATransaction);
+
+                // Loop over all rows of GroupGiftDT
+                for (Counter = 0; Counter <= GroupGiftDT.Rows.Count - 1; Counter += 1)
+                {
+                    // To be able to view a Gift, ReadAccess must be granted
+                    if (GroupGiftDT[Counter].ReadAccess)
+                    {
+                        // Find out whether the user has a row in s_user_group with the
+                        // GroupID of the GroupGift row
+                        FoundUserGroups = UserGroupDT.Select(SUserGroupTable.GetGroupIdDBName() + " = '" + GroupGiftDT[Counter].GroupId + "'");
+
+                        if (FoundUserGroups.Length != 0)
+                        {
+                            // The gift is not restricted because there is a read access for the group
+                            return false;
+                            // don't evaluate further GroupGiftDT rows
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

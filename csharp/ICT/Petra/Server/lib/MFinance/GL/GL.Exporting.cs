@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -69,7 +69,6 @@ namespace Ict.Petra.Server.MFinance.GL
         public bool ExportAllGLBatchData(ref ArrayList batches, Hashtable requestParams, out String exportString)
         {
             FStringWriter = new StringWriter();
-            StringBuilder line = new StringBuilder();
             FMainDS = new GLBatchTDS();
             FDelimiter = (String)requestParams["Delimiter"];
             FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
@@ -226,11 +225,19 @@ namespace Ict.Petra.Server.MFinance.GL
             if (FSummary)
             {
                 //To simplify matters this is always written even if there are no batches
-                WriteBatchSummaryLine();
+                if (!FTransactionsOnly)
+                {
+                    // no batch summary line if only transactions are to be exported
+                    WriteBatchSummaryLine();
+                }
 
                 foreach (KeyValuePair <string, AJournalSummaryRow>kvp in sdSummary)
                 {
-                    WriteJournalSummaryLine(kvp.Value);
+                    if (!FTransactionsOnly)
+                    {
+                        // no journal summary line if only transactions are to be exported
+                        WriteJournalSummaryLine(kvp.Value);
+                    }
 
                     foreach (KeyValuePair <string, ATransactionSummaryRow>kvpt in kvp.Value.TransactionSummaries)
                     {
@@ -417,12 +424,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd)
         {
-            Int64 integerNumber = Convert.ToInt64(generalNumberField);
-
-
             FStringWriter.Write(String.Format(FCultureInfo, "{0:g}", generalNumberField));
-
-
             WriteDelimiter(bLineEnd);
         }
 

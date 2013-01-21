@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,13 +24,14 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.IO;
 using GNU.Gettext;
-using ExcelLibrary.SpreadSheet;
+using OfficeOpenXml;
 
 namespace Ict.Common.IO
 {
@@ -101,14 +102,19 @@ namespace Ict.Common.IO
             List <XmlNode>AllNodes = new List <XmlNode>();
             GetAllAttributesAndNodes(ADoc.DocumentElement, ref AllAttributes, ref AllNodes);
 
-            string separator = TAppSettingsManager.GetValueStatic("CSVSeparator",
+            string separator = TAppSettingsManager.GetValue("CSVSeparator",
                 System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
 
             string headerLine = "";
 
             foreach (string attrName in AllAttributes)
             {
-                headerLine = StringHelper.AddCSV(headerLine, "#" + attrName, separator);
+                if (headerLine.Length > 0)
+                {
+                    headerLine += separator;
+                }
+
+                headerLine += "\"" + attrName + "\"";
             }
 
             string result = headerLine + Environment.NewLine;
@@ -136,21 +142,15 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// store the data into Excel format, Biff8, Excel 5.0
+        /// store the data into Excel format, Open Office XML, .xlsx
         ///
-        /// this makes use of the ExcelLibrary, see ThirdParty directory.
-        /// http://code.google.com/p/excellibrary/
+        /// this makes use of the EPPlus library
+        /// http://epplus.codeplex.com/
         /// </summary>
-        /// <param name="ADoc"></param>
-        /// <param name="AStream"></param>
-        /// <returns></returns>
-        public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream)
+        private static void Xml2ExcelWorksheet(XmlDocument ADoc, ExcelWorksheet AWorksheet, bool AWithHashInCaption = true)
         {
-            Workbook workbook = new Workbook();
-            Worksheet worksheet = new Worksheet("Data Export");
-
-            Int32 rowCounter = 0;
-            Int16 colCounter = 0;
+            Int32 rowCounter = 1;
+            Int16 colCounter = 1;
 
             // first write the header of the csv file
             List <string>AllAttributes = new List <string>();
@@ -159,12 +159,20 @@ namespace Ict.Common.IO
 
             foreach (string attrName in AllAttributes)
             {
-                worksheet.Cells[rowCounter, colCounter] = new Cell("#" + attrName);
+                if (AWithHashInCaption)
+                {
+                    AWorksheet.Cells[rowCounter, colCounter].Value = "#" + attrName;
+                }
+                else
+                {
+                    AWorksheet.Cells[rowCounter, colCounter].Value = attrName;
+                }
+
                 colCounter++;
             }
 
             rowCounter++;
-            colCounter = 0;
+            colCounter = 1;
 
             foreach (XmlNode node in AllNodes)
             {
@@ -172,24 +180,91 @@ namespace Ict.Common.IO
                 {
                     if (attrName == "childOf")
                     {
-                        worksheet.Cells[rowCounter, colCounter] = new Cell(TXMLParser.GetAttribute(node.ParentNode, "name"));
+                        AWorksheet.Cells[rowCounter, colCounter].Value = TXMLParser.GetAttribute(node.ParentNode, "name");
                     }
                     else
                     {
-                        worksheet.Cells[rowCounter, colCounter] = new Cell(TXMLParser.GetAttribute(node, attrName));
+                        string value = TXMLParser.GetAttribute(node, attrName);
+
+                        if (value.StartsWith(eVariantTypes.eDateTime.ToString() + ":"))
+                        {
+                            AWorksheet.Cells[rowCounter, colCounter].Value = TVariant.DecodeFromString(value).ToDate();
+                            AWorksheet.Cells[rowCounter, colCounter].Style.Numberformat.Format = "dd/mm/yyyy";
+                        }
+                        else if (value.StartsWith(eVariantTypes.eInteger.ToString() + ":"))
+                        {
+                            AWorksheet.Cells[rowCounter, colCounter].Value = TVariant.DecodeFromString(value).ToInt64();
+                        }
+                        else
+                        {
+                            AWorksheet.Cells[rowCounter, colCounter].Value = value;
+                        }
                     }
 
                     colCounter++;
                 }
 
                 rowCounter++;
-                colCounter = 0;
+                colCounter = 1;
             }
+        }
 
-            workbook.Worksheets.Add(worksheet);
+        /// <summary>
+        /// store the data into Excel format, Open Office XML, .xlsx
+        ///
+        /// this makes use of the EPPlus library
+        /// http://epplus.codeplex.com/
+        /// </summary>
+        public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream, bool AWithHashInCaption = true)
+        {
+            try
+            {
+                ExcelPackage pck = new ExcelPackage();
 
-            workbook.Save(AStream);
-            return true;
+                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
+
+                Xml2ExcelWorksheet(ADoc, worksheet, AWithHashInCaption);
+
+                pck.SaveAs(AStream);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// store the data into Excel format, Open Office XML, .xlsx
+        ///
+        /// this makes use of the EPPlus library
+        /// http://epplus.codeplex.com/
+        ///
+        /// this overload stores several worksheets
+        /// </summary>
+        public static bool Xml2ExcelStream(SortedList <string, XmlDocument>ADocs, MemoryStream AStream, bool AWithHashInCaption = true)
+        {
+            try
+            {
+                ExcelPackage pck = new ExcelPackage();
+
+                foreach (string WorksheetTitle in ADocs.Keys)
+                {
+                    ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(WorksheetTitle);
+
+                    Xml2ExcelWorksheet(ADocs[WorksheetTitle], worksheet, AWithHashInCaption);
+                }
+
+                pck.SaveAs(AStream);
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                return false;
+            }
         }
 
         /// <summary>
@@ -207,11 +282,11 @@ namespace Ict.Common.IO
         /// the first line is expected to contain the column names/captions, in quotes.
         /// from the header line, the separator can be determined, if the parameter ASeparator is empty
         /// </summary>
-        public static XmlDocument ParseCSV2Xml(string ACSVFilename, string ASeparator)
+        public static XmlDocument ParseCSV2Xml(string ACSVFilename, string ASeparator, Encoding AEncoding = null)
         {
             XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
 
-            StreamReader sr = new StreamReader(ACSVFilename, TTextFile.GetFileEncoding(ACSVFilename), false);
+            StreamReader sr = new StreamReader(ACSVFilename, TTextFile.GetFileEncoding(ACSVFilename, AEncoding), false);
 
             try
             {
@@ -228,8 +303,8 @@ namespace Ict.Common.IO
                     }
                     else
                     {
-                        // read separator from header line. at least the first column need to be quoted
-                        separator = headerLine[StringHelper.FindMatchingQuote(headerLine.Substring(1)) + 3].ToString();
+                        // read separator from header line. at least the first column needs to be quoted
+                        separator = headerLine[StringHelper.FindMatchingQuote(headerLine, 0) + 2].ToString();
                     }
                 }
 
@@ -247,7 +322,7 @@ namespace Ict.Common.IO
 
                     if (attrName.Length > 1)
                     {
-                        attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, " ", false, false).Substring(1);
+                        attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, ' ', false, false).Substring(1);
                     }
 
                     AllAttributes.Add(attrName);

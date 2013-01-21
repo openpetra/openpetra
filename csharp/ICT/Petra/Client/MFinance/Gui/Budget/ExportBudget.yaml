@@ -1,0 +1,51 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Export Budget
+    Namespace: Ict.Petra.Client.MFinance.Gui.Budget
+    FormType: browse
+    Template: window
+    WindowWidth: 660
+    WindowHeight: 300
+    Actions:
+        actExportBudget: {Label=&Start, ActionClick=ExportBudget}
+        actClose: {Label=&Close, ActionClick=BtnCloseClick}
+        actHelp: {Label=&Help, ActionClick=BtnHelpClick}
+    Controls:
+        pnlContent:
+            Controls: [pnlTop, pnlButtons]
+            Dock: Fill
+        pnlTop:
+            Dock: Top
+            Controls:
+                Row0: [pnlFilename]
+                Row1: [cmbDelimiter]
+                Row2: [cmbDateFormat]
+                Row3: [cmbNumberFormat]
+        
+        pnlFilename:
+            Controls:
+                Row0: [txtFilename, btnBrowseFilename]
+        pnlButtons:
+            Dock:Bottom
+            Controls:
+                Row0: [btnHelp, btnOK, btnClose]
+            ColWidths: [0=Fixed:350,1=Fixed:100,2=Fixed:100]
+        btnHelp: {Action=actHelp}
+        btnClose: {Action=actClose}
+        btnOK: {Action=actExportBudget}                
+        txtFilename: 
+            Width:400
+        btnBrowseFilename:
+            ActionClick: BtnBrowseClick
+            Label: &Browse...
+        cmbDateFormat:
+            OptionalValues: [MM/dd/yyyy,dd/MM/yyyy,yyyy-MM-dd]
+            Width: 160
+        cmbNumberFormat:
+            Width: 160
+            OptionalValues: ["Decimal Point (12.34)", "Decimal Comma (12,34)"]
+        cmbDelimiter:
+            OptionalValues: [";", ",", ":", "[SPACE]"]
+            Width: 80
+    Toolbar:
+        tbbExportBudget:

@@ -1,0 +1,51 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Email Destinations
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DetailTable: AEmailDestination
+    CacheableTable: EmailDestinationList
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Account.Validation, Ict.Petra.Shared.MPartner]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 750
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailFileCode, DetailConditionalValue, DetailPartnerKey, DetailEmailAddress]
+            CustomColumns:
+                DetailConditionalValue: {Label=Condition value}
+                DetailEmailAddress: {Label=Email address(es)}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [cmbDetailFileCode, txtDetailConditionalValue]
+                Row1: [pnlEmailAddress]
+            ColWidths: [0=Fixed:135]
+        cmbDetailFileCode: {Label=File Code, OnChange=OnFileCodeChange}
+            OptionalValues: [ =AFO, BRANCH, FUND BALS-AFO, FUND BALANCE, HOSA, STEWARDSHIP, ICH, GIFT STATEMENT ]
+        txtDetailConditionalValue: {Label=Condition value, Width=180}
+        pnlEmailAddress:
+            Controls:
+                Row0: [txtDetailPartnerKey]
+                Row1: [txtDetailEmailAddress]
+            ColSpan: 2
+        txtDetailPartnerKey: {Label=Partner Key, Type=PartnerKey, OnChange=PartnerKeyChanged}
+        txtDetailEmailAddress: {Label=Email address(es) (one per line), Multiline=true, ScrollBars=Vertical, Height=80, Width=400}
+
+    Toolbar:
+        tbbNew: 
+            Label: New Email Destination

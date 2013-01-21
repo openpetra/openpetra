@@ -22,6 +22,15 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using System.Windows.Forms;
+
+using Ict.Common.Verification;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.MPartner.Verification;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -49,5 +58,26 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public void InitializeManualCode()
+        {
+            txtContactPartnerKey.PerformDataBinding(FMainDS.PBank.DefaultView, PBankTable.GetContactPartnerKeyDBName());
+
+            #region Verification
+//            FMainDS.PBank.ColumnChanging += new DataColumnChangeEventHandler(this.OnPBankColumnChanging);
+            txtContactPartnerKey.VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            #endregion
+        }
+
+        private void ValidateDataManual(PBankRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidatePartnerBankManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+        }
     }
 }

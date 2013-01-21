@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Globalization;
 using System.Windows.Forms;
 
@@ -35,14 +36,17 @@ namespace Ict.Common.Conversion
     /// </summary>
     public class TDate
     {
-        /// <summary> error message </summary>
-        public const String StrMonthDayExchangedInfo = "The entered Date is not valid - the month is greater than 12." + "\r\n" +
-                                                       "It seems you have inadvertedly exchanged month" +
-                                                       " and day. Petra will exchange month and day for you to make a valid date " +
-                                                       "- please check that the corrected date is the date you intended to enter!";
+        #region Resourcestrings
 
-        /// <summary> title of error message box </summary>
-        public const String StrMonthDayExchangedInfoTitle = "Invalid date - Petra tries correcting";
+        private static readonly string StrMonthDayExchangedInfo = Catalog.GetString(
+            "The entered Date is not valid - the month is greater than 12.\r\n" +
+            "It seems you have inadvertedly exchanged month" +
+            " and day. OpenPetra will exchange month and day for you to make a valid date " +
+            "- please check that the corrected date is the date you intended to enter!");
+
+        private static readonly string StrMonthDayExchangedInfoTitle = Catalog.GetString("Invalid date - OpenPetra tries correcting");
+
+        #endregion
 
         /// <summary>
         /// Converts a string to a formatted date string
@@ -60,20 +64,22 @@ namespace Ict.Common.Conversion
             Boolean AShowVerificationError,
             System.Type ATypeWhichCallsVerification)
         {
-            Boolean ReturnValue;
+            Boolean ReturnValue = false;
             Int32 DayOffset;
             String TmpYear;
             String TmpMonth;
             String TmpDay;
             String TmpMonthDayExchange = "";
             String TmpShortDatePattern;
-            String TmpDateSeparator;
             Int16 YearStart = 0;
             Int16 RestStart = 0;
 
             AParsedDate = null;
             DateTimeFormatInfo CurrentDateTimeFormatInfo;
-            ReturnValue = false;
+
+            // for testing purposes only
+            // string TmpDateSeparator = CurrentDateTimeFormatInfo.DateSeparator;
+
             try
             {
                 // TODO: implement parsing of localised short month names like 4GL does (according to user's default language setting), eg. accept 'M?R' instead of 'MAR' for March if the user's language setting is DE (German)
@@ -128,7 +134,6 @@ namespace Ict.Common.Conversion
                         TmpShortDatePattern = CurrentDateTimeFormatInfo.ShortDatePattern.ToUpper();
 
                         // TmpShortDatePattern := "MM DD";      // For testing purposes only
-                        TmpDateSeparator = CurrentDateTimeFormatInfo.DateSeparator;
 
                         if (TmpShortDatePattern.StartsWith("Y"))
                         {
@@ -259,7 +264,6 @@ namespace Ict.Common.Conversion
                         }
                         catch (Exception)
                         {
-                            // $IFDEF DEBUGMODE MessageBox.Show('Exception occured in LongDateStringToDateTime: ' + Exp.ToString); $ENDIF
                             MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
                                 TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
                             return ReturnValue;
@@ -302,16 +306,8 @@ namespace Ict.Common.Conversion
                 AParsedDate = DateTime.Parse(AParseDate).ToString("D");
                 ReturnValue = true;
             }
-#if DEBUGMODE
-            catch (Exception Exp)
-#endif
-#if !DEBUGMODE
             catch (Exception)
-#endif
             {
-#if DEBUGMODE
-                MessageBox.Show("Exception occured in LongDateStringToDateTimeInternal: " + Exp.ToString());
-#endif
                 MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
                     TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
             }

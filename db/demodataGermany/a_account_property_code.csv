@@ -1,2 +1,3 @@
-Bank Account,?,2009-6-15,?,?,?,?
+BANK ACCOUNT,?,2009-6-15,?,?,?,?
+Is_Special_Account,?,2009-6-15,?,?,?,?
 CARRYFORWARDCC,"Used to specify that a particular equity account should be used to carry forward the specified Cost Centre. The property value associated with it includes both the Cost Centre and also some text (SAMECC or STANDARDCC) to indicate whether the equity should be carried forward into the same CC or rolled up to the standard CC. (eg. 10TEAPIC,SAMECC)",2009-6-15,?,?,?,?

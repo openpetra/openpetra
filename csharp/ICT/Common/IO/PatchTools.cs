@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,166 +38,17 @@ using System.Text;
 namespace Ict.Common.IO
 {
     /// <summary>
-    /// our own type for version information for a file
+    /// Some file version functions for working with patch files
     /// </summary>
-    public class TFileVersionInfo
+    public class TPatchFileVersionInfo : TFileVersionInfo
     {
-        /// <summary>MajorPart.MinorPart.BuildPart-PrivatePart</summary>
-        public UInt16 FileMajorPart;
-
-        /// <summary>MajorPart.MinorPart.BuildPart-PrivatePart</summary>
-        public UInt16 FileMinorPart;
-
-        /// <summary>MajorPart.MinorPart.BuildPart-PrivatePart</summary>
-        public UInt16 FileBuildPart;
-
-        /// <summary>MajorPart.MinorPart.BuildPart-PrivatePart</summary>
-        public UInt16 FilePrivatePart;
-
         /// <summary>
-        /// constructor
+        /// constructor for base class
         /// </summary>
-        /// <param name="ARPMStyleVersion">2.2.35: major.minor.buildprivate</param>
-        /// <returns>void</returns>
-        public TFileVersionInfo(String ARPMStyleVersion)
+        /// <param name="version"></param>
+        public TPatchFileVersionInfo(TFileVersionInfo version)
+            : base(version)
         {
-            Int32 pos;
-
-            // 2.2.35: major.minor.buildprivate
-
-            pos = ARPMStyleVersion.IndexOf('.');
-            FileMajorPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
-            ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
-            pos = ARPMStyleVersion.IndexOf('.');
-            FileMinorPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
-            ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
-            pos = ARPMStyleVersion.IndexOf('-');
-
-            if (pos == -1)
-            {
-                pos = ARPMStyleVersion.IndexOf('.');
-            }
-
-            if (pos == -1)
-            {
-                FileBuildPart = System.Convert.ToUInt16(ARPMStyleVersion);
-                FilePrivatePart = 0;
-            }
-            else
-            {
-                FileBuildPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
-                ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
-                FilePrivatePart = System.Convert.ToUInt16(ARPMStyleVersion);
-            }
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="AInfo"></param>
-        public TFileVersionInfo(FileVersionInfo AInfo)
-        {
-            FileMajorPart = System.Convert.ToUInt16(AInfo.FileMajorPart);
-            FileMinorPart = System.Convert.ToUInt16(AInfo.FileMinorPart);
-            FileBuildPart = System.Convert.ToUInt16(AInfo.FileBuildPart);
-            FilePrivatePart = System.Convert.ToUInt16(AInfo.FilePrivatePart);
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="AVersion"></param>
-        public TFileVersionInfo(System.Version AVersion)
-        {
-            FileMajorPart = System.Convert.ToUInt16(AVersion.Major);
-            FileMinorPart = System.Convert.ToUInt16(AVersion.Minor);
-            FileBuildPart = System.Convert.ToUInt16(AVersion.Build);
-            FilePrivatePart = System.Convert.ToUInt16(AVersion.Revision);
-        }
-
-        /// <summary>
-        /// copy constructor
-        /// </summary>
-        /// <param name="AInfo"></param>
-        public TFileVersionInfo(TFileVersionInfo AInfo)
-        {
-            FileMajorPart = AInfo.FileMajorPart;
-            FileMinorPart = AInfo.FileMinorPart;
-            FileBuildPart = AInfo.FileBuildPart;
-            FilePrivatePart = AInfo.FilePrivatePart;
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TFileVersionInfo()
-        {
-        }
-
-        /// <summary>
-        /// compare two file versions
-        /// </summary>
-        /// <returns>-1 if this &lt; ACmp, 1 if this &gt; ACmp, and 0 if equals</returns>
-        public Int16 Compare(TFileVersionInfo ACmp)
-        {
-            Int16 ReturnValue;
-
-            if (FileMajorPart > ACmp.FileMajorPart)
-            {
-                ReturnValue = 1;
-            }
-            else if (FileMajorPart < ACmp.FileMajorPart)
-            {
-                ReturnValue = -1;
-            }
-            else if (FileMinorPart > ACmp.FileMinorPart)
-            {
-                ReturnValue = 1;
-            }
-            else if (FileMinorPart < ACmp.FileMinorPart)
-            {
-                ReturnValue = -1;
-            }
-            else if (FileBuildPart > ACmp.FileBuildPart)
-            {
-                ReturnValue = 1;
-            }
-            else if (FileBuildPart < ACmp.FileBuildPart)
-            {
-                ReturnValue = -1;
-            }
-            else if (FilePrivatePart > ACmp.FilePrivatePart)
-            {
-                ReturnValue = 1;
-            }
-            else if (FilePrivatePart < ACmp.FilePrivatePart)
-            {
-                ReturnValue = -1;
-            }
-            else
-            {
-                ReturnValue = 0;
-            }
-
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// print file version to string
-        /// </summary>
-        /// <returns></returns>
-        public override String ToString()
-        {
-            return FileMajorPart.ToString() + '.' + FileMinorPart.ToString() + '.' + FileBuildPart.ToString() + '.' + FilePrivatePart.ToString();
-        }
-
-        /// <summary>
-        /// print file version to string, with hyphen as last separator
-        /// </summary>
-        /// <returns></returns>
-        public String ToStringDotsHyphen()
-        {
-            return FileMajorPart.ToString() + '.' + FileMinorPart.ToString() + '.' + FileBuildPart.ToString() + '-' + FilePrivatePart.ToString();
         }
 
         /// <summary>
@@ -220,6 +71,11 @@ namespace Ict.Common.IO
         public static TFileVersionInfo GetLatestPatchVersionFromDiffZipName(String APatchZipFile)
         {
             StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
+
+            if (versions.Count < 2)
+            {
+                throw new Exception("GetLatestPatchVersionFromDiffZipName: invalid name " + APatchZipFile);
+            }
 
             return new TFileVersionInfo(versions[1]);
         }
@@ -252,16 +108,34 @@ namespace Ict.Common.IO
         /// <summary>
         /// would this patch file apply to the current installed version
         /// </summary>
+        static public Boolean PatchApplies(TFileVersionInfo ACurrentVersion, string APatchZipFile)
+        {
+            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
+            TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
+
+            return patchStartVersion.Compare(ACurrentVersion) == 0;
+        }
+
+        /// <summary>
+        /// would this patch file apply to the current installed version
+        /// </summary>
         /// <param name="APatchZipFile"></param>
         /// <param name="AMaxVersion">maximum version to upgrade to, usually this is the version of the exe files</param>
         /// <returns></returns>
         public Boolean PatchApplies(String APatchZipFile, TFileVersionInfo AMaxVersion)
         {
-            StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
-            TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
-            TFileVersionInfo patchEndVersion = new TFileVersionInfo(versions[1]);
+            try
+            {
+                StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
+                TFileVersionInfo patchStartVersion = new TFileVersionInfo(versions[0]);
+                TFileVersionInfo patchEndVersion = new TFileVersionInfo(versions[1]);
 
-            return patchStartVersion.Compare(this) == 0 && patchEndVersion.Compare(AMaxVersion) <= 0;
+                return patchStartVersion.Compare(this) == 0 && patchEndVersion.Compare(AMaxVersion) <= 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 
@@ -328,6 +202,14 @@ namespace Ict.Common.IO
     /// </summary>
     public class TPatchTools
     {
+        #region Resourcestrings
+
+        private static readonly string StrProblemConnecting = Catalog.GetString("There is a problem connecting to {0}");
+
+        private static readonly string StrProblemConnectingTitle = Catalog.GetString("Cannot find patches on server");
+
+        #endregion
+
         /// <summary>maximum is 9, quite slow, and memory consuming</summary>
         public const Int32 BZ_COMPRESSION_LEVEL = 5;
 
@@ -336,6 +218,9 @@ namespace Ict.Common.IO
 
         /// <summary>identify our patch version</summary>
         public const String FORMAT_DESCR = "OPODIFF1";
+
+        /// <summary>we need that constants for finding the path for bin30 in the zip patch file</summary>
+        public const string OPENPETRA_VERSIONPREFIX = "30";
 
         /// <summary>todoComment</summary>
         protected SortedList FListOfNewPatches;
@@ -346,9 +231,7 @@ namespace Ict.Common.IO
         /// <summary>eg. bin30 has postfix 30</summary>
         protected string FVersionPostFix;
 
-        /// <summary>
-        /// calculated from FInstallPath and FVersionPostFix
-        /// </summary>
+        /// <summary>todoComment</summary>
         protected string FBinPath;
 
         /// <summary>todoComment</summary>
@@ -520,12 +403,25 @@ namespace Ict.Common.IO
             FileStream fsTemp;
             Int32 i;
             byte[] header = new byte[32];
-            byte[] buf = new byte[8];
+
+            string bsdiffPath = TAppSettingsManager.ApplicationDirectory + "/../../csharp/ThirdParty/bsdiff/bsdiff";
+
+            if (Utilities.DetermineExecutingOS().ToString().StartsWith("eosWin"))
+            {
+                bsdiffPath += ".exe";
+            }
+
+            bsdiffPath = Path.GetFullPath(bsdiffPath);
+
+            if (!File.Exists(bsdiffPath))
+            {
+                bsdiffPath = "bsdiff";
+            }
 
             // make an external call to bsdiff, it will create a BSDIFF4.0 patch file
             BSDIFFProcess = new System.Diagnostics.Process();
             BSDIFFProcess.EnableRaisingEvents = false;
-            BSDIFFProcess.StartInfo.FileName = "bsdiff"; // TODO bsdiff should be on the PATH
+            BSDIFFProcess.StartInfo.FileName = bsdiffPath; // TODO bsdiff should be on the PATH
             BSDIFFProcess.StartInfo.Arguments = '"' + AFileName1 + "\" \"" + AFileName2 + "\" temp.patch";
             BSDIFFProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             BSDIFFProcess.EnableRaisingEvents = true;
@@ -1020,6 +916,7 @@ namespace Ict.Common.IO
         /// to be used to actually install patches
         /// </summary>
         public TPatchTools(String AInstallPath,
+            String ABinPath,
             String AVersionPostFix,
             String ATmpPath,
             String ADatPath,
@@ -1029,7 +926,7 @@ namespace Ict.Common.IO
         {
             FInstallPath = Path.GetFullPath(AInstallPath);
             FVersionPostFix = AVersionPostFix;
-            FBinPath = FInstallPath + Path.DirectorySeparatorChar + "bin" + FVersionPostFix;
+            FBinPath = ABinPath;
 
             if (ATmpPath.Length > 0)
             {
@@ -1092,8 +989,6 @@ namespace Ict.Common.IO
         /// <paramref name="AShowStatus" /> is false.</param>
         public Boolean CheckForRecentPatch(bool AShowStatus, out string AStatusMessage)
         {
-            const string ProblemMessage = "There is a problem connecting to {0}";
-
             string localname;
             TFileVersionInfo fileStartVersion;
             TFileVersionInfo filePatchVersion;
@@ -1124,12 +1019,12 @@ namespace Ict.Common.IO
                 {
                     if (AShowStatus)
                     {
-                        MessageBox.Show(String.Format(ProblemMessage, FRemotePatchesPath),
-                            "Cannot find patches on server");
+                        MessageBox.Show(String.Format(StrProblemConnecting, FRemotePatchesPath),
+                            StrProblemConnectingTitle);
                     }
                     else
                     {
-                        AStatusMessage = String.Format(ProblemMessage, FRemotePatchesPath);
+                        AStatusMessage = String.Format(StrProblemConnecting, FRemotePatchesPath);
                     }
 
                     return false;
@@ -1152,7 +1047,7 @@ namespace Ict.Common.IO
 
                     if (filename.ToLower().StartsWith("patch") && filename.ToLower().EndsWith(".zip"))
                     {
-                        filePatchVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(filename);
+                        filePatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(filename);
 
                         if ((filePatchVersion.Compare(FCurrentlyInstalledVersion) > 0)
                             && (!System.IO.File.Exists(FPatchesPath + Path.DirectorySeparatorChar + Path.GetFileName(filename))))
@@ -1226,7 +1121,7 @@ namespace Ict.Common.IO
 
                 foreach (string filename in files)
                 {
-                    filePatchVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(filename);
+                    filePatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(filename);
 
                     if ((filePatchVersion.Compare(FCurrentlyInstalledVersion) > 0)
                         && ((!System.IO.File.Exists(FPatchesPath + Path.DirectorySeparatorChar + Path.GetFileName(filename)))))
@@ -1242,8 +1137,8 @@ namespace Ict.Common.IO
 
             foreach (string filename in patchfiles)
             {
-                fileStartVersion = TFileVersionInfo.GetStartVersionFromDiffZipName(filename);
-                filePatchVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(filename);
+                fileStartVersion = TPatchFileVersionInfo.GetStartVersionFromDiffZipName(filename);
+                filePatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(filename);
 
                 if ((fileStartVersion.Compare(FCurrentlyInstalledVersion) >= 0)
                     && (filePatchVersion.Compare(FCurrentlyInstalledVersion) > 0))
@@ -1271,7 +1166,7 @@ namespace Ict.Common.IO
 
             foreach (string patch in AOrderedListOfAllPatches.GetValueList())
             {
-                testPatchVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch);
+                testPatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch);
 
                 if (testPatchVersion.Compare(FLatestAvailablePatch) > 0)
                 {
@@ -1291,7 +1186,7 @@ namespace Ict.Common.IO
 
                 foreach (string patch in AOrderedListOfAllPatches.GetValueList())
                 {
-                    if (testPatchVersion.PatchApplies(patch))
+                    if (TPatchFileVersionInfo.PatchApplies(testPatchVersion, patch))
                     {
                         applyingPatches.Add(patch);
                     }
@@ -1303,19 +1198,33 @@ namespace Ict.Common.IO
                 {
                     // see which of the applying patches takes us further
                     string highestPatch = applyingPatches[0];
-                    TFileVersionInfo highestPatchVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(highestPatch);
+                    TFileVersionInfo highestPatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(highestPatch);
 
                     foreach (string patch in applyingPatches)
                     {
-                        if (TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch).Compare(highestPatchVersion) > 0)
+                        if (TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch).Compare(highestPatchVersion) > 0)
                         {
                             highestPatch = patch;
-                            highestPatchVersion = TFileVersionInfo.GetLatestPatchVersionFromDiffZipName(highestPatch);
+                            highestPatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(highestPatch);
                         }
                     }
 
                     ResultPatchList.Add(highestPatch, highestPatch);
                     testPatchVersion = highestPatchVersion;
+                }
+            }
+
+            if (FLatestAvailablePatch.Compare(testPatchVersion) != 0)
+            {
+                // check for a generic patch file, starting from version 0.0.99.99
+                foreach (string patch in AOrderedListOfAllPatches.GetValueList())
+                {
+                    if (patch.Contains("0.0.99.99"))
+                    {
+                        testPatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch);
+                        ResultPatchList.Clear();
+                        ResultPatchList.Add(patch, patch);
+                    }
                 }
             }
 
@@ -1361,19 +1270,16 @@ namespace Ict.Common.IO
             PatchExecutableFiles.Add(binPath + "Ict.Common.dll");
             PatchExecutableFiles.Add(binPath + "Ict.Common.IO.dll");
             PatchExecutableFiles.Add(binPath + "ICSharpCode.SharpZipLib.dll");
-            PatchExecutableFiles.Add(binPath + "PatchTool.exe");
+            PatchExecutableFiles.Add(binPath + "Ict.Tools.PatchTool.exe");
+            PatchExecutableFiles.Add(binPath + "Ict.Tools.PatchTool.Library.dll");
             PatchExecutableFiles.Add(binPath + "GNU.Gettext.dll");
-            PatchExecutableFiles.Add(binPath + "intl.dll");
-            PatchExecutableFiles.Add(binPath + "Mono.Posix.dll");
-            PatchExecutableFiles.Add(binPath + "Mono.Security.dll");
-            PatchExecutableFiles.Add(binPath + "MonoPosixHelper.dll");
 
             // copy the PatchTool.exe and required files from the currently installed application to a temp directory
             foreach (string patchExeFile in PatchExecutableFiles)
             {
-                if (File.Exists(FInstallPath + patchExeFile.Substring("openpetraorg".Length)))
+                if (File.Exists(FBinPath + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile)))
                 {
-                    System.IO.File.Copy(FInstallPath + patchExeFile.Substring("openpetraorg".Length),
+                    System.IO.File.Copy(FBinPath + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile),
                         APatchDirectory + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile), true);
                 }
             }

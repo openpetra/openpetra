@@ -933,12 +933,6 @@ namespace Ict.Petra.Server.MReporting.MFinance
             return ReturnValue;
         }
 
-        /* If you want the data of year 2 and period 10, you would call GetActualEndOfLastYear(10, 2, "B");
-         * ' this would return the value of year 1 period 12.
-         * ' If you want the data of year 2 and period 14, you would call GetActualEndOfLastYear(14, 2, "B");
-         * ' this would return the value of year 2 period 12.
-         */
-
         /// <summary>
         /// If you want the data of year 2 and period 10, you would call GetActualEndOfLastYear(sequence_year_1, sequence_year_2, 10, 12, 2, 2, "B");
         /// ' this would return the value of year 1 period 12.
@@ -961,8 +955,6 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             return GetActual(numberAccountingPeriods, pv_year_i - 1, true, pv_currency_select_c);
         }
-
-        // calls getActual, and calculates the correct ytd or nonytd amount for the given period(s)
 
         /// <summary>
         /// calls getActual, and calculates the correct ytd or nonytd amount for the given period(s)
@@ -991,11 +983,9 @@ namespace Ict.Petra.Server.MReporting.MFinance
             return ReturnValue;
         }
 
-        // calls getActual, and calculates the correct ytd or nonytd amount for the given period(s)
-        // special version for Income & Expense: the values are reset at the year end
-
         /// <summary>
-        /// calls getActual, and calculates the correct ytd or nonytd amount for the given period(s)  special version for Income &amp; Expense: the values are reset at the year end
+        /// calls getActual, and calculates the correct ytd or nonytd amount for the given period(s)
+        /// special version for Income &amp; Expense: the values are reset at the year end
         /// </summary>
         /// <returns>void</returns>
         private decimal GetActualPeriodsIE(int pv_start_period_number_i,

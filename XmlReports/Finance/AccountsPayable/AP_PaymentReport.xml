@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../../reports.dtd">
+<reports>
+
+	<report id="APPaymentReport">
+		<description>
+			Show all the documents that together made up a payment to a supplier.
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_payment_number_i"/>
+		</reportparameters>
+		
+		<reportheader/>
+		
+		<pageheader>
+			<field whichfield="title1">
+					<value text ="AP - Payment Report" />
+			</field>
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="descr1"><value text="Ledger: "/><value variable="param_ledger_number_i"/>
+				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
+			</field>
+		</pageheader>
+		
+		<calculations>
+
+      <calculation id="SelectSupplier" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT
+              PUB_a_ap_supplier.p_partner_key_n AS SupplierKey,
+              PUB_p_partner.p_partner_short_name_c AS SupplierName,
+              PUB_a_ap_payment.a_payment_number_i AS PaymentNumber,
+              PUB_a_ap_payment.a_bank_account_c AS PaymentBank,
+              PUB_a_ap_payment.a_payment_date_d AS PaymentDate,
+              PUB_a_ap_payment.a_reference_c AS PaymentRef,
+              PUB_a_ap_supplier.a_currency_code_c AS PaymentCurrency,
+              PUB_a_ap_payment.a_amount_n AS PaymentTotal
+              FROM
+              PUB_a_ap_document, PUB_a_ap_supplier, PUB_a_ap_payment, PUB_a_ap_document_payment, PUB_p_partner
+              WHERE
+              PUB_a_ap_payment.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document_payment.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_payment.a_payment_number_i &gt;= {{param_payment_num_from_i}}
+              AND PUB_a_ap_payment.a_payment_number_i &lt;= {{param_payment_num_to_i}}
+              AND PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i
+              AND PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i
+              AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
+              AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+      
+
+      <calculation id="SupplierName" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Supplier"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="SupplierName"/>
+          </queryDetail>
+        </query>
+      </calculation>
+      
+
+      <calculation id="PaymentNumber" returnsFormat="text" returns="text">
+        <caption>
+          <value text="AP / Pymnt"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PaymentNumber"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="PaymentBank" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Doc Num"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PaymentBank"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="PaymentRef" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Ref"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PaymentRef"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="PaymentDate" returnsFormat="formatteddate" returns="date">
+        <caption>
+          <value text="Date"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PaymentDate"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="PaymentCurrency" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Amount"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PaymentCurrency"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="PaymentTotal" returnsFormat="currency" returns="text">
+        <caption>
+          <value text="Payment"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PaymentTotal"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SupplierKey" returnsFormat="text" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="SupplierKey"/>
+          </queryDetail>
+        </query>
+      </calculation>
+     
+      <calculation id="SelectDocuments" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT
+              PUB_a_ap_document.a_ap_number_i AS ApNumber,
+              PUB_a_ap_document.a_ap_document_id_i AS ApDocumentId,
+              PUB_a_ap_document.a_document_code_c AS DocCode,
+              PUB_a_ap_document.a_reference_c AS DocRef,
+              PUB_a_ap_document.a_date_issued_d AS DocDate,
+              PUB_a_ap_document.a_total_amount_n AS DocTotal
+              FROM
+              PUB_a_ap_document, PUB_a_ap_document_payment
+              WHERE
+              PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document_payment.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document_payment.a_payment_number_i = {{PaymentNumber}}
+              AND PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i
+              AND PUB_a_ap_document.p_partner_key_n = {{SupplierKey}}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+
+      <calculation id="ApDocumentId" returnsFormat="text" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="ApDocumentId"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="ApNumber" returnsFormat="text" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="ApNumber"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="DocCode" returnsFormat="text" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="DocCode"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="DocRef" returnsFormat="text" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="DocRef"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="DocDate" returnsFormat="text" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="DocDate"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="DocTotal" returnsFormat="currency" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="DocTotal"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectDetails" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT
+              a_account_code_c AS DetailAccount,
+              a_narrative_c AS DetailRef,
+              a_amount_n AS DetailAmount,
+              a_detail_number_i
+              FROM PUB_a_ap_document_detail
+              WHERE
+              a_ap_document_id_i = {{ApDocumentId}}
+              ORDER BY a_detail_number_i
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+        
+      <calculation id="DetailAccount" returnsFormat="text" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="DetailAccount"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="DetailRef" returnsFormat="text" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="DetailRef"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="DetailAmount" returnsFormat="currency" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="DetailAmount"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+
+    </calculations>
+		
+		<levels>
+		<level name="main">
+			<detail>
+  				<lowerLevelReport level="SupplierListLevel" calculation="SelectSupplier"/>
+			</detail>
+		</level>
+
+    <level name="SupplierListLevel">
+			<detail>
+        <lowerLevelReport level="SupplierLevel"/>
+			</detail>
+			<footer space="above">
+        <field whichfield="column 5">
+          <value text="Total Payment"/>
+        </field>
+        <field whichfield="column 6" format="currency" pos="indented">
+          <value function="getSumLowerReport({{lineId}}, 6)"/>
+        </field>
+			</footer>
+      </level>
+      
+      <level name="SupplierLevel" identification ="p_partner_key_n">
+        <header>
+          <field whichfield="header 1" pos="0 cm" width="8cm">
+            <value variable="SupplierName"/>
+          </field>
+        </header>
+        <detail>
+  				<lowerLevelReport level="DocumentLevel" calculation="SelectDocuments"/>
+        </detail>
+        <footer>
+          <field whichfield="column 0">
+            <value text="Payment"/>
+          </field>
+          <field whichfield="column 1">
+            <value variable="PaymentNumber"/>
+          </field>
+          <field whichfield="column 2">
+            <value variable="PaymentBank"/>
+          </field>
+           <field whichfield="column 3">
+            <value variable="PaymentRef"/>
+          </field>
+          <field whichfield="column 4">
+            <value variable="PaymentDate"/>
+          </field>
+          <field whichfield="column 6" line="below" format="currency">
+            <value variable="PaymentTotal"/>
+            <value text=" "/>
+            <value variable="PaymentCurrency"/>
+          </field>
+        </footer>
+      </level>
+
+        <level name="DocumentLevel">
+        <header>
+        </header>
+		    <detail>
+          <lowerLevelReport level="APDocumentLevel"/>
+          <lowerLevelReport level="DetailLevel" calculation="SelectDetails"/>
+		    </detail>
+          <footer space="below">
+           <field whichfield="column 5" format="currency" pos="indented">
+            <value variable="DocTotal"/>
+          </field>
+            
+          </footer>
+ 		  </level>
+      
+      <level name="APDocumentLevel">
+        <detail>
+          <field whichfield="column 1">
+            <value variable="ApNumber"/>
+          </field>
+          <field whichfield="column 2">
+            <value variable="DocCode"/>
+          </field>
+           <field whichfield="column 3">
+            <value variable="DocRef"/>
+          </field>
+           <field whichfield="column 4">
+            <value variable="DocDate"/>
+          </field>
+        </detail>
+      </level>
+      
+      <level name="DetailLevel">
+        <detail>
+          <field whichfield="column 1">
+            <value text=""/>
+          </field>
+           <field whichfield="column 2">
+             <value text="    (Acc#: "/>
+             <value variable="DetailAccount"/>
+             <value text=")"/>
+           </field>
+           <field whichfield="column 3">
+             <value text="   "/>
+             <value variable="DetailRef"/>
+          </field>
+           <field whichfield="column 4">
+            <value text=""/>
+          </field>
+           <field whichfield="column 5" format="currency">
+            <value variable="DetailAmount"/>
+          </field>
+           <field whichfield="column 6" format="text">
+            <value text=""/>
+          </field>
+          
+        </detail>
+ 		</level>
+		
+		</levels>
+	</report>
+</reports>

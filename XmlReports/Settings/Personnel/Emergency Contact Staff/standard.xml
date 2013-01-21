@@ -1,32 +1,32 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\emergencycontactreportstaff.xml,Personnel\\emergencycontactreport.xml,common.xml" />
-  <Parameter id="currentReport" value="Emergency Contact Report Staff" />
-  <Parameter id="MaxDisplayColumns" value="11" />
-  <Parameter id="param_selection" value="one partner" />
-  <Parameter id="param_extract" value="" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_calculation" column="0" value="Emergency Contact Type" />
-  <Parameter id="ColumnWidth" column="0" value="2.2" />
-  <Parameter id="param_calculation" column="1" value="Emergency Contact Key" />
-  <Parameter id="ColumnWidth" column="1" value="2" />
-  <Parameter id="param_calculation" column="2" value="Emergency Contact Name" />
-  <Parameter id="ColumnWidth" column="2" value="4" />
-  <Parameter id="param_calculation" column="3" value="Street" />
-  <Parameter id="ColumnWidth" column="3" value="3" />
-  <Parameter id="param_calculation" column="4" value="Post Code" />
-  <Parameter id="ColumnWidth" column="4" value="2" />
-  <Parameter id="param_calculation" column="5" value="City" />
-  <Parameter id="ColumnWidth" column="5" value="3" />
-  <Parameter id="param_calculation" column="6" value="Country" />
-  <Parameter id="ColumnWidth" column="6" value="2" />
-  <Parameter id="param_calculation" column="7" value="Telephone" />
-  <Parameter id="ColumnWidth" column="7" value="2" />
-  <Parameter id="param_calculation" column="8" value="Alternate Telephone" />
-  <Parameter id="ColumnWidth" column="8" value="2" />
-  <Parameter id="param_calculation" column="9" value="Mobile" />
-  <Parameter id="ColumnWidth" column="9" value="2" />
-  <Parameter id="param_calculation" column="10" value="E-Mail" />
-  <Parameter id="ColumnWidth" column="10" value="3" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\emergencycontactreportstaff.xml,Personnel\\emergencycontactreport.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:Emergency Contact Report Staff" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:11" />
+  <Parameter id="param_selection" value="eString:one partner" />
+  <Parameter id="param_extract" value="eString:" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_calculation" column="0" value="eString:Emergency Contact Type" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4612136378390124954" />
+  <Parameter id="param_calculation" column="1" value="eString:Emergency Contact Key" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="param_calculation" column="2" value="eString:Emergency Contact Name" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:4" />
+  <Parameter id="param_calculation" column="3" value="eString:Street" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
+  <Parameter id="param_calculation" column="4" value="eString:Post Code" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
+  <Parameter id="param_calculation" column="5" value="eString:City" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
+  <Parameter id="param_calculation" column="6" value="eString:Country" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
+  <Parameter id="param_calculation" column="7" value="eString:Telephone" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
+  <Parameter id="param_calculation" column="8" value="eString:Alternate Telephone" />
+  <Parameter id="ColumnWidth" column="8" value="eInteger:2" />
+  <Parameter id="param_calculation" column="9" value="eString:Mobile" />
+  <Parameter id="ColumnWidth" column="9" value="eInteger:2" />
+  <Parameter id="param_calculation" column="10" value="eString:E-Mail" />
+  <Parameter id="ColumnWidth" column="10" value="eInteger:3" />
 </Parameters>

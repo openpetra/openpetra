@@ -1,0 +1,7 @@
+GUEST,Associate Worker or Guest needing Intranet access,?,true,6,false,?,false,?,?,?,?,?
+LONG-TERMER,Long-term Worker,?,true,3,false,?,false,?,?,?,?,?
+WORKER,"Worker with us 6 months or longer, not yet long-term",?,true,2,false,?,false,?,?,?,?,?
+SHORT-TERMER,Short-termer - less than 6 months,?,true,1,false,?,false,?,?,?,?,?
+STAFF,Paid staff and employees,?,true,4,false,?,false,?,?,?,?,?
+TRANSITION,Left the organisation but needs Intranet access for a limited time,?,true,7,false,?,false,?,?,?,?,?
+VOLUNTEER,Volunteer,?,false,5,false,?,false,?,?,?,?,?

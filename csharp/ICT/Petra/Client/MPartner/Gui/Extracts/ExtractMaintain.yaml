@@ -1,0 +1,31 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintenance of Extract
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    DetailTable: MExtract
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    FormType: edit
+    Template: window
+    Actions:
+        actCopyPartnerKey: {ShortCut=Ctrl+C, ActionClick=CopyPartnerKeyToClipboard}        
+        actSetLastWorkedWith: {ShortCut=Ctrl+S, ActionClick=SetPartnerLastWorkedWith}
+        actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}      
+        
+    Controls:
+        pnlExtract:
+            Dock: Fill
+            Controls: [ucoExtractMaintain]
+               
+        ucoExtractMaintain:
+            Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMaintain
+            Dock: Fill
+    Menu:
+        mniEdit:
+            mniCopyPartnerKey: {Label=Copy partner key to clipboard}
+            mniSetLastWorkedWith: {Label=Set this partner as 'last worked with'}
+
+        mniMaintain:
+            Label: &Maintain
+            mniVerifyExtract: {Label=Verify and Update Extract, Action=actVerifyAndUpdateExtract}
+            

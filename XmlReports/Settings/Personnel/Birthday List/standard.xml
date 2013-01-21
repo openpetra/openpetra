@@ -1,36 +1,39 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\birthdaylist.xml,Personnel\\personnel.xml" />
-  <Parameter id="currentReport" value="Birthday List" />
-  <Parameter id="MaxDisplayColumns" value="7" />
-  <Parameter id="param_selection" value="one partner" />
-  <Parameter id="param_extract" value="" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="orderby0" value="Date of Birth" />
-  <Parameter id="orderby1" value="Partner Name" />
-  <Parameter id="orderby2" value="Partner Key" />
-  <Parameter id="param_sortby_readable" value="Date of Birth, Partner Name, Partner Key" />
-  <Parameter id="param_calculation" column="7" value="Date Of Birth This Year" />
-  <Parameter id="param_calculation" column="8" value="Partner Name" />
-  <Parameter id="param_calculation" column="9" value="Partner Key" />
-  <Parameter id="param_sortby_columns" value="7,8,9" />
-  <Parameter id="param_chkUseDate" value="false" />
-  <Parameter id="param_chkIncludeFamily" value="false" />
-  <Parameter id="param_chkSelectTypes" value="false" />
-  <Parameter id="param_partnertypelist" value="false" />
-  <Parameter id="param_calculation" column="0" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="0" value="4" />
-  <Parameter id="param_calculation" column="1" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="1" value="2" />
-  <Parameter id="param_calculation" column="2" value="Date of Birth" />
-  <Parameter id="ColumnWidth" column="2" value="2.5" />
-  <Parameter id="param_calculation" column="3" value="Partner Type" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_calculation" column="4" value="Start Date of Commitment" />
-  <Parameter id="ColumnWidth" column="4" value="2" />
-  <Parameter id="param_calculation" column="5" value="End Date of Commitment" />
-  <Parameter id="ColumnWidth" column="5" value="2" />
-  <Parameter id="param_calculation" column="6" value="Gender" />
-  <Parameter id="ColumnWidth" column="6" value="2" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\birthdaylist.xml,Personnel\\personnel.xml" />
+  <Parameter id="currentReport" value="eString:Birthday List" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:7" />
+  <Parameter id="param_selection" value="eString:one partner" />
+  <Parameter id="param_extract" value="eString:" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="orderby0" value="eString:Date of Birth" />
+  <Parameter id="orderby1" value="eString:Partner Name" />
+  <Parameter id="orderby2" value="eString:Partner Key" />
+  <Parameter id="param_sortby_readable" value="eString:Date of Birth, Partner Name, Partner Key" />
+  <Parameter id="param_calculation" column="7" value="eString:Date Of Birth This Year" />
+  <Parameter id="param_calculation" column="8" value="eString:Partner Name" />
+  <Parameter id="param_calculation" column="9" value="eString:Partner Key" />
+  <Parameter id="param_sortby_columns" value="eString:7,8,9" />
+  <Parameter id="param_chkUseDate" value="eString:false" />
+  <Parameter id="param_chkIncludeFamily" value="eString:false" />
+  <Parameter id="param_chkSelectTypes" value="eString:false" />
+  <Parameter id="param_partnertypelist" value="eString:false" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:4" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="param_calculation" column="2" value="eString:Date of Birth" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_calculation" column="3" value="eString:Partner Type" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_calculation" column="4" value="eString:Start Date of Commitment" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
+  <Parameter id="param_calculation" column="5" value="eString:End Date of Commitment" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="param_calculation" column="6" value="eString:Gender" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
+  <Parameter id="param_calculation" column="7" value="eString:Age" />
+  <Parameter id="ColumnWidth" column="7" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="7" value="eBoolean:false" />  
 </Parameters>

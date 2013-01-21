@@ -1,0 +1,44 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Mailings
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PMailing
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation, Ict.Petra.Shared.Interfaces.MCommon, Ict.Common.Remoting.Client]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 800
+    WindowHeight: 575
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailMailingCode, DetailMailingDescription, DetailMailingDate, DetailMailingCost]
+            CustomColumns:
+                DetailMailingDescription: {Label=Description}
+                DetailMailingDate: {Label=Mailing Date, Type=DateTime}
+                DetailMailingCost: {Label=Mailing Cost, Type=Currency}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailMailingCode, txtDetailMailingDescription]
+                Row1: [dtpDetailMailingDate, txtDetailMailingCost]
+        txtDetailMailingCode: {Label=Mailing Code, CharacterCasing=Upper, Width=180}
+        txtDetailMailingDescription: {Label=Description, Width=350}
+        dtpDetailMailingDate: {Label=Mailing Date, Validation=True}
+        txtDetailMailingCost: {Label=Mailing Cost, Format=Decimal}
+
+    Toolbar:
+        tbbNew: 
+            Label: New Mailing

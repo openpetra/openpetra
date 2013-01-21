@@ -14,6 +14,8 @@ RootNode:
     Actions:
         actOK: {ActionClick=btnOK_Click}
         actCopyToClipboard: {ActionClick=btnCopyToClipboard_Click}
+        actShowServerLog: {ActionClick=btnShowServerLog_Click}
+        actShowClientLog: {ActionClick=btnShowClientLog_Click}
         
     Controls:
         pnlContent:
@@ -38,9 +40,10 @@ RootNode:
         pnlButtons:
             Dock: Bottom
             Controls:
-                Row0: [btnCopyToClipboard, btnOK]
-            ColWidths: [0=Percent:25, 1=Percent:33]
+                Row0: [btnCopyToClipboard, btnOK, btnShowServerLog, btnShowClientLog]
+            ColWidths: [0=Percent:33, 1=Percent:25, 2=Percent:20, 3=Percent:20]
             
         btnCopyToClipboard:
-            
         btnOK:
+        btnShowServerLog:
+        btnShowClientLog:

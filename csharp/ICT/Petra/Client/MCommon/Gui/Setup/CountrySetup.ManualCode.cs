@@ -31,8 +31,10 @@ using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
@@ -56,11 +58,6 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             ARow.CountryCode = newName;
         }
 
-        private void GetDetailDataFromControlsManual(PCountryRow ARow)
-        {
-            ARow.NationalityName = "";
-        }
-
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPCountry();
@@ -80,6 +77,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             {
                 txtDetailTimeZoneMaximum.NumberValueDouble = txtDetailTimeZoneMinimum.NumberValueDouble;
             }
+        }
+
+        private void ValidateDataDetailsManual(PCountryRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedValidation_CacheableDataTables.ValidateCountrySetupManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

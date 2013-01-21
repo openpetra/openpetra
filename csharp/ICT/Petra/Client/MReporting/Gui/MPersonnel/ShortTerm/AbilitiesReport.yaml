@@ -2,7 +2,7 @@ RootNode:
     BaseYaml: ShortTermReportingForm.yaml
     FormType: report
     FormTitle: Abilities Report
-    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
     TemplateParameters:
         XMLFILES: [Personnel\\\\abilitiesreport.xml,Personnel\\\\personnel.xml]
         REPORTNAME: Abilities Report

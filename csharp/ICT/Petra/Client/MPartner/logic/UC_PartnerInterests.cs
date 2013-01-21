@@ -4,7 +4,7 @@
 // @Authors:
 //       martaj
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,21 +24,21 @@
 using System;
 using System.Data;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Common.Controls;
 using SourceGrid;
 using SourceGrid.Cells;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
 using System.Windows.Forms;
 using System.Collections;
 using System.Collections.Specialized;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared;
+using Ict.Common.Remoting.Client;
 
 namespace Ict.Petra.Client.MPartner
 {
@@ -47,14 +47,15 @@ namespace Ict.Petra.Client.MPartner
     /// </summary>
     public class TUCPartnerInterestsLogic
     {
-        /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionLine1 = "Are you sure you want to remove this Interest";
+        #region Resourcestrings
 
         /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionNotShared = "from the database?";
+        private static readonly string StrDeleteQuestion = Catalog.GetString("Are you sure you want to remove the Interest {0} from the database?");
 
         /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionTitle = "Delete Interest?";
+        private static readonly string StrDeleteQuestionTitle = Catalog.GetString("Delete Interest?");
+
+        #endregion
 
         private PartnerEditTDS FMultiTableDS;
 
@@ -464,7 +465,6 @@ namespace Ict.Petra.Client.MPartner
             Boolean ReturnValue;
             DataRow InterestRow = null;
             DialogResult Chosen;
-            String DeleteQuestion;
 
             try
             {
@@ -473,8 +473,8 @@ namespace Ict.Petra.Client.MPartner
             catch (Exception)
             {
             }
-            DeleteQuestion = StrDeleteQuestionLine1 + "\r\n" + StrDeleteQuestionNotShared;
-            Chosen = MessageBox.Show(DeleteQuestion,
+
+            Chosen = MessageBox.Show(StrDeleteQuestion,
                 StrDeleteQuestionTitle,
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question,

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.IO;
+using System.Data;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -50,6 +51,7 @@ namespace Tests.Common.Printing
     {
         const string FileName = "../../csharp/ICT/Testing/exe/Printing/test.html";
 
+        /// constructor
         public MainForm()
         {
             //
@@ -94,7 +96,7 @@ namespace Tests.Common.Printing
 
             pdfPrinter.SavePDF("test.pdf");
 
-            MessageBox.Show("Please check test.pdf in the Debug directory!");
+            System.Diagnostics.Process.Start(Path.GetFullPath("test.pdf"));
         }
 
         void TbbPrintPDFToScreenClick(object sender, EventArgs e)
@@ -120,8 +122,6 @@ namespace Tests.Common.Printing
 
         void TbbPreviewClick(object sender, EventArgs e)
         {
-            webBrowser1.DocumentText = txtHTMLText.Text;
-
             PrintDocument doc = new PrintDocument();
 
             FGfxPrinter = new TGfxPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
@@ -210,7 +210,7 @@ namespace Tests.Common.Printing
                 UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
                 FGfxPrinter = new TGfxPrinter(doc, TGfxPrinter.ePrinterBehaviour.eReport);
-                TReportPrinterLayout ReportGfxPrinter = new TReportPrinterLayout(Results, Parameters, FGfxPrinter, true);
+                new TReportPrinterLayout(Results, Parameters, FGfxPrinter, true);
                 printPreviewControl1.Document = doc;
                 doc.EndPrint += new PrintEventHandler(this.PrintDocument_EndPrint);
                 printPreviewControl1.InvalidatePreview();

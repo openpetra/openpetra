@@ -97,38 +97,19 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   </code>
 </script>             
 
-<target name="cleanPetra" depends="clean" />
+<target name="cleanPetra" depends="clean,quickClean" />
 <target name="compilePetra" depends="compile" />
 
 <target name="generateORMCachedTables" depends="" description="Generates the cached tables">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="CachedTableParameters" value="-petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Shared -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
+  <property name="CachedTableParameters" value="-petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Shared -TemplateDir:${dir.incdir.template.src}"/>
   <ExecDotNet program="${tool-generateORM}" commandline="-do:cachedtables ${CachedTableParameters} -cachedef:${dir.root}/csharp/ICT/Petra/Definitions/CacheableTablesAndLists.yaml"/>
 </target>
 
-<target name="generateORMDatasets" depends="" description="Generates the Datasets">
-  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MCommon/data/CommonTypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MCommon.Data -outputFilename:Common.DataSets -StartTableId:5000 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MPartner/data/PartnerTypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MPartner.Partner.Data -outputFilename:Partner.DataSets -StartTableId:5100 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MPersonnel/data/PersonnelTypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MPersonnel.Personnel.Data -outputFilename:Personnel.DataSets -StartTableId:5200 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MHospitality/data/TypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MHospitality.Data -outputFilename:Hospitality.DataSets -StartTableId:5300 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.AP.TypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MFinance.AP.Data -outputFilename:Finance.AP.DataSets -StartTableId:5400 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.GL.TypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MFinance.GL.Data -outputFilename:Finance.GL.DataSets -StartTableId:5500 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.Gift.TypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MFinance.Gift.Data -outputFilename:Finance.Gift.DataSets -StartTableId:5600 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MSysMan/data/SysMan.TypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MSysMan.Data -outputFilename:SysMan.DataSets -StartTableId:5700 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-  <ExecDotNet  program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MConference/data/ConferenceTypedDataSets.xml -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data/ -outputNamespace:Ict.Petra.Shared.MConference.Data -outputFilename:Conference.DataSets -StartTableId:5800 -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-</target> 
-
 <target name="generateGlue" depends="" description="Generate the glue between client and server, ie. interfaces and instantiators">
-  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <ExecDotNet program="${dir.bin}/GenerateSharedCode.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.root}/csharp/ICT/PetraTools/Templates"/>
-</target>
-
-<target name="translation" description="extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery">
-  <nant inheritall="false" target="extractMsgs" 
-        buildfile="${dir.root}/i18n/i18n.build" />
-  <nant inheritall="false" target="translationCompilePOFile" 
-        buildfile="${dir.root}/i18n/i18n.build" />
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+  <property name="module" value="all" overwrite="false"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateGlue.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.incdir.template.src} -module:${module}"/>
 </target>
 
 <!-- Some database settings -->
@@ -138,21 +119,33 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <!-- set platform specific variables -->
 <if test="${'win32'==platform::get-name()}" >
   <echo>Running on MS Windows</echo>
-  <property name="Dia.exe" value="${environment::get-variable('ProgramFiles')}\Dia\bin\dia.exe" overwrite="false"/> 
-  <property name="PostgreSQL.exe" value="${environment::get-variable('ProgramFiles')}/PostgreSQL/9.0/bin/psql.exe" overwrite="false" />
-  <property name="pgdump.exe" value="${environment::get-variable('ProgramFiles')}/PostgreSQL/9.0/bin/pg_dump.exe" overwrite="false"/>
-  <property name="MySQL.exe" value="${environment::get-variable('ProgramFiles')}\mysql\mysql server 5.1/bin/mysql.exe" overwrite="false" />
-  <property name="MySQLDump.exe" value="${environment::get-variable('ProgramFiles')}\mysql\mysql server 5.1/bin/mysqldump.exe" 
+  <property name="PostgreSQL.Version" value="9.0" overwrite="false"/>
+  <property name="MySQL.Version" value="5.1" overwrite="false"/>
+  <property name="Dia.exe" value="${OP::GetFileInProgramDirectory('\Dia\bin\dia.exe')}" overwrite="false"/> 
+  <property name="PostgreSQL.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/' + PostgreSQL.Version + '/bin/psql.exe')}" overwrite="false" />
+  <property name="pgdump.exe" value="${OP::GetFileInProgramDirectory('/PostgreSQL/' + PostgreSQL.Version + '/bin/pg_dump.exe')}" overwrite="false"/>
+  <property name="MySQL.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server ' + MySQL.Version + '/bin/mysql.exe')}" overwrite="false" />
+  <property name="MySQLDump.exe" value="${OP::GetFileInProgramDirectory('\mysql\mysql server ' + MySQL.Version + '/bin/mysqldump.exe')}" 
             overwrite="false"/> 
-  <property name="Innosetup.ISCC" value="${environment::get-variable('ProgramFiles')}/Inno Setup 5/ISCC.exe" overwrite="false"/>
-  <!-- Is this really needed?? Yes, needed for the XSP webserver which is used for testing on Windows -->
-  <property name="MonoBinPath" value="${environment::get-variable('ProgramFiles')}\Mono-2.6.7\bin" overwrite="false"/>     
+  <property name="Innosetup.ISCC" value="${OP::GetFileInProgramDirectory('/Inno Setup 5/ISCC.exe')}" overwrite="false"/>
+  <property name="makensis.exe" value="${OP::GetFileInProgramDirectory('/NSIS/makensis.exe')}" overwrite="false"/>
+
+  <!-- For Windows, we do not need the XSP server anymore, but use the SimpleASPHost -->
+  <property name="MonoBinPath" value="" overwrite="false"/>
 </if>
 <if test="${'win32'!=platform::get-name()}">
   <if test="${'unix'==platform::get-name()}">
     <echo>Running on Unix</echo>
     <property name="PostgreSQL.exe" value="psql" overwrite="false"/>
+    <property name="pgdump.exe" value="pg_dump" overwrite="false"/>
     <property name="MySQL.exe" value="mysql" overwrite="false"/>
+    <property name="makensis.exe" value="makensis" overwrite="false"/>
+    <property name="MonoBinPath" value="/usr/bin" overwrite="false"/>
+
+    <property name="MonoExecutable.file" value="/opt/mono-openpetra/bin/mono" overwrite="false"/>
+    <if test="${not file::exists(MonoExecutable.file)}">
+        <property name="MonoExecutable.file" value="${framework::get-runtime-engine(framework::get-target-framework())}" overwrite="true"/>
+    </if>
   </if>
   <if test="${'unix'!=platform::get-name()}">
     <echo>Unknown platform!</echo>
@@ -164,7 +157,8 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <property name="OpenPetraRoot.dir" value="${dir.root}" overwrite="true" />
 <property name="PetraRelease" value="0300" overwrite="false" />
 <property name="SQLitedb.file" value="${dir.root}/setup/petra${PetraRelease}/petra.db" overwrite="false" />
-<property name="PetraToolsExe.dir" value="${dir.bin}" overwrite="true" />
+<property name="SQLitedbWork.file" value="${dir.root}/setup/petra${PetraRelease}/demo.db" overwrite="false" />
+<property name="BuildToolsExe.dir" value="${dir.bin}" overwrite="true" />
 <property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
 <property name="ThirdParty.dir" value="${dir.3rdParty}" overwrite="false" />
 <property name="Tmp.dir" value="${tempdir}"/>
@@ -216,6 +210,6 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   </if>
  </target>
   
-<include buildfile="../../OpenPetra.build.database.tasks" />
+<include buildfile="../../db/database.build" />
 
 </project>

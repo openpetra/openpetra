@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,11 +45,25 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public partial class TPetraUserControl : System.Windows.Forms.UserControl
     {
-        // TODO statusbar text
         private System.Windows.Forms.ToolTip tipUC;
+
+        /// <summary>
+        /// property for setting the tooltip.
+        /// needed to avoid warning about unused variable tipUC
+        /// </summary>
+        public string ToolTip
+        {
+            set
+            {
+                tipUC.SetToolTip(this, value);
+            }
+        }
 
         /// <summary>Holds the DataSet that contains most data that is used in the UserControl</summary>
         protected DataSet FMainDS;
+
+        /// <summary>use this property to exclude controls from being hooked up to the automatic value changed event</summary>
+        protected bool FCanBeHookedUpForValueChangedEvent = true;
 
         /// <summary>Used for keeping track of data verification errors</summary>
         protected TVerificationResultCollection FVerificationResultCollection;
@@ -84,6 +98,21 @@ namespace Ict.Petra.Client.CommonForms
                 FVerificationResultCollection = value;
             }
         }
+
+        /// <summary>use this property to exclude controls from being hooked up to the automatic value changed event</summary>
+        public bool CanBeHookedUpForValueChangedEvent
+        {
+            get
+            {
+                return FCanBeHookedUpForValueChangedEvent;
+            }
+
+            set
+            {
+                FCanBeHookedUpForValueChangedEvent = value;
+            }
+        }
+
 
         /// <summary>
         /// Special property to determine whether our code is running in the WinForms Designer.
@@ -164,6 +193,9 @@ namespace Ict.Petra.Client.CommonForms
             set;
         }
 
+        /// <summary>
+        /// used to initialize the user control
+        /// </summary>
         void InitUserControl();
     }
 
@@ -182,6 +214,9 @@ namespace Ict.Petra.Client.CommonForms
             set;
         }
 
+        /// <summary>
+        /// used to initialize the user control
+        /// </summary>
         void InitUserControl();
     }
 }

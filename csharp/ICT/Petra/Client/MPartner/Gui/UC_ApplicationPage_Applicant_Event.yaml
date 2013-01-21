@@ -1,0 +1,47 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.ApplicationTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PmGeneralApplication
+    Actions:
+    Controls:
+        pnlDetails:
+            Controls: [grpComments, grpStatus, grpEventRoles]
+            Dock: Fill
+        grpComments: {Label=Additional Preferences or Comments, Stretch=horizontally}
+            Controls: 
+                Row0: [txtComments]
+        grpStatus: {Label=Status, Stretch=horizontally}
+            Controls: 
+                Row0: [cmbApplicationStatus]
+                Row1: [txtReason]
+                Row2: [dtpCancellationDate, dtpAcceptanceDate]
+                Row3: [chkAcceptedByReceivingField, dtpFieldAcceptance]
+        grpEventRoles: {Label=At Event, Stretch=horizontally}
+            Controls: 
+                Row0: [cmbConferenceRole]
+                Row1: [cmbConferenceLanguage]
+                Row2: [txtFellowshipGroup, chkFellowshipGroupLeader]
+              
+        txtComments: {NoLabel=true, DataField=PmGeneralApplication.Comment, Stretch=horizontally}
+            Width: 600
+            Height: 50
+            Multiline: true
+            ScrollBars: Vertical
+            
+        cmbApplicationStatus: {Label=Application Status, List=ApplicantStatusList, DataField=PmGeneralApplication.GenApplicationStatus, ColSpan=2}
+        txtReason: {Label=Reason, DataField=PmGeneralApplication.GenApplicationHoldReason, ColSpan=2, Stretch=horizontally}
+        dtpCancellationDate: {Label= Cancellation Date, DataField=PmGeneralApplication.GenAppCancelled}
+        dtpAcceptanceDate: {Label=Sending Field Acceptance Date, DataField=PmGeneralApplication.GenAppSendFldAcceptDate}
+        chkAcceptedByReceivingField: {Label=Accepted by Receiving Field, DataField=PmGeneralApplication.GenAppSrvFldAccept, OnChange=EnableDisableReceivingFieldAcceptanceDate}
+        dtpFieldAcceptance: {Label=Receiving Field Acceptance Date, DataField=PmGeneralApplication.GenAppRecvgFldAccept, Validation=true}
+        
+        cmbConferenceRole: {Label=Conference Role, List=EventRoleList, DataField=PmShortTermApplication.StCongressCode, ColSpan=2}
+        cmbConferenceLanguage: {Label=Conference Language, List=LanguageCodeList, DataField=PmShortTermApplication.StCongressLanguage, ColSpan=2}
+        txtFellowshipGroup: {Label=Fellowship Group, DataField=PmShortTermApplication.StFgCode}
+        chkFellowshipGroupLeader: {Label=Fellowship Group Leader, CheckBoxAttachedLabel=right, DataField=PmShortTermApplication.StFgLeader}
+        

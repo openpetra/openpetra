@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,9 @@
 //
 using System;
 using System.Data;
+using System.Collections.Generic;
+using System.Reflection;
+using System.IO;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MReporting;
@@ -97,8 +100,9 @@ namespace Ict.Petra.Server.MReporting
             int ReturnValue;
             int thisRunningCode;
             TRptDetail rptDetail;
-            TRptGrpLowerLevel rptGrpLowerLevel;
-            TRptGrpField rptGrpField;
+
+            List <TRptLowerLevel>rptGrpLowerLevel;
+            List <TRptField>rptGrpField;
             TRptDataCalcSwitch calcSwitch;
             TRptDataCalcLowerLevel calcLowerLevel;
             TRptDataCalcField calcGrpField;
@@ -144,7 +148,7 @@ namespace Ict.Petra.Server.MReporting
                 {
                     subreport = 0;
 
-                    foreach (TRptLowerLevel rptLowerLevel in rptGrpLowerLevel.List)
+                    foreach (TRptLowerLevel rptLowerLevel in rptGrpLowerLevel)
                     {
                         Parameters.Add("CurrentSubReport", subreport);
                         calcLowerLevel = new TRptDataCalcLowerLevel(this);
@@ -162,7 +166,7 @@ namespace Ict.Petra.Server.MReporting
                 }
                 else
                 {
-                    foreach (TRptLowerLevel rptLowerLevel in rptGrpLowerLevel.List)
+                    foreach (TRptLowerLevel rptLowerLevel in rptGrpLowerLevel)
                     {
                         calcLowerLevel = new TRptDataCalcLowerLevel(this);
                         calcLowerLevel.Calculate(rptLowerLevel, thisRunningCode);
@@ -297,9 +301,9 @@ namespace Ict.Petra.Server.MReporting
 
             if (rptSwitch.rptGrpCases != null)
             {
-                while ((counter < rptSwitch.rptGrpCases.List.Count) && (ReturnValue == null))
+                while ((counter < rptSwitch.rptGrpCases.Count) && (ReturnValue == null))
                 {
-                    rptCase = (TRptCase)rptSwitch.rptGrpCases.List[counter];
+                    rptCase = (TRptCase)rptSwitch.rptGrpCases[counter];
 
                     if (EvaluateCondition(rptCase.strCondition))
                     {
@@ -322,7 +326,7 @@ namespace Ict.Petra.Server.MReporting
         /// this procedure should be used in levels only
         /// </summary>
         /// <returns>void</returns>
-        public void Calculate(TRptSwitch rptSwitch, out TRptGrpLowerLevel rptGrpLowerLevel, out TRptGrpField rptGrpField)
+        public void Calculate(TRptSwitch rptSwitch, out List <TRptLowerLevel>rptGrpLowerLevel, out List <TRptField>rptGrpField)
         {
             TRptDataCalcSwitch calcSwitch;
             TRptCase rptCase;
@@ -347,13 +351,13 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// this function can be used in calculations and other places as well
         /// </summary>
-        public TVariant Calculate(TRptGrpSwitch rptGrpSwitch)
+        public TVariant Calculate(List <TRptSwitch>rptGrpSwitch)
         {
             TVariant ReturnValue;
 
             ReturnValue = new TVariant();
 
-            foreach (TRptSwitch rptSwitch in rptGrpSwitch.List)
+            foreach (TRptSwitch rptSwitch in rptGrpSwitch)
             {
                 ReturnValue.Add(Calculate(rptSwitch));
             }
@@ -532,9 +536,9 @@ namespace Ict.Petra.Server.MReporting
         /// todoComment
         /// </summary>
         /// <param name="rptGrpField"></param>
-        public void Calculate(TRptGrpField rptGrpField)
+        public void Calculate(List <TRptField>rptGrpField)
         {
-            foreach (TRptField rptField in rptGrpField.List)
+            foreach (TRptField rptField in rptGrpField)
             {
                 Calculate(rptField);
             }
@@ -715,7 +719,7 @@ namespace Ict.Petra.Server.MReporting
         /// </summary>
         /// <param name="rptGrpValue"></param>
         /// <param name="rptGrpFieldDetail"></param>
-        public void Calculate(TRptGrpValue rptGrpValue, TRptGrpFieldDetail rptGrpFieldDetail)
+        public void Calculate(List <TRptValue>rptGrpValue, List <TRptFieldDetail>rptGrpFieldDetail)
         {
             TVariant value;
             TRptDataCalcValue rptDataCalcValue;
@@ -758,7 +762,7 @@ namespace Ict.Petra.Server.MReporting
         /// </summary>
         /// <param name="rptGrpFieldDetail"></param>
         /// <returns></returns>
-        public TVariant Calculate(TRptGrpFieldDetail rptGrpFieldDetail)
+        public TVariant Calculate(List <TRptFieldDetail>rptGrpFieldDetail)
         {
             TVariant ReturnValue;
             TRptDataCalcValue rptDataCalcValue;
@@ -766,7 +770,7 @@ namespace Ict.Petra.Server.MReporting
 
             ReturnValue = new TVariant();
 
-            foreach (TRptFieldDetail rptFieldDetail in rptGrpFieldDetail.List)
+            foreach (TRptFieldDetail rptFieldDetail in rptGrpFieldDetail)
             {
                 if (EvaluateCondition(rptFieldDetail.strCondition))
                 {
@@ -844,7 +848,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptGrpValue"></param>
         /// <param name="AWithSpaceBetweenValues"></param>
         /// <returns></returns>
-        public TVariant Calculate(TRptGrpValue rptGrpValue, Boolean AWithSpaceBetweenValues)
+        public TVariant Calculate(List <TRptValue>rptGrpValue, Boolean AWithSpaceBetweenValues)
         {
             TVariant ReturnValue;
             String listValue;
@@ -854,7 +858,7 @@ namespace Ict.Petra.Server.MReporting
 
             ReturnValue = new TVariant();
 
-            foreach (TRptValue rptValue in rptGrpValue.List)
+            foreach (TRptValue rptValue in rptGrpValue)
             {
                 if (EvaluateCondition(rptValue.strCondition))
                 {
@@ -1013,7 +1017,7 @@ namespace Ict.Petra.Server.MReporting
         /// </summary>
         /// <param name="rptGrpValue"></param>
         /// <returns></returns>
-        public TVariant Calculate(TRptGrpValue rptGrpValue)
+        public TVariant Calculate(List <TRptValue>rptGrpValue)
         {
             return Calculate(rptGrpValue, false);
         }
@@ -1063,7 +1067,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="query"></param>
         /// <param name="rptGrpParameter"></param>
         /// <returns></returns>
-        public String Calculate(String query, TRptGrpParameter rptGrpParameter)
+        public String Calculate(String query, List <TRptParameter>rptGrpParameter)
         {
             String ReturnValue;
             string name;
@@ -1073,7 +1077,7 @@ namespace Ict.Petra.Server.MReporting
             value = new TVariant();
             ReturnValue = query;
 
-            foreach (TRptParameter rptParameter in rptGrpParameter.List)
+            foreach (TRptParameter rptParameter in rptGrpParameter)
             {
                 name = rptParameter.strName;
 
@@ -1155,7 +1159,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptGrpParameter"></param>
         /// <param name="query"></param>
         /// <returns></returns>
-        private string ApplyParametersToQuery(TRptGrpParameter rptGrpParameter, String query)
+        private string ApplyParametersToQuery(List <TRptParameter>rptGrpParameter, String query)
         {
             string ReturnValue;
             TRptDataCalcParameter rptDataCalcParameter;
@@ -1171,6 +1175,71 @@ namespace Ict.Petra.Server.MReporting
             return ReturnValue;
         }
 
+        private SortedList <string, Assembly>FReportAssemblies = new SortedList <string, Assembly>();
+
+        /// <summary>
+        /// instead of executing an sql query, we can run a method that returns a DataTable
+        /// </summary>
+        /// <param name="ANamespaceClassAndMethodName"></param>
+        private DataTable CalculateFromMethod(string ANamespaceClassAndMethodName)
+        {
+            string methodName = ANamespaceClassAndMethodName.Substring(ANamespaceClassAndMethodName.LastIndexOf(".") + 1);
+
+            ANamespaceClassAndMethodName = ANamespaceClassAndMethodName.Substring(0, ANamespaceClassAndMethodName.LastIndexOf("."));
+            string className = ANamespaceClassAndMethodName.Substring(ANamespaceClassAndMethodName.LastIndexOf(".") + 1);
+            string namespaceName = ANamespaceClassAndMethodName.Substring(0, ANamespaceClassAndMethodName.LastIndexOf("."));
+
+            if (!FReportAssemblies.Keys.Contains(namespaceName))
+            {
+                // work around dlls containing several namespaces, eg Ict.Petra.Client.MFinance.Gui contains AR as well
+                string DllName = (TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + namespaceName).ToString().
+                                 Replace("Ict.Petra.Server.", "Ict.Petra.Server.lib.");
+
+                if (!System.IO.File.Exists(DllName + ".dll"))
+                {
+                    DllName = DllName.Substring(0, DllName.LastIndexOf("."));
+                }
+
+                try
+                {
+                    FReportAssemblies.Add(namespaceName, Assembly.LoadFrom(DllName + ".dll"));
+                }
+                catch (Exception exp)
+                {
+                    throw new Exception("error loading assembly " + namespaceName + ".dll: " + exp.Message);
+                }
+            }
+
+            Assembly asm = FReportAssemblies[namespaceName];
+
+            System.Type classType = asm.GetType(namespaceName + "." + className);
+
+            if (classType == null)
+            {
+                throw new Exception("cannot find class " + namespaceName + "." + className + " for method " + methodName);
+            }
+
+            MethodInfo method = classType.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
+
+            if (method != null)
+            {
+                try
+                {
+                    return (DataTable)method.Invoke(null, new object[] { this.Parameters, this.Results });
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log("problem while calling " + ANamespaceClassAndMethodName);
+                    TLogging.Log(e.ToString());
+                    return null;
+                }
+            }
+            else
+            {
+                throw new Exception("cannot find method " + className + "." + methodName);
+            }
+        }
+
         /// <summary>
         /// execute sql query, or do any other calculation to get the result
         /// </summary>
@@ -1179,7 +1248,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="strLowerLevel">can be empty string if there is no lower level to be calculated depending on the result of this query</param>
         /// <param name="masterRow"></param>
         public TVariant EvaluateCalculation(TRptCalculation rptCalculation,
-            TRptGrpParameter rptGrpParameter,
+            List <TRptParameter>rptGrpParameter,
             string strLowerLevel,
             int masterRow)
         {
@@ -1216,6 +1285,41 @@ namespace Ict.Petra.Server.MReporting
                         TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
                         rptDataCalcLevel.Depth++;
                         rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
+                    }
+                }
+            }
+            else if (strSql.StartsWith("Ict.Petra.Server."))
+            {
+                DataTable tab = CalculateFromMethod(strSql);
+
+                if (tab == null)
+                {
+                    throw new Exception("Error in " + strSql);
+                }
+                else if (tab.Rows.Count > 0)
+                {
+                    string strReturns = rptCalculation.strReturns;
+
+                    if (strReturns.ToLower() == "automatic")
+                    {
+                        strReturns = string.Empty;
+
+                        foreach (DataColumn col in tab.Columns)
+                        {
+                            strReturns = StringHelper.AddCSV(strReturns, col.ColumnName);
+                        }
+                    }
+
+                    foreach (DataRow row in tab.Rows)
+                    {
+                        this.AddResultsToParameter(strReturns, rptCalculation.strReturnsFormat, row, StoreResultsAtDepth);
+
+                        if (strLowerLevel != String.Empty)
+                        {
+                            TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
+                            rptDataCalcLevel.Depth++;
+                            rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
+                        }
                     }
                 }
             }
@@ -1359,16 +1463,16 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptGrpValue"></param>
         /// <param name="strFunction"></param>
         /// <returns></returns>
-        private Boolean GetFunctionCalculation(TRptGrpValue rptGrpValue, out String strFunction)
+        private Boolean GetFunctionCalculation(List <TRptValue>rptGrpValue, out String strFunction)
         {
             TRptValue rptValue;
 
             strFunction = "";
             Boolean ReturnValue = false;
 
-            if ((rptGrpValue != null) && (rptGrpValue.List.Count == 1))
+            if ((rptGrpValue != null) && (rptGrpValue.Count == 1))
             {
-                rptValue = (TRptValue)rptGrpValue.List[0];
+                rptValue = (TRptValue)rptGrpValue[0];
 
                 if ((rptValue.strFunction.Length != 0) && (rptValue.strCondition.Length == 0))
                 {
@@ -1387,7 +1491,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="precalculatedColumns"></param>
         /// <param name="resultValue"></param>
         /// <returns></returns>
-        public Boolean EvaluateCalculationFunction(TRptGrpQuery rptGrpQuery, ref TVariant[] precalculatedColumns, ref TVariant resultValue)
+        public Boolean EvaluateCalculationFunction(List <TRptQuery>rptGrpQuery, ref TVariant[] precalculatedColumns, ref TVariant resultValue)
         {
             Boolean ReturnValue;
             String strFunction;
@@ -1397,9 +1501,9 @@ namespace Ict.Petra.Server.MReporting
             resultValue = new TVariant();
             rptFirstQuery = null;
 
-            if ((rptGrpQuery != null) && (rptGrpQuery.List.Count == 1))
+            if ((rptGrpQuery != null) && (rptGrpQuery.Count == 1))
             {
-                rptFirstQuery = (TRptQuery)rptGrpQuery.List[0];
+                rptFirstQuery = (TRptQuery)rptGrpQuery[0];
             }
 
             if ((rptFirstQuery != null) && GetFunctionCalculation(rptFirstQuery.rptGrpValue, out strFunction))
@@ -1420,9 +1524,9 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptGrpQuery"></param>
         /// <returns></returns>
         public TVariant EvaluateCalculationAll(TRptCalculation rptCalculation,
-            TRptGrpParameter rptGrpParameter,
-            TRptGrpQuery rptGrpTemplate,
-            TRptGrpQuery rptGrpQuery)
+            List <TRptParameter>rptGrpParameter,
+            List <TRptQuery>rptGrpTemplate,
+            List <TRptQuery>rptGrpQuery)
         {
             TVariant ReturnValue;
             TRptDataCalcValue rptDataCalcValue;
@@ -1435,7 +1539,7 @@ namespace Ict.Petra.Server.MReporting
                 return ReturnValue;
             }
 
-            foreach (TRptQuery rptQuery in rptGrpQuery.List)
+            foreach (TRptQuery rptQuery in rptGrpQuery)
             {
                 if (EvaluateCondition(rptQuery.strCondition))
                 {
@@ -1487,7 +1591,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptCalculation"></param>
         /// <param name="rptGrpParameter"></param>
         /// <returns></returns>
-        public TVariant Calculate(TRptCalculation rptCalculation, TRptGrpParameter rptGrpParameter)
+        public TVariant Calculate(TRptCalculation rptCalculation, List <TRptParameter>rptGrpParameter)
         {
             return EvaluateCalculationAll(rptCalculation, rptGrpParameter, rptCalculation.rptGrpTemplate, rptCalculation.rptGrpQuery);
 
@@ -1638,7 +1742,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptGrpSwitch"></param>
         /// <param name="strLine"></param>
         /// <param name="strSpace"></param>
-        public void Calculate(TRptGrpField rptGrpField, TRptGrpSwitch rptGrpSwitch, string strLine, string strSpace)
+        public void Calculate(List <TRptField>rptGrpField, List <TRptSwitch>rptGrpSwitch, string strLine, string strSpace)
         {
             TRptDataCalcSwitch calcSwitch;
             TRptDataCalcField calcField;
@@ -1683,7 +1787,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptGrpField"></param>
         /// <param name="rptGrpSwitch"></param>
         /// <param name="strLine"></param>
-        public void Calculate(TRptGrpField rptGrpField, TRptGrpSwitch rptGrpSwitch, string strLine)
+        public void Calculate(List <TRptField>rptGrpField, List <TRptSwitch>rptGrpSwitch, string strLine)
         {
             Calculate(rptGrpField, rptGrpSwitch, strLine, "");
         }
@@ -1693,7 +1797,7 @@ namespace Ict.Petra.Server.MReporting
         /// </summary>
         /// <param name="rptGrpField"></param>
         /// <param name="rptGrpSwitch"></param>
-        public void Calculate(TRptGrpField rptGrpField, TRptGrpSwitch rptGrpSwitch)
+        public void Calculate(List <TRptField>rptGrpField, List <TRptSwitch>rptGrpSwitch)
         {
             Calculate(rptGrpField, rptGrpSwitch, "", "");
         }

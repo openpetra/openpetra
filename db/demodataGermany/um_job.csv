@@ -1,0 +1,7 @@
+1000000,CM-FIELD-WEBMASTER,O,11,Short Term,2004-6-28,2004-7-1,0,0,1,0,0,false,None,None,false,0,false,?,?,?,?,?
+1000000,FIN-FIELD-ACCOUNTANT,O,1,Long Term,2002-5-1,?,1,1,0,0,0,true,One month,Three months,false,0,false,?,?,?,?,?
+1000000,OFF-MANAGER,O,22,Long Term,2007-6-1,2009-6-1,0,0,1,0,0,false,None,None,false,0,false,?,?,?,?,?
+1000000,OFF-RECEPTIONIST,O,23,Long Term,2007-6-1,2009-6-1,0,0,1,0,0,false,None,None,false,0,false,?,?,?,?,?
+1000000,FIN-FIELD-ACCOUNTANT,O,2,Long Term,2002-5-4,?,1,1,0,1,0,true,One month,Two years,false,1,false,?,?,?,?,?
+1000000,IT-FIELD-IT-SYSADMIN,O,3,Global Action,2002-3-15,?,1,0,0,1,0,true,One month,Six months,false,1,false,?,?,?,?,?
+1000000,LDR-FIELD-LEADER,O,4,Long Term,2001-12-25,?,1,1,0,0,0,false,One month,Two years,false,1,true,?,?,?,?,?

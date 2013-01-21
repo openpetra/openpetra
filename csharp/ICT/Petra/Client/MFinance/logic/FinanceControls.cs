@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Data;
+using SourceGrid;
 
 using Ict.Common;
 using Ict.Common.Controls;
@@ -31,6 +32,7 @@ using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -57,36 +59,30 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ALocalOnly"></param>
         private static string PrepareCostCentreFilter(bool APostingOnly, bool AExcludePosting, bool AActiveOnly, bool ALocalOnly)
         {
-            string Filter = "";
+            string Filter = ACostCentreTable.GetCostCentreCodeDBName() + " = '' OR (";
+
+            Filter += "1=1";
 
             if (APostingOnly)
             {
-                Filter += ACostCentreTable.GetPostingCostCentreFlagDBName() + " = true";
+                Filter += " AND " + ACostCentreTable.GetPostingCostCentreFlagDBName() + " = true";
             }
             else if (AExcludePosting)
             {
-                Filter += ACostCentreTable.GetPostingCostCentreFlagDBName() + " = false";
+                Filter += " AND " + ACostCentreTable.GetPostingCostCentreFlagDBName() + " = false";
             }
 
             if (AActiveOnly)
             {
-                if (Filter.Length > 0)
-                {
-                    Filter += " AND ";
-                }
-
-                Filter += ACostCentreTable.GetCostCentreActiveFlagDBName() + " = true";
+                Filter += " AND " + ACostCentreTable.GetCostCentreActiveFlagDBName() + " = true";
             }
 
             if (ALocalOnly)
             {
-                if (Filter.Length > 0)
-                {
-                    Filter += " AND ";
-                }
-
-                Filter += ACostCentreTable.GetCostCentreTypeDBName() + " = 'Local'";
+                Filter += " AND " + ACostCentreTable.GetCostCentreTypeDBName() + " = 'Local'";
             }
+
+            Filter += ")";
 
             return Filter;
         }
@@ -111,36 +107,29 @@ namespace Ict.Petra.Client.MFinance.Logic
             bool AActiveOnly, bool ABankAccountOnly,
             string AForeignCurrencyName)
         {
-            string Filter = "";
+            string Filter = AAccountTable.GetAccountCodeDBName() + " = '' OR (";
+
+            Filter += "1=1";
 
             if (APostingOnly)
             {
-                Filter += AAccountTable.GetPostingStatusDBName() + " = true";
+                Filter += " AND " + AAccountTable.GetPostingStatusDBName() + " = true";
             }
             else if (AExcludePosting)
             {
-                Filter += AAccountTable.GetPostingStatusDBName() + " = false";
+                Filter += " AND " + AAccountTable.GetPostingStatusDBName() + " = false";
             }
 
             if (AActiveOnly)
             {
-                if (Filter.Length > 0)
-                {
-                    Filter += " AND ";
-                }
-
-                Filter += AAccountTable.GetAccountActiveFlagDBName() + " = true";
+                Filter += " AND " + AAccountTable.GetAccountActiveFlagDBName() + " = true";
             }
 
             // GetCacheableFinanceTable returns a DataTable with a bank flag
             if (ABankAccountOnly)
             {
-                if (Filter.Length > 0)
-                {
-                    Filter += " AND ";
-                }
-
-                Filter += GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true";
+                Filter += " AND (" + GLSetupTDSAAccountTable.GetBankAccountFlagDBName() + " = true OR " +
+                          GLSetupTDSAAccountTable.GetCashAccountFlagDBName() + " = true)";
             }
 
             // AForeignCurrencyName.Equals("") means use default or do nothing!
@@ -156,6 +145,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 Filter += ")";       // Bracket 2
                 Filter += ")";       // Bracket 1
             }
+
+            Filter += ")";
 
             return Filter;
         }
@@ -248,6 +239,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         {
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
 
+            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
+            DataRow emptyRow = Table.NewRow();
+
+            emptyRow[ACostCentreTable.ColumnLedgerNumberId] = ALedgerNumber;
+            emptyRow[ACostCentreTable.ColumnCostCentreCodeId] = string.Empty;
+            emptyRow[ACostCentreTable.ColumnCostCentreNameId] = Catalog.GetString("Select a valid cost centre");
+            Table.Rows.Add(emptyRow);
+
             AControl.InitialiseUserControl(Table,
                 ACostCentreTable.GetCostCentreCodeDBName(),
                 ACostCentreTable.GetCostCentreNameDBName(),
@@ -257,8 +256,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.Filter = PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ALocalOnly);
         }
 
-        // Adapter for the modules which have been developed before multy currency support
-        // was required
+        /// Adapter for the modules which have been developed before multi-currency support
+        /// was required
         public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
@@ -280,8 +279,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
         /// <param name="ABankAccountOnly"></param>
-        /// <param name="AForeignCurrencyName">If a value is defined, only base curreny or the
-        /// defined currency are filtered</param>
+        /// <param name="AForeignCurrencyName">If a value is defined, only base curreny or the defined currency are filtered</param>
         public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
@@ -291,6 +289,14 @@ namespace Ict.Petra.Client.MFinance.Logic
             string AForeignCurrencyName)
         {
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
+
+            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first account etc)
+            DataRow emptyRow = Table.NewRow();
+
+            emptyRow[AAccountTable.ColumnLedgerNumberId] = ALedgerNumber;
+            emptyRow[AAccountTable.ColumnAccountCodeId] = string.Empty;
+            emptyRow[AAccountTable.ColumnAccountCodeShortDescId] = Catalog.GetString("Select a valid account");
+            Table.Rows.Add(emptyRow);
 
             AControl.InitialiseUserControl(Table,
                 AAccountTable.GetAccountCodeDBName(),
@@ -313,7 +319,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             // TODO: use cached table for transaction types? use filter to get only appropriate types for subsystem?
             TTypedDataTable Table;
 
-            TRemote.MCommon.DataReader.GetData(TTypedDataTable.GetTableNameSQL(ATransactionTypeTable.TableId),
+            TRemote.MCommon.DataReader.WebConnectors.GetData(TTypedDataTable.GetTableNameSQL(ATransactionTypeTable.TableId),
                 new TSearchCriteria[] {
                     new TSearchCriteria(TTypedDataTable.GetColumnNameSQL(ATransactionTypeTable.TableId,
                             ATransactionTypeTable.ColumnLedgerNumberId), ALedgerNumber),
@@ -341,32 +347,14 @@ namespace Ict.Petra.Client.MFinance.Logic
             Int32 ALedgerNumber,
             bool AActiveOnly)
         {
-            AMotivationGroupTable groupTable = new AMotivationGroupTable();
-
-            DataTable detailTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, ALedgerNumber);
-
-            // since we get the details, we have duplicates for group; remove the duplicates
-            StringCollection groups = new StringCollection();
-
-            foreach (AMotivationDetailRow detail in detailTable.Rows)
-            {
-                if (((AActiveOnly && detail.MotivationStatus) || !AActiveOnly)
-                    && !groups.Contains(detail.MotivationGroupCode))
-                {
-                    groups.Add(detail.MotivationGroupCode);
-                    AMotivationGroupRow newGroup = groupTable.NewRowTyped(true);
-                    newGroup.MotivationGroupCode = detail.MotivationGroupCode;
-
-                    // also assign: description for group?
-
-                    groupTable.Rows.Add(newGroup);
-                }
-            }
+            DataTable groupTable =
+                (AMotivationGroupTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationGroupList, ALedgerNumber);
 
             AControl.InitialiseUserControl(groupTable,
                 AMotivationGroupTable.GetMotivationGroupCodeDBName(),
-                AMotivationGroupTable.GetMotivationGroupCodeDBName(),
+                AMotivationGroupTable.GetMotivationGroupDescriptionDBName(),
                 null);
+
             AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
         }
 
@@ -518,21 +506,24 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         static PUnitTable FKeyMinTable = null;
-        static Int64 fieldNumber = -1;
+        static Int64 FFieldNumber = -1;
 
+        /// <summary>
+        /// Field number of key ministry gift
+        /// </summary>
         public static long FieldNumber {
             get
             {
-                return fieldNumber;
+                return FFieldNumber;
             }
         }
-
 
         /// <summary>
         /// This function fills the combobox for the key ministry depending on the partnerkey
         /// </summary>
-        /// <param name="AControl"></param>
-        /// <param name="ALedgerNr"></param>
+        /// <param name="cmbMinistry"></param>
+        /// <param name="txtField"></param>
+        /// <param name="APartnerKey"></param>
         public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, ref TtxtAutoPopulatedButtonLabel txtField, System.Int64 APartnerKey)
         {
             if (FKeyMinTable != null)
@@ -545,8 +536,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             string DisplayMember = PUnitTable.GetUnitNameDBName();
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
-            FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out fieldNumber);
-            txtField.Text = fieldNumber.ToString();
+            FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out FFieldNumber);
+            txtField.Text = FFieldNumber.ToString();
             FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
 
             cmbMinistry.InitialiseUserControl(FKeyMinTable,
@@ -559,7 +550,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             if (!FindAndSelect(ref cmbMinistry, APartnerKey))
             {
                 //Clear the combobox
-                cmbMinistry.SelectedValueCell = null;
+                cmbMinistry.SelectedIndex = -1;
             }
         }
 
@@ -569,7 +560,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             {
                 if (pr.PartnerKey == APartnerKey)
                 {
-                    AControl.SelectedValueCell = APartnerKey;
+                    AControl.SetSelectedInt64(APartnerKey);
                     return true;
                 }
             }
@@ -582,15 +573,142 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="ALedgerNr"></param>
-        public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoPopulated AControl, System.Int32 ALedgerNr)
+        public static void InitialiseAvailableGiftYearsList(ref TCmbAutoPopulated AControl, System.Int32 ALedgerNr)
         {
             string DisplayMember;
             string ValueMember;
-            DataTable Table = TRemote.MFinance.Reporting.UIConnectors.GetAvailableFinancialYears(0, out DisplayMember, out ValueMember);
+            DataTable Table = TRemote.MFinance.Gift.WebConnectors.GetAvailableGiftYears(ALedgerNr, out DisplayMember, out ValueMember);
 
-            Table.DefaultView.Sort = "YearNumber Desc";
+            Table.DefaultView.Sort = ValueMember + " DESC";
 
             AControl.InitialiseUserControl(Table,
+                ValueMember,
+                DisplayMember,
+                null,
+                null);
+
+            AControl.SelectedIndex = 0;
+
+            AControl.AppearanceSetup(new int[] { -1 }, -1);
+        }
+
+        /// <summary>
+        /// This function fills the available financial years of a given ledger into a combobox
+        /// </summary>
+        public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoPopulated AControl,
+            System.Int32 ALedgerNr,
+            bool AIncludeNextYear = false)
+        {
+            string DisplayMember;
+            string ValueMember;
+            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNr,
+                0,
+                AIncludeNextYear,
+                out DisplayMember,
+                out ValueMember);
+
+            Table.DefaultView.Sort = ValueMember + " DESC";
+
+            AControl.InitialiseUserControl(Table,
+                ValueMember,
+                DisplayMember,
+                null,
+                null);
+
+            AControl.SelectedIndex = 0;
+
+            AControl.AppearanceSetup(new int[] { -1 }, -1);
+        }
+
+        /// <summary>
+        /// This function fills the available financial periods of a given ledger and financial year into a combobox
+        /// </summary>
+        public static void InitialiseAvailableFinancialPeriodsList(
+            ref TCmbAutoPopulated AControl,
+            System.Int32 ALedgerNr,
+            System.Int32 AYear)
+        {
+            DataTable AccountingPeriods = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, ALedgerNr);
+
+            AccountingPeriods.DefaultView.Sort = AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " ASC";
+
+            ALedgerRow Ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNr))[0];
+
+            string DisplayMember = "display";
+            string ValueMember = "value";
+            DataTable periods = new DataTable();
+            periods.Columns.Add(new DataColumn(ValueMember, typeof(Int32)));
+            periods.Columns.Add(new DataColumn(DisplayMember, typeof(string)));
+
+            if (Ledger.CurrentFinancialYear == AYear)
+            {
+                DataRow period = periods.NewRow();
+                period[ValueMember] = 0;
+                period[DisplayMember] = Catalog.GetString("Current and forwarding periods");
+                periods.Rows.Add(period);
+
+                for (int periodCounter = 1; periodCounter <= Ledger.CurrentPeriod + Ledger.NumberFwdPostingPeriods; periodCounter++)
+                {
+                    period = periods.NewRow();
+                    period[ValueMember] = periodCounter;
+                    period[DisplayMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                    periods.Rows.Add(period);
+                }
+            }
+            else
+            {
+                for (int periodCounter = 1; periodCounter <= Ledger.NumberOfAccountingPeriods; periodCounter++)
+                {
+                    DataRow period = periods.NewRow();
+                    period[ValueMember] = periodCounter;
+                    period[DisplayMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                    periods.Rows.Add(period);
+                }
+            }
+
+            periods.DefaultView.Sort = ValueMember + " ASC";
+
+            AControl.InitialiseUserControl(periods,
+                ValueMember,
+                DisplayMember,
+                null,
+                null);
+
+            AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
+        }
+
+        /// <summary>
+        /// This function fills the open financial periods of a given ledger into a combobox
+        /// </summary>
+        public static void InitialiseOpenFinancialPeriodsList(
+            ref TCmbAutoPopulated AControl,
+            System.Int32 ALedgerNr)
+        {
+            DataTable AccountingPeriods = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, ALedgerNr);
+
+            AccountingPeriods.DefaultView.Sort = AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " ASC";
+
+            ALedgerRow Ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNr))[0];
+
+            string DisplayMember = "display";
+            string ValueMember = "value";
+            DataTable periods = new DataTable();
+            periods.Columns.Add(new DataColumn(ValueMember, typeof(Int32)));
+            periods.Columns.Add(new DataColumn(DisplayMember, typeof(string)));
+
+            for (int periodCounter = Ledger.CurrentPeriod; periodCounter <= Ledger.CurrentPeriod + Ledger.NumberFwdPostingPeriods; periodCounter++)
+            {
+                DataRow period = periods.NewRow();
+                period[ValueMember] = periodCounter;
+                period[DisplayMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                periods.Rows.Add(period);
+            }
+
+            periods.DefaultView.Sort = ValueMember + " ASC";
+
+            AControl.InitialiseUserControl(periods,
                 ValueMember,
                 DisplayMember,
                 null,
@@ -606,6 +724,11 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <returns></returns>
         public static string GetLedgerNumberAndName(Int32 ALedgerNumber)
         {
+            if (ALedgerNumber <= 0)
+            {
+                return "None";
+            }
+
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
 
             foreach (DataRow row in Table.Rows)
@@ -616,7 +739,73 @@ namespace Ict.Petra.Client.MFinance.Logic
                 }
             }
 
+            TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList); // perhaps the user will fix the problem...
             return "ledger " + ALedgerNumber.ToString();
+        }
+
+        /// <summary>
+        /// return the ledger's current financial year
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public static Int32 GetLedgerCurrentFinancialYear(Int32 ALedgerNumber)
+        {
+            ALedgerRow row =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+
+            return row.CurrentFinancialYear;
+        }
+
+        /// <summary>
+        /// fill checkedlistbox values with fees payable list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        public static void InitialiseFeesPayableList(ref TClbVersatile AControl,
+            Int32 ALedgerNumber)
+        {
+            string CheckedMember = "CHECKED";
+            string DisplayMember = AFeesPayableTable.GetFeeDescriptionDBName();
+            string ValueMember = AFeesPayableTable.GetFeeCodeDBName();
+
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.FeesPayableList, ALedgerNumber);
+            DataView view = new DataView(Table);
+
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+
+            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            AControl.Columns.Clear();
+            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+        }
+
+        /// <summary>
+        /// fill checkedlistbox values with fees receivable list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        public static void InitialiseFeesReceivableList(ref TClbVersatile AControl,
+            Int32 ALedgerNumber)
+        {
+            string CheckedMember = "CHECKED";
+            string DisplayMember = AFeesReceivableTable.GetFeeDescriptionDBName();
+            string ValueMember = AFeesReceivableTable.GetFeeCodeDBName();
+
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.FeesReceivableList, ALedgerNumber);
+            DataView view = new DataView(Table);
+
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+
+            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            AControl.Columns.Clear();
+            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
     }
 }

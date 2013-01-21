@@ -2,61 +2,72 @@
 AppCopyright=by developers of OpenPetra.org
 AppName=OpenPetra.org {#ORGNAME}
 AppVerName=OpenPetra.org {#ORGNAME} {#PATCHVERSION}
-DefaultDirName={pf}\OpenPetra{#ORGNAME}
+DefaultDirName={userappdata}/OpenPetra{#ORGNAME}
+; for the moment, don't use the previous app name, otherwise it will try to install as admin
+UsePreviousAppDir=no
 DefaultGroupName=OpenPetra.org {#ORGNAME}
 AppPublisherURL=http://{#PUBLISHERURL}
 LicenseFile=..\..\..\LICENSE
 VersionInfoVersion={#RELEASEID}
 VersionInfoCompany=OM International
 VersionInfoDescription=Administration Software for Charities
-VersionInfoCopyright=2010 OM International
+VersionInfoCopyright=2011 OM International
 OutputBaseFilename=OpenPetraRemoteSetup-{#ORGNAME}-{#RELEASEVERSION}
 OutputDir={#DELIVERY.DIR}
-PrivilegesRequired=admin
+PrivilegesRequired=lowest
 
 [Languages]
 Name: en; MessagesFile: compiler:Default.isl,..\language\lang-en.isl
 Name: de; MessagesFile: compiler:Languages\German.isl,..\language\lang-de.isl
 
 [Dirs]
-Name: {app}/bin30; permissions: users-full
-Name: {app}/patches30; permissions: users-full
-Name: {app}/manuals30; permissions: users-full
-Name: {app}/resources30; permissions: users-full
-Name: {app}/reports30/Settings; permissions: users-full
-Name: {app}/etc30; permissions: users-full
+Name: {userappdata}/OpenPetra{#ORGNAME}/bin30; permissions: users-full
+Name: {userappdata}/OpenPetra{#ORGNAME}/patches30; permissions: users-full
+Name: {userappdata}/OpenPetra{#ORGNAME}/manuals30; permissions: users-full
+Name: {userappdata}/OpenPetra{#ORGNAME}/resources30; permissions: users-full
+Name: {userappdata}/OpenPetra{#ORGNAME}/reports30/Settings; permissions: users-full
+Name: {userappdata}/OpenPetra{#ORGNAME}/etc30; permissions: users-full
+Name: {userappdata}/OpenPetra{#ORGNAME}/tmp30/export; permissions: users-full
 
 [Files]
-Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\SQLite\System.Data.SQLite.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ThirdParty\GNU\GNU.Gettext.dll; DestDir: {app}/bin30; Flags: ignoreversion
-	Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Common*dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\Ict.Petra.Client*dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Shared\_bin\Server_Client\Release\Ict.Petra.Shared*dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Client\_bin\Release\PetraClient.exe; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\csharp\ICT\Petra\Definitions\{#UINAVIGATION}; DestDir: {app}/bin30
-Source: ..\..\..\tmp\i18n\*.dll; DestDir: {app}/bin30; Flags: recursesubdirs createallsubdirs
-Source: ..\..\..\XmlReports\Settings\*.xml; DestDir: {app}/reports30/Settings; Flags: recursesubdirs createallsubdirs
-Source: {#REMOTECONFIG}; DestDir: {app}/etc30
-Source: ..\releasenotes\releasenotes*html; DestDir: {app}/manuals30
-Source: ..\..\..\resources\petraico-big.ico; DestDir: {app}
-Source: ..\..\..\resources\*.ico; DestDir: {app}/resources30
-Source: ..\..\..\resources\*.png; DestDir: {app}/resources30
-Source: ..\..\..\LICENSE; DestDir: {app}
-Source: version.txt; DestDir: {app}/bin30
+Source: ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\SQLite\Mono.Data.Sqlite.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\SQLite\sqlite3.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\GNU\GNU.Gettext.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\A1Panel\Owf.Controls.A1Panel.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+
+Source: ..\..\..\delivery\bin\Ict.Common*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Ict.Petra.Client*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Ict.Petra.Server.*.connect.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Ict.Petra.Shared*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Ict.Petra.ClientPlugins*.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\PetraClient.exe; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Ict.Tools.PatchTool.exe; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\tmp\UINavigation.yml; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30
+Source: ..\..\..\delivery\bin\de-DE\OpenPetra.resources.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30/de-DE
+Source: ..\..\..\delivery\bin\es-ES\OpenPetra.resources.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30/es-ES
+Source: ..\..\..\delivery\bin\da-DK\OpenPetra.resources.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30/da-DK
+Source: ..\..\..\XmlReports\Settings\*.xml; DestDir: {userappdata}/OpenPetra{#ORGNAME}/reports30/Settings; Flags: recursesubdirs createallsubdirs
+Source: ..\..\..\delivery\PetraClientRemote.config; DestDir: {userappdata}/OpenPetra{#ORGNAME}/etc30
+Source: ..\releasenotes\releasenotes*html; DestDir: {userappdata}/OpenPetra{#ORGNAME}/manuals30
+Source: ..\..\..\resources\petraico-big.ico; DestDir: {userappdata}/OpenPetra{#ORGNAME}
+Source: ..\..\..\resources\*.ico; DestDir: {userappdata}/OpenPetra{#ORGNAME}/resources30
+Source: ..\..\..\resources\*.png; DestDir: {userappdata}/OpenPetra{#ORGNAME}/resources30
+Source: ..\..\..\LICENSE; DestDir: {userappdata}/OpenPetra{#ORGNAME}
+Source: version.txt; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30
 
 [Icons]
-Name: {group}\{cm:cmIconRemoteLabel}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClientRemote.config"""
-Name: {group}\{cm:cmIconReleaseNotesLabel}; Filename: {app}\manuals30\{cm:cmReleaseNotesFile}; WorkingDir: {app}/manuals30; Comment: {cm:cmIconReleaseNotesComment}
-Name: {commondesktop}\{groupname}; Filename: {app}\bin30\PetraClient.exe; WorkingDir: {app}/bin30; IconFilename: {app}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{app}\etc30\PetraClientRemote.config"""; Tasks: iconDesktop
+Name: {group}\{cm:cmIconRemoteLabel}; Filename: {userappdata}/OpenPetra{#ORGNAME}\bin30\PetraClient.exe; WorkingDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; IconFilename: {userappdata}/OpenPetra{#ORGNAME}\petraico-big.ico; Comment: {cm:cmIconRemoteComment}; IconIndex: 0; Parameters: "-C:""{userappdata}/OpenPetra{#ORGNAME}\etc30\PetraClientRemote.config"""
+Name: {group}\{cm:cmIconReleaseNotesLabel}; Filename: {userappdata}/OpenPetra{#ORGNAME}\manuals30\{cm:cmReleaseNotesFile}; WorkingDir: {userappdata}/OpenPetra{#ORGNAME}/manuals30; Comment: {cm:cmIconReleaseNotesComment}
+Name: {commondesktop}\{groupname}; Filename: {userappdata}/OpenPetra{#ORGNAME}\bin30\PetraClient.exe; WorkingDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; IconFilename: {userappdata}/OpenPetra{#ORGNAME}\petraico-big.ico; Comment: Start OpenPetra.org; IconIndex: 0; Parameters: "-C:""{userappdata}/OpenPetra{#ORGNAME}\etc30\PetraClientRemote.config"""; Tasks: iconDesktop
 
 [Tasks]
 Name: iconDesktop; Description: {cm:cmIconTask}
 
 [Run]
-Filename: {app}\manuals30\{cm:cmReleaseNotesFile}; Description: {cm:cmViewReleaseNotes}; Flags: shellexec skipifdoesntexist postinstall skipifsilent
+Filename: {userappdata}\OpenPetra{#ORGNAME}\manuals30\{cm:cmReleaseNotesFile}; Description: {cm:cmViewReleaseNotes}; Flags: shellexec skipifdoesntexist postinstall skipifsilent
 
 [Code]
 #include "../utils/fileutils.iiss"
@@ -157,23 +168,15 @@ end;
 procedure CurStepChanged(CurStep: TSetupStep);
 var
     ResultCode: Integer;
-    Dirname: String;
 begin
   if CurStep=ssPostInstall then
   begin
-    Dirname := ExpandConstant('{app}');
-    StringChangeEx(Dirname, ExpandConstant('{pf}') + '\', '', true);
-	ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'TMP30', '{userappdata}/' + Dirname + '/tmp30', true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'PATCHES30', ExpandConstant('{app}/patches30'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'REMOTEPATCHESPATH', 'https://{#SERVERHOST}/patches/{#ORGNAME}/', true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'REPORTUSERSETTINGSPATH', '{userappdata}/' + Dirname + '/reports30/Settings', true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'REPORTSETTINGSPATH', ExpandConstant('{app}/reports30/Settings'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'PETRAHOST', strServer, true);
-    ReplaceInTextFile(ExpandConstant('{app}/etc30/PetraClientRemote.config'), 'PETRAPORT', IntToStr(NetPort), true);
+    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'PETRAHOST', strServer, true);
+    ReplaceInTextFile(ExpandConstant('{userappdata}/OpenPetra{#ORGNAME}/etc30/PetraClientRemote.config'), 'PETRAPORT', IntToStr(NetPort), true);
   end;
 
   // allow the .net remoting communication between client and server
   Exec(ExpandConstant('{sys}\cmd.exe'), '/C netsh firewall set allowedprogram program = '
-    + ExpandConstant('"{app}\bin30\PetraClient.exe" name = PetraClient mode = DISABLE'),
+    + ExpandConstant('"{userappdata}/OpenPetra{#ORGNAME}\bin30\PetraClient.exe" name = PetraClient mode = DISABLE'),
     '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
 end;

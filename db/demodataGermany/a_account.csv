@@ -182,6 +182,7 @@
 43,6000,Asset,Petty Cash,Petty Cash,Petty Cash,Petty Cash,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,6000S,Asset,Petty Cash Accounts (Total),Petty Cash Accounts (Total),Petty Cash Accounts (Total),Petty Cash Accounts (Total),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,6200,Asset,Bank Accounts Operational,Bank Accounts Operational,Bank Accounts Operational,Bank Accounts Operational,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,6210,Asset,GBP Bank Account,GBP Bank Account,GBP Bank Account,GBP Bank Account,true,true,false,true,true,false,Adhoc,true,true,false,Local,true,GBP,?,2009-6-15,?,?,?,?
 43,6200S,Asset,Bank Accounts(Total Operational),Bank Accounts(Total Operational),Bank Accounts(Total Operational),Bank Accounts(Total Operational),true,true,false,true,false,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,6400,Asset,Bank Accounts Deposit,Bank Accounts Deposit,Bank Accounts Deposit,Bank Accounts Deposit,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,6400S,Asset,Bank Accounts (Total Deposit),Bank Accounts (Total Deposit),Bank Accounts (Total Deposit),Bank Accounts (Total Deposit),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?

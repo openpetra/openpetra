@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,11 +24,13 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
-using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
@@ -40,10 +42,14 @@ namespace Ict.Petra.Client.MCommon
     /// </summary>
     public class TFieldOfServiceLogic : System.Object
     {
-        private const String StrPetraServerTooBusy = "The Petra Server is currently too busy to open th" +
-                                                     "e Partner Edit screen. Please wait a few seconds and press 'Retry' then to ret" +
-                                                     "ry, or 'Cancel' to abort.";
-        private const String StrPetraServerTooBusyTitle = "Petra Server Too Busy";
+        #region Resourcestrings
+
+        private static readonly string StrPetraServerTooBusy = Catalog.GetString(
+            "The OpenPetra Server is currently too busy to open the Partner Edit screen. Please wait a few seconds " +
+            "and press 'Retry' then to retry, or 'Cancel' to abort.");
+        private static readonly string StrPetraServerTooBusyTitle = Catalog.GetString("OpenPetra Server Too Busy");
+
+        #endregion
 
         /// <summary>Main DataSet for the Screen</summary>
         private FieldOfServiceTDS FMainDS = new FieldOfServiceTDS();

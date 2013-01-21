@@ -1,0 +1,89 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Donor by Motivation
+    WindowWidth: 900
+    WindowHeight: 600
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MFinance.queries.QueryDonorByMotivation.CalculateExtract
+        ISOLATIONLEVEL: serializable
+        REPORTNAME: Donor by Motivation
+        CURRENTREPORT: Donor by Motivation
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        # TODO: the following things have to be set by generator
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Actions:
+        actFilter: {Label=Filter List, ActionClick=FilterList}
+        actSelectAllMotDetail: {Label=Select All, ActionClick=SelectAllMotivationDetail}
+        actDeselectAllMotDetail: {Label=Deselect All, ActionClick=DeselectAllMotivationDetail}
+    Controls:
+        tpgGeneralSettings: {ControlsOrientation=vertical}
+            Label: General Settings
+            Controls: [grpTop, grpMiddle, pnlBottom]
+        grpTop: {NoLabel=true}
+            Controls: 
+                Row0: [pnlLedger]
+                Row1: [pnlTopLeft, pnlTopRight]
+        pnlLedger:
+            Controls:
+                Row0:[cmbLedgerNumber]
+        pnlTopLeft:
+            Controls:
+                Row0:[lblMotivationGroup]
+                Row1:[clbMotivationGroup]
+        pnlTopRight:
+            Controls:
+                Row0:[lblMotivationDetail, btnSelectAll, btnDeselectAll]
+                Row1:[clbMotivationDetail]
+        grpMiddle: {NoLabel=true, ControlsOrientation=horizontal}
+            Controls: 
+                Row0: [pnlMiddleLeft, pnlMiddleRight]
+        pnlBottom: {ControlsOrientation=horizontal}
+            Controls: [ucoAddress, ucoChkFilter]
+        pnlMiddleLeft:
+            Controls:
+                Row0:[cmbMailingCode]
+                Row1:[cmbReceiptLetterFrequency]
+                Row2:[chkReceiptEachGiftOnly]
+        pnlMiddleRight:
+            Controls:
+                Row0:[dtpDateFrom]
+                Row1:[dtpDateTo]
+                Row2:[chkNewDonorsOnly]
+        cmbLedgerNumber: {Label=Ledger Number, List=LedgerNameList, OnChange=CmbLedgerChanged, ClearIfSettingEmpty=true, ParameterName=param_ledger_number}            
+        lblMotivationGroup: {Label=Motivation Group}
+        clbMotivationGroup:
+            NoLabel: true
+            ParameterName: param_motivation_group
+            Width: 320
+            Height: 200
+        lblMotivationDetail: {Label=Motivation Detail}
+        btnSelectAll: {Label=Select all, Action=actSelectAllMotDetail}
+        btnDeselectAll: {Label=Deselect all, Action=actDeselectAllMotDetail}
+        clbMotivationDetail:
+            NoLabel: true
+            ParameterName: param_motivation_detail
+            Width: 400
+            Height: 200
+            ColSpan: 3
+        cmbMailingCode: {Label=Mailing Code, List=MailingList, ClearIfSettingEmpty=true, ParameterName=param_mailing_code}
+        cmbReceiptLetterFrequency: {Label=Receipt Letter Frequency, List=FrequencyList, ClearIfSettingEmpty=true, ParameterName=param_receipt_letter_frequency}            
+        chkNewDonorsOnly: {Label=New Donors only, ParameterName=param_new_donors_only}
+        chkReceiptEachGiftOnly: {Label=Receipt each Gift only, ParameterName=param_receipt_each_gift_only}
+        dtpDateFrom: {ClearIfSettingEmpty=true}
+            Label: Date from
+            ParameterName: param_date_from
+        dtpDateTo: {ClearIfSettingEmpty=true}
+            Label: To
+            ParameterName: param_date_to
+        ucoAddress:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+        ucoChkFilter:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter

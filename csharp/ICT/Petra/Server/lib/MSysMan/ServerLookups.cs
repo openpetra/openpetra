@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, berndr
+//       christiank, berndr, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,8 +28,9 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
+namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
 {
     /// <summary>
     /// Performs server-side lookups for the Client in the MSysMan.ServerLookups
@@ -37,58 +38,19 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
     /// </summary>
     public class TSysManServerLookups
     {
-        /// <summary>time when this object was instantiated</summary>
-        private DateTime FStartTime;
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TSysManServerLookups() : base()
-        {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
-            FStartTime = DateTime.Now;
-        }
-
-#if DEBUGMODE
-        /// <summary>
-        /// destructor
-        /// </summary>
-        ~TSysManServerLookups()
-        {
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-        }
-#endif
-
-
-
         /// <summary>
         /// Retrieves the current database version
         /// </summary>
         /// <param name="APetraDBVersion">Current database version</param>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static System.Boolean GetDBVersion(out System.String APetraDBVersion)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
 
             APetraDBVersion = "Can not retrieve DB version";
-
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("GetDatabaseVersion called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TSysManServerLookups.GetDatabaseVersion called!");
 
             SSystemDefaultsTable SystemDefaultsDT = new SSystemDefaultsTable();
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -101,18 +63,13 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine("GetDatabaseVersion: committed own transaction.");
-                }
-#endif
+                TLogging.LogAtLevel(7, "TSysManServerLookups.GetDatabaseVersion: committed own transaction.");
             }
 
             if (SystemDefaultsDT.Rows.Count < 1)
             {
                 throw new ApplicationException(
-                    "TSysManServerLookups.GetDBVersion: s_system_defaults DB Table is empty; this is unexpected and can lead to sever malfunction of Petra. Contact Petra-Support");
+                    "TSysManServerLookups.GetDBVersion: s_system_defaults DB Table is empty; this is unexpected and can lead to sever malfunction of OpenPetra. Contact your Support Team.");
             }
 
             SSystemDefaultsRow sysrow = SystemDefaultsDT.Rows[0] as SSystemDefaultsRow;
@@ -120,7 +77,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
             if (sysrow == null)
             {
                 throw new ApplicationException(
-                    "TSysManServerLookups.GetDBVersion: s_system_defaults DB Table is empty; this is unexpected and can lead to sever malfunction of Petra. Contact Petra-Support");
+                    "TSysManServerLookups.GetDBVersion: s_system_defaults DB Table is empty; this is unexpected and can lead to sever malfunction of OpenPetra. Contact your Support Team.");
             }
 
             APetraDBVersion = sysrow.DefaultValue;
@@ -133,6 +90,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
         /// </summary>
         /// <param name="APatchLogDT">The installed patches</param>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static System.Boolean GetInstalledPatches(out Ict.Petra.Shared.MSysMan.Data.SPatchLogTable APatchLogDT)
         {
             SPatchLogTable TmpTable = new SPatchLogTable();
@@ -140,13 +98,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
             APatchLogDT = new SPatchLogTable();
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
-
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine("GetInstalledPatches called!");
-            }
-#endif
+            TLogging.LogAtLevel(9, "TSysManServerLookups.GetInstalledPatches called!");
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
@@ -162,12 +114,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                    if (TSrvSetting.DL >= 7)
-                    {
-                        Console.WriteLine("GetInstalledPatches: committed own transaction.");
-                    }
-#endif
+                    TLogging.LogAtLevel(7, "TSysManServerLookups.GetInstalledPatches: committed own transaction.");
                 }
             }
 
@@ -180,13 +127,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
              */
             for (int Counter = 0; Counter < TmpTable.DefaultView.Count; ++Counter)
             {
-#if DEBUGMODE
-                if (TSrvSetting.DL >= 7)
-                {
-                    Console.WriteLine("Patch: " + TmpTable.DefaultView[Counter][0]);
-                }
-#endif
-
+                TLogging.LogAtLevel(7, "Patch: " + TmpTable.DefaultView[Counter][0]);
                 APatchLogDT.ImportRow(TmpTable.DefaultView[Counter].Row);
             }
 

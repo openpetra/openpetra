@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="param_active" value="eBoolean:true" />
+  <Parameter id="param_mailing_addresses_only" value="eBoolean:true" />
+  <Parameter id="param_families_only" value="eBoolean:true" />
+  <Parameter id="param_exclude_no_solicitations" value="eBoolean:true" />
+</Parameters>

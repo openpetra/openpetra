@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,9 +29,12 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Xml;
 using System.Data;
+using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace Ict.Common.DB.Testing
 {
@@ -39,8 +42,6 @@ namespace Ict.Common.DB.Testing
     [TestFixture]
     public class TTestCommonDB
     {
-        private TAppSettingsManager settings;
-
         /// <summary>
         /// modified version taken from Ict.Petra.Server.App.Main::TServerManager
         /// </summary>
@@ -49,15 +50,15 @@ namespace Ict.Common.DB.Testing
             TLogging.Log("  Connecting to Database...");
 
             DBAccess.GDBAccessObj = new TDataBase();
-            DBAccess.GDBAccessObj.DebugLevel = settings.GetInt16("Server.DebugLevel", 10);
+            TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 10);
             try
             {
-                DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(settings.GetValue("Server.RDBMSType")),
-                    settings.GetValue("Server.PostgreSQLServer"),
-                    settings.GetValue("Server.PostgreSQLServerPort"),
-                    settings.GetValue("Server.PostgreSQLDatabaseName"),
-                    settings.GetValue("Server.PostgreSQLUserName"),
-                    settings.GetValue("Server.Credentials"),
+                DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType")),
+                    TAppSettingsManager.GetValue("Server.DBHostOrFile"),
+                    TAppSettingsManager.GetValue("Server.DBPort"),
+                    TAppSettingsManager.GetValue("Server.DBName"),
+                    TAppSettingsManager.GetValue("Server.DBUserName"),
+                    TAppSettingsManager.GetValue("Server.DBPassword"),
                     "");
             }
             catch (Exception)
@@ -68,15 +69,17 @@ namespace Ict.Common.DB.Testing
             TLogging.Log("  Connected to Database.");
         }
 
+        /// init
         [SetUp]
         public void Init()
         {
             new TLogging("test.log");
-            settings = new TAppSettingsManager("../../etc/TestServer.config");
+            new TAppSettingsManager("../../etc/TestServer.config");
 
             EstablishDBConnection();
         }
 
+        /// tear down
         [TearDown]
         public void TearDown()
         {
@@ -125,6 +128,7 @@ namespace Ict.Common.DB.Testing
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
+        /// test the order of statements in a transaction
         [Test]
         public void TestOrderStatementsInTransaction()
         {
@@ -134,6 +138,7 @@ namespace Ict.Common.DB.Testing
             Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
         }
 
+        /// test sequences
         [Test]
         public void TestSequence()
         {
@@ -149,6 +154,44 @@ namespace Ict.Common.DB.Testing
             Assert.AreEqual(CurrentSequence, CurrentSequenceAfterReset, "after reset we want the same current sequence");
             Int64 NextSequenceAfterReset = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
             Assert.AreEqual(CurrentSequence + 1, NextSequenceAfterReset, "after reset we don't want the previous last sequence number to be repeated");
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+
+        /// test timestamp
+        [Test]
+        public void TestTimeStamp()
+        {
+            TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            string countSql = "SELECT COUNT(*) FROM PUB_s_system_defaults";
+            int count = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(countSql, t));
+            string code = "test" + (count + 1).ToString();
+
+            string insertSql = String.Format(
+                "INSERT INTO PUB_s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c, s_modification_id_t) VALUES('{0}', '{1}','{2}',NOW())",
+                code,
+                "test",
+                "test");
+
+            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(insertSql, t));
+
+            string getTimeStampSql = String.Format(
+                "SELECT s_modification_id_t FROM PUB_s_system_defaults WHERE s_default_code_c = '{0}'",
+                code);
+            DateTime timestamp = Convert.ToDateTime(DBAccess.GDBAccessObj.ExecuteScalar(getTimeStampSql, t));
+
+            string updateSql = String.Format(
+                "UPDATE PUB_s_system_defaults set s_modification_id_t = NOW(), s_default_description_c = '{0}' where s_default_code_c = '{1}' AND s_modification_id_t = ?",
+                "test2",
+                code);
+
+            OdbcParameter param = new OdbcParameter("timestamp", OdbcType.DateTime);
+            param.Value = timestamp;
+
+            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(updateSql, t, new OdbcParameter[] { param }), "update by timestamp");
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
         }
     }
 }

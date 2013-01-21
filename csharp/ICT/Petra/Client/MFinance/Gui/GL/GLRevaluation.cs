@@ -1,10 +1,10 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Ict.Common;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -31,12 +32,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public partial class TGLRevaluation : Form
     {
-        public TGLRevaluation(IntPtr AParentFormHandle) : base()
+        /// <summary>
+        /// Runs the revalation ...
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        public TGLRevaluation(Form AParentForm) : base()
         {
             //
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.lblName.Text = Catalog.GetString("Select cost center") + ":";
+            this.btnRevaluate.Text = Catalog.GetString("Revaluate");
+            this.btnCancel.Text = Catalog.GetString("Cancel");
+            this.Text = Catalog.GetString("Revaluation ...");
+            #endregion
 
 
             this.btnCancel.Click += new EventHandler(CancelRevaluation);

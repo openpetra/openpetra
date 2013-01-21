@@ -24,6 +24,7 @@
 using System;
 using System.Xml;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 
 namespace Ict.Common.Printing
 {
@@ -31,6 +32,11 @@ namespace Ict.Common.Printing
     /// provided by TReportPrinter, which is derived from this class.
     public abstract class TPrinterLayout
     {
+        /// <summary>
+        /// get the size of the page, eg. from the HTML body tag
+        /// </summary>
+        public abstract bool GetPageSize(out PaperKind APaperKind, out Margins AMargins, out float AWidthInPoint, out float AHeightInPoint);
+
         /// <summary>todoComment</summary>
         public abstract void StartPrintDocument();
 
@@ -73,6 +79,18 @@ namespace Ict.Common.Printing
 
         /// <summary>todoComment</summary>
         public Int32 borderWidth;
+
+        /// left border
+        public static int LEFT = 1;
+        /// right border
+        public static int RIGHT = 2;
+        /// top border
+        public static int TOP = 4;
+        /// bottom border
+        public static int BOTTOM = 8;
+
+        /// <summary>border: left = 1, right = 2, top = 4, bottom = 8</summary>
+        public Int32 borderBitField;
 
         /// <summary>this height has been calculated while printing the content</summary>
         public float contentHeight;

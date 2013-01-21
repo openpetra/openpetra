@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,15 +27,15 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Common.Remoting.Shared;
+using Ict.Petra.Shared.MCommon;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using SourceGrid;
 using SourceGrid.Cells;
 using Ict.Common.Data;
 using Ict.Common.Controls;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.RemotedExceptions;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
@@ -49,63 +49,64 @@ namespace Ict.Petra.Client.MCommon
     /// </summary>
     public class TUCPartnerAddressesLogic : System.Object
     {
-        /// <summary>todoComment</summary>
-        public const String StrAnotherAddressIsMailingAddress = "Another Address is already set to be a Mailing Address." + "\r\n" + "\r\n" +
-                                                                "This could lead to confusion as to which Address is the 'Best' Address (=the default Address Petra will use)."
-                                                                +
-                                                                "\r\n" +
-                                                                "Petra has already marked the 'Best' Address in the list of Addresses (green icon background)."
-                                                                +
-                                                                "\r\n" +
-                                                                "Please check if this is the correct one!";
+        #region Resourcestrings
 
         /// <summary>todoComment</summary>
-        public const String StrAnotherAddressIsMailingAddressTitle = "Multiple Mailing Addresses";
+        private static readonly string StrAnotherAddressIsMailingAddress = Catalog.GetString(
+            "Another Address is already set to be a Mailing Address.\r\n\r\n" +
+            "This could lead to confusion as to which Address is the 'Best' Address (=the default Address OpenPetra will use).\r\n" +
+            "OpenPetra has already marked the 'Best' Address in the list of Addresses (green icon background).\r\n" +
+            "Please check if this is the correct one!");
 
         /// <summary>todoComment</summary>
-        public const String StrSecurityViolationExplanation1 = "You tried to delete the last Address that the Partner had." + "\r\n" +
-                                                               "For this operation you actually need modify permission on PartnerLocation records," +
-                                                               "\r\n" + "which you do not have.";
+        private static readonly string StrAnotherAddressIsMailingAddressTitle = Catalog.GetString("Multiple Mailing Addresses");
 
         /// <summary>todoComment</summary>
-        public const String StrSecurityViolationExplanation2 = "You tried to delete an Address that isn't used by any other Partner." + "\r\n" +
-                                                               "For this operation you actually need delete permission on Location records," +
-                                                               "\r\n" + "which you do not have.";
+        private static readonly string StrSecurityViolationExplanation1 = Catalog.GetString(
+            "You tried to delete the last Address that the Partner had.\r\n" +
+            "For this operation you need modify permission on PartnerLocation records,\r\nwhich you do not have.");
 
         /// <summary>todoComment</summary>
-        public const String StrSecurityViolationExplanationTitle = "Security Violation - Explanation";
+        private static readonly string StrSecurityViolationExplanation2 = Catalog.GetString(
+            "You tried to delete an Address that isn't used by any other Partner.\r\n" +
+            "For this operation you need delete permission on Location records,\r\nwhich you do not have.");
 
         /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionLine1 = "Are you sure you want to remove this address";
+        private static readonly string StrSecurityViolationExplanationTitle = Catalog.GetString("Security Violation - Explanation");
 
         /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionShared = "from this partner?";
+        private static readonly string StrDeleteQuestionLine1 = Catalog.GetString("Are you sure you want to remove this address");
 
         /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionNotShared = "from the database (it is not used elsewhere)?";
+        private static readonly string StrDeleteQuestionShared = Catalog.GetString("from this partner?");
 
         /// <summary>todoComment</summary>
-        public const String StrDeleteQuestionTitle = "Delete Address?";
+        private static readonly string StrDeleteQuestionNotShared = Catalog.GetString("from the database (it is not used elsewhere)?");
 
         /// <summary>todoComment</summary>
-        public const String StrFoundAddressIsDuplicate = "The found Address cannot be used because the" +
-                                                         " Partner already has an Address record with this address!";
+        private static readonly string StrDeleteQuestionTitle = Catalog.GetString("Delete Address?");
 
         /// <summary>todoComment</summary>
-        public const String StrFoundAddressIsDuplicateTitle = "Duplicate Address";
+        private static readonly string StrFoundAddressIsDuplicate = Catalog.GetString(
+            "The found Address cannot be used because the" +
+            " Partner already has an Address record with this address!");
 
         /// <summary>todoComment</summary>
-        public const String StrPartnerReActivationBecauseOfNewAddr = " because you have added" + "\r\n" + "a new Address!";
+        private static readonly string StrFoundAddressIsDuplicateTitle = Catalog.GetString("Duplicate Address");
 
         /// <summary>todoComment</summary>
-        public const String StrAddressCannotBeExpired = "The Address" + "\r\n" + "\r\n" + "   {0}" + "\r\n" + "\r\n" +
-                                                        "has a Valid-From date that lies after the date that you entered for" + "\r\n" +
-                                                        "expiration." + "\r\n" + "\r\n" +
-                                                        "This Address will not be expired because the Valid-To date cannot lie" + "\r\n" +
-                                                        "before the Valid-From date!";
+        private static readonly string StrPartnerReActivationBecauseOfNewAddr = Catalog.GetString(" because you have added\r\na new Address!");
 
         /// <summary>todoComment</summary>
-        public const String StrAddressCannotBeExpiredTitle = "Address Cannot be Expired";
+        private static readonly string StrAddressCannotBeExpired = Catalog.GetString(
+            "The Address\r\n\r\n   {0}\r\n\r\n" +
+            "has a Valid-From date that lies after the date that you entered for\r\nexpiration.\r\n\r\n" +
+            "This Address will not be expired because the Valid-To date cannot lie\r\nbefore the Valid-From date!");
+
+        /// <summary>todoComment</summary>
+        private static readonly string StrAddressCannotBeExpiredTitle = Catalog.GetString("Address Cannot be Expired");
+
+        #endregion
 
         /// <summary>Holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
@@ -118,9 +119,6 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>DataRow of the record we are currently working with</summary>
         private PLocationRow FCurrentDataRow;
-
-        /// <summary>Grid Row of the record we are currently working with</summary>
-        private Int32 FCurrentGridRow;
 
         /// <summary>DataTable Key value for the record we are currently working with</summary>
         private Int32 FCurrentLocationKey;
@@ -666,13 +664,16 @@ namespace Ict.Petra.Client.MCommon
             FDataGrid.AddTextColumn("City", ASourceTable.ColumnCity);
 
             // p_location_key_i (for testing purposes only...)
-            // FDataGrid.AddTextColumn('Location Key', ASourceTable.ColumnLocationKey);
+            // FDataGrid.AddTextColumn("Location Key", ASourceTable.ColumnLocationKey);
 
             // p_location_key_i (for testing purposes only...)
-            // FDataGrid.AddTextColumn('PartnerLocation Key', ASourceTable.Columns['Parent_' + PPartnerLocationTable.GetLocationKeyDBName()]);
+            // FDataGrid.AddTextColumn("PartnerLocation Key", ASourceTable.Columns["Parent_" + PPartnerLocationTable.GetLocationKeyDBName()]);
 
             // Location Type
             FDataGrid.AddTextColumn("Location Type", ASourceTable.Columns["Parent_" + PPartnerLocationTable.GetLocationTypeDBName()]);
+
+            // Modification TimeStamp (for testing purposes only...)
+            // FDataGrid.AddTextColumn("Modification TimeStamp", ASourceTable.ColumnModificationId);
         }
 
         #region Editing
@@ -968,10 +969,10 @@ namespace Ict.Petra.Client.MCommon
                 {
                     // Business Rule: if a new Address is added and the Partner's StatusCode
                     // isn't ACTIVE, set it to ACTIVE automatically.
-                    MessageBox.Show(String.Format(CommonResourcestrings.StrPartnerStatusChange + StrPartnerReActivationBecauseOfNewAddr,
+                    MessageBox.Show(String.Format(MCommonResourcestrings.StrPartnerStatusChange + StrPartnerReActivationBecauseOfNewAddr,
                             FMainDS.PPartner[0].StatusCode,
                             SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE)),
-                        CommonResourcestrings.StrPartnerReActivationTitle,
+                        MCommonResourcestrings.StrPartnerReActivationTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     FMainDS.PPartner[0].StatusCode = SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE);
                 }
@@ -1092,7 +1093,7 @@ namespace Ict.Petra.Client.MCommon
             if (PartnerLocationRecordZero != null)
             {
                 LocationRecordZero = FMainDS.PLocation.Rows.Find(new object[] { SharedConstants.FIXED_SITE_KEY, 0 });
-                LocationRecordZero.Delete();
+                FMainDS.PLocation.Rows.Remove(LocationRecordZero);
                 PartnerLocationRecordZero.Delete();
 
                 // LocationRecordZero.AcceptChanges();
@@ -1193,6 +1194,9 @@ namespace Ict.Petra.Client.MCommon
                 NewLocationsRow.CountryCode = "99";
                 FMainDS.PLocation.Rows.Add(NewLocationsRow);
 
+                // the location is already in the database
+                NewLocationsRow.AcceptChanges();
+
                 // Add new PartnerLocations row
                 NewPartnerLocationRow = (PartnerEditTDSPPartnerLocationRow)FMainDS.PPartnerLocation.NewRow();
 
@@ -1204,7 +1208,7 @@ namespace Ict.Petra.Client.MCommon
                 {
                     // MessageBox.Show('FJustDeletedPartnerLocationsRow <> nil');
                     NewPartnerLocationRow.LocationType =
-                        TAddressHandling.GetDefaultLocationType(SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass));
+                        TSharedAddressHandling.GetDefaultLocationType(SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass));
                 }
 
                 NewPartnerLocationRow.LocationKey = 0;
@@ -1455,7 +1459,7 @@ namespace Ict.Petra.Client.MCommon
         {
             DataRowView TheDataRowView;
 
-            // MessageBox.Show('DetermineCurrentKey:  ARow: ' + ARow.ToString);
+//TLogging.Log("DetermineCurrentKey:  ARow: " + ARow.ToString());
             if (FDataGrid != null)
             {
                 TheDataRowView = (DataRowView)FDataGrid.Rows.IndexToDataSourceRow(ARow);
@@ -1469,9 +1473,8 @@ namespace Ict.Petra.Client.MCommon
 
             FCurrentLocationKey = (Int32)FCurrentDataRow.LocationKey;
             FCurrentSiteKey = FCurrentDataRow.SiteKey;
-            FCurrentGridRow = ARow;
 
-//          MessageBox.Show("DetermineCurrentKey:  FCurrentLocationKey: " + FCurrentLocationKey.ToString());
+//TLogging.Log("DetermineCurrentKey:  FCurrentLocationKey: " + FCurrentLocationKey.ToString());
             return FCurrentLocationKey;
         }
 
@@ -1691,7 +1694,8 @@ namespace Ict.Petra.Client.MCommon
 
             if (PartnerLocationRow.BestAddress)
             {
-                TooltipText = TooltipText + " ('Best' Address - this is the default address Petra will use [eg. for Mailings])";
+                TooltipText = TooltipText + " " + Catalog.GetString(
+                    "'Best' Address - this is the default address OpenPetra will use [eg. for Mailings])");
             }
 
             return TooltipText;

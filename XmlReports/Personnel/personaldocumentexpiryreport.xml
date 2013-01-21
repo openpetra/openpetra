@@ -3,8 +3,9 @@
 <reports>
 	<report id="Personal Documents Expiry Report">
 		<description>
-			The personal documents for a partner, all partners
-			in an extract, all current staff or all staff in the database will be printed.
+			The personal documents that have expired for a partner, all partners
+			in an extract or all current staff at a certain date should
+			be printed.
 
 		requires personnel.xml
 		</description>
@@ -13,7 +14,6 @@
 				<option name="one partner"/>
 				<option name="an extract"/>
 				<option name="all current staff"/>
-				<option name="all staff"/>
 			</reportparameter>
 			<reportparameter name="param_extract"
 				condition="param_selection=an extract"/>
@@ -46,9 +46,6 @@
 				<fielddetail condition="eq({param_selection},all current staff)">
 					<value text = "All current Staff at date "/>
 					<value variable = "param_currentstaffdate" format="formatteddate"/>
-				</fielddetail>
-				<fielddetail condition="eq({param_selection},all staff)">
-					<value text = "All Staff"/>
 				</fielddetail>
 			</field>
 
@@ -123,12 +120,6 @@
 							AND PUB_pm_staff_data.p_partner_key_n = partner.p_partner_key_n
 							AND
 					</value></queryDetail>
-					<queryDetail condition="eq({param_selection},all staff)"><value>
-						,PUB_pm_staff_data
-					WHERE 
-							PUB_pm_staff_data.p_partner_key_n = partner.p_partner_key_n
-						AND
-					</value></queryDetail>
 					<queryDetail><value>
 						person.p_partner_key_n = partner.p_partner_key_n
 						AND person.p_partner_key_n = document.p_partner_key_n
@@ -175,7 +166,7 @@
 				</query>
 			</calculation>
 
- 			<calculation id="Start Date" returnsFormat="text" returns="text">
+ 			<calculation id="Start Date" returnsFormat="date" returns="text">
 				<caption><value text="Start Date"/></caption>
 				<query>
 					<queryDetail>
@@ -184,7 +175,7 @@
 				</query>
 			</calculation>
 
-			<calculation id="Expiry Date" returnsFormat="text" returns="text">
+			<calculation id="Expiry Date" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Expiry Date"/></caption>
 				<query>
 					<queryDetail>
@@ -211,7 +202,7 @@
 				</query>
 			</calculation>
 
-			<calculation id="Date of Issue" returnsFormat="text" returns="text">
+			<calculation id="Date of Issue" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Date of\nIssue"/></caption>
 				<query>
 					<queryDetail>

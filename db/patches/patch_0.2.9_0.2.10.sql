@@ -1,0 +1,2 @@
+-- updates for standalone SQLite database for OpenPetra
+-- we cannot upgrade, because table and column names have changed, but sqlite does not support changing column names

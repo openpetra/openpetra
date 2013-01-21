@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,16 +45,14 @@ namespace Ict.Petra.Shared
         /// <returns></returns>
         public static DateTime Int32TimeToDateTime(Int32 AInt32Time)
         {
-            Int32 hour;
-            Int32 minute;
-            Int32 second;
+            TimeSpan TimeSpanFromSecs = TimeSpan.FromSeconds(AInt32Time);
 
-            hour = 3600;
-            AInt32Time = AInt32Time - 3600;
-            minute = 60;
-            AInt32Time = AInt32Time - 60;
-            second = AInt32Time;
-            return new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hour, minute, second);
+            return new DateTime(DateTime.Now.Year,
+                DateTime.Now.Month,
+                DateTime.Now.Day,
+                TimeSpanFromSecs.Hours,
+                TimeSpanFromSecs.Minutes,
+                TimeSpanFromSecs.Seconds);
         }
     }
 }

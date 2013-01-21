@@ -9,15 +9,15 @@
 
 <%
 new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
-new TLogging(TAppSettingsManager.GetValueStatic("Server.LogFile"));
+new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
 try
 {
     if (HttpContext.Current.Request.Params["pdf-id"] != null && HttpContext.Current.Request.Params["pdf-id"].Length > 0)
     {
-        string LinkFilename = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar + "downloads" + Path.DirectorySeparatorChar +  Path.GetFileName(HttpContext.Current.Request.Params["pdf-id"]) + ".txt";
+        string LinkFilename = TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar + "downloads" + Path.DirectorySeparatorChar +  Path.GetFileName(HttpContext.Current.Request.Params["pdf-id"]) + ".txt";
         
         StreamReader rw = new StreamReader(LinkFilename);
-        string pdfFileName = TAppSettingsManager.GetValueStatic("Server.PathData") + Path.DirectorySeparatorChar + rw.ReadLine() + Path.DirectorySeparatorChar + rw.ReadLine();
+        string pdfFileName = TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar + rw.ReadLine() + Path.DirectorySeparatorChar + rw.ReadLine();
         
         Response.Buffer = true;
         Response.Clear();
@@ -26,7 +26,7 @@ try
         Response.ContentType = "application/pdf";
         Response.AppendHeader("Content-Disposition","attachment; filename=application.pdf");
         TLogging.Log(pdfFileName);
-        Response.TransmitFile( pdfFileName );
+        Response.WriteFile( pdfFileName );
         // comment Response.End() to avoid System.Threading.ThreadAbortException
         // see http://www.west-wind.com/Weblog/posts/368975.aspx
         Response.End();

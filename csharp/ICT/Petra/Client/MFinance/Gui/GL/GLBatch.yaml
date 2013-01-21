@@ -5,9 +5,13 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     FormType: browse
     Template: windowTDS
-    WindowWidth: 660
+    WindowWidth: 760
     WindowHeight: 700
-    UsingNamespaces: [Ict.Petra.Shared.Interfaces] 
+    UsingNamespaces: [Ict.Petra.Shared.Interfaces.MFinance]
+
+    Events:
+        Load: {class=System.EventHandler, method=TFrmGLBatch_Load}    
+
     Controls:
         pnlContent:
             Controls: [tabGLBatch]

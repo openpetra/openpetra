@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       markusm
+//       markusm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -303,11 +303,6 @@ namespace Ict.Common.Controls
                 this.btnFindScreen.TextAlign = value;
             }
         }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public event TDelegateFormatText FormatText;
 
         /// <summary>
         /// todoComment
@@ -683,24 +678,6 @@ namespace Ict.Common.Controls
         ///
         /// </summary>
         public event TDelegateEvaluateText EvaluateText;
-
-        /// <summary>
-        /// This property occurs when a key is first pressed.
-        ///
-        /// </summary>
-        public event TButtonLabelKeyDown ButtonLabelKeyDown;
-
-        /// <summary>
-        /// This property occurs after the user is finished pressing a key.
-        ///
-        /// </summary>
-        public event TButtonLabelKeyPress ButtonLabelKeyPress;
-
-        /// <summary>
-        /// This property occurs after the user is finished pressing a key.
-        ///
-        /// </summary>
-        public event TButtonLabelKeyUp ButtonLabelKeyUp;
 
         #region Windows Form Designer generated code
 
@@ -1456,8 +1433,6 @@ namespace Ict.Common.Controls
         /// </summary>
         public void UpdateLabelText()
         {
-            String mFoundText;
-
             // Initialization
             // TLogging.Log('TtxtButtonLabel.UpdateLabelText: Start', [TLoggingType.ToLogfile]);
             // TLogging.LogStackTrace([TLoggingType.ToLogfile]);
@@ -1485,9 +1460,11 @@ namespace Ict.Common.Controls
             {
                 if (this.SetLabel != null)
                 {
+                    String mFoundText = this.lblLabel.Text;
+
                     // Get text from hosting control
                     // TLogging.Log('TtxtButtonLabel.UpdateLabelText: Text of control: ' + this.txtTextBox.Text);
-                    SetLabel(this.txtTextBox.Text, out mFoundText);
+                    SetLabel(this.txtTextBox.Text, ref mFoundText);
 
                     // TLogging.Log('TtxtButtonLabel.UpdateLabelText: Text from function: >' + mFoundText + '<', [TLoggingType.ToLogfile]);
                     // Set text
@@ -1726,13 +1703,11 @@ namespace Ict.Common.Controls
             bool mLabelDataMemberExists;
             bool mLookUpTableExists;
             bool mDelegateFunctionExists;
-            String mResultString;
 
             mTextBoxDataMemberExists = false;
             mLabelDataMemberExists = false;
             mLookUpTableExists = false;
             mDelegateFunctionExists = false;
-            mResultString = "";
             #region Configuration Check
 
             /*
@@ -1790,15 +1765,16 @@ namespace Ict.Common.Controls
 
             #endregion
 
-            if ((ReturnValue == TButtonLabelControlMode.None) && (DesignMode))
-            {
-                mResultString = "mTextBoxDataMemberExists: " + mTextBoxDataMemberExists.ToString() + "\n" + "mLabelDataMemberExists: " +
-                                mLabelDataMemberExists.ToString() + "\nmLookUpTableExists: " + mLookUpTableExists.ToString() +
-                                "\nmDelegateFunctionExists: " +
-                                mDelegateFunctionExists.ToString();
-
-                // messagebox.Show(mResultString);
-            }
+//            if ((ReturnValue == TButtonLabelControlMode.None) && (DesignMode))
+//            {
+//
+//                string mResultString = "mTextBoxDataMemberExists: " + mTextBoxDataMemberExists.ToString() + "\n" + "mLabelDataMemberExists: " +
+//                                mLabelDataMemberExists.ToString() + "\nmLookUpTableExists: " + mLookUpTableExists.ToString() +
+//                                "\nmDelegateFunctionExists: " +
+//                                mDelegateFunctionExists.ToString();
+//
+//                MessageBox.Show(mResultString);
+//            }
 
             return ReturnValue;
         }
@@ -2064,10 +2040,8 @@ namespace Ict.Common.Controls
     /// </summary>
     /// <param name="LabelStringIn">Current Label text</param>
     /// <param name="TextBoxStringIn">Current TextBox text</param>
-    /// <param name="LabelStringOut">Updated Label text
+    /// <param name="LabelStringOut">Updated Label text</param>
     /// <param name="TextBoxStringOut">Updated TextBox text</param>
-    /// </param>
-    ///
     public delegate void TDelegateButtonClick(System.String LabelStringIn,
         System.String TextBoxStringIn,
         out System.String LabelStringOut,
@@ -2077,27 +2051,15 @@ namespace Ict.Common.Controls
     /// Here the hosting form has to provide a text for the label
     /// </summary>
     /// <param name="ALookupText">A lookup text goes here</param>
-    /// <param name="ALabelText">Updated Label text
-    /// </param>
-    public delegate void TDelegateSetLabel(String ALookupText, out System.String ALabelText);
-
-    /// <summary>
-    /// Here the hosting form has to provide means for formating the textbox text.
-    /// </summary>
-    /// <param name="TextToFormat">Text which needs formating</param>
-    /// <param name="TextFormated">Text which has been formated</param>
-    /// <param name="SelectionStart">Start of the selection in the textbox</param>
-    /// <param name="SelectionLength">Length of the selection in the textbox
-    /// </param>
-    public delegate bool TDelegateFormatText(System.String TextToFormat, out System.String TextFormated, int SelectionStart, int SelectionLength);
+    /// <param name="ALabelText">Updated Label text</param>
+    public delegate void TDelegateSetLabel(String ALookupText, ref System.String ALabelText);
 
     /// <summary>
     /// This delegate is used to notify the hosting control of an error.
     /// </summary>
     /// <param name="ATextBoxText">The text in the textbox</param>
     /// <param name="AErrorMessage">An error message</param>
-    /// <param name="AEvaluationResult">true if there is no error
-    /// </param>
+    /// <param name="AEvaluationResult">true if there is no error</param>
     public delegate void TDelegateEvaluationFault(String ATextBoxText, String AErrorMessage, bool AEvaluationResult);
 
     /// <summary>
@@ -2105,36 +2067,8 @@ namespace Ict.Common.Controls
     /// </summary>
     /// <param name="ATextBoxText">The text in the textbox</param>
     /// <param name="ALabelString">A String the label should display</param>
-    /// <param name="ATextValid">true if the text of the textbox is valid otherwise false.
-    /// </param>
+    /// <param name="ATextValid">true if the text of the textbox is valid otherwise false.</param>
     public delegate void TDelegateEvaluateText(String ATextBoxText, out String ALabelString, out bool ATextValid);
-
-    /// <summary>
-    /// This is the declaration of the KeyDown event for the ButtonLabel TextBox.
-    /// This event is the first to be thrown after a key stroke
-    /// </summary>
-    /// <param name="sender">The sender of the event: Here TtxtButtonLabel</param>
-    /// <param name="e">Event Arguments
-    /// </param>
-    public delegate void TButtonLabelKeyDown(System.Object sender, System.Windows.Forms.KeyEventArgs e);
-
-    /// <summary>
-    /// This is the declaration of the KeyPress event for the ButtonLabel TextBox
-    /// This event is the second to be thrown after a key stroke
-    /// </summary>
-    /// <param name="sender">The sender of the event: Here TtxtButtonLabel</param>
-    /// <param name="e">Event Arguments
-    /// </param>
-    public delegate void TButtonLabelKeyPress(System.Object sender, System.Windows.Forms.KeyPressEventArgs e);
-
-    /// <summary>
-    /// This is the declaration of the KeyUp event for the ButtonLabel TextBox
-    /// This event is the third to be thrown after a key stroke
-    /// </summary>
-    /// <param name="sender">The sender of the event: Here TtxtButtonLabel</param>
-    /// <param name="e">Event Arguments
-    /// </param>
-    public delegate void TButtonLabelKeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e);
 
     /// <summary>
     /// problem with data binding

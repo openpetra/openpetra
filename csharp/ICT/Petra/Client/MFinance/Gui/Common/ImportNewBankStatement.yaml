@@ -1,0 +1,17 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Import a bank statement
+    Namespace: Ict.Petra.Client.MFinance.Gui.Common
+    FormType: dialog
+    Template: window
+    WindowWidth: 490
+    WindowHeight: 200
+    Actions:
+    Controls:
+        pnlDialogContent:
+            Dock: Fill
+            Controls: [cmbSelectBankAccount, cmbSelectPlugin]
+        cmbSelectBankAccount: {List=UserDefinedList}
+        cmbSelectPlugin: {Width=200}
+    Menu:
+    Toolbar:

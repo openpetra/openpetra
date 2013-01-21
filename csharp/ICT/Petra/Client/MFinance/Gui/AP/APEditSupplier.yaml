@@ -2,13 +2,13 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: AP Supplier Edit
     Namespace: Ict.Petra.Client.MFinance.Gui.AP
-    UIConnectorType: Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors.IAPUIConnectorsSupplierEdit
+    UIConnectorType: Ict.Petra.Shared.Interfaces.MFinance.IAPUIConnectorsSupplierEdit
     UIConnectorCreate: TRemote.MFinance.AP.UIConnectors.SupplierEdit
     FormType: edit
     Template: windowEditUIConnector
     MasterTable: AApSupplier
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data]
-    WindowWidth: 800
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
+    WindowWidth: 760
     WindowHeight: 500
     Actions:
         cndDiscountEnabled: {InitialValue=false}
@@ -19,24 +19,25 @@ RootNode:
         pnlPartnerInfo:
             Controls: [txtPartnerKey, btnEditPartner]
             ControlsOrientation: horizontal
-            Dock:Top
         btnEditPartner: {Label=&Edit Partner info of Supplier, ActionClick=EditPartner}
+        txtOurReference:
+            Label: Our Ref
+            DataField: AApSupplier.OurReference
         pnlDefaults:
             Controls: [grpGeneralInformation, grpMiscDefaults]
             ControlsOrientation: horizontal
-            Dock:Top
         grpGeneralInformation:
             Label: General Information
-            Controls: [cmbCurrency, cmbSupplierType]
+            Controls: [cmbCurrency, cmbSupplierType, txtOurReference]
+            Width: 360
         grpMiscDefaults:
             Label: Misc Defaults
-            ColWidths: [1=Fixed:95]
             Controls: [nudInvoiceAging, nudCreditTerms, cmbDefaultPaymentType, nudDiscountDays, txtDiscountValue]
         grpAccountInformation:
             Label: Account Information
             Controls: [cmbAPAccount, cmbDefaultBankAccount, cmbCostCentre, cmbExpenseAccount]
-        txtPartnerKey: {Label=Partner Key, ReadOnly=true, DataField=AApSupplier.PartnerKey, Type=PartnerKey}
-        cmbCurrency: {Label=&Currency, DataField=AApSupplier.CurrencyCode, List=CurrencyCodeList}
+        txtPartnerKey: {Label=Partner Key, ReadOnly=true, DataField=AApSupplier.PartnerKey, Type=PartnerKey, Width=450}
+        cmbCurrency: {Label=&Currency, DataField=AApSupplier.CurrencyCode, List=CurrencyCodeList, Width=200}
         cmbSupplierType: 
             Label:Supplier &Type
             DataField: AApSupplier.SupplierType
@@ -45,11 +46,12 @@ RootNode:
         cmbDefaultBankAccount: {Label=Default &Bank Account, DataField=AApSupplier.DefaultBankAccount, List=UserDefinedList}
         cmbCostCentre: {Label=Default C&ost Centre, DataField=AApSupplier.DefaultCostCentre, List=UserDefinedList}
         cmbExpenseAccount: {Label=Default &Expense Account, DataField=AApSupplier.DefaultExpAccount, List=UserDefinedList}
-        nudInvoiceAging: {Label=Invoice A&ging, LabelUnit=months, DataField=AApSupplier.PreferredScreenDisplay}
-        nudCreditTerms: {Label=C&redit Terms, LabelUnit=days, DataField=AApSupplier.DefaultCreditTerms}
+        nudInvoiceAging: {Label=Invoice A&ging, LabelUnit=months, DataField=AApSupplier.PreferredScreenDisplay, Width=90}
+        nudCreditTerms: {Label=C&redit Terms, LabelUnit=days, DataField=AApSupplier.DefaultCreditTerms, Width=90}
         cmbDefaultPaymentType:
             Label: Default &Payment Type
             DataField: AApSupplier.PaymentType
-            OptionalValues: [CASH, CHEQUE, TRANSFER]
-        nudDiscountDays: {Label=Number of Days for &Discount (0 for none), DataField=AApSupplier.DefaultDiscountDays, PositiveValueActivates=cndDiscountEnabled}
-        txtDiscountValue: {Label=Discount &Value (%), DataField=AApSupplier.DefaultDiscountPercentage, Enabled=cndDiscountEnabled}
+            OptionalValues: [Cash, Cheque, Debit Card, Credit Card, Transfer]
+            Width: 90
+        nudDiscountDays: {Label=Number of Days for &Discount (0 for none), DataField=AApSupplier.DefaultDiscountDays, PositiveValueActivates=cndDiscountEnabled, Width=90}
+        txtDiscountValue: {Label=Discount &Value (%), DataField=AApSupplier.DefaultDiscountPercentage, Enabled=cndDiscountEnabled, Format=PercentDecimal(2), Width=90}

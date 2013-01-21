@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,7 +40,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MFinance.Gift;
+using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -58,6 +58,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GenerateLetters(System.Object sender, EventArgs e)
         {
+            if ((!dtpStartDate.Date.HasValue) || (!dtpEndDate.Date.HasValue))
+            {
+                MessageBox.Show(Catalog.GetString("Please supply valid Start and End dates."));
+                return;
+            }
+
             FMainDS = TRemote.MFinance.Gift.WebConnectors.GetNewDonorSubscriptions(
                 txtPublicationCode.Text,
                 dtpStartDate.Date.Value, dtpEndDate.Date.Value,

@@ -1,0 +1,45 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Transport Types
+    Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
+    DetailTable: PtTravelType
+    CacheableTable: TransportTypeList
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 750
+    WindowHeight: 400
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailCode, DetailDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            CustomColumns:
+                DetailCode: {Label="Transport Code"}
+                DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailCode, txtDetailDescription]
+                Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row2: [chkDetailDeletableFlag]
+        txtDetailCode: {Label="Transport Code"}
+        txtDetailDescription: {Label=Description, Width=280}
+        chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
+        chkDetailDeletableFlag: {Label=Deletable}
+    Toolbar:
+        tbbNew:
+            Label: New Transport Type

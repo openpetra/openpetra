@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -70,9 +70,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             }
         }
 
-        /// <summary>True to show the select campaign options dialog during "ReadControls"
+        /// <summary>True to show the select outreach options dialog during "ReadControls"
         /// if the current conference has several options. </summary>
-        public bool FShowSelectCampaignOptionsDialog;
+        public bool FShowSelectOutreachOptionsDialog;
 
         /// <summary>
         /// Initialisation
@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             rbtAllAttendees.Checked = true;
             txtExtract.Enabled = false;
-            FShowSelectCampaignOptionsDialog = true;
+            FShowSelectOutreachOptionsDialog = true;
         }
 
         /// <summary>
@@ -160,48 +160,48 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
 
-            if (FShowSelectCampaignOptionsDialog
+            if (FShowSelectOutreachOptionsDialog
                 && (AReportAction == TReportActionEnum.raGenerate)
                 && (rbtConference.Checked)
                 && (FPetraUtilsObject.GetVerificationResultCount() == 0))
             {
                 List <KeyValuePair <long, string>>ConferenceList;
-                DialogResult DlgResult = TFrmSelectCampaignOption.OpenSelectCampaignOptionDialog(
-                    Convert.ToInt64(txtConference.Text), this, true, out ConferenceList);
+                DialogResult DlgResult = TFrmSelectOutreachOption.OpenSelectOutreachOptionDialog(
+                    Convert.ToInt64(txtConference.Text), FPetraUtilsObject.GetForm(), true, out ConferenceList);
 
                 if (((DlgResult != DialogResult.OK) || (ConferenceList.Count == 0))
                     && (DlgResult != DialogResult.None))
                 {
                     VerificationResult = new TVerificationResult(
-                        Catalog.GetString("You must chose at least one campaign option from the \"Select Campaign Option\" Dialog."),
-                        Catalog.GetString("No campaign option was selected!"),
+                        Catalog.GetString("You must chose at least one outreach option from the \"Select Outreach Option\" Dialog."),
+                        Catalog.GetString("No outreach option was selected!"),
                         TResultSeverity.Resv_Critical);
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
 
-                string CampaignOptions = "";
-                string CampaignOptionsCode = "";
+                string OutreachOptions = "";
+                string OutreachOptionsCode = "";
 
-                foreach (KeyValuePair <long, string>CampaignOption in ConferenceList)
+                foreach (KeyValuePair <long, string>OutreachOption in ConferenceList)
                 {
-                    CampaignOptions = CampaignOptions + CampaignOption.Key.ToString() + ",";
-                    CampaignOptionsCode = CampaignOptionsCode + CampaignOption.Value + ",";
+                    OutreachOptions = OutreachOptions + OutreachOption.Key.ToString() + ",";
+                    OutreachOptionsCode = OutreachOptionsCode + OutreachOption.Value + ",";
                 }
 
-                if (CampaignOptions.Length > 0)
+                if (OutreachOptions.Length > 0)
                 {
                     // Remove the last comma
-                    CampaignOptions = CampaignOptions.Remove(CampaignOptions.Length - 1);
-                    CampaignOptionsCode = CampaignOptionsCode.Remove(CampaignOptionsCode.Length - 1);
+                    OutreachOptions = OutreachOptions.Remove(OutreachOptions.Length - 1);
+                    OutreachOptionsCode = OutreachOptionsCode.Remove(OutreachOptionsCode.Length - 1);
                 }
                 else
                 {
-                    CampaignOptions = txtConference.Text;
-                    CampaignOptionsCode = txtConference.LabelText;
+                    OutreachOptions = txtConference.Text;
+                    OutreachOptionsCode = txtConference.LabelText;
                 }
 
-                ACalculator.AddStringParameter("param_conferenceoptions", CampaignOptions);
-                ACalculator.AddParameter("param_conferenceoptionscode", CampaignOptionsCode);
+                ACalculator.AddStringParameter("param_conferenceoptions", OutreachOptions);
+                ACalculator.AddParameter("param_conferenceoptionscode", OutreachOptionsCode);
             }
         }
 

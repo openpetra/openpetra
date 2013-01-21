@@ -1,35 +1,35 @@
 <?xml version="1.0"?>
 <Parameters>
-   <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Conference\\attendeereport.xml,Conference\\conference.xml" />
-  <Parameter id="currentReport" value="Attendee Report" />
-  <Parameter id="MaxDisplayColumns" value="7" />
-  <Parameter id="param_conferenceselection" value="one conference" />
-  <Parameter id="param_attendeeselection" value="all attendees" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_conferencekey" value="0" />
-  <Parameter id="param_conferencename" value="" />
-  <Parameter id="param_extractname" value="" />
-  <Parameter id="orderby0" value="Passport Name" />
-  <Parameter id="orderby1" value="Nationality" />
-  <Parameter id="orderby2" value="Age" />
-  <Parameter id="param_sortby_readable" value="Passport Name, Nationality, Age" />
-  <Parameter id="param_calculation" column="7" value="Passport Name" />
-  <Parameter id="param_calculation" column="8" value="Nationality" />
-  <Parameter id="param_calculation" column="9" value="Age" />
-  <Parameter id="param_sortby_columns" value="7,8,9" />
-  <Parameter id="param_calculation" column="0" value="Passport Name" />
-  <Parameter id="ColumnWidth" column="0" value="5" />
-  <Parameter id="param_calculation" column="1" value="Passport Number" />
-  <Parameter id="ColumnWidth" column="1" value="3" />
-  <Parameter id="param_calculation" column="2" value="Age" />
-  <Parameter id="ColumnWidth" column="2" value="1" />
-  <Parameter id="param_calculation" column="3" value="Gender" />
-  <Parameter id="ColumnWidth" column="3" value="1.5" />
-  <Parameter id="param_calculation" column="4" value="Conference Room" />
-  <Parameter id="ColumnWidth" column="4" value="3" />
-  <Parameter id="param_calculation" column="5" value="Arrival Date" />
-  <Parameter id="ColumnWidth" column="5" value="2.5" />
-  <Parameter id="param_calculation" column="6" value="Departure Date" />
-  <Parameter id="ColumnWidth" column="6" value="2.5" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Conference\\attendeereport.xml,Conference\\conference.xml" />
+  <Parameter id="currentReport" value="eString:Attendee Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:7" />
+  <Parameter id="param_conferenceselection" value="eString:one conference" />
+  <Parameter id="param_attendeeselection" value="eString:all attendees" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_conferencekey" value="eInteger:0" />
+  <Parameter id="param_conferencename" value="eString:" />
+  <Parameter id="param_extractname" value="eString:" />
+  <Parameter id="orderby0" value="eString:Passport Name" />
+  <Parameter id="orderby1" value="eString:Nationality" />
+  <Parameter id="orderby2" value="eString:Age" />
+  <Parameter id="param_sortby_readable" value="eString:Passport Name, Nationality, Age" />
+  <Parameter id="param_calculation" column="7" value="eString:Passport Name" />
+  <Parameter id="param_calculation" column="8" value="eString:Nationality" />
+  <Parameter id="param_calculation" column="9" value="eString:Age" />
+  <Parameter id="param_sortby_columns" value="eString:7,8,9" />
+  <Parameter id="param_calculation" column="0" value="eString:Passport Name" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:5" />
+  <Parameter id="param_calculation" column="1" value="eString:Passport Number" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
+  <Parameter id="param_calculation" column="2" value="eString:Age" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:1" />
+  <Parameter id="param_calculation" column="3" value="eString:Gender" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="4" value="eString:Conference Room" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:3" />
+  <Parameter id="param_calculation" column="5" value="eString:Arrival Date" />
+  <Parameter id="ColumnWidth" column="5" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_calculation" column="6" value="eString:Departure Date" />
+  <Parameter id="ColumnWidth" column="6" value="eDecimal:4612811918334230528" />
 </Parameters>

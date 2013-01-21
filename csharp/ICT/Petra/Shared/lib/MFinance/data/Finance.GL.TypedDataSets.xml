@@ -7,17 +7,27 @@
     <DataSet name="GLBatchTDS">
         <Table sqltable="a_ledger"/>
         <Table sqltable="a_batch"/>
-        <Table sqltable="a_journal"/>
+        <Table sqltable="a_journal">
+            <CustomField name="JournalDebitTotalBase" type="decimal"/>
+            <CustomField name="JournalCreditTotalBase" type="decimal"/>
+        </Table>
         <Table sqltable="a_transaction">
             <CustomField name="DateEntered" type="DateTime"/>
             <CustomField name="AnalysisAttributes" type="string"/>
         </Table>
+        <Table sqltable="a_trans_anal_attrib" />	
+    </DataSet>
+    
+    <DataSet name="GLPostingTDS">
+        <Table sqltable="a_ledger"/>
         <Table sqltable="a_account"/>
         <Table sqltable="a_cost_centre"/>
         <Table sqltable="a_account_hierarchy_detail"/>
         <Table sqltable="a_general_ledger_master"/>
         <Table sqltable="a_general_ledger_master_period"/>
-        <Table sqltable="a_trans_anal_attrib" />	
+        <Table sqltable="a_analysis_attribute"/>
+        <Table sqltable="a_analysis_type"/>
+        <Table sqltable="a_freeform_analysis"/>
     </DataSet> 
 
     <DataSet name="GLSetupTDS">
@@ -31,6 +41,7 @@
 
         <Table sqltable="a_account">
             <CustomField name="BankAccountFlag" type="bool"/>
+            <CustomField name="CashAccountFlag" type="bool"/> <!-- will be set to true for the cacheable tables when this account reports to CASH -->
         </Table>
         <Table sqltable="a_account_hierarchy"/>
         <Table sqltable="a_account_hierarchy_detail"/>
@@ -68,5 +79,20 @@
         <Table sqltable="p_partner_location"/>
         <Table sqltable="p_partner_ledger"/>
     </DataSet>
-
+    <DataSet name="GLStewardshipCalculationTDS">
+        <CustomTable name="CreditFeeTotal">
+            <Field sqltable="a_cost_centre" sqlfield="a_cost_centre_code_c"/>
+            <Field sqltable="a_account" sqlfield="a_account_code_c"/>
+            <Field sqltable="a_transaction" sqlfield="a_transaction_amount_n"/>
+            <PrimaryKey thisFields="CostCentreCode,AccountCode"/>
+        </CustomTable>
+    </DataSet>
+    <DataSet name="BudgetTDS">
+        <Table sqltable="a_ledger"/>
+        <Table sqltable="a_budget_revision"/>
+        <Table sqltable="a_budget_type"/>
+        <Table sqltable="a_budget"/>
+        <Table sqltable="a_budget_period"/>
+        <Table sqltable="a_general_ledger_master_period"/>
+    </DataSet>
 </PetraDataSets>

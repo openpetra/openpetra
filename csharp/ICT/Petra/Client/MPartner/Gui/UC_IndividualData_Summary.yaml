@@ -1,0 +1,71 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PPerson
+    Controls:
+        pnlContent:
+            Controls: [grpPersonInfo, grpChurchInfo, grpJobCommitment]              
+            Dock: Fill
+       
+        grpPersonInfo:
+            Controls: [pnlPersonInfoData]
+                   
+        pnlPersonInfoData:
+            Controls:
+                Row0: [dtpDateOfBirth]
+                Row1: [txtGender]
+                Row2: [txtNationalities]
+                Row3: [txtMaritalStatus]
+                Row4: [txtPhone]
+                Row5: [txtEmail]                
+            Margin: 23,0,0,0
+            
+        dtpDateOfBirth: {Label=Birth date, ReadOnly=true, BorderStyle=None, DataField=SummaryData.DateOfBirth}
+        txtGender: {ReadOnly=true, BorderStyle=None, DataField=SummaryData.Gender}
+        txtNationalities: {Width=427, Label=Nationalities, ReadOnly=true, BorderStyle=None, DataField=SummaryData.Nationalities}
+        txtMaritalStatus: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.MaritalStatus}
+        txtPhone: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.TelephoneNumber}
+        txtEmail: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.EmailAddress}
+
+        grpJobCommitment:
+            Label: Job(s)/Commitment(s)
+            Controls: [grdDetails]
+        
+        grdDetails:
+            Height: 82
+            Width: 540
+            TableName: JobAssignmentStaffDataCombined
+            Columns: [FieldKey, FieldName, Position, FromDate, ToDate]
+            CustomColumns:
+                FieldKey: {Label=Field Key}
+                FieldName: {Label=Field}
+                Position: {Label=Position}
+                FromDate: {Label=Begin Date, Type=DateTime}
+                ToDate: {Label=End Date, Type=DateTime}
+            SortOrder: FromDate DESC
+            
+        grpChurchInfo:
+            Controls: [pnlChurchInfoData]
+                    
+        pnlChurchInfoData:
+            Controls:
+                Row0: [txtChurchName]
+                Row1: [txtChurchAddress]
+                Row2: [txtChurchPhone]
+                Row3: [txtPastor]
+                Row4: [txtPastorPhone]
+                Row5: [lblMultipleRecordsInfo]
+            RowHeights: [2=Fixed:25]
+            Margin: 10,0,0,0
+            
+        txtChurchName: {Width=427, Label=Name, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchName}
+        txtChurchAddress: {Width=427, Label=Church Address, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchAddress}
+        txtChurchPhone: {Width=427, Label=Church Phone, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchPhone}
+        txtPastor: {Width=427, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchPastor}
+        txtPastorPhone: {Width=427, Label=Pastor's Phone, ReadOnly=true, BorderStyle=None, DataField=SummaryData.ChurchPastorsPhone}
+        lblMultipleRecordsInfo: {Text=, Visible=false}

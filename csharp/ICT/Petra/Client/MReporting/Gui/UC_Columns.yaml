@@ -11,19 +11,19 @@ RootNode:
             Dock: Fill
         pnlTop:
             Controls: [pnlColumns, pnlAddRemButtons]
-            Dock: Top
+            Dock: Fill
         pnlColumns:
             Controls: [pnlGrid, pnlMoveColumn]
             ControlsOrientation: horizontal
             Dock: Fill
         pnlGrid:
-            Controls:[grdColumns, btnDummy]
+            Controls:[grdColumns]
             Dock: Fill
         pnlMoveColumn:
             Controls:
                 Row0: [btnMoveColumn2Left]
                 Row1: [btnMoveColumn2Right]
-                Dock: Left
+            Dock: Left
         pnlAddRemButtons:
             Controls: 
                 Row0: [btnAddColumn, btnRemoveColumn]
@@ -42,17 +42,7 @@ RootNode:
         btnRemoveColumn:
             Label: Remove
             Action: actRemoveColumn
-            
-        btnCancel:
-            Label: &Cancel
-            Action: actCancelColumn
-        btnApply:
-            Label: A&pply
-            Action: actApplyColumn
-        
-        btnDummy:
-            Label: DummyButton
-            Visible: false
+       
         pnlBottom:
             #Controls: []
             Dock: Bottom

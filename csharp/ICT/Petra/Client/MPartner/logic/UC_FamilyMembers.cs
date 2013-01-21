@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,8 +27,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using SourceGrid;
 using SourceGrid.Cells;
@@ -49,19 +48,20 @@ namespace Ict.Petra.Client.MPartner
     /// <summary>
     /// FamilyID logic for the UC_FamilyMembers UserControl.
     /// </summary>
-    public class TUCFamilyMembersLogic : System.Object
+    public class TUCFamilyMembersLogic
     {
-        /// <summary>todoComment</summary>
-        public const String StrFamilyIDChangeDone1stLine = "The Family ID of";
+        #region Resourcetexts
 
         /// <summary>todoComment</summary>
-        public const String StrFamilyIDChangeDoneWasChangedFrom = " was changed from ";
+        private static readonly string StrFamilyIDChangeDone = Catalog.GetString(
+            "The Family ID of\r\n" +
+            "    {0} was changed from {1} to {2}\r\n" +
+            "    {3} was changed from {4} to {5}");
 
         /// <summary>todoComment</summary>
-        public const String StrFamilyIDChangeDoneTo = " to ";
+        private static readonly string StrFamilyIDChangeDoneTitle = Catalog.GetString("Family ID Change Done");
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyIDChangeDoneTitle = "Family ID Change Done";
+        #endregion
 
         private PartnerEditTDS FMainDS;
         private PartnerEditTDSFamilyMembersTable FFamilyMembersDT;
@@ -70,10 +70,7 @@ namespace Ict.Petra.Client.MPartner
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
         private SourceGrid.Cells.Editors.ComboBox FFamilyIDEditor;
         private ControllerBase FSpecialCellController = null;
-        private DevAge.ComponentModel.Validator.ValueMapping FamilyIDDropDownMapping;
         private Int32[] FamilyIDDropDownValues;
-        private Int64 PartnerKeyMemory;
-        private Int32 LocationMemory;
 
         /// <summary>isEdited: Boolean;</summary>
         private Boolean FGridEdited;
@@ -337,7 +334,8 @@ namespace Ict.Petra.Client.MPartner
             FFamilyIDEditor.EnableEdit = true;
             FFamilyIDEditor.EditableMode = EditableMode.Focus;
             FDataGrid.Selection.Focus(new Position(RowNumber, FDataGrid.Columns.Count - 1), true);
-            PartnerKeyMemory = this.GetPartnerKeySelected();
+
+            // Int64 PartnerKeyMemory = this.GetPartnerKeySelected();
         }
 
         /// <summary>
@@ -458,11 +456,10 @@ namespace Ict.Petra.Client.MPartner
                 }
 
                 // button := MessageBoxButtons.OK;
-                MessageBox.Show((StrFamilyIDChangeDone1stLine + "\r\n" + "    " + PersonName1.ToString() + StrFamilyIDChangeDoneWasChangedFrom +
-                                 FamilyID.ToString() + StrFamilyIDChangeDoneTo +
-                                 Convert.ToString(FamilyIDint +
-                                     1) + "\r\n" + "    " + PersonName2.ToString() + StrFamilyIDChangeDoneWasChangedFrom + NextFamilyID.ToString() +
-                                 StrFamilyIDChangeDoneTo + FamilyID.ToString()), StrFamilyIDChangeDoneTitle);
+
+                MessageBox.Show(String.Format(StrFamilyIDChangeDone, PersonName1, FamilyID, (FamilyIDint + 1),
+                        PersonName2, NextFamilyID, FamilyID),
+                    StrFamilyIDChangeDoneTitle);
             }
             else
             {
@@ -555,7 +552,8 @@ namespace Ict.Petra.Client.MPartner
                 DisableEditing();
                 FFamilyIDEditor.EnableEdit = false;
                 FFamilyIDEditor.Control.Validating += new CancelEventHandler(this.FamilyID_Validating);
-                FamilyIDDropDownMapping = new DevAge.ComponentModel.Validator.ValueMapping();
+                // DevAge.ComponentModel.Validator.ValueMapping FamilyIDDropDownMapping =
+                new DevAge.ComponentModel.Validator.ValueMapping();
             }
             catch (System.NullReferenceException)
             {
@@ -826,11 +824,9 @@ namespace Ict.Petra.Client.MPartner
                     }
                 }
 
-                MessageBox.Show((StrFamilyIDChangeDone1stLine + "\r\n" + "    " + PersonName1.ToString() + StrFamilyIDChangeDoneWasChangedFrom +
-                                 FamilyID.ToString() + StrFamilyIDChangeDoneTo + PreviousFamilyID.ToString() + "\r\n" + "    " +
-                                 PersonName2.ToString() +
-                                 StrFamilyIDChangeDoneWasChangedFrom + PreviousFamilyID.ToString() + StrFamilyIDChangeDoneTo +
-                                 Convert.ToString(Convert.ToInt32(PreviousFamilyID) + 1)), "Family ID Change Done");
+                MessageBox.Show(String.Format(StrFamilyIDChangeDone, PersonName1, FamilyID, PreviousFamilyID,
+                        PersonName2, PreviousFamilyID, (Convert.ToInt32(PreviousFamilyID) + 1)),
+                    StrFamilyIDChangeDoneTitle);
                 PreviousPartnerMemory = PersonName1;
             }
             else
@@ -921,7 +917,9 @@ namespace Ict.Petra.Client.MPartner
                         if (FFamilyMembersDV[Counter].Row == (object)PartnerKey)
                         {
                             FFamilyMembersDV[Counter].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()] = (object)this.GetFamilyID();
-                            LocationMemory = Counter;
+
+                            // Int32 LocationMemory = Counter;
+
                             break;
                         }
                     }

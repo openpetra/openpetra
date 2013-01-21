@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -48,11 +48,13 @@ namespace Ict.Petra.Client.MCommon.Gui
     {
         private TFrmPetraEditUtils FTheObject;
 
-        /// <summary>todoComment</summary>
-        public const String StrOpeningCancelledByUser = "Opening of Field Of Service screen got cancelled " + "by user.";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrOpeningCancelledByUserTitle = "Screen opening cancelled";
+        private static readonly string StrOpeningCancelledByUser = Catalog.GetString("Opening of Field Of Service screen got cancelled by user.");
+
+        private static readonly string StrOpeningCancelledByUserTitle = Catalog.GetString("Screen opening cancelled");
+
+        #endregion
 
         /// <summary>Reference to the Logic for the Screen</summary>
         private TFieldOfServiceLogic FLogic;
@@ -79,15 +81,15 @@ namespace Ict.Petra.Client.MCommon.Gui
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.lblPartnerKey.Text = Catalog.GetString("PartnerKey");
             this.lblPartnerName.Text = Catalog.GetString("Partner Name");
-            this.Label3.Text = Catalog.GetString("Partner Name:");
-            this.Label4.Text = Catalog.GetString("PartnerKey:");
+            this.Label3.Text = Catalog.GetString("Partner Name") + ":";
+            this.Label4.Text = Catalog.GetString("PartnerKey") + ":";
             this.Text = Catalog.GetString("Field Of Service");
             #endregion
 
             // Initialise Screen Logic
             FLogic = new TFieldOfServiceLogic();
 
-            FTheObject = new TFrmPetraEditUtils(AParentForm.Handle, this, stbMain);
+            FTheObject = new TFrmPetraEditUtils(AParentForm, this, stbMain);
 
             // TODO FTheObject.ActionEnablingEvent += ActionEnabledEvent;
             FTheObject.InitActionState();

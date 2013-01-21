@@ -1,22 +1,68 @@
 <?xml version="1.0"?>
 <project name="ICT-Testing-Build">
 
+<include buildfile="../../../inc/nant/OpenPetra.csharp.xml"/> 
 
-<target name="exe" depends="" >
-  <nant inheritall="false" target="${target}" 
-        buildfile="exe/ICT.Testing.exe.build" />
+<target name="test-client">
+    <nant inheritall="false" target="startPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Controls.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" testcase="Tests.MFinance.GLBatches.TGLBatchesTest.TestCreateBatchAndPost"/>
+
+<!-- TODO
+        <test assemblyname="${dir.bin}/Ict.Testing.lib.Reporting.dll" />
+        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GiftForm.dll" />
+        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" />
+-->
+    <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
 </target>
 
-<target name="lib" depends="" >
-  <nant inheritall="false" target="${target}" 
-        buildfile="lib/ICT.Testing.lib.build" />
+<target name="test-tools">
+    <!-- NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.CodeGeneration.dll" -->
 </target>
 
+<target name="test-server">
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerEdit.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Budget.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GL.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.ICH.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.AP.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.BankImport.dll" />
 
-<target name="internal-subdirs" 
-        depends="exe,lib" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerExports.dll" />
+    
+    <!-- <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" /> -->
+</target>
 
-<!-- Include default implementation -->
-<include buildfile="../../../inc/nant/OpenPetra.subdirs.xml"/> 
+<target name="test-common">
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.IO.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.DB.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Data.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Shared.dll" />
+
+    <nunit2>
+        <formatter type="Plain" />
+        <test>
+            <assemblies>
+<!--
+                <include name="${dir.bin}/Ict.Testing.lib.Common*dll" />
+                <exclude name="${dir.bin}/Ict.Testing.lib.Common.Controls.dll" />
+-->
+            </assemblies>
+        </test>
+    </nunit2>
+</target>
+
+<target name="test-without-display">
+    <call target="test-common"/>
+    <call target="test-tools"/>
+    <call target="test-server"/>
+</target>
+
+<target name="test-all">
+    <call target="test-without-display"/>
+    <call target="test-client"/>
+</target>
 
 </project>

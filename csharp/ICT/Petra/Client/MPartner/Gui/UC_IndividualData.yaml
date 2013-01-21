@@ -1,0 +1,92 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: usercontrolUnbound
+    Actions:
+        actIndivDataItemSelected: {ActionClick=IndividualDataItemSelected}
+        actBasicDataShepherd: {ActionClick=OpenBasicDataShepherd}
+        actIntranetRegistrationShepherd: {ActionClick=OpenIntranetRegistrationShepherd}
+        actEmergencyContacts: {ActionClick=ShowEmergencyContacts}
+        
+    Controls:
+        pnlContent:
+            Controls: [pnlDataItems, pnlButtons]              
+            Dock: Fill
+
+        pnlDataItems:
+            Dock: Fill
+            ControlsOrientation: horizontal
+            Controls: [pnlIndivDataMenu, pnlSelectedIndivDataItem]
+            
+        pnlButtons:
+            Dock: Bottom
+            Height: 35
+            Margin: 0
+            ControlsOrientation: horizontal
+            Controls: [pnlShepherds, pnlEmergencyData]
+        
+        pnlIndivDataMenu:
+            Dock: Left
+            BackColor: System.Drawing.Color.Beige
+            Controls: 
+                Row0: [llbOverview]
+                Row1: [llbEmergencyData]
+                Row2: [llbCommitmentPeriods]
+                Row3: [llbJobAssignments]
+                Row4: [llbPassportDetails]
+                Row5: [llbPersonalDocuments]
+                Row6: [llbSpecialNeeds]                
+                Row7: [llbLanguages]
+                Row8: [llbPersonSkills]
+                Row9: [llbPreviousExperience]
+                Row10: [llbProgressReports]
+                Row11: [llbLocalPersonnelData]
+                Row12: [llbPersonalData]
+                Row13: [llbProfessionalAreas]
+                Row14: [llbPersonalAbilities]
+           # RowHeights: [0=Fixed:28]
+
+        llbOverview: {Label=[&a] Overview, Action=actIndivDataItemSelected, Width=175, Height=30}
+        llbEmergencyData: {Label=[&b] Emergency Data, Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbCommitmentPeriods: {Label=[&c] Commitment Periods ({0}), Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbJobAssignments: {Label=[&d] Job Assignments ({0}), Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbPassportDetails: {Label=[&e] Passport Details ({0}), Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbPersonalDocuments: {Label=[&f] Personal Documents ({0}), Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbSpecialNeeds: {Label=[&g] Special Needs, Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbLanguages: {Label=[&h] Languages ({0}), Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbPersonSkills: {Label=[&i] Skills ({0}), Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbPreviousExperience: {Label=[&j] Previous Experience ({0}), Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbProgressReports: {Label=[&k] Progress Reports ({0}), Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbLocalPersonnelData: {Label=[&l] Local Personnel Data, Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbPersonalData: {Label=[&m] Miscellaneous, Action=actIndivDataItemSelected, Width=175, Height=22}
+        #hide Professional Areas for now as they get replaced by Skills
+        llbProfessionalAreas: {Label=[&n] Professional Areas ({0}), Visible=false, Action=actIndivDataItemSelected, Width=175, Height=22}
+        #hide Abilities for now as they get replaced by Skills
+        llbPersonalAbilities: {Label=[&o] Abilities ({0}), Visible=false, Action=actIndivDataItemSelected, Width=175, Height=22}
+            
+        pnlSelectedIndivDataItem:
+            Dock: Fill
+            Controls: [ucoSummaryData]
+            
+        ucoSummaryData:
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_Summary
+            Dock: Fill
+            
+        
+        pnlShepherds:
+            Dock: Left
+            ControlsOrientation: horizontal
+            Controls: [btnBasicDataShepherd, btnIntranetRegistrationShepherd]
+            
+        btnBasicDataShepherd: {Label=Basic Data Shepherd...}
+        btnIntranetRegistrationShepherd: {Label=Intranet Registration Shepherd...}
+        
+        pnlEmergencyData:
+            Dock: Fill
+            Padding : 30, 0, 0, 0
+            Controls: [btnEmergencyContacts]
+            
+        btnEmergencyContacts: {Label=Emergency Contacts...}

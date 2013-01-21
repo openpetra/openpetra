@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -854,8 +854,6 @@ namespace Ict.Petra.Server.MReporting.MConference
         {
             foreach (DataRow DetailRow in FAccommodationDetailTable.Rows)
             {
-                string bla = DetailRow["RoomName"].ToString();
-
                 if (DetailRow["RoomName"].ToString() != ARoomName)
                 {
                     continue;

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,7 +52,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TGridPreview FGridPreview;
         private bool FPrinterInstalled;
 
-        private TReportPrinterLayout ReportGfxPrinter;
         private TReportPrinterLayout ReportTxtPrinter;
         private TGfxPrinter FGfxPrinter;
         private TTxtPrinter FTxtPrinter;
@@ -69,17 +68,17 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="ACallerWindowHandle"></param>
+        /// <param name="ACallerForm"></param>
         /// <param name="caption">caption of the dialog</param>
         /// <param name="duration"></param>
         /// <param name="results"></param>
         /// <param name="parameters"></param>
         /// <param name="AWrapColumn">true: Wrap the text in the column. False: Cut the text that is to long for the column</param>
-        public TFrmPrintPreview(IntPtr ACallerWindowHandle, String caption, TimeSpan duration, TResultList results,
+        public TFrmPrintPreview(Form ACallerForm, String caption, TimeSpan duration, TResultList results,
             TParameterList parameters, bool AWrapColumn)
             : base()
         {
-            FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerWindowHandle, this, stbMain);
+            FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerForm, this, stbMain);
 
             //
             // Required for Windows Form Designer support
@@ -94,7 +93,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.mniHelp.Text = Catalog.GetString("&Help");
             this.mniHelpPetraHelp.Text = Catalog.GetString("&Petra Help");
             this.mniHelpBugReport.Text = Catalog.GetString("Bug &Report");
-            this.mniHelpAboutPetra.Text = Catalog.GetString("&About Petra...");
+            this.mniHelpAboutPetra.Text = Catalog.GetString("&About OpenPetra...");
             this.mniHelpDevelopmentTeam.Text = Catalog.GetString("&The Development Team...");
             this.stbMain.Text = Catalog.GetString("Status Bar");
             this.stpInfo.Text = Catalog.GetString("Ready");
@@ -122,7 +121,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             #endregion
 
             System.Windows.Forms.TabPage SelectedTab;
-            String durationText;
 
             this.Text = this.Text + ": " + caption;
             this.ReportName = caption;
@@ -141,7 +139,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 this.tabPreview.SelectedTab = tbpPreview;
                 FGfxPrinter = new TGfxPrinter(this.PrintDocument, TGfxPrinter.ePrinterBehaviour.eReport);
-                this.ReportGfxPrinter = new TReportPrinterLayout(Results, Parameters, FGfxPrinter, AWrapColumn);
+
+                // TReportPrinterLayout ReportGfxPrinter
+                new TReportPrinterLayout(Results, Parameters, FGfxPrinter, AWrapColumn);
+
                 this.PrintPreviewControl.Document = FGfxPrinter.Document;
                 this.PrintPreviewControl.Zoom = 1; // show 100% by default
                 this.PrintPreviewControl.UseAntiAlias = true;
@@ -176,9 +177,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FGridPreview.PopulateGridContextMenu(ContextMenu1);
             }
 
-            durationText = String.Format("It took {0} to calculate the report", FormatDuration(duration));
-
-            // TODO statusbar this.sbtForm.InstanceDefaultText = durationText;
+            stpInfo.Text = string.Empty;
+            stbMain.ShowMessage(String.Format(Catalog.GetString("It took {0} to calculate the report"), FormatDuration(duration)));
         }
 
         #region Event Handlers
@@ -387,7 +387,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             TFrmPrintPreview printWindow;
 
             // show a print window with all kinds of output options
-            printWindow = new TFrmPrintPreview(this.Handle, ACalculator.GetParameters().Get("currentReport").ToString(),
+            printWindow = new TFrmPrintPreview(this, ACalculator.GetParameters().Get("currentReport").ToString(),
                 ACalculator.GetDuration(), ACalculator.GetResults(
                     ), ACalculator.GetParameters(), FWrapColumn);
             this.AddOwnedForm(printWindow);

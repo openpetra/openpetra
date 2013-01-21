@@ -1,0 +1,148 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Budget
+    Namespace: Ict.Petra.Client.MFinance.Gui.Budget
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.BudgetTDS
+    DetailTable: ABudget
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
+    FormType: edit
+    Template: windowEdit
+    #Template: windowEditUIConnector
+    WindowWidth: 858
+    #WindowHeight: 900
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+        actImport: {Label=&Import, ActionClick=ImportBudget}      
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlFilter]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: 
+                Row0: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete, btnImport]
+        pnlFilter:
+            Dock: Bottom
+            Controls:
+                Row0: [pnlDetails, rgrSelectBudgetType]
+                Row1: [grpBudgetDetails]
+        rgrSelectBudgetType:
+            OptionalValues: [Split, Ad hoc, Same, Inflate Base, Inflate n]
+            ControlsOrientation: horizontal
+            Align: left
+            NoLabel: true
+            Enabled: false
+            OnChange: NewBudgetType
+        btnNew:
+            Action: actNew
+        btnDelete:
+            Action: actDelete
+        btnImport:
+            Action: actImport
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Controls:
+                Row0: [cmbDetailCostCentreCode]
+                Row1: [cmbDetailAccountCode]
+                #Row2: [cmbDetailYear]
+        pnlBudgetTypeAdhoc:
+            Dock: Fill
+            Visible: false
+            Controls:
+                Row0: [txtPeriod01Amount, txtPeriod07Amount]
+                Row1: [txtPeriod02Amount, txtPeriod08Amount]
+                Row2: [txtPeriod03Amount, txtPeriod09Amount]
+                Row3: [txtPeriod04Amount, txtPeriod10Amount]
+                Row4: [txtPeriod05Amount, txtPeriod11Amount]
+                Row5: [txtPeriod06Amount, txtPeriod12Amount, lblAdhocTotalAmount]
+        pnlBudgetTypeSame:
+            Dock: Fill
+            Visible: false
+            Controls:
+                Row0: [txtAmount, lblSameTotalAmount]
+        pnlBudgetTypeSplit:
+            Dock: Fill
+            Visible: false
+            Controls:
+                Row0: [txtTotalSplitAmount]
+                Row1: [txtPerPeriodAmount]
+                Row2: [txtPeriod12AmountPlus]
+        pnlBudgetTypeInflateN:
+            Dock: Fill
+            Visible: false
+            Controls:
+                Row0: [txtFirstPeriodAmount]
+                Row1: [txtInflateAfterPeriod]
+                Row2: [txtInflationRate, lblInflateNTotalAmount]
+        pnlBudgetTypeInflateBase:
+            Dock: Fill
+            Visible: false
+            Controls:
+                Row0: [txtPeriod1Amount, txtPeriod07Index]
+                Row1: [txtPeriod02Index, txtPeriod08Index]
+                Row2: [txtPeriod03Index, txtPeriod09Index]
+                Row3: [txtPeriod04Index, txtPeriod10Index]
+                Row4: [txtPeriod05Index, txtPeriod11Index]
+                Row5: [txtPeriod06Index, txtPeriod12Index, lblInflateBaseTotalAmount]
+        grpBudgetDetails: {ColSpan=2, Width:775, Height: 190}
+            Align: top-left
+            Controls: 
+                Row0: [pnlBudgetTypeAdhoc]
+                Row1: [pnlBudgetTypeSame]
+                Row2: [pnlBudgetTypeSplit]
+                Row3: [pnlBudgetTypeInflateN]
+                Row4: [pnlBudgetTypeInflateBase]
+        #cmbDetailYear: {Label=Year, List=UserDefinedList, OnChange=BudgetYearChanged}
+        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Enabled=false}
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Enabled=false}
+        #Adhoc controls
+        txtPeriod01Amount: {Label=Period 1, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod02Amount: {Label=Period 2, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod03Amount: {Label=Period 3, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod04Amount: {Label=Period 4, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod05Amount: {Label=Period 5, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod06Amount: {Label=Period 6, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod07Amount: {Label=Period 7, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod08Amount: {Label=Period 8, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod09Amount: {Label=Period 9, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod10Amount: {Label=Period 10, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod11Amount: {Label=Period 11, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod12Amount: {Label=Period 12, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        lblAdhocTotalAmount: {Text=Total}
+        #Same controls
+        txtAmount: {Label = Amount, Format=Currency, OnLeave=ProcessBudgetTypeSame}
+        lblSameTotalAmount: {Text=Total}
+        #Split controls
+        txtTotalSplitAmount: {Label = Total Amount, Format=Currency, OnLeave=ProcessBudgetTypeSplit}
+        txtPerPeriodAmount: {Label = Amount for periods 1 to 11, Format=Currency, ReadOnly=true}
+        txtPeriod12AmountPlus: {Label = Amount for period 12, Format=Currency, ReadOnly=true}
+        #Inflate N controls
+        txtFirstPeriodAmount: {Label = First Period Amount, Format=Currency, OnLeave=ProcessBudgetTypeInflateN}
+        txtInflateAfterPeriod: {Label = Inflate after period, Format=Integer, OnLeave=ProcessBudgetTypeInflateN}
+        txtInflationRate: {Label = Inflation Rate, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateN}
+        lblInflateNTotalAmount: {Text=Total}
+        #Inflate Base controls
+        txtPeriod1Amount: {Label=Period 1 Amount, Format=Currency, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod02Index: {Label=Period 2 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod03Index: {Label=Period 3 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod04Index: {Label=Period 4 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod05Index: {Label=Period 5 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod06Index: {Label=Period 6 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod07Index: {Label=Period 7 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod08Index: {Label=Period 8 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod09Index: {Label=Period 9 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod10Index: {Label=Period 10 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod11Index: {Label=Period 11 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod12Index: {Label=Period 12 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        lblInflateBaseTotalAmount: {Text=Total}
+        #TODO: radio buttons for selection of budget type, display different user controls depending on selection, similar to bankimport screen
+    Menu:
+    Toolbar:
+        cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, Width=250, SuppressChangeDetection=true}

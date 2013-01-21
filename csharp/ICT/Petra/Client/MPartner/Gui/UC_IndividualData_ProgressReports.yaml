@@ -1,0 +1,71 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
+    DetailTable: PmPersonEvaluation
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlDetailGrid, pnlDetails]
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
+        grdDetails:
+            Dock: Fill
+            TableName: PmPersonEvaluation
+            Columns: [Evaluator, EvaluationDate, EvaluationType]
+            CustomColumns:
+                Evaluator: {Label=Reporter}
+                EvaluationDate: {Label=Report Date, Type=DateTime}
+                EvaluationType: {Label=Report Type}
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: Evaluator ASC
+            
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtEvaluator]
+                Row1: [dtpEvaluationDate, dtpNextEvalDate]
+                Row2: [cmbEvaluationType]
+                Row3: [txtEvaluationComments]
+                Row4: [txtEvaluationAction]
+                
+        txtEvaluator: {Label=Reporter, DataField=PmPersonEvaluation.Evaluator, Width=150, Validation=true}
+        dtpEvaluationDate: {Label=Report Date, DataField=PmPersonEvaluation.EvaluationDate, Validation=true}
+        dtpNextEvalDate: {Label=Next Report Date, DataField=PmPersonEvaluation.NextEvaluationDate, Validation=Pair(dtpEvaluationDate)}
+        cmbEvaluationType: 
+            Label: Report Type 
+            DataField: PmPersonEvaluation.EvaluationType
+            Width: 100
+            OptionalValues: [=Semi-Annual, Annual, Leaving]
+            Validation: true
+        txtEvaluationComments:
+            Label: Comments
+            DataField: PmPersonEvaluation.EvaluationComments
+            Multiline: true
+            ScrollBars: Vertical
+            Height: 50
+            Width: 380
+            ColSpan: 2
+        txtEvaluationAction:
+            Label: Next Action
+            DataField: PmPersonEvaluation.PersonEvalAction
+            Multiline: true
+            ScrollBars: Vertical
+            Height: 50
+            Width: 380
+            ColSpan: 2
+
+        

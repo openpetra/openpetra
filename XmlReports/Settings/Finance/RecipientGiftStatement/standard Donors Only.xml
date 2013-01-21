@@ -1,34 +1,34 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Finance\\recipientgiftstatement.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="RecipientGiftStatement" />
-  <Parameter id="MaxDisplayColumns" value="6" />
-  <Parameter id="param_report_type" value="Donors Only" />
-  <Parameter id="param_recipient" value="All Recipients" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_calculation" column="0" value="Donor Name" />
-  <Parameter id="param_ytd" column="0" value="false" />
-  <Parameter id="ColumnWidth" column="0" value="4" />
-  <Parameter id="param_calculation" column="1" value="Street" />
-  <Parameter id="ColumnWidth" column="1" value="3" />
-  <Parameter id="param_ytd" column="1" value="false" />
-  <Parameter id="param_calculation" column="2" value="Post Code" />
-  <Parameter id="ColumnWidth" column="2" value="2" />
-  <Parameter id="param_ytd" column="2" value="false" />
-  <Parameter id="param_calculation" column="3" value="City" />
-  <Parameter id="ColumnWidth" column="3" value="3" />
-  <Parameter id="param_ytd" column="3" value="false" />
-  <Parameter id="param_calculation" column="4" value="Country" />
-  <Parameter id="ColumnWidth" column="4" value="1.5" />
-  <Parameter id="param_ytd" column="4" value="false" />
-  <Parameter id="param_calculation" column="5" value="Donor Key" />
-  <Parameter id="param_ytd" column="5" value="false" />
-  <Parameter id="ColumnWidth" column="5" value="2.5" />
-  <Parameter id="param_currency_format" value="CurrencyComplete" />
-  <Parameter id="param_recipientkey" value="0" />
-  <Parameter id="param_extract_name" value="" />
-  <Parameter id="FirstColumn" column="3" value="0" />
-  <Parameter id="SecondColumn" column="3" value="1" />
-  <Parameter id="param_gift_amount_column" value="4" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\recipientgiftstatement.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:RecipientGiftStatement" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:6" />
+  <Parameter id="param_report_type" value="eString:Donors Only" />
+  <Parameter id="param_recipient" value="eString:All Recipients" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_calculation" column="0" value="eString:Donor Name" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:4" />
+  <Parameter id="param_calculation" column="1" value="eString:Street" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Post Code" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:City" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Country" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_ytd" column="4" value="eString:false" />
+  <Parameter id="param_calculation" column="5" value="eString:Donor Key" />
+  <Parameter id="param_ytd" column="5" value="eString:false" />
+  <Parameter id="ColumnWidth" column="5" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_recipientkey" value="eInteger:0" />
+  <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="FirstColumn" column="3" value="eInteger:0" />
+  <Parameter id="SecondColumn" column="3" value="eInteger:1" />
+  <Parameter id="param_gift_amount_column" value="eInteger:4" />
 </Parameters>

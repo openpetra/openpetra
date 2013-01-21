@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,7 +46,6 @@ namespace Ict.Petra.Client.App.Core
         delegate void TRemindersProcessor (System.Object AState);
 
         private static TRemindersProcessor URemindersProcessor;
-        private static System.Threading.Timer UTimer;
 
         /// <summary>
         /// processing the Partner Reminders.
@@ -100,7 +99,7 @@ namespace Ict.Petra.Client.App.Core
              * The Timer will execute the function 'ProcessRemindersDelegate' through
              * calling the URemindersProcessor Delegate in the specified time periods.
              */
-            UTimer = new System.Threading.Timer(new TimerCallback(URemindersProcessor), null, InitialSleepTime, TwentyfourHrs);
+            new System.Threading.Timer(new TimerCallback(URemindersProcessor), null, InitialSleepTime, TwentyfourHrs);
         }
     }
 }

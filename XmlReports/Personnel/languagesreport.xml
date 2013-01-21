@@ -55,8 +55,8 @@
         <fielddetail>
           <value text="Selection: "></value>
         </fielddetail>
-        <fielddetail condition="eq({param_source}, Campaign)">
-          <value text="Campaign: "></value><value variable="param_event_code"></value>
+        <fielddetail condition="eq({param_source}, Outreach)">
+          <value text="Outreach: "></value><value variable="param_event_code"></value>
         </fielddetail>
         <fielddetail condition="eq({param_source}, Conference)">
           <value text="Conference: "></value><value variable="param_event_code"></value>
@@ -126,7 +126,7 @@
 					PUB_p_unit,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_language
 				WHERE
 					PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_xyz_tbd_code_c
+					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
 					AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
 			</value></queryDetail>
 			
@@ -146,7 +146,7 @@
 					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
 					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
 					AND PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_xyz_tbd_code_c
+					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
 					AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
 			</value></queryDetail>
 			

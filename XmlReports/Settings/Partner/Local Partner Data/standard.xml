@@ -1,22 +1,22 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Partner\\localpartnerdata.xml" />
-  <Parameter id="currentReport" value="Local Partner Data" />
-  <Parameter id="MaxDisplayColumns" value="2" />
-  <Parameter id="param_selection" value="one partner" />
-  <Parameter id="param_extract" value="" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="orderby0" value="Partner Name" />
-  <Parameter id="orderby1" value="Partner Key" />
-  <Parameter id="param_sortby_readable" value="Partner Name, Partner Key" />
-  <Parameter id="param_calculation" column="2" value="Partner Name" />
-  <Parameter id="param_calculation" column="3" value="Partner Key" />
-  <Parameter id="param_sortby_columns" value="2,3" />
-  <Parameter id="param_calculation" column="0" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="0" value="4" />
-  <Parameter id="param_calculation" column="1" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="1" value="2" />
-  <Parameter id="param_label_type" value="partner" />
-  <Parameter id="param_labeluse" value="Person,Family,Church,Organisation,Bank,Unit,Venue" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Partner\\localpartnerdata.xml" />
+  <Parameter id="currentReport" value="eString:Local Partner Data" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:2" />
+  <Parameter id="param_selection" value="eString:one partner" />
+  <Parameter id="param_extract" value="eString:" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="orderby0" value="eString:Partner Name" />
+  <Parameter id="orderby1" value="eString:Partner Key" />
+  <Parameter id="param_sortby_readable" value="eString:Partner Name, Partner Key" />
+  <Parameter id="param_calculation" column="2" value="eString:Partner Name" />
+  <Parameter id="param_calculation" column="3" value="eString:Partner Key" />
+  <Parameter id="param_sortby_columns" value="eString:2,3" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:4" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="param_label_type" value="eString:partner" />
+  <Parameter id="param_labeluse" value="eString:Person,Family,Church,Organisation,Bank,Unit,Venue" />
 </Parameters>

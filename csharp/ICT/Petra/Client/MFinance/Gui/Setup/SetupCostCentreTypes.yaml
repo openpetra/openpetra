@@ -1,0 +1,44 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Cost Centre Types
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    DetailTable: ACostCentreTypes
+    CacheableTable: CostCentreTypesList
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Account.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 760
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+            Action: actNew
+        grdDetails:
+            Dock: Fill
+            Columns: [CostCentreType, CcDescription, Deletable]
+            CustomColumns:
+                CostCentreType:  {Label=Cost Centre Type}
+                CcDescription:  {Label=Description}
+                Deletable:  {Label=Deletable}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailCostCentreType, txtDetailCcDescription]
+                Row1: [chkDetailDeletable]
+        txtDetailCostCentreType: {Label=Cost Centre Type}
+        txtDetailCcDescription: {Label=Description, Width=319}
+        chkDetailDeletable: {Label=Deletable}
+    Toolbar:
+        tbbNew:
+            Label: New Cost Centre Type

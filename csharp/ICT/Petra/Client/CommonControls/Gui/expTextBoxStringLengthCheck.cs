@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -82,33 +82,29 @@ namespace Ict.Petra.Client.CommonControls
     /// </summary>
     public partial class TexpTextBoxStringLengthCheck : System.ComponentModel.Component, IExtenderProvider
     {
-        /// <summary>todoComment</summary>
-        public const String strFoundControlKey = "Key";
+        #region Resourcetexts - DON'T TRANSLATE AS THEY ARE FOR LOGGING/DEBUGGING PUPROSES
+
+//        private static readonly string strUnknownControl = "Unkown control! Databinding System.Object could not be retreived!";
+
+        #endregion
 
         /// <summary>todoComment</summary>
-        public const String strFoundControlTextBox = "TextBox";
+        private const String strFoundControlKey = "Key";
 
         /// <summary>todoComment</summary>
-        public const String strFoundControlMaxLength = "MaxLength";
+        private const String strFoundControlTextBox = "TextBox";
 
         /// <summary>todoComment</summary>
-        public const String strFoundControlTableName = "TableName";
+        private const String strFoundControlMaxLength = "MaxLength";
 
         /// <summary>todoComment</summary>
-        public const String strFoundControlColumnName = "ColumnName";
+        private const String strFoundControlTableName = "TableName";
 
         /// <summary>todoComment</summary>
-        public const String strFoundControlDataSource = "DataSource";
+        private const String strFoundControlColumnName = "ColumnName";
 
         /// <summary>todoComment</summary>
-        public const String strExceptionRegisterHost = "The host of the extender provider is not registered to the provider." + "\n" +
-                                                       "Please implement the event >RegisterHostToExtender< in the control where you use the TexpTextBoxStringLengthCheck!!!";
-
-        /// <summary>todoComment</summary>
-        public const String strExceptionInitialisation = "Initialisation Failure";
-
-        /// <summary>todoComment</summary>
-        public const String strUnknownControl = "Unkown control! Databinding System.Object could not be retreived!";
+        private const String strFoundControlDataSource = "DataSource";
 
         private System.Windows.Forms.UserControl UExtenderHost;
         private System.Windows.Forms.Control.ControlCollection UExtenderControlCollection;
@@ -299,15 +295,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns>void</returns>
         public bool CanExtend(System.Object AnObject)
         {
-            bool ReturnValue;
-
-            System.Object mTextBoxObject;
-            System.Windows.Forms.Control mTextBox;
-
-            // Initialization
-            ReturnValue = false;
-            mTextBox = new System.Windows.Forms.TextBox();
-            mTextBoxObject = new System.Object();
+            bool ReturnValue = false;
 
             // If the System.Object is derived from System.Windows.Forms.UserControl then we have to deal with it
             if (AnObject is System.Windows.Forms.UserControl)
@@ -462,8 +450,6 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns>void</returns>
         private void ImposeMaxLength()
         {
-            String mKey;
-
             System.Object mValueObject;
             System.Windows.Forms.Control mControl;
             TTxtPartnerKeyTextBox mPartnerKey;
@@ -472,7 +458,6 @@ namespace Ict.Petra.Client.CommonControls
 
             foreach (DataRow mDataRow in this.UFoundControlTable.Rows)
             {
-                mKey = mDataRow[strFoundControlKey].ToString();
                 mValueObject = mDataRow[strFoundControlTextBox];
                 mControl = (System.Windows.Forms.Control)mValueObject;
 
@@ -675,13 +660,6 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns>void</returns>
         public void RetrieveTextboxes(System.Object AnObject)
         {
-            System.Object mTextBoxObject;
-            System.Windows.Forms.Control mTextBox;
-
-            // Initialization
-            mTextBox = new System.Windows.Forms.TextBox();
-            mTextBoxObject = new System.Object();
-
             // If the System.Object is derived from System.Windows.Forms.UserControl then we have to deal with it
             if (AnObject is System.Windows.Forms.UserControl)
             {

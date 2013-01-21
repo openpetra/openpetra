@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       matthiash
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,9 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-
+using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
+
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -45,22 +46,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// show the actual data of the database after server has changed data
+        /// </summary>
+        public void RefreshAll()
+        {
+            ucoBatches.RefreshAll();
+        }
+
         private void InitializeManualCode()
         {
+            tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgTransactions.Enabled = false;
-
-            if (FTabPageEvent == null)
-            {
-                FTabPageEvent += this.TabPageEventHandler;
-            }
         }
+
+        private int standardTabIndex = 0;
 
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
-            tabGiftBatch.SelectedIndex = 0;
+            tabGiftBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null);
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            ucoBatches.Focus();
+            HookupAllInContainer(ucoBatches);
+            HookupAllInContainer(ucoTransactions);
         }
 
         /// <summary>
@@ -68,12 +82,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
+        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, bool AFromTabClick = true)
         {
-            this.tpgTransactions.Enabled = true;
-            FPetraUtilsObject.DisableDataChangedEvent();
-            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
-            FPetraUtilsObject.EnableDataChangedEvent();
+            try
+            {
+                //this.tpgTransactions.Enabled = true;
+                FPetraUtilsObject.DisableDataChangedEvent();
+                this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, AFromTabClick);
+            }
+            finally
+            {
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
         }
 
         /// <summary>
@@ -96,6 +117,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void EnableTransactionsTab()
         {
             this.tpgTransactions.Enabled = true;
+        }
+
+        /// enable the transaction tab page
+        public void DisableTransactionsTab()
+        {
+            this.tpgTransactions.Enabled = false;
         }
 
         /// <summary>
@@ -124,40 +151,76 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Transactions
         };
 
+        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
+            if (!SaveChanges())
+            {
+                e.Cancel = true;
+
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            }
+        }
+
+        bool FChangeTabEventHasRun = false;
+
+        private void SelectTabManual(int ASelectedTabIndex)
+        {
+            if (ASelectedTabIndex == (int)eGiftTabs.Batches)
+            {
+                SelectTab(eGiftTabs.Batches);
+            }
+            else
+            {
+                SelectTab(eGiftTabs.Transactions);
+            }
+        }
+
         /// <summary>
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
-        public void SelectTab(eGiftTabs ATab)
+        /// <param name="AFromTabClick"></param>
+        public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
         {
+            if (FChangeTabEventHasRun && AFromTabClick)
+            {
+                FChangeTabEventHasRun = false;
+                return;
+            }
+            else
+            {
+                FChangeTabEventHasRun = !AFromTabClick;
+            }
+
             if (ATab == eGiftTabs.Batches)
             {
-                this.tabGiftBatch.SelectedTab = this.tpgBatches;
+                //If from grid double click then invoke tab changed event
+                if (!AFromTabClick)
+                {
+                    this.tabGiftBatch.SelectedTab = this.tpgBatches;
+                }
+
+                this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
+                this.ucoBatches.FocusGrid();
             }
             else if (ATab == eGiftTabs.Transactions)
             {
                 if (this.tpgTransactions.Enabled)
                 {
+                    //ucoBatches.Controls["grdDetails"].Focus;
                     LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
-                        ucoBatches.GetSelectedDetailRow().BatchNumber);
-                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
-                }
-            }
-        }
+                        ucoBatches.GetSelectedDetailRow().BatchNumber, AFromTabClick);
 
-        private void TabPageEventHandler(object sender, TTabPageEventArgs ATabPageEventArgs)
-        {
-            if (ATabPageEventArgs.Event == "InitialActivation")
-            {
-                if (ATabPageEventArgs.Tab == tpgBatches)
-                {
-                    ucoBatches.LoadBatches(FLedgerNumber);
-                }
-            }
+                    //If from grid double click then invoke tab changed event
+                    if (!AFromTabClick)
+                    {
+                        this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+                    }
 
-            if (ATabPageEventArgs.Tab == tpgTransactions)
-            {
-                SelectTab(eGiftTabs.Transactions);
+                    this.ucoTransactions.FocusGrid();
+                }
             }
         }
     }

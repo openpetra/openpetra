@@ -1,0 +1,27 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: New Extract
+    Namespace: Ict.Petra.Client.MReporting.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 400
+    WindowHeight: 300
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent:
+            Controls:
+                Row0: [txtExtractName]
+                Row1: [txtDescription]
+                
+        txtExtractName:
+            Label: Extract Name
+
+        txtDescription:
+            Label: Description
+            Multiline: true
+            ScrollBars: Vertical
+            Height: 200
+            Width: 250

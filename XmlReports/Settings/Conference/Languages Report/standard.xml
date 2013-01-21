@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Conference\\languagesreport.xml,Conference\\conference.xml" />
-  <Parameter id="currentReport" value="Languages Report" />
-  <Parameter id="MaxDisplayColumns" value="0" />
-  <Parameter id="param_conferenceselection" value="one conference" />
-  <Parameter id="param_attendeeselection" value="all attendees" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_extractname" value="" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Conference\\languagesreport.xml,Conference\\conference.xml" />
+  <Parameter id="currentReport" value="eString:Languages Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:0" />
+  <Parameter id="param_conferenceselection" value="eString:one conference" />
+  <Parameter id="param_attendeeselection" value="eString:all attendees" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_extractname" value="eString:" />
 </Parameters>

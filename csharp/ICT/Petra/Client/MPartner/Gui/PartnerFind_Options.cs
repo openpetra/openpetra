@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using System.Resources;
+using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Gui;
@@ -57,8 +58,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         public const String PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT_DEFAULT =
             "PartnerClass;PartnerKey;OMSSKey;PartnerStatus";
 #if TODO
-        public const String StrMoreOptions = "&More >>";
-        public const String StrLessOptions = "<< &Less";
+        #region Resourcestrings
+
+        private static readonly string StrMoreOptions = Catalog.GetString("&More >>");
+        private static readonly string StrLessOptions = Catalog.GetString("<< &Less");
+
+        #endregion
 
         /// <summary>Private Declarations</summary>
         private bool FSaveChangedOptions;
@@ -88,9 +93,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.btnMoveToLeftColumn.Text = Catalog.GetString("Move To &Left");
             this.btnMoveToRightColumn.Text = Catalog.GetString("Move To &Right");
             this.grpDisplayedSearchCriteria.Text = Catalog.GetString("Displayed Find Criteria");
-            this.Label1.Text = Catalog.GetString("&Partner Find Criteria:");
-            this.Label2.Text = Catalog.GetString("&Address Find Criteria:");
-            this.Label3.Text = Catalog.GetString("O&ther Find Criteria:");
+            this.Label1.Text = Catalog.GetString("&Partner Find Criteria") + ":";
+            this.Label2.Text = Catalog.GetString("&Address Find Criteria") + ":";
+            this.Label3.Text = Catalog.GetString("O&ther Find Criteria") + ":";
             this.chkShowMatchButtons.Text = Catalog.GetString("Sho&w \'Matching Pattern\' buttons");
             this.chkExactPartnerKeyMatchSearch.Text = Catalog.GetString("Exact Partner &Key Match");
             this.btnReset.Text = Catalog.GetString("&Reset");
@@ -277,14 +282,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FSaveChangedOptions = false;
 
-#if !DEBUGMODE
             // The following Buttons are only for debugging...
             btnShowRightListItems.Visible = false;
             btnShowLeftListItems.Visible = false;
 
             // The rearranging of Find Criteria isn't quite stable yet, so we don't show the Button that enables the rearranging...
             btnMore.Visible = false;
-#endif
 
             // Define default order in which the items in the left and right columns should appear
             // This is used to determine the place where added fields should appear in the columns
@@ -330,8 +333,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             DialogResult ResetQuestionResult;
 
-            ResetQuestionResult = MessageBox.Show("Do you want to reset the Find Criteria to the Petra default?",
-                "Reset Find Criteria", MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+            ResetQuestionResult = MessageBox.Show(Catalog.GetString("Do you want to reset the Find Criteria to the OpenPetra default?"),
+                Catalog.GetString("Reset Find Criteria"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
                 MessageBoxDefaultButton.Button2);
 
             if (ResetQuestionResult == DialogResult.Yes)

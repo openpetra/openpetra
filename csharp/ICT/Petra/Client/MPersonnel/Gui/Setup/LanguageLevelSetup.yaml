@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtLanguageLevel
     CacheableTable: LanguageLevelList
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
@@ -39,9 +39,9 @@ RootNode:
                 Row3: [chkDetailDeletableFlag]                
         txtDetailLanguageLevel: {Format=Integer, Width=30}
         txtDetailLanguageLevelDescr: {Label=Description, Width=370}
-        txtDetailLanguageComment: {Label=Language Comment, Width=530, ColSpan=3}
+        txtDetailLanguageComment: {Label=Language Comment, Width=530, ColSpan=2}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
         
     Toolbar:

@@ -32,9 +32,8 @@ RootNode:
             Label: Contact Attributes
             Controls:
                 Row0: [grdAttribute, grdDetail]
-                Row1: [pnlDummy, pnlButton]
+                Row1: [Empty, pnlButton]
                 Row2: [grdSelection]
-            ColWidths: [0=Percent:35, 1=Percent:65]
             
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
@@ -51,33 +50,34 @@ RootNode:
             Label: Report Range
             Controls: [cmbContactor, cmbContact, dtpDateFrom, dtpDateTo]
         cmbContactor:
-            Label: Contactor:
+            Label: Contactor
         cmbContact:
             Label: Contact
         dtpDateFrom:
-            Label: Date From:
+            Label: Date From
         dtpDateTo:
-            Label: Date To:
+            Label: Date To
             
-        pnlDummy:
-        
         pnlButton:
             Controls: 
                 Row0: [btnAddDetail, btnRemoveDetail]
             Align: left
         grdAttribute:
         #~ p_contact_attribute
-            Dock: Fill
             ActionFocusRow: AttributeFocusedRowChanged
+            Width: 300
+            Height: 150
         grdDetail:
         #~ p_contact_attribute_detail
-            Dock: Fill
             ActionDoubleClick: grdDetailDoubleClick
+            Width: 300
+            Height: 150
         grdSelection:
         #~ Holds the selected attributes
-            Dock: Fill
             ColSpan: 2
             ActionDoubleClick: grdSelectionDoubleClick
+            Width: 300
+            Height: 150
         btnAddDetail:
             Label: AddDetail
             ActionClick: AddDetail

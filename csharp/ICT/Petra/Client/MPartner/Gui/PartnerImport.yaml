@@ -10,61 +10,62 @@ RootNode:
         actCancelImport: {ActionClick=CancelImport, InitiallyEnabled=false}
         actCreateNewPartner: {ActionClick=CreateNewPartner}
         actSkip: {ActionClick=SkipRecord}
+        actUseSelectedAddress: {ActionClick=UseSelectedAddress, InitiallyEnabled=false}
+        actUseSelectedPerson: {ActionClick=UseSelectedPerson, InitiallyEnabled=false}
+        actUseSelectedFamily: {ActionClick=UseSelectedFamily, InitiallyEnabled=false}
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlImportSettings, pnlImportRecord]
-        pnlImportSettings:
-            Dock: Top
             Controls:
-                Row0: [txtFilename, btnSelectFile]
-                Row1: [chkSemiAutomatic]
-                # todo: other options, eg. skip partners that have already been imported, log file, etc.
-        txtFilename: {ReadOnly=true, Width:300}
+                RowA: [txtFilename, btnSelectFile]
+                RowB: [txtPartnerInfo, pnlActions]
+                RowC: [grdMatchingRecords]
+                RowD: [txtHint]
+        txtFilename: {ReadOnly=true, Width=500}
         btnSelectFile: {ActionClick=OpenFile}
-        chkSemiAutomatic: {Label=Semi Automatic Import, Help="In this mode most partners are imported or updated automatically, only for unclear situations the user has to intervene"}
-        pnlImportRecord:
-            Controls:
-                RowA: [txtCurrentRecordStatus]
-                Row0: [txtPartnerInfo, pnlActions]
-                Row1: [grdMatchingRecords]
-        txtCurrentRecordStatus: {Label=Current Import File Record Status, ReadOnly=true, Width=500, ColSpan=2}
         txtPartnerInfo:
             Multiline: true
             ReadOnly: true
-            Width: 400
-            Height: 300
+            Width: 500
+            Height: 350
+            Label: Import Status
+            ScrollBars: Vertical
         grdMatchingRecords:
             ColSpan: 2
             Width: 600
             Height: 100
             #Columns: [PartnerClass, PartnerName, City, PostCode, Addr1]
+        txtHint:
+            ReadOnly: true
+            Width: 500
         pnlActions:
             Controls: 
-                Row0: [txtExplanation]
-                Row0a: [lblTakeAction]
+                Row0: [lblTakeAction]
                 Row1: [btnSkip]
                 #Row2: [btnCreateNewFamilyAndPerson]
-                #Row3: [btnUseSelectedPerson]
+                Row3: [btnUseSelectedPerson]
                 #Row4: [btnCreateNewPersonForSelectedFamily]
                 #Row5: [btnCreateNewFamily]
                 Row5: [btnCreateNewPartner]
-                #Row6: [btnUseSelectedFamily]
+                Row6: [btnUseSelectedAddress]
+                Row7: [btnUseSelectedFamily]
                 #Row7: [btnFindOtherPerson]
                 #Row8: [btnFindOtherFamily]
                 #Row9: [chkReplaceAddress]
-        txtExplanation: {ReadOnly=true, Multiline=true}
+                Row10: [chkSemiAutomatic]
         lblTakeAction: 
-        btnSkip: {Label=Skip Record}
+        btnSkip: {Label=Skip Partner, Enabled=false}
         #btnCreateNewFamilyAndPerson: {Label=Create new Family and Person, Enabled=false}
-        #btnUseSelectedPerson: {Label=Use selected Person in list below, Enabled=false}
+        btnUseSelectedPerson: {Label=Update Partner, Enabled=false}
         #btnCreateNewPersonForSelectedFamily: {Label=Add as new Person to selected Family in list below, Enabled=false}
         #btnCreateNewFamily: {Label=Create new Family Record only}
-        btnCreateNewPartner: {Label=Create new Partner Record}
-        #btnUseSelectedFamily: {Label=Use selected Family in list below, Enabled=false}
+        btnCreateNewPartner: {Label=Create Partner, Enabled=false}
+        btnUseSelectedAddress: {Label=Re-use address, Enabled=false}
+        btnUseSelectedFamily: {Label=Add to Family, Enabled=false}
         #btnFindOtherPerson: {Label=Find other Person to use for this Record..., Enabled=false}
         #btnFindOtherFamily: {Label=Find other Family to add this Person to..., Enabled=false}
-        #chkReplaceAddress: {Label=Replace current address in list below with imported one, Enabled=false, CheckBoxAttachedLabel=right}
+        #chkReplaceAddress: {Label=Replace current address in list below with imported one, Enabled=false}
+        chkSemiAutomatic: {Label=Automatic Import, Help="Partners will be imported automatically, unless user intervention is required.", CheckBoxAttachedLabel=right}
     Toolbar:
         tbbStartImport:
         tbbCancelImport:

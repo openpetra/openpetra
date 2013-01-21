@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,10 +23,12 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
 using System.Security.Cryptography;
 using System.Text;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Ict.Common.Data
 {
@@ -136,14 +138,8 @@ namespace Ict.Common.Data
             TmpDS.Tables.Add((DataTable)TmpObj);
             TmpDS.Tables[0].TableName = DataTableName;
 
-            /* $IFDEF DEBUGMODE TLogging.Log('ChangeDataTableToTypedDataTable: DataTable ''' + DataTableName + ''': got added as a new DataTable to TmpDS. DataTable.TableName: ' + TmpDS.Tables[0].TableName + '; DataTable Type: ' +
-             *TmpDS.Tables[0].GetType.FullName + '; Rows: ' + TmpDS.Tables[0].Rows.Count.ToString); $ENDIF */
-
             // Now merge in data from the untyped DataTable to the Typed DataTable!
             TmpDS.Merge(ADataTable);
-
-            /* $IFDEF DEBUGMODE TLogging.Log('ChangeDataTableToTypedDataTable: DataTable ''' + DataTableName + ''': got merged into DataTable in TmpDS. Table count: ' + TmpDS.Tables.Count.ToString + '; DataTable Type: ' +
-             *TmpDS.Tables[0].GetType.FullName + '; Rows: ' + TmpDS.Tables[0].Rows.Count.ToString); $ENDIF */
 
             // The result is a Typed DataTable of the desired Type, filled with data from
             // an untyped DataTable
@@ -207,9 +203,6 @@ namespace Ict.Common.Data
                     // Increment the size
                     TmpSize = AHashDV[RowCounter][ColumnCounter].ToString().Length;
                     ASize = ASize + TmpSize;
-
-                    /* $IFDEF DEBUGMODE  if TSrvSetting.DL >= 7 then TLogging.Log('Length(AHashDV[RowCounter][ColumnCounter].ToString]): ' + TmpSize.ToString + ' (Value: ''' + AHashDV[RowCounter][ColumnCounter].ToString + ''')'); $ENDIF   if
-                     *TSrvSetting.DL >= 9 then */
                 }
             }
 
@@ -218,8 +211,6 @@ namespace Ict.Common.Data
              */
             HashingProvider = new SHA1CryptoServiceProvider();
             AHash = Convert.ToBase64String(HashingProvider.ComputeHash(Encoding.UTF8.GetBytes(HashStringBuilder.ToString())));
-
-            // $IFDEF DEBUGMODE  if TSrvSetting.DL >= 7 then TLogging.Log('HashStringBuilder.ToString: ' + HashStringBuilder.ToString); $ENDIF  if TSrvSetting.DL >= 9 then
         }
 
         /// <summary>
@@ -254,6 +245,111 @@ namespace Ict.Common.Data
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// compare the values of two data rows expressed as object arrays
+        /// </summary>
+        /// <param name="ADataRow1">first row</param>
+        /// <param name="ADataRow2">second row</param>
+        /// <returns>true if identical values</returns>
+        public static Boolean HaveDataRowsIdenticalValues(object[] ADataRow1, object[] ADataRow2)
+        {
+            // Check for matching number of columns
+            if (ADataRow1.Length != ADataRow2.Length)
+            {
+                return false;
+            }
+
+            for (Int32 col = 0; col < ADataRow1.Length; col++)
+            {
+                // Column data must be of same type
+                if (ADataRow1[col].GetType().ToString() != ADataRow2[col].GetType().ToString())
+                {
+                    return false;
+                }
+
+                // Column content must be the same
+                if (!ADataRow1[col].Equals(ADataRow2[col]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// compare the changed columns of a row.
+        /// for some reasons, on the client the values are read from the controls, and despite the row has not changed, the row is marked modified
+        /// </summary>
+        public static bool IsReallyChanged(DataRow ADataRow)
+        {
+            int DEBUGLEVEL_REALLYCHANGED = 1;
+
+            if (ADataRow.RowState == DataRowState.Added)
+            {
+                if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                {
+                    TLogging.Log("Row has been added:");
+
+                    foreach (DataColumn dc in ADataRow.Table.Columns)
+                    {
+                        TLogging.Log("  " + dc.ColumnName + ": " + ADataRow[dc.Ordinal].ToString());
+                    }
+                }
+
+                return true;
+            }
+            else if (ADataRow.RowState == DataRowState.Deleted)
+            {
+                if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                {
+                    TLogging.Log("Row has been deleted:");
+
+                    foreach (DataColumn dc in ADataRow.Table.Columns)
+                    {
+                        TLogging.Log("  " + dc.ColumnName + ": " + ADataRow[dc.Ordinal, DataRowVersion.Original].ToString());
+                    }
+                }
+
+                return true;
+            }
+            else if (ADataRow.RowState == DataRowState.Modified)
+            {
+                if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                {
+                    TLogging.Log("Row has been modified:");
+                }
+
+                bool changed = false;
+
+                foreach (DataColumn dc in ADataRow.Table.Columns)
+                {
+                    if (ADataRow[dc.Ordinal, DataRowVersion.Original].ToString() != ADataRow[dc.Ordinal, DataRowVersion.Current].ToString())
+                    {
+                        changed = true;
+
+                        if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                        {
+                            TLogging.Log("***  " + dc.ColumnName + ": from " +
+                                ADataRow[dc.Ordinal, DataRowVersion.Original].ToString() + " to " +
+                                ADataRow[dc.Ordinal, DataRowVersion.Current].ToString());
+                        }
+                    }
+                    else
+                    {
+                        if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
+                        {
+                            TLogging.Log("  " + dc.ColumnName + ": " + ADataRow[dc.Ordinal, DataRowVersion.Original].ToString());
+                        }
+                    }
+                }
+
+                return changed;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -371,6 +467,88 @@ namespace Ict.Common.Data
             }
         }
 
+        /// <summary>
+        /// copy all values from one row to the other; must have the same columns; omit Primary Key Columns
+        /// </summary>
+        /// <param name="ASourceRow"></param>
+        /// <param name="ADestinationRow"></param>
+        public static void CopyAllColumnValuesWithoutPK(DataRow ASourceRow, DataRow ADestinationRow)
+        {
+            for (Int32 col = 0; col < ASourceRow.Table.Columns.Count; col++)
+            {
+                Int32 pkIndex = 0;
+                bool pk = false;
+
+                while (pkIndex < ADestinationRow.Table.PrimaryKey.Length)
+                {
+                    if (col == ADestinationRow.Table.PrimaryKey[pkIndex].Ordinal)
+                    {
+                        pk = true;
+                        break;
+                    }
+
+                    pkIndex++;
+                }
+
+                string columnName = ASourceRow.Table.Columns[col].ColumnName;
+
+                if (!pk && ADestinationRow.Table.Columns.Contains(columnName))
+                {
+                    ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal] = ASourceRow[col];
+                }
+            }
+        }
+
+        /// <summary>
+        /// small structure for comparing 2 DataRows by columns, used by CompareAllColumnValues
+        /// </summary>
+        public struct TColumnDifference
+        {
+            /// <summary> the name of the column that is different </summary>
+            public string FColumnName;
+            /// <summary> the new value </summary>
+            public string FSourceValue;
+            /// <summary> the original value </summary>
+            public string FDestinationValue;
+            /// <summary> Constructor </summary>
+            public TColumnDifference(string AColumnName, string ASourceName, string ADestinationValue)
+            {
+                FColumnName = AColumnName;
+                FSourceValue = ASourceName;
+                FDestinationValue = ADestinationValue;
+            }
+        }
+
+        /// <summary>
+        /// compare the values of two rows; must have the same columns
+        /// </summary>
+        /// <param name="ASourceRow"></param>
+        /// <param name="ADestinationRow"></param>
+        /// <param name="ADifferences"></param>
+        public static void CompareAllColumnValues(DataRow ASourceRow, DataRow ADestinationRow, out List <TColumnDifference>ADifferences)
+        {
+            ADifferences = new List <TColumnDifference>();
+
+            for (Int32 col = 0; col < ASourceRow.Table.Columns.Count; col++)
+            {
+                string columnName = ASourceRow.Table.Columns[col].ColumnName;
+
+                if ((columnName != "s_created_by_c") && (columnName != "s_modified_by_c")
+                    && (columnName != "s_date_created_d") && (columnName != "s_date_modified_d")
+                    && (columnName != TTypedDataAccess.MODIFICATION_ID)
+                    && ADestinationRow.Table.Columns.Contains(columnName))
+                {
+                    object SourceValue = ASourceRow[col];
+                    object DestinationValue = ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal];
+
+                    if (!SourceValue.Equals(DestinationValue))
+                    {
+                        ADifferences.Add(new TColumnDifference(columnName, SourceValue.ToString(), DestinationValue.ToString()));
+                    }
+                }
+            }
+        }
+
         /// delete the destination table, copy all rows from the source table;
         /// we assume both tables have the same columns, same type.
         /// this is needed for datasets, when the table is readonly and cannot be assigned directly
@@ -381,6 +559,157 @@ namespace Ict.Common.Data
             foreach (DataRow r in ASrc.Rows)
             {
                 ADest.ImportRow(r);
+            }
+        }
+
+        /// <summary>
+        /// make sure that unmodified rows are marked as accepted
+        /// </summary>
+        /// <param name="AInspectDT"></param>
+        /// <param name="AMaxColumn"></param>
+        /// <param name="AExcludeLocation0"></param>
+        /// <returns></returns>
+        public static Int32 AcceptChangesForUnmodifiedRows(DataTable AInspectDT, Int32 AMaxColumn, Boolean AExcludeLocation0)
+        {
+            Int32 ReturnValue;
+            Int32 MaxColumn;
+            Int16 Counter;
+            Int16 Counter2;
+            Int16 ChangedDRColumns;
+
+            #region Process Arguments
+
+            if (AInspectDT == null)
+            {
+                throw new ArgumentException("AInspectDT must not be nil");
+            }
+
+            if (AMaxColumn != -1)
+            {
+                MaxColumn = AMaxColumn;
+            }
+            else
+            {
+                MaxColumn = AInspectDT.Columns.Count;
+            }
+
+            #endregion
+            ReturnValue = 0;
+
+            for (Counter = 0; Counter <= AInspectDT.Rows.Count - 1; Counter += 1)
+            {
+                ChangedDRColumns = 0;
+
+                if (((AInspectDT.Rows[Counter].RowState == DataRowState.Modified)
+                     || (AInspectDT.Rows[Counter].RowState == DataRowState.Added))
+                    && ((AExcludeLocation0) && (Convert.ToInt32(AInspectDT.Rows[Counter]["p_location_key_i"]) != 0)))
+                {
+                    for (Counter2 = 0; Counter2 <= MaxColumn - 1; Counter2 += 1)
+                    {
+                        if ((AInspectDT.Rows[Counter].RowState == DataRowState.Added)
+                            || (AInspectDT.Rows[Counter][Counter2,
+                                                         DataRowVersion.Original] != AInspectDT.Rows[Counter][Counter2, DataRowVersion.Current]))
+                        {
+                            ChangedDRColumns++;
+                            ReturnValue++;
+                        }
+                    }
+
+                    if (ChangedDRColumns == 0)
+                    {
+                        // Make DataRow unchanged since the Original values don't differ
+                        // from the Current values for any of the DataColumns!
+                        // MessageBox.Show('Calling AcceptChanges on Row ' + Counter.ToString + '; Contents of first 2 columns: ' +
+                        // AInspectDT.Rows[Counter][0].ToString + '; ' + AInspectDT.Rows[Counter][1].ToString);
+                        AInspectDT.Rows[Counter].AcceptChanges();
+                    }
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// make sure that unmodified rows are marked as accepted
+        /// </summary>
+        /// <param name="AInspectDT"></param>
+        /// <param name="AMaxColumn"></param>
+        /// <returns></returns>
+        public static Int32 AcceptChangesForUnmodifiedRows(DataTable AInspectDT, Int32 AMaxColumn)
+        {
+            return AcceptChangesForUnmodifiedRows(AInspectDT, AMaxColumn, false);
+        }
+
+        /// <summary>
+        /// make sure that unmodified rows are marked as accepted
+        /// </summary>
+        /// <param name="AInspectDT"></param>
+        /// <returns></returns>
+        public static Int32 AcceptChangesForUnmodifiedRows(DataTable AInspectDT)
+        {
+            return AcceptChangesForUnmodifiedRows(AInspectDT, -1, false);
+        }
+
+        /// <summary>
+        /// Removes any DataRow from the Destination DataTable that isn't found in the Source DataTable.
+        /// </summary>
+        /// <remarks><para><em>Both DataTables <em>must have the same Primary Key</em> for this Method to work!</em></para>
+        /// <para>A possible use for this Method is the removing of DataRows from a DataTable that is held on
+        /// the Client side when the DataTable is re-loaded from the DB and the reloaded DataTable may contains less rows.
+        /// Performing a DataSet.Merge operation (DataTable reloaded from the DB merged into client-side DataSet)
+        /// does not remove DataRows that don't exist in the DataTable that got reloaded from the DB,
+        /// but calling this Method after the DataSet.Merge does that.</para></remarks>
+        /// <param name="ASourceDT">Source DataTable.</param>
+        /// <param name="ADestinationDT">Destination DataTable.</param>
+        /// <param name="ADontAttemptToProcessDTsWithoutPKs">Set this to true to not attemt to process DataTables that don't have Primary Keys.
+        /// If this Argument is set to true, no Exception is thrown and the Method simply doesn't do any work, as it would need Primary Keys for
+        /// performing its work (default=false).</param>
+        public static void RemoveRowsNotPresentInDT(DataTable ASourceDT, DataTable ADestinationDT, bool ADontAttemptToProcessDTsWithoutPKs = false)
+        {
+            DataRow FoundRow;
+
+            DataColumn[] PrimaryKeyArr = ADestinationDT.PrimaryKey;
+            object[] PrimaryKeyValues;
+
+            if (ASourceDT.PrimaryKey.Length == 0)
+            {
+                if (ADontAttemptToProcessDTsWithoutPKs)
+                {
+                    return;
+                }
+                else
+                {
+                    throw new ArgumentException("DataTable specified with ASourceDT must have a Primary Key specified");
+                }
+            }
+
+            if (PrimaryKeyArr.Length == 0)
+            {
+                if (ADontAttemptToProcessDTsWithoutPKs)
+                {
+                    return;
+                }
+                else
+                {
+                    throw new ArgumentException("DataTable specified with ADestinationDT must have a Primary Key specified");
+                }
+            }
+
+            for (int Counter = ADestinationDT.Rows.Count - 1; Counter >= 0; Counter--) // Counting backwards so that I can delete rows as I go
+            {
+                PrimaryKeyValues = new object[PrimaryKeyArr.Length];
+
+                for (int Counter2 = 0; Counter2 < PrimaryKeyArr.Length; Counter2++)
+                {
+                    PrimaryKeyValues[Counter2] = ADestinationDT.Rows[Counter][PrimaryKeyArr[Counter2]];
+                }
+
+                FoundRow = ASourceDT.Rows.Find(PrimaryKeyValues);
+
+                if (FoundRow == null)
+                {
+                    ADestinationDT.Rows.Remove(ADestinationDT.Rows[Counter]);
+                }
             }
         }
     }

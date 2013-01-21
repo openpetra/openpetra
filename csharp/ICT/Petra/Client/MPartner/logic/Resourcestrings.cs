@@ -22,258 +22,223 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common;
 
 namespace Ict.Petra.Client.MPartner
 {
     /// <summary>
     /// Contains resourcetexts that are used in the Petra Partner Module.
     /// </summary>
-    public class Resourcestrings
+    public class MPartnerResourcestrings
     {
-        /// <summary>todoComment</summary>
-        public const String StrErrorNeedToSavePartner1 = "You have to save the Partner first, before ";
-
-        /// <summary>todoComment</summary>
-        public const String StrErrorNeedToSavePartnerTitle = "First Save the Partner";
-
-        /// <summary>todoComment</summary>
-        public const String StrErrorFindNewAddress2 = "finding a new Address";
-
-        /// <summary>todoComment</summary>
-        public const String StrErrorExportPartner2 = "exporting the Partner";
-
-        /// <summary>todoComment</summary>
-        public const String StrErrorPrintPartner2 = "printing the Partner";
-
-        /// <summary>todoComment</summary>
-        /// <summary>todoComment</summary>
-        public const String StrErrorChangeFamily2 = "changing the Family";
+        #region General resourcestrings
 
         /// <summary>todoComment</summary>
-        public const String StrErrorMaintainContacts2 = "maintaining Contacts";
+        public static readonly string StrErrorNeedToSavePartner1 = Catalog.GetString("You have to save the Partner first, before ");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorDeletePartner2 = "deleting the Partner";
+        public static readonly string StrErrorNeedToSavePartnerTitle = Catalog.GetString("First Save the Partner");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorMaintainField2 = "changing the Field";
+        public static readonly string StrErrorFindNewAddress2 = Catalog.GetString("finding a new Address");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorMaintainFamilyMembers2 = "maintaining Family Members";
+        public static readonly string StrErrorExportPartner2 = Catalog.GetString("exporting the Partner");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorMaintainFinanceDetails2 = "maintaining Finance Details";
+        public static readonly string StrErrorPrintPartner2 = Catalog.GetString("printing the Partner");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorMaintainDonorGiftHistory2 = "showing the Donor Gift History";
+        public static readonly string StrErrorChangeFamily2 = Catalog.GetString("changing the Family");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorMaintainRecipientGiftHistory2 = "showing the Recipient Gift History";
+        public static readonly string StrErrorMaintainContacts2 = Catalog.GetString("maintaining Contacts");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorMaintainInterests2 = "maintaining Interests";
+        public static readonly string StrErrorDeletePartner2 = Catalog.GetString("deleting the Partner");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorMaintainIndividualData2 = "maintaining Individual Data";
+        public static readonly string StrErrorMaintainField2 = Catalog.GetString("changing the Field");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorMaintainRelationships2 = "maintaining Relationships";
+        public static readonly string StrErrorMaintainFamilyMembers2 = Catalog.GetString("maintaining Family Members");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorMaintainReminders2 = "maintaining Reminders";
+        public static readonly string StrErrorMaintainFinanceDetails2 = Catalog.GetString("maintaining Finance Details");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorCopyAddress2 = "copying an Address";
+        public static readonly string StrErrorMaintainDonorGiftHistory2 = Catalog.GetString("showing the Donor Gift History");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorNoEmailAddressForThisPartner = "No e-mail address for this Partner" + " in the selected address record.";
+        public static readonly string StrErrorMaintainRecipientGiftHistory2 = Catalog.GetString("showing the Recipient Gift History");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorNoValidEmailAddressForThisPartner = "No valid e-mail address for this" +
-                                                                        " Partner in the selected address record.";
+        public static readonly string StrErrorMaintainInterests2 = Catalog.GetString("maintaining Interests");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorNoEmailAddressForThisPartnerTitle = "Cannot Send E-mail To Partner";
+        public static readonly string StrErrorMaintainIndividualData2 = Catalog.GetString("maintaining Individual Data");
 
         /// <summary>todoComment</summary>
-        public const String StrDetails = "Details: ";
+        public static readonly string StrErrorMaintainRelationships2 = Catalog.GetString("maintaining Relationships");
 
         /// <summary>todoComment</summary>
-        public const String StrMergedPartnerNotPossible =
-            "For this Merged Partner the Merged-Into Partner is not known. It is generally not possible to work with a Partner that was Merged.\r\n"
-            +
-            "Choose 'Cancel' to cancel the operation that you were in.";
+        public static readonly string StrErrorMaintainReminders2 = Catalog.GetString("maintaining Reminders");
 
-        // Address related resourcestrings
         /// <summary>todoComment</summary>
-        public const String StrEmailAddressHelpText = "Enter an email address";
+        public static readonly string StrErrorCopyAddress2 = Catalog.GetString("copying an Address");
 
         /// <summary>todoComment</summary>
-        public const String StrAddress1Helptext =
-            "Enter a first line of an address (this does NOT contain the street, but usually contains a business' name)";
+        public static readonly string StrErrorNoEmailAddressForThisPartner = Catalog.GetString(
+            "No e-mail address for this Partner in the selected address record.");
 
         /// <summary>todoComment</summary>
-        public const String StrAddress2Helptext = "Enter a second line of an address (this usually contains the street)";
+        public static readonly string StrErrorNoValidEmailAddressForThisPartner = Catalog.GetString(
+            "No valid e-mail address for this Partner in the selected address record.");
 
         /// <summary>todoComment</summary>
-        public const String StrAddress3Helptext = "Enter a third line of an address (eg. district of the city)";
+        public static readonly string StrErrorNoEmailAddressForThisPartnerTitle = Catalog.GetString("Cannot Send E-mail To Partner");
 
         /// <summary>todoComment</summary>
-        public const String StrCityHelptext = "Enter a city or town";
+        public static readonly string StrMergedPartnerNotPossible =
+            Catalog.GetString(
+                "For this Merged Partner the Merged-Into Partner is not known. It is generally not possible to work with a Partner that was Merged.\r\n"
+                +
+                "Choose 'Cancel' to cancel the operation that you were in.");
 
-        /// <summary>todoComment</summary>
-        public const String StrPostCodeHelpText = "Enter an international postal/zip code";
-
-        /// <summary>todoComment</summary>
-        public const String StrCountyHelpText = "Enter a county/province/state/district/canton";
+        #endregion
 
-        /// <summary>todoComment</summary>
-        public const String StrCountryHelpText = "Select a country from the list or type the 2 digit code";
-
-        /// <summary>todoComment</summary>
-        public const String StrLocationKeyHelpText = "Enter a Location Key";
+        #region Address related resourcestrings
 
         /// <summary>todoComment</summary>
-        public const String StrLocationKeyExtraHelpText = " (use button to the left to find a Location Key)";
+        public static readonly string StrEmailAddressHelpText = Catalog.GetString("Enter an email address");
 
         /// <summary>todoComment</summary>
-        public const String StrLocationKeyButtonFindHelpText = "Finds a Location Key";
+        public static readonly string StrAddress1Helptext =
+            Catalog.GetString("Enter a first line of an address (this does NOT contain the street, but usually contains a business' name)");
 
         /// <summary>todoComment</summary>
-        public const String StrMailingOnlyFindHelpText = "Restricts returned Addresses to Mailing Addresses if ticked";
+        public static readonly string StrAddress2Helptext = Catalog.GetString("Enter a second line of an address (this usually contains the street)");
 
         /// <summary>todoComment</summary>
-        public const String StrPhoneNumberFindHelpText = "Searches for a phone number or an alternate phone number";
+        public static readonly string StrAddress3Helptext = Catalog.GetString("Enter a third line of an address (eg. district of the city)");
 
-        // Partner Find related resourcestrings
         /// <summary>todoComment</summary>
-        public const String StrPartnerNameFindHelptext = "Enter [last name, first name, title] or church / organi" +
-                                                         "sation / bank / unit / venue name.";
+        public static readonly string StrCityHelptext = Catalog.GetString("Enter a city or town");
 
         /// <summary>todoComment</summary>
-        public const String StrPersonalNameFindHelpText = "Enter a Personal name when searching for specif" + "ic people";
+        public static readonly string StrPostCodeHelpText = Catalog.GetString("Enter an international postal/zip code");
 
         /// <summary>todoComment</summary>
-        public const String StrPartnerKeyFindHelpText = "Enter a Partner Key as 4+6=10 digit Unit/Partner number";
+        public static readonly string StrCountyHelpText = Catalog.GetString("Enter a county/province/state/district/canton");
 
         /// <summary>todoComment</summary>
-        public const String StrOMSSKeyFindHelpText = "Enter an OMSS Key";
+        public static readonly string StrCountryHelpText = Catalog.GetString("Select a country from the list or type the 2 digit code");
 
         /// <summary>todoComment</summary>
-        public const String StrActivePartnersFindHelpText = "Restricts search to Partners with Status ACTIVE";
+        public static readonly string StrLocationKeyHelpText = Catalog.GetString("Enter a Location Key");
 
         /// <summary>todoComment</summary>
-        public const String StrAllPartnersFindHelpText = "Search for Partners with any Status";
+        public static readonly string StrLocationKeyExtraHelpText = Catalog.GetString(" (use button to the left to find a Location Key)");
 
         /// <summary>todoComment</summary>
-        public const String StrPartnersAddedToExtractText = "{0} Partner was added to the new Extract.";
+        public static readonly string StrLocationKeyButtonFindHelpText = Catalog.GetString("Finds a Location Key");
 
         /// <summary>todoComment</summary>
-        public const String StrPartnersAddedToExtractPluralText = "{0} Partners were added to the new Extract.";
+        public static readonly string StrMailingOnlyFindHelpText = Catalog.GetString("Restricts returned Addresses to Mailing Addresses if ticked");
 
         /// <summary>todoComment</summary>
-        public const String StrPartnersAddedToExtractTitle = "Generate Extract From Found Partners";
+        public static readonly string StrPhoneNumberFindHelpText = Catalog.GetString("Searches for a phone number or an alternate phone number");
 
-        // Find screens related resourcestrings
-        /// <summary>todoComment</summary>
-        public const String StrSearching = "Searching...";
+        #endregion
 
-        /// <summary>todoComment</summary>
-        public const String StrStoppingSearch = "Stopping search...";
+        #region Find screens related resourcestrings
 
         /// <summary>todoComment</summary>
-        public const String StrSearchStopped = "Search stopped!";
+        public static readonly string StrSearching = Catalog.GetString("Searching...");
 
         /// <summary>todoComment</summary>
-        public const String StrSearchResult = "Fin&d Result";
+        public static readonly string StrStoppingSearch = Catalog.GetString("Stopping search...");
 
         /// <summary>todoComment</summary>
-        public const String StrNoCriteriaSpecified = "No Search Criteria Specified";
+        public static readonly string StrSearchStopped = Catalog.GetString("Search stopped!");
 
         /// <summary>todoComment</summary>
-        public const String StrSearchButtonHelpText = "Searches the Petra database with above criteria";
+        public static readonly string StrSearchResult = Catalog.GetString("Fin&d Result");
 
         /// <summary>todoComment</summary>
-        public const String StrClearCriteriaButtonHelpText = "Clears the search criteria fields and the search result";
+        public static readonly string StrNoCriteriaSpecified = Catalog.GetString("No Search Criteria Specified");
 
         /// <summary>todoComment</summary>
-        public const String StrNewButtonHelpText = "Creates a new Partner (independent of found Partners)";
+        public static readonly string StrSearchButtonHelpText = Catalog.GetString("Searches the OpenPetra database with above criteria");
 
         /// <summary>todoComment</summary>
-        public const String StrEditButtonHelpText = "Opens a Partner Edit screen for the selected Partner";
+        public static readonly string StrClearCriteriaButtonHelpText = Catalog.GetString("Clears the search criteria fields and the search result");
 
         /// <summary>todoComment</summary>
-        public const String StrViewButtonHelpText = "Gives a short overview of the main information for the selected Partner";
+        public static readonly string StrAcceptButtonHelpText = Catalog.GetString("Accepts the selected ");
 
         /// <summary>todoComment</summary>
-        public const String StrAcceptButtonHelpText = "Accepts the selected ";
+        public static readonly string StrCancelButtonHelpText = Catalog.GetString("Closes the window without selecting a ");
 
         /// <summary>todoComment</summary>
-        public const String StrCancelButtonHelpText = "Closes the window without selecting a ";
+        public static readonly string StrResultGridHelpText = Catalog.GetString(
+            "These are the results of your search. Highlight (or right-click) a line to work with the ");
 
         /// <summary>todoComment</summary>
-        public const String StrResultGridHelpText = "These are the results of your search. Highlight (or right-click) a line to work with the ";
+        public static readonly string StrDetailedResultsHelpText =
+            Catalog.GetString("If this is ticked, all data is shown; untick to speed up searches (esp. on remote connections).");
 
         /// <summary>todoComment</summary>
-        public const String StrDetailedResultsHelpText =
-            "If this is ticked, all data is shown; untick to speed up searches (esp. on remote connections).";
+        public static readonly string StrTransferringDataForPageText = Catalog.GetString("Transferring data...    (for Page ");
 
         /// <summary>todoComment</summary>
-        public const String StrFamilyMembersMenuItemText = "Family &Members...";
+        public static readonly string StrFoundText = Catalog.GetString("found");
 
         /// <summary>todoComment</summary>
-        public const String StrFamilyMenuItemText = "Fa&mily...";
+        public static readonly string StrNoRecordsFound1Text = Catalog.GetString("No");
 
         /// <summary>todoComment</summary>
-        public const String StrPersonnelPersonMenuItemText = "&Personnel/Individual Data...";
+        public static readonly string StrNoRecordsFound2Text = Catalog.GetString(
+            " records found.\r\n\r\nPlease check your search criteria or broaden your conditions!");
 
         /// <summary>todoComment</summary>
-        public const String StrPersonnelUnitMenuItemText = "&Personnel/Unit Maintenance...";
+        public static readonly string StrSearchButtonText = Catalog.GetString("&Search");
 
         /// <summary>todoComment</summary>
-        public const String StrTransferringDataForPageText = "Transferring data...    (for Page ";
+        public static readonly string StrSearchButtonStopText = Catalog.GetString("&Stop");
 
         /// <summary>todoComment</summary>
-        public const String StrNoPartnerSelectedText = "No Partner selected!";
+        public static readonly string StrSearchMenuItemStopText = Catalog.GetString("&Stop Search");
 
-        /// <summary>todoComment</summary>
-        public const String StrFoundText = "found";
+        #endregion
 
-        /// <summary>todoComment</summary>
-        public const String StrNoRecordsFound1Text = "No";
+        #region Partner Find resourcestrings (shared across several Classes)
 
         /// <summary>todoComment</summary>
-        public const String StrNoRecordsFound2Text = " records found." + "\r\n" + "\r\n" +
-                                                     "Please check your search criteria or broaden your conditions!";
+        public static readonly string StrPartnerFindSearchTargetText = Catalog.GetString("Partner+Location combination");
 
         /// <summary>todoComment</summary>
-        public const String StrSearchButtonText = "&Search";
+        public static readonly string StrPartnerFindSearchTarget2Text = Catalog.GetString("Partner");
 
         /// <summary>todoComment</summary>
-        public const String StrSearchButtonStopText = "&Stop";
+        public static readonly string StrPartnerFindSearchTargetPluralText = Catalog.GetString("Partner+Location combinations");
 
-        /// <summary>todoComment</summary>
-        public const String StrSearchMenuItemStopText = "&Stop Search";
+        #endregion
 
-        // Partner Info related resourcestrings
-        /// <summary>todoComment</summary>
-        public const String StrPartnerOrLocationNotExistantText =
-            "This Partner (or this Partner+Location combination) doesn't exist anymore in Petra.";
+        #region Resourcestrings which are shared between Partner Edit screen and Partner Find screen
 
         /// <summary>todoComment</summary>
-        public const String StrPartnerOrLocationNotExistantTextReRunSearchText =
-            "Please re-run the Partner Find query by pressing 'Search' to get up-to-date Find Results.";
+        public static readonly string StrFamilyMembersMenuItemText = Catalog.GetString("Family &Members...");
 
         /// <summary>todoComment</summary>
-        public const String StrPartnerOrLocationNotExistantTitle = "Partner Information Cannot be Shown for Partner {0}";
+        public static readonly string StrFamilyMenuItemText = Catalog.GetString("Fa&mily...");
 
         /// <summary>todoComment</summary>
-        public const String StrPartnerFindSearchTargetText = "Partner+Location combination";
+        public static readonly string StrPersonnelPersonMenuItemText = Catalog.GetString("&Personnel/Individual Data...");
 
         /// <summary>todoComment</summary>
-        public const String StrPartnerFindSearchTarget2Text = "Partner";
+        public static readonly string StrPersonnelUnitMenuItemText = Catalog.GetString("&Personnel/Unit Maintenance...");
 
-        /// <summary>todoComment</summary>
-        public const String StrPartnerFindSearchTargetPluralText = "Partner+Location combinations";
+        #endregion
     }
 }

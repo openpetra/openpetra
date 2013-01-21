@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,52 +35,6 @@ namespace Ict.Petra.Client.MFinance.Logic
     /// </summary>
     public class TLedgerSelection
     {
-        /// <summary>
-        /// Try to find out the ledger for the user;
-        /// does check for user permissions and user defaults
-        /// </summary>
-        /// <returns>-1 if no ledger is available to the user,
-        /// -2 if there are several ledgers available and no default ledger is set,
-        /// otherwise the default ledger number for the user</returns>
-        public static Int32 DetermineDefaultLedger()
-        {
-            DataTable ledgerTable;
-
-            // TODO: use App.Core.Cache, GetCacheableDataTableFromPetraServer???
-            TRemote.MFinance.Cacheable.RefreshCacheableTable(TCacheableFinanceTablesEnum.LedgerNameList, out ledgerTable);
-
-            Int32 countLedgersWithPermissions = 0;
-            Int32 defaultLedgerNumber = -1;
-
-            foreach (DataRow row in ledgerTable.Rows)
-            {
-                Int32 ledgerNumber = Convert.ToInt32(row["LedgerNumber"]);
-
-                if (UserInfo.GUserInfo.IsInModule("LEDGER" + String.Format("{0:0000}", ledgerNumber)))
-                {
-                    countLedgersWithPermissions++;
-                    defaultLedgerNumber = ledgerNumber;
-                }
-            }
-
-            // remove ledgers that the user does not have access to
-            if (countLedgersWithPermissions == 1)
-            {
-                return defaultLedgerNumber;
-            }
-            else if (countLedgersWithPermissions == 0)
-            {
-                return -1;
-            }
-
-            // TODO: check user default for ledger selection
-            // if user has default ledger, return that ledger
-
-            // several ledgers are available to the user
-            // this function is called from TDlgSelectLedger, and it will show a list of ledgers to the user to choose
-            return -2;
-        }
-
         private static SortedList <Int32, DateTime[]>FValidPostingDates = new SortedList <int, DateTime[]>();
 
         /// <summary>
@@ -108,8 +62,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         public static bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
             out DateTime AStartDateCurrentPeriod,
-            out DateTime AEndDateLastForwardingPeriod,
-            out DateTime ADefaultDate)
+            out DateTime AEndDateLastForwardingPeriod)
         {
             if (!FValidPostingDates.ContainsKey(ALedgerNumber))
             {
@@ -121,6 +74,27 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AStartDateCurrentPeriod = FValidPostingDates[ALedgerNumber][0];
                 AEndDateLastForwardingPeriod = FValidPostingDates[ALedgerNumber][1];
 
+                return true;
+            }
+
+            AStartDateCurrentPeriod = DateTime.MinValue;
+            AEndDateLastForwardingPeriod = DateTime.MinValue;
+            return false;
+        }
+
+        /// <summary>
+        /// Get the valid dates for posting;
+        /// based on current period and number of forwarding periods
+        /// </summary>
+        public static bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+            out DateTime AStartDateCurrentPeriod,
+            out DateTime AEndDateLastForwardingPeriod,
+            out DateTime ADefaultDate)
+        {
+            if (GetCurrentPostingRangeDates(ALedgerNumber,
+                    out AStartDateCurrentPeriod,
+                    out AEndDateLastForwardingPeriod))
+            {
                 if ((DateTime.Now >= AStartDateCurrentPeriod) && (DateTime.Now <= AEndDateLastForwardingPeriod))
                 {
                     ADefaultDate = DateTime.Now;
@@ -133,8 +107,6 @@ namespace Ict.Petra.Client.MFinance.Logic
                 return true;
             }
 
-            AStartDateCurrentPeriod = DateTime.MinValue;
-            AEndDateLastForwardingPeriod = DateTime.MinValue;
             ADefaultDate = DateTime.MinValue;
             return false;
         }

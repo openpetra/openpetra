@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,12 +29,12 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-// using Ict.Petra.Shared.MPartner.Partner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
@@ -50,11 +50,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public delegate bool TDelegateIsNewPartner(PartnerEditTDS AInspectDataSet);
 
-    /// just temporary until TUCPartnerSubscriptions are included properly
-    public class TUCPartnerSubscriptions
-    {
-    }
-
     /// <summary>
     /// temporary class until PartnerInterests are implemented properly
     /// </summary>
@@ -62,49 +57,33 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
     }
 
-    /// <summary>
-    /// temporary class until FamilyMembers are implemented properly
-    /// </summary>
-    public class TUC_FamilyMembers
-    {
-    }
-
     public partial class TUC_PartnerEdit_PartnerTabSet
     {
-        #region TODO ResourceStrings
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressesTabHeader = "Addresses";
+        private static readonly string StrAddressesTabHeader = Catalog.GetString("Addresses");
 
-        /// <summary>todoComment</summary>
-        public const String StrSubscriptionsTabHeader = "Subscriptions";
+        private static readonly string StrSubscriptionsTabHeader = Catalog.GetString("Subscriptions");
 
-        /// <summary>todoComment</summary>
-        public const String StrSpecialTypesTabHeader = "Special Types";
+        private static readonly string StrSpecialTypesTabHeader = Catalog.GetString("Special Types");
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyMembersTabHeader = "Family Members";
+        private static readonly string StrFamilyMembersTabHeader = Catalog.GetString("Family Members");
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyTabHeader = "Family";
+        private static readonly string StrPartnerRelationshipsTabHeader = Catalog.GetString("Relationships");
 
-        /// <summary>todoComment</summary>
-        public const String StrInterestsTabHeader = "Interests";
+        private static readonly string StrFamilyTabHeader = Catalog.GetString("Family");
 
-        /// <summary>todoComment</summary>
-        public const String StrNotesTabHeader = "Notes";
+// TODO        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressesSingular = "Address";
+        private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
 
-        /// <summary>todoComment</summary>
-        public const String StrSubscriptionsSingular = "Subscription";
+        private static readonly string StrAddressesSingular = Catalog.GetString("Address");
 
-        /// <summary>todoComment</summary>
-        public const String StrTabHeaderCounterTipSingular = "{0} {2}, of which {1} is ";
+        private static readonly string StrSubscriptionsSingular = Catalog.GetString("Subscription");
 
-        /// <summary>todoComment</summary>
-        public const String StrTabHeaderCounterTipPlural = "{0} {2}, of which {1} are ";
+        private static readonly string StrTabHeaderCounterTipSingular = Catalog.GetString("{0} {2}, of which {1} is ");
+
+        private static readonly string StrTabHeaderCounterTipPlural = Catalog.GetString("{0} {2}, of which {1} are ");
 
         #endregion
 
@@ -120,6 +99,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private String FPartnerClass;
 
         private Boolean FUserControlInitialised;
+
+        private TDelegateIsNewPartner FDelegateIsNewPartner;
 
         #endregion
 
@@ -180,9 +161,41 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// Returns the PLocation DataRow of the currently selected Address.
+        /// </summary>
+        /// <remarks>Performs all necessary initialisations in case the Address Tab
+        /// hasn't been initialised before.</remarks>
+        public PLocationRow LocationDataRowOfCurrentlySelectedAddress
+        {
+            get
+            {
+                if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+                {
+                    SetupUserControlAddresses();
+                }
+
+                return FUcoAddresses.LocationDataRowOfCurrentlySelectedRecord;
+            }
+        }
+
         #endregion
 
         #region Public Methods
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        public PLocationRow Get_LocationRowOfCurrentlySelectedAddress()
+        {
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                SetupUserControlAddresses();
+            }
+
+            return FUcoAddresses.LocationDataRowOfCurrentlySelectedRecord;
+        }
 
         /// <summary>
         /// Initialization of Manual Code logic.
@@ -193,6 +206,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FTabPageEvent += this.TabPageEventHandler;
             }
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="ADelegateFunction"></param>
+        public void InitialiseDelegateIsNewPartner(TDelegateIsNewPartner ADelegateFunction)
+        {
+            // set the delegate function from the calling System.Object
+            FDelegateIsNewPartner = ADelegateFunction;
         }
 
         /// <summary>
@@ -269,13 +292,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (!FMainDS.MiscellaneousData[0].OfficeSpecificDataLabelsAvailable)
             {
-                TabsToHide.Add("tbpOfficeSpecific");
+                TabsToHide.Add("tpgOfficeSpecific");
             }
 
             // for the time beeing, we always hide these Tabs that don't do anything yet...
 #if  SHOWUNFINISHEDTABS
 #else
-            TabsToHide.Add("tbpRelationships");
             TabsToHide.Add("tbpContacts");
             TabsToHide.Add("tbpReminders");
             TabsToHide.Add("tbpInterests");
@@ -283,13 +305,221 @@ namespace Ict.Petra.Client.MPartner.Gui
             ControlsUtilities.HideTabs(tabPartners, TabsToHide);
             FUserControlInitialised = true;
 
-//            this.tabPartners.SelectedIndexChanged += new EventHandler(this.tabPartners_SelectedIndexChanged);
+            tabPartners.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
             SelectTabPage(FInitiallySelectedTabPage);
 
             CalculateTabHeaderCounters(this);
 
             OnDataLoadingFinished();
+        }
+
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
+        /// specific Control for which Data Validation errors might have been recorded. (Default=null).
+        /// <para>
+        /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+        /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+        /// this Argument.
+        /// </para>
+        /// </param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        {
+            bool ReturnValue = true;
+
+            switch (GetPartnerDetailsVariableUC())
+            {
+                case TDynamicLoadableUserControls.dlucPartnerDetailsPerson:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsPerson))
+                    {
+                        TUC_PartnerDetails_Person UCPartnerDetailsPerson =
+                            (TUC_PartnerDetails_Person)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsPerson];
+
+                        if (!UCPartnerDetailsPerson.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsFamily:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsFamily))
+                    {
+                        TUC_PartnerDetails_Family UCPartnerDetailsFamily =
+                            (TUC_PartnerDetails_Family)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsFamily];
+
+                        if (!UCPartnerDetailsFamily.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation))
+                    {
+                        TUC_PartnerDetails_Organisation UCPartnerDetailsOrganisation =
+                            (TUC_PartnerDetails_Organisation)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation];
+
+                        if (!UCPartnerDetailsOrganisation.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsChurch:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsChurch))
+                    {
+                        TUC_PartnerDetails_Church UCPartnerDetailsChurch =
+                            (TUC_PartnerDetails_Church)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsChurch];
+
+                        if (!UCPartnerDetailsChurch.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsUnit:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsUnit))
+                    {
+                        TUC_PartnerDetails_Unit UCPartnerDetailsUnit =
+                            (TUC_PartnerDetails_Unit)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsUnit];
+
+                        if (!UCPartnerDetailsUnit.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsVenue:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsVenue))
+                    {
+                        TUC_PartnerDetails_Venue UCPartnerDetailsVenue =
+                            (TUC_PartnerDetails_Venue)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsVenue];
+
+                        if (!UCPartnerDetailsVenue.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsBank:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsBank))
+                    {
+                        TUC_PartnerDetails_Bank UCPartnerDetailsBank =
+                            (TUC_PartnerDetails_Bank)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsBank];
+
+                        if (!UCPartnerDetailsBank.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                TUCPartnerAddresses UCPartnerAddresses =
+                    (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
+
+                if (!UCPartnerAddresses.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucSubscriptions))
+            {
+                TUC_Subscriptions UCSubscriptions =
+                    (TUC_Subscriptions)FTabSetup[TDynamicLoadableUserControls.dlucSubscriptions];
+
+                if (!UCSubscriptions.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerTypes))
+            {
+                TUCPartnerTypes UCPartnerTypes =
+                    (TUCPartnerTypes)FTabSetup[TDynamicLoadableUserControls.dlucPartnerTypes];
+
+                if (!UCPartnerTypes.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerRelationships))
+            {
+                TUC_PartnerRelationships UCRelationships =
+                    (TUC_PartnerRelationships)FTabSetup[TDynamicLoadableUserControls.dlucPartnerRelationships];
+
+                if (!UCRelationships.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucFamilyMembers))
+            {
+                TUC_FamilyMembers UCFamilyMembers =
+                    (TUC_FamilyMembers)FTabSetup[TDynamicLoadableUserControls.dlucFamilyMembers];
+
+                if (!UCFamilyMembers.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucNotes))
+            {
+                TUC_PartnerNotes UCNotes =
+                    (TUC_PartnerNotes)FTabSetup[TDynamicLoadableUserControls.dlucNotes];
+
+                if (!UCNotes.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucOfficeSpecific))
+            {
+                TUC_LocalPartnerData UCLocalPartnerData =
+                    (TUC_LocalPartnerData)FTabSetup[TDynamicLoadableUserControls.dlucOfficeSpecific];
+
+                if (!UCLocalPartnerData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -537,10 +767,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
 
-                    // Hook up EnableDisableOtherScreenParts Event that is fired by UserControls on Tabs
-                    FUcoAddresses.EnableDisableOtherScreenParts += new TEnableDisableScreenPartsEventHandler(
-                        UcoTab_EnableDisableOtherScreenParts);
-
                     // Hook up RecalculateScreenParts Event
                     FUcoAddresses.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
@@ -567,7 +793,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpSubscriptions;
 
-                    // TODO
+                    // Hook up RecalculateScreenParts Event
+                    FUcoSubscriptions.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoSubscriptions.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoSubscriptions.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoSubscriptions.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
@@ -585,11 +817,34 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+                else if (ATabPageEventArgs.Tab == tpgPartnerRelationships)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerRelationships;
+
+                    // Hook up RecalculateScreenParts Event
+                    FUcoPartnerRelationships.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoPartnerRelationships.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoPartnerRelationships.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoPartnerRelationships.SpecialInitUserControl();
+
+                    CorrectDataGridWidthsAfterDataChange();
+                }
                 else if (ATabPageEventArgs.Tab == tpgFamilyMembers)
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFamilyMembers;
 
-                    // TODO
+                    // Hook up RecalculateScreenParts Event
+                    FUcoFamilyMembers.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoFamilyMembers.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoFamilyMembers.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+                    FUcoFamilyMembers.InitialiseDelegateIsNewPartner(FDelegateIsNewPartner);
+                    FUcoFamilyMembers.InitialiseDelegateGetLocationRowOfCurrentlySelectedAddress(
+                        Get_LocationRowOfCurrentlySelectedAddress);
+
+                    FUcoFamilyMembers.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
@@ -597,13 +852,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpNotes;
 
-                    // TODO
+                    // Hook up RecalculateScreenParts Event
+                    FUcoNotes.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
                 }
                 else if (ATabPageEventArgs.Tab == tpgOfficeSpecific)
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpOfficeSpecific;
 
-                    // TODO
+                    FUcoOfficeSpecific.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoOfficeSpecific.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoOfficeSpecific.SpecialInitUserControl();
+
+                    CorrectDataGridWidthsAfterDataChange();
                 }
             }
         }
@@ -669,7 +930,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerSubscriptions))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_Subscriptions))
             {
                 if (FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
                 {
@@ -717,6 +978,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     tpgPartnerTypes.Text = StrSpecialTypesTabHeader + " (" + FMainDS.MiscellaneousData[0].ItemsCountPartnerTypes.ToString() + ')';
                 }
+            }
+
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerRelationships))
+            {
+                if (FMainDS.Tables.Contains(PPartnerRelationshipTable.GetTableName()))
+                {
+                    Calculations.CalculateTabCountsPartnerRelationships(FMainDS.PPartnerRelationship, out CountAll);
+                }
+                else
+                {
+                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountPartnerRelationships;
+                }
+
+                tpgPartnerRelationships.Text = String.Format(StrPartnerRelationshipsTabHeader + " ({0})", CountAll);
             }
 
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FamilyMembers))
@@ -789,22 +1064,30 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoAddresses.AdjustAfterResizing();
                 }
 
-                // TODO
-//                if (FUcoPartnerSubscriptions != null)
-//                {
-//                    FUcoPartnerSubscriptions.AdjustAfterResizing();
-//                }
+                if (FUcoSubscriptions != null)
+                {
+                    FUcoSubscriptions.AdjustAfterResizing();
+                }
 
                 if (FUcoPartnerTypes != null)
                 {
                     FUcoPartnerTypes.AdjustAfterResizing();
                 }
 
-                // TODO
-//                if (FUcoFamilyMembers != null)
-//                {
-//                    FUcoFamilyMembers.AdjustAfterResizing();
-//                }
+                if (FUcoPartnerRelationships != null)
+                {
+                    FUcoPartnerRelationships.AdjustAfterResizing();
+                }
+
+                if (FUcoFamilyMembers != null)
+                {
+                    FUcoFamilyMembers.AdjustAfterResizing();
+                }
+
+                if (FUcoOfficeSpecific != null)
+                {
+                    FUcoOfficeSpecific.AdjustAfterResizing();
+                }
             }
         }
 
@@ -824,21 +1107,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void UcoTab_EnableDisableOtherScreenParts(System.Object sender, TEnableDisableEventArgs e)
-        {
-            // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet2.ucoTab_EnableDisableOtherScreenParts(' + e.Enable.ToString + ')');
-            // Simply fire OnEnableDisableOtherScreenParts event again so that the PartnerEdit screen can catch it
-            OnEnableDisableOtherScreenParts(e);
-
-            // Disable all TabPages except the current one (and reverse that)
-            tabPartners.EnableDisableAllOtherTabPages(e.Enable);
-        }
-
         private void OnEnableDisableOtherScreenParts(TEnableDisableEventArgs e)
         {
             if (EnableDisableOtherScreenParts != null)
             {
                 EnableDisableOtherScreenParts(this, e);
+            }
+        }
+
+        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
+            if (!ValidateAllData(true, FCurrentUserControl))
+            {
+                e.Cancel = true;
+
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
             }
         }
 
@@ -898,66 +1183,73 @@ namespace Ict.Petra.Client.MPartner.Gui
             // supress detection changing
             SelectedTabPageBeforeReSelecting = tabPartners.SelectedTab;
 
-            switch (ATabPage)
+            try
             {
-                case TPartnerEditTabPageEnum.petpAddresses:
-                case TPartnerEditTabPageEnum.petpDefault:
-                    tabPartners.SelectedTab = tpgAddresses;
-                    break;
+                switch (ATabPage)
+                {
+                    case TPartnerEditTabPageEnum.petpAddresses:
+                    case TPartnerEditTabPageEnum.petpDefault:
+                        tabPartners.SelectedTab = tpgAddresses;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpDetails:
-                    tabPartners.SelectedTab = tpgPartnerDetails;
-                    break;
+                    case TPartnerEditTabPageEnum.petpDetails:
+                        tabPartners.SelectedTab = tpgPartnerDetails;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpFoundationDetails:
-                    tabPartners.SelectedTab = tpgFoundationDetails;
-                    break;
+                    case TPartnerEditTabPageEnum.petpFoundationDetails:
+                        tabPartners.SelectedTab = tpgFoundationDetails;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpSubscriptions:
-                    tabPartners.SelectedTab = tpgSubscriptions;
-                    break;
+                    case TPartnerEditTabPageEnum.petpSubscriptions:
+                        tabPartners.SelectedTab = tpgSubscriptions;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpPartnerTypes:
-                    tabPartners.SelectedTab = tpgPartnerTypes;
-                    break;
+                    case TPartnerEditTabPageEnum.petpPartnerTypes:
+                        tabPartners.SelectedTab = tpgPartnerTypes;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpFamilyMembers:
-                    tabPartners.SelectedTab = tpgFamilyMembers;
-                    break;
+                    case TPartnerEditTabPageEnum.petpPartnerRelationships:
+                        tabPartners.SelectedTab = tpgPartnerRelationships;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpOfficeSpecific:
-                    tabPartners.SelectedTab = tpgOfficeSpecific;
-                    break;
+                    case TPartnerEditTabPageEnum.petpFamilyMembers:
+                        tabPartners.SelectedTab = tpgFamilyMembers;
+                        break;
+
+                    case TPartnerEditTabPageEnum.petpOfficeSpecific:
+                        tabPartners.SelectedTab = tpgOfficeSpecific;
+                        break;
 
 #if TODO
-                case TPartnerEditTabPageEnum.petpInterests:
-                    tabPartners.SelectedTab = tpgInterests;
-                    break;
+                    case TPartnerEditTabPageEnum.petpInterests:
+                        tabPartners.SelectedTab = tpgInterests;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpReminders:
-                    tabPartners.SelectedTab = tpgReminders;
-                    break;
+                    case TPartnerEditTabPageEnum.petpReminders:
+                        tabPartners.SelectedTab = tpgReminders;
+                        break;
 
-                case TPartnerEditTabPageEnum.petpRelationships:
-                    tabPartners.SelectedTab = tpgRelationships;
-                    break;
-
-                case TPartnerEditTabPageEnum.petpContacts:
-                    tabPartners.SelectedTab = tpgContacts;
-                    break;
+                    case TPartnerEditTabPageEnum.petpContacts:
+                        tabPartners.SelectedTab = tpgContacts;
+                        break;
 #endif
-                case TPartnerEditTabPageEnum.petpNotes:
+                    case TPartnerEditTabPageEnum.petpNotes:
 
-                    if (tpgNotes.Enabled)
-                    {
-                        tabPartners.SelectedTab = tpgNotes;
-                    }
-                    else
-                    {
-                        tabPartners.SelectedTab = tpgAddresses;
-                    }
+                        if (tpgNotes.Enabled)
+                        {
+                            tabPartners.SelectedTab = tpgNotes;
+                        }
+                        else
+                        {
+                            tabPartners.SelectedTab = tpgAddresses;
+                        }
 
-                    break;
+                        break;
+                }
+            }
+            catch (Ict.Common.Controls.TSelectedIndexChangeDisallowedTabPagedIsDisabledException)
+            {
+                // Desired Tab Page isn't selectable because it is disabled; ignoring this Exception to ignore the selection.
             }
 
             // Check if the selected TabPage actually changed...

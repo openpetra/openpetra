@@ -112,7 +112,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtPartnerUpdated = new System.Windows.Forms.TextBox();
             this.lblPartnerUpdated = new System.Windows.Forms.Label();
             this.lblLanguages = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.lblLastContact = new System.Windows.Forms.Label();
             this.txtLanguages = new System.Windows.Forms.TextBox();
             this.txtLastContact = new System.Windows.Forms.TextBox();
@@ -890,7 +889,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlOtherLeft.Controls.Add(this.txtPartnerUpdated);
             this.pnlOtherLeft.Controls.Add(this.lblPartnerUpdated);
             this.pnlOtherLeft.Controls.Add(this.lblLanguages);
-            this.pnlOtherLeft.Controls.Add(this.label4);
             this.pnlOtherLeft.Controls.Add(this.lblLastContact);
             this.pnlOtherLeft.Controls.Add(this.txtLanguages);
             this.pnlOtherLeft.Controls.Add(this.txtLastContact);
@@ -929,16 +927,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblLanguages.Name = "lblLanguages";
             this.lblLanguages.Size = new System.Drawing.Size(83, 18);
             this.lblLanguages.TabIndex = 20;
-            this.lblLanguages.Text = "guages):";
-
-            //
-            // label4
-            //
-            this.label4.Location = new System.Drawing.Point(3, 3);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(83, 18);
-            this.label4.TabIndex = 16;
-            this.label4.Text = "Speaks (Lan-";
+            this.lblLanguages.Text = "Speaks (Languages):";
 
             //
             // lblLastContact
@@ -1378,7 +1367,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.TextBox txtLocationType;
         private System.Windows.Forms.TableLayoutPanel tlpPartnerLocation;
         private DevAge.Windows.Forms.Line lneDivider;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtSpecialTypes;
         private System.Windows.Forms.TextBox txtAddress1;
         private Ict.Common.Controls.TTxtPartnerKeyTextBox txtPartnerKey;

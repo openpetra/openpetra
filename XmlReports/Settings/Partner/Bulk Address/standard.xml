@@ -1,26 +1,26 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Partner\\bulkaddressreport.xml" />
-  <Parameter id="currentReport" value="Bulk Address" />
-  <Parameter id="MaxDisplayColumns" value="8" />
-  <Parameter id="param_selection" value="one partner" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_order_by_name" value="PartnerKey" />
-  <Parameter id="param_calculation" column="0" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_calculation" column="1" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="1" value="4" />
-  <Parameter id="param_calculation" column="2" value="Street Name" />
-  <Parameter id="ColumnWidth" column="2" value="2.5" />
-  <Parameter id="param_calculation" column="3" value="Post Code" />
-  <Parameter id="ColumnWidth" column="3" value="2" />
-  <Parameter id="param_calculation" column="4" value="City" />
-  <Parameter id="ColumnWidth" column="4" value="2.5" />
-  <Parameter id="param_calculation" column="5" value="Country" />
-  <Parameter id="ColumnWidth" column="5" value="2" />
-  <Parameter id="param_calculation" column="6" value="Copies" />
-  <Parameter id="ColumnWidth" column="6" value="2" />
-  <Parameter id="param_calculation" column="7" value="Subscription" />
-  <Parameter id="ColumnWidth" column="7" value="3" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Partner\\bulkaddressreport.xml" />
+  <Parameter id="currentReport" value="eString:Bulk Address" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:8" />
+  <Parameter id="param_selection" value="eString:an extract" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_order_by_name" value="eString:PartnerKey" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:4" />
+  <Parameter id="param_calculation" column="2" value="eString:Street Name" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_calculation" column="3" value="eString:Post Code" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_calculation" column="4" value="eString:City" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_calculation" column="5" value="eString:Country" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="param_calculation" column="6" value="eString:Copies" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
+  <Parameter id="param_calculation" column="7" value="eString:Subscription" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:3" />
 </Parameters>

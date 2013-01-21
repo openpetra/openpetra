@@ -23,8 +23,9 @@
 //
 using System;
 using System.Windows.Forms;
+using Tests.Common.Printing;
 
-namespace Tests.Common.Printing
+namespace Ict.Testing.Common.Printing
 {
     /// <summary>
     /// Class with program entry point.

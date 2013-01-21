@@ -1,49 +1,49 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Personnel\\generalshorttermerreport.xml,Personnel\\shorttermerreport.xml" />
-  <Parameter id="currentReport" value="Short Termer Report" />
-  <Parameter id="MaxDisplayColumns" value="10" />
-  <Parameter id="param_source" value="Event" />
-  <Parameter id="param_event_selection" value="this" />
-  <Parameter id="param_event_code" value="" />
-  <Parameter id="param_event_name" value="" />
-  <Parameter id="param_extract_name" value="" />
-  <Parameter id="param_conference_code" value="" />
-  <Parameter id="param_unit_key" value="" />
-  <Parameter id="param_application_status_accepted" value="true" />
-  <Parameter id="param_application_status_cancelled" value="false" />
-  <Parameter id="param_application_status_enquiry" value="false" />
-  <Parameter id="param_application_status_hold" value="false" />
-  <Parameter id="param_application_status_rejected" value="false" />
-  <Parameter id="orderby0" value="Fellowship Group" />
-  <Parameter id="orderby1" value="Leader" />
-  <Parameter id="orderby2" value="Partner Name" />
-  <Parameter id="param_sortby_readable" value="Fellowship Group, Leader, Partner Name" />
-  <Parameter id="param_sortby_columns" value="3,4,5" />
-  <Parameter id="param_hide_empty_lines" value="false" />
-  <Parameter id="param_print_two_lines" value="false" />
-  <Parameter id="param_calculation" column="0" value="Fellowship Group" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_calculation" column="1" value="Leader" />
-  <Parameter id="ColumnWidth" column="1" value="2" />
-  <Parameter id="param_calculation" column="2" value="Partner Key" />
-  <Parameter id="ColumnWidth" column="2" value="2" />
-  <Parameter id="param_calculation" column="3" value="Partner Name" />
-  <Parameter id="ColumnWidth" column="3" value="4" />
-  <Parameter id="param_calculation" column="4" value="Conference Role" />
-  <Parameter id="ColumnWidth" column="4" value="3" />
-  <Parameter id="param_calculation" column="5" value="Event Code" />
-  <Parameter id="ColumnWidth" column="5" value="3" />
-  <Parameter id="param_calculation" column="6" value="Event Preference 1 Code" />
-  <Parameter id="ColumnWidth" column="6" value="3" />
-  <Parameter id="param_calculation" column="7" value="Event Preference 2 Code" />
-  <Parameter id="ColumnWidth" column="7" value="3" />
-  <Parameter id="param_calculation" column="8" value="Arrival Date" />
-  <Parameter id="ColumnWidth" column="8" value="2" />
-  <Parameter id="param_calculation" column="9" value="Departure Date" />
-  <Parameter id="ColumnWidth" column="9" value="2" />
-  <Parameter id="param_address_detail" value="false" />
-  <Parameter id="param_passport_detail" value="false" />
-  <Parameter id="param_church_detail" value="false" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\generalshorttermerreport.xml,Personnel\\shorttermerreport.xml" />
+  <Parameter id="currentReport" value="eString:Short Termer Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:10" />
+  <Parameter id="param_source" value="eString:Event" />
+  <Parameter id="param_event_selection" value="eString:this" />
+  <Parameter id="param_event_code" value="eString:" />
+  <Parameter id="param_event_name" value="eString:" />
+  <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="param_conference_code" value="eString:" />
+  <Parameter id="param_unit_key" value="eString:" />
+  <Parameter id="param_application_status_accepted" value="eString:true" />
+  <Parameter id="param_application_status_cancelled" value="eString:false" />
+  <Parameter id="param_application_status_enquiry" value="eString:false" />
+  <Parameter id="param_application_status_hold" value="eString:false" />
+  <Parameter id="param_application_status_rejected" value="eString:false" />
+  <Parameter id="orderby0" value="eString:Fellowship Group" />
+  <Parameter id="orderby1" value="eString:Leader" />
+  <Parameter id="orderby2" value="eString:Partner Name" />
+  <Parameter id="param_sortby_readable" value="eString:Fellowship Group, Leader, Partner Name" />
+  <Parameter id="param_sortby_columns" value="eString:3,4,5" />
+  <Parameter id="param_hide_empty_lines" value="eString:false" />
+  <Parameter id="param_print_two_lines" value="eString:false" />
+  <Parameter id="param_calculation" column="0" value="eString:Fellowship Group" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_calculation" column="1" value="eString:Leader" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="param_calculation" column="2" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_calculation" column="3" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:4" />
+  <Parameter id="param_calculation" column="4" value="eString:Conference Role" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:3" />
+  <Parameter id="param_calculation" column="5" value="eString:Event Code" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
+  <Parameter id="param_calculation" column="6" value="eString:Event Preference 1 Code" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:3" />
+  <Parameter id="param_calculation" column="7" value="eString:Event Preference 2 Code" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:3" />
+  <Parameter id="param_calculation" column="8" value="eString:Arrival Date" />
+  <Parameter id="ColumnWidth" column="8" value="eInteger:2" />
+  <Parameter id="param_calculation" column="9" value="eString:Departure Date" />
+  <Parameter id="ColumnWidth" column="9" value="eInteger:2" />
+  <Parameter id="param_address_detail" value="eString:false" />
+  <Parameter id="param_passport_detail" value="eString:false" />
+  <Parameter id="param_church_detail" value="eString:false" />
 </Parameters>

@@ -34,7 +34,7 @@ using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.CommonForms;
 
-namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
+namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
 {
     /// <summary>
     /// Description of TFrmUC_ShortTermerAdditionalSetting

@@ -50,12 +50,10 @@ namespace Ict.Petra.Shared
             list.Add("p_country");
             list.Add("a_currency");
             list.Add("s_form");
-            list.Add("s_file");
             list.Add("s_group");
             list.Add("s_user_group");
             list.Add("s_module");
             list.Add("s_valid_output_form");
-            list.Add("s_module_file");
             list.Add("s_group_module_access_permission");
             list.Add("s_group_table_access_permission");
             list.Add("s_user_module_access_permission");
@@ -65,15 +63,9 @@ namespace Ict.Petra.Shared
             list.Add("s_logon_message");
             list.Add("s_patch_log");
             list.Add("s_reports_to_archive");
-            list.Add("s_report_file");
-            list.Add("s_report_options");
-            list.Add("s_selected_output_destination");
             list.Add("s_system_status");
-            list.Add("s_system_status_log");
             list.Add("s_user_defaults");
             list.Add("s_system_defaults");
-            list.Add("s_batch_job");
-            list.Add("s_error_message");
             list.Add("s_error_log");
             list.Add("p_partner_status");
             list.Add("p_acquisition");
@@ -94,7 +86,6 @@ namespace Ict.Petra.Shared
             list.Add("p_type");
             list.Add("p_relation_category");
             list.Add("p_relation");
-            list.Add("p_reports");
             list.Add("m_extract_type");
             list.Add("m_extract_master");
             list.Add("m_extract_parameter");
@@ -105,8 +96,6 @@ namespace Ict.Petra.Shared
             list.Add("p_address_line");
             list.Add("p_addressee_title_override");
             list.Add("p_formality");
-            list.Add("p_form_letter_body");
-            list.Add("p_form_letter_design");
             list.Add("p_label");
             list.Add("p_merge_form");
             list.Add("p_merge_field");
@@ -142,9 +131,6 @@ namespace Ict.Petra.Shared
             list.Add("a_method_of_giving");
             list.Add("a_method_of_payment");
             list.Add("a_motivation_group");
-            list.Add("a_previous_year_batch");
-            list.Add("a_prev_year_corp_ex_rate");
-            list.Add("a_this_year_old_batch");
             list.Add("a_recurring_batch");
             list.Add("a_batch");
             list.Add("a_special_trans_type");
@@ -162,16 +148,13 @@ namespace Ict.Petra.Shared
             list.Add("pt_special_applicant");
             list.Add("pt_leadership_rating");
             list.Add("pt_arrival_point");
-            list.Add("pt_xyz_tbd_preference_level");
+            list.Add("pt_outreach_preference_level");
             list.Add("pt_congress_code");
-            list.Add("pt_party_type");
             list.Add("pt_travel_type");
-            list.Add("pt_app_form_types");
             list.Add("pm_document_category");
             list.Add("pm_document_type");
             list.Add("pt_passport_type");
             list.Add("pt_language_level");
-            list.Add("pt_valuable_item");
             list.Add("pt_ability_area");
             list.Add("pt_ability_level");
             list.Add("pt_qualification_area");
@@ -179,16 +162,11 @@ namespace Ict.Petra.Shared
             list.Add("pt_skill_category");
             list.Add("pt_skill_level");
             list.Add("pt_driver_status");
-            list.Add("pt_personal_data_labels");
-            list.Add("pt_office_specific_data_labels");
             list.Add("p_data_label_lookup_category");
             list.Add("p_data_label");
             list.Add("p_data_label_use");
             list.Add("p_data_label_lookup");
-            list.Add("pt_vision_area");
-            list.Add("pt_vision_level");
             list.Add("pm_commitment_status");
-            list.Add("pt_reports");
             list.Add("pt_position");
             list.Add("pt_assignment_type");
             list.Add("pt_leaving_code");
@@ -218,12 +196,12 @@ namespace Ict.Petra.Shared
             list.Add("p_banking_details");
             list.Add("p_partner_banking_details");
             list.Add("p_banking_details_usage");
+            list.Add("p_partner_tax_deductible_pct");
             list.Add("p_partner_type");
             list.Add("p_partner_relationship");
             list.Add("p_partner_ledger");
             list.Add("m_extract");
             list.Add("p_customised_greeting");
-            list.Add("p_form_letter_insert");
             list.Add("p_subscription");
             list.Add("p_partner_contact");
             list.Add("p_partner_contact_attribute");
@@ -234,8 +212,6 @@ namespace Ict.Petra.Shared
             list.Add("a_account_hierarchy_detail");
             list.Add("a_email_destination");
             list.Add("a_transaction_type");
-            list.Add("a_previous_year_journal");
-            list.Add("a_this_year_old_journal");
             list.Add("a_recurring_journal");
             list.Add("a_journal");
             list.Add("a_suspense_account");
@@ -254,24 +230,19 @@ namespace Ict.Petra.Shared
             list.Add("pm_application_status_history");
             list.Add("pm_short_term_application");
             list.Add("pm_year_program_application");
-            list.Add("pm_application_forms");
             list.Add("pm_document");
             list.Add("pm_passport_details");
-            list.Add("pm_long_term_support_figures");
             list.Add("pm_person_language");
-            list.Add("pm_ownership");
             list.Add("pm_past_experience");
             list.Add("pm_person_ability");
             list.Add("pm_person_qualification");
             list.Add("pm_person_skill");
             list.Add("pm_formal_education");
             list.Add("pm_personal_data");
-            list.Add("pm_pers_office_specific_data");
             list.Add("p_data_label_value_partner");
             list.Add("p_data_label_value_application");
-            list.Add("pm_interview");
             list.Add("pm_person_evaluation");
-            list.Add("pm_person_vision");
+            list.Add("pm_person_absence");
             list.Add("pm_special_need");
             list.Add("pm_staff_data");
             list.Add("pm_person_commitment_status");
@@ -279,11 +250,9 @@ namespace Ict.Petra.Shared
             list.Add("um_job_requirement");
             list.Add("um_job_language");
             list.Add("um_job_qualification");
-            list.Add("um_job_vision");
             list.Add("pm_job_assignment");
             list.Add("um_unit_ability");
             list.Add("um_unit_language");
-            list.Add("um_unit_vision");
             list.Add("um_unit_cost");
             list.Add("um_unit_evaluation");
             list.Add("pc_conference");
@@ -326,10 +295,6 @@ namespace Ict.Petra.Shared
             list.Add("a_ep_match");
             list.Add("a_ep_transaction");
             list.Add("a_motivation_detail_fee");
-            list.Add("a_previous_year_transaction");
-            list.Add("a_prev_year_trans_anal_attrib");
-            list.Add("a_this_year_old_transaction");
-            list.Add("a_thisyearold_trans_anal_attrib");
             list.Add("a_recurring_transaction");
             list.Add("a_recurring_trans_anal_attrib");
             list.Add("a_recurring_gift_batch");
@@ -383,7 +348,6 @@ namespace Ict.Petra.Shared
             list.Add("p_partner_contact_file");
             list.Add("pm_document_file");
             list.Add("pm_application_file");
-            list.Add("pm_application_forms_file");
             list.Add("s_volume_partner_group");
             list.Add("s_default_file_volume");
             list.Add("s_volume_partner_group_partner");
@@ -402,6 +366,7 @@ namespace Ict.Petra.Shared
             List<string> list = new List<string>();
             #region DBSequenceNames
             list.Add("seq_application");
+            list.Add("seq_ap_document");
             list.Add("seq_contact");
             list.Add("seq_extract_number");
             list.Add("seq_location_number");
@@ -419,8 +384,6 @@ namespace Ict.Petra.Shared
             list.Add("seq_foundation_proposal");
             list.Add("seq_proposal_detail");
             list.Add("seq_form_letter_insert");
-            list.Add("seq_modification1");
-            list.Add("seq_modification2");
             list.Add("seq_workflow");
             list.Add("seq_file_info");
             list.Add("seq_person_skill");
@@ -429,6 +392,7 @@ namespace Ict.Petra.Shared
             list.Add("seq_ar_invoice");
             list.Add("seq_match_number");
             list.Add("seq_statement_number");
+            list.Add("seq_login_process_id");
 
             #endregion
             return list;

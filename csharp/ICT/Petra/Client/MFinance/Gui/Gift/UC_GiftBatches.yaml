@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     DetailTable: AGiftBatch
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance,Ict.Petra.Shared.MFinance.Gift.Data,Ict.Petra.Shared.MFinance.Gift.Validation]
     FormType: edit
     Template: controlMaintainTable
     Actions:
@@ -13,19 +13,24 @@ RootNode:
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
+        actReverseGiftBatch: {Label=&Reverse Gift Batch, ActionClick=ReverseGiftBatch}
+        actSetExchangeRate:{Label=Get/Set Exchange Rate, ActionClick=SetExchangeRateValue}
     Controls:
         pnlContent:
             Dock: Fill
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
         pnlInfo: 
-            Controls: [pnlLedgerInfo, rgrShowBatches]
+            ControlsOrientation: horizontal
+            Controls: [pnlLedgerInfo, rgrShowBatches, cmbYear, cmbPeriod]
             Dock: Top
         rgrShowBatches: 
             Label: Show batches
             ControlsOrientation: horizontal
+            OptionalValues: [Posting, =Editing, All]
             SuppressChangeDetection: true
-            OptionalValues: [Posted, =Editing, All]
-            OnChange: ChangeBatchFilter
+            OnChange: RefreshFilter
+        cmbYear: {List=UserDefinedList, OnChange=RefreshPeriods, SuppressChangeDetection=true, Width=100}
+        cmbPeriod: {List=UserDefinedList, OnChange=RefreshFilter, SuppressChangeDetection=true, Width=250}
         pnlLedgerInfo:
             Controls: [txtLedgerNumber]
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
@@ -44,6 +49,7 @@ RootNode:
             Columns: [BatchNumber, GlEffectiveDate, BatchStatus, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType, DateModified]
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
+            ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: BatchNumber DESC
         pnlDetails:
             Dock: Bottom
@@ -53,20 +59,22 @@ RootNode:
                 Row2: [cmbDetailBankAccountCode]
                 Row3: [dtpDetailGlEffectiveDate, lblValidDateRange]
                 Row4: [txtDetailHashTotal, cmbDetailCurrencyCode]
-                Row5: [txtDetailExchangeRateToBase]
+                Row5: [txtDetailExchangeRateToBase, btnGetSetExchangeRate]
                 Row6: [cmbDetailMethodOfPaymentCode]
                 Row7: [rgrDetailGiftType]
-        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=3}
+        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
         cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
         cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
-        dtpDetailGlEffectiveDate: {Label=GL Effective Date}
+        dtpDetailGlEffectiveDate: {Label=GL Effective Date, OnChange=UpdateBatchPeriod, Validation=true}
         lblValidDateRange:
-        txtDetailHashTotal: {Label=Hash Total, Format=Currency, OnChange=HashTotalChanged}
+        txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged, Validation=true}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
-        txtDetailExchangeRateToBase:
+        txtDetailExchangeRateToBase: {ReadOnly=true, Validation=true, Format=Decimal}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList,OnChange=MethodOfPaymentChanged}
+        btnGetSetExchangeRate: {Action=actSetExchangeRate}
         rgrDetailGiftType:
             OptionalValues: [=Gift,Gift In Kind,Other]
+            OptionalValuesConstants: [MFinanceConstants.GIFT_TYPE_GIFT,MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND,MFinanceConstants.GIFT_TYPE_OTHER]
             ControlsOrientation: Horizontal
         tbrTabPage:
         mnuTabPage:
@@ -74,6 +82,7 @@ RootNode:
         mniBatch:
             Label: &Batch
             mniPost: {Action=actPostBatch}
+            mniReverseGiftBatch: {Action=actReverseGiftBatch}
     Toolbar:
         tbbPostBatch: {Action=actPostBatch}
         tbbExportBatches: {Action=actExportBatches}

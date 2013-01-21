@@ -4,66 +4,111 @@
 <echo>operating system=${operating-system::to-string(environment::get-operating-system())}</echo>
 <echo>platform=${platform::get-name()}</echo>
 
-
 <include buildfile="inc/nant/OpenPetra.common.xml"/>
 
 <!-- nant -projecthelp does not show imported targets-->
 <target name="help" depends="" description="Displays the available targets and parameters.">
     <echo>
 list of available commands:
-  clean: cleans everything
-  compile: compiles OpenPetra including testing
+  quickClean: cleans all generated files and the delivery directory
   generateSolution: compiles OpenPetra and generates the project and solution files
-  generateSolutionNoCompile: generates the project and solution files. compile should already be executed
-  quickGenerateSolution: generates the project and solution files. compiles what it needs, but does not compile all code
-  quickCompile: will just compile the solution file, with msbuild (Windows) or xbuild (Linux)
+  generateTools: build the basic tools only
+  minimalGenerateSolution: generates the project and solution files. compiles what it needs, but does not compile all code
+  generateSolutionNoCompile: generates the project and solution files. minimalGenerateSolution should already be executed
+  quickCompile: will just compile the solution file, with msbuild (Windows) or our own builder (Linux)
       nant quickCompile                    will compile the OpenPetra.sln
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
-  quickClean: cleans all generated files and the delivery directory
+  compileProject: compile a single project file
+      nant compileProject -D:file=delivery/projects/sharpdevelop4/Ict.Testing.ControlTestBench.csproj 
+  start: start both the local server and client
   startPetraServer: run a local Petra Server
   stopPetraServer: stop the local Petra Server
   startPetraClient: run the Petra Client
   deleteBakFiles: delete all backup files
-  buildRelease: Build the release for the target platform we are building on
   initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
+  test: will run the NUnit tests
 
 compat:
   createSQLStatements: generates the sql create table statements etc from the petra.xml
   dbdoc: generates database design documentation using sql2diagram
+  schemaSpy: generates database documentation using schemaSpy
   recreateDatabase: needed after changes in table structure in petra.xml
   resetDatabase: just resets the data, resets the permissions
   patchDatabase: update the database to the latest development version
+  dumpDatabase: dump the database to a db specific format.
+        nant dumpDatabase -D:file=test.sql
+  loadDatabase: load the database from a db specific dump
+        nant loadDatabase -D:file=test.sql
+  loadDatabaseFromBackup: load the database from a backup
+        (includes table specification)
   generateORM: generates Object Relational Mapping routines from petra.xml
-     sub items: generateORMCachedTables, generateORMData, generateORMAccess
+    sub items: generateORMCachedTables, generateORMData, generateORMAccess
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
+  generateWinforms: generates all yaml files in csharp\ICT\Petra\Client
+  generateWinform: generate a single yaml file, and optionally compile and start the client
+       nant generateWinform startPetraClient -D:file=MFinance/Gui/GL/GLBatch.yaml
+       nant generateWinform -D:file=MFinance/Gui/GL/GLBatch.yaml -D:donotcompile=true
+  previewWinform: preview a single yaml file
+       nant previewWinform -D:file=MFinance/Gui/GL/GLBatch.yaml
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
-  translationCompilePOFile: create the dlls required to be delivered with a new release
-  translation: extracts string in winforms, creates and updates the .po files, and compiles the .mo files for delivery
+  translation: download new language files, and create the dlls required to be delivered with a new release
+  buildTranslationTemplate: extracts string in winforms, creates and updates the .po files
+  generateGuidedTranslations: Simplifies the translation of the .po files
+  createI18NYamlFiles: create localised yaml files
+    createI18NYamlFiles -language=de-DE -path=...
+
+releases:
+  buildWindowsStandalone: will build the standalone installer for Windows. Only works on Windows with InnoSetup.
+  buildLinuxSourceforgeRelease: will build the linux files that we upload to Sourceforge. creates tar files for local server and client
+  buildRemoteInstallers -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:HostedServer=app.Provider.com -D:HostedPort=9000 -D:WithLinuxClient=false
+
+demodata:
+  generateDemodata: create demo data
+  importDemodata: imports demo data into the database
 
 list of commands, which works in the specific csharp directories:
   indent: beautify the code according to coding style guide
   uncrustify: calls indent
-
 
 not supported
   loc, ploc: count the lines of code, to be used for COCOMO etc
   generateWebforms: generates the User Interface using the Ext.js AJAX framework
   generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm
   startWebServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)
-  setupRemote -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:ServerHost=app.Provider.com -D:ServerPort=9000
-  createPatch: requires these parameters: -D:OldVersion=0.0.8-1 -D:NewVersion=0.0.10-0
-  packTestReportingRelease: quick snapshot of all debug executables and dlls and config files for quick test on another machine
-  
+
 useful parameters
   -logfile:test.log
 </echo>
 </target>
 
-<target name="translationCompilePOFile" description="create the dlls with the i18n messages" >
+<target name="apiDoc" description="Generates API documentation. nant depend should have been run" >
+  <exec program="${external.doxygen}">
+    <arg value="&quot;${external.doxygen.configfile}&quot;" />
+  </exec>  
+</target>
+
+<target name="translation" description="create the dlls with the i18n messages" >
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
+        buildfile="i18n/i18n.build" />
+</target>
+
+<target name="buildTranslationTemplate" description="extracts string in winforms, creates and updates the .po files" >
+  <property name="target" value="compile" overwrite="false" />
+  <nant inheritall="false" target="extractMsgs" 
+        buildfile="i18n/i18n.build" />
+</target>
+
+<target name="generateGuidedTranslations" description="simplifies the translation of the .po files" >
+  <property name="target" value="compile" overwrite="false" />
+  <nant inheritall="false" target="guidedTrans" 
+        buildfile="i18n/i18n.build" />
+</target>
+
+<target name="createI18NYamlFiles" description="create localised yaml files" >
+  <nant inheritall="true" target="createI18NYamlFiles" 
         buildfile="i18n/i18n.build" />
 </target>
 
@@ -71,7 +116,7 @@ useful parameters
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <delete>
       <fileset basedir="${path::combine(dir.projectfiles,devenv-name)}">
-        <include name="OpenPetra.sln" />
+        <include name="OpenPetra*.sln" />
         <include name="*.csproj" />
       </fileset>
     </delete>
@@ -82,12 +127,28 @@ useful parameters
     </fileset>
   </delete>
   <property name="target" value="clean" />
-  <call target="translationCompilePOFile" />    
 </target>
 
 <target name="quickClean" description="cleans all generated files and the delivery directory">
-  <delete dir="${dir.delivery}"/>
-  <mkdir dir="${dir.delivery}"/>
+  <!-- Do not remove dir.delivery, because this would change all UUIDs from the project files -->
+  <!-- Do not remove dir.bin, because this fails on Windows Jenkins server for NUnit tests -->
+  <delete>
+    <fileset basedir="${dir.bin}">
+      <include name="**" />
+      <exclude name="."/>
+    </fileset>
+  </delete>
+  <delete>
+    <fileset basedir="${dir.obj}">
+      <include name="**" />
+      <exclude name="."/>
+    </fileset>
+  </delete>
+  <delete file="${namespaceFile}"/>
+  <delete file="${projectDependenciesFile}"/>
+  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
+    <delete dir="${path::combine(dir.projectfiles,devenv-name)}" />
+  </foreach>
   <delete>
     <fileset basedir="${dir.root}">
       <include name="**/*-generated.build" />
@@ -95,12 +156,13 @@ useful parameters
       <include name="**/*-generated.resx" />
       <include name="**/*-generated.Designer.cs" />
       <include name="**/*.generated.refs" />
+      <include name="**/*.dll.xml" />
       <include name="tmp/**/AssemblyInfo.cs" />
     </fileset>
   </delete>
 </target>
 
-<target name="nanttasks" depends="" description="goes into the directory inc/nanttasks">
+<target name="nanttasks" description="goes into the directory inc/nanttasks">
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="inc/nanttasks/nanttasks.build" />
@@ -112,147 +174,74 @@ useful parameters
         buildfile="csharp/csharp.build" />
 </target>
 
-<target name="internal-subdirs" description="Goes into all necessary subdirectories" 
-        depends="csharp,nanttasks" />
-
-<target name="generateSolutionNoCompile" description="generates the project and solution files. Target compile should already be executed">
-  <call target="generateCsprojectNoCompile" />
-  <call target="generate-solution-all-internal" />
+<target name="webserver" depends="nanttasks" description="goes into the directory webserver">
+  <property name="target" value="compile" overwrite="false" />
+  <nant inheritall="false" target="${target}" 
+        buildfile="webserver/webserver.build" />
 </target>
 
-<target name="quickGenerateSolution" description="generates code, the references, the project and solution files">
-  <!-- we need to compile Ict.Tools.NAntTasks.dll, Ict.Common and Ict.PetraTools to get tools like Ict.Tools.GenerateORM.exe -->
+<target name="internal-subdirs" description="Goes into all necessary subdirectories" 
+        depends="csharp,nanttasks,webserver" />
+
+<target name="generateSolutionNoCompile" description="generates the project and solution files. minimalGenerateSolution should already be executed"
+        depends="generateProjectFiles"/>
+
+<target name="minimalGenerateSolution" description="compile minimal code for generating source code and the project and solution files">
+    <call target="generateTools"/>
+    <call target="generateWinforms"/>
+    <call target="generateORM"/>
+    <call target="generateGlue"/>
+    <!-- need to call generateNamespaceMap again, even though it was called in generateTools already. but now the winforms and ORM have been generated -->
+    <call target="generateNamespaceMap"/>
+    <call target="generateProjectFiles"/>
+</target>
+
+<target name="generateSolution" description="compiles OpenPetra and generates the project and solution files"
+        depends="minimalGenerateSolution">
+    <call target="quickCompile"/>
+</target>
+
+<target name="generateNamespaceMap">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <GenerateNamespaceMap
+    CodeRootDir="${dir.csharp}"
+    NamespaceMapFilename="${namespaceFile}"
+    NamespaceMap3rdParty="${namespaceFile3rdParty}"
+    DependencyMapFilename="${projectDependenciesFile}"/>
+</target>
+
+<target name="generateTools">
   <call target="nanttasks"/>
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <GenerateNamespaceMap
+    CodeRootDir="${dir.csharp}"
+    NamespaceMapFilename="${namespaceFile}"
+    NamespaceMap3rdParty="${namespaceFile3rdParty}"
+    DependencyMapFilename="${projectDependenciesFile}"
+    ShowWarnings="false"
+    LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Tools*"/>
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ThirdParty/ThirdParty.build" />
-  <nant inheritall="false" target="compile" 
-        buildfile="csharp/ICT/Common/ICT.Common.build" />
-  <nant inheritall="false" target="generateCsprojectNoCompile" 
-        buildfile="csharp/ICT/Common/ICT.Common.build" />
-  <nant inheritall="false" target="compile" 
-        buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
-  <nant inheritall="false" target="generateCsprojectNoCompile" 
-        buildfile="csharp/ICT/PetraTools/ICT.PetraTools.build" />
-
-  <nant inheritall="false" target="prepareProjects"
-        buildfile="csharp/ICT/Petra/Petra.build" />
-  <nant inheritall="false" target="prepareProjects"
-        buildfile="csharp/ICT/Testing/ICT.Testing.build" />
-
-  <call target="generate-solution-all-internal" />
+  <call target="generateProjectFilesInternal"/>
+  <call target="quickCompile"/>
 </target>
 
-<target name="generateSolution" depends="compile" description="compiles OpenPetra and generates the project and solution files">
-  <call target="generateSolutionNoCompile" />
-</target>
+<target name="generateProjectFiles" depends="nanttasks,generateNamespaceMap,generateProjectFilesInternal"/>
 
-<!-- Generate solution targets -->
-<target name="generate-solution-all-internal" >
-  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
-    <property name="includepaths" value="Common,Petra,PetraTools,Testing"/>
-    <property name="solution-name" value="OpenPetra.sln"/>
-    <call target="generate-solution-internal" />
-  </foreach>
-  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
-    <property name="includepaths" value="Common,Petra/Shared,Petra/Server,Petra/ServerPlugins,Petra/PetraServerConsole"/>
-    <property name="startupproject" value="PetraServerConsole"/>
-    <property name="startuparguments" value="-C:${ServerConfigFile}"/>
-    <property name="solution-name" value="OpenPetra.Server.sln"/>
-    <call target="generate-solution-internal" />
-  </foreach>
-  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
-    <property name="includepaths" value="Common,Petra/Shared,Petra/Client,Petra/ClientPlugins,Petra/PetraClient"/>
-    <property name="startupproject" value="PetraClient"/>
-    <property name="startuparguments" value="-C:${ClientConfigFile}"/>
-    <property name="solution-name" value="OpenPetra.Client.sln"/>
-    <call target="generate-solution-internal" />
-  </foreach>
-  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
-    <property name="includepaths" value="Common,PetraTools"/>
-    <property name="solution-name" value="OpenPetra.Tools.sln"/>
-    <call target="generate-solution-internal" />
-  </foreach>
-  <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
-    <property name="includepaths" value="Common,PetraTools,Petra/Shared,Petra/Client,Petra/ClientPlugins,Petra/Server,Petra/ServerPlugins,Testing"/>
-    <property name="solution-name" value="OpenPetra.Testing.sln"/>
-    <call target="generate-solution-internal" />
-  </foreach>
-</target>
-
-
-<target name="generate-solution-internal" >
-  <property name="templatedir" value="${path::combine(dir.incdir.template, devenv-name)}" />
-  <property name="TemplateProject" value="" />
-  <property name="TemplateConfiguration" value="" />
-  <property name="SolutionGuid" value="{${OP::GUIDGen()}}" />
-  <property name="startupproject" value="" overwrite="false"/>
-
-  <!-- collect all project files, but without the startup project, so we can add that at the last position -->
-  <property name="projectfiles" value="^"/>
-  <foreach item="File" property="ProjectFile">
-    <in>
-      <items basedir="${path::combine(dir.projectfiles, devenv-name)}">
-        <include name="*.csproj"/>
-        <exclude name="${startupproject}.csproj"/>
-      </items>
-    </in>
-    <do>
-      <property name="projectfiles" value="${projectfiles},${ProjectFile}"/>
-    </do>
-  </foreach>
-  <property name="projectfiles" value="${string::replace(projectfiles,'^,','')}"/>
-  <if test="${string::get-length(startupproject) > 0}">
-    <property name="startupproject" value="${path::combine(path::combine(dir.projectfiles, devenv-name),startupproject+'.csproj')}"/>
-    <property name="temp" value="${script::ReplaceInFile(startupproject, '&lt;/Optimize&gt;', '&lt;/Optimize&gt;&lt;StartArguments&gt;'+startuparguments+'&lt;/StartArguments&gt;')}"/>
-    <property name="projectfiles" value="${projectfiles},${startupproject}"/>
-  </if>
-  <property name="startupproject" value="" overwrite="true"/>
-  <foreach item="String" property="ProjectFile" delim="," in="${projectfiles}">
-    <do>
-      <!-- do we need to remove the xmlns="http://schemas.microsoft.com/developer/msbuild/2003" from the project file so that xmlpeek works? -->
-      <property name="temp" value="${script::ReplaceInFile(ProjectFile, 'xmlns', 'xmlnsDeactivated')}"/>
-      
-      <xmlpeek file="${ProjectFile}"
-              xpath="/Project/PropertyGroup/ProjectGuid"
-              property="ProjectGuid"/>
-      <xmlpeek file="${ProjectFile}"
-              xpath="//Compile[1]/@Include"
-              property="FirstCSFile"/>
-      
-      <property name="FirstCSFile" value="${string::replace(FirstCSFile,dir.root,'')}"/>
-      <property name="FirstCSFile" value="${string::replace(FirstCSFile,'\','/')}"/>
-      <property name="FirstCSFile" value="${string::replace(FirstCSFile,'/csharp/ICT/','')}"/>
-      <property name="temp" value="${script::ReplaceInFile(ProjectFile, 'xmlnsDeactivated', 'xmlns')}"/>
-      <foreach item="String" property="includePath" delim="," in="${includepaths}" >
-        <if test="${string::starts-with(FirstCSFile,includePath+'/')}">
-          <property name="ProjectName" value="${path::get-file-name-without-extension(ProjectFile)}" />
-          <loadfile file="${path::combine(templatedir, 'template.sln.project')}"
-                    property="tempTemplateProject" encoding="utf-8">  
-            <filterchain>
-              <expandproperties />
-            </filterchain>
-          </loadfile>
-          <property name="TemplateProject" value="${TemplateProject}${tempTemplateProject}" />
-          <loadfile file="${path::combine(templatedir, 'template.sln.configuration')}"
-                    property="tempTemplateConfiguration" encoding="utf-8">  
-            <filterchain>
-              <expandproperties />
-            </filterchain>
-          </loadfile>
-          <property name="TemplateConfiguration" value="${TemplateConfiguration}${tempTemplateConfiguration}" />
-        </if>
-      </foreach>
-    </do>
-  </foreach>
-  <copy file="${path::combine(templatedir, 'template.sln')}"
-        tofile="${path::combine(dir.projectfiles,
-                                path::combine(devenv-name, solution-name))}" 
-        overwrite="true">  
-    <filterchain>
-      <expandproperties />
-    </filterchain>
-  </copy>
-
+<target name="generateProjectFilesInternal">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateProjectFiles')}"/>
+  <GenerateProjectFiles 
+    CodeRootDir="${dir.csharp}"
+    DependencyMapFilename="${projectDependenciesFile}"
+    GUIDMapFilename="${uuidFile}"
+    TemplateDir="${dir.incdir.template}"
+    DevEnvironments="${devenv-msbuild},${projectfiles.templates-list}"
+    DirBin="${dir.bin}"
+    DirProjectFiles="${dir.projectfiles}"
+    NetFrameworkVersion="${NETframework-version}"
+    ProjectVersion="${ReleaseID}"
+    DebugParameters="PetraClient,-C:${ClientConfigFile},PetraServerConsole,-C:${ServerConfigFile}"
+    />
 </target>
 
 <!-- Include default implementation -->
@@ -261,288 +250,35 @@ useful parameters
 <!-- Compat targets -->
 <include buildfile="inc/nant/OpenPetra.tobe.migrated.xml"/>
 
-<!-- BEGIN buildRelease -->
-<target name="buildRelease" depends="buildReleaseLinux,buildReleaseWindows" 
-        description="Build the release for the target platform we are building on" />
+<!-- tasks for building releases -->
+<include buildfile="setup/setup.build"/>
 
-<property name="BuildClientArchive" value="false" overwrite="false" />
-<property name="SkipDatabases" value="false" overwrite="false" />
-<property name="PetraRelease" value="0300" overwrite="false" />
+<!-- tasks for creating demodata -->
+<include buildfile="demodata/demodata.build"/>
 
-<!-- Windows -->
-<target name="buildReleaseWindows" if="${platform::is-windows()}">
-  <call target="compile" unless="${target::has-executed('compile')}" />
-  <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
-  <call target="setupStandalone" unless="${target::has-executed('setupStandalone')}"/>
-</target> 
-
-<script language="C#">
-  <references>
-    <include name="System.dll" />
-  </references>
-  <code><![CDATA[ 
-[Function("CalculateStandaloneDBUpdateFileName")]
-public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
-{
-    string[] numbers = ReleaseID.Split(new char[]{'.', '-'});
-    
-    // need to manually code the medium version increases
-    if (numbers[1] == "1" && numbers[2] == "0")
-    {
-        return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
-                        0, 0, 15,
-                        numbers[0], numbers[1], numbers[2]);
-    }
-
-    if (numbers[1] == "2" && numbers[2] == "0")
-    {
-        return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
-                        0, 1, 0,
-                        numbers[0], numbers[1], numbers[2]);
-    }
-
-    // this is for smaller patches
-    return String.Format("Patch_{0}.{1}.{2}_{3}.{4}.{5}.sql",
-                        numbers[0], numbers[1], Convert.ToInt16(numbers[2]) - 1,
-                        numbers[0], numbers[1], numbers[2]);
-}
-]]>
-    </code>
-</script> 
-  
-<target name="setupStandalone">
-    <echo file="${dir.root}/setup/petra${PetraRelease}/standalone/version.txt">${ReleaseID}</echo>
-    <property name="DBUpdate.file" value="${dir.root}/db/patches/${script::CalculateStandaloneDBUpdateFileName(ReleaseID)}"/>
-    <if test="${not file::exists(DBUpdate.file)}">
-        <echo message="${DBUpdate.file}"/>
-        <fail message="We are missing the db upgrade file for sqlite standalone databases." />
-    </if>
-    <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/standalone/standalone.iss"/>
-    <call target="setupTemplate"/>
+<target name="MsBuildTarget">
+    <msbuild project="${solution.file}" verbosity="Minimal">
+        <property name="Configuration" value="${Configuration}"/>
+    </msbuild>
 </target>
-
-<target name="setupTemplate">
-    <property name="Current.File" value="${SetupOriginal.File}.local"/>
-
-    <copy file="${SetupOriginal.File}" tofile="${Current.File}" overwrite="true"/>
-
-    <property name="toReplace" value="{#UINAVIGATION}"/>
-    <property name="UINavigation.file" value="UINavigation.yml.my"/>
-    <if test="${file::exists(UINavigation.file)}">
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
-    </if>
-    <if test="${not file::exists(UINavigation.file)}">
-        <property name="UINavigation.file" value="UINavigation.yml"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, UINavigation.file)}'/>
-    </if>
-
-    <property name="toReplace" value="{#REMOTECONFIG}"/>
-    <property name="Config.file" value="PetraClientRemote.config.my"/>
-    <if test="${file::exists(Config.file)}">
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
-    </if>
-    <if test="${not file::exists(Config.file)}">
-        <property name="Config.file" value="PetraClientRemote.config"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, Config.file)}'/>
-    </if>
-
-    <property name="toReplace" value="{#RELEASEVERSION}"/>
-    <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
-    <property name="toReplace" value="{#RELEASEID}"/>
-    <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseID)}'/>
-    <property name="toReplace" value="{#PATCHVERSION}"/>
-    <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseID)}'/>
-    <property name="toReplace" value="{#DELIVERY.DIR}"/>
-    <echo message='${script::ReplaceInFile(Current.File, toReplace, dir.delivery)}'/>
-    
-    <!-- for remote installer -->
-    <if test="${property::exists('OrgName')}">
-        <property name="toReplace" value="{#ORGNAME}"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, OrgName)}'/>
-        <property name="toReplace" value="{#PUBLISHERURL}"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, PublisherUrl)}'/>
-        <property name="toReplace" value="{#SERVERHOST}"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, ServerHost)}'/>
-        <property name="toReplace" value="{#SERVERPORT}"/>
-        <echo message='${script::ReplaceInFile(Current.File, toReplace, ServerPort)}'/>
-    </if>
-    <exec program="${Innosetup.ISCC}" commandline=" &quot;${Current.File}&quot;"
-          workingdir="${path::get-directory-name(Current.File)}"/>
-</target>
-
-<!-- Linux -->
-<target name="buildReleaseLinux" if="${platform::is-unix()}">
-  <call target="refreshSudo" unless="${target::has-executed('refreshSudo')}" />
-  <call target="compile" unless="${target::has-executed('compile')}" />
-  <call target="createPostgreSQLDB" unless="${target::has-executed('createPostgreSQLDB')}"/>
-  <call target="createMySQLDB" unless="${target::has-executed('createMySQLDB')}"/>
-  <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
-  <call target="translationCompilePOFile" unless="${target::has-executed('translationCompilePOFile')}"/>
-  <call target="setupLinuxServer" unless="${target::has-executed('setupLinuxServer')}"/>
-</target>
-
-<target name="setupLinuxServer">
-<!-- for the moment, just create a tar.gz file, with sub directories manuals30 containing the release notes, 
-     bin30 with just the server binaries, db30 with the demo sqlite database, demo30 with some sample files,
-     reports30, sql30 with the sql scripts, etc30 with the 2 config files; start and maintain script in the root
-     LICENSE file in the root, INSTALL file with instructions, required packages, firewall etc? -->
-  <property name="setupDir" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
-  <delete dir="${setupDir}"/>
-  <mkdir dir="${setupDir}"/>
-
-  <if test="${SkipDatabases!='true'}">
-    <mkdir dir="${setupDir}/db30"/>
-    <mkdir dir="${setupDir}/demo30"/>
-    <mkdir dir="${setupDir}/log30"/>
-    <mkdir dir="${setupDir}/etc30"/>
-    <mkdir dir="${setupDir}/reports30"/>
-    <mkdir dir="${setupDir}/patches30"/>  
-    <if test="${not BuildClientArchive}">
-      <copy todir="${setupDir}/etc30">
-          <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">
-              <include name="*.config" />
-          </fileset>
-      </copy>
-    </if>
-    <copy todir="${setupDir}/demo30">
-        <fileset basedir="${dir.bin}/demodata/">
-            <include name="**/*.*" />
-        </fileset>
-    </copy>
-  </if>
-  <mkdir dir="${setupDir}/manuals30"/>
-  <mkdir dir="${setupDir}/sql30"/>
-  <mkdir dir="${setupDir}/resources30"/>
-  <mkdir dir="${setupDir}/bin30"/>
-  <copy file="${dir.root}/db/patches/version.txt" tofile="${setupDir}/bin30/version.txt" />
-  <copy todir="${setupDir}/bin30">
-    <fileset basedir="${dir.bin}">
-      <include name="*.dll" />
-      <include name="*.exe" />
-      <exclude name="Tests*" />
-      <include name="*/*.dll" /> <!-- i18n DLLs-->
-    </fileset>
-  </copy>
-  <copy file="${dir.bin}/csharp/ICT/Petra/Definitions/UINavigation.yml"
-              tofile="${setupDir}/bin30/UINavigation.yml"/>
-  <copy todir="${setupDir}/resources30">
-    <fileset basedir="${dir.bin}/resources">
-        <include name="*.ico" />
-        <include name="*.png" />
-    </fileset>
-  </copy>       
-  <if test="${BuildClientArchive}">
-    <copy todir="${setupDir}/etc30" 
-          file="${dir.bin}/setup/petra${PetraRelease}/remoteclientWin/PetraClientRemote.config" />
-  </if>
-  <copy todir="${setupDir}/manuals30">
-    <fileset basedir="${dir.bin}/setup/petra${PetraRelease}/releasenotes/">
-      <include name="*.html" />
-    </fileset>
-  </copy>
-  <copy todir="${setupDir}/reports30">
-    <fileset basedir="${dir.bin}/XmlReports/">
-      <include name="*.dtd" />
-      <include name="**/*.xml" />
-    </fileset>
-  </copy>
-  <copy file="${dir.bin}/LICENSE" tofile="${setupDir}/LICENSE"/>
-  <if test="${not BuildClientArchive}">
-    <copy todir="${setupDir}/sql30">
-      <fileset basedir="${dir.bin}/csharp/ICT/Petra/Server/sql/">
-          <include name="*.sql" />
-          <include name="*.yml" />
-      </fileset>
-    </copy>
-    <if test="${SkipDatabases!='true'}">
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/demo.db"
-                  tofile="${setupDir}/db30/demo.db"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql"
-                  tofile="${setupDir}/db30/createtables-PostgreSQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
-                  tofile="${setupDir}/db30/createconstraints-PostgreSQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"
-                  tofile="${setupDir}/db30/demodata-PostgreSQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/createtables-MySQL.sql"
-                  tofile="${setupDir}/db30/createtables-MySQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/createconstraints-MySQL.sql"
-                  tofile="${setupDir}/db30/createconstraints-MySQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/demodata-MySQL.sql"
-                  tofile="${setupDir}/db30/demodata-MySQL.sql"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/INSTALL"
-                  tofile="${setupDir}/INSTALL"/>
-      <if test="${SkipCompileClient!='true'}">
-        <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/startClient.sh"
-                tofile="${setupDir}/startClient.sh"/>
-      </if>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/openpetraorg-server.sh"
-                  tofile="${setupDir}/openpetraorg-server.sh"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/initpg.sh"
-                  tofile="${setupDir}/initpg.sh"/>
-      <copy file="${dir.bin}/setup/petra${PetraRelease}/linuxserver/initmysql.sh"
-                  tofile="${setupDir}/initmysql.sh"/>
-      <if test="${platform::is-unix()}">
-        <!-- change the executable flag -->
-        <ExecCmd program="sh" commandline="/C &quot;chmod a+x ${setupDir}/*.sh&quot;"/>
-        <!-- make sure that the script files are in unix format -->
-        <ExecCmd program="sh" commandline="/C &quot;for f in ${setupDir}/*.sh; do dos2unix -o $f; done;&quot;"/>
-        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; ln -s PetraServerConsole-postgresql.config PetraServerConsole.config&quot;"/>
-        
-        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/..; tar czpf ${dir.setup}/openpetraorg-mono-${ReleaseID}.tar.gz *&quot;"/>
-
-        <!-- to avoid problem with symbolic link with delete dir task -->
-        <ExecCmd program="sh" commandline="/C &quot;cd ${setupDir}/etc30; rm PetraServerConsole.config&quot;"/>
-      </if>
-    </if>
-    <if test="${SkipDatabases=='true'}">
-      <!-- this can be useful if we just need the binary files and not the scripts for an existing Linux OpenPetra server to update -->
-      <tar destfile="${dir.setup}/openpetraorg-server-update-${ReleaseID}.tar.gz" compression="GZip">
-          <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
-              <include name="**/*" />
-          </fileset>
-      </tar>
-    </if>
-  </if>
-  <if test="${BuildClientArchive}">
-    <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
-    <tar destfile="${dir.setup}/openpetraorg-client-backup-${ReleaseID}.tar.gz" compression="GZip">
-        <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
-            <include name="**/*" />
-        </fileset>
-    </tar>
-  </if>
-</target> 
-<!-- END buildRelease -->
 
 <target name="quickCompile">
   <!-- this is very different from the compile target. quickCompile does not generate any code. 
        quickCompile uses the solution and csproj files and msbuild.
        quickCompile is intended as an alternative to compile in SharpDevelop directly.
   -->
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CompileSolution')}"/>
   <property name="solution" value="OpenPetra" overwrite="false"/>
   <property name="solution.file" value="${path::combine(dir.projectfiles,
-                                path::combine(devenv-name, 'OpenPetra.'+solution+'.sln'))}"/>
+                              path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
   <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
-  <if test="${framework::get-target-framework() == 'mono-2.0'}" >
-    <if test="${property::exists('xbuild')}">
-      <exec program="${xbuild}" commandline="${solution.file}">
-         <environment>
-           <variable name="MONO_PATH" value="${NAntBin.dir}"/> <!-- variable does not exist yet; otherwise: value="${NAntBin.dir}:${environment::get-variable('MONO_PATH')}" -->
-         </environment>
-      </exec>
-    </if>
-  </if>
-  <if test="${string::starts-with(framework::get-target-framework(), 'net-')}" >
-    <if test="${file::exists(msbuildtask.file)}">
-      <msbuild project="${solution.file}" verbosity="Minimal">
-        <property name="Configuration" value="${Configuration}"/>
-      </msbuild>
-    </if>
-    <if test="${not file::exists(msbuildtask.file)}">
-      <solution configuration="${Configuration}" solutionfile="${solution.file}" />
-    </if>
-  </if>
+
+  <CompileSolution SolutionFile="${solution.file}"/>
+</target>
+
+<target name="compileProject">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <CompileProject CSProjFile="${path::get-full-path(file)}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
 </target>
 
 <target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess">
@@ -559,40 +295,31 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
   <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Server/Ict.Petra.Server.build')}" verbose="${verbose}"/>
 </target>
 
-<target name="initConfigFiles" description="write and overwrite the config files for client, server and testing, and the version.txt">
-  <copy file="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"
-        tofile="${ServerConfigFile}" overwrite="true">
-    <filterchain>
-      <expandproperties />
-    </filterchain>
-  </copy>
+<target name="generateWinforms">
+  <property name="WithWindowsClient" value="true" overwrite="false"/>
+  <property name="WithLinuxClient" value="false" overwrite="false"/>
+  <if test="${WithWindowsClient or WithLinuxClient}">
+    <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+    <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraClient/PetraClient.build')}" verbose="${verbose}"/>
+  </if>
+</target>
 
-  <copy file="${dir.incdir.template.etc}/Client.config"
-        tofile="${ClientConfigFile}" overwrite="true">
-    <filterchain>
-      <expandproperties />
-    </filterchain>  
-  </copy>
+<target name="generateWinform">
+  <nant inheritall="true" target="generateWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+</target>
 
-  <copy file="${dir.incdir.template.etc}/TestServer.config"
-        tofile="${path::combine(dir.etc, 'TestServer.config')}" overwrite="true">
-    <filterchain>
-      <expandproperties />
-    </filterchain>  
-  </copy>
+<target name="previewWinform">
+  <nant inheritall="true" target="previewWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+</target>
 
-  <copy file="${dir.incdir.template.etc}/TestClient.config"
-        tofile="${path::combine(dir.etc, 'TestClient.config')}" overwrite="true">
-    <filterchain>
-      <expandproperties />
-    </filterchain>  
-  </copy>
-  
-<!-- MGR: TODO: Remove copy. Should be during database work! -->
-  <copy file="${path::combine(dir.db.patches, 'version.txt')}"
-      tofile="${path::combine(dir.bin, 'version.txt')}" 
-      overwrite="true"/>
-  
+<target name="test" depends="initConfigFiles">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <nant inheritall="false" target="test-all" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="test-without-display" depends="initConfigFiles">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <nant inheritall="false" target="test-without-display" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
 </target>
 
 </project>

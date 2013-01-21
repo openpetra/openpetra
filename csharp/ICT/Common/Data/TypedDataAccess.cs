@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,7 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Text;
+using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
@@ -38,7 +41,7 @@ namespace Ict.Common.Data
     public class TTypedDataAccess
     {
         /// name of the column used for tracking changes, one ID per change
-        public const string MODIFICATION_ID = "s_modification_id_c";
+        public const string MODIFICATION_ID = "s_modification_id_t";
 
         /// <summary>
         /// who has last modified the row
@@ -63,7 +66,12 @@ namespace Ict.Common.Data
         /// <summary>
         /// indicates whether a row has been deleted
         /// </summary>
-        public const string MODIFICATION_ID_DELETEDROW_INDICATOR = "[DELETED ROW!!!]";
+        public static DateTime MODIFICATION_ID_DELETEDROW_INDICATOR = DateTime.MaxValue;
+
+        /// <summary>
+        /// the max for sqlite is 500. for postgresql it could be higher.
+        /// </summary>
+        private const int MAX_SQL_PARAMETERS = 450;
 
         private static int FRowCount;
 
@@ -97,40 +105,6 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
-        /// This function returns the next available modification ID.
-        /// It uses the next-value of the sequences seq_modification1 and seq_modification2
-        /// (first counting up seq_modification1, then increasing once seq_modification2,
-        /// and cycling through seq_modification1 again)
-        /// The string is made up by the two values of the sequences, formatted as Hex numbers, and
-        /// separated by a semicolon.
-        ///
-        /// </summary>
-        /// <returns>the next modification ID</returns>
-        public static String GetNextModificationID(DB.TDBTransaction ATransaction)
-        {
-            Int64 value1;
-            Int64 value2;
-
-            value1 = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_modification1", ATransaction);
-
-            if (value1 == 0)
-            {
-                value2 = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_modification2", ATransaction);
-            }
-            else
-            {
-                value2 = DBAccess.GDBAccessObj.GetCurrentSequenceValue("seq_modification2", ATransaction);
-            }
-
-            // this has been tested with an upper limit of 32;
-            // those were the numbers generated:
-            // 13 December 2006, 15:39:42 : Next modification ID: ...00000;...00020
-            // 13 December 2006, 15:39:51 : Next modification ID: ...00001;...00000
-            // 13 December 2006, 15:39:51 : Next modification ID: ...00001;...00001
-            return String.Format("{0:x70}", ((object)value2)) + ';' + String.Format("{0:x70}", ((object)value1));
-        }
-
-        /// <summary>
         /// This function returns the modification details of a row
         ///
         /// </summary>
@@ -140,9 +114,10 @@ namespace Ict.Common.Data
             int[] APrimKeyColumnOrdList,
             DataRow ADataRow,
             DB.TDBTransaction ATransaction,
-            ref String AModificationID,
-            ref String AModifiedBy,
-            out System.DateTime AModifiedDate)
+            out DateTime AModificationID,
+            out String AModifiedBy,
+            out System.DateTime AModifiedDate,
+            bool ATreatRowAsAdded = false)
         {
             Int32 Counter;
             Boolean First;
@@ -172,15 +147,23 @@ namespace Ict.Common.Data
 
             Counter = 0;
 
+            DataRowVersion WhichVersion = DataRowVersion.Original;
+
+            if ((ADataRow.RowState == DataRowState.Added)
+                || (ATreatRowAsAdded))
+            {
+                WhichVersion = DataRowVersion.Current;
+            }
+
             foreach (int i in APrimKeyColumnOrdList)
             {
-                Parameters[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, DataRowVersion.Original]);
-                Parameters[Counter].Value = ADataRow[i, DataRowVersion.Original];
+                Parameters[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, WhichVersion].GetType());
+                Parameters[Counter].Value = ADataRow[i, WhichVersion];
                 Counter = Counter + 1;
             }
 
             table = DBAccess.GDBAccessObj.SelectDT(SqlString, TTypedDataTable.GetTableNameSQL(ATableId), ATransaction, Parameters);
-            AModificationID = "";
+            AModificationID = DateTime.MinValue;
             AModifiedBy = "";
             AModifiedDate = DateTime.MinValue;
 
@@ -188,7 +171,7 @@ namespace Ict.Common.Data
             {
                 if (table.Rows[0][0] != System.DBNull.Value)
                 {
-                    AModificationID = (string)table.Rows[0][0];
+                    AModificationID = Convert.ToDateTime(table.Rows[0][0]);
                 }
 
                 if (table.Rows[0][1] != System.DBNull.Value)
@@ -208,22 +191,79 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
-        /// This function is called by the DataStore (SubmitChanges)
-        ///
+        /// This function is called by the DataStore (SubmitChanges).
+        /// it will not update the modification id.
         /// </summary>
-        /// <returns>void</returns>
         public static void InsertRow(
             short ATableId,
             ref DataRow ADataRow,
             DB.TDBTransaction ATransaction,
-            String ACurrentUser)
+            String ACurrentUser,
+            StringBuilder AInsertStatement,
+            List <OdbcParameter>AInsertParameters)
         {
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
-            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateInsertClause("PUB_" +
-                    TTypedDataTable.GetTableNameSQL(ATableId),
-                    Columns,
-                    ADataRow), ATransaction, false,
-                GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser));
+            string query = GenerateInsertClause("PUB_" +
+                TTypedDataTable.GetTableNameSQL(ATableId),
+                Columns,
+                ADataRow,
+                true);
+            List <OdbcParameter>parameters =
+                GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser, true);
+
+            if (AInsertStatement.Length > 0)
+            {
+                AInsertStatement.Append(",");
+                AInsertStatement.Append(query.Substring(query.IndexOf("VALUES (") + "VALUES".Length));
+            }
+            else
+            {
+                AInsertStatement.Append(query);
+            }
+
+            AInsertParameters.AddRange(parameters);
+        }
+
+        /// <summary>
+        /// This function is called by the DataStore (SubmitChanges).
+        /// it will update the modification id.
+        /// </summary>
+        public static void InsertRow(
+            short ATableId,
+            ref DataRow ADataRow,
+            DB.TDBTransaction ATransaction,
+            String ACurrentUser,
+            bool ATreatRowAsAdded)
+        {
+            string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
+            string query = GenerateInsertClause("PUB_" +
+                TTypedDataTable.GetTableNameSQL(ATableId),
+                Columns,
+                ADataRow, false);
+            List <OdbcParameter>parameters =
+                GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser, false);
+
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(query, ATransaction, false, parameters.ToArray()))
+            {
+                throw new Exception("problems inserting a row");
+            }
+
+            DateTime LastModificationId;
+            string LastModifiedBy;
+            DateTime LastModifiedDate;
+            int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
+
+            GetStoredModification(ATableId,
+                Columns,
+                PrimKeyColumnOrdList,
+                ADataRow,
+                ATransaction,
+                out LastModificationId,
+                out LastModifiedBy,
+                out LastModifiedDate,
+                ATreatRowAsAdded);
+
+            ADataRow[MODIFICATION_ID] = LastModificationId;
         }
 
         /// <summary>
@@ -233,94 +273,124 @@ namespace Ict.Common.Data
         /// <returns>void</returns>
         public static void UpdateRow(
             short ATableId,
+            bool AThrowAwayAfterSubmitChanges,
             ref DataRow ADataRow,
             DB.TDBTransaction ATransaction,
             String ACurrentUser)
         {
-            String LastModificationId = "";
-            String LastModifiedBy = "";
-
-            System.DateTime LastModifiedDate;
-            String OriginalModificationID;
-            String CurrentModificationID;
-
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
             int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
             string DBTableName = TTypedDataTable.GetTableNameSQL(ATableId);
+            DateTime LastModificationId;
+            String LastModifiedBy;
+            System.DateTime LastModifiedDate;
 
-            // check if modification id of the changed row is the same as currently stored in the database
-            GetStoredModification(ATableId,
-                Columns,
-                PrimKeyColumnOrdList,
-                ADataRow,
-                ATransaction,
-                ref LastModificationId,
-                ref LastModifiedBy,
-                out LastModifiedDate);
-
-            if (LastModificationId != MODIFICATION_ID_DELETEDROW_INDICATOR)
-            {
-                if ((ADataRow[MODIFICATION_ID,
-                              DataRowVersion.Original] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Original] == null))
-                {
-                    OriginalModificationID = "";
-                }
-                else
-                {
-                    OriginalModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Original].ToString();
-                }
-
-                if ((ADataRow[MODIFICATION_ID,
-                              DataRowVersion.Current] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Current] == null))
-                {
-                    CurrentModificationID = "";
-                }
-                else
-                {
-                    CurrentModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Current].ToString();
-                }
-
-                if (OriginalModificationID == LastModificationId)
-                {
-                    if (CurrentModificationID != LastModificationId)
-                    {
-                        // the modification id has been increased in a previous SubmitChanges, but then the transaction has been rolled back
-                        ADataRow[MODIFICATION_ID] = LastModificationId;
-                        CurrentModificationID = LastModificationId;
-                    }
-                }
-
-                // check if modification id has been changed and committed to the database, but AcceptChanges has not been applied
-                if (OriginalModificationID != CurrentModificationID)
-                {
-                    throw new Exception(
-                        "Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName + " (OriginalModificationID: '" +
-                        OriginalModificationID + "', CurrentModificationID: '" + CurrentModificationID + "'");
-                }
-
-                if (LastModificationId != OriginalModificationID)
-                {
-                    throw new EDBConcurrencyException(
-                        "Cannot update row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
-                        "update",
-                        DBTableName,
-                        LastModifiedBy,
-                        LastModifiedDate);
-                }
-
-                DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
+            // First try to update with a where clause with the modification id
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
                         Columns,
                         ADataRow,
                         PrimKeyColumnOrdList), ATransaction, false,
-                    GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser));
-            }
-            else
+                    GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser)))
             {
-                throw new EDBConcurrencyRowDeletedException("Cannot update row of table " + DBTableName + " because the row has been deleted.",
-                    "update",
-                    DBTableName,
-                    "",
-                    DateTime.MinValue);
+                // Was not able to update the row,
+                // the database has a different modification id on that row.
+                // trying now the other way
+
+                DateTime OriginalModificationID;
+                DateTime CurrentModificationID;
+
+                // check if modification id of the changed row is the same as currently stored in the database
+                GetStoredModification(ATableId,
+                    Columns,
+                    PrimKeyColumnOrdList,
+                    ADataRow,
+                    ATransaction,
+                    out LastModificationId,
+                    out LastModifiedBy,
+                    out LastModifiedDate);
+
+                if (LastModificationId != MODIFICATION_ID_DELETEDROW_INDICATOR)
+                {
+                    if ((ADataRow[MODIFICATION_ID,
+                                  DataRowVersion.Original] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Original] == null))
+                    {
+                        OriginalModificationID = DateTime.MinValue;
+                    }
+                    else
+                    {
+                        OriginalModificationID = Convert.ToDateTime(ADataRow[MODIFICATION_ID, DataRowVersion.Original]);
+                    }
+
+                    if ((ADataRow[MODIFICATION_ID,
+                                  DataRowVersion.Current] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Current] == null))
+                    {
+                        CurrentModificationID = DateTime.MinValue;
+                    }
+                    else
+                    {
+                        CurrentModificationID = Convert.ToDateTime(ADataRow[MODIFICATION_ID, DataRowVersion.Current]);
+                    }
+
+                    if (OriginalModificationID == LastModificationId)
+                    {
+                        if (CurrentModificationID != LastModificationId)
+                        {
+                            // the modification id has been increased in a previous SubmitChanges, but then the transaction has been rolled back
+                            ADataRow[MODIFICATION_ID] = LastModificationId;
+                            CurrentModificationID = LastModificationId;
+                        }
+                    }
+
+                    // check if modification id has been changed and committed to the database, but AcceptChanges has not been applied
+                    if (OriginalModificationID != CurrentModificationID)
+                    {
+                        throw new Exception(
+                            "Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName);
+                    }
+
+                    if (LastModificationId != OriginalModificationID)
+                    {
+                        throw new EDBConcurrencyException(
+                            "Cannot update row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
+                            "update",
+                            DBTableName,
+                            LastModifiedBy,
+                            LastModifiedDate);
+                    }
+
+                    int RowsChanged = DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
+                            Columns,
+                            ADataRow,
+                            PrimKeyColumnOrdList), ATransaction, false,
+                        GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser));
+
+                    if (RowsChanged == 0)
+                    {
+                        throw new Exception("cannot UPDATE row due to problems most likely with the timestamp");
+                    }
+                }
+                else
+                {
+                    throw new EDBConcurrencyRowDeletedException("Cannot update row of table " + DBTableName + " because the row has been deleted.",
+                        "update",
+                        DBTableName,
+                        "",
+                        DateTime.MinValue);
+                }
+            }
+
+            if (!AThrowAwayAfterSubmitChanges)
+            {
+                GetStoredModification(ATableId,
+                    Columns,
+                    PrimKeyColumnOrdList,
+                    ADataRow,
+                    ATransaction,
+                    out LastModificationId,
+                    out LastModifiedBy,
+                    out LastModifiedDate);
+
+                ADataRow[MODIFICATION_ID] = LastModificationId;
             }
         }
 
@@ -334,13 +404,12 @@ namespace Ict.Common.Data
             DataRow ADataRow,
             DB.TDBTransaction ATransaction)
         {
-            String LastModificationId = "";
-            String LastModifiedBy = "";
-
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
             int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
             string DBTableName = TTypedDataTable.GetTableNameSQL(ATableId);
 
+            DateTime LastModificationId;
+            String LastModifiedBy = "";
             System.DateTime LastModifiedDate;
 
             // check if modification id of the changed row is the same as currently stored in the database
@@ -349,14 +418,19 @@ namespace Ict.Common.Data
                 PrimKeyColumnOrdList,
                 ADataRow,
                 ATransaction,
-                ref LastModificationId,
-                ref LastModifiedBy,
+                out LastModificationId,
+                out LastModifiedBy,
                 out LastModifiedDate);
 
-            // check the modification ID (if the row was already there in the base database, it will have no modification ID, NULL)
-            Object OriginalLastModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Original];
+            object OriginalModificationIdObject = ADataRow[MODIFICATION_ID, DataRowVersion.Original];
+            DateTime OriginalLastModificationID = DateTime.MinValue;
 
-            if ((OriginalLastModificationID.GetType() != typeof(System.DBNull)) && (LastModificationId != (string)OriginalLastModificationID))
+            if (OriginalModificationIdObject != System.DBNull.Value)
+            {
+                OriginalLastModificationID = Convert.ToDateTime(OriginalModificationIdObject);
+            }
+
+            if (LastModificationId != OriginalLastModificationID)
             {
                 throw new EDBConcurrencyException(
                     "Cannot delete row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
@@ -392,7 +466,7 @@ namespace Ict.Common.Data
             }
             else
             {
-                ReturnValue = ReturnValue + StringHelper.StrMerge(AFieldList, ",");
+                ReturnValue = ReturnValue + StringHelper.StrMerge(AFieldList, ',');
 
                 string[] PrimKeyColumnStringList = TTypedDataTable.GetPrimaryKeyColumnStringList(ATableID);
 
@@ -632,6 +706,16 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// this function generates a where clause for the unique key of the given table
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <returns></returns>
+        public static String GenerateWhereClauseFromUniqueKey(short ATableId)
+        {
+            return GenerateWhereClause(TTypedDataTable.GetUniqueKeyColumnStringList(ATableId));
+        }
+
+        /// <summary>
         /// This function expects a string list of all existing columns,
         /// and a datarow that has a value or an empty value for each column.
         /// It will return a Where clause, using the given values.
@@ -777,9 +861,9 @@ namespace Ict.Common.Data
         /// </summary>
         /// <param name="ATableId">Table that we are operating on</param>
         /// <param name="AColumnNr">which column should the parameter be generated for</param>
-        /// <param name="obj">the value that needs to be converted to OdbcParameter</param>
+        /// <param name="AType">the value that needs to be converted to OdbcParameter</param>
         /// <returns>the Odbc parameter</returns>
-        public static OdbcParameter CreateOdbcParameter(short ATableId, Int32 AColumnNr, System.Object obj)
+        public static OdbcParameter CreateOdbcParameter(short ATableId, Int32 AColumnNr, Type AType)
         {
             OdbcParameter ReturnValue;
             OdbcType newType;
@@ -788,21 +872,21 @@ namespace Ict.Common.Data
             Length = -1;
             newType = OdbcType.Int;
 
-            if (obj.GetType() == typeof(System.Int64))
+            if (AType == typeof(System.Int64))
             {
                 newType = OdbcType.Decimal;
                 Length = 10;
             }
-            else if (obj.GetType() == typeof(double))
+            else if (AType == typeof(double))
             {
                 newType = OdbcType.Decimal;
                 Length = 24;
             }
-            else if (obj.GetType() == typeof(bool))
+            else if (AType == typeof(bool))
             {
                 newType = OdbcType.Bit;
             }
-            else if (obj.GetType() == typeof(String))
+            else if (AType == typeof(String))
             {
                 newType = OdbcType.VarChar;
 
@@ -824,15 +908,15 @@ namespace Ict.Common.Data
                     Length = 1;
                 }
             }
-            else if (obj.GetType() == typeof(System.DateTime))
+            else if (AType == typeof(System.DateTime))
             {
                 newType = OdbcType.Date;
             }
-            else if (obj.GetType() == typeof(System.Int32))
+            else if (AType == typeof(System.Int32))
             {
                 newType = OdbcType.Int;
             }
-            else if (obj.GetType() == typeof(System.Decimal))
+            else if (AType == typeof(System.Decimal))
             {
                 // hardly ever used... p_person.p_believer_since_year_i number(4)
                 newType = OdbcType.Decimal;
@@ -865,7 +949,7 @@ namespace Ict.Common.Data
 
             foreach (System.Object obj in AKeyValues)
             {
-                ParametersArray[counter] = CreateOdbcParameter(ATableId, AKeyColumns[counter], obj);
+                ParametersArray[counter] = CreateOdbcParameter(ATableId, AKeyColumns[counter], obj.GetType());
                 ParametersArray[counter].Value = obj;
                 counter++;
             }
@@ -882,6 +966,17 @@ namespace Ict.Common.Data
         private static OdbcParameter[] CreateOdbcParameterArrayFromPrimaryKey(short ATableId, System.Object[] APrimaryKeyValues)
         {
             return CreateOdbcParameterArrayFromKey(ATableId, TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId), APrimaryKeyValues);
+        }
+
+        /// <summary>
+        /// create the odbc parameters for the unique key, with the actual values
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="AUniqueKeyValues"></param>
+        /// <returns></returns>
+        private static OdbcParameter[] CreateOdbcParameterArrayFromUniqueKey(short ATableId, System.Object[] AUniqueKeyValues)
+        {
+            return CreateOdbcParameterArrayFromKey(ATableId, TTypedDataTable.GetUniqueKeyColumnOrdList(ATableId), AUniqueKeyValues);
         }
 
         /// <summary>
@@ -1014,7 +1109,7 @@ namespace Ict.Common.Data
             {
                 if (item != System.DBNull.Value)
                 {
-                    ReturnValue[Counter] = CreateOdbcParameter(ATableId, ColumnCounter, item);
+                    ReturnValue[Counter] = CreateOdbcParameter(ATableId, ColumnCounter, item.GetType());
                     ReturnValue[Counter].Value = item;
                     Counter = Counter + 1;
                 }
@@ -1080,7 +1175,7 @@ namespace Ict.Common.Data
 
                     if (CurrentValue != System.DBNull.Value)
                     {
-                        ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, CurrentValue);
+                        ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, CurrentValue.GetType());
                         ReturnValue[Counter].Value = CurrentValue;
                         Counter = Counter + 1;
                     }
@@ -1091,7 +1186,7 @@ namespace Ict.Common.Data
             {
                 // we need at least 1 column, otherwise the SQL statement will be invalid...
                 CurrentValue = ADataRow.ItemArray[0];
-                ReturnValue[Counter] = CreateOdbcParameter(ATableId, 0, CurrentValue);
+                ReturnValue[Counter] = CreateOdbcParameter(ATableId, 0, CurrentValue.GetType());
                 ReturnValue[Counter].Value = CurrentValue;
                 Counter = 1;
             }
@@ -1101,7 +1196,7 @@ namespace Ict.Common.Data
             {
                 foreach (int item in PrimaryKeyColumnOrderList)
                 {
-                    ReturnValue[Counter] = CreateOdbcParameter(ATableId, item, ADataRow[item]);
+                    ReturnValue[Counter] = CreateOdbcParameter(ATableId, item, ADataRow[item].GetType());
                     ReturnValue[Counter].Value = ADataRow[item, DataRowVersion.Original];
                     Counter = Counter + 1;
                 }
@@ -1140,64 +1235,49 @@ namespace Ict.Common.Data
         /// <param name="ANumberDBColumns">the number of columns of this row that should be stored in the database; that allows some columns to be added temporarily, e.g. PPartnerLocation.BestAddress in PartnerEdit Dataset</param>
         /// <param name="ATransaction">need a transaction for getting the next modification id</param>
         /// <param name="ACurrentUser">for setting modified by</param>
+        /// <param name="AIncludeDefaultColumns">only useful when saving many rows in one query</param>
         /// <returns>an array of OdbcParameters
         /// </returns>
-        public static OdbcParameter[] GetParametersForInsertClause(
+        public static List <OdbcParameter>GetParametersForInsertClause(
             short ATableId,
             ref DataRow ADataRow,
             Int32 ANumberDBColumns,
             DB.TDBTransaction ATransaction,
-            String ACurrentUser)
+            String ACurrentUser,
+            bool AIncludeDefaultColumns)
         {
-            OdbcParameter[] ReturnValue;
-            System.Int32 i;
-            System.Int32 Counter;
-            System.Object item;
-            System.Object CurrentValue;
-            Counter = 0;
+            List <OdbcParameter>ReturnValue = new List <OdbcParameter>();
+            OdbcParameter param;
 
-            // find out how many template values there are, to be able to create the array in one go
-            for (i = 0; i <= ANumberDBColumns - 1; i += 1)
+            for (int i = 0; i <= ANumberDBColumns - 1; i += 1)
             {
-                item = ADataRow.ItemArray[i];
+                object item = ADataRow.ItemArray[i];
 
-                if ((item != System.DBNull.Value) && NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
+                if ((AIncludeDefaultColumns || (item != System.DBNull.Value)) && NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
                 {
-                    CurrentValue = GetSafeValue(ADataRow, i, DataRowVersion.Current);
-                    Counter = Counter + 1;
+                    if (item == System.DBNull.Value)
+                    {
+                        param = CreateOdbcParameter(ATableId, i, ADataRow.Table.Columns[i].DataType);
+                        param.Value = item;
+                        ReturnValue.Add(param);
+                    }
+                    else
+                    {
+                        param = CreateOdbcParameter(ATableId, i, item.GetType());
+                        param.Value = item;
+                        ReturnValue.Add(param);
+                    }
                 }
             }
 
-            // for the modification ID, createdby and datecreated
-            Counter = Counter + 3;
-            ReturnValue = new OdbcParameter[Counter];
-            Counter = 0;
-
-            for (i = 0; i <= ANumberDBColumns - 1; i += 1)
-            {
-                item = ADataRow.ItemArray[i];
-
-                if ((item != System.DBNull.Value) && NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
-                {
-                    CurrentValue = GetSafeValue(ADataRow, i, DataRowVersion.Current);
-
-                    ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, item);
-                    ReturnValue[Counter].Value = item;
-                    Counter = Counter + 1;
-                }
-            }
-
-            ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 150);
-            ReturnValue[Counter].Value = GetNextModificationID(ATransaction);
-            ADataRow[MODIFICATION_ID] = ReturnValue[Counter].Value;
-            Counter = Counter + 1;
-            ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ReturnValue[Counter].Value = ACurrentUser;
-            ADataRow[CREATED_BY] = ReturnValue[Counter].Value;
-            Counter = Counter + 1;
-            ReturnValue[Counter] = new OdbcParameter("", OdbcType.Date);
-            ReturnValue[Counter].Value = DateTime.Now;
-            ADataRow[CREATED_DATE] = ReturnValue[Counter].Value;
+            param = new OdbcParameter("", OdbcType.VarChar, 20);
+            param.Value = ACurrentUser;
+            ADataRow[CREATED_BY] = param.Value;
+            ReturnValue.Add(param);
+            param = new OdbcParameter("", OdbcType.Date);
+            param.Value = DateTime.Now;
+            ADataRow[CREATED_DATE] = param.Value;
+            ReturnValue.Add(param);
 
             return ReturnValue;
         }
@@ -1222,15 +1302,11 @@ namespace Ict.Common.Data
             DB.TDBTransaction ATransaction,
             String ACurrentUser)
         {
-            OdbcParameter[] ReturnValue;
-            System.Int32 Counter;
-            System.Int32 i;
+            List <OdbcParameter>ReturnValue = new List <OdbcParameter>();
             System.Object CurrentValue = null;
-            Counter = 0;
+            OdbcParameter parameter;
 
-            // find out how many template values there are, to be able to create the array in one go
-            // only consider the first columns of the row, that exist in the database
-            for (i = 0; i <= ANumberDBColumns - 1; i += 1)
+            for (Int32 i = 0; i <= ANumberDBColumns - 1; i += 1)
             {
                 if (NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
                 {
@@ -1238,65 +1314,44 @@ namespace Ict.Common.Data
                     {
                         if (CurrentValue != System.DBNull.Value)
                         {
-                            Counter = Counter + 1;
+                            parameter = CreateOdbcParameter(ATableId, i, CurrentValue.GetType());
+                            parameter.Value = CurrentValue;
+                            ReturnValue.Add(parameter);
                         }
                     }
                 }
             }
 
-            // for the modification id, the modified by and date modified
-            Counter = Counter + 3;
-
-            if (APrimaryKeyColumnOrd != null)
-            {
-                Counter = Counter + APrimaryKeyColumnOrd.Length;
-            }
-
-            ReturnValue = new OdbcParameter[Counter];
-            Counter = 0;
-
-            for (i = 0; i <= ANumberDBColumns - 1; i += 1)
-            {
-                if (NoDefaultColumn(ADataRow.Table.Columns[i].ColumnName))
-                {
-                    if (NotEquals(ADataRow, i, ref CurrentValue))
-                    {
-                        if (CurrentValue != System.DBNull.Value)
-                        {
-                            ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, CurrentValue);
-                            ReturnValue[Counter].Value = CurrentValue;
-                            Counter = Counter + 1;
-                        }
-                    }
-                }
-            }
-
-            // modification id
-            ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 150);
-            ReturnValue[Counter].Value = GetNextModificationID(ATransaction);
-            ADataRow[MODIFICATION_ID] = ReturnValue[Counter].Value;
-            Counter = Counter + 1;
-            ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 20);
-            ReturnValue[Counter].Value = ACurrentUser;
-            ADataRow[MODIFIED_BY] = ReturnValue[Counter].Value;
-            Counter = Counter + 1;
-            ReturnValue[Counter] = new OdbcParameter("", OdbcType.Date);
-            ReturnValue[Counter].Value = DateTime.Now;
-            ADataRow[MODIFIED_DATE] = ReturnValue[Counter].Value;
-            Counter = Counter + 1;
+            parameter = new OdbcParameter("s_modified_by_c", OdbcType.VarChar, 20);
+            parameter.Value = ACurrentUser;
+            ADataRow[MODIFIED_BY] = parameter.Value;
+            ReturnValue.Add(parameter);
+            parameter = new OdbcParameter("s_date_modified_d", OdbcType.Date);
+            parameter.Value = DateTime.Now;
+            ADataRow[MODIFIED_DATE] = parameter.Value;
+            ReturnValue.Add(parameter);
 
             // for the UPDATE WHERE statement
             if (APrimaryKeyColumnOrd != null)
             {
                 foreach (int pki in APrimaryKeyColumnOrd)
                 {
-                    ReturnValue[Counter] = CreateOdbcParameter(ATableId, pki, ADataRow[pki]);
-                    ReturnValue[Counter].Value = ADataRow[pki, DataRowVersion.Original];
-                    Counter = Counter + 1;
+                    parameter = CreateOdbcParameter(ATableId, pki, ADataRow[pki].GetType());
+                    parameter.Value = ADataRow[pki, DataRowVersion.Original];
+                    ReturnValue.Add(parameter);
                 }
             }
 
-            return ReturnValue;
+            // modification id
+            if (!((ADataRow.IsNull(MODIFICATION_ID) || (Convert.ToDateTime(ADataRow[MODIFICATION_ID]) == DateTime.MinValue))))
+            {
+                // modification id for the where clause
+                parameter = new OdbcParameter("s_modification_id_t", OdbcType.DateTime);
+                parameter.Value = Convert.ToDateTime(ADataRow[MODIFICATION_ID]);
+                ReturnValue.Add(parameter);
+            }
+
+            return ReturnValue.ToArray();
         }
 
         /// <summary>
@@ -1319,7 +1374,7 @@ namespace Ict.Common.Data
 
             foreach (int i in APrimaryKeyColumnOrd)
             {
-                ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, DataRowVersion.Original]);
+                ReturnValue[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, DataRowVersion.Original].GetType());
                 ReturnValue[Counter].Value = ADataRow[i, DataRowVersion.Original];
                 Counter = Counter + 1;
             }
@@ -1335,21 +1390,15 @@ namespace Ict.Common.Data
         /// </summary>
         /// <returns>the INSERT statement
         /// </returns>
-        public static String GenerateInsertClause(String ATableName, string[] AColumnNames, DataRow ADataRow)
+        public static String GenerateInsertClause(String ATableName, string[] AColumnNames, DataRow ADataRow, bool AIncludeDefaultColumns)
         {
-            String ReturnValue;
-            Int32 Counter;
-            Boolean First;
-
-            System.Object CurrentValue;
-
-            ReturnValue = "INSERT INTO " + ATableName + " (";
-            First = true;
+            String ReturnValue = "INSERT INTO " + ATableName + " (";
+            Boolean First = true;
 
             // should ignore additional fields at the end of the row
-            for (Counter = 0; Counter <= AColumnNames.Length - 1; Counter += 1)
+            for (Int32 Counter = 0; Counter <= AColumnNames.Length - 1; Counter += 1)
             {
-                if ((ADataRow[Counter] != System.DBNull.Value) && NoDefaultColumn(AColumnNames[Counter]))
+                if ((AIncludeDefaultColumns || (ADataRow[Counter] != System.DBNull.Value)) && NoDefaultColumn(AColumnNames[Counter]))
                 {
                     if ((!First))
                     {
@@ -1368,9 +1417,9 @@ namespace Ict.Common.Data
             ReturnValue = ReturnValue + ") VALUES (";
             First = true;
 
-            for (Counter = 0; Counter <= AColumnNames.Length - 1; Counter += 1)
+            for (Int32 Counter = 0; Counter <= AColumnNames.Length - 1; Counter += 1)
             {
-                if ((ADataRow[Counter] != System.DBNull.Value) && NoDefaultColumn(AColumnNames[Counter]))
+                if ((AIncludeDefaultColumns || (ADataRow[Counter] != System.DBNull.Value)) && NoDefaultColumn(AColumnNames[Counter]))
                 {
                     if ((!First))
                     {
@@ -1381,7 +1430,6 @@ namespace Ict.Common.Data
                         First = false;
                     }
 
-                    CurrentValue = GetSafeValue(ADataRow, Counter, DataRowVersion.Current);
                     ReturnValue = ReturnValue + '?';
                 }
             }
@@ -1392,7 +1440,7 @@ namespace Ict.Common.Data
             }
 
             // add modification id, created by, date created
-            ReturnValue = ReturnValue + "?, ?, ?";
+            ReturnValue = ReturnValue + "NOW(), ?, ?";
             return ReturnValue + ")";
         }
 
@@ -1450,7 +1498,7 @@ namespace Ict.Common.Data
                     ReturnValue = ReturnValue + ", ";
                 }
 
-                ReturnValue = ReturnValue + MODIFICATION_ID + " = ?, ";
+                ReturnValue = ReturnValue + MODIFICATION_ID + " = NOW(), ";
                 ReturnValue = ReturnValue + MODIFIED_BY + " = ?, ";
                 ReturnValue = ReturnValue + MODIFIED_DATE + " = ? ";
 
@@ -1470,6 +1518,15 @@ namespace Ict.Common.Data
                     }
 
                     ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
+                }
+
+                if (ADataRow.IsNull(MODIFICATION_ID) || (Convert.ToDateTime(ADataRow[MODIFICATION_ID]) == DateTime.MinValue))
+                {
+                    ReturnValue += " AND " + MODIFICATION_ID + " IS NULL";
+                }
+                else
+                {
+                    ReturnValue += " AND " + MODIFICATION_ID + " = ?";
                 }
             }
             else
@@ -1527,7 +1584,7 @@ namespace Ict.Common.Data
         /// <param name="AOrderBy"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
-        public static void LoadByPrimaryKey(short ATableId,
+        public static DataRow LoadByPrimaryKey(short ATableId,
             DataSet ADataSet,
             System.Object[] APrimaryKeyValues,
             StringCollection AFieldList,
@@ -1544,12 +1601,14 @@ namespace Ict.Common.Data
                 GenerateOrderByClause(AOrderBy),
                 TTypedDataTable.GetTableName(ATableId),
                 ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+
+            return ADataSet.Tables[TTypedDataTable.GetTableName(ATableId)].Rows.Find(APrimaryKeyValues);
         }
 
         /// <summary>
         /// different version for data table
         /// </summary>
-        public static void LoadByPrimaryKey(short ATableId,
+        public static DataRow LoadByPrimaryKey(short ATableId,
             TTypedDataTable ADataTable,
             System.Object[] APrimaryKeyValues,
             StringCollection AFieldList,
@@ -1565,6 +1624,8 @@ namespace Ict.Common.Data
                 GenerateWhereClauseFromPrimaryKey(ATableId) +
                 GenerateOrderByClause(AOrderBy),
                 ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+
+            return ADataTable.Rows.Find(APrimaryKeyValues);
         }
 
         /// <summary>
@@ -1856,6 +1917,21 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// check if row exists with the unique key
+        /// </summary>
+        /// <param name="ATableId"></param>
+        /// <param name="AUniqueKeyValues"></param>
+        /// <param name="ATransaction"></param>
+        public static bool ExistsUniqueKey(short ATableId, System.Object[] AUniqueKeyValues, TDBTransaction ATransaction)
+        {
+            OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromUniqueKey(ATableId, AUniqueKeyValues);
+            return 1 == Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
+                    TTypedDataTable.GetTableNameSQL(ATableId) +
+                    GenerateWhereClauseFromUniqueKey(ATableId),
+                    ATransaction, false, ParametersArray));
+        }
+
+        /// <summary>
         /// loads all rows matching certain search criteria into a dataset
         /// </summary>
         /// <param name="ATableID">specify which typed table is used</param>
@@ -2020,9 +2096,10 @@ namespace Ict.Common.Data
         {
             bool ResultValue = true;
             bool ExceptionReported = false;
+            bool TreatRowAsAdded = false;
             DataRow TheRow = null;
 
-            AVerificationResult = null;
+            AVerificationResult = new TVerificationResultCollection();
 
             // allow this method to be called with null values, eg. when saving complex TypedDataSets with some removed empty tables
             if (ATable == null)
@@ -2032,7 +2109,18 @@ namespace Ict.Common.Data
 
             short TableId = Convert.ToInt16(ATable.GetType().GetField("TableId").GetValue(null));
 
-            AVerificationResult = new TVerificationResultCollection();
+            if (!ATable.ThrowAwayAfterSubmitChanges && (ATable.Rows.Count > 1000))
+            {
+                TLogging.Log(
+                    "Warning to the developer: Saving " + ATable.Rows.Count.ToString() + " records to table " + ATable.TableName +
+                    " without ThrowAwayAfterSubmitChanges is quite slow");
+                TLogging.Log(
+                    "It is recommended to use either ThrowAwayAfterSubmitChanges and Reload all data at once, or GetChanges to have less queries for updated modification timestamp");
+                TLogging.LogStackTrace(TLoggingType.ToLogfile);
+            }
+
+            List <OdbcParameter>InsertParameters = new List <OdbcParameter>();
+            StringBuilder InsertStatement = new StringBuilder();
 
             for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount = (RowCount + 1))
             {
@@ -2047,11 +2135,21 @@ namespace Ict.Common.Data
                             // this is needed when creating location 0 for a new site/ledger
                             if (Convert.ToInt64(TheRow[ASequenceField]) < 0)
                             {
+                                // accept changes for the row, so that we can update the dataset on the client and still know the negative temp sequence number
+                                TheRow.AcceptChanges();
                                 TheRow[ASequenceField] = (System.Object)DBAccess.GDBAccessObj.GetNextSequenceValue(ASequenceName, ATransaction);
+                                TreatRowAsAdded = true;   // setting this variable to 'true' is *vital* for the retrieval of the s_modification_id_t for that record once it is saved!
                             }
                         }
 
-                        TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId);
+                        if (ATable.ThrowAwayAfterSubmitChanges)
+                        {
+                            TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, InsertStatement, InsertParameters);
+                        }
+                        else
+                        {
+                            TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, TreatRowAsAdded);
+                        }
                     }
                     else
                     {
@@ -2068,7 +2166,7 @@ namespace Ict.Common.Data
                             }
                             else
                             {
-                                TTypedDataAccess.UpdateRow(TableId, ref TheRow, ATransaction, AUserId);
+                                TTypedDataAccess.UpdateRow(TableId, ATable.ThrowAwayAfterSubmitChanges, ref TheRow, ATransaction, AUserId);
                             }
                         }
 
@@ -2087,6 +2185,34 @@ namespace Ict.Common.Data
                             }
                         }
                     }
+
+                    if (InsertParameters.Count > MAX_SQL_PARAMETERS)
+                    {
+                        // Inserts in one query
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, InsertParameters.ToArray());
+                        InsertStatement = new StringBuilder();
+                        InsertParameters = new List <OdbcParameter>();
+                    }
+                }
+                catch (OdbcException ex)
+                {
+                    ResultValue = false;
+                    ExceptionReported = false;
+
+                    if ((ExceptionReported == false))
+                    {
+                        AVerificationResult.Add(new TVerificationResult("[ODBC]", ex.Errors[0].Message, "ODBC error for table PLanguage",
+                                ex.Errors[0].NativeError.ToString(), TResultSeverity.Resv_Critical));
+                    }
+                }
+            }
+
+            if (InsertStatement.Length > 0)
+            {
+                try
+                {
+                    // Inserts in one query
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, InsertParameters.ToArray());
                 }
                 catch (OdbcException ex)
                 {

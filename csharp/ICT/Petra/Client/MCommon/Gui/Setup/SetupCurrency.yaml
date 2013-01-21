@@ -3,7 +3,7 @@ RootNode:
     FormTitle: Currency List
     Namespace: Ict.Petra.Client.MCommon.Gui.Setup
     DetailTable: ACurrency
-    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.MCommon.Validation]
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 660
@@ -23,8 +23,10 @@ RootNode:
             Controls: [btnNew, btnDelete]
         btnNew:
             Action: actNew
+            Stretch: horizontally
         btnDelete:
             Action: actDelete
+            Stretch: horizontally
         grdDetails:
             Dock: Fill
             Columns: [ACurrency.CurrencyCode, ACurrency.CurrencyName, ACurrency.CurrencySymbol, ACurrency.CountryCode, ACurrency.DisplayFormat]
@@ -39,6 +41,6 @@ RootNode:
         txtDetailCurrencyCode: {Label=Currency Code, CharacterCasing=Upper}
         txtDetailCurrencyName: {Label=Currency Name}
         txtDetailCurrencySymbol: {Label=Currency Symbol, Width=50}
-        cmbDetailCountryCode: {Label=Country Code, List=CountryList, ColSpan=3}
+        cmbDetailCountryCode: {Label=Country Code, List=CountryList, ColSpan=2}
         # TODO: should be nudNumberOfDecimals
         txtDetailDisplayFormat: {Label=Number of Decimals, Width=180}

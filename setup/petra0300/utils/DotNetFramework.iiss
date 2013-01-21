@@ -6,7 +6,7 @@
 *}
 function IsDotNetInstalled(): Boolean;
 begin
-  result := RegKeyExists(HKLM, 'Software\Microsoft\.NETFramework\policy\v2.0');
+  result := RegKeyExists(HKLM, 'Software\Microsoft\.NETFramework\Policy\v4.0');
 end;
 
 function CreatePage_MissingNetFrameWork(const afterId: Integer): TOutputMsgMemoWizardPage;

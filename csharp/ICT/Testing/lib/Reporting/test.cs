@@ -49,31 +49,47 @@ namespace Tests.Reporting
 
         /// the object that is able to deal with all the parameters, and can calculate a report
         public TRptCalculator FCalculator;
+
+        /// <summary>
+        /// ...
+        /// </summary>
         public String PathToTestData;
+        /// <summary>
+        /// ...
+        /// </summary>
         public String PathToSettingsData;
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [SetUp]
         public void Init()
         {
             new TLogging("test.log");
 
-            // todo: what about different cultures?
+            // TODO: what about different cultures?
             OrigCulture = new CultureInfo("en-GB", false);
             Thread.CurrentThread.CurrentCulture = OrigCulture;
             TPetraConnector.Connect("../../etc/TestClient.config");
             FCalculator = new TRptCalculator();
-            PathToTestData = TAppSettingsManager.GetValueStatic("Testing.Path") + "/lib/Reporting/TestData/".Replace("/",
+            PathToTestData = TAppSettingsManager.GetValue("Testing.Path") + "/lib/Reporting/TestData/".Replace("/",
                 System.IO.Path.DirectorySeparatorChar.ToString());
-            PathToSettingsData = TAppSettingsManager.GetValueStatic("Reporting.PathReportSettings") + "/".Replace("/",
+            PathToSettingsData = TAppSettingsManager.GetValue("Reporting.PathReportSettings") + "/".Replace("/",
                 System.IO.Path.DirectorySeparatorChar.ToString());
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [TearDown]
         public void TearDown()
         {
             TPetraConnector.Disconnect();
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public static void PrintTxt(TResultList results, TParameterList parameters, string output)
         {
             TReportPrinterLayout reportTxtPrinter;
@@ -85,6 +101,9 @@ namespace Tests.Reporting
             txtPrinter.WriteToFile(output);
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         public void TestDetailReport(String ATestPath, String ASettingsPath)
         {
             String detailReportCSV;
@@ -157,8 +176,11 @@ namespace Tests.Reporting
             }
         }
 
-        /** common procedure that will load all settings in the given directory, and run a report and compare the result with results from previous, using the csv and the txt output
-         */
+        /// <summary>
+        /// common procedure that will load all settings in the given directory, and run a report and
+        /// compare the result with results
+        /// from previous, using the csv and the txt output
+        /// </summary>
         public void TestReport(String ASettingsDirectory)
         {
             String[] fileEntries;
@@ -258,150 +280,220 @@ namespace Tests.Reporting
                     System.Console.WriteLine(e.StackTrace);
                 }
 
-                throw e;
+                throw;
             }
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestFDDonorsPerRecipient()
         {
             TestReport("FDDonorsPerRecipient");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestPassportExpiry()
         {
             TestReport("Passport Expiry");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestAccountDetail()
         {
             TestReport("Account Detail");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestAccountDetailAnalysisAttr()
         {
             TestReport("AccountDetailAnalysisAttr");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestAPPaymentExport()
         {
             TestReport("APPaymentExport");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestBalSheet()
         {
             TestReport("BalanceSheet");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestBalSheetMultiLedger()
         {
             TestReport("BalSheet MultiLedger");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestBirthdayList()
         {
             TestReport("Birthday List");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestFDIncomeByFund()
         {
             TestReport("FDIncomeByFund");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestGiftBatchExport()
         {
             TestReport("GiftBatchExport");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestIncExpMultiLedger()
         {
             TestReport("IncExp MultiLedger");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestIncExpMultiPeriod()
         {
             TestReport("IncExp MultiPeriod");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestIncExpStatement()
         {
             TestReport("Income Expense Statement");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestSurplusDeficit()
         {
             TestReport("SurplusDeficit");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestTrialBalance()
         {
             TestReport("TrialBalance");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestPartnerFindByEmail()
         {
             TestReport("PartnerFindByEmail");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestGiftExportByMotivation()
         {
             TestReport("GiftExportByMotivation");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestFDIncomeLocalSplit()
         {
             TestReport("FDIncomeLocalSplit");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestTotalGiftsPerDonor()
         {
             TestReport("TotalGiftsPerDonor");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestGiftMethodGiving()
         {
             TestReport("GiftMethodGiving");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestAddressesOfRelationships()
         {
             TestReport("AddressesOfRelationships");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestGiftDataExport()
         {
             TestReport("GiftDataExport");
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestCurrentAccountsPayable()
         {
             TestReport("CurrentAccountsPayable");
         }
 
-        /** for testing csv files and printouts
-         */
+        /// <summary>
+        /// for testing csv files and printouts
+        /// </summary>
         public void RunLocalizedReport(String OutputCSVFile)
         {
             if (!System.IO.File.Exists(OutputCSVFile + ".csv"))
@@ -439,8 +531,10 @@ namespace Tests.Reporting
             }
         }
 
-        /** for testing csv files and printouts
-         */
+        /// <summary>
+        /// for testing csv files and printouts
+        /// </summary>
+        /// <param name="Prefix"></param>
         public void ExportLocalizationReports(String Prefix)
         {
             /* test which csv separator is used, and how dates and currency values are formatted */
@@ -477,6 +571,9 @@ namespace Tests.Reporting
             Thread.CurrentThread.CurrentCulture = OrigCulture;
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestLocalizationCurrency()
         {
@@ -498,6 +595,9 @@ namespace Tests.Reporting
             }
         }
 
+        /// <summary>
+        /// ...
+        /// </summary>
         [Test]
         public void TestLocalizationDates()
         {

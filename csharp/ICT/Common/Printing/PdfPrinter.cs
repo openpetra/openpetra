@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.IO;
 using Ict.Common.Printing;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Drawing.Imaging;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
@@ -57,6 +58,11 @@ namespace Ict.Common.Printing
         /// todoComment
         public XFont FXSmallPrintFont;
 
+        /// <summary>
+        /// for printing bar codes
+        /// </summary>
+        public XFont FXBarCodeFont;
+
         /// todoComment
         public XFont FXBiggestLastUsedFont;
         private XStringFormat FXLeft;
@@ -82,11 +88,17 @@ namespace Ict.Common.Printing
         {
             FXBlackPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), Cm(0.05f));
 
+            XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode, PdfFontEmbedding.Always);
+
             // the fonts need to be a little bit bigger so that they have the same size as the GfxPrinter?
-            FXSmallPrintFont = new XFont("Arial", 0.12); // Point(6 + XFONTSIZE)
-            FXDefaultFont = new XFont("Arial", 0.14); // Point(8 + XFONTSIZE)
-            FXDefaultBoldFont = new XFont("Arial", 0.14, XFontStyle.Bold); // Point(8 + XFONTSIZE)
-            FXHeadingFont = new XFont("Arial", 0.16, XFontStyle.Bold); // Point(10 + XFONTSIZE)
+            FXSmallPrintFont = new XFont("Arial", 0.12, XFontStyle.Regular, options); // Point(6 + XFONTSIZE)
+            FXDefaultFont = new XFont("Arial", 0.14, XFontStyle.Regular, options); // Point(8 + XFONTSIZE)
+            FXDefaultBoldFont = new XFont("Arial", 0.14, XFontStyle.Bold, options); // Point(8 + XFONTSIZE)
+            FXHeadingFont = new XFont("Arial", 0.16, XFontStyle.Bold, options); // Point(10 + XFONTSIZE)
+
+            // using GPL Font Code 128 from Grand Zebu http://grandzebu.net/
+            FXBarCodeFont = new XFont("Code 128", 0.45, XFontStyle.Regular, options); // Point(10 + XFONTSIZE)
+
             FXBiggestLastUsedFont = FXDefaultFont;
             FXRight = new XStringFormat();
             FXRight.Alignment = XStringAlignment.Far;
@@ -96,11 +108,11 @@ namespace Ict.Common.Printing
             FXCenter.Alignment = XStringAlignment.Center;
         }
 
+        private SortedList <string, XFont>FXFontCache = new SortedList <string, XFont>();
+
         private XFont GetXFont(eFont AFont)
         {
-            XFont ReturnValue;
-
-            ReturnValue = FXDefaultFont;
+            XFont ReturnValue = FXDefaultFont;
 
             switch (AFont)
             {
@@ -119,14 +131,23 @@ namespace Ict.Common.Printing
                 case eFont.eSmallPrintFont:
                     ReturnValue = FXSmallPrintFont;
                     break;
+
+                case eFont.eBarCodeFont:
+                    ReturnValue = FXBarCodeFont;
+                    break;
             }
 
-            if (CurrentRelativeFontSize != 0)
+            Font gFont = GetFont(AFont);
+
+            string id = ReturnValue.FontFamily.Name + gFont.SizeInPoints.ToString() + gFont.Style.ToString();
+
+            if (!FXFontCache.ContainsKey(id))
             {
-                // TODO it seems negative values have no effect?
-                Font gFont = GetFont(AFont);
-                ReturnValue = new XFont(gFont.FontFamily, Point(gFont.SizeInPoints /*+XFONTSIZE*/), ReturnValue.Style, null);
+                XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode, PdfFontEmbedding.Always);
+                FXFontCache.Add(id, new XFont(ReturnValue.FontFamily.Name, Point(gFont.SizeInPoints /*+XFONTSIZE*/), ReturnValue.Style, options));
             }
+
+            ReturnValue = FXFontCache[id];
 
             return ReturnValue;
         }
@@ -174,15 +195,26 @@ namespace Ict.Common.Printing
             return ReturnValue;
         }
 
+        private RectangleF CalculatePrintStringRectangle(float ALeft, float ATop, float AWidth, eFont AFont)
+        {
+            float MyYPos = ATop;
+
+            if (Environment.OSVersion.ToString().StartsWith("Unix"))
+            {
+                // on Mono/Unix, we have problems with the y position being too high on the page
+                MyYPos += GetFontHeight(AFont);
+            }
+
+            return new RectangleF(ALeft, MyYPos, AWidth, GetFontHeight(AFont) + 0.2f);
+        }
+
         /// <summary>
         /// prints into the current line, aligned x position
         ///
         /// </summary>
         public override Boolean PrintString(String ATxt, eFont AFont, eAlignment AAlign)
         {
-            RectangleF rect;
-
-            rect = new RectangleF(FLeftMargin, CurrentYPos, FWidth, (float)GetXFont(AFont).GetHeight(FXGraphics));
+            RectangleF rect = CalculatePrintStringRectangle(FLeftMargin, CurrentYPos, FWidth, AFont);
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
@@ -213,20 +245,29 @@ namespace Ict.Common.Printing
         /// <returns>true if something was printed</returns>
         public override Boolean PrintString(String ATxt, eFont AFont, float AXPos, float AWidth, eAlignment AAlign)
         {
-            RectangleF rect = new RectangleF(AXPos, CurrentYPos, AWidth, (float)GetXFont(AFont).GetHeight(FXGraphics));
+            RectangleF rect = CalculatePrintStringRectangle(AXPos, CurrentYPos, AWidth, AFont);
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
-                XStringFormat f = GetXStringFormat(AAlign);
-                f.FormatFlags = XStringFormatFlags.MeasureTrailingSpaces;
-
                 if (FPrinterBehaviour == ePrinterBehaviour.eReport)
                 {
                     ATxt = GetFittedText(ATxt, AFont, rect.Width);
                 }
 
-                //TLogging.Log("curr ypos " + CurrentYPos.ToString() + " " + AXPos.ToString() + " " + ATxt + AWidth.ToString());
-                FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, rect, f);
+                if ((AAlign == eAlignment.eCenter) && Environment.OSVersion.ToString().StartsWith("Unix"))
+                {
+                    // it seems on Mono/Unix, the string aligning to the center does not work properly. so we do it manually
+                    rect = new RectangleF(rect.Left + (AWidth - GetWidthString(ATxt, AFont)) / 2.0f, rect.Top, rect.Height, rect.Width);
+                    FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, rect, GetXStringFormat(eAlignment.eLeft));
+                }
+                else
+                {
+                    XStringFormat f = GetXStringFormat(AAlign);
+                    f.FormatFlags = XStringFormatFlags.MeasureTrailingSpaces;
+
+                    //TLogging.Log("curr ypos " + CurrentYPos.ToString() + " " + AXPos.ToString() + " " + ATxt + AWidth.ToString());
+                    FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, rect, f);
+                }
             }
 
             return (ATxt != null) && (ATxt.Length != 0);
@@ -249,7 +290,7 @@ namespace Ict.Common.Printing
 
             if (ALinePosition == eLinePosition.eBelow)
             {
-                YPos = CurrentYPos + (float)GetXFont(AFont).GetHeight(FXGraphics);
+                YPos = CurrentYPos + GetFontHeight(AFont);
             }
             else if (ALinePosition == eLinePosition.eAbove)
             {
@@ -268,6 +309,17 @@ namespace Ict.Common.Printing
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Draws a line, at specified position
+        /// </summary>
+        public override void DrawLine(Int32 APenPixels, float AXPos1, float AYPos1, float AXPos2, float AYPos2)
+        {
+            if (PrintingMode == ePrintingMode.eDoPrint)
+            {
+                FXGraphics.DrawLine(FXBlackPen, AXPos1, AYPos1, AXPos2, AYPos2);
+            }
         }
 
         /// <summary>
@@ -307,22 +359,23 @@ namespace Ict.Common.Printing
                 return;
             }
 
-            Bitmap img = new System.Drawing.Bitmap(APath);
+            Bitmap img;
 
-            if ((img != null) && (PrintingMode == ePrintingMode.eDoPrint))
+            try
             {
-                FXGraphics.DrawImage(img, AXPos, AYPos);
+                img = new System.Drawing.Bitmap(APath);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem reading image for printing to PDF: " + APath);
+                TLogging.Log(e.ToString());
+                throw new Exception("Problem reading image for printing to PDF: " + APath);
             }
 
-            // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
-            // pixel/inch = dpi <=> inch = pixel/dpi
-            CurrentYPos += img.Size.Height / img.VerticalResolution;
-            CurrentXPos += img.Size.Width / img.HorizontalResolution;
-        }
-
-        float Pixel2Twips(float APixelNumber)
-        {
-            return APixelNumber / 100.0f;
+            if (img != null)
+            {
+                DrawBitmapInternal(img, AXPos, AYPos, img.Size.Width, img.Size.Height);
+            }
         }
 
         /// <summary>
@@ -345,38 +398,109 @@ namespace Ict.Common.Printing
                 throw new Exception("TGfxPrinter.DrawBitmap: cannot find image file " + APath);
             }
 
-            Bitmap img = new System.Drawing.Bitmap(APath);
+            Bitmap img;
+
+            try
+            {
+                img = new System.Drawing.Bitmap(APath);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem reading image for printing to PDF: " + APath);
+                TLogging.Log(e.ToString());
+                throw new Exception("Problem reading image for printing to PDF: " + APath);
+            }
+
             float Height = img.Size.Height;
 
             if (AHeightPercentage != 0.0f)
             {
-                Height = Height / img.VerticalResolution * AHeightPercentage;
+                Height = Height * AHeightPercentage;
             }
             else
             {
-                Height = Pixel2Twips(AHeight);
+                Height = AHeight;
             }
 
             float Width = img.Size.Width;
 
             if (AHeightPercentage != 0.0f)
             {
-                Width = Width / img.HorizontalResolution * AWidthPercentage;
+                Width = Width * AWidthPercentage;
             }
             else
             {
-                Width = Pixel2Twips(AWidth);
+                Width = AWidth;
             }
+
+// there seem to be too many problems with this on Linux. On Linux, the size of the PDF is quite small anyway
+#if DEACTIVATED
+            if (false && (Width / img.Size.Width * 100 < 80))
+            {
+                // we should scale down the picture to make the result pdf smaller
+                try
+                {
+                    Bitmap SmallerImg = new Bitmap(Convert.ToInt32(Width), Convert.ToInt32(Height));
+                    using (Graphics g = Graphics.FromImage((Image)SmallerImg))
+                    {
+                        g.DrawImage(img, 0, 0, Convert.ToInt32(Width), Convert.ToInt32(Height));
+                    }
+
+                    // saving as PNG file because I get GDI+ status: InvalidParameter in Mono/XSP when trying to save to jpg
+                    string ThumbPath = APath.Replace(Path.GetExtension(APath), "thumb.png");
+
+                    ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
+                    ImageCodecInfo jpegCodecInfo = codecs[0];
+
+                    foreach (ImageCodecInfo codec in codecs)
+                    {
+                        if (codec.FormatID == ImageFormat.Png.Guid)
+                        {
+                            jpegCodecInfo = codec;
+                        }
+                    }
+
+                    EncoderParameters codecParams = new EncoderParameters(1);
+                    codecParams.Param[0] = new EncoderParameter(Encoder.Quality, 75);
+                    SmallerImg.Save(ThumbPath, jpegCodecInfo, codecParams);
+                    SmallerImg.Dispose();
+                    img.Dispose();
+
+                    File.Delete(ThumbPath);
+
+                    img = new System.Drawing.Bitmap(ThumbPath);
+                }
+                catch (Exception)
+                {
+                }
+            }
+#endif
+
+            DrawBitmapInternal(img, AXPos, AYPos, Width, Height);
+
+            img.Dispose();
+        }
+
+        /// <summary>
+        /// Draw the bitmap and move the cursor position
+        /// </summary>
+        /// <param name="img"></param>
+        /// <param name="AXPos">in page units</param>
+        /// <param name="AYPos">in page units</param>
+        /// <param name="AWidth">in pixel</param>
+        /// <param name="AHeight">in pixel</param>
+        private void DrawBitmapInternal(Bitmap img, float AXPos, float AYPos, float AWidth, float AHeight)
+        {
+            AWidth = PixelHorizontal(AWidth);
+            AHeight = PixelVertical(AHeight);
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
-                FXGraphics.DrawImage(img, AXPos, AYPos, Width, Height);
+                FXGraphics.DrawImage(img, AXPos, AYPos, AWidth, AHeight);
             }
 
-            // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
-            // pixel/inch = dpi <=> inch = pixel/dpi
-            CurrentYPos += Height;
-            CurrentXPos += Width;
+            CurrentYPos += AHeight;
+            CurrentXPos += AWidth;
         }
 
         private float GetFontHeight(eFont AFont)
@@ -401,10 +525,44 @@ namespace Ict.Common.Printing
             // on Windows, base.GetWidthString is too long.
             if (Environment.OSVersion.ToString().StartsWith("Unix"))
             {
-                return base.GetWidthString(ATxt, AFont);;
+                // FXGraphics.MeasureString seems to be useless on Mono/Unix.
+                // it returns 0 for single letters, for more letters there is a huge factor of difference to the desired value
+                return base.GetWidthString(ATxt, AFont);
             }
 
             return (float)FXGraphics.MeasureString(ATxt, GetXFont(AFont), XStringFormats.Default).Width;
+        }
+
+        /// remember the rotation and transformation
+        protected Stack <XGraphicsState>FGraphicsStateStack = new Stack <XGraphicsState>();
+
+
+        /// <summary>
+        /// save the state
+        /// </summary>
+        public override void SaveState()
+        {
+            base.SaveState();
+
+            FGraphicsStateStack.Push(FXGraphics.Save());
+        }
+
+        /// <summary>
+        /// restore the state
+        /// </summary>
+        public override void RestoreState()
+        {
+            base.RestoreState();
+
+            FXGraphics.Restore(FGraphicsStateStack.Pop());
+        }
+
+        /// <summary>
+        /// rotate the following output by some degrees, at the given position
+        /// </summary>
+        public override void RotateAtTransform(double ADegrees, double XPos, double YPos)
+        {
+            FXGraphics.RotateAtTransform(ADegrees, new XPoint(XPos, YPos));
         }
 
         /// <summary>
@@ -492,10 +650,30 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// store a pdf to a file. will call PrintPage automatically
+        /// store a pdf to file. will check for paper size using the PrinterLayout. By default A4 is chosen
         /// </summary>
         /// <param name="AFilename"></param>
         public void SavePDF(string AFilename)
+        {
+            PaperKind MyPaperKind;
+            Margins MyMargins;
+            float WidthInPoint;
+            float HeightInPoint;
+
+            if (FPrinterLayout.GetPageSize(out MyPaperKind, out MyMargins, out WidthInPoint, out HeightInPoint))
+            {
+                SavePDF(AFilename, MyPaperKind, MyMargins, WidthInPoint, HeightInPoint);
+            }
+            else
+            {
+                SavePDF(AFilename, PaperKind.A4, new Margins(20, 20, 20, 39), -1, -1);
+            }
+        }
+
+        /// <summary>
+        /// store a pdf to a file. will call PrintPage automatically
+        /// </summary>
+        public void SavePDF(string AFilename, PaperKind APaperKind, Margins AMargins, float AWidthInPoint, float AHeightInPoint)
         {
             if (Directory.Exists("/usr/share/fonts/"))
             {
@@ -514,21 +692,47 @@ namespace Ict.Common.Printing
             do
             {
                 PdfPage page = FPdfDocument.AddPage();
-                page.Size = PageSize.A4;
-                FXGraphics = XGraphics.FromPdfPage(page, XGraphicsUnit.Inch);
 
-                if (FEv == null)
+                if (APaperKind != PaperKind.Custom)
+                {
+                    // see if we can match PaperKind to PageSize by name
+                    foreach (PageSize MyPageSize in Enum.GetValues(typeof(PageSize)))
+                    {
+                        if (MyPageSize.ToString() == APaperKind.ToString())
+                        {
+                            page.Size = MyPageSize;
+                            break;
+                        }
+                    }
+                }
+
+                if ((AWidthInPoint != -1) && (AHeightInPoint != -1))
+                {
+                    // to get the points, eg. inch * 72
+                    page.Width = AWidthInPoint;
+                    page.Height = AHeightInPoint;
+                }
+
+                FXGraphics = XGraphics.FromPdfPage(page, XGraphicsUnit.Inch);
+                FXGraphics.MFEH = PdfFontEmbedding.Always;
+
+                // it seems for Linux we better reset the FEv, otherwise the positions are only correct on the first page, but wrong on the following pages
+                // was: if (FEv == null)
+                if (true)
                 {
                     PrinterSettings myPrinterSettings = new PrinterSettings();
                     PageSettings myPageSettings = new PageSettings(myPrinterSettings);
                     myPageSettings.Color = true;
                     myPageSettings.Landscape = false;
-                    myPageSettings.Margins = new Margins(20, 20, 20, 39);
-                    myPageSettings.PaperSize = new PaperSize("A4", 900, 827);
+                    myPageSettings.Margins = AMargins;
+                    myPageSettings.PaperSize =
+                        new PaperSize(page.Size.ToString(), Convert.ToInt32(page.Width.Point / 72.0f * 100.0f),
+                            Convert.ToInt32(page.Height.Point / 72.0f * 100.0f));
+
                     try
                     {
-                        myPageSettings.PrinterResolution.X = 600;
-                        myPageSettings.PrinterResolution.Y = 600;
+                        myPageSettings.PrinterResolution.X = DEFAULTPRINTERRESOLUTION;
+                        myPageSettings.PrinterResolution.Y = DEFAULTPRINTERRESOLUTION;
                     }
                     catch (Exception)
                     {

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -713,10 +713,11 @@ namespace Ict.Petra.Client.MCommon.Gui
             int mXCoord;
             int mTextBoxWidth;
 
-            System.Drawing.Point mTextBoxLocation;
             mXCoord = ALabel.Width + this.FRightLabelMargin;
             mTextBoxWidth = APanel.Width - mXCoord;
-            mTextBoxLocation = new System.Drawing.Point(mXCoord, TUC_CollapsibleSearchPane.constDefaultTextBoxY);
+
+            // System.Drawing.Point mTextBoxLocation = new System.Drawing.Point(mXCoord, TUC_CollapsibleSearchPane.constDefaultTextBoxY);
+
             return new System.Drawing.Size(mTextBoxWidth, TUC_CollapsibleSearchPane.constControlHeight);
         }
 

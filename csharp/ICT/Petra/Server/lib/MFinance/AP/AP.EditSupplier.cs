@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,11 +28,12 @@ using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
-using Ict.Petra.Server.MFinance;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
-using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 {
@@ -123,7 +125,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     TLogging.Log("TSupplierEditUIConnector.LoadData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                     TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
-                    throw Exp;
+                    throw;
                 }
             }
             finally
@@ -169,6 +171,19 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             if (AInspectDS != null)
             {
                 AVerificationResult = new TVerificationResultCollection();
+
+                // I won't allow any null fields related to discount:
+
+                if (AInspectDS.AApSupplier[0].IsDefaultDiscountDaysNull())
+                {
+                    AInspectDS.AApSupplier[0].DefaultDiscountDays = 0;
+                }
+
+                if (AInspectDS.AApSupplier[0].IsDefaultDiscountPercentageNull())
+                {
+                    AInspectDS.AApSupplier[0].DefaultDiscountPercentage = 0;
+                }
+
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
@@ -197,7 +212,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw e;
+                    throw;
                 }
             }
 

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">           
+<reports>
+	<report id="Outreach Options">
+		<description>
+			lists the all outreaches according to the report settings
+		</description>
+		<reportparameters>
+			
+			<reportparameter name="param_txtYear"/>
+			<reportparameter name="param_txtOutreachCode"/>
+			<reportparameter name="param_matching_pattern"/>
+			<!-- Below comma separated list of the column numbers. Not done! -->
+			<reportparameter name="param_sortby"/>
+			<!-- Below comma separated list of the column names. Not done! -->
+			<reportparameter name="param_sortby_readable"/>
+		</reportparameters>
+		<reportheader/>
+
+		<pageheader>
+			<field whichfield="title1"><value text ="Outreach Options" /></field>
+			<field whichfield="title2"><value function = "getSiteName()"/></field>
+   			<field whichfield="descr2">
+				<fielddetail>
+					<value text="Sorted by: "/>
+					<value variable="param_sortby_readable"/>
+				</fielddetail>
+			</field>
+			<field whichfield="period1">
+				<fielddetail>
+					<switch>
+						<case condition="gt(length({param_txtOutreachCode}), 0)">
+							<value text = "Only Outreaches with Prefix: "/>
+							<value variable = "param_txtOutreachCode"/>
+						</case>
+						<default>
+							<value text = "All Outreaches"/>
+						</default>
+					</switch>
+				</fielddetail>
+			</field>
+			
+			<field whichfield="descr1">
+				<fielddetail>
+					<switch>
+						<case condition="gt({param_txtYear}, 0)">
+							<value text = "Year: "/>
+							<value variable = "param_txtYear"/>
+						</case>
+						<default>
+							<value text = "No year selected "/>
+						</default>
+					</switch>
+				</fielddetail>
+			</field>
+			
+		</pageheader>
+
+		<calculations>
+			<calculation id="Select Outreaches"
+					returns="OutreachCode, UnitCode, UnitName, UnitKey, StartDate, EndDate"
+					returnsFormat="row">
+				<query>
+					<queryDetail><value>
+					SELECT DISTINCT
+						PUB_p_unit.p_outreach_code_c AS OutreachCode,
+						PUB_p_unit.u_unit_type_code_c AS UnitCode,
+						PUB_p_unit.p_unit_name_c AS UnitName,
+						PUB_p_unit.p_partner_key_n AS UnitKey,
+						PUB_p_partner_location.p_date_effective_d AS StartDate,
+						PUB_p_partner_location.p_date_good_until_d AS EndDate
+					FROM
+						PUB_p_unit,
+						PUB_p_partner_location,
+						PUB_p_partner
+					WHERE
+						PUB_p_partner_location.p_partner_key_n = PUB_p_unit.p_partner_key_n
+						AND PUB_p_partner.p_partner_key_n = PUB_p_unit.p_primary_office_n
+					</value></queryDetail>
+					<queryDetail condition="gt(length({param_matching_pattern}), 1)">
+						<value>
+						AND PUB_p_unit.p_outreach_code_c LIKE {param_matching_pattern}
+				   	</value>
+					</queryDetail>
+				</query>
+			</calculation> <!-- Select Outreaches -->
+  
+			<calculation id="Unit Name" returnsFormat="text" returns="text">
+				<caption><value text="Unit Name"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="UnitName"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Unit Key" returnsFormat="partnerkey" returns="text">
+				<caption><value text="Key"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="UnitKey"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+  			<calculation id="Start Date" returnsFormat="formatteddate" returns="date">
+				<caption><value text="Start Date"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="StartDate" format="formatteddate"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="End Date" returnsFormat="formatteddate" returns="date">
+				<caption><value text="End Date"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="EndDate" format="formatteddate"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Outreach Code" returnsFormat="csvlistslash:text" returns="text">
+				<caption><value text="Outreach Code"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="OutreachCode"/>
+					</queryDetail>
+				</query>
+			</calculation>
+
+			<calculation id="Unit Code" returnsFormat="text" returns="text">
+				<caption><value text="Unit Code"/></caption>
+				<query>
+					<queryDetail>
+						<value variable="UnitCode"/>
+					</queryDetail>
+				</query>
+			</calculation>
+			
+		</calculations>
+		
+		<levels>
+		<level name="main">
+			<detail>
+				<lowerLevelReport level="Outreach Detail" calculation ="Select Outreaches">
+				</lowerLevelReport>
+			</detail>
+		</level> <!-- main -->
+
+		<level name="Outreach Detail" identification="UnitKey">
+			<detail>
+				<field whichfield="columns"/>
+			</detail>
+		</level>  <!-- Outreach Detail -->
+		</levels>
+
+	</report>
+
+</reports>

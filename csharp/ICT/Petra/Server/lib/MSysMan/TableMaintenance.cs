@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,8 +26,9 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MSysMan.TableMaintenance.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 
@@ -39,32 +40,20 @@ namespace Ict.Petra.Server.MSysMan.TableMaintenance.UIConnectors
     public class TSysManTableMaintenanceUIConnector : TConfigurableMBRObject, ISysManUIConnectorsTableMaintenance
     {
         /// <summary>
-        /// Constructor.
+        /// Constructor
         /// </summary>
         public TSysManTableMaintenanceUIConnector() : base()
         {
-#if DEBUGMODE
-            if (TSrvSetting.DL >= 7)
-            {
-                Console.WriteLine(this.GetType().FullName + " called.");
-            }
-#endif
+            TLogging.LogAtLevel(7, "TSysManTableMaintenanceUIConnector created.");
         }
 
-#if DEBUGMODE
         /// <summary>
         /// Destructor
         /// </summary>
         ~TSysManTableMaintenanceUIConnector()
         {
-            if (TSrvSetting.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ".FINALIZE called!");
-            }
+            TLogging.LogAtLevel(7, "TSysManTableMaintenanceUIConnector.FINALIZE called!");
         }
-#endif
-
-
 
         /// <summary>
         /// get the datatable from the database

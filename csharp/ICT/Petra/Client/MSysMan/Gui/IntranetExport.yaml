@@ -1,0 +1,39 @@
+  RootNode:
+    BaseYaml: ../../CommonForms/PetraForm.yaml
+    FormTitle: Export to Intranet
+    Namespace: Ict.Petra.Client.MSysMan.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 400
+    WindowHeight:200
+
+    Controls:
+        pnlContent:
+            Controls: [grpOptions, pnlRightButtons]
+            Dock: Fill
+        grpOptions:
+            Controls: [chkPersonData, chkDonationData, lblGiftsSince, chkFieldData]
+            Dock: Fill
+            Label: Data types to export
+        chkPersonData:
+        chkDonationData:
+        lblGiftsSince:
+        chkFieldData:
+        pnlRightButtons:
+            Dock: Right
+            Controls: [btnOK, btnCancel, btnSettings, btnMotivations]
+        btnOK:
+            Stretch:horizontally
+            AcceptButton:true
+            ActionClick:BtnOK_Click
+        btnCancel:
+            Stretch:horizontally
+            ActionClick:BtnCancel_Click
+        btnSettings:
+            Stretch:horizontally
+            Label: Settings..
+            ActionClick:BtnSettings_Click
+        btnMotivations:
+            Label: Motivations..
+            Stretch:horizontally
+            ActionClick:BtnMotivations_Click

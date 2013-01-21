@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,7 +36,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Server.MPartner;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
@@ -61,81 +61,90 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             NewDonorTDS MainDS = new NewDonorTDS();
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadUncommitted, out NewTransaction);
 
-            string stmt = TDataBase.ReadSqlFile("Gift.NewDonorSubscription.sql");
-
-            OdbcParameter parameter;
-
-            List <OdbcParameter>parameters = new List <OdbcParameter>();
-            parameter = new OdbcParameter("PublicationCode", OdbcType.VarChar);
-            parameter.Value = APublicationCode;
-            parameters.Add(parameter);
-            parameter = new OdbcParameter("StartDate", OdbcType.Date);
-            parameter.Value = ASubscriptionStartFrom;
-            parameters.Add(parameter);
-            parameter = new OdbcParameter("EndDate", OdbcType.Date);
-            parameter.Value = ASubscriptionStartUntil;
-            parameters.Add(parameter);
-            parameter = new OdbcParameter("ExtractName", OdbcType.VarChar);
-            parameter.Value = AExtractName;
-            parameters.Add(parameter);
-
-            DBAccess.GDBAccessObj.Select(MainDS, stmt, MainDS.AGift.TableName, transaction, parameters.ToArray());
-
-            // drop all previous gifts, keep only the most recent one
-            NewDonorTDSAGiftRow previousRow = null;
-
-            Int32 rowCounter = 0;
-
-            while (rowCounter < MainDS.AGift.Rows.Count)
+            try
             {
-                NewDonorTDSAGiftRow row = MainDS.AGift[rowCounter];
+                string stmt = TDataBase.ReadSqlFile("Gift.NewDonorSubscription.sql");
 
-                if ((previousRow != null) && (previousRow.DonorKey == row.DonorKey))
+                OdbcParameter parameter;
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+                parameter = new OdbcParameter("PublicationCode", OdbcType.VarChar);
+                parameter.Value = APublicationCode;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("StartDate", OdbcType.Date);
+                parameter.Value = ASubscriptionStartFrom;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("EndDate", OdbcType.Date);
+                parameter.Value = ASubscriptionStartUntil;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("ExtractName", OdbcType.VarChar);
+                parameter.Value = AExtractName;
+                parameters.Add(parameter);
+
+                DBAccess.GDBAccessObj.Select(MainDS, stmt, MainDS.AGift.TableName, transaction, parameters.ToArray());
+
+                // drop all previous gifts, keep only the most recent one
+                NewDonorTDSAGiftRow previousRow = null;
+
+                Int32 rowCounter = 0;
+
+                while (rowCounter < MainDS.AGift.Rows.Count)
                 {
-                    MainDS.AGift.Rows.Remove(previousRow);
-                }
-                else
-                {
-                    rowCounter++;
+                    NewDonorTDSAGiftRow row = MainDS.AGift[rowCounter];
+
+                    if ((previousRow != null) && (previousRow.DonorKey == row.DonorKey))
+                    {
+                        MainDS.AGift.Rows.Remove(previousRow);
+                    }
+                    else
+                    {
+                        rowCounter++;
+                    }
+
+                    previousRow = row;
                 }
 
-                previousRow = row;
+                // get recipient description
+                foreach (NewDonorTDSAGiftRow row in MainDS.AGift.Rows)
+                {
+                    if (row.RecipientDescription.Length == 0)
+                    {
+                        row.RecipientDescription = row.MotivationGroupCode + "/" + row.MotivationDetailCode;
+                    }
+                }
+
+                // best address for each partner
+                DataUtilities.CopyTo(
+                    TAddressTools.AddPostalAddress(MainDS.AGift, MainDS.AGift.ColumnDonorKey, ADropForeignAddresses, true, transaction),
+                    MainDS.BestAddress);
+
+                // remove all invalid addresses
+                rowCounter = 0;
+
+                while (rowCounter < MainDS.BestAddress.Rows.Count)
+                {
+                    BestAddressTDSLocationRow row = MainDS.BestAddress[rowCounter];
+
+                    if (!row.ValidAddress)
+                    {
+                        MainDS.BestAddress.Rows.Remove(row);
+                    }
+                    else
+                    {
+                        rowCounter++;
+                    }
+                }
             }
-
-            // get recipient description
-            foreach (NewDonorTDSAGiftRow row in MainDS.AGift.Rows)
+            finally
             {
-                if (row.RecipientDescription.Length == 0)
+                if (NewTransaction)
                 {
-                    row.RecipientDescription = row.MotivationGroupCode + "/" + row.MotivationDetailCode;
+                    DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
-
-            // best address for each partner
-            DataUtilities.CopyTo(
-                TAddressTools.AddPostalAddress(MainDS.AGift, MainDS.AGift.ColumnDonorKey, ADropForeignAddresses, transaction),
-                MainDS.BestAddress);
-
-            // remove all invalid addresses
-            rowCounter = 0;
-
-            while (rowCounter < MainDS.BestAddress.Rows.Count)
-            {
-                BestAddressTDSLocationRow row = MainDS.BestAddress[rowCounter];
-
-                if (!row.ValidAddress)
-                {
-                    MainDS.BestAddress.Rows.Remove(row);
-                }
-                else
-                {
-                    rowCounter++;
-                }
-            }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
 
             return MainDS;
         }
@@ -159,7 +168,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
 
             // get the local country code
-            string LocalCountryCode = TAddressTools.GetLocalCountryCode(transaction);
+            string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
@@ -182,6 +191,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 msg =
                     msg.Replace("#RECIPIENTNAME",
                         Calculations.FormatShortName(row.RecipientDescription, eShortNameFormat.eReverseWithoutTitle));
+                msg =
+                    msg.Replace("#RECIPIENTFIRSTNAME",
+                        Calculations.FormatShortName(row.RecipientDescription, eShortNameFormat.eOnlyFirstname));
                 msg = msg.Replace("#TITLE", Calculations.FormatShortName(donorName, eShortNameFormat.eOnlyTitle));
                 msg = msg.Replace("#NAME", Calculations.FormatShortName(donorName, eShortNameFormat.eReverseWithoutTitle));
                 msg = msg.Replace("#FORMALGREETING", Calculations.FormalGreeting(donorName));

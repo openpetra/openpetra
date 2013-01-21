@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,22 +35,23 @@ namespace Ict.Common
     /// the Application itself).
     /// It also supports parameters on the command line which override the values in the config file.
     /// </summary>
-    public class TAppSettingsManager : object
+    public class TAppSettingsManager
     {
         /// <summary>
         /// constant for undefined value
         /// </summary>
         public const String UNDEFINEDVALUE = "#UNDEFINED#";
 
+        /// <summary>The path where the application is started from.</summary>
+        private static String FApplicationDirectory = System.IO.Path.GetDirectoryName(
+            System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 
-        private static String FApplicationDirectory = Environment.CurrentDirectory;
-
-        /// <summary>the path where the application is started from. The name of the Configuration File that should be read from; static so it can be manipulated manually once for all (remoting nunit etc.)</summary>
+        /// <summary>The name of the Configuration File that should be read from; static so it can be manipulated manually once for all (remoting nunit etc.)</summary>
         private static String FConfigFileName = "";
 
         /// <summary>XML Element under which the AppSettings are found</summary>
-        private XmlElement FAppSettingsElement = null;
-        private TCmdOpts FCmdOpts;
+        private static XmlElement FAppSettingsElement = null;
+        private static TCmdOpts FCmdOpts;
 
         /// <summary>
         /// read only property for the filename of the current config file
@@ -60,6 +61,26 @@ namespace Ict.Common
             get
             {
                 return FConfigFileName;
+            }
+        }
+
+        /// <summary>
+        /// read only property for the directory where all the binary exe and dll files are
+        /// </summary>
+        public static string ApplicationDirectory
+        {
+            get
+            {
+                if (FApplicationDirectory.StartsWith("file:\\"))
+                {
+                    FApplicationDirectory = FApplicationDirectory.Substring("file:\\".Length);
+                }
+                else if (FApplicationDirectory.StartsWith("file:/"))
+                {
+                    FApplicationDirectory = FApplicationDirectory.Substring("file:".Length);
+                }
+
+                return FApplicationDirectory;
             }
         }
 
@@ -149,9 +170,6 @@ namespace Ict.Common
         {
             XmlDocument xml;
 
-            // need to switch back to the application directory, because the path names might be relative to the application
-            Environment.CurrentDirectory = FApplicationDirectory;
-
             if (!System.IO.File.Exists(FConfigFileName) && System.IO.File.Exists(FConfigFileName.Replace(".config", ".config.sample")))
             {
                 System.IO.File.Copy(FConfigFileName.Replace(".config", ".config.sample"), FConfigFileName);
@@ -192,7 +210,7 @@ namespace Ict.Common
         /// returns true if the value is on the command line or in the config file
         /// </summary>
         /// <returns>void</returns>
-        public Boolean HasValue(String Key)
+        public static Boolean HasValue(String Key)
         {
             Boolean ReturnValue;
             XmlElement appsetting;
@@ -224,7 +242,7 @@ namespace Ict.Common
         /// <param name="ALogErrorIfNotPresent"></param>
         /// <returns>Value of the AppSetting
         /// </returns>
-        public String GetValue(String AKey, Boolean ALogErrorIfNotPresent)
+        public static String GetValue(String AKey, Boolean ALogErrorIfNotPresent)
         {
             String ReturnValue;
             XmlElement appsetting = null;
@@ -267,6 +285,10 @@ namespace Ict.Common
                 }
             }
 
+            ReturnValue = ReturnValue.Replace("{userappdata}",
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            ReturnValue = ReturnValue.Replace("{applicationbindir}", ApplicationDirectory);
+
             return ReturnValue;
         }
 
@@ -275,7 +297,7 @@ namespace Ict.Common
         /// </summary>
         /// <param name="AKey">the name of the parameter</param>
         /// <returns>returns the string value</returns>
-        public String GetValue(String AKey)
+        public static String GetValue(String AKey)
         {
             return GetValue(AKey, true);
         }
@@ -286,9 +308,28 @@ namespace Ict.Common
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>returns the string value or the default value</returns>
-        public String GetValue(String AKey, String ADefaultValue)
+        public static String GetValue(String AKey, String ADefaultValue)
         {
             string ReturnValue = GetValue(AKey, false);
+
+            if (ReturnValue == UNDEFINEDVALUE)
+            {
+                ReturnValue = ADefaultValue;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// returns the string value of a parameter or the default value
+        /// </summary>
+        /// <param name="AKey">the name of the parameter</param>
+        /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
+        /// <param name="ALogErrorIfNotPresent"></param>
+        /// <returns>returns the string value or the default value</returns>
+        public static String GetValue(String AKey, String ADefaultValue, Boolean ALogErrorIfNotPresent)
+        {
+            string ReturnValue = GetValue(AKey, ALogErrorIfNotPresent);
 
             if (ReturnValue == UNDEFINEDVALUE)
             {
@@ -304,13 +345,14 @@ namespace Ict.Common
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>the value of the parameter, or the default value</returns>
-        public System.Int16 GetInt16(String AKey, System.Int16 ADefaultValue)
+        public static System.Int16 GetInt16(String AKey, System.Int16 ADefaultValue)
         {
             System.Int16 ReturnValue;
             ReturnValue = ADefaultValue;
             try
             {
-                ReturnValue = Convert.ToInt16(GetValue(AKey, (ADefaultValue == -1)));
+                string str = GetValue(AKey, (ADefaultValue == -1));
+                ReturnValue = Convert.ToInt16(str);
             }
             catch (Exception)
             {
@@ -328,7 +370,7 @@ namespace Ict.Common
         /// </summary>
         /// <param name="AKey">the name of the parameter</param>
         /// <returns>the value of the parameter or -1 if the parameter does not exist on the command line or in the config file</returns>
-        public System.Int16 GetInt16(String AKey)
+        public static System.Int16 GetInt16(String AKey)
         {
             return GetInt16(AKey, -1);
         }
@@ -339,7 +381,7 @@ namespace Ict.Common
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>the value of the parameter, or the default value</returns>
-        public System.Int32 GetInt32(String AKey, System.Int16 ADefaultValue)
+        public static System.Int32 GetInt32(String AKey, System.Int32 ADefaultValue)
         {
             System.Int32 ReturnValue;
             ReturnValue = ADefaultValue;
@@ -363,7 +405,7 @@ namespace Ict.Common
         /// </summary>
         /// <param name="AKey">the name of the parameter</param>
         /// <returns>the value of the parameter or -1 if the parameter does not exist on the command line or in the config file</returns>
-        public System.Int32 GetInt32(String AKey)
+        public static System.Int32 GetInt32(String AKey)
         {
             return GetInt32(AKey, -1);
         }
@@ -374,7 +416,7 @@ namespace Ict.Common
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>the value of the parameter, or the default value</returns>
-        public System.Int64 GetInt64(String AKey, System.Int16 ADefaultValue)
+        public static System.Int64 GetInt64(String AKey, System.Int64 ADefaultValue)
         {
             System.Int64 ReturnValue;
             ReturnValue = ADefaultValue;
@@ -398,7 +440,7 @@ namespace Ict.Common
         /// </summary>
         /// <param name="AKey">the name of the parameter</param>
         /// <returns>the value of the parameter or -1 if the parameter does not exist on the command line or in the config file</returns>
-        public System.Int64 GetInt64(String AKey)
+        public static System.Int64 GetInt64(String AKey)
         {
             return GetInt64(AKey, -1);
         }
@@ -408,7 +450,7 @@ namespace Ict.Common
         /// </summary>
         /// <param name="AKey">the name of the parameter</param>
         /// <returns>the value of the parameter or -1.0 if the parameter does not exist on the command line or in the config file</returns>
-        public float GetFloat(String AKey)
+        public static float GetFloat(String AKey)
         {
             float ReturnValue = -1.0f;
 
@@ -425,12 +467,31 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// read a double value
+        /// </summary>
+        /// <returns>the value of the parameter or -1.0 if the parameter does not exist on the command line or in the config file</returns>
+        public static double GetDouble(String AKey, double ADefault)
+        {
+            double ReturnValue = -1.0f;
+
+            try
+            {
+                ReturnValue = Convert.ToDouble(GetValue(AKey, false));
+            }
+            catch (Exception)
+            {
+                ReturnValue = ADefault;
+            }
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// return the Boolean value of a parameter or its default value
         /// </summary>
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>the value of the parameter, or the default value</returns>
-        public bool GetBoolean(String AKey, bool ADefaultValue)
+        public static bool GetBoolean(String AKey, bool ADefaultValue)
         {
             bool ReturnValue = ADefaultValue;
 
@@ -444,87 +505,6 @@ namespace Ict.Common
                 TLogging.Log("Problem reading Boolean value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
             }
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// Returns the Value of a specified AppSetting key.
-        /// This version of the function GetValue will automatically find the correct config file.
-        /// It should only be used for single values, it is quite a bit of overhead to always reload the config file.
-        ///
-        /// </summary>
-        /// <param name="AKey">Key of the AppSetting</param>
-        /// <param name="ADefaultValue">the default value</param>
-        /// <param name="AShowWarning">log a warning if value cannot be found</param>
-        /// <returns>Value of the AppSetting
-        /// </returns>
-        public static String GetValueStatic(String AKey, String ADefaultValue, bool AShowWarning)
-        {
-            String ReturnValue = UNDEFINEDVALUE;
-            TAppSettingsManager Config;
-
-            try
-            {
-                Config = new TAppSettingsManager(false);
-                ReturnValue = Config.GetValue(AKey, AShowWarning);
-
-                if (ReturnValue == UNDEFINEDVALUE)
-                {
-                    ReturnValue = ADefaultValue;
-                }
-            }
-            catch (Exception e)
-            {
-                if (ADefaultValue == UNDEFINEDVALUE)
-                {
-                    TLogging.Log(e.Message, TLoggingType.ToLogfile);
-                    ReturnValue = "EXCEPTION";
-                }
-                else
-                {
-                    ReturnValue = ADefaultValue;
-                }
-            }
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// Returns the Value of a specified AppSetting key.
-        /// This version of the function GetValue will automatically find the correct config file.
-        /// It should only be used for single values, it is quite a bit of overhead to always reload the config file.
-        /// </summary>
-        /// <param name="AKey">the name of the parameter</param>
-        /// <returns>value of the parameter, or UNDEFINEDVALUE</returns>
-        public static String GetValueStatic(String AKey)
-        {
-            return GetValueStatic(AKey, UNDEFINEDVALUE, true);
-        }
-
-        /// <summary>
-        /// Returns the Value of a specified AppSetting key.
-        /// This version of the function GetValue will automatically find the correct config file.
-        /// It should only be used for single values, it is quite a bit of overhead to always reload the config file.
-        /// </summary>
-        /// <param name="AKey">the name of the parameter</param>
-        /// <param name="AShowWarning">log a warning if value cannot be found</param>
-        /// <returns>value of the parameter, or UNDEFINEDVALUE</returns>
-        public static String GetValueStatic(String AKey, bool AShowWarning)
-        {
-            return GetValueStatic(AKey, UNDEFINEDVALUE, AShowWarning);
-        }
-
-        /// <summary>
-        /// Returns the Value of a specified AppSetting key.
-        /// This version of the function GetValue will automatically find the correct config file.
-        /// It should only be used for single values, it is quite a bit of overhead to always reload the config file.
-        /// This overload will log a warning if the value cannot be found.
-        /// </summary>
-        /// <param name="AKey">Key of the AppSetting</param>
-        /// <param name="ADefaultValue">the default value</param>
-        /// <returns>Value of the AppSetting
-        /// </returns>
-        public static String GetValueStatic(String AKey, String ADefaultValue)
-        {
-            return GetValueStatic(AKey, ADefaultValue, true);
         }
 
         /// <summary>
@@ -647,24 +627,22 @@ namespace Ict.Common
             Font WindowsFont = txt.Font;
 
             Font ReturnValue;
-            TAppSettingsManager settings;
 
             // set the font in the config file; or try to figure it out from the Windows XP system font (WindowsFont)
-            settings = new TAppSettingsManager();
 
-            if (settings.HasValue("FontName") && settings.HasValue("FontSize"))
+            if (TAppSettingsManager.HasValue("FontName") && TAppSettingsManager.HasValue("FontSize"))
             {
                 changeFonts = true;
                 ReturnValue = new System.Drawing.Font(
-                    settings.GetValue("FontName"),
-                    settings.GetFloat("FontSize"));
+                    TAppSettingsManager.GetValue("FontName"),
+                    TAppSettingsManager.GetFloat("FontSize"));
                 SetDefaultUIFont(ReturnValue);
 
-                if (settings.HasValue("FontAllowBold") && (settings.GetBoolean("FontAllowBold", false) == true))
+                if (TAppSettingsManager.HasValue("FontAllowBold") && (TAppSettingsManager.GetBoolean("FontAllowBold", false) == true))
                 {
                     SetDefaultBoldFont(new System.Drawing.Font(
-                            settings.GetValue("FontName"),
-                            settings.GetFloat("FontSize"),
+                            TAppSettingsManager.GetValue("FontName"),
+                            TAppSettingsManager.GetFloat("FontSize"),
                             System.Drawing.FontStyle.Bold));
                 }
                 else
@@ -673,17 +651,17 @@ namespace Ict.Common
                 }
             }
             // just set the font size in the config file, without specifying the font; will use the default Windows font
-            else if ((!settings.HasValue("FontName") && settings.HasValue("FontSize")))
+            else if ((!TAppSettingsManager.HasValue("FontName") && TAppSettingsManager.HasValue("FontSize")))
             {
                 changeFonts = true;
-                ReturnValue = new System.Drawing.Font(WindowsFont.Name, settings.GetFloat("FontSize"));
+                ReturnValue = new System.Drawing.Font(WindowsFont.Name, TAppSettingsManager.GetFloat("FontSize"));
                 SetDefaultUIFont(ReturnValue);
 
-                if (settings.HasValue("FontAllowBold") && (settings.GetBoolean("FontAllowBold", false) == true))
+                if (TAppSettingsManager.HasValue("FontAllowBold") && (TAppSettingsManager.GetBoolean("FontAllowBold", false) == true))
                 {
                     SetDefaultBoldFont(new System.Drawing.Font(
-                            settings.GetValue("FontName"),
-                            settings.GetFloat("FontSize"),
+                            TAppSettingsManager.GetValue("FontName"),
+                            TAppSettingsManager.GetFloat("FontSize"),
                             System.Drawing.FontStyle.Bold));
                 }
                 else

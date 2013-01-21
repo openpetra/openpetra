@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,7 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Runtime.Remoting;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.Interfaces.MPartner;
@@ -30,7 +33,6 @@ using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Interfaces.MReporting;
-using Ict.Petra.Shared.Interfaces;
 
 namespace Ict.Petra.Client.App.Core.RemoteObjects
 {
@@ -45,22 +47,8 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
     /// The properties MPartner, MFinance, etc. represent the top-most level of the
     /// Petra Partner, Finance, etc. Petra Module Namespaces in the PetraServer.
     /// </summary>
-    public class TRemote : object
+    public class TRemote : TRemoteBase
     {
-        /// <summary>Reference to the ClientManager</summary>
-        public static IClientManagerInterface ClientManager
-        {
-            get
-            {
-                return UClientManager;
-            }
-
-            set
-            {
-                UClientManager = value;
-            }
-        }
-
         /// <summary>Reference to the topmost level of the Petra Common Module Namespace</summary>
         public static IMCommonNamespace MCommon
         {
@@ -124,7 +112,6 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
             }
         }
 
-        private static IClientManagerInterface UClientManager;
         private static IMCommonNamespace UCommonObject;
         private static IMConferenceNamespace UConferenceObject;
         private static IMPartnerNamespace UPartnerObject;
@@ -145,8 +132,8 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
             IMFinanceNamespace AFinanceObject,
             IMReportingNamespace AReportingObject,
             IMSysManNamespace ASysManObject)
+            : base(AClientManager)
         {
-            UClientManager = AClientManager;
             USysManObject = ASysManObject;
             UConferenceObject = AConferenceObject;
             UPartnerObject = APartnerObject;
@@ -154,6 +141,14 @@ namespace Ict.Petra.Client.App.Core.RemoteObjects
             UPersonnelObject = APersonnelObject;
             UFinanceObject = AFinanceObject;
             UReportingObject = AReportingObject;
+
+            FRemoteObjects.Add((MarshalByRefObject)USysManObject);
+            FRemoteObjects.Add((MarshalByRefObject)UConferenceObject);
+            FRemoteObjects.Add((MarshalByRefObject)UPartnerObject);
+            FRemoteObjects.Add((MarshalByRefObject)UCommonObject);
+            FRemoteObjects.Add((MarshalByRefObject)UPersonnelObject);
+            FRemoteObjects.Add((MarshalByRefObject)UFinanceObject);
+            FRemoteObjects.Add((MarshalByRefObject)UReportingObject);
         }
     }
 }

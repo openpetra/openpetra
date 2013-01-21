@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
+using SourceGrid;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -80,7 +81,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails = new SourceGrid.DataGrid();
 
-            this.cmbCostCenter = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.btnRevaluate = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int rowHeight = 25;
             int rightColWidth = 350;
 
-            int buttonTop = 210;
+            // int buttonTop = 210;
             int buttonLeft = 140;
 
             //
@@ -162,18 +162,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblName.Text = "Select cost center:";
             lblName.TextAlign = ContentAlignment.MiddleRight;
 
-            //
-            // cmbCostCenter
-            //
-            this.cmbCostCenter.Location = new System.Drawing.Point(
-                leftColStart + leftColWidth + colSpace, rowY);
-            this.cmbCostCenter.Name = "cmbCostCenter";
-            this.cmbCostCenter.Size = new System.Drawing.Size(rightColWidth, 21);
-            this.cmbCostCenter.TabIndex = 1;
-            this.cmbCostCenter.ListTable =
-                TCmbAutoPopulated.TListTableEnum.UserDefinedList;
-
-
             rowY = rowY + rowHeight;
 
             //
@@ -233,7 +221,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.ClientSize = new System.Drawing.Size(600, rowY + 50);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnRevaluate);
-            this.Controls.Add(this.cmbCostCenter);
             this.Controls.Add(this.lblName);
             this.Controls.Add(this.lblAccountText);
             this.Controls.Add(this.lblAccountValue);
@@ -254,7 +241,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnRevaluate;
-        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbCostCenter;
         private System.Windows.Forms.Label lblName;
         private System.Windows.Forms.Label lblAccountText;
         private System.Windows.Forms.Label lblAccountValue;

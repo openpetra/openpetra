@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -91,8 +91,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
-
-            int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
         }
 
         private void SetControlsManual(TParameterList AParameters)

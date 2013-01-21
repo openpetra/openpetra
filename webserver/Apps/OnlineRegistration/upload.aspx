@@ -46,7 +46,7 @@ private void UploadFile()
     
     MyFile.SaveAs(Filename);
     
-    string md5SumFileName = TAppSettingsManager.GetValueStatic("Server.PathTemp") + 
+    string md5SumFileName = TAppSettingsManager.GetValue("Server.PathTemp") + 
         Path.DirectorySeparatorChar +
         TPatchTools.GetMd5Sum(Filename) + ".jpg";
     try
@@ -74,7 +74,7 @@ private void UploadFile()
 
 <%
 new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
-new TLogging(TAppSettingsManager.GetValueStatic("Server.LogFile"));
+new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
 try
 {
     if (Request.Files.Count == 1)
@@ -85,14 +85,14 @@ try
     {
         if (HttpContext.Current.Request.Params["image-id"] != null && HttpContext.Current.Request.Params["image-id"].Length > 0)
         {
-            string Filename = TAppSettingsManager.GetValueStatic("Server.PathTemp") + Path.DirectorySeparatorChar + Path.GetFileName(HttpContext.Current.Request.Params["image-id"]);
+            string Filename = TAppSettingsManager.GetValue("Server.PathTemp") + Path.DirectorySeparatorChar + Path.GetFileName(HttpContext.Current.Request.Params["image-id"]);
             Response.Buffer = true;
             Response.Clear();
             Response.ClearContent(); 
             Response.ClearHeaders();         
             Response.ContentType = "image/jpeg";
             Response.AppendHeader("Content-Disposition","attachment; filename=photo.jpg");
-            Response.TransmitFile( Filename );
+            Response.WriteFile( Filename );
             // comment Response.End() to avoid System.Threading.ThreadAbortException
             // see http://www.west-wind.com/Weblog/posts/368975.aspx
             Response.End();

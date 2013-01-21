@@ -2,21 +2,21 @@ RootNode:
     BaseYaml: ../../CommonForms/PetraEditForm.yaml
     FormTitle: Partner Edit
     Namespace: Ict.Petra.Client.MPartner.Gui
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: windowEditUIConnector 
-    UIConnectorType: Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors.IPartnerUIConnectorsPartnerEdit
+    UIConnectorType: Ict.Petra.Shared.Interfaces.MPartner.IPartnerUIConnectorsPartnerEdit
     UIConnectorCreate: TRemote.MPartner.Partner.UIConnectors.PartnerEdit
     MasterTable: PPartner
-    WindowWidth: 750
+    WindowWidth: 800
     WindowHeight: 700
     
     Events:
         Load: {class=System.EventHandler, method=TFrmPartnerEdit2_Load}    
 
     Actions:
-        actFileNewPartner: {Label=&New Partner..., ActionClick=FileNewPartner, Image: NewPartner.ico}
+        actNewPartner: {ActionClick=FileNewPartner, Image: NewPartner.ico}
         actFileNewPartnerWithShepherdPerson: {Label=Add &Person with Shepherd..., ActionClick=FileNewPartnerWithShepherdPerson}
         actFileNewPartnerWithShepherdFamily: {Label=Add &Family with Shepherd..., ActionClick=FileNewPartnerWithShepherdFamily}
         actFileNewPartnerWithShepherdChurch: {Label=Add &Church with Shepherd..., ActionClick=FileNewPartnerWithShepherdChurch}
@@ -71,6 +71,7 @@ RootNode:
             
         ucoUpperPart:
             Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_TopPart
+            Height: 121
             Dock: Top
             
         ucoLowerPart:
@@ -78,7 +79,7 @@ RootNode:
             Dock: Fill            
     Menu:
         mniFile: 
-            mniFileNewPartner: {Action=actNewPartner, Order=AlwaysFirst}
+            mniFileNewPartner: {Label=&New Partner..., Action=actNewPartner, Order=AlwaysFirst}
             mniFileNewPartnerWithShepherd: {Label: N&ew Partner (Shepherd), Action=actFileNewPartnerWithShepherd, Order=AlwaysFirst, Image: NewPartner.ico}
                 mniFileNewPartnerWithShepherdPerson:
                 mniFileNewPartnerWithShepherdFamily:
@@ -96,6 +97,9 @@ RootNode:
             mniFileExportPartner:
             mniSeparator:
             
+        mniEdit:
+            mniEditFindNewAddress: {Label=Find New Address...}
+
         mniMaintain: {Label=Ma&intain}            
             mniMaintainAddresses:
             mniMaintainPartnerDetails:
@@ -126,7 +130,7 @@ RootNode:
                 mniViewUpperScreenPartCollapsed:            
             mniViewPartnerData:
             mniViewPersonnelData:
-            mniViewFinanceData:
+            mniViewFinanceData: {Enabled=false}
         
         mniHelp:
             mniSeparator:
@@ -137,4 +141,4 @@ RootNode:
         tbbSeparator:
         tbbViewPartnerData: {Action=actViewPartnerData}
         tbbViewPersonnelData: {Action=actViewPersonnelData}
-        tbbViewFinanceData: {Action=actViewFinanceData}
+        tbbViewFinanceData: {Action=actViewFinanceData, Enabled=false}

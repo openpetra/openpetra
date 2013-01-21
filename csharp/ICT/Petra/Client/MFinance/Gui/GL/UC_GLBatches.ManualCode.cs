@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,27 +27,38 @@ using System.IO;
 using System.Xml;
 using System.Data;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Collections;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Client;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TUC_GLBatches
     {
-        private Int32 FLedgerNumber;
-        private Int32 FSelectedBatchNumber;
-        private TFinanceBatchFilterEnum FLoadedData = TFinanceBatchFilterEnum.fbfNone;
-
-        private DateTime DefaultDate;
+        private Int32 FLedgerNumber = -1;
+        private Int32 FSelectedBatchNumber = -1;
+        private string FStatusFilter = "1 = 1";
+        private string FPeriodFilter = "1 = 1";
         private DateTime StartDateCurrentPeriod;
         private DateTime EndDateLastForwardingPeriod;
+        private string FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
+        private Int32 FSelectedYear;
+        private Int32 FSelectedPeriod;
+        private DateTime FDefaultDate;
 
         /// <summary>
         /// load the batches into the grid
@@ -59,22 +70,56 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             rbtEditing.Checked = true;
 
+            FPetraUtilsObject.DisableDataChangedEvent();
+            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbYearFilter, FLedgerNumber); //.InitialiseAvailableGiftYearsList(ref cmbYearFilter, FLedgerNumber);
+            FPetraUtilsObject.EnableDataChangedEvent();
+
             // this will load the batches from the server
-            SetBatchFilter();
+            RefreshFilter(null, null);
+
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmGLBatch) this.ParentForm).EnableJournals();
+            }
+            else
+            {
+                ((TFrmGLBatch) this.ParentForm).DisableJournals();
+            }
+
+            ((TFrmGLBatch) this.ParentForm).DisableTransactions();
+            ((TFrmGLBatch) this.ParentForm).DisableAttributes();
 
             ShowData();
 
-            //TODO: not necessary for posted batches
             TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
                 out StartDateCurrentPeriod,
                 out EndDateLastForwardingPeriod,
-                out DefaultDate);
+                out FDefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
                 StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
-            dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
-            dtpDetailDateEffective.SetMinimalDate(StartDateCurrentPeriod);
-            txtDetailBatchControlTotal.Enabled = false;
+
+            //Set sort order
+            FMainDS.ABatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
+                ABatchTable.GetLedgerNumberDBName(),
+                ABatchTable.GetBatchNumberDBName()
+                );
+
+            grdDetails.Focus();
+        }
+
+        void RefreshPeriods(Object sender, EventArgs e)
+        {
+            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32());
+            cmbPeriodFilter.SelectedIndex = 0;
+        }
+
+        /// reset the control
+        public void ClearCurrentSelection()
+        {
+            GetDataFromControls();
+            this.FPreviouslySelectedDetailRow = null;
+            ShowData();
         }
 
         /// <summary>
@@ -82,35 +127,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void ShowDataManual()
         {
-            txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-        }
-
-        private void UpdateChangeableStatus(bool batchRowIsSelected)
-        {
-            btnCancel.Enabled = batchRowIsSelected;
-            btnPostBatch.Enabled = batchRowIsSelected;
-
-
-            dtpDetailDateEffective.Enabled = batchRowIsSelected;
-            txtDetailBatchDescription.Enabled = batchRowIsSelected;
-
-            mniExportBatches.Enabled = batchRowIsSelected;
-            tbbExportBatches.Enabled = batchRowIsSelected;
-
-            if (batchRowIsSelected)
+            if (FLedgerNumber != -1)
             {
-                Boolean postable =
-                    FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
-                mniPost.Enabled = postable;
-                tbbPostBatch.Enabled = postable;
+                ALedgerRow ledger =
+                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                         TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
             }
             else
             {
-                mniPost.Enabled = false;
-                tbbPostBatch.Enabled = false;
+                EnableButtonControl(false);
             }
+        }
 
-            if (!batchRowIsSelected)
+        private void UpdateChangeableStatus()
+        {
+            Boolean postable = (FPreviouslySelectedDetailRow != null)
+                               && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
+
+            FPetraUtilsObject.EnableAction("actPostBatch", postable);
+            FPetraUtilsObject.EnableAction("actTestPostBatch", postable);
+            FPetraUtilsObject.EnableAction("actCancel", postable);
+            pnlDetails.Enabled = postable;
+            pnlDetailsProtected = !postable;
+
+            if (FPreviouslySelectedDetailRow == null)
             {
                 // in the very first run ParentForm is null. Therefore
                 // the exception handler has been included.
@@ -121,40 +161,77 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 catch (Exception)
                 {
                 }
-                ;
             }
         }
 
-        /// <summary>
-        /// The FMainDS-Contol is only usable after the LedgerNumber has been set externaly.
-        /// In this case some "default"-Settings are to be done.
-        /// </summary>
-        public void FMainDS_ALedgerIsValidNow()
+        private void ValidateDataDetailsManual(ABatchRow ARow)
         {
-            txtDetailBatchControlTotal.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            ParseHashTotal(ARow);
+
+            TSharedFinanceValidation_GL.ValidateGLBatchManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+        }
+
+        private void ParseHashTotal(ABatchRow ARow)
+        {
+            decimal correctHashValue = 0;
+            string hashTotal = txtDetailBatchControlTotal.Text.Trim();
+            decimal hashDecimalVal;
+
+            if (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+                return;
+            }
+
+            if ((hashTotal == null) || (hashTotal.Length == 0))
+            {
+                correctHashValue = 0m;
+            }
+            else
+            {
+                if (!Decimal.TryParse(hashTotal, out hashDecimalVal))
+                {
+                    correctHashValue = 0m;
+                }
+                else
+                {
+                    correctHashValue = hashDecimalVal;
+                }
+            }
+
+            if (ARow.BatchControlTotal != correctHashValue)
+            {
+                ARow.BatchControlTotal = correctHashValue;
+                txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
+            }
         }
 
         private void ShowDetailsManual(ABatchRow ARow)
         {
-            UpdateChangeableStatus(ARow != null);
-
-            if (ARow != null)
+            if (ARow == null)
             {
-                FPetraUtilsObject.DetailProtectedMode =
-                    (ARow.BatchRunningTotal.Equals(MFinanceConstants.BATCH_POSTED)
-                     || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
-
-                ((TFrmGLBatch)ParentForm).LoadJournals(
-                    ARow.LedgerNumber,
-                    ARow.BatchNumber);
-
-                FSelectedBatchNumber = ARow.BatchNumber;
+                return;
             }
+
+            FPetraUtilsObject.DetailProtectedMode =
+                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED)
+                 || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
+
+            dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
+
+            FSelectedBatchNumber = ARow.BatchNumber;
+
+            //Update the batch period if necessary
+            UpdateBatchPeriod(null, null);
+
+            UpdateChangeableStatus();
         }
 
         /// <summary>
         /// This routine is called by a double click on a batch row, which means: Open the
-        /// Jounal Tab of this batch.
+        /// Journal Tab of this batch.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -164,28 +241,230 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Controls the enabled status of the Cancel, Test and Post buttons
+        /// </summary>
+        /// <param name="AEnable"></param>
+        private void EnableButtonControl(bool AEnable)
+        {
+            if (AEnable)
+            {
+                if (!pnlDetails.Enabled)
+                {
+                    pnlDetails.Enabled = true;
+                }
+            }
+
+            btnPostBatch.Enabled = AEnable;
+            btnTestPostBatch.Enabled = AEnable;
+            btnCancel.Enabled = AEnable;
+        }
+
+        private void ClearDetailControls()
+        {
+            FPetraUtilsObject.DisableDataChangedEvent();
+            txtDetailBatchDescription.Text = string.Empty;
+            txtDetailBatchControlTotal.NumberValueDecimal = 0;
+            dtpDetailDateEffective.Date = FDefaultDate;
+            FPetraUtilsObject.EnableDataChangedEvent();
+        }
+
+        /// <summary>
         /// add a new batch
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+            Int32 yearNumber = 0;
+            Int32 periodNumber = 0;
+
+            if (!rbtEditing.Checked)
+            {
+                rbtEditing.Checked = true;
+            }
+            else if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
+            {
+                return;
+            }
+
+            //Set year and period to correct value
+            if (cmbYearFilter.GetSelectedInt32() != 0)
+            {
+                cmbYearFilter.SelectedIndex = 0;
+            }
+            else if (cmbPeriodFilter.GetSelectedInt32() != 0)
+            {
+                cmbPeriodFilter.SelectedIndex = 0;
+            }
+
+            //FPreviouslySelectedDetailRow = null;
+
+            pnlDetails.Enabled = true;
+
+            //ClearDetailControls();
+
+            EnableButtonControl(true);
+
+            //grdDetails.DataSource = null;
+
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
 
-            ((ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1]).DateEffective = DefaultDate;
+            ABatchRow newBatchRow = (ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1];
 
-            FPetraUtilsObject.SetChangedFlag();
+            newBatchRow.DateEffective = FDefaultDate;
 
-            // BoundDataView bdv = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
-            //bdv
+            if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
+            {
+                newBatchRow.BatchPeriod = periodNumber;
+            }
 
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
-
-            grdDetails.Refresh();
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
-            // dtpDetailDateEffective.Date = DefaultDate;
 
-            // grdDetails.Selection.SelectRow(1,true);
+            FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
+            dtpDetailDateEffective.Date = FDefaultDate;
+
+            FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+
+            FPreviouslySelectedDetailRow.BatchDescription = "Please enter a batch description";
+            txtDetailBatchDescription.Text = "Please enter a batch description";
+            txtDetailBatchDescription.Focus();
+
+            ((TFrmGLBatch)ParentForm).SaveChanges();
+
+            //Enable the Journals if not already enabled
+            ((TFrmGLBatch)ParentForm).EnableJournals();
+        }
+
+        private void UpdateJournalTransEffectiveDate(bool ASetJournalDateOnly)
+        {
+            DateTime batchEffectiveDate = dtpDetailDateEffective.Date.Value;
+            Int32 activeJournalNumber = 0;
+            Int32 activeTransNumber = 0;
+            Int32 activeTransJournalNumber = 0;
+
+            bool activeJournalUpdated = false;
+            bool activeTransUpdated = false;
+
+            //Current Batch number
+            Int32 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+
+            FMainDS.AJournal.DefaultView.RowFilter = String.Format("{0}={1}",
+                ATransactionTable.GetBatchNumberDBName(),
+                batchNumber);
+
+            if (FMainDS.AJournal.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
+            }
+
+            activeJournalNumber = ((TFrmGLBatch) this.ParentForm).GetJournalsControl().ActiveJournalNumber(FLedgerNumber, batchNumber);
+            activeTransNumber = ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().ActiveTransactionNumber(FLedgerNumber,
+                batchNumber,
+                ref activeTransJournalNumber);
+
+            foreach (DataRowView v in FMainDS.AJournal.DefaultView)
+            {
+                AJournalRow r = (AJournalRow)v.Row;
+
+                if (ASetJournalDateOnly)
+                {
+                    if ((activeJournalNumber > 0) && !activeJournalUpdated && (r.JournalNumber == activeJournalNumber))
+                    {
+                        ((TFrmGLBatch) this.ParentForm).GetJournalsControl().UpdateEffectiveDateForCurrentRow(batchEffectiveDate);
+                        activeJournalUpdated = true;
+                    }
+
+                    r.BeginEdit();
+                    r.DateEffective = batchEffectiveDate;
+                    r.EndEdit();
+                }
+                else
+                {
+                    FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                        ATransactionTable.GetBatchNumberDBName(),
+                        batchNumber,
+                        ATransactionTable.GetJournalNumberDBName(),
+                        r.JournalNumber);
+
+                    if (FMainDS.ATransaction.DefaultView.Count == 0)
+                    {
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(FLedgerNumber, batchNumber, r.JournalNumber));
+                    }
+
+                    foreach (DataRowView w in FMainDS.ATransaction.DefaultView)
+                    {
+                        ATransactionRow t = (ATransactionRow)w.Row;
+
+                        if ((activeTransNumber > 0) && !activeTransUpdated && (r.JournalNumber == activeTransJournalNumber)
+                            && (t.TransactionNumber == activeTransNumber))
+                        {
+                            ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().UpdateEffectiveDateForCurrentRow(batchEffectiveDate);
+                            activeTransUpdated = true;
+                        }
+
+                        t.BeginEdit();
+                        t.TransactionDate = batchEffectiveDate;
+                        t.EndEdit();
+                    }
+                }
+            }
+
+            FPetraUtilsObject.HasChanges = true;
+        }
+
+        private void UpdateBatchPeriod(object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            try
+            {
+                Int32 periodNumber = 0;
+                Int32 yearNumber = 0;
+                DateTime dateValue;
+                string aDate = dtpDetailDateEffective.Date.ToString();
+
+                if (DateTime.TryParse(aDate, out dateValue))
+                {
+                    if (FPreviouslySelectedDetailRow.DateEffective != dateValue)
+                    {
+                        FPreviouslySelectedDetailRow.DateEffective = dateValue;
+                        //Update the Transaction effective dates
+                        UpdateJournalTransEffectiveDate(true);
+                    }
+
+                    if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
+                    {
+                        if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+                        {
+                            FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+
+                            //Update the Transaction effective dates
+                            UpdateJournalTransEffectiveDate(false);
+
+                            if (cmbYearFilter.SelectedIndex != 0)
+                            {
+                                cmbYearFilter.SelectedIndex = 0;
+                            }
+                            else if (cmbPeriodFilter.SelectedIndex != 0)
+                            {
+                                cmbPeriodFilter.SelectedIndex = 0;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
+        {
+            return TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
         }
 
         /// <summary>
@@ -200,9 +479,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
+            int newCurrentRowPos = grdDetails.SelectedRowIndex();
+
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 ||
-                (MessageBox.Show(String.Format(Catalog.GetString("You have choosen to cancel this batch ({0}).\n\nDo you really want to cancel it?"),
+                (MessageBox.Show(String.Format(Catalog.GetString("You have chosen to cancel this batch ({0}).\n\nDo you really want to cancel it?"),
                          FSelectedBatchNumber),
                      Catalog.GetString("Confirm Cancel"),
                      MessageBoxButtons.YesNo,
@@ -211,7 +492,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TVerificationResultCollection Verifications;
                 GLBatchTDS mergeDS;
                 //save the position of the actual row
-                int rowIndex = CurrentRowIndex();
+                //int rowIndex = CurrentRowIndex();
 
                 if (!TRemote.MFinance.GL.WebConnectors.CancelGLBatch(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
                 {
@@ -230,7 +511,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 else
                 {
                     FMainDS.Merge(mergeDS);
+                    //GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
                     FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                    //grdDetails.Refresh();
 
                     foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                     {
@@ -254,32 +537,54 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         transactionDV[0].Delete();
                     }
 
-                    MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
-                        Catalog.GetString("Success"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    //((TFrmGLBatch)ParentForm).GetJournalsControl() .ClearCurrentSelection();
+                    //Select and call the event that doesn't occur automatically
+                    SelectRowInGrid(newCurrentRowPos);
+
+                    //If some row(s) still exist after deletion
+                    if (grdDetails.Rows.Count < 2)
+                    {
+                        EnableButtonControl(false);
+                        ClearDetailControls();
+
+                        ((TFrmGLBatch)ParentForm).DisableJournals();
+                        ((TFrmGLBatch)ParentForm).DisableTransactions();
+                        ((TFrmGLBatch)ParentForm).DisableAttributes();
+                    }
+
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     FPetraUtilsObject.SetChangedFlag();
 
-                    SelectByIndex(rowIndex);
+                    //Need to call save
+                    if (((TFrmGLBatch)ParentForm).SaveChanges())
+                    {
+                        MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
+                            Catalog.GetString("Success"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        //((TFrmGLBatch)ParentForm).GetJournalsControl() .ClearCurrentSelection();
+                    }
+                    else
+                    {
+                        // saving failed, therefore do not try to post
+                        MessageBox.Show(Catalog.GetString(
+                                "The batch has been cancelled but there were problems during saving; ") + Environment.NewLine +
+                            Catalog.GetString("Please try and save the cancellation immediately."),
+                            Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-
-                // UpdateChangeableStatus();
             }
         }
 
+        /// <summary>
+        /// UpdateTotals
+        /// </summary>
         public void UpdateTotals()
         {
-            txtDetailBatchControlTotal.NumberValueDecimal =
-                FPreviouslySelectedDetailRow.BatchRunningTotal;
+            //Below not needed as yet
+            //txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
         }
 
-        private void PostBatch(System.Object sender, EventArgs e)
+        private bool SaveBatchForPosting()
         {
-            // TODO: show VerificationResult
-            // TODO: display progress of posting
-            TVerificationResultCollection Verifications;
-
             if (FPetraUtilsObject.HasChanges)
             {
                 // save first, then post
@@ -289,8 +594,42 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
                         Catalog.GetString("Please first save the batch, and then post it!"),
                         Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    return false;
                 }
+            }
+
+            return true;
+        }
+
+        private void PostBatch(System.Object sender, EventArgs e)
+        {
+            // TODO: display progress of posting
+            TVerificationResultCollection Verifications;
+
+            if (!SaveBatchForPosting())
+            {
+                return;
+            }
+
+            //get index position of row to post
+            int newCurrentRowPos = grdDetails.SelectedRowIndex();
+
+            //TODO: Correct this if needed
+            DateTime StartDateCurrentPeriod;
+            DateTime EndDateLastForwardingPeriod;
+
+            TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(FMainDS.ALedger[0].LedgerNumber,
+                out StartDateCurrentPeriod,
+                out EndDateLastForwardingPeriod);
+
+            if ((dtpDetailDateEffective.Date < StartDateCurrentPeriod) || (dtpDetailDateEffective.Date > EndDateLastForwardingPeriod))
+            {
+                MessageBox.Show(String.Format(Catalog.GetString(
+                            "The Date Effective is outside the periods available for posting. Enter a date between {0:d} and {1:d}."),
+                        StartDateCurrentPeriod,
+                        EndDateLastForwardingPeriod));
+
+                return;
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post batch {0}?"),
@@ -321,34 +660,121 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
 
-                    // TODO: refresh the grid, to reflect that the batch has been posted
+                    // refresh the grid, to reflect that the batch has been posted
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, FSelectedBatchNumber));
+
+                    // make sure that the current dataset is clean,
+                    // otherwise the next save would try to modify the posted batch, even though no values have been changed
+                    FMainDS.AcceptChanges();
+                    this.FPreviouslySelectedDetailRow = null;
+                    ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+
                     LoadBatches(FLedgerNumber);
+
+                    //Select unposted batch row in same index position as batch just posted
+                    grdDetails.DataSource = null;
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+
+                    if (grdDetails.Rows.Count > 1)
+                    {
+                        //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                        // such that a removal of a row is not detected
+                        SelectRowInGrid(newCurrentRowPos);
+                    }
+                    else
+                    {
+                        EnableButtonControl(false);
+                        ClearDetailControls();
+                        pnlDetails.Enabled = false;
+                    }
                 }
             }
         }
 
         /// <summary>
-        ///  The changes of the radio button are handled.
+        /// this function calculates the balances of the accounts involved, if this batch would be posted
         /// </summary>
-        /// <param name="sender">It should be a radio button</param>
+        /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
+        private void TestPostBatch(System.Object sender, EventArgs e)
         {
-            // Each radio button click invokes this routine twice, on run is done for the
-            // unchecked button an one is done for the checked one.
-            RadioButton radioButton = sender as RadioButton;
+            TVerificationResultCollection Verifications;
 
-            if (radioButton != null)
+            if (!SaveBatchForPosting())
             {
-                if (radioButton.Checked)
-                {
-                    int rowIndex = CurrentRowIndex();
+                return;
+            }
 
-                    SetBatchFilter();
-                    // TODO Select the actual row again in updated
-                    SelectByIndex(rowIndex);
-                    // UpdateChangeableStatus();
+            List <TVariant>Result = TRemote.MFinance.GL.WebConnectors.TestPostGLBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications);
+
+            if ((Verifications != null) && (Verifications.Count > 0))
+            {
+                string ErrorMessages = string.Empty;
+
+                foreach (TVerificationResult verif in Verifications)
+                {
+                    ErrorMessages += "[" + verif.ResultContext + "] " +
+                                     verif.ResultTextCaption + ": " +
+                                     verif.ResultText + Environment.NewLine;
                 }
+
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            else if (Result.Count < 25)
+            {
+                string message = string.Empty;
+
+                foreach (TVariant value in Result)
+                {
+                    ArrayList compValues = value.ToComposite();
+
+                    message +=
+                        string.Format(
+                            Catalog.GetString("{1}/{0} ({3}/{2}) is: {4} and would be: {5}"),
+                            ((TVariant)compValues[0]).ToString(),
+                            ((TVariant)compValues[2]).ToString(),
+                            ((TVariant)compValues[1]).ToString(),
+                            ((TVariant)compValues[3]).ToString(),
+                            StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
+                            StringHelper.FormatCurrency((TVariant)compValues[5], "currency")) +
+                        Environment.NewLine;
+                }
+
+                MessageBox.Show(message, Catalog.GetString("Result of Test Posting"));
+            }
+            else
+            {
+                // store to CSV file
+                string message = string.Empty;
+
+                foreach (TVariant value in Result)
+                {
+                    ArrayList compValues = value.ToComposite();
+
+                    message +=
+                        string.Format(
+                            "{0},{1},{2},{3},{4},{5}",
+                            ((TVariant)compValues[0]).ToString(),
+                            ((TVariant)compValues[1]).ToString(),
+                            ((TVariant)compValues[2]).ToString(),
+                            ((TVariant)compValues[3]).ToString(),
+                            StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
+                            StringHelper.FormatCurrency((TVariant)compValues[5], "currency")) +
+                        Environment.NewLine;
+                }
+
+                string CSVFilePath = TClientSettings.PathLog + Path.DirectorySeparatorChar + "Batch" + FSelectedBatchNumber.ToString() +
+                                     "_TestPosting.csv";
+                StreamWriter sw = new StreamWriter(CSVFilePath);
+                sw.Write(message);
+                sw.Close();
+
+                MessageBox.Show(
+                    String.Format(Catalog.GetString("Please see file {0} for the result of the test posting"), CSVFilePath),
+                    Catalog.GetString("Result of Test Posting"));
             }
         }
 
@@ -366,8 +792,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return rowIndex;
         }
 
+        /// <summary>
+        /// SelectByIndex
+        /// </summary>
+        /// <param name="rowIndex"></param>
         public void SelectByIndex(int rowIndex)
         {
+            // TODO: Alan noted on upgrade that this method could be replaced by SelectRowInGrid(rowIndex, true)
+            // This method actually never seems to be called
             if (rowIndex >= grdDetails.Rows.Count)
             {
                 rowIndex = grdDetails.Rows.Count - 1;
@@ -391,90 +823,204 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        /// <summary>
-        /// This routine is invoked if no Batch-Row has been selected. The idea was to
-        /// select the "old row again" defined by row index but in this case
-        /// the list of batches ist filtered. So the row must not exist any more.
-        /// </summary>
-        /// <param name="rowIndex">Index of a previosly selected row and -1 defines no row.</param>
-//        private void SelectByIndex(int rowIndex)
-//        {
-//            // In the very first call FPetraUtilsObject does not exists
-//            // Thererfore try-catch ..
-//            try
-//            {
-//                FPetraUtilsObject.DisableDataChangedEvent();
-//                txtDetailBatchControlTotal.Text = "";
-//                txtDetailBatchDescription.Text = "";
-//                dtpDetailDateEffective.Text = "";
-//                UpdateChangeableStatus(false);
-//                FPetraUtilsObject.EnableDataChangedEvent();
-////                if (rowIndex >=   grdDetails.Rows)
-////                {
-////                    rowIndex = rowIndex--;
-////                }
-//                grdDetails.Selection.SelectRow(rowIndex,true);
-//            }
-//            catch (Exception)
-//            {
-//            }
-//            ;
-//        }
-
-        /// <summary>
-        /// Program reaction of a change of the value of 3 nested radio buttons, which means
-        /// differnt filters to view the list o batches
-        /// </summary>
-
-        private void SetBatchFilter()
+        private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
         {
-            if (FMainDS == null)
+            if (AToggleOn)
+            {
+                rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+            }
+            else
+            {
+                rbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+            }
+        }
+
+        void RefreshFilter(Object sender, EventArgs e)
+        {
+            int batchNumber = 0;
+            int newRowToSelectAfterFilter = 1;
+            bool senderIsRadioButton = (sender is RadioButton);
+
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
                 return;
             }
+            else if ((sender != null) && senderIsRadioButton)
+            {
+                //Avoid repeat events
+                RadioButton rbt = (RadioButton)sender;
 
-            // load data from database, if it has not been loaded yet
-            if (rbtAll.Checked && ((FLoadedData & TFinanceBatchFilterEnum.fbfAll) == 0))
-            {
-                // TODO: more criteria: period, etc
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
-                FLoadedData = TFinanceBatchFilterEnum.fbfAll;
-            }
-            else if (rbtEditing.Checked && ((FLoadedData & TFinanceBatchFilterEnum.fbfEditing) == 0))
-            {
-                // TODO: more criteria: period, etc
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing));
-                FLoadedData |= TFinanceBatchFilterEnum.fbfEditing;
-            }
-            else if (rbtPosting.Checked && ((FLoadedData & TFinanceBatchFilterEnum.fbfReadyForPosting) == 0))
-            {
-                // TODO: more criteria: period, etc
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting));
-                FLoadedData |= TFinanceBatchFilterEnum.fbfReadyForPosting;
+                if (rbt.Name.Contains(FCurrentBatchViewOption))
+                {
+                    return;
+                }
             }
 
-            if (rbtAll.Checked)
+            //Record the current batch
+            if (FPreviouslySelectedDetailRow != null)
             {
-                FMainDS.ABatch.DefaultView.RowFilter = "";
-                btnNew.Enabled = true;
+                batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+
+                if (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                {
+                    FPetraUtilsObject.DisableSaveButton();
+                }
             }
-            else if (rbtEditing.Checked)
+
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
-                FMainDS.ABatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                if (senderIsRadioButton)
+                {
+                    //Need to cancel the change of option button
+                    if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_EDITING) && (rbtEditing.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtEditing.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                    else if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_ALL) && (rbtAll.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtAll.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                    else if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_POSTING) && (rbtPosting.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtPosting.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                }
+                else
+                {
+                    //Reset the combos
+                    FPetraUtilsObject.DisableDataChangedEvent();
+                    cmbYearFilter.SetSelectedInt32(FSelectedYear);
+                    cmbPeriodFilter.SetSelectedInt32(FSelectedPeriod);
+                    FPetraUtilsObject.EnableDataChangedEvent();
+                }
+
+                return;
+            }
+
+            ClearCurrentSelection();
+
+            FSelectedYear = cmbYearFilter.GetSelectedInt32();
+            FSelectedPeriod = cmbPeriodFilter.GetSelectedInt32();
+
+            FPeriodFilter = String.Format(
+                "{0} = {1} AND ",
+                ABatchTable.GetBatchYearDBName(), FSelectedYear);
+
+            if (FSelectedPeriod == 0)
+            {
+                ALedgerRow Ledger =
+                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+                FPeriodFilter += String.Format(
+                    "{0} >= {1}",
+                    ABatchTable.GetBatchPeriodDBName(), Ledger.CurrentPeriod);
+            }
+            else
+            {
+                FPeriodFilter += String.Format(
+                    "{0} = {1}",
+                    ABatchTable.GetBatchPeriodDBName(), FSelectedPeriod);
+            }
+
+            if (rbtEditing.Checked)
+            {
+                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
+
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
+                        FSelectedPeriod));
+                FStatusFilter = String.Format("{0} = '{1}'",
                     ABatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
                 btnNew.Enabled = true;
             }
             else if (rbtPosting.Checked)
             {
-                FMainDS.ABatch.DefaultView.RowFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2} ))",
+                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_POSTING;
+
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting, FSelectedYear,
+                        FSelectedPeriod));
+                FStatusFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2}))",
                     ABatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED,
                     ABatchTable.GetBatchCreditTotalDBName(),
                     ABatchTable.GetBatchDebitTotalDBName(),
                     ABatchTable.GetBatchControlTotalDBName());
-                btnNew.Enabled = false;
             }
+            else //(rbtAll.Checked)
+            {
+                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_ALL;
+
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, FSelectedYear,
+                        FSelectedPeriod));
+                FStatusFilter = "1 = 1";
+                btnNew.Enabled = true;
+            }
+
+            FPreviouslySelectedDetailRow = null;
+            grdDetails.DataSource = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+
+            FMainDS.ABatch.DefaultView.RowFilter =
+                String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+
+            if (grdDetails.Rows.Count < 2)
+            {
+                ClearDetailControls();
+                pnlDetails.Enabled = false;
+                ((TFrmGLBatch) this.ParentForm).DisableJournals();
+                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
+                ((TFrmGLBatch) this.ParentForm).DisableAttributes();
+            }
+            else
+            {
+                //Select same row after refilter
+                if (batchNumber > 0)
+                {
+                    newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber);
+                }
+
+                SelectRowInGrid(newRowToSelectAfterFilter);
+
+                UpdateChangeableStatus();
+                ((TFrmGLBatch) this.ParentForm).EnableJournals();
+            }
+        }
+
+        private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
+        {
+            int rowPos = 0;
+            bool batchFound = false;
+
+            foreach (DataRowView rowView in FMainDS.ABatch.DefaultView)
+            {
+                ABatchRow row = (ABatchRow)rowView.Row;
+
+                if ((row.LedgerNumber == ALedgerNumber) && (row.BatchNumber == ABatchNumber))
+                {
+                    batchFound = true;
+                    break;
+                }
+
+                rowPos++;
+            }
+
+            if (!batchFound)
+            {
+                rowPos = 0;
+            }
+
+            //remember grid is out of sync with DataView by 1 because of grid header rows
+            return rowPos + 1;
         }
 
         private void ImportFromSpreadSheet(object sender, EventArgs e)
@@ -516,7 +1062,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     string DefaultCostCentre = TXMLParser.GetAttribute(RootNode, "CostCentre");
 
                     CreateNewABatch();
-                    AJournalRow NewJournal = FMainDS.AJournal.NewRowTyped(true);
+                    GLBatchTDSAJournalRow NewJournal = FMainDS.AJournal.NewRowTyped(true);
                     ((TFrmGLBatch)ParentForm).GetJournalsControl().NewRowManual(ref NewJournal);
                     FMainDS.AJournal.Rows.Add(NewJournal);
                     NewJournal.TransactionCurrency = TXMLParser.GetAttribute(RootNode, "Currency");
@@ -651,13 +1197,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (!NewTransaction.IsTransactionDateNull())
                 {
-                    NewTransaction.AmountInIntlCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
-                        ARefJournalRow.TransactionCurrency,
-                        FMainDS.ALedger[0].IntlCurrency,
-                        NewTransaction.TransactionDate);
                     NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
                         ARefJournalRow.TransactionCurrency,
                         FMainDS.ALedger[0].BaseCurrency,
+                        NewTransaction.TransactionDate);
+                    //
+                    // The International currency calculation is changed to "Base -> International", because it's likely
+                    // we won't have a "Transaction -> International" conversion rate defined.
+                    //
+                    NewTransaction.AmountInIntlCurrency = NewTransaction.AmountInBaseCurrency * TExchangeRateCache.GetDailyExchangeRate(
+                        FMainDS.ALedger[0].BaseCurrency,
+                        FMainDS.ALedger[0].IntlCurrency,
                         NewTransaction.TransactionDate);
                 }
             } while (!dataFile.EndOfStream);
@@ -729,10 +1279,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            TFrmGLBatchExport gl = new TFrmGLBatchExport(this.Handle);
+            TFrmGLBatchExport gl = new TFrmGLBatchExport(FPetraUtilsObject.GetForm());
             gl.LedgerNumber = FLedgerNumber;
             gl.MainDS = FMainDS;
             gl.Show();
+        }
+
+        /// <summary>
+        /// Set focus to the gid controltab
+        /// </summary>
+        public void FocusGrid()
+        {
+            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            {
+                grdDetails.Focus();
+            }
         }
     }
 }

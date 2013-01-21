@@ -1,0 +1,31 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    UtilObjectClass: TFrmPetraEditUtils
+    FormTitle: Partners
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 450
+    WindowHeight: 400
+    
+    Controls:
+        pnlDialogContent:
+            Dock: Fill
+            Controls:
+                Row0: [lblExplanationLine1]
+                Row1: [lblExplanationLine2]
+                Row2: [lblEmptyLine]
+                Row3: [grdPartners]
+                
+        lblExplanationLine1:
+            Dock: Top
+
+        lblExplanationLine2:
+            Dock: Top
+            
+        lblEmptyLine:
+            Dock: Top
+
+        grdPartners:
+            Dock: Fill
+            

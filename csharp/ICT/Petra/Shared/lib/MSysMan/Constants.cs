@@ -131,6 +131,9 @@ namespace Ict.Petra.Shared.MSysMan
         /// <summary>key name for acquisition</summary>
         public const String PARTNER_ACQUISITION = "p_acquisition";
 
+        /// <summary>column name for last and first name combined field in UserList</summary>
+        public const String USER_LAST_AND_FIRST_NAME_COLUMNNAME = "LastAndFirstName";
+
         /// <summary>
         /// ------------------------------------------------------------------------------
         /// Reporting User Default Constants

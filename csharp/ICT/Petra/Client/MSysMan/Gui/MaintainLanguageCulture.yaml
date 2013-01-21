@@ -1,21 +1,23 @@
 RootNode:
-    BaseYaml: ../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
     FormTitle: Maintain Language and Culture
     Namespace: Ict.Petra.Client.MSysMan.Gui
     FormType: dialog
-    Width: 200
-    Height: 50
+    WindowWidth: 620
+    WindowHeight: 230
     Template: window
-    Actions:
-        actClose: {ActionId=eClose}
+
     Controls:
-        pnlContent:
-            Dock: Fill
-            Controls: 
+        pnlDialogContent:
+            Controls:
                 Row0: [cmbLanguage]
                 Row1: [cmbCulture]
-                Row2: [btnOk, btnCancel]
-        cmbLanguage: {ColSpan=2, Width=200}
-        cmbCulture: {ColSpan=2, Width=200}
-        btnOk: {ActionClick=Apply}
-        btnCancel: {Action=actClose}
+                Row2: [lblLanguageNotFound]
+                Row3: [lblLanguageNotFound2]
+                Row4: [llbLaunchpadLink]
+
+        cmbLanguage: {Width=204}
+        cmbCulture: {Width=204}
+        lblLanguageNotFound: {Text="Language not found?"}
+        lblLanguageNotFound2: {Text="If your language is not available or the translation needs improving, please consider helping. See"}
+        llbLaunchpadLink: {Label=Launchpad Translation Platform, Action=actLaunchpadLinkClicked, Width=200}
