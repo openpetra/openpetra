@@ -119,7 +119,13 @@ namespace Ict.Petra.Server.App.Core
 
             if (TAppSettingsManager.GetBoolean("Server.Processing.AutomatedIntranetExport.Enabled", false))
             {
-                // TODO
+                Assembly CommonProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MCommon.Processing");
+                Type IntranetExportClass = CommonProcessingAssembly.GetType("Ict.Petra.Server.MCommon.Processing.TProcessAutomatedIntranetExport");
+                TTimedProcessing.AddProcessingJob(
+                    (TTimedProcessing.TProcessDelegate)Delegate.CreateDelegate(
+                        typeof(TTimedProcessing.TProcessDelegate),
+                        IntranetExportClass,
+                        IntranetExportClass.GetMethod("Process")));
             }
         }
 
