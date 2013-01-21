@@ -24,12 +24,13 @@
 using System;
 using System.Globalization;
 using System.Threading;
+using System.Collections.Generic;
 
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
 
-namespace Ict.Petra.Server.App.Core.Processing
+namespace Ict.Petra.Server.App.Core
 {
     /// <summary>
     /// Provides means to run certain processing routines at timed intervals.
@@ -40,17 +41,15 @@ namespace Ict.Petra.Server.App.Core.Processing
         public const string StrAutomaticProcessing = "Automatic Processing";
 
         private static int MINUTES_DELAY_BETWEEN_INDIV_PROCESSES = 5;
-        delegate void TRemindersProcessor (System.Object AState);
-        delegate void TAutomatedIntranetExportProcessor (System.Object AState);
-
-        private static TRemindersProcessor FRemindersProcessor;
-        private static TAutomatedIntranetExportProcessor FIntranetExportProcessor;
-        private static System.Threading.Timer FRemindersTimer;
-        private static System.Threading.Timer FIntranetExportTimer;
+        delegate void TGenericProcessor (object processormethod);
+        /// <summary>
+        /// delegate for processing
+        /// </summary>
+        public delegate void TProcessDelegate(TDataBase Database);
+        private static List <TProcessDelegate>FProcessDelegates = new List <TTimedProcessing.TProcessDelegate>();
+        private static List <System.Threading.Timer>FTimers = new List <Timer>();
 
         private static DateTime FDailyStartTime24Hrs;
-        private static bool FProcessPartnerRemindersEnabled = false;
-        private static bool FProcessAutomatedIntranetExportEnabled = false;
 
         /// <summary>Daily start time of Processing in 24 Hrs Format (with leading zeroes for hours and minutes between 0-9) (this is taken by reading a value from the Server Config file).</summary>
         public static string DailyStartTime24Hrs
@@ -75,74 +74,23 @@ namespace Ict.Petra.Server.App.Core.Processing
             }
         }
 
-        /// <summary>Whether the Partner Reminders processing is enabled (this is decided by reading a value from the Server Config file).</summary>
-        public static bool ProcessPartnerRemindersEnabled
-        {
-            get
-            {
-                return FProcessPartnerRemindersEnabled;
-            }
-
-            set
-            {
-                FProcessPartnerRemindersEnabled = value;
-            }
-        }
-
-        /// <summary>Whether the Automated Intranet (Caleb) Export is enabled (this is decided by reading a value from the Server Config file).</summary>
-        public static bool ProcessAutomatedIntranetExportEnabled
-        {
-            get
-            {
-                return FProcessAutomatedIntranetExportEnabled;
-            }
-
-            set
-            {
-                FProcessAutomatedIntranetExportEnabled = value;
-            }
-        }
-
         /// <summary>
-        /// Processes the Partner Reminders.
+        /// Processes the delegate
         /// </summary>
-        private static void ProcessRemindersDelegate(object AState)
+        private static void GenericProcessor(object ADelegate)
         {
-            TLogging.Log("TODO: Automated partner reminders have not been implemented yet");
-            return;
-#if TODO
             TDataBase db = EstablishDBConnection();
 
-            TProcessPartnerReminders.Process(db);
+            TProcessDelegate TypedDelegate = (TProcessDelegate)ADelegate;
+
+            TypedDelegate(db);
 
             CloseDBConnection(db);
 
             if (TLogging.DebugLevel >= 9)
             {
-                TLogging.Log("TTimedProcessing.ProcessRemindersDelegate has run.");
+                TLogging.Log("delegate " + ADelegate.ToString() + " has run.");
             }
-#endif
-        }
-
-        /// <summary>
-        /// Processes the Automated Intranet (Caleb) Export.
-        /// </summary>
-        private static void ProcessAutomatedIntranetExportDelegate(object AState)
-        {
-            TLogging.Log("TODO: Automated Export to the Intranet has not been implemented yet");
-            return;
-#if TODO
-            TDataBase db = EstablishDBConnection();
-
-            TProcessAutomatedIntranetExport.Process(db);
-
-            CloseDBConnection(db);
-
-            if (TLogging.DebugLevel >= 9)
-            {
-                TLogging.Log("TTimedProcessing.ProcessAutomatedIntranetExportDelegate has run.");
-            }
-#endif
         }
 
         /// <summary>
@@ -189,6 +137,14 @@ namespace Ict.Petra.Server.App.Core.Processing
         }
 
         /// <summary>
+        /// add a new processing job
+        /// </summary>
+        public static void AddProcessingJob(TProcessDelegate ADelegate)
+        {
+            FProcessDelegates.Add(ADelegate);
+        }
+
+        /// <summary>
         /// Starts all processing Timers.
         /// </summary>
         /// <description>This Method performs immediate processing
@@ -202,21 +158,10 @@ namespace Ict.Petra.Server.App.Core.Processing
             TimeSpan TwentyfourHrs;
 
             // Check if any Processing is enabled at all
-            if (!(FProcessPartnerRemindersEnabled || FProcessAutomatedIntranetExportEnabled))
+            if (FProcessDelegates.Count == 0)
             {
                 // No Processing is enabled, therefore we don't do anything here!
                 return;
-            }
-
-            // Set up the Delegates that will be passed to the Timer
-            if (FProcessPartnerRemindersEnabled)
-            {
-                FRemindersProcessor = new TRemindersProcessor(ProcessRemindersDelegate);
-            }
-
-            if (FProcessAutomatedIntranetExportEnabled)
-            {
-                FIntranetExportProcessor = new TAutomatedIntranetExportProcessor(ProcessAutomatedIntranetExportDelegate);
             }
 
             /*
@@ -251,64 +196,28 @@ namespace Ict.Petra.Server.App.Core.Processing
              */
             if (TodaysStartTime < DateTime.Now)
             {
-                if (FProcessPartnerRemindersEnabled)
+                foreach (TProcessDelegate processdelegate in FProcessDelegates)
                 {
-                    ProcessRemindersDelegate(null);
-                }
-
-                if (FProcessAutomatedIntranetExportEnabled)
-                {
-                    ProcessAutomatedIntranetExportDelegate(null);
+                    // run the job
+                    GenericProcessor(processdelegate);
                 }
             }
 
             /*
              * Start the Timer(s) for the individual processing Processes
              */
-
-            if (FProcessPartnerRemindersEnabled)
+            foreach (TProcessDelegate processdelegate in FProcessDelegates)
             {
-                /*
-                 * Schedule the regular Partner Reminders processing calls.
-                 * The Timer will execute the function 'ProcessRemindersDelegate' through
-                 * calling the FRemindersProcessor Delegate in the specified time periods.
-                 */
-                FRemindersTimer = new System.Threading.Timer(
-                    new TimerCallback(FRemindersProcessor),
-                    null,
-                    InitialSleepTime,
-                    TwentyfourHrs);
+                InitialSleepTime = InitialSleepTime.Add(new TimeSpan(0, MINUTES_DELAY_BETWEEN_INDIV_PROCESSES, 0));
+                TwentyfourHrs = TwentyfourHrs.Add(new TimeSpan(0, MINUTES_DELAY_BETWEEN_INDIV_PROCESSES, 0));
+
+                // Schedule the regular processing calls.
+                FTimers.Add(new System.Threading.Timer(
+                        new TimerCallback(new TGenericProcessor(GenericProcessor)),
+                        processdelegate,
+                        InitialSleepTime,
+                        TwentyfourHrs));
             }
-
-            if (FProcessAutomatedIntranetExportEnabled)
-            {
-                /*
-                 * Schedule the regular Automatic Intranet (Caleb) Export calls.
-                 * The Timer will execute the function 'ProcessAutomatedIntranetExportDelegate' through
-                 * calling the FIntranetExportProcessor Delegate in the specified time periods.
-                 */
-                FIntranetExportTimer = new System.Threading.Timer(
-                    new TimerCallback(FIntranetExportProcessor),
-                    null,
-                    InitialSleepTime.Add(new TimeSpan(0, MINUTES_DELAY_BETWEEN_INDIV_PROCESSES, 0)),
-                    TwentyfourHrs.Add(new TimeSpan(0, MINUTES_DELAY_BETWEEN_INDIV_PROCESSES, 0)));
-            }
-        }
-
-        /// <summary>
-        /// Manually call the reminders process
-        /// </summary>
-        public static void ManuallyProcessReminders()
-        {
-            ProcessRemindersDelegate(null);
-        }
-
-        /// <summary>
-        /// Manually call the Intranet export
-        /// </summary>
-        public static void ManuallyProcessIntranetExport()
-        {
-            ProcessAutomatedIntranetExportDelegate(null);
         }
     }
 }

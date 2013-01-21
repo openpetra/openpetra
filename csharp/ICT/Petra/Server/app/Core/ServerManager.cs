@@ -45,7 +45,6 @@ using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.App.Core.Processing;
 
 namespace Ict.Petra.Server.App.Core
 {
@@ -106,10 +105,22 @@ namespace Ict.Petra.Server.App.Core
                 new TClientAppDomainConnection());
 
             TTimedProcessing.DailyStartTime24Hrs = TAppSettingsManager.GetValue("Server.Processing.DailyStartTime24Hrs", "00:30");
-            TTimedProcessing.ProcessPartnerRemindersEnabled = TAppSettingsManager.GetBoolean("Server.Processing.PartnerReminders.Enabled", true);
-            TTimedProcessing.ProcessAutomatedIntranetExportEnabled = TAppSettingsManager.GetBoolean(
-                "Server.Processing.AutomatedIntranetExport.Enabled",
-                true);
+
+            if (TAppSettingsManager.GetBoolean("Server.Processing.PartnerReminders.Enabled", true))
+            {
+                Assembly PartnerProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MPartner.Processing");
+                Type PartnerReminderClass = PartnerProcessingAssembly.GetType("Ict.Petra.Server.MPartner.Processing.TProcessPartnerReminders");
+                TTimedProcessing.AddProcessingJob(
+                    (TTimedProcessing.TProcessDelegate)Delegate.CreateDelegate(
+                        typeof(TTimedProcessing.TProcessDelegate),
+                        PartnerReminderClass,
+                        PartnerReminderClass.GetMethod("Process")));
+            }
+
+            if (TAppSettingsManager.GetBoolean("Server.Processing.AutomatedIntranetExport.Enabled", false))
+            {
+                // TODO
+            }
         }
 
         private List <TDataBase>FDBConnections = new List <TDataBase>();
