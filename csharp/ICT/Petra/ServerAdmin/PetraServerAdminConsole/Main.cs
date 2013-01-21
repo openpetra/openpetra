@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -422,6 +422,40 @@ public class TAdminConsole
                         Console.Write(ServerAdminPrompt);
 
                         // queue a Client Task for a certain Client
+                        break;
+
+                    case 'p':
+                    case 'P':
+                        string resp = "";
+
+                        Console.WriteLine("  Server Timed Processing Status: " +
+                            "runs daily at " + TRemote.TimedProcessingDailyStartTime24Hrs + ".");
+                        Console.WriteLine("    Partner Reminders: " + (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders") ? "On" : "Off"));
+                        Console.WriteLine("    Automatic Intranet Export: " + (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
+
+                        Console.WriteLine("  SMTP Server used for sending e-mails: " + TRemote.SMTPServer);
+
+                        Console.WriteLine("");
+                        Console.WriteLine("Do you want to run Reminder Processing now?");
+                        Console.Write("Type YES to continue, anything else to skip:");
+                        resp = Console.ReadLine();
+
+                        if (resp == "YES")
+                        {
+                            TRemote.PerformTimedProcessingNow("TProcessPartnerReminders");
+                        }
+
+                        Console.WriteLine("");
+                        Console.WriteLine("Do you want to run Intranet Export Processing now?");
+                        Console.Write("Type YES to continue, anything else to skip:");
+                        resp = Console.ReadLine();
+
+                        if (resp == "YES")
+                        {
+                            TRemote.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
+                        }
+
+                        Console.Write(ServerAdminPrompt);
                         break;
 
                     case 's':

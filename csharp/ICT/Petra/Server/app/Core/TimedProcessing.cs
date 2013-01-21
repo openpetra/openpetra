@@ -46,7 +46,7 @@ namespace Ict.Petra.Server.App.Core
         /// delegate for processing
         /// </summary>
         public delegate void TProcessDelegate(TDataBase Database);
-        private static List <TProcessDelegate>FProcessDelegates = new List <TTimedProcessing.TProcessDelegate>();
+        private static SortedList <string, TProcessDelegate>FProcessDelegates = new SortedList <string, TTimedProcessing.TProcessDelegate>();
         private static List <System.Threading.Timer>FTimers = new List <Timer>();
 
         private static DateTime FDailyStartTime24Hrs;
@@ -77,11 +77,11 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>
         /// Processes the delegate
         /// </summary>
-        private static void GenericProcessor(object ADelegate)
+        private static void GenericProcessor(object ADelegateName)
         {
             TDataBase db = EstablishDBConnection();
 
-            TProcessDelegate TypedDelegate = (TProcessDelegate)ADelegate;
+            TProcessDelegate TypedDelegate = FProcessDelegates[(string)ADelegateName];
 
             TypedDelegate(db);
 
@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.App.Core
 
             if (TLogging.DebugLevel >= 9)
             {
-                TLogging.Log("delegate " + ADelegate.ToString() + " has run.");
+                TLogging.Log("delegate " + ADelegateName + " has run.");
             }
         }
 
@@ -139,9 +139,26 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>
         /// add a new processing job
         /// </summary>
-        public static void AddProcessingJob(TProcessDelegate ADelegate)
+        public static void AddProcessingJob(string ADelegateName, TProcessDelegate ADelegate)
         {
-            FProcessDelegates.Add(ADelegate);
+            FProcessDelegates.Add(ADelegateName, ADelegate);
+        }
+
+        /// <summary>
+        /// run this job now
+        /// </summary>
+        /// <param name="ADelegateName"></param>
+        public static void RunJobManually(string ADelegateName)
+        {
+            GenericProcessor(ADelegateName);
+        }
+
+        /// <summary>
+        /// check if that job has been added
+        /// </summary>
+        public static bool IsJobEnabled(string ADelegateName)
+        {
+            return FProcessDelegates.ContainsKey(ADelegateName);
         }
 
         /// <summary>
@@ -196,17 +213,17 @@ namespace Ict.Petra.Server.App.Core
              */
             if (TodaysStartTime < DateTime.Now)
             {
-                foreach (TProcessDelegate processdelegate in FProcessDelegates)
+                foreach (string delegatename in FProcessDelegates.Keys)
                 {
                     // run the job
-                    GenericProcessor(processdelegate);
+                    GenericProcessor(delegatename);
                 }
             }
 
             /*
              * Start the Timer(s) for the individual processing Processes
              */
-            foreach (TProcessDelegate processdelegate in FProcessDelegates)
+            foreach (string delegatename in FProcessDelegates.Keys)
             {
                 InitialSleepTime = InitialSleepTime.Add(new TimeSpan(0, MINUTES_DELAY_BETWEEN_INDIV_PROCESSES, 0));
                 TwentyfourHrs = TwentyfourHrs.Add(new TimeSpan(0, MINUTES_DELAY_BETWEEN_INDIV_PROCESSES, 0));
@@ -214,7 +231,7 @@ namespace Ict.Petra.Server.App.Core
                 // Schedule the regular processing calls.
                 FTimers.Add(new System.Threading.Timer(
                         new TimerCallback(new TGenericProcessor(GenericProcessor)),
-                        processdelegate,
+                        delegatename,
                         InitialSleepTime,
                         TwentyfourHrs));
             }

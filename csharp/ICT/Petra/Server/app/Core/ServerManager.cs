@@ -111,6 +111,7 @@ namespace Ict.Petra.Server.App.Core
                 Assembly PartnerProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MPartner.Processing");
                 Type PartnerReminderClass = PartnerProcessingAssembly.GetType("Ict.Petra.Server.MPartner.Processing.TProcessPartnerReminders");
                 TTimedProcessing.AddProcessingJob(
+                    "TProcessPartnerReminders",
                     (TTimedProcessing.TProcessDelegate)Delegate.CreateDelegate(
                         typeof(TTimedProcessing.TProcessDelegate),
                         PartnerReminderClass,
@@ -122,6 +123,7 @@ namespace Ict.Petra.Server.App.Core
                 Assembly CommonProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MCommon.Processing");
                 Type IntranetExportClass = CommonProcessingAssembly.GetType("Ict.Petra.Server.MCommon.Processing.TProcessAutomatedIntranetExport");
                 TTimedProcessing.AddProcessingJob(
+                    "TProcessAutomatedIntranetExport",
                     (TTimedProcessing.TProcessDelegate)Delegate.CreateDelegate(
                         typeof(TTimedProcessing.TProcessDelegate),
                         IntranetExportClass,
@@ -249,6 +251,31 @@ namespace Ict.Petra.Server.App.Core
         public void SetupServerTimedProcessing()
         {
             TTimedProcessing.StartProcessing();
+        }
+
+        /// <summary>
+        /// Allows the server or admin console to run a timed job now
+        /// </summary>
+        public override void PerformTimedProcessingNow(string AProcessName)
+        {
+            TTimedProcessing.RunJobManually(AProcessName);
+        }
+
+        /// Is the process job enabled?
+        public override bool TimedProcessingJobEnabled(string AProcessName)
+        {
+            return TTimedProcessing.IsJobEnabled(AProcessName);
+        }
+
+        /// <summary>
+        /// the daily start time for the timed processing
+        /// </summary>
+        public override string TimedProcessingDailyStartTime24Hrs
+        {
+            get
+            {
+                return TTimedProcessing.DailyStartTime24Hrs;
+            }
         }
     }
 }

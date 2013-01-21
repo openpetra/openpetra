@@ -447,6 +447,40 @@ public class TServer
 
                         break;
 
+                    case 'p':
+                    case 'P':
+                        string resp = "";
+
+                        Console.WriteLine("  Server Timed Processing Status: " +
+                            "runs daily at " + TheServerManager.TimedProcessingDailyStartTime24Hrs + ".");
+                        Console.WriteLine("    Partner Reminders: " + (TheServerManager.TimedProcessingJobEnabled("TProcessPartnerReminders") ? "On" : "Off"));
+                        Console.WriteLine("    Automatic Intranet Export: " + (TheServerManager.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
+
+                        Console.WriteLine("  SMTP Server used for sending e-mails: " + TheServerManager.SMTPServer);
+
+                        Console.WriteLine("");
+                        Console.WriteLine("Do you want to run Reminder Processing now?");
+                        Console.Write("Type YES to continue, anything else to skip:");
+                        resp = Console.ReadLine();
+
+                        if (resp == "YES")
+                        {
+                            TheServerManager.PerformTimedProcessingNow("TProcessPartnerReminders");
+                        }
+
+                        Console.WriteLine("");
+                        Console.WriteLine("Do you want to run Intranet Export Processing now?");
+                        Console.Write("Type YES to continue, anything else to skip:");
+                        resp = Console.ReadLine();
+
+                        if (resp == "YES")
+                        {
+                            TheServerManager.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
+                        }
+
+                        WriteServerPrompt();
+                        break;
+                        
                     case 's':
                     case 'S':
                         Console.WriteLine(Environment.NewLine + "-> Server Status <-");
