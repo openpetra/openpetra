@@ -49,10 +49,10 @@ namespace Ict.Petra.Server.MCommon.Processing
         private static void CheckModule(TDataBase ADBAccessObj, string AModule)
         {
             // get all sql files starting with module
-            string[] sqlfiles = Directory.GetFiles(TAppSettingsManager.GetValue("SqlFiles.Path",
-                    ".") + Path.DirectorySeparatorChar + AModule + "*.sql");
+            string[] sqlfiles = Directory.GetFiles(Path.GetFullPath(TAppSettingsManager.GetValue("SqlFiles.Path", ".")),
+                AModule + "*.sql");
 
-            DataTable errors = new DataTable();
+            DataTable errors = new DataTable(AModule + "Errors");
 
             foreach (string sqlfile in sqlfiles)
             {
@@ -60,8 +60,8 @@ namespace Ict.Petra.Server.MCommon.Processing
 
                 // extend the sql to load the s_date_created_d, s_created_by_c, s_date_modified_d, s_modified_by_c
                 // only for the first table in the FROM clause
-                string firstTableAlias = sql.Substring(sql.ToUpper().IndexOf("FROM") + "FROM".Length);
-                firstTableAlias = sql.Substring(0, firstTableAlias.ToUpper().IndexOf("WHERE"));
+                string firstTableAlias = sql.Substring(sql.ToUpper().IndexOf("FROM ") + "FROM ".Length);
+                firstTableAlias = firstTableAlias.Substring(0, firstTableAlias.ToUpper().IndexOf("WHERE"));
                 int indexOfAs = firstTableAlias.ToUpper().IndexOf(" AS ");
 
                 if (indexOfAs > -1)

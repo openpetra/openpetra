@@ -32,6 +32,7 @@ using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -73,6 +74,16 @@ namespace Ict.Petra.Server.MPartner.Processing
             {
                 TLogging.Log("Entering TProcessPartnerReminders.Process...");
             }
+
+            // TODO: it is quite impossible at the moment to use ADBAccessObj instead of DBAccess.GDBAccessObj due to SubmitChanges etc
+
+            // SubmitChanges references a user
+            TPetraIdentity PetraIdentity = new TPetraIdentity(
+                "SYSADMIN", "", "", "", "", DateTime.MinValue,
+                DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false,
+                false);
+
+            UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
             // Open database transaction
             TDBTransaction ReadWriteTransaction = ADBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
@@ -379,7 +390,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             DataSet ReminderResultsDS = new DataSet();
             ReminderResultsDS.Tables.Add(APartnerReminderDT);
 
-            SQLCommand = "SELECT * FROM PUB.p_partner_reminder WHERE ";
+            SQLCommand = "SELECT * FROM PUB_p_partner_reminder WHERE ";
             SQLCommand += " ( p_next_reminder_date_d > ? OR p_last_reminder_sent_d IS NULL) AND ";
             SQLCommand += " p_next_reminder_date_d <= ? AND ";
             SQLCommand += " p_reminder_active_l = TRUE AND ";
@@ -388,14 +399,14 @@ namespace Ict.Petra.Server.MPartner.Processing
             OdbcParams = new List <OdbcParameter>();
 
             // Parameter 1 = LastReminderDate from SystemDefaults
-            OdbcParams.Add(new OdbcParameter("@LastDate", OdbcType.Date, 16));
+            OdbcParams.Add(new OdbcParameter("LastDate", OdbcType.Date));
             OdbcParams[0].Value = ALastReminderDate.Date;
 
             // Parameter 2 = Today's date
-            OdbcParams.Add(new OdbcParameter("@Now", OdbcType.Date, 16));
+            OdbcParams.Add(new OdbcParameter("Now", OdbcType.Date));
             OdbcParams[1].Value = DateTime.Now.Date;
 
-            ADBAccessObj.Select(ReminderResultsDS, SQLCommand, APartnerReminderDT.TableName, AReadTransaction, OdbcParams.ToArray());
+            DBAccess.GDBAccessObj.Select(ReminderResultsDS, SQLCommand, APartnerReminderDT.TableName, AReadTransaction, OdbcParams.ToArray());
 
             // Mark the data as being 'unchanged' (rather than 'new', which it is by default)
             ReminderResultsDS.AcceptChanges();

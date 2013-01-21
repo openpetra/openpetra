@@ -350,6 +350,7 @@ public class TAdminConsole
                         Console.WriteLine(Environment.NewLine + "-> Available commands <-");
                         Console.WriteLine("     c: list connected Clients / C: list disconnected Clients");
                         Console.WriteLine("     d: disconnect a certain Client");
+                        Console.WriteLine("     p: perform timed server processing manually now");
                         Console.WriteLine("     q: queue a Client Task for a certain Client");
                         Console.WriteLine("     s: Server Status");
 
@@ -437,34 +438,43 @@ public class TAdminConsole
 
                         Console.WriteLine("  SMTP Server used for sending e-mails: " + TRemote.SMTPServer);
 
-                        Console.WriteLine("");
-                        Console.WriteLine("Do you want to run Reminder Processing now?");
-                        Console.Write("Type YES to continue, anything else to skip:");
-                        resp = Console.ReadLine();
-
-                        if (resp == "YES")
+                        if (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders"))
                         {
-                            TRemote.PerformTimedProcessingNow("TProcessPartnerReminders");
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Reminder Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TRemote.PerformTimedProcessingNow("TProcessPartnerReminders");
+                            }
                         }
 
-                        Console.WriteLine("");
-                        Console.WriteLine("Do you want to run Intranet Export Processing now?");
-                        Console.Write("Type YES to continue, anything else to skip:");
-                        resp = Console.ReadLine();
-
-                        if (resp == "YES")
+                        if (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport"))
                         {
-                            TRemote.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Intranet Export Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TRemote.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
+                            }
                         }
 
-                        Console.WriteLine("");
-                        Console.WriteLine("Do you want to run Data Checks Processing now?");
-                        Console.Write("Type YES to continue, anything else to skip:");
-                        resp = Console.ReadLine();
-
-                        if (resp == "YES")
+                        if (TRemote.TimedProcessingJobEnabled("TProcessDataChecks"))
                         {
-                            TRemote.PerformTimedProcessingNow("TProcessDataChecks");
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Data Checks Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TRemote.PerformTimedProcessingNow("TProcessDataChecks");
+                            }
                         }
 
                         Console.Write(ServerAdminPrompt);

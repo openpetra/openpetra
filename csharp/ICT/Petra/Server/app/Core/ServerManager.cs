@@ -108,38 +108,38 @@ namespace Ict.Petra.Server.App.Core
 
             if (TAppSettingsManager.GetBoolean("Server.Processing.PartnerReminders.Enabled", true))
             {
-                Assembly PartnerProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MPartner.Processing");
+                Assembly PartnerProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MPartner.processing");
                 Type PartnerReminderClass = PartnerProcessingAssembly.GetType("Ict.Petra.Server.MPartner.Processing.TProcessPartnerReminders");
                 TTimedProcessing.AddProcessingJob(
                     "TProcessPartnerReminders",
                     (TTimedProcessing.TProcessDelegate)Delegate.CreateDelegate(
                         typeof(TTimedProcessing.TProcessDelegate),
                         PartnerReminderClass,
-                        PartnerReminderClass.GetMethod("Process")));
+                        "Process"));
             }
 
             if (TAppSettingsManager.GetBoolean("Server.Processing.AutomatedIntranetExport.Enabled", false))
             {
-                Assembly CommonProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MCommon.Processing");
+                Assembly CommonProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MCommon.processing");
                 Type IntranetExportClass = CommonProcessingAssembly.GetType("Ict.Petra.Server.MCommon.Processing.TProcessAutomatedIntranetExport");
                 TTimedProcessing.AddProcessingJob(
                     "TProcessAutomatedIntranetExport",
                     (TTimedProcessing.TProcessDelegate)Delegate.CreateDelegate(
                         typeof(TTimedProcessing.TProcessDelegate),
                         IntranetExportClass,
-                        IntranetExportClass.GetMethod("Process")));
+                        "Process"));
             }
 
             if (TAppSettingsManager.GetBoolean("Server.Processing.DataChecks.Enabled", false))
             {
-                Assembly CommonProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MCommon.Processing");
+                Assembly CommonProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MCommon.processing");
                 Type ProcessDataChecksClass = CommonProcessingAssembly.GetType("Ict.Petra.Server.MCommon.Processing.TProcessDataChecks");
                 TTimedProcessing.AddProcessingJob(
                     "TProcessDataChecks",
                     (TTimedProcessing.TProcessDelegate)Delegate.CreateDelegate(
                         typeof(TTimedProcessing.TProcessDelegate),
                         ProcessDataChecksClass,
-                        ProcessDataChecksClass.GetMethod("Process")));
+                        "Process"));
             }
         }
 

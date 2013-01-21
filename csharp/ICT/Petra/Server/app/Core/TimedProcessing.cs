@@ -146,7 +146,10 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         public static void AddProcessingJob(string ADelegateName, TProcessDelegate ADelegate)
         {
-            FProcessDelegates.Add(ADelegateName, ADelegate);
+            if (!FProcessDelegates.ContainsKey(ADelegateName))
+            {
+                FProcessDelegates.Add(ADelegateName, ADelegate);
+            }
         }
 
         /// <summary>
