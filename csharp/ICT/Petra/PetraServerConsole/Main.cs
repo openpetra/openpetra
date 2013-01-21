@@ -462,7 +462,7 @@ public class TServer
 
                         Console.WriteLine("  SMTP Server used for sending e-mails: " + TheServerManager.SMTPServer);
 
-                        if (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders"))
+                        if (TheServerManager.TimedProcessingJobEnabled("TProcessPartnerReminders"))
                         {
                             Console.WriteLine("");
                             Console.WriteLine("Do you want to run Reminder Processing now?");
@@ -475,7 +475,7 @@ public class TServer
                             }
                         }
 
-                        if (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport"))
+                        if (TheServerManager.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport"))
                         {
                             Console.WriteLine("");
                             Console.WriteLine("Do you want to run Intranet Export Processing now?");
@@ -488,7 +488,7 @@ public class TServer
                             }
                         }
 
-                        if (TRemote.TimedProcessingJobEnabled("TProcessDataChecks"))
+                        if (TheServerManager.TimedProcessingJobEnabled("TProcessDataChecks"))
                         {
                             Console.WriteLine("");
                             Console.WriteLine("Do you want to run Data Checks Processing now?");
