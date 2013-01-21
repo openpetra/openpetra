@@ -452,9 +452,12 @@ public class TServer
                         string resp = "";
 
                         Console.WriteLine("  Server Timed Processing Status: " +
-                            "runs daily at " + TheServerManager.TimedProcessingDailyStartTime24Hrs + ".");
-                        Console.WriteLine("    Partner Reminders: " + (TheServerManager.TimedProcessingJobEnabled("TProcessPartnerReminders") ? "On" : "Off"));
-                        Console.WriteLine("    Automatic Intranet Export: " + (TheServerManager.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
+                        "runs daily at " + TheServerManager.TimedProcessingDailyStartTime24Hrs + ".");
+                        Console.WriteLine("    Partner Reminders: " +
+                        (TheServerManager.TimedProcessingJobEnabled("TProcessPartnerReminders") ? "On" : "Off"));
+                        Console.WriteLine("    Automatic Intranet Export: " +
+                        (TheServerManager.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
+                        Console.WriteLine("    Data Checks: " + (TheServerManager.TimedProcessingJobEnabled("TProcessDataChecks") ? "On" : "Off"));
 
                         Console.WriteLine("  SMTP Server used for sending e-mails: " + TheServerManager.SMTPServer);
 
@@ -478,9 +481,19 @@ public class TServer
                             TheServerManager.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
                         }
 
+                        Console.WriteLine("");
+                        Console.WriteLine("Do you want to run Data Checks Processing now?");
+                        Console.Write("Type YES to continue, anything else to skip:");
+                        resp = Console.ReadLine();
+
+                        if (resp == "YES")
+                        {
+                            TheServerManager.PerformTimedProcessingNow("TProcessDataChecks");
+                        }
+
                         WriteServerPrompt();
                         break;
-                        
+
                     case 's':
                     case 'S':
                         Console.WriteLine(Environment.NewLine + "-> Server Status <-");

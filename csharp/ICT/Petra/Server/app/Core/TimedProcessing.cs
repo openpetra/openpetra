@@ -79,6 +79,11 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         private static void GenericProcessor(object ADelegateName)
         {
+            if (!FProcessDelegates.ContainsKey((string)ADelegateName))
+            {
+                return;
+            }
+
             TDataBase db = EstablishDBConnection();
 
             TProcessDelegate TypedDelegate = FProcessDelegates[(string)ADelegateName];

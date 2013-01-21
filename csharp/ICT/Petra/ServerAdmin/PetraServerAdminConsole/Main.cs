@@ -429,9 +429,11 @@ public class TAdminConsole
                         string resp = "";
 
                         Console.WriteLine("  Server Timed Processing Status: " +
-                            "runs daily at " + TRemote.TimedProcessingDailyStartTime24Hrs + ".");
+                        "runs daily at " + TRemote.TimedProcessingDailyStartTime24Hrs + ".");
                         Console.WriteLine("    Partner Reminders: " + (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders") ? "On" : "Off"));
-                        Console.WriteLine("    Automatic Intranet Export: " + (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
+                        Console.WriteLine("    Automatic Intranet Export: " +
+                        (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
+                        Console.WriteLine("    Data Checks: " + (TRemote.TimedProcessingJobEnabled("TProcessDataChecks") ? "On" : "Off"));
 
                         Console.WriteLine("  SMTP Server used for sending e-mails: " + TRemote.SMTPServer);
 
@@ -453,6 +455,16 @@ public class TAdminConsole
                         if (resp == "YES")
                         {
                             TRemote.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
+                        }
+
+                        Console.WriteLine("");
+                        Console.WriteLine("Do you want to run Data Checks Processing now?");
+                        Console.Write("Type YES to continue, anything else to skip:");
+                        resp = Console.ReadLine();
+
+                        if (resp == "YES")
+                        {
+                            TRemote.PerformTimedProcessingNow("TProcessDataChecks");
                         }
 
                         Console.Write(ServerAdminPrompt);

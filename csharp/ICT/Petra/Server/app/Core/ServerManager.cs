@@ -129,6 +129,18 @@ namespace Ict.Petra.Server.App.Core
                         IntranetExportClass,
                         IntranetExportClass.GetMethod("Process")));
             }
+
+            if (TAppSettingsManager.GetBoolean("Server.Processing.DataChecks.Enabled", false))
+            {
+                Assembly CommonProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MCommon.Processing");
+                Type ProcessDataChecksClass = CommonProcessingAssembly.GetType("Ict.Petra.Server.MCommon.Processing.TProcessDataChecks");
+                TTimedProcessing.AddProcessingJob(
+                    "TProcessDataChecks",
+                    (TTimedProcessing.TProcessDelegate)Delegate.CreateDelegate(
+                        typeof(TTimedProcessing.TProcessDelegate),
+                        ProcessDataChecksClass,
+                        ProcessDataChecksClass.GetMethod("Process")));
+            }
         }
 
         private List <TDataBase>FDBConnections = new List <TDataBase>();
