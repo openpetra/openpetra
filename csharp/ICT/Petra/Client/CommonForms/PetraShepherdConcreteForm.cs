@@ -44,9 +44,9 @@ namespace Ict.Petra.Client.CommonForms
 
         ///<summary>Name of the YAML file that contains the definition of the Shepherd Pages and the Shepherd overall</summary>
         protected string FYamlFile = String.Empty;
-        
+
         /// <summary>Name of the Shepherd that will be imported. It has to be a global variable because it has to bounce from </summary>
-        protected string ShepherdTitle = string.Empty; 
+        protected string ShepherdTitle = string.Empty;
 
         ///<summary>Instance of base Shepherd Logic.</summary>
         protected TPetraShepherdFormLogic FLogic;
@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.CommonForms
             TLogging.Log("Entering TPetraShepherdConcreteForm Constructor...");
 
             FPetraUtilsObject = new TFrmPetraEditUtils(AParentForm, this, stbMain);
-            
+
             TLogging.Log("TPetraShepherdConcreteForm Constructor ran.");
         }
 
@@ -73,6 +73,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             FLogic.HandleActionFinish();
         }
+
         /// <summary>
         /// Overwrites virtual function in PetraShepherdForm.cs,
         /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
@@ -128,8 +129,8 @@ namespace Ict.Petra.Client.CommonForms
 
             FShepherdNavigationHelper = new TShepherdNavigationHelper(FLogic.ShepherdPages, pnlNavigation);
 
-            this.Text = ShepherdTitle; 
-            
+            this.Text = ShepherdTitle;
+
             ShowCurrentPage();
 
             TLogging.Log("TPetraShepherdConcreteForm (Base) Form_Load ran.");
@@ -138,54 +139,55 @@ namespace Ict.Petra.Client.CommonForms
         ///<summary>Update navigation buttons and navigation panel</summary>
         public void UpdateNavigation()
         {
-        	TLogging.Log("Updating Navigation Buttons."); 
-        	if(FLogic.CurrentPage.IsFirstPage)
-        	{
-        		this.btnBack.Enabled = false; 
-        	}
-        	else
-        	{
-        		this.btnBack.Enabled = true; 
-        	}
-        	
-        	if(FLogic.CurrentPage.IsLastPage)
-        	{
-        		this.btnNext.Enabled = false; 
-        		this.btnFinish.Enabled = true; 
-        	}
-        	else
-        	{
-        		this.btnNext.Enabled = true; 
-        		this.btnFinish.Enabled = false; 
-        	}
-        	
-        	this.lblPageProgress.Text = "Page: " + FLogic.GetCurrentPageNumber() + "/" + FLogic.EnumeratePages(); 
-        	this.prbPageProgress.Value = ((int)FLogic.GetProgressBarPercentage());
-        	
-        	this.lblHeading1.Text = FLogic.CurrentPage.Title; 
-        	this.lblHeading2.Text = FLogic.CurrentPage.Note;
-        	
-        	pnlCollapsibleNavigation.Text = Catalog.GetString("Shepherd Pages");
-        	pnlCollapsibleNavigation.TaskListNode = FLogic.CreateTaskList();
-        	pnlCollapsibleNavigation.Show(); 
-        	
-        	TLogging.Log("Added a node to the task list.");
-        
-        	pnlCollapsibleNavigation.RealiseTaskListNow();
-        	
+            TLogging.Log("Updating Navigation Buttons.");
+
+            if (FLogic.CurrentPage.IsFirstPage)
+            {
+                this.btnBack.Enabled = false;
+            }
+            else
+            {
+                this.btnBack.Enabled = true;
+            }
+
+            if (FLogic.CurrentPage.IsLastPage)
+            {
+                this.btnNext.Enabled = false;
+                this.btnFinish.Enabled = true;
+            }
+            else
+            {
+                this.btnNext.Enabled = true;
+                this.btnFinish.Enabled = false;
+            }
+
+            this.lblPageProgress.Text = "Page: " + FLogic.GetCurrentPageNumber() + "/" + FLogic.EnumeratePages();
+            this.prbPageProgress.Value = ((int)FLogic.GetProgressBarPercentage());
+
+            this.lblHeading1.Text = FLogic.CurrentPage.Title;
+            this.lblHeading2.Text = FLogic.CurrentPage.Note;
+
+            pnlCollapsibleNavigation.Text = Catalog.GetString("Shepherd Pages");
+            pnlCollapsibleNavigation.TaskListNode = FLogic.CreateTaskList();
+            pnlCollapsibleNavigation.Show();
+
+            TLogging.Log("Added a node to the task list.");
+
+            pnlCollapsibleNavigation.RealiseTaskListNow();
+
             TLogging.Log("UpdateNavigation");
         }
-        
-        public void UpdateShepherdFormProperties(string AString, int width, int height) 
+
+        public void UpdateShepherdFormProperties(string AString, int width, int height)
         {
-        	TLogging.Log("UpdateShepherdFormProperties in commonForms--PetraShepherdConcreteFormGui"); 
-        	TLogging.Log("Size before UpdateShepherdFormProperties: " + pnlContent.Width + ", height: " + pnlContent.Width); 
-        	TLogging.Log("Resizing the shepherd to the following: width: " + width + ", height: " + height); 
-        	Size FormSize = new Size(width, height);
-        	this.Size = FormSize; 
-        	ShepherdTitle = AString;
-        	
-        	TLogging.Log("Size AFTER UpdateShepherdFormProperties: width: " + pnlContent.Width + ", height: " + pnlContent.Width); 
+            TLogging.Log("UpdateShepherdFormProperties in commonForms--PetraShepherdConcreteFormGui");
+            TLogging.Log("Size before UpdateShepherdFormProperties: " + pnlContent.Width + ", height: " + pnlContent.Width);
+            TLogging.Log("Resizing the shepherd to the following: width: " + width + ", height: " + height);
+            Size FormSize = new Size(width, height);
+            this.Size = FormSize;
+            ShepherdTitle = AString;
+
+            TLogging.Log("Size AFTER UpdateShepherdFormProperties: width: " + pnlContent.Width + ", height: " + pnlContent.Width);
         }
 
         ///<summary>Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel</summary>

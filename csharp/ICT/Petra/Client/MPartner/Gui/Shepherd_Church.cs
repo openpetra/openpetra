@@ -61,8 +61,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TLogging.Log("Entering TShepherdChurchForm Constructor...");
 
-            FYamlFile = Path.GetDirectoryName(TAppSettingsManager.GetValue("UINavigation.File")) + 
-                Path.DirectorySeparatorChar + "Shepherd_Church_Definition.yaml";
+            FYamlFile = Path.GetDirectoryName(TAppSettingsManager.GetValue("UINavigation.File")) +
+                        Path.DirectorySeparatorChar + "Shepherd_Church_Definition.yaml";
 
             FLogic = new TShepherdChurchFormLogic(FYamlFile, this);
             FSpecificLogic = (TShepherdChurchFormLogic)FLogic;

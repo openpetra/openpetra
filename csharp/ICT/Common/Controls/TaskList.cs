@@ -657,16 +657,16 @@ namespace Ict.Common.Controls
         /// <returns>string attribute, or empty string if attribute is null.</returns>
         public string GetAttribute(XmlNode node, string attr)
         {
-            if (node == null) 
+            if (node == null)
             {
                 throw new ArgumentNullException("Argument 'node' must not be null");
             }
-            
-            if (node.Attributes == null) 
+
+            if (node.Attributes == null)
             {
                 throw new ArgumentNullException("Argument 'node' must have Attributes (node.Name='" + node.Name + "')");
             }
-            
+
             if (node.Attributes[attr] != null)
             {
                 return node.Attributes[attr].Value;
@@ -686,16 +686,16 @@ namespace Ict.Common.Controls
         /// <returns>Boolean whether given Xml Node has the passed attribute set to true</returns>
         public bool AttributeTrue(XmlNode node, string attr, bool TrueByDefault = true)
         {
-            if (node == null) 
+            if (node == null)
             {
                 throw new ArgumentNullException("Argument 'node' must not be null");
             }
-            
-            if (node.Attributes == null) 
+
+            if (node.Attributes == null)
             {
                 throw new ArgumentNullException("Argument 'node' must have Attributes (node.Name='" + node.Name + "')");
             }
-            
+
             if (node.Attributes[attr] == null)
             {
                 if (TrueByDefault)

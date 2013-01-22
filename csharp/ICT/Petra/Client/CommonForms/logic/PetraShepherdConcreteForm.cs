@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
         ///<summary>List of Shepherd Pages</summary>
         public TPetraShepherdPagesList ShepherdPages
-        {            
+        {
             /// <summary>
             /// Read in XML nodes from YAML file and call TShepherdPage constructor
             /// with the particular XML node needed for that page.
@@ -84,14 +84,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             // Take AYamlFile and parse it into an XmlNode structure
 
-            ParseYAMLFileElements(AYamlFile); 
-            
+            ParseYAMLFileElements(AYamlFile);
+
             FShepherdPages = new TPetraShepherdPagesList(AYamlFile);
 
             SwitchToStartPage();
-            
+
             TLogging.Log("The TPetraShepherdFormLogic constructor has switched to the first page.");
-	
+
             // Iterate over all FPetraShepherdPages and add the VisibleOrEnabledChangedEventHandler
 
             // FShepherdPages needs to get added an auto-generated TPetraShepherdFinishPage
@@ -102,7 +102,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TLogging.Log(
                 "TPetraShepherdFormLogic Constructor ran and returned to the TPetraShepherdFormLogic constructor in PetraShepherdConcreteForm.");
         }
-        
+
         /// <summary>
         /// Returns an XML node that defines a number of the properties of each Shepherd. Including size and title.
         /// </summary>
@@ -110,87 +110,88 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <returns></returns>
         protected XmlNode ParseYAMLFileElements(string AYamlFile)
         {
-        	TLogging.Log("ParseYAMLFileElements method starting."); 
-        	TYml2Xml parser = new TYml2Xml(AYamlFile);
+            TLogging.Log("ParseYAMLFileElements method starting.");
+            TYml2Xml parser = new TYml2Xml(AYamlFile);
             XmlDocument XmlPages = parser.ParseYML2XML();
 
             TLogging.Log("ParseYAMLFileElements currently has this many attributes: " + XmlPages.LastChild.LastChild.Attributes.Count);
 
             XmlNode FileElementData = XmlPages.DocumentElement;
-		
-            FileElementData = XmlPages.LastChild.LastChild; 
-            
-            string ShepherdHeight = "";
-            string ShepherdWidth = ""; 
-            string ShepherdTitle = ""; 
-            string TestElement = ""; 
-            string FinishPageNote = ""; 
-            
-            #region YAML Attributes Input
-            
-            if(FileElementData.Attributes["FinishPageNote"] != null)
-            {
-            	FinishPageNote = FileElementData.Attributes["FinishPageNote"].Value;
-            }
-            else
-            {
-            	TLogging.Log("DID NOT FIND FINISH PAGE");
-            }
-            
-            if(FileElementData.Attributes["Testelement"] != null)
-            {
-            	TLogging.Log("FOUND TEST ELEMENT"); 
-            	TLogging.Log("Printing the value of test: " + FileElementData.Attributes["Testelement"].Value);
-            	TestElement = FileElementData.Attributes["Testelement"].Value; 
-            }
-            else
-            {
-            	TLogging.Log("Did not find a test element for this shepherd."); 
-            }
-            
-            if(FileElementData.Attributes["Width"] != null)
-            {
-            	TLogging.Log("Printing the width of shepherd: " + FileElementData.Attributes["Width"].Value);
-            	ShepherdWidth = FileElementData.Attributes["Width"].Value; 
-            }
-            else
-            {
-            	TLogging.Log("Did not find a width for this shepherd."); 
-            }
-            
-            if(FileElementData.Attributes["Height"] != null)
-            {
-            	TLogging.Log("Printing the height of shepherd: " + FileElementData.Attributes["Height"].Value); 
-            	ShepherdHeight = FileElementData.Attributes["Height"].Value; 
-            }
-            else
-            {
-            	TLogging.Log("Did not find a height for this shepherd."); 
-            }
-            
-            if(FileElementData.Attributes["Title"] != null)
-            {
-            	TLogging.Log("Printing the title of shepherd: " + FileElementData.Attributes["Title"].Value); 
-            	ShepherdTitle = FileElementData.Attributes["Title"].Value;
-            }
-            else
-            {
-            	TLogging.Log("Did not find a title for this shepherd."); 
-            }
-			#endregion
-            
-            try{
-            		FForm.UpdateShepherdFormProperties(ShepherdTitle, 
-            	                                   Convert.ToInt32(ShepherdWidth),
-            	                                   Convert.ToInt32(ShepherdHeight));
-            }
-            catch(FormatException e)
-            {
-            	TLogging.Log("An element (height or width) cannot be converted to integer. Check the datatype and try again."); 
-            }
-                        
-            return FileElementData;
 
+            FileElementData = XmlPages.LastChild.LastChild;
+
+            string ShepherdHeight = "";
+            string ShepherdWidth = "";
+            string ShepherdTitle = "";
+            string TestElement = "";
+            string FinishPageNote = "";
+
+            #region YAML Attributes Input
+
+            if (FileElementData.Attributes["FinishPageNote"] != null)
+            {
+                FinishPageNote = FileElementData.Attributes["FinishPageNote"].Value;
+            }
+            else
+            {
+                TLogging.Log("DID NOT FIND FINISH PAGE");
+            }
+
+            if (FileElementData.Attributes["Testelement"] != null)
+            {
+                TLogging.Log("FOUND TEST ELEMENT");
+                TLogging.Log("Printing the value of test: " + FileElementData.Attributes["Testelement"].Value);
+                TestElement = FileElementData.Attributes["Testelement"].Value;
+            }
+            else
+            {
+                TLogging.Log("Did not find a test element for this shepherd.");
+            }
+
+            if (FileElementData.Attributes["Width"] != null)
+            {
+                TLogging.Log("Printing the width of shepherd: " + FileElementData.Attributes["Width"].Value);
+                ShepherdWidth = FileElementData.Attributes["Width"].Value;
+            }
+            else
+            {
+                TLogging.Log("Did not find a width for this shepherd.");
+            }
+
+            if (FileElementData.Attributes["Height"] != null)
+            {
+                TLogging.Log("Printing the height of shepherd: " + FileElementData.Attributes["Height"].Value);
+                ShepherdHeight = FileElementData.Attributes["Height"].Value;
+            }
+            else
+            {
+                TLogging.Log("Did not find a height for this shepherd.");
+            }
+
+            if (FileElementData.Attributes["Title"] != null)
+            {
+                TLogging.Log("Printing the title of shepherd: " + FileElementData.Attributes["Title"].Value);
+                ShepherdTitle = FileElementData.Attributes["Title"].Value;
+            }
+            else
+            {
+                TLogging.Log("Did not find a title for this shepherd.");
+            }
+
+            #endregion
+
+            try
+            {
+                FForm.UpdateShepherdFormProperties(ShepherdTitle,
+                    Convert.ToInt32(ShepherdWidth),
+                    Convert.ToInt32(ShepherdHeight));
+            }
+            catch (FormatException e)
+            {
+                TLogging.Log("An element (height or width) cannot be converted to integer. Check the datatype and try again.");
+            }
+
+            return FileElementData;
         }
 
         ///<summary>Returns an instance of a Page UserControl</summary>
@@ -210,7 +211,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TLogging.Log("PetraShepherdConcreteForm: SwitchToPage -- Page number = " + CurrentPage.ID);
             TLogging.Log("The current Total number of pages is = " + EnumeratePages());
             TLogging.Log("The percentage of pages = " + GetProgressBarPercentage());
-            
+
             try
             {
                 FForm.ShowCurrentPage();
@@ -223,57 +224,62 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 TLogging.Log(e.Message);
             }
         }
-		
+
         /// <summary>Returns the total number of pages in the Shepherd</summary>
         /// <returns>Total Number of Shepherd Pages</returns>
         public int EnumeratePages()
         {
-        	TLogging.Log("Enumerate Pages in TPetraShepherdFormLogic -- Counting the total number of pages."); 
-        	int PagesCount = 0; 
-        	foreach(KeyValuePair<string, TPetraShepherdPage>pair in FShepherdPages.Pages)
-        	{
-        		PagesCount++; 
-        	}
-        	TLogging.Log("EnumeratePages in TPetraShepherdFormLogic -- Count of Pages = " + PagesCount);
-        	return PagesCount; 
+            TLogging.Log("Enumerate Pages in TPetraShepherdFormLogic -- Counting the total number of pages.");
+            int PagesCount = 0;
+
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+            {
+                PagesCount++;
+            }
+
+            TLogging.Log("EnumeratePages in TPetraShepherdFormLogic -- Count of Pages = " + PagesCount);
+            return PagesCount;
         }
-        
+
         /// <summary>Iterates through the list of pages to find out which page number the current page is.</summary>
         /// <returns>Page Number</returns>
         public int GetCurrentPageNumber()
         {
-        	TLogging.Log("GetCurrentPageNumber() in TPetraShepherdConcreteForm.. "); 
-        	int pageCounter = 1;
-        	foreach(KeyValuePair<string, TPetraShepherdPage>pair in FShepherdPages.Pages)
-        	{
-        		TLogging.Log("GetCurrentPageNumber loop. Pair.key: " + pair.Key); 
-        		TLogging.Log("GetCurrentPageNumber loop. CurrentPage.ID: " + CurrentPage.ID);
-                if (pair.Value.Visible && pair.Value.Enabled && pair.Key == CurrentPage.ID)
+            TLogging.Log("GetCurrentPageNumber() in TPetraShepherdConcreteForm.. ");
+            int pageCounter = 1;
+
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+            {
+                TLogging.Log("GetCurrentPageNumber loop. Pair.key: " + pair.Key);
+                TLogging.Log("GetCurrentPageNumber loop. CurrentPage.ID: " + CurrentPage.ID);
+
+                if (pair.Value.Visible && pair.Value.Enabled && (pair.Key == CurrentPage.ID))
                 {
-                    TLogging.Log("GetCurrentPageNumber Found the current page: " + pair.Key);    
+                    TLogging.Log("GetCurrentPageNumber Found the current page: " + pair.Key);
                     break;
                 }
-				pageCounter++; 
-        	}
-        	TLogging.Log("GetCurrentPageNumber() -- Returning the following value." + pageCounter); 
-        	return pageCounter; 
+
+                pageCounter++;
+            }
+
+            TLogging.Log("GetCurrentPageNumber() -- Returning the following value." + pageCounter);
+            return pageCounter;
         }
-        
+
         /// <summary>
         /// Calculates the percentage of all of the pages that have been passed in the Shepherd.
         /// </summary>
         /// <returns>Percentage of Pages</returns>
         public float GetProgressBarPercentage()
         {
-        	TPetraShepherdPage ProgressPage = null;
-			float ProgressPercentage = 0;
-			ProgressPercentage = ((float)GetCurrentPageNumber()/(float)EnumeratePages() * 100);
-			TLogging.Log("GetProgredsBarPercentage returns the following: " + ProgressPercentage); 
-			return ProgressPercentage;
+            TPetraShepherdPage ProgressPage = null;
+            float ProgressPercentage = 0;
+
+            ProgressPercentage = ((float)GetCurrentPageNumber() / (float)EnumeratePages() * 100);
+            TLogging.Log("GetProgredsBarPercentage returns the following: " + ProgressPercentage);
+            return ProgressPercentage;
         }
-        
-        
-        
+
         /// <summary>
         /// Switches to the first page
         /// Iterates through FShepeherdPages.Pages to find the first page that is both visible and enabled.
@@ -290,7 +296,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 {
                     TLogging.Log("SwitchToStartPage foreach loop returned the following value that was both visible and enabled: " + pair.Key);
                     startPage = pair.Key;
-                    pair.Value.IsFirstPage = true; 
+                    pair.Value.IsFirstPage = true;
                     CurrentPage = pair.Value;
                     break;
                 }
@@ -360,34 +366,37 @@ namespace Ict.Petra.Client.CommonForms.Logic
         }
 
         ///<summary>Switches to the 'previous' page (whatever page this is)</summary>
-        public virtual void HandleActionBack() //TODO: The handleActionBack method has an edge case that I can't figure out quite yet -- when only two pages are visible and enabled, hitting the back button repeatedly cycles through the two pages.. :-/ 
+        public virtual void HandleActionBack() //TODO: The handleActionBack method has an edge case that I can't figure out quite yet -- when only two pages are visible and enabled, hitting the back button repeatedly cycles through the two pages..
+                                               // :-/
         {
             TLogging.Log("HandleActionBack (in TPetraShepherdFormLogic)");
 
             string backPage = ""; //temporary string to hold the key of the StartPage
             TPetraShepherdPage temporaryPage = CurrentPage;
             int counter = 0;
-            
-            if(CurrentPage.IsFirstPage)
+
+            if (CurrentPage.IsFirstPage)
             {
-            	backPage = CurrentPage.ID; 
+                backPage = CurrentPage.ID;
             }
             else
             {
-	            foreach(KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
-	            { 
-	            	if(pair.Value == CurrentPage && pair.Value.Enabled && pair.Value.Visible) 
-	            	{
-	            		backPage = temporaryPage.ID; 
-	            		break; 
-	            		TLogging.Log("Set the backpage to the following: " + temporaryPage.ID); 
-	            	}
-	            	temporaryPage = pair.Value; 
-	            	counter++; 
-	            }
+                foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+                {
+                    if ((pair.Value == CurrentPage) && pair.Value.Enabled && pair.Value.Visible)
+                    {
+                        backPage = temporaryPage.ID;
+                        break;
+                        TLogging.Log("Set the backpage to the following: " + temporaryPage.ID);
+                    }
+
+                    temporaryPage = pair.Value;
+                    counter++;
+                }
             }
-			backPage = temporaryPage.ID; 
-           	SwitchToPage(backPage);
+
+            backPage = temporaryPage.ID;
+            SwitchToPage(backPage);
         }
 
         ///<summary>Causes to close the Shepherd without saving if the user chooses to do that</summary>
@@ -437,52 +446,52 @@ namespace Ict.Petra.Client.CommonForms.Logic
         {
             TLogging.Log("PagesDataHeapPoke");
         }
-        
+
         public XmlNode CreateTaskList()
         {
-//        	TLogging.Log("Starting method CreateTaskList!");
+//              TLogging.Log("Starting method CreateTaskList!");
 
-        	// Create the xml document container
+            // Create the xml document container
             XmlDocument XMLDocumentOfActivePages = TYml2Xml.CreateXmlDocument();
             XmlNode root = XMLDocumentOfActivePages.FirstChild.NextSibling;
-            
-            // Create 'ShepherdPages' element (which serves as 'our' root element)            
-			XmlElement ShepherdPages = root.OwnerDocument.CreateElement("ShepherdPages"); //<ShepherdPages>
-			XmlNode ShepherdPagesNode = root.AppendChild(ShepherdPages);
-			
-			int PageCounter = 1; 
-			
-			// TODO: Sub-Shepherds
-			foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
-			{
-				XmlElement ID = ShepherdPagesNode.OwnerDocument.CreateElement("Page" + PageCounter.ToString()); //<ID>
-				XmlNode IDNode = ShepherdPagesNode.AppendChild(ID); 
-				
-				// Label Attribute
-				XmlAttribute LabelAttribute = ShepherdPagesNode.OwnerDocument.CreateAttribute("Label");
+
+            // Create 'ShepherdPages' element (which serves as 'our' root element)
+            XmlElement ShepherdPages = root.OwnerDocument.CreateElement("ShepherdPages");             //<ShepherdPages>
+            XmlNode ShepherdPagesNode = root.AppendChild(ShepherdPages);
+
+            int PageCounter = 1;
+
+            // TODO: Sub-Shepherds
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+            {
+                XmlElement ID = ShepherdPagesNode.OwnerDocument.CreateElement("Page" + PageCounter.ToString());                 //<ID>
+                XmlNode IDNode = ShepherdPagesNode.AppendChild(ID);
+
+                // Label Attribute
+                XmlAttribute LabelAttribute = ShepherdPagesNode.OwnerDocument.CreateAttribute("Label");
                 IDNode.Attributes.Append(LabelAttribute);
                 IDNode.Attributes["Label"].Value = pair.Value.Title;
-				
+
                 // Visible Attribute
-				if(!(pair.Value.Visible))
-				{
-    				XmlAttribute VisibleAttribute = ShepherdPagesNode.OwnerDocument.CreateAttribute("Visible");
+                if (!(pair.Value.Visible))
+                {
+                    XmlAttribute VisibleAttribute = ShepherdPagesNode.OwnerDocument.CreateAttribute("Visible");
                     IDNode.Attributes.Append(VisibleAttribute);
-				    IDNode.Attributes["Visible"].Value = "False";    
-				}
-				
-				// Enabled Attribute
-				if(!(pair.Value.Enabled))
-				{
-    				XmlAttribute EnabledAttribute = ShepherdPagesNode.OwnerDocument.CreateAttribute("Enabled");
+                    IDNode.Attributes["Visible"].Value = "False";
+                }
+
+                // Enabled Attribute
+                if (!(pair.Value.Enabled))
+                {
+                    XmlAttribute EnabledAttribute = ShepherdPagesNode.OwnerDocument.CreateAttribute("Enabled");
                     IDNode.Attributes.Append(EnabledAttribute);
-				    IDNode.Attributes["Enabled"].Value = "False";    
-				}
-				
-				PageCounter++; 
-			}
-			
-			XmlNode firstPage = root.FirstChild;
+                    IDNode.Attributes["Enabled"].Value = "False";
+                }
+
+                PageCounter++;
+            }
+
+            XmlNode firstPage = root.FirstChild;
 
 // For debugging only
 //			TLogging.Log("Count of child nodes: " + firstPage.ChildNodes.Count);
@@ -492,49 +501,51 @@ namespace Ict.Petra.Client.CommonForms.Logic
 //			{
 //				foreach(XmlNode attributeNode in node.ChildNodes)
 //				{
-//					
-//					TLogging.Log("Foreach Node Value: " + attributeNode.InnerText); 
-//					
+//
+//					TLogging.Log("Foreach Node Value: " + attributeNode.InnerText);
+//
 //				}
-//				TLogging.Log("Inner foreach: " + counter); 
+//				TLogging.Log("Inner foreach: " + counter);
 //				counter++;
 //			}
 //			TLogging.Log("FIRST CHILD NAME: " + root.FirstChild.FirstChild.FirstChild.NextSibling.InnerText);
 //			ChildDisplay(firstPage,0);
-			
-        	return firstPage; 
+
+            return firstPage;
         }
-        
-         /// <summary>
-         /// This Method is only for debugging the TaskList nodes.
-         /// </summary>
-         /// <param name="xnod"></param>
-         /// <param name="level"></param>
-		 private static void ChildDisplay(XmlNode xnod, int level)
-		  {
-		    XmlNode xnodWorking;
-		    String pad = new String(' ', level * 2);
-		
-		    TLogging.Log(pad + xnod.Name + "(" + xnod.NodeType.ToString() + ": <" + xnod.Value + ">)");
-		    
-		    if (xnod.NodeType == XmlNodeType.Element)
-		    {
-		      XmlNamedNodeMap mapAttributes = xnod.Attributes;
-		      for(int i=0; i<mapAttributes.Count; i++)
-		      {
-		        TLogging.Log(pad + " " + mapAttributes.Item(i).Name + " = " +  mapAttributes.Item(i).Value);
-		      }
-		    }
-		    
-		    if (xnod.HasChildNodes)
-		    {
-		      xnodWorking = xnod.FirstChild;
-		      while (xnodWorking != null)
-		      {
-		        ChildDisplay(xnodWorking, level+1);
-		        xnodWorking = xnodWorking.NextSibling;
-		      }
-		    }
-		  }
+
+        /// <summary>
+        /// This Method is only for debugging the TaskList nodes.
+        /// </summary>
+        /// <param name="xnod"></param>
+        /// <param name="level"></param>
+        private static void ChildDisplay(XmlNode xnod, int level)
+        {
+            XmlNode xnodWorking;
+            String pad = new String(' ', level * 2);
+
+            TLogging.Log(pad + xnod.Name + "(" + xnod.NodeType.ToString() + ": <" + xnod.Value + ">)");
+
+            if (xnod.NodeType == XmlNodeType.Element)
+            {
+                XmlNamedNodeMap mapAttributes = xnod.Attributes;
+
+                for (int i = 0; i < mapAttributes.Count; i++)
+                {
+                    TLogging.Log(pad + " " + mapAttributes.Item(i).Name + " = " + mapAttributes.Item(i).Value);
+                }
+            }
+
+            if (xnod.HasChildNodes)
+            {
+                xnodWorking = xnod.FirstChild;
+
+                while (xnodWorking != null)
+                {
+                    ChildDisplay(xnodWorking, level + 1);
+                    xnodWorking = xnodWorking.NextSibling;
+                }
+            }
+        }
     }
 }

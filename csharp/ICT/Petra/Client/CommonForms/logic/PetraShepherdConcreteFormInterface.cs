@@ -21,7 +21,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-using System.Windows.Forms; 
+using System.Windows.Forms;
 namespace Ict.Petra.Client.CommonForms.Logic
 {
     ///<summary>Interface for TPetraShepherdConcreteForm</summary>
@@ -32,8 +32,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
         ///<summary>Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel</summary>
         void ShowCurrentPage();
         ///<summary>Closes the Shepherd without any further ado and without saving</summary>
-        void CancelShepherd(); 
+        void CancelShepherd();
         ///<summary>Defines the attributes of each individual Shepherd at run time</summary>
-        void UpdateShepherdFormProperties(string ATitle, int ShepherdWidth, int ShepherdHeight); 
+        void UpdateShepherdFormProperties(string ATitle, int ShepherdWidth, int ShepherdHeight);
     }
 }

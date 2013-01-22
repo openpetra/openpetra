@@ -371,32 +371,33 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             foreach (XmlNode node in nodeList)
             {
-            	if(node.Name.Contains("SubShepherd."))
-            	{
-            		TLogging.Log("TPetraSHepherdPagesList Contsructor loop: Found a sub shepherd.. Skipping.. "); 
-            	}
-            	else
-            	{
-	                TPetraShepherdPage temporaryPetraShepherdPage = new TPetraShepherdPage(node);
-	                //Conrstuctor call for each page built off an XML node.
-	
-	                TLogging.Log("TPetraShepherdPagesList Constructor loop: THE TITLE OF THE CURRENT PAGE IS: " + temporaryPetraShepherdPage.Title);
-	
-	                FPagesList.Add(temporaryPetraShepherdPage.ID, temporaryPetraShepherdPage);	            		
-            	}
+                if (node.Name.Contains("SubShepherd."))
+                {
+                    TLogging.Log("TPetraSHepherdPagesList Contsructor loop: Found a sub shepherd.. Skipping.. ");
+                }
+                else
+                {
+                    TPetraShepherdPage temporaryPetraShepherdPage = new TPetraShepherdPage(node);
+                    //Conrstuctor call for each page built off an XML node.
+
+                    TLogging.Log("TPetraShepherdPagesList Constructor loop: THE TITLE OF THE CURRENT PAGE IS: " + temporaryPetraShepherdPage.Title);
+
+                    FPagesList.Add(temporaryPetraShepherdPage.ID, temporaryPetraShepherdPage);
+                }
+
                 counter++;
             }
-			
-            TPetraShepherdFinishPage shepherdFinishPage = new TPetraShepherdFinishPage(XmlPages); 
-            TLogging.Log("Adding a shepherd finish page: " + shepherdFinishPage.ID); 
-            FPagesList.Add(shepherdFinishPage.ID, shepherdFinishPage); 
-            
-            //Temporary Statement to add a subshepherd finish page in addition to the Finish page above
-            TPetraShepherdFinishPage shepherdSubFinishPage = new TPetraShepherdFinishPage(XmlPages, "SubShepherd"); 
-            TLogging.Log("Adding a shepherd sub-finish page: " + shepherdSubFinishPage.ID); 
-            FPagesList.Add(shepherdSubFinishPage.ID, shepherdSubFinishPage); 
 
-            
+            TPetraShepherdFinishPage shepherdFinishPage = new TPetraShepherdFinishPage(XmlPages);
+            TLogging.Log("Adding a shepherd finish page: " + shepherdFinishPage.ID);
+            FPagesList.Add(shepherdFinishPage.ID, shepherdFinishPage);
+
+            //Temporary Statement to add a subshepherd finish page in addition to the Finish page above
+            TPetraShepherdFinishPage shepherdSubFinishPage = new TPetraShepherdFinishPage(XmlPages, "SubShepherd");
+            TLogging.Log("Adding a shepherd sub-finish page: " + shepherdSubFinishPage.ID);
+            FPagesList.Add(shepherdSubFinishPage.ID, shepherdSubFinishPage);
+
+
             TLogging.Log("TPetraShepherdPagesList Constructor ran successfully.");
         }
     }
@@ -409,38 +410,42 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// </summary>
         public TPetraShepherdFinishPage(XmlDocument XmlPages)
         {
-        	base.ID = "FINISHPAGE_MASTER"; 
-        	Init(XmlPages);
+            base.ID = "FINISHPAGE_MASTER";
+            Init(XmlPages);
         }
-       	public TPetraShepherdFinishPage(XmlDocument XmlPages, string SubShepherdName)
+
+        public TPetraShepherdFinishPage(XmlDocument XmlPages, string SubShepherdName)
         {
-       		base.ID = "FINISHPAGE_CHILD_" + SubShepherdName.ToUpper(); 
-       		Init(XmlPages); 
+            base.ID = "FINISHPAGE_CHILD_" + SubShepherdName.ToUpper();
+            Init(XmlPages);
         }
-       	private void Init(XmlDocument XmlPages)
-       	{
-       		base.Enabled = true;
-        	base.Visible = true; 
+
+        private void Init(XmlDocument XmlPages)
+        {
+            base.Enabled = true;
+            base.Visible = true;
             base.FIsLastPage = false;
             base.FUserControlClassName = "TUC_PetraShepherdFinishPage";
             base.FUserControlNamespace = "Ict.Petra.Client.CommonForms";
             base.FTitle = "Here is a summary of the information you have provided:" + base.ID;
-            base.Note = GetFinishPageNote(XmlPages); 
-       	}
-       	protected string GetFinishPageNote(XmlDocument XmlPages)
-       	{
-       		XmlNode FileElementData = XmlPages.DocumentElement;
-            FileElementData = XmlPages.LastChild.LastChild; 
-            
-            if(FileElementData.Attributes["FinishPageNote"] != null)
+            base.Note = GetFinishPageNote(XmlPages);
+        }
+
+        protected string GetFinishPageNote(XmlDocument XmlPages)
+        {
+            XmlNode FileElementData = XmlPages.DocumentElement;
+
+            FileElementData = XmlPages.LastChild.LastChild;
+
+            if (FileElementData.Attributes["FinishPageNote"] != null)
             {
-            	TLogging.Log("VALUE OF FINISH PAGE NOTE: " + FileElementData.Attributes["FinishPageNote"].Value);
-            	return FileElementData.Attributes["FinishPageNote"].Value;
+                TLogging.Log("VALUE OF FINISH PAGE NOTE: " + FileElementData.Attributes["FinishPageNote"].Value);
+                return FileElementData.Attributes["FinishPageNote"].Value;
             }
             else
             {
-            	return "Choose \'Finish\' to commit the data.";
+                return "Choose \'Finish\' to commit the data.";
             }
-       	}
+        }
     }
 }

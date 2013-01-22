@@ -61,8 +61,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TLogging.Log("Entering TShepherdFamilyForm Constructor...");
 
-            FYamlFile = Path.GetDirectoryName(TAppSettingsManager.GetValue("UINavigation.File")) + 
-                Path.DirectorySeparatorChar + "Shepherd_Family_Definition.yaml";
+            FYamlFile = Path.GetDirectoryName(TAppSettingsManager.GetValue("UINavigation.File")) +
+                        Path.DirectorySeparatorChar + "Shepherd_Family_Definition.yaml";
 
             FLogic = new TShepherdFamilyFormLogic(FYamlFile, this);
             FSpecificLogic = (TShepherdFamilyFormLogic)FLogic;
