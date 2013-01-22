@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       AustinS
+//       AustinS, ChristianK
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //

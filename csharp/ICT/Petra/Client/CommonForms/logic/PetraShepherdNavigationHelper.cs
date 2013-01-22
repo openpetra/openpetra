@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       >>>> Put your full name or just a shortname here <<<<
+//       >>>Unknown<<< (likely ChristianK, pauln, or tomn, or all of them)
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
