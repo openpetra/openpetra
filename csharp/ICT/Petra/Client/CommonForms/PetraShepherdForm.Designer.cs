@@ -328,7 +328,6 @@ namespace Ict.Petra.Client.CommonForms
         private System.Windows.Forms.Panel pnlHeadings;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel1;
-        //protected System.Windows.Forms.TextBox testStatusMessage;
 
         protected System.Windows.Forms.Panel pnlContent;
         protected System.Windows.Forms.Panel pnlNavigation;

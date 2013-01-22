@@ -26,26 +26,40 @@ using System.Collections;
 using System.Xml;
 using System.Reflection;
 using System.Collections.Generic;
+
 using Ict.Common;
 using Ict.Common.IO;
+
 namespace Ict.Petra.Client.CommonForms.Logic
 {
-    ///<summary>Logic class for the internal behaviour of a Shepherd</summary>
-    public class TPetraShepherdFormLogic : object
+    /// <summary>
+    /// Logic class that controls the internal behaviour of a Shepherd.
+    /// </summary>
+    public class TPetraShepherdFormLogic
     {
+        #region Private Constants
+        
         private const string STARTPAGE_NAME = "|||START PAGE|||";
         private const string FINISHPAGE_NAME = "FINISHPAGE_MASTER";
 
-        /// <summary>Holds a typed list of 0..n TPetraShepherdPage's</summary>
+        #endregion
+        
+        #region Fields
+        
+        /// <summary>Holds a typed list of 0..n TPetraShepherdPage's.</summary>
         private TPetraShepherdPagesList FShepherdPages;
-        /// <summary>Holds the instance of the Shepherd Form management class</summary>
+        /// <summary>Holds the instance of the Shepherd Form management class.</summary>
         private IPetraShepherdConcreteFormInterface FForm;
-        /// <summary>Holds the instance of the current shepherd page</summary>
+        /// <summary>Holds the instance of the current shepherd page.</summary>
         private TPetraShepherdPage FCurrentPage;
-//        /// <summary>'Blackboard' for exchanging data between shepherd pages which isn't stored in the DB</summary>
+//        /// <summary>'Blackboard' for exchanging data between shepherd pages which isn't stored in the DB.</summary>
 //        private SortedList FPagesDataHeap;   // TODO
 
-        ///<summary>List of Shepherd Pages</summary>
+        #endregion
+        
+        #region Properties
+        
+        /// <summary>List of Shepherd Pages.</summary>
         public TPetraShepherdPagesList ShepherdPages
         {
             get
@@ -55,7 +69,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
         }
 
-        ///<summary>Currently displayed Shepherd Page</summary>
+        /// <summary>Currently displayed Shepherd Page.</summary>
         public TPetraShepherdPage CurrentPage
         {
             get
@@ -67,8 +81,16 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 FCurrentPage = value;
             }
         }
+        
+        #endregion
+        
+        #region Constructor
 
-        ///<summary>Constructor for the default logic behind all Shepherds.</summary>
+        /// <summary>
+        /// Constructor for the default logic behind all Shepherds.
+        /// </summary>
+        /// <param name="AYamlFile">Full path to the Shepherd's YAML Definition file.</param>
+        /// <param name="APetraShepherdForm"></param>
         public TPetraShepherdFormLogic(string AYamlFile, IPetraShepherdConcreteFormInterface APetraShepherdForm)
         {
             TLogging.Log(
@@ -99,10 +121,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 "TPetraShepherdFormLogic Constructor ran and returned to the TPetraShepherdFormLogic constructor in PetraShepherdConcreteForm.");
         }
 
+        #endregion
+        
+        #region Protected Methods
+        
         /// <summary>
         /// Returns an XML node that defines a number of the properties of each Shepherd. Including size and title.
         /// </summary>
-        /// <param name="AYamlFile"></param>
+        /// <param name="AYamlFile">Full path to the Shepherd's YAML Definition file.</param>
         /// <returns></returns>
         protected XmlNode ParseYAMLFileElements(string AYamlFile)
         {
@@ -190,7 +216,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             return FileElementData;
         }
 
-        ///<summary>Returns an instance of a Page UserControl</summary>
+        ///<summary>Returns an instance of a Page UserControl.</summary>
         protected UserControl InstantiatePageUC(string AID)
         {
             TLogging.Log("SwitchToPage (in TPetraShepherdFormLogic) was called for Page UserControl '" + AID + "'");
@@ -198,7 +224,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
             return null;
         }
 
-        ///<summary>Switches the current page</summary>
+        /// <summary>
+        /// Switches the current page.
+        /// </summary>
         protected void SwitchToPage(string APage)
         {
             TLogging.Log("SwitchToPage (in TPetraShepherdFormLogic) was called for Page '" + APage + "'");
@@ -220,9 +248,15 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 TLogging.Log(e.Message);
             }
         }
-
-        /// <summary>Returns the total number of pages in the Shepherd</summary>
-        /// <returns>Total Number of Shepherd Pages</returns>
+        
+        #endregion
+        
+        #region Public Methods
+        
+        /// <summary>
+        /// Returns the total number of pages in the Shepherd.
+        /// </summary>
+        /// <returns>Total Number of Shepherd Pages.</returns>
         public int EnumeratePages()
         {
             TLogging.Log("Enumerate Pages in TPetraShepherdFormLogic -- Counting the total number of pages.");
@@ -237,8 +271,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
             return PagesCount;
         }
 
-        /// <summary>Iterates through the list of pages to find out which page number the current page is.</summary>
-        /// <returns>Page Number</returns>
+        /// <summary>
+        /// Iterates through the list of pages to find out which page number the current page is.
+        /// </summary>
+        /// <returns>Page Number.</returns>
         public int GetCurrentPageNumber()
         {
             TLogging.Log("GetCurrentPageNumber() in TPetraShepherdConcreteForm.. ");
@@ -265,7 +301,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>
         /// Calculates the percentage of all of the pages that have been passed in the Shepherd.
         /// </summary>
-        /// <returns>Percentage of Pages</returns>
+        /// <returns>Percentage of Pages.</returns>
         public float GetProgressBarPercentage()
         {
 //            TPetraShepherdPage ProgressPage = null;
@@ -277,7 +313,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         }
 
         /// <summary>
-        /// Switches to the first page
+        /// Switches to the Start page (whatever page this is!).
         /// Iterates through FShepeherdPages.Pages to find the first page that is both visible and enabled.
         /// </summary>
         public void SwitchToStartPage()
@@ -299,6 +335,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
 
             TLogging.Log("temporary page was assigned to " + startPage + " in SwitchToStartPage.");
+            
             try
             {
                 SwitchToPage(startPage);
@@ -309,7 +346,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
         }
 
-        ///<summary>Switches the Finish page</summary>
+        /// <summary>
+        /// Switches to the Finish page.
+        /// </summary>
         public void SwitchToFinishPage()
         {
             TLogging.Log("SwitchToFinishPage (in TPetraShepherdFormLogic) called to: " + FINISHPAGE_NAME);
@@ -317,7 +356,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
             SwitchToPage(FINISHPAGE_NAME);
         }
 
-        ///<summary>Switches to the 'next' page (whatever page this is)</summary>
+        /// <summary>
+        /// Switches to the 'next' page (whatever page this is!).
+        /// </summary>
         public virtual void HandleActionNext()
         {
             TLogging.Log("HandleActionNext (in TPetraShepherdFormLogic)");
@@ -361,7 +402,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
         }
 
-        ///<summary>Switches to the 'previous' page (whatever page this is)</summary>
+        /// <summary>
+        /// Switches to the 'previous' page (whatever page this is!).
+        /// </summary>
         public virtual void HandleActionBack() //TODO: The handleActionBack method has an edge case that I can't figure out quite yet -- when only two pages are visible and enabled, hitting the back button repeatedly cycles through the two pages..
                                                // :-/
         {
@@ -397,23 +440,32 @@ namespace Ict.Petra.Client.CommonForms.Logic
             SwitchToPage(backPage);
         }
 
-        ///<summary>Causes to close the Shepherd without saving if the user chooses to do that</summary>
+        /// <summary>
+        /// Causes to close the Shepherd without saving if the user chooses to do that.
+        /// </summary>
         public void HandleActionCancel()
         {
             TLogging.Log("HandleActionCancel");
-            // Show Message Box with Yes, No, Cancel options
+            
+            // TODO: Show Message Box with Yes, No, Cancel options
 
             // If YES ->
             FForm.CancelShepherd();
         }
 
-        ///<summary>Shows the context-sensitive help file content for the current page, if available, otherwise for the Shepherd as a whole</summary>
+        /// <summary>
+        /// Shows the context-sensitive help file content for the current page, if available, otherwise for the Shepherd as a whole.
+        /// </summary>
         public void HandleActionHelp()
         {
             TLogging.Log("HandleActionHelp");
+            
+            // TODO
         }
 
-        ///<summary>Switches to the auto-generated 'Finish' page.</summary>
+        /// <summary>
+        /// Switches to the auto-generated 'Finish' page.
+        /// </summary>
         public void HandleActionFinish()
         {
             TLogging.Log("HandleActionFinish");
@@ -422,51 +474,51 @@ namespace Ict.Petra.Client.CommonForms.Logic
             SwitchToFinishPage();
         }
 
-        ///<summary>Determines the 'First' page (whatever page this is).</summary>
-        private void VisibleOrEnabledChangedEventHandler()
-        {
-            TLogging.Log("VisibleOrEnabledChangedEventHandler");
-            // re-enumerate FShepherdPages!
-
-            FForm.UpdateNavigation();
-        }
-
-        /// <summary>Looks up a key in the PagesDataHeap and returns its value, or null if it doesn't exist</summary>
+        /// <summary>
+        /// Looks up a key in the PagesDataHeap and returns its value, or null if it doesn't exist.
+        /// </summary>
         public string PagesDataHeapPeek(string AKey)
         {
             TLogging.Log("VisibleOrEnabledChangedEventHandler");
 
+            // TODO
+            
             return String.Empty;
         }
 
-        /// <summary>Sets a key-value pair in the PagesDataHeap</summary>
+        /// <summary>
+        /// Sets a key-value pair in the PagesDataHeap.
+        /// </summary>
         public void PagesDataHeapPoke(string AKey, string AValue)
         {
             TLogging.Log("PagesDataHeapPoke");
+            
+            // TODO
         }
 
         /// <summary>
         /// Creates XmlNodes for the Task List.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The created XmlNodes for the Task List.</returns>
         public XmlNode CreateTaskList()
         {
 //              TLogging.Log("Starting method CreateTaskList!");
 
-            // Create the xml document container
+            // Create the XML document container
             XmlDocument XMLDocumentOfActivePages = TYml2Xml.CreateXmlDocument();
             XmlNode root = XMLDocumentOfActivePages.FirstChild.NextSibling;
 
             // Create 'ShepherdPages' element (which serves as 'our' root element)
-            XmlElement ShepherdPages = root.OwnerDocument.CreateElement("ShepherdPages");             //<ShepherdPages>
+            XmlElement ShepherdPages = root.OwnerDocument.CreateElement("ShepherdPages");                        // <ShepherdPages>
             XmlNode ShepherdPagesNode = root.AppendChild(ShepherdPages);
 
             int PageCounter = 1;
 
             // TODO: Sub-Shepherds
+            
             foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
             {
-                XmlElement ID = ShepherdPagesNode.OwnerDocument.CreateElement("Page" + PageCounter.ToString());                 //<ID>
+                XmlElement ID = ShepherdPagesNode.OwnerDocument.CreateElement("Page" + PageCounter.ToString());  // <ID>
                 XmlNode IDNode = ShepherdPagesNode.AppendChild(ID);
 
                 // Label Attribute
@@ -515,7 +567,11 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             return firstPage;
         }
-
+        
+        #endregion
+        
+        #region Private Methods
+        
         /// <summary>
         /// This Method is only for debugging the TaskList nodes.
         /// </summary>
@@ -548,6 +604,24 @@ namespace Ict.Petra.Client.CommonForms.Logic
                     xnodWorking = xnodWorking.NextSibling;
                 }
             }
+        }        
+        
+        #endregion
+        
+        #region Event Handlers
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        private void VisibleOrEnabledChangedEventHandler()
+        {
+            TLogging.Log("VisibleOrEnabledChangedEventHandler");
+            
+            // re-enumerate FShepherdPages!
+
+            FForm.UpdateNavigation();
         }
+        
+        #endregion
     }
 }

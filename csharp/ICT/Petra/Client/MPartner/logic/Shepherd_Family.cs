@@ -29,11 +29,17 @@ using Ict.Petra.Client.CommonForms.Logic;
 namespace Ict.Petra.Client.MPartner.Logic
 {
     /// <summary>
-    /// Description of TShepherdFamilyFormLogic.
+    /// Logic for a Shepherd for a Partner of Class FAMILY.
     /// </summary>
     public class TShepherdFamilyFormLogic : TPetraShepherdFormLogic
     {
-        ///<summary>Constructor</summary>
+        #region Constructor
+        
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="AYamlFile">Full path to the Shepherd's YAML Definition file.</param>
+        /// <param name="APetraShepherdForm">An instance of TPetraShepherdConcreteForm.</param>
         public TShepherdFamilyFormLogic(string AYamlFile, IPetraShepherdConcreteFormInterface APetraShepherdForm) : base(AYamlFile,
                                                                                                                         APetraShepherdForm)
         {
@@ -45,6 +51,10 @@ namespace Ict.Petra.Client.MPartner.Logic
             TLogging.Log("TShepherdFamilyFormLogic Constructor ran.");
         }
 
+        #endregion
+        
+        #region Public Methods
+        
         /// <summary>
         /// Skips the first page of the Shepherd ('Ledger Selection')
         /// </summary>
@@ -54,5 +64,7 @@ namespace Ict.Petra.Client.MPartner.Logic
 
             base.SwitchToPage("Name");
         }
+        
+        #endregion
     }
 }

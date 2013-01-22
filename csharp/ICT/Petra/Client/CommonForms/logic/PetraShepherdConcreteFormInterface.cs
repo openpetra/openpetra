@@ -25,19 +25,21 @@ using System.Windows.Forms;
 
 namespace Ict.Petra.Client.CommonForms.Logic
 {
-    ///<summary>Interface for TPetraShepherdConcreteForm</summary>
+    /// <summary>
+    /// Interface for TPetraShepherdConcreteForm.
+    /// </summary>
     public interface IPetraShepherdConcreteFormInterface
     {
-        ///<summary>Update navigation buttons and navigation panel</summary>
+        ///<summary>Update navigation buttons and navigation panel.</summary>
         void UpdateNavigation();
         
-        ///<summary>Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel</summary>
+        ///<summary>Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel.</summary>
         void ShowCurrentPage();
         
-        ///<summary>Closes the Shepherd without any further ado and without saving</summary>
+        ///<summary>Closes the Shepherd without any further ado and without saving.</summary>
         void CancelShepherd();
         
-        ///<summary>Defines the attributes of each individual Shepherd at run time</summary>
+        ///<summary>Modifies the Form's layout according to the passed in Arguments.</summary>
         void UpdateShepherdFormProperties(string ATitle, int ShepherdWidth, int ShepherdHeight);
     }
 }

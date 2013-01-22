@@ -27,8 +27,10 @@ namespace Ict.Petra.Client.CommonForms
 {
     public partial class TUC_PetraShepherdFinishPage
     {
+        #region Properties
+        
         /// <summary>
-        /// Summary Text #1
+        /// Summary Text #1.
         /// </summary>
         public string SummaryText1
         {
@@ -44,7 +46,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// Summary Text #2
+        /// Summary Text #2.
         /// </summary>
         public string SummaryText2
         {
@@ -91,7 +93,6 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-
         /// <summary>
         /// Determines the Checked state of the 'Further action on finish' CheckBox (not Checked by default).
         /// </summary>
@@ -108,6 +109,10 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        #endregion
+        
+        #region Private Methods
+        
         private void InitializeManualCode()
         {
             // TODO: REMOVE the following code once the Properties can be set from the Shepherds!
@@ -116,5 +121,7 @@ namespace Ict.Petra.Client.CommonForms
 //            FurtherActionOnFinish = true;
             chkFurtherActionOnFinish.Visible = true;
         }
+        
+        #endregion
     }
 }

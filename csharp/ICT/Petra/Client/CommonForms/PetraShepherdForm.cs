@@ -29,12 +29,14 @@ using Ict.Petra.Client.CommonForms.Logic;
 namespace Ict.Petra.Client.CommonForms
 {
     /// <summary>
-    /// The base GUI for all Petra Shepherd Forms: elements will be present in every Shepherd Page
+    /// The base GUI for all Petra Shepherd Forms: elements will be present in every Shepherd Page.
     /// </summary>
     public partial class TPetraShepherdForm : Form
     {
 //        TPetraShepherdFormLogic FLogic;  TODO
 
+        #region Constructor
+        
         /// <summary>
         /// Constructor
         /// </summary>
@@ -46,68 +48,61 @@ namespace Ict.Petra.Client.CommonForms
             InitializeComponent();
         }
 
-        #region ButtonEvents
+        #endregion
+        
+        #region Events
+        
         /// <summary>
-        /// Virtual function: implementor should handle action for Finish button click
+        /// Virtual Method: implementor should handle action for Finish button click.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
         protected virtual void BtnFinishClick(object sender, EventArgs e)
         {
         }
 
         /// <summary>
-        /// Virtual function: implementor should handle action for Next button click
+        /// Virtual Method: implementor should handle action for Next button click.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
         protected virtual void BtnNextClick(object sender, EventArgs e)
         {
         }
 
         /// <summary>
-        /// Virtual function: implementor should handle action for Back button click
+        /// Virtual Method: implementor should handle action for Back button click.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
         protected virtual void BtnBackClick(object sender, EventArgs e)
         {
         }
 
         /// <summary>
-        /// Virtual function: implementor should handle action for Cancel button click
+        /// Virtual Method: implementor should handle action for Cancel button click.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
         protected virtual void BtnCancelClick(object sender, EventArgs e)
         {
         }
 
         /// <summary>
-        /// Virtual function: implementor should handle action for Help button click
+        /// Virtual Method: implementor should handle action for Help button click.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
         protected virtual void BtnHelpClick(object sender, EventArgs e)
         {
         }
 
         /// <summary>
-        /// Virtual function: implementor should handle the loading of the current form
+        /// Virtual Method: implementor should handle the loading of the current form.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
         protected virtual void Form_Load(object sender, EventArgs e)
-        {
-        }
-
-        /// <summary>
-        /// TODO: This is a temporary Action: we are using this to test the page switching functionality
-        /// of the shepherd.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void TextBox1TextChanged(object sender, EventArgs e)
         {
         }
 

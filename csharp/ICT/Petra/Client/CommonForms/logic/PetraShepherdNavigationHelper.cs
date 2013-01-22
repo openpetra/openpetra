@@ -27,35 +27,54 @@ using Ict.Common;
 namespace Ict.Petra.Client.CommonForms.Logic
 {
     /// <summary>
-    /// Shepherd Navigation Helper
+    /// Shepherd Navigation Helper.
     /// </summary>
     /// <remarks>TODO what was this Class about? Is it still needed?</remarks>
     public class TShepherdNavigationHelper
     {
-        /// <summary>Total visible Panels</summary>
-        public int TotalPages {
+        #region Properties
+        
+        /// <summary>
+        /// Total visible Pages.
+        /// </summary>
+        public int TotalPages 
+        {
             get
             {
                 return 0;
             }
         }
-
+        
+        #endregion
+        
+        #region Constructor
+        
         /// <summary>
-        /// TODO:
+        /// Constructor.
         /// </summary>
-        /// <param name="AShepherdPages"></param>
-        /// <param name="APanelCollapsible"></param>
+        /// <param name="AShepherdPages">TODO</param>
+        /// <param name="APanelCollapsible">TODO</param>
         public TShepherdNavigationHelper(TPetraShepherdPagesList AShepherdPages, Panel APanelCollapsible)
         {
             TLogging.Log("Entering TShepherdNavigationHelper Constructor...");
 
+            // TODO 
+
             TLogging.Log("TShepherdNavigationHelper Constructor ran.");
         }
 
-        /// <summary>Redraws the Navigation Panel only</summary>
+        #endregion
+        
+        #region Public Methods
+        
+        /// <summary>Redraws the Navigation Panel only.</summary>
         public void Refresh()
         {
             TLogging.Log("Refresh");
+            
+            // TODO
         }
+        
+        #endregion
     }
 }

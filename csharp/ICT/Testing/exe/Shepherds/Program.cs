@@ -21,13 +21,21 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+
 using NUnit.Framework;
-using Ict.Testing.Shepherds;
 
 namespace Ict.Testing.Shepherds
 {
+    /// <summary>
+    /// Main entry point for the program.
+    /// </summary>
     class Program
     {
+        /// <summary>
+        /// Main entry point for the program.
+        /// </summary>
+        /// <remarks>TODO: This Unit Test should be converted to be a DLL rather than an EXE!</remarks>
+        /// <param name="args">Command Line arguments array.</param>
         public static void Main(string[] args)
         {
             Console.WriteLine("Test.");

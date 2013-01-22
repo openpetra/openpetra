@@ -37,11 +37,17 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public partial class TShepherdFamilyForm : TPetraShepherdConcreteForm
     {
+        #region Fields
+        
         ///<summary>Instance of this Shepherd's Logic.</summary>
         private TShepherdFamilyFormLogic FSpecificLogic;
 
         private bool FSkipLedgerSelectionPage = false;
 
+        #endregion
+        
+        #region Properties
+        
         /// <summary>
         /// TODO Comment
         /// </summary>
@@ -51,15 +57,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 return FSkipLedgerSelectionPage;
             }
+            
             set
             {
                 FSkipLedgerSelectionPage = value;
             }
         }
 
+        #endregion
+        
+        #region Constructor
+        
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="AParentForm">Parent Form.</param>
         public TShepherdFamilyForm(Form AParentForm) : base(AParentForm)
         {
             TLogging.Log("Entering TShepherdFamilyForm Constructor...");
@@ -75,26 +87,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             InitializeComponent();
 
-
-            //
-            // TODO: Add constructor code after the InitializeComponent() call.
-            //
-
             TLogging.Log("TShepherdFamilyForm Constructor ran.");
         }
+        
+        #endregion
+        
+        #region Protected Methods
 
         /// <summary>
         /// Load Event for the TShepherdFamilyForm.
         /// </summary>
-        /// <param name="sender">Not evaluated.</param>
-        /// <param name="e">Not evaluated.</param>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
         protected override void Form_Load(object sender, EventArgs e)
         {
             TLogging.Log("Entering TShepherdFamilyForm Form_Load...");
 
             base.Form_Load(sender, e);
-
-            this.Text = "Add New Family Shepherd";   // this should come out of the YAML file and should have been set in the TPetraShepherdConcreteForm.Form_Load Method!
 
             if (FSkipLedgerSelectionPage)
             {
@@ -102,6 +111,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             TLogging.Log("TShepherdFamilyForm Form_Load ran.");
+            
+            try
+            {
+                TLogging.Log("The Family Form Printed an a valid ID: " + FLogic.CurrentPage.ID);
+            }
+            catch (Exception)
+            {
+                TLogging.Log("EXCEPTION CAUGHT: testStatusMessage threw Null Exception.");
+            }            
         }
+        
+        #endregion
     }
 }

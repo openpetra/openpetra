@@ -27,33 +27,45 @@ using System.Windows.Forms;
 using Ict.Petra.Client.CommonForms.Logic;
 using System.Xml;
 
-using Ict.Common; //this is also a test
+using Ict.Common;
 
 namespace Ict.Petra.Client.CommonForms
 {
-    ///<summary>Imlements TPetraShepherdForm (and therefore becomes a WinForm)
+    ///<summary>
+    /// Imlements TPetraShepherdForm (and therefore becomes a WinForm)
     /// and handles the GUI behaviour of a Shepherd. Utilises
-    /// TPetraShepherdFormLogic for the base Shepherd Logic.</summary>
+    /// TPetraShepherdFormLogic for the base Shepherd Logic.
+    /// </summary>
     public class TPetraShepherdConcreteForm : TPetraShepherdForm, IPetraShepherdConcreteFormInterface, Ict.Petra.Client.CommonForms.IFrmPetraEdit
     {
+        #region Fields
+        
         /// <summary>Helper object for Edit screens.</summary>
         protected TFrmPetraEditUtils FPetraUtilsObject;
 
         /// <summary>Holds the DataSet that contains most data that is used on the screen.</summary>
         protected DataSet FMainDS;
 
-        ///<summary>Name of the YAML file that contains the definition of the Shepherd Pages and the Shepherd overall</summary>
+        ///<summary>Name of the YAML file that contains the definition of the Shepherd Pages and the Shepherd overall.</summary>
         protected string FYamlFile = String.Empty;
 
-        /// <summary>Name of the Shepherd that will be imported. It has to be a global variable because it has to bounce from </summary>
+        /// <summary>Name of the Shepherd that will be imported. It has to be a global variable because it has to bounce from.</summary>
         protected string ShepherdTitle = string.Empty;
 
         ///<summary>Instance of base Shepherd Logic.</summary>
         protected TPetraShepherdFormLogic FLogic;
-        ///<summary>Instance of helper Class for navigation purposes</summary>
+        
+        ///<summary>Instance of helper Class for navigation purposes.</summary>
         private TShepherdNavigationHelper FShepherdNavigationHelper;
 
-        ///<summary>Constructor</summary>
+        #endregion
+        
+        #region Constructor
+        
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="AParentForm">Parent Form.</param>
         public TPetraShepherdConcreteForm(Form AParentForm)
         {
             TLogging.Log("Entering TPetraShepherdConcreteForm Constructor...");
@@ -62,81 +74,14 @@ namespace Ict.Petra.Client.CommonForms
 
             TLogging.Log("TPetraShepherdConcreteForm Constructor ran.");
         }
-
+        
+        #endregion
+        
+        #region Public Methods
+        
         /// <summary>
-        /// Overwrites virtual function in PetraShepherdForm.cs,
-        /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
+        /// Update navigation buttons and navigation panel.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected override void BtnFinishClick(object sender, EventArgs e)
-        {
-            FLogic.HandleActionFinish();
-        }
-
-        /// <summary>
-        /// Overwrites virtual function in PetraShepherdForm.cs,
-        /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected override void BtnNextClick(object sender, EventArgs e)
-        {
-            FLogic.HandleActionNext();
-        }
-
-        /// <summary>
-        /// Overwrites virtual function in PetraShepherdForm.cs,
-        /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected override void BtnBackClick(object sender, EventArgs e)
-        {
-            FLogic.HandleActionBack();
-        }
-
-        /// <summary>
-        /// Overwrites virtual function in PetraShepherdForm.cs,
-        /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected override void BtnCancelClick(object sender, EventArgs e)
-        {
-            FLogic.HandleActionCancel();
-        }
-
-        /// <summary>
-        /// Overwrites virtual function in PetraShepherdForm.cs,
-        /// calls function in PetraShepherdConcreteForm.cs in logic namespace to handle action
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected override void BtnHelpClick(object sender, EventArgs e)
-        {
-            FLogic.HandleActionHelp();
-        }
-
-        /// <summary>
-        /// Gets called when the Form is shown but before it's painted
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected override void Form_Load(object sender, EventArgs e)
-        {
-            TLogging.Log("Entering TPetraShepherdConcreteForm (Base) Form_Load...");
-
-            FShepherdNavigationHelper = new TShepherdNavigationHelper(FLogic.ShepherdPages, pnlNavigation);
-
-            this.Text = ShepherdTitle;
-
-            ShowCurrentPage();
-
-            TLogging.Log("TPetraShepherdConcreteForm (Base) Form_Load ran.");
-        }
-
-        ///<summary>Update navigation buttons and navigation panel</summary>
         public void UpdateNavigation()
         {
             TLogging.Log("Updating Navigation Buttons.");
@@ -179,11 +124,11 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// TODO Comment
+        /// Modifies the Form's layout according to the passed in Arguments.
         /// </summary>
-        /// <param name="AString"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
+        /// <param name="AString">Shepherd Title.</param>
+        /// <param name="width">Width of the Shepherd Form.</param>
+        /// <param name="height">Height of the Shepherd Form.</param>
         public void UpdateShepherdFormProperties(string AString, int width, int height)
         {
             TLogging.Log("UpdateShepherdFormProperties in commonForms--PetraShepherdConcreteFormGui");
@@ -196,7 +141,9 @@ namespace Ict.Petra.Client.CommonForms
             TLogging.Log("Size AFTER UpdateShepherdFormProperties: width: " + pnlContent.Width + ", height: " + pnlContent.Width);
         }
 
-        ///<summary>Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel</summary>
+        /// <summary>
+        /// Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel.
+        /// </summary>
         public void ShowCurrentPage()
         {
             UserControl PageUserControl;
@@ -204,10 +151,9 @@ namespace Ict.Petra.Client.CommonForms
 
             TLogging.Log("ShowCurrentPage");
 
-            TLogging.Log("In ShowCurrentPage() method, at line 165, the current page is set to: " + FLogic.CurrentPage.ID);
+            TLogging.Log("In ShowCurrentPage() method the current page is set to: " + FLogic.CurrentPage.ID);
 
             PageUserControl = FLogic.CurrentPage.UserControlInstance;
-
 
             #region Set up the UserControl
 
@@ -227,60 +173,154 @@ namespace Ict.Petra.Client.CommonForms
 
             #endregion
 
-
             // Add the UserControl to the Content Panel, ensuring no other UserControl is left there.
             pnlContent.Controls.Clear();
             pnlContent.Controls.Add(PageUserControl);
 
-
             UpdateNavigation();
         }
 
-        ///<summary>Closes the Shepherd without any further ado and without saving</summary>
+        /// <summary>
+        /// Closes the Shepherd without any further ado and without saving.
+        /// </summary>
         public void CancelShepherd()
         {
             TLogging.Log("CancelShepherd");
+            
+            this.Close();
         }
 
+        #endregion
+                
+        #region Private Methods
+        
         /// <summary>
         /// Determines the changes in the screen's dataset and submits them to the
         /// Server.
         /// </summary>
-        /// <param name="AInspectDS">The screen's dataset
-        /// </param>
+        /// <param name="AInspectDS">The screen's DataSet.</param>
         /// <returns>True if saving of data succeeded, otherwise false.</returns>
         private Boolean SaveChanges(ref DataSet AInspectDS)
         {
             // TODO
+            
             return false;
         }
 
-        #region Implement interface functions
+        #endregion
+        
+        #region Event Handlers
+
+        /// <summary>
+        /// Overwrites virtual Method in TPetraShepherdForm,
+        /// calls Method in TPetraShepherdFormLogic in logic namespace to handle action.
+        /// </summary>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
+        protected override void BtnFinishClick(object sender, EventArgs e)
+        {
+            FLogic.HandleActionFinish();
+        }
+
+        /// <summary>
+        /// Overwrites virtual Method in TPetraShepherdForm,
+        /// calls Method in TPetraShepherdFormLogic in logic namespace to handle action.
+        /// </summary>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
+        protected override void BtnNextClick(object sender, EventArgs e)
+        {
+            FLogic.HandleActionNext();
+        }
+
+        /// <summary>
+        /// Overwrites virtual Method in TPetraShepherdForm,
+        /// calls Method in TPetraShepherdFormLogic in logic namespace to handle action.
+        /// </summary>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
+        protected override void BtnBackClick(object sender, EventArgs e)
+        {
+            FLogic.HandleActionBack();
+        }
+
+        /// <summary>
+        /// Overwrites virtual Method in TPetraShepherdForm,
+        /// calls Method in TPetraShepherdFormLogic in logic namespace to handle action.
+        /// </summary>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
+        protected override void BtnCancelClick(object sender, EventArgs e)
+        {
+            FLogic.HandleActionCancel();
+        }
+
+        /// <summary>
+        /// Overwrites virtual Method in TPetraShepherdForm,
+        /// calls Method in TPetraShepherdFormLogic in logic namespace to handle action.
+        /// </summary>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
+        protected override void BtnHelpClick(object sender, EventArgs e)
+        {
+            FLogic.HandleActionHelp();
+        }
+
+        /// <summary>
+        /// Gets called when the Form is shown but before it's painted.
+        /// </summary>
+        /// <param name="sender">Sending Control (supplied by WinForms).</param>
+        /// <param name="e">Event Arguments (supplied by WinForms).</param>
+        protected override void Form_Load(object sender, EventArgs e)
+        {
+            TLogging.Log("Entering TPetraShepherdConcreteForm (Base) Form_Load...");
+
+            FShepherdNavigationHelper = new TShepherdNavigationHelper(FLogic.ShepherdPages, pnlNavigation);
+
+            this.Text = ShepherdTitle;
+
+            ShowCurrentPage();
+
+            TLogging.Log("TPetraShepherdConcreteForm (Base) Form_Load ran.");
+        }
+        
+        #endregion
+                
+        #region Implement interface Methods
+        
+        /// <summary>
         /// TODO
+        /// </summary>
         public void RunOnceOnActivation()
         {
         }
 
         /// <summary>
-        /// Adds event handlers for the appropiate onChange event to call a central procedure
+        /// Adds event handlers for the appropriate OnChange event to call a central procedure.
         /// </summary>
         public void HookupAllControls()
         {
         }
 
+        /// <summary>
         /// TODO
+        /// </summary>
         public void HookupAllInContainer(Control container)
         {
             FPetraUtilsObject.HookupAllInContainer(container);
         }
 
+        /// <summary>
         /// TODO
+        /// </summary>
         public bool CanClose()
         {
             return FPetraUtilsObject.CanClose();
         }
 
+        /// <summary>
         /// TODO
+        /// </summary>
         public TFrmPetraUtils GetPetraUtilsObject()
         {
             return (TFrmPetraUtils)FPetraUtilsObject;
