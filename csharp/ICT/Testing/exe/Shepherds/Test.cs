@@ -22,9 +22,16 @@ using Ict.Petra.Client.CommonForms.Logic;
 
 namespace Ict.Testing.Shepherds
 {
+
+    /// <summary>
+    /// Shepherd Unit Tests.
+    /// </summary>        
     [TestFixture]
     public class Test
     {
+        /// <summary>
+        /// TODO Comment
+        /// </summary>        
         [Test]
         public void TestTPetraShepherdParseYAMLFileElementsMethod()
         {
@@ -36,6 +43,9 @@ namespace Ict.Testing.Shepherds
                 new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", testShepherdInterface);
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>        
         [Test]
         public void TestTPetraShepherdPagesListConstructor()
         {
@@ -81,6 +91,9 @@ namespace Ict.Testing.Shepherds
             }
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>        
         [Test]
         public void TestPetraShepherdFormLogicHandleActionNextNormalCircumstances()
         {
@@ -101,6 +114,9 @@ namespace Ict.Testing.Shepherds
             Assert.AreEqual(testFormLogic.CurrentPage.ID, "FINISHPAGE_MASTER");
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
         [Test]
         public void TestPetraShepherdFormLogicHandleActionNextOneInvisible()
         {
@@ -127,6 +143,9 @@ namespace Ict.Testing.Shepherds
             Assert.AreEqual(testNotVisibleLogic.CurrentPage.ID, "12");
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
         [Test]
         public void TestPetraShepherdFormLogicHandleActionNextOneUnenabled()
         {
@@ -153,6 +172,9 @@ namespace Ict.Testing.Shepherds
             Assert.AreEqual(testNotEnabledLogic.CurrentPage.ID, "12");
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
         [Test]
         public void TestPetraShepherdFormLogicHandleActionNextOneInvisibleOneUnenabled()
         {
@@ -180,6 +202,9 @@ namespace Ict.Testing.Shepherds
             Assert.AreEqual(testNotVisibleOrEnabledLogic.CurrentPage.ID, "12");
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
         [Test]
         public void TestPetraShepherdFormLogicSwitchToStartPage()
         {
@@ -195,6 +220,9 @@ namespace Ict.Testing.Shepherds
                 "Did not correctly switch back to the start page.");
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
         [Test]
         public void TestPetraShepherdFormLogicSwitchToFinishPage()
         {
@@ -207,6 +235,9 @@ namespace Ict.Testing.Shepherds
             testFomLogicSwitchToFinishPage.SwitchToFinishPage();
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
         [Test]
         public void TestPetraShepherdFormLogicSwitchToBackPage()
         {
@@ -233,6 +264,9 @@ namespace Ict.Testing.Shepherds
                 "The shepherd should not have jumped farther back than 5.");
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
         [Test]
         public void TestPetraShepherdFormLogicParseYAMLFileElements()
         {
@@ -242,6 +276,9 @@ namespace Ict.Testing.Shepherds
             //how do we test the elements of a GUI element?
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
         [Test]
         public void TestPetraShepherdFormLogicGetCurrentPageNumber()
         {
@@ -254,6 +291,9 @@ namespace Ict.Testing.Shepherds
             Assert.AreEqual(testGetCurrentPageNumber.GetCurrentPageNumber(), 2, "The current page was not 2.");
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
         [Test]
         public void TestPetraShepherdFormLogicEnumeratePages()
         {

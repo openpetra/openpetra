@@ -42,16 +42,12 @@ namespace Ict.Petra.Client.CommonForms.Logic
         private IPetraShepherdConcreteFormInterface FForm;
         /// <summary>Holds the instance of the current shepherd page</summary>
         private TPetraShepherdPage FCurrentPage;
-        /// <summary>'Blackboard' for exchanging data between shepherd pages which isn't stored in the DB</summary>
-        private SortedList FPagesDataHeap;
+//        /// <summary>'Blackboard' for exchanging data between shepherd pages which isn't stored in the DB</summary>
+//        private SortedList FPagesDataHeap;   // TODO
 
         ///<summary>List of Shepherd Pages</summary>
         public TPetraShepherdPagesList ShepherdPages
         {
-            /// <summary>
-            /// Read in XML nodes from YAML file and call TShepherdPage constructor
-            /// with the particular XML node needed for that page.
-            /// </summary>
             get
             {
                 TLogging.Log("TPetraShepherdPagesList called get method in the attribute.");
@@ -106,7 +102,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>
         /// Returns an XML node that defines a number of the properties of each Shepherd. Including size and title.
         /// </summary>
-        /// <param name="AID"></param>
+        /// <param name="AYamlFile"></param>
         /// <returns></returns>
         protected XmlNode ParseYAMLFileElements(string AYamlFile)
         {
@@ -186,7 +182,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
                     Convert.ToInt32(ShepherdWidth),
                     Convert.ToInt32(ShepherdHeight));
             }
-            catch (FormatException e)
+            catch (FormatException)
             {
                 TLogging.Log("An element (height or width) cannot be converted to integer. Check the datatype and try again.");
             }
@@ -272,7 +268,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <returns>Percentage of Pages</returns>
         public float GetProgressBarPercentage()
         {
-            TPetraShepherdPage ProgressPage = null;
+//            TPetraShepherdPage ProgressPage = null;
             float ProgressPercentage = 0;
 
             ProgressPercentage = ((float)GetCurrentPageNumber() / (float)EnumeratePages() * 100);
@@ -307,7 +303,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 SwitchToPage(startPage);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
                 TLogging.Log("KeyNotFoundException Thrown in SwitchToStartPage when SwitchToPage(startPage) was called.");
             }
@@ -359,7 +355,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 SwitchToPage(nextPage);
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException)
             {
                 TLogging.Log("KeyNotFoundException Thrown at HandleActionNext when SwitchToPage(nextPage) was called.");
             }
@@ -386,8 +382,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
                     if ((pair.Value == CurrentPage) && pair.Value.Enabled && pair.Value.Visible)
                     {
                         backPage = temporaryPage.ID;
-                        break;
+                        
                         TLogging.Log("Set the backpage to the following: " + temporaryPage.ID);
+                        
+                        break;
                     }
 
                     temporaryPage = pair.Value;
@@ -447,6 +445,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TLogging.Log("PagesDataHeapPoke");
         }
 
+        /// <summary>
+        /// Creates XmlNodes for the Task List.
+        /// </summary>
+        /// <returns></returns>
         public XmlNode CreateTaskList()
         {
 //              TLogging.Log("Starting method CreateTaskList!");

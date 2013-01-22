@@ -414,6 +414,11 @@ namespace Ict.Petra.Client.CommonForms.Logic
             Init(XmlPages);
         }
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="XmlPages"></param>
+        /// <param name="SubShepherdName"></param>
         public TPetraShepherdFinishPage(XmlDocument XmlPages, string SubShepherdName)
         {
             base.ID = "FINISHPAGE_CHILD_" + SubShepherdName.ToUpper();
@@ -431,6 +436,11 @@ namespace Ict.Petra.Client.CommonForms.Logic
             base.Note = GetFinishPageNote(XmlPages);
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
+        /// <param name="XmlPages"></param>
+        /// <returns></returns>
         protected string GetFinishPageNote(XmlDocument XmlPages)
         {
             XmlNode FileElementData = XmlPages.DocumentElement;

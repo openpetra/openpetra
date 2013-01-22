@@ -178,6 +178,12 @@ namespace Ict.Petra.Client.CommonForms
             TLogging.Log("UpdateNavigation");
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
+        /// <param name="AString"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public void UpdateShepherdFormProperties(string AString, int width, int height)
         {
             TLogging.Log("UpdateShepherdFormProperties in commonForms--PetraShepherdConcreteFormGui");

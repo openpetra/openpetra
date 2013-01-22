@@ -42,6 +42,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private bool FSkipLedgerSelectionPage = false;
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
         public bool SkipLedgerSelectionPage
         {
             get

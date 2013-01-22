@@ -33,7 +33,7 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public partial class TPetraShepherdForm : Form
     {
-        TPetraShepherdFormLogic FLogic;
+//        TPetraShepherdFormLogic FLogic;  TODO
 
         /// <summary>
         /// Constructor
@@ -45,10 +45,6 @@ namespace Ict.Petra.Client.CommonForms
             //
             InitializeComponent();
         }
-
-        /// <summary>Returns the percentage at which the progress bar should currently be set.
-        /// Christian said that we were to implement this here, but it doesn't make sense that
-        /// this method be implemented inside of the GUI..</summary>
 
         #region ButtonEvents
         /// <summary>

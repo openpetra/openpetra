@@ -42,6 +42,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private bool FSkipLedgerSelectionPage = false;
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
         public bool SkipLedgerSelectionPage
         {
             get
@@ -100,7 +103,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 TLogging.Log("The Church Form Printed an a valid ID: " + FLogic.CurrentPage.ID);
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 TLogging.Log("EXCEPTION CAUGHT: testStatusMessage threw Null Exception.");
             }

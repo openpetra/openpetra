@@ -27,6 +27,9 @@ namespace Ict.Testing.Shepherds
     /// TODO: implement this class in the dve
     public class TestLogicInterface : Ict.Petra.Client.CommonForms.Logic.IPetraShepherdConcreteFormInterface
     {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public TestLogicInterface()
         {
         }
@@ -50,11 +53,21 @@ namespace Ict.Testing.Shepherds
             System.Console.WriteLine("Canceling the shepherd's GUI and logic.. ");
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
+        /// <param name="AString"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public void UpdateShepherdFormProperties(string AString, int width, int height)
         {
             System.Console.WriteLine("The ShepherdFormProperties would have been updated if this wasn't a dummy interface.");
         }
 
+        /// <summary>
+        /// TODO Comment
+        /// </summary>
+        /// <param name="ProgressPercent"></param>
         public void UpdateProgressBar(int ProgressPercent)
         {
             System.Console.WriteLine("The Progress Bar would have been updated if this wasn't a dummy interface.");

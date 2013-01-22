@@ -26,6 +26,10 @@ using Ict.Common;
 
 namespace Ict.Petra.Client.CommonForms.Logic
 {
+    /// <summary>
+    /// Shepherd Navigation Helper
+    /// </summary>
+    /// <remarks>TODO what was this Class about? Is it still needed?</remarks>
     public class TShepherdNavigationHelper
     {
         /// <summary>Total visible Panels</summary>
