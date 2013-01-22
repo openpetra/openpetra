@@ -165,12 +165,13 @@ namespace Ict.Petra.Client.CommonForms
         	this.lblHeading1.Text = FLogic.CurrentPage.Title; 
         	this.lblHeading2.Text = FLogic.CurrentPage.Note;
         	
+        	pnlCollapsibleNavigation.Text = Catalog.GetString("Shepherd Pages");
         	pnlCollapsibleNavigation.TaskListNode = FLogic.CreateTaskList();
         	pnlCollapsibleNavigation.Show(); 
         	
         	TLogging.Log("Added a node to the task list.");
         
-//        	pnlCollapsibleNavigation.RealiseTaskListNow();
+        	pnlCollapsibleNavigation.RealiseTaskListNow();
         	
             TLogging.Log("UpdateNavigation");
         }

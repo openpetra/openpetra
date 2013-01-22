@@ -90,8 +90,6 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             SwitchToStartPage();
             
-            CreateTaskList(); // test call to this function; not where it will be implemented 
-            
             TLogging.Log("The TPetraShepherdFormLogic constructor has switched to the first page.");
 	
             // Iterate over all FPetraShepherdPages and add the VisibleOrEnabledChangedEventHandler
@@ -442,89 +440,76 @@ namespace Ict.Petra.Client.CommonForms.Logic
         
         public XmlNode CreateTaskList()
         {
-        	TLogging.Log("Starting method CreateTaskList!");
+//        	TLogging.Log("Starting method CreateTaskList!");
+
         	// Create the xml document container
-			XmlDocument XMLDocumentOfActivePages = new XmlDocument();// Create the XML Declaration, and append it to XML document
-			XmlDeclaration dec = XMLDocumentOfActivePages.CreateXmlDeclaration("1.0", null, null);
-			XMLDocumentOfActivePages.AppendChild(dec);// Create the root element
-			XmlElement root = XMLDocumentOfActivePages.CreateElement("Library");
-			XMLDocumentOfActivePages.AppendChild(root);
-        
-			XmlElement ShepherdPages = XMLDocumentOfActivePages.CreateElement("ShepherdPages"); //<ShepherdPages>
+            XmlDocument XMLDocumentOfActivePages = TYml2Xml.CreateXmlDocument();
+            XmlNode root = XMLDocumentOfActivePages.FirstChild.NextSibling;
+            
+            // Create 'ShepherdPages' element (which serves as 'our' root element)            
+			XmlElement ShepherdPages = root.OwnerDocument.CreateElement("ShepherdPages"); //<ShepherdPages>
+			XmlNode ShepherdPagesNode = root.AppendChild(ShepherdPages);
 			
 			int PageCounter = 1; 
+			
+			// TODO: Sub-Shepherds
 			foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
 			{
-				XmlElement ID = XMLDocumentOfActivePages.CreateElement("Task" + PageCounter.ToString()); //<ID>
-				ID.InnerText = "" + PageCounter + " " + pair.Key;
+				XmlElement ID = ShepherdPagesNode.OwnerDocument.CreateElement("Page" + PageCounter.ToString()); //<ID>
+				XmlNode IDNode = ShepherdPagesNode.AppendChild(ID); 
 				
-				ID.SetAttribute("Label", pair.Value.Title);
+				// Label Attribute
+				XmlAttribute LabelAttribute = ShepherdPagesNode.OwnerDocument.CreateAttribute("Label");
+                IDNode.Attributes.Append(LabelAttribute);
+                IDNode.Attributes["Label"].Value = pair.Value.Title;
+				
+                // Visible Attribute
 				if(!(pair.Value.Visible))
 				{
-					ID.SetAttribute("Hidden", "True");
+    				XmlAttribute VisibleAttribute = ShepherdPagesNode.OwnerDocument.CreateAttribute("Visible");
+                    IDNode.Attributes.Append(VisibleAttribute);
+				    IDNode.Attributes["Visible"].Value = "False";    
 				}
+				
+				// Enabled Attribute
 				if(!(pair.Value.Enabled))
 				{
-					ID.SetAttribute("Enabled","False");
+    				XmlAttribute EnabledAttribute = ShepherdPagesNode.OwnerDocument.CreateAttribute("Enabled");
+                    IDNode.Attributes.Append(EnabledAttribute);
+				    IDNode.Attributes["Enabled"].Value = "False";    
 				}
 				
-				XmlElement Title = XMLDocumentOfActivePages.CreateElement("Label"); //<Title>
-				Title.InnerText = pair.Value.Title; 
-				
-				XmlElement Visible = XMLDocumentOfActivePages.CreateElement("Visible"); // <Visible>
-					if(pair.Value.Visible)
-					{
-						Visible.InnerText = "True"; 	
-					}
-					else
-					{
-						Visible.InnerText = "False"; 	
-					}	
-					
-				XmlElement Enabled = XMLDocumentOfActivePages.CreateElement("Enabled"); 
-					if(pair.Value.Enabled)
-					{
-						Enabled.InnerText = "True"; 	
-					}
-					else
-					{
-						Enabled.InnerText = "False"; 	
-					}
-
-				//TODO 
-				//IF(ISSUBSHEPHERD)
-				//SUDOCODE HERE 
-				
-				ID.AppendChild(Title); 
-				ID.AppendChild(Visible);
-				ID.AppendChild(Enabled);
-				ShepherdPages.AppendChild(ID); 
 				PageCounter++; 
 			}
-			root.AppendChild(ShepherdPages); //Last Step 
 			
 			XmlNode firstPage = root.FirstChild;
-			TLogging.Log("Count of child nodes: " + firstPage.ChildNodes.Count); 
-			
 
-			XmlNodeList PageAttributes = firstPage.ChildNodes;
-			int counter = 0;
-			foreach(XmlNode node in PageAttributes)
-			{
-				foreach(XmlNode attributeNode in node.ChildNodes)
-				{
-					
-					TLogging.Log("Foreach Node Value: " + attributeNode.InnerText); 
-					
-				}
-				TLogging.Log("Inner foreach: " + counter); 
-				counter++;
-			}
+// For debugging only
+//			TLogging.Log("Count of child nodes: " + firstPage.ChildNodes.Count);
+//			XmlNodeList PageAttributes = firstPage.ChildNodes;
+//			int counter = 0;
+//			foreach(XmlNode node in PageAttributes)
+//			{
+//				foreach(XmlNode attributeNode in node.ChildNodes)
+//				{
+//					
+//					TLogging.Log("Foreach Node Value: " + attributeNode.InnerText); 
+//					
+//				}
+//				TLogging.Log("Inner foreach: " + counter); 
+//				counter++;
+//			}
+//			TLogging.Log("FIRST CHILD NAME: " + root.FirstChild.FirstChild.FirstChild.NextSibling.InnerText);
+//			ChildDisplay(firstPage,0);
 			
-			TLogging.Log("FIRST CHILD NAME" + root.FirstChild.FirstChild.FirstChild.NextSibling.InnerText);
-			ChildDisplay(root.FirstChild.FirstChild,0);
-        	return root.FirstChild; 
+        	return firstPage; 
         }
+        
+         /// <summary>
+         /// This Method is only for debugging the TaskList nodes.
+         /// </summary>
+         /// <param name="xnod"></param>
+         /// <param name="level"></param>
 		 private static void ChildDisplay(XmlNode xnod, int level)
 		  {
 		    XmlNode xnodWorking;
