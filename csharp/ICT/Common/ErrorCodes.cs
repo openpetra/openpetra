@@ -145,6 +145,11 @@ namespace Ict.Common
              FullDescription = "The text entered does not specify a valid time.")]
         public const String ERR_INVALIDINTEGERTIME = "GENC.00015V";
 
+        /// <summary>User has created a duplicate record.</summary>
+        [ErrCodeAttribute("Duplicate record",
+             ErrorMessageText = "A record with these key value(s) already exists:")]
+        public const String ERR_DUPLICATE_RECORD = "GENC.00016V";
+
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";
 

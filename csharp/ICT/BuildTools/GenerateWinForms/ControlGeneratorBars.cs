@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -107,6 +107,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if (addChildren.Length > 0)
                     {
                         addChildren += "," + Environment.NewLine + "            ";
+                    }
+
+                    if ((addChildren.Length == 0) && child.controlName.StartsWith("mniSeparator"))
+                    {
+                        // ignore separators at the top of a menu, needed for localised winforms
+                        continue;
                     }
 
                     addChildren += child.controlName;
@@ -293,6 +299,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if (addChildren.Length > 0)
                     {
                         addChildren += "," + Environment.NewLine + "            ";
+                    }
+
+                    if ((addChildren.Length == 0) && child.controlName.StartsWith("tbbSeparator"))
+                    {
+                        // ignore separators at the front of a toolbar, needed for localised winforms
+                        continue;
                     }
 
                     addChildren += child.controlName;

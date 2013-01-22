@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template controlMaintainTable
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template controlMaintainTableWithDataViewGrid
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -72,10 +72,10 @@ namespace {#NAMESPACE}
     public void InitUserControl()
     {
       {#INITUSERCONTROLS}
-      {#INITMANUALCODE}
 {#IFDEF ACTIONENABLING}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
+      {#INITMANUALCODE}
       
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
       myDataView.AllowNew = false;

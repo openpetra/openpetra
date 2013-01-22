@@ -220,11 +220,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (writer.GetControlProperty(ctrl.controlName, "Text") == "\"\"")
                     {
-                        writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleLeft");
+                        writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleCenter");
                     }
                     else
                     {
-                        writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleCenter");
+                        writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleLeft");
                     }
 
                     writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.MiddleRight");

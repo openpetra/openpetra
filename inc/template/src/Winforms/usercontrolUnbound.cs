@@ -131,10 +131,10 @@ namespace {#NAMESPACE}
     public void InitUserControl()
     {
         {#INITUSERCONTROLS}
-        {#INITMANUALCODE}
 {#IFDEF ACTIONENABLING}
         FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
+        {#INITMANUALCODE}
     }
     
     {#EVENTHANDLERSIMPLEMENTATION}

@@ -367,8 +367,7 @@ namespace Ict.Common.Remoting.Server
             // Server.RDBMSType
             FRDBMSType = CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType", "postgresql"));
 
-            FDatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost").
-                                  Replace("{userappdata}", Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            FDatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost");
             FDatabasePort = TAppSettingsManager.GetValue("Server.DBPort", "5432");
             FDatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
             FDBUsername = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
@@ -396,9 +395,7 @@ namespace Ict.Common.Remoting.Server
 
             if (TAppSettingsManager.HasValue("Server.LogFile"))
             {
-                FServerLogFile =
-                    TAppSettingsManager.GetValue("Server.LogFile", false).Replace("{userappdata}",
-                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+                FServerLogFile = TAppSettingsManager.GetValue("Server.LogFile", false);
             }
             else
             {

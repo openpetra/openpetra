@@ -14,6 +14,7 @@ RootNode:
         Closed: {class=System.EventHandler,method=TFrmPetra_Closed}
     Actions:
         actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
+        actAbout: {Label=&About OpenPetra, ActionId=eHelpAbout, Image: PetraInformation.ico}
     Controls:
         mnuMain: 
         tbrMain:
@@ -26,9 +27,9 @@ RootNode:
         mniHelp: 
             Label: &Help
             Order: AlwaysLast
-            mniHelpPetraHelp: {Label=&Petra Help, ActionId=eHelp, Image: Help2.ico}
+            mniHelpPetraHelp: {Label=&OpenPetra Help, ActionId=eHelp, Image: Help2.ico}
             mniSeparator: {Label=-}
             mniHelpBugReport: {Label=Bug &Report, ActionId=eBugReport, Image: BugReport.ico}
             mniSeparator: {Label=-}
-            mniHelpAboutPetra: {Label=&About Petra, ActionId=eAHelpbout, Image: PetraInformation.ico}
-            mniHelpDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam, Image: DevelopmentTeam.ico}
+            mniAbout:
+            mniDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam, Image: DevelopmentTeam.ico}

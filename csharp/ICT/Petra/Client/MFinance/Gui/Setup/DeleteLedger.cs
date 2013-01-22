@@ -54,16 +54,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (!TRemote.MFinance.Setup.WebConnectors.DeleteLedger(ALedgerNumber, out VerificationResult))
             {
                 MessageBox.Show(
-                    string.Format(Catalog.GetString("Deletion of Ledger '{0}' failed"), ALedgerNameAndNumber),
+                    string.Format(Catalog.GetString("Deletion of Ledger '{0}' failed"), ALedgerNameAndNumber) + "\r\n\r\n" +
                     VerificationResult.BuildVerificationResultString(),
+                    Catalog.GetString("Deletion failed"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
             else
             {
                 MessageBox.Show(
-                    Catalog.GetString("Deletion successful"),
                     string.Format(Catalog.GetString("Ledger '{0}' has been deleted"), ALedgerNameAndNumber),
+                    Catalog.GetString("Deletion successful"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
             }
@@ -90,27 +91,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button3
                     ) == DialogResult.Yes)
             {
-                Thread t = new Thread(() => ProcessDeletion(AMainWindow, ALedgerNumber, LedgerNameAndNumber));
-
-                TProgressDialog dialog = new TProgressDialog(t);
-
-                dialog.ShowDialog();
-
-                // reload list of Ledger names
-                TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
-
-                // reload navigation
-                method = AMainWindow.GetType().GetMethod("LoadNavigationUI");
-
-                // Setting the "CurrentLedger" to -1 isn't strictly needed, but it eradicates the Ledger
-                // we have presently deleted to make sure the Main Menu isn't working any further with a
-                // Ledger that doesn't exist anymore.
-                PropertyInfo CurrentLedgerProperty = AMainWindow.GetType().GetProperty("CurrentLedger");
-                CurrentLedgerProperty.SetValue(AMainWindow, -1, null);
-
-                if (method != null)
+                // ledger cannot be deleted if there are any transactions existing for it
+                if (TRemote.MFinance.Setup.WebConnectors.ContainsTransactions(ALedgerNumber))
                 {
-                    method.Invoke(AMainWindow, new object[] { false });
+                    MessageBox.Show(
+                        string.Format(Catalog.GetString("There are still transactions associated with Ledger '{0}'. \r\n\r\nNothing has been done."),
+                            LedgerNameAndNumber),
+                        Catalog.GetString("Deletion not possible"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+                else
+                {
+                    Thread t = new Thread(() => ProcessDeletion(AMainWindow, ALedgerNumber, LedgerNameAndNumber));
+
+                    TProgressDialog dialog = new TProgressDialog(t);
+
+                    dialog.ShowDialog();
+
+                    // reload list of Ledger names
+                    TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+
+                    // reload navigation
+                    method = AMainWindow.GetType().GetMethod("LoadNavigationUI");
+
+                    // Setting the "CurrentLedger" to -1 isn't strictly needed, but it eradicates the Ledger
+                    // we have presently deleted to make sure the Main Menu isn't working any further with a
+                    // Ledger that doesn't exist anymore.
+                    PropertyInfo CurrentLedgerProperty = AMainWindow.GetType().GetProperty("CurrentLedger");
+                    CurrentLedgerProperty.SetValue(AMainWindow, -1, null);
+
+                    if (method != null)
+                    {
+                        method.Invoke(AMainWindow, new object[] { false });
+                    }
                 }
             }
         }

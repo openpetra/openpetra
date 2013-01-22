@@ -51,6 +51,8 @@ namespace Ict.Common.Controls
     /// <summary>
     /// Represents an individual Task (of many) in a Task List.
     /// </summary>
+    /// <remarks>In the OpenPetra Main Menu it represents a single Main Menu item that the user can click to
+    /// perform a Task in OpenPetra.</remarks>
     public partial class TUcoSingleTask : UserControl
     {
         bool FTaskSelected = false;

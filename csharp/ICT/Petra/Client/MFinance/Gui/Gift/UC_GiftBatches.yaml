@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     DetailTable: AGiftBatch
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data,Ict.Petra.Shared.MFinance.Gift.Validation]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance,Ict.Petra.Shared.MFinance.Gift.Data,Ict.Petra.Shared.MFinance.Gift.Validation]
     FormType: edit
     Template: controlMaintainTable
     Actions:
@@ -74,6 +74,7 @@ RootNode:
         btnGetSetExchangeRate: {Action=actSetExchangeRate}
         rgrDetailGiftType:
             OptionalValues: [=Gift,Gift In Kind,Other]
+            OptionalValuesConstants: [MFinanceConstants.GIFT_TYPE_GIFT,MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND,MFinanceConstants.GIFT_TYPE_OTHER]
             ControlsOrientation: Horizontal
         tbrTabPage:
         mnuTabPage:

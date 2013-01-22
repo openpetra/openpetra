@@ -113,7 +113,7 @@ RootNode:
                 mniFileRecentPartner8: {Label=7}
                 mniFileRecentPartner9: {Label=8}
                 mniFileRecentPartner10: {Label=9}
-            mniFileSeparator1: {Label=-}
+            mniSeparator: {Label=-}
             mniFileNewPartner: {Label=&New Partner...}
             mniFileNewPartnerWithShepherd: {Label=N&ew Partner (Shepherd)}
                 mniFileNewPartnerWithShepherdFamily: {Label=Add &Family with Shepherd...}
@@ -123,19 +123,19 @@ RootNode:
             mniFileEditPartner: {Label=&Edit Partner...}
             mniFileMergePartners: {Label=Mer&ge Partners...}
             mniFileDeletePartner: {Label=&Delete Partner...}
-            mniFileSeparator2: {Label=-}
+            mniSeparator: {Label=-}
             mniFileSendEmail: {Label=Send E&mail to Partner...}
-            mniFileSeparator3: {Label=-}
+            mniSeparator: {Label=-}
             mniFilePrintPartner: {Label=&Print Partner...}
-            mniFileSeparator4: {Label=-}
+            mniSeparator: {Label=-}
             mniFileExportPartner: {Label=E&xport Partner...}
             mniFileImportPartner: {Label=&Import Partner...}
-            mniFileSeparator5: {Label=-}
+            mniSeparator: {Label=-}
             
         mniEdit:
             Label: &Edit
             mniEditSearch: {Label=&Search}
-            mniEditSeparator: {Label=-}
+            mniSeparator: {Label=-}
             mniEditCopyPartnerKey: {Label=Copy Partner's Partner &Key}
             mniEditCopyAddress: {Label=Copy Partner\'s &Address...}
             mniEditCopyEmailAddress: {Label=Copy Partner\'s E&mail Address}
@@ -168,11 +168,11 @@ RootNode:
             Label: &Mailing
             mniMailingGenerateExtract:
             mniMailingExtracts:
-            mniMailingSeparator1: {Label=-}
+            mniSeparator: {Label=-}
             mniMailingDuplicateAddressCheck:
             mniMailingMergeAddresses:
             mniMailingPartnersAtLocation:
-            mniMailingSeparator2: {Label=-}
+            mniSeparator: {Label=-}
             mniMailingSubscriptionExpNotice:
             mniMailingSubscriptionCancellation:
         mniTools: 

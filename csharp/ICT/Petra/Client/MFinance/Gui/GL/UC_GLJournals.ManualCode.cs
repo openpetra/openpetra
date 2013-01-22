@@ -269,9 +269,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
                 txtBatchNumber.Text = FBatchNumber.ToString();
-                txtDebit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
-                txtCredit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
-                txtControl.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
             }
 
             if (FPreviouslySelectedDetailRow != null)

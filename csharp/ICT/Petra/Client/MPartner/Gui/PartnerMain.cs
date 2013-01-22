@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common;
 using Ict.Common.IO;
@@ -77,7 +78,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// open partner find screen
+        /// Opens the Partner Find screen (or activates it in case a non-modal instance was already open).
         /// </summary>
         public static TPartnerFindScreen FindPartner(Form AParentForm)
         {
