@@ -34,7 +34,7 @@ namespace Ict.Petra.Client.MPartner.Logic
     public class TShepherdFamilyFormLogic : TPetraShepherdFormLogic
     {
         #region Constructor
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -52,9 +52,9 @@ namespace Ict.Petra.Client.MPartner.Logic
         }
 
         #endregion
-        
+
         #region Public Methods
-        
+
         /// <summary>
         /// Skips the first page of the Shepherd ('Ledger Selection')
         /// </summary>
@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MPartner.Logic
 
             base.SwitchToPage("Name");
         }
-        
+
         #endregion
     }
 }

@@ -37,7 +37,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
     public class TPetraShepherdPage
     {
         #region Fields
-        
+
         /// <summary>Shepherd Page ID (=a unique ID for each individual Page).</summary>
         string FID;
 
@@ -73,11 +73,11 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
         /// <summary>Is the Shepherd Page the First page in the Shepherd?</summary>
         bool FIsFirstPage = false;
-        
+
         #endregion
 
         #region Properties
-        
+
         /// <summary>Shepherd Page ID (=a unique ID for each individual Page).</summary>
         public string ID
         {
@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FID;
             }
-            
+
             set
             {
                 FID = value;
@@ -108,7 +108,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FNote;
             }
-            
+
             set
             {
                 FNote = value;
@@ -122,13 +122,13 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FVisible;
             }
-            
+
             set
             {
                 if (FVisible != value)
                 {
                     FVisible = value;
-                    
+
                     OnVisibleOrEnabledChangedEvent();
                 }
             }
@@ -146,7 +146,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 if (FEnabled != value)
                 {
                     FEnabled = value;
-                    
+
                     OnVisibleOrEnabledChangedEvent();
                 }
             }
@@ -177,7 +177,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FHelpContext;
             }
-            
+
             set
             {
                 FHelpContext = value;
@@ -238,18 +238,18 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 }
             }
         }
-        
+
         #endregion
 
         #region Events
-        
+
         ///<summary>Raised if value of Visible or Enabled Property changes.</summary>
         public event System.EventHandler VisibleOrEnabledChangedEvent;
 
         #endregion
-        
+
         #region Constructors
-        
+
         /// <summary>
         /// Default Constructor for TPetraShepherdPage.
         /// </summary>
@@ -306,7 +306,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         }
 
         #endregion
-        
+
         #region Private Methods
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             return FUserControl;
         }
-        
+
         /// <summary>
         /// Fires the VisibleOrEnabledChangedEvent if something subscribed to it.
         /// </summary>
@@ -343,8 +343,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 VisibleOrEnabledChangedEvent(this, new System.EventArgs());
             }
-        }        
-        
+        }
+
         #endregion
     }
 
@@ -355,14 +355,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
     public class TPetraShepherdPagesList
     {
         #region Fields
-        
+
         /// <summary>Dictionary containing a list of TPetraShepherdPage using the page's Unique ID as an identifier.</summary>
         Dictionary <string, TPetraShepherdPage>FPagesList = new Dictionary <string, TPetraShepherdPage>();
 
         #endregion
-        
+
         #region Properties
-        
+
         /// <summary>
         /// Allows for read-only access to a Dictionary of Pages.
         /// </summary>
@@ -375,9 +375,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
         }
 
         #endregion
-        
+
         #region Constructor
-        
+
         /// <summary>
         /// Constructor for TPetraShepherdPagesList. This function reads in a yaml file from the appropriate
         /// namespace, parses it into xmlNodes, and adds them to the list of pages so that they can be read
@@ -396,7 +396,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             XmlNode temporaryXmlNode = XmlPages.LastChild.LastChild.LastChild.FirstChild;   //...LastChild.LastChild.LastChild.FirstChild is required because of the structure of the XML File after parsing.
 
             int counter = 0;
-            
+
             XmlNodeList nodeList;
             XmlNode root = XmlPages.DocumentElement;
             nodeList = XmlPages.LastChild.LastChild.LastChild.ChildNodes;
@@ -431,18 +431,18 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             TLogging.Log("TPetraShepherdPagesList Constructor ran successfully.");
         }
-        
+
         #endregion
     }
 
-    
+
     /// <summary>
     /// Specialisation of a Shepherd Page: Finish Page
     /// </summary>
     public class TPetraShepherdFinishPage : TPetraShepherdPage
     {
         #region Constructor
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -467,7 +467,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         #endregion
 
         #region Protected Methods
-        
+
         /// <summary>
         /// TODO
         /// </summary>
@@ -489,11 +489,11 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 return "Choose \'Finish\' to commit the data.";
             }
         }
-        
+
         #endregion
-        
+
         #region Private Methods
-        
+
         /// <summary>
         /// TODO
         /// </summary>

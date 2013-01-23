@@ -39,7 +39,7 @@ namespace Ict.Petra.Client.CommonForms
     public class TPetraShepherdConcreteForm : TPetraShepherdForm, IPetraShepherdConcreteFormInterface, Ict.Petra.Client.CommonForms.IFrmPetraEdit
     {
         #region Fields
-        
+
         /// <summary>Helper object for Edit screens.</summary>
         protected TFrmPetraEditUtils FPetraUtilsObject;
 
@@ -54,14 +54,14 @@ namespace Ict.Petra.Client.CommonForms
 
         ///<summary>Instance of base Shepherd Logic.</summary>
         protected TPetraShepherdFormLogic FLogic;
-        
+
         ///<summary>Instance of helper Class for navigation purposes.</summary>
         private TShepherdNavigationHelper FShepherdNavigationHelper;
 
         #endregion
-        
+
         #region Constructor
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -74,11 +74,11 @@ namespace Ict.Petra.Client.CommonForms
 
             TLogging.Log("TPetraShepherdConcreteForm Constructor ran.");
         }
-        
+
         #endregion
-        
+
         #region Public Methods
-        
+
         /// <summary>
         /// Update navigation buttons and navigation panel.
         /// </summary>
@@ -186,14 +186,14 @@ namespace Ict.Petra.Client.CommonForms
         public void CancelShepherd()
         {
             TLogging.Log("CancelShepherd");
-            
+
             this.Close();
         }
 
         #endregion
-                
+
         #region Private Methods
-        
+
         /// <summary>
         /// Determines the changes in the screen's dataset and submits them to the
         /// Server.
@@ -203,12 +203,12 @@ namespace Ict.Petra.Client.CommonForms
         private Boolean SaveChanges(ref DataSet AInspectDS)
         {
             // TODO
-            
+
             return false;
         }
 
         #endregion
-        
+
         #region Event Handlers
 
         /// <summary>
@@ -283,11 +283,11 @@ namespace Ict.Petra.Client.CommonForms
 
             TLogging.Log("TPetraShepherdConcreteForm (Base) Form_Load ran.");
         }
-        
+
         #endregion
-                
+
         #region Implement interface Methods
-        
+
         /// <summary>
         /// TODO
         /// </summary>

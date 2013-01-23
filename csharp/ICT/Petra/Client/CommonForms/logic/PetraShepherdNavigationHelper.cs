@@ -33,22 +33,22 @@ namespace Ict.Petra.Client.CommonForms.Logic
     public class TShepherdNavigationHelper
     {
         #region Properties
-        
+
         /// <summary>
         /// Total visible Pages.
         /// </summary>
-        public int TotalPages 
+        public int TotalPages
         {
             get
             {
                 return 0;
             }
         }
-        
+
         #endregion
-        
+
         #region Constructor
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -58,23 +58,23 @@ namespace Ict.Petra.Client.CommonForms.Logic
         {
             TLogging.Log("Entering TShepherdNavigationHelper Constructor...");
 
-            // TODO 
+            // TODO
 
             TLogging.Log("TShepherdNavigationHelper Constructor ran.");
         }
 
         #endregion
-        
+
         #region Public Methods
-        
+
         /// <summary>Redraws the Navigation Panel only.</summary>
         public void Refresh()
         {
             TLogging.Log("Refresh");
-            
+
             // TODO
         }
-        
+
         #endregion
     }
 }

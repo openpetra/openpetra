@@ -28,7 +28,7 @@ namespace Ict.Petra.Client.CommonForms
     public partial class TUC_PetraShepherdFinishPage
     {
         #region Properties
-        
+
         /// <summary>
         /// Summary Text #1.
         /// </summary>
@@ -110,9 +110,9 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         #endregion
-        
+
         #region Private Methods
-        
+
         private void InitializeManualCode()
         {
             // TODO: REMOVE the following code once the Properties can be set from the Shepherds!
@@ -121,7 +121,7 @@ namespace Ict.Petra.Client.CommonForms
 //            FurtherActionOnFinish = true;
             chkFurtherActionOnFinish.Visible = true;
         }
-        
+
         #endregion
     }
 }

@@ -38,13 +38,13 @@ namespace Ict.Testing.Shepherds
 {
     /// <summary>
     /// Shepherd Unit Tests.
-    /// </summary>        
+    /// </summary>
     [TestFixture]
     public class Test
     {
         /// <summary>
         /// TODO Comment
-        /// </summary>        
+        /// </summary>
         [Test]
         public void TestTPetraShepherdParseYAMLFileElementsMethod()
         {
@@ -58,7 +58,7 @@ namespace Ict.Testing.Shepherds
 
         /// <summary>
         /// TODO Comment
-        /// </summary>        
+        /// </summary>
         [Test]
         public void TestTPetraShepherdPagesListConstructor()
         {
@@ -106,7 +106,7 @@ namespace Ict.Testing.Shepherds
 
         /// <summary>
         /// TODO Comment
-        /// </summary>        
+        /// </summary>
         [Test]
         public void TestPetraShepherdFormLogicHandleActionNextNormalCircumstances()
         {

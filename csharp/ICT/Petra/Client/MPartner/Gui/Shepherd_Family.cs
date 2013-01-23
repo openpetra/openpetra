@@ -38,16 +38,16 @@ namespace Ict.Petra.Client.MPartner.Gui
     public partial class TShepherdFamilyForm : TPetraShepherdConcreteForm
     {
         #region Fields
-        
+
         ///<summary>Instance of this Shepherd's Logic.</summary>
         private TShepherdFamilyFormLogic FSpecificLogic;
 
         private bool FSkipLedgerSelectionPage = false;
 
         #endregion
-        
+
         #region Properties
-        
+
         /// <summary>
         /// TODO Comment
         /// </summary>
@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 return FSkipLedgerSelectionPage;
             }
-            
+
             set
             {
                 FSkipLedgerSelectionPage = value;
@@ -65,9 +65,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
-        
+
         #region Constructor
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -89,9 +89,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TLogging.Log("TShepherdFamilyForm Constructor ran.");
         }
-        
+
         #endregion
-        
+
         #region Protected Methods
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             TLogging.Log("TShepherdFamilyForm Form_Load ran.");
-            
+
             try
             {
                 TLogging.Log("The Family Form Printed an a valid ID: " + FLogic.CurrentPage.ID);
@@ -119,9 +119,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             catch (Exception)
             {
                 TLogging.Log("EXCEPTION CAUGHT: testStatusMessage threw Null Exception.");
-            }            
+            }
         }
-        
+
         #endregion
     }
 }

@@ -43,7 +43,7 @@ namespace Ict.Testing.Shepherds
     public class TestLogicInterface : Ict.Petra.Client.CommonForms.Logic.IPetraShepherdConcreteFormInterface
     {
         #region Constructor
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -52,9 +52,9 @@ namespace Ict.Testing.Shepherds
         }
 
         #endregion
-        
+
         #region Public Methods
-        
+
         /// <summary>
         /// Update navigation buttons and navigation panel.
         /// </summary>
@@ -98,7 +98,7 @@ namespace Ict.Testing.Shepherds
         {
             System.Console.WriteLine("The Progress Bar would have been updated if this wasn't a dummy interface.");
         }
-        
+
         #endregion
     }
 }

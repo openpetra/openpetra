@@ -36,7 +36,7 @@ namespace Ict.Petra.Client.CommonForms
 //        TPetraShepherdFormLogic FLogic;  TODO
 
         #region Constructor
-        
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -49,9 +49,9 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         #endregion
-        
+
         #region Events
-        
+
         /// <summary>
         /// Virtual Method: implementor should handle action for Finish button click.
         /// </summary>
