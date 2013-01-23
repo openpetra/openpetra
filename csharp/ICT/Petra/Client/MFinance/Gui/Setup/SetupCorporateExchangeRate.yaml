@@ -33,16 +33,18 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [cmbDetailFromCurrencyCode]
-                Row1: [cmbDetailToCurrencyCode]
+                Row1: [cmbDetailToCurrencyCode, chkHideOthers]
                 Row2: [dtpDetailDateEffectiveFrom]
-                Row3: [txtDetailRateOfExchange, btnInvertExchangeRate]
+                Row3: [txtDetailRateOfExchange, btnInvertExchangeRate, Empty]
                 Row4: [lblValueOneDirection]
                 Row5: [lblValueOtherDirection]
         cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList, OnLeave=ValueChangedCurrencyCode, ColSpan=2}
         cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, OnLeave=ValueChangedCurrencyCode, ColSpan=2}
+        chkHideOthers: {OnlySetOnce=true, CheckBoxAttachedLabel=right, Label=&Hide other 'To' currencies}
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate}
-        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100, OnLeave=ValueChangedCurrencyCode}
+        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100}
         btnInvertExchangeRate: {Label=&Invert value}
+        Empty:
         lblValueOneDirection: {ColSpan=2}
         lblValueOtherDirection: {ColSpan=2}
     Menu:

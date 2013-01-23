@@ -44,13 +44,14 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [cmbDetailFromCurrencyCode, btnEnableEdit]
-                Row1: [cmbDetailToCurrencyCode, lblEnableEditDelete]
+                Row1: [cmbDetailToCurrencyCode, chkHideOthers]
                 Row2: [dtpDetailDateEffectiveFrom, txtDetailTimeEffectiveFrom, Empty]
-                Row3: [txtDetailRateOfExchange, btnInvertExchangeRate]
+                Row3: [txtDetailRateOfExchange, btnInvertExchangeRate, lblEnableEditDelete]
                 Row4: [lblValueOneDirection]
                 Row5: [lblValueOtherDirection]
         cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList, ColSpan=2}
         cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, ColSpan=2}
+        chkHideOthers: {OnlySetOnce=true, CheckBoxAttachedLabel=right, Label=&Hide other 'To' currencies}
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate Effective, Validation=true}
         txtDetailTimeEffectiveFrom: {Label=Time Effective, Width=70, Type=ShortTime, Tooltip=The time the rate becomes effective on the specified date, Validation=true}
         txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100, Validation=true}
