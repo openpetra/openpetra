@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1283,7 +1283,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.AddImageToResource(ctrl.controlName, AActionHandler.actionImage, "Bitmap");
             }
 
-            if (AActionHandler.actionTooltip.Length > 0)
+            if ((AActionHandler.actionTooltip.Length > 0) && (ctrl.controlTypePrefix != "btn"))
             {
                 writer.SetControlProperty(ctrl, "ToolTipText", "\"" + AActionHandler.actionTooltip + "\"");
             }

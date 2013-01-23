@@ -46,38 +46,44 @@ public static string CalculateStandaloneDBUpdateFileName(string ReleaseID)
 
 // for example: "..\..\..\XmlReports\Settings\*.xml"
 [Function("InsertRecursiveAllFilesFromSubdirectories")]
-public static string InsertRecursiveAllFilesFromSubdirectories(string PathToSearch, string FilePattern, string DestinationPath)
+public static string InsertRecursiveAllFilesFromSubdirectories(string ARootPath, string PathToSearch, string FilePattern, string DestinationPath)
 {
-    string[] filePaths = Directory.GetFiles(Path.GetFullPath(PathToSearch), FilePattern, SearchOption.AllDirectories);
+    string[] filePaths = Directory.GetFiles(Path.GetFullPath(ARootPath + '/' + PathToSearch), FilePattern, SearchOption.AllDirectories);
     string AllFilesFromSubdirectories = string.Empty;
+    
+    Int32 PathLength = Path.GetFullPath(ARootPath + '/' + PathToSearch).Length;
+    
     foreach (string path in filePaths)
     {
         if (Path.GetExtension(path) != ".build")
         {
-            AllFilesFromSubdirectories += "  SetOutPath \"$INSTDIR\\" + DestinationPath + "\\" + Path.GetDirectoryName(path.Substring(Path.GetFullPath(PathToSearch).Length)) + "\"" + Environment.NewLine;
-            AllFilesFromSubdirectories += "  File \"..\\..\\..\\" + PathToSearch + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+            AllFilesFromSubdirectories += "  SetOutPath \"$INSTDIR\\" + DestinationPath + "\\" + Path.GetDirectoryName(path.Substring(PathLength)) + "\"" + Environment.NewLine;
+            AllFilesFromSubdirectories += "  File \"..\\..\\..\\" + PathToSearch + path.Substring(PathLength) + "\"" + Environment.NewLine;
         }
     }
     return AllFilesFromSubdirectories.Replace('/', '\\');
 }
 
 [Function("InsertRecursiveAllFilesFromSubdirectoriesForDeletion")]
-public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string PathToSearch, string FilePattern, string DestinationPath)
+public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string ARootPath, string PathToSearch, string FilePattern, string DestinationPath)
 {
-    string[] filePaths = Directory.GetFiles(Path.GetFullPath(PathToSearch), FilePattern, SearchOption.AllDirectories);
+    string[] filePaths = Directory.GetFiles(Path.GetFullPath(ARootPath + '/' + PathToSearch), FilePattern, SearchOption.AllDirectories);
     string AllFilesFromSubdirectories = string.Empty;
+    
+    Int32 PathLength = Path.GetFullPath(ARootPath + '/' + PathToSearch).Length;
+    
     foreach (string path in filePaths)
     {
         if (Path.GetExtension(path) != ".build")
         {
-            AllFilesFromSubdirectories += "  Delete \"$INSTDIR\\" + DestinationPath + path.Substring(Path.GetFullPath(PathToSearch).Length) + "\"" + Environment.NewLine;
+            AllFilesFromSubdirectories += "  Delete \"$INSTDIR\\" + DestinationPath + path.Substring(PathLength) + "\"" + Environment.NewLine;
         }
     }
     
     SortedList<string, string> DeleteDirectories = new SortedList<string, string>();
     foreach (string path in filePaths)
     {
-        string pathToDelete = Path.GetDirectoryName(path.Substring(Path.GetFullPath(PathToSearch).Length));
+        string pathToDelete = Path.GetDirectoryName(path.Substring(PathLength));
         string key = (1000 - pathToDelete.Length).ToString("00000") + pathToDelete;
         while (pathToDelete.Length > 0 && !DeleteDirectories.ContainsKey(key))
         {
@@ -157,7 +163,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/remote.nsi"/>
     <call target="setupTemplate"/>
 
-    <!-- ************ build backup client tar.gz for future patches ********* -->
+    <!-- ************ build backup client tar.gz for the patches ********* -->
     <property name="BuildArchive" value="client" overwrite="true"/>
     <call target="prepareSetupDirForTarFile"/>
     <copy file="${Config.file}" tofile="${setupDir}/etc30/PetraClientRemote.config" overwrite="true"/>
@@ -191,12 +197,12 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <copy file="${UINavigation.file}" tofile="${tempdir}/UINavigation.yml" overwrite="true"/>
     </if>
 
-    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\Settings\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports/Settings/', '*.xml', 'reports30\Settings'))}"/>
-    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\Settings\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports/Settings/', '*.xml', 'reports30\Settings\'))}"/>
-    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\*.xml', script::InsertRecursiveAllFilesFromSubdirectories('XmlReports/', '*.xml', 'reports30'))}"/>
-    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('XmlReports/', '*.xml', 'reports30\'))}"/>
-    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\demodata\*.*', script::InsertRecursiveAllFilesFromSubdirectories('demodata/', '*.*', 'demo30'))}"/>
-    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\demo30\*.*&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion('demodata/', '*.*', 'demo30\'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\Settings\*.xml', script::InsertRecursiveAllFilesFromSubdirectories(dir.root, '/XmlReports/Settings/', '*.xml', 'reports30\Settings'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\Settings\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion(dir.root, '/XmlReports/Settings/', '*.xml', 'reports30\Settings\'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\XmlReports\*.xml', script::InsertRecursiveAllFilesFromSubdirectories(dir.root, '/XmlReports/', '*.xml', 'reports30'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\reports30\*.xml&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion(dir.root, '/XmlReports/', '*.xml', 'reports30\'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  File ..\..\..\demodata\*.*', script::InsertRecursiveAllFilesFromSubdirectories(dir.root, '/demodata/', '*.*', 'demo30'))}"/>
+    <property name="dummy" value="${script::ReplaceInFile(Current.File, '  Delete &quot;$INSTDIR\demo30\*.*&quot;', script::InsertRecursiveAllFilesFromSubdirectoriesForDeletion(dir.root, '/demodata/', '*.*', 'demo30\'))}"/>
 
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#GUILocalisation}', GUILocalisation)}"/>
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#RELEASEVERSION}', ReleaseVersion)}"/>

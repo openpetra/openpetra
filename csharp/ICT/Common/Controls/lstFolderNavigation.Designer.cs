@@ -61,28 +61,10 @@ namespace Ict.Common.Controls
 
             this.sptNavigation = new System.Windows.Forms.SplitContainer();
             this.pnlMoreButtons = new TPnlGradient();
-            this.lblNavigationCaption = new System.Windows.Forms.Label();
-
             this.sptNavigation.Panel1.SuspendLayout();
             this.sptNavigation.Panel2.SuspendLayout();
             this.sptNavigation.SuspendLayout();
             this.SuspendLayout();
-
-            //
-            // lblNavigationCaption
-            //
-            this.lblNavigationCaption.Font = new System.Drawing.Font("Tahoma",
-                11.50F,
-                System.Drawing.FontStyle.Bold,
-                System.Drawing.GraphicsUnit.Point,
-                0);
-            this.lblNavigationCaption.ForeColor = System.Drawing.Color.FromArgb(0, 0, 0x84);
-            this.lblNavigationCaption.Location = new System.Drawing.Point(11, 2);
-            this.lblNavigationCaption.Name = "lblNavigationCaption";
-            this.lblNavigationCaption.Size = new System.Drawing.Size(200 - 30, 24);
-            this.lblNavigationCaption.TabIndex = 0;
-            this.lblNavigationCaption.BackColor = System.Drawing.Color.Transparent;
-            this.lblNavigationCaption.Text = "Caption";
 
             //
             // pnlMoreButtons
@@ -131,7 +113,6 @@ namespace Ict.Common.Controls
             this.PerformLayout();
         }
 
-        private System.Windows.Forms.Label lblNavigationCaption;
         private System.Windows.Forms.SplitContainer sptNavigation;
         private TPnlGradient pnlMoreButtons;
     }

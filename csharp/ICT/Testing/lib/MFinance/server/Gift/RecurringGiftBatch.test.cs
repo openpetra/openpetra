@@ -4,7 +4,7 @@
 // @Authors:
 //       Chris Thomas
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -213,7 +213,9 @@ namespace Tests.MFinance.Server.Gift
                 row.Delete();
             }
 
-            Assert.AreNotEqual(0, FMainDS.ARecurringGiftDetail.Rows.Count, "after deletion the row should still exist");
+            Assert.AreEqual(0,
+                FMainDS.ARecurringGiftDetail.Rows.Count,
+                "after deleting a new gift detail row, there should be no gift detail anymore");
 
             // Delete the associated recurring gift rows.
             DataView viewGift = new DataView(FMainDS.ARecurringGift);
@@ -224,12 +226,14 @@ namespace Tests.MFinance.Server.Gift
                 row.Delete();
             }
 
-            Assert.AreNotEqual(0, FMainDS.ARecurringGiftBatch.Rows.Count, "after deletion the batch row should still exist");
+            Assert.AreEqual(0, FMainDS.ARecurringGift.Rows.Count, "after deleting a new gift row, there should not be any gifts anymore");
 
             // Delete the recurring batch row.
             FMainDS.ARecurringGiftBatch.Rows[0].Delete();
 
-            Assert.AreNotEqual(0, FMainDS.ARecurringGiftBatch.Rows.Count, "after deletion the batch row should still exist");
+            Assert.AreNotEqual(0,
+                FMainDS.ARecurringGiftBatch.Rows.Count,
+                "after deletion the batch row will still exist because it has been saved before");
 
             //Now save changes
             GiftBatchTDSAccess.SubmitChanges(FMainDS, out VerficationResults);

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -65,6 +65,70 @@ public class TAdminConsole
     }
 
     /// <summary>
+    /// shut down the server (gets all connected clients to disconnect)
+    /// </summary>
+    /// <param name="TRemote"></param>
+    /// <param name="AWithUserInteraction"></param>
+    /// <returns>true if shutdown was completed</returns>
+    public static bool ShutDownControlled(IServerAdminInterface TRemote, bool AWithUserInteraction)
+    {
+        bool ReturnValue;
+        bool ack;
+
+        ack = false;
+
+        if (AWithUserInteraction == true)
+        {
+            Console.WriteLine(Environment.NewLine + "-> CONTROLLED SHUTDOWN  (gets all connected clients to disconnect) <-");
+            Console.Write("     Enter YES to perform shutdown (anything else to leave command): ");
+
+            if (Console.ReadLine() == "YES")
+            {
+                Console.WriteLine();
+                ack = true;
+            }
+        }
+        else
+        {
+            ack = true;
+        }
+
+        if (ack == true)
+        {
+            TLogging.Log("CONTROLLED SHUTDOWN PROCEDURE INITIATED...");
+            try
+            {
+                if (!TRemote.StopServerControlled(true))
+                {
+                    Console.WriteLine("     Shutdown cancelled!");
+                    Console.Write(ServerAdminPrompt);
+                    ReturnValue = false;
+                }
+            }
+            catch (SocketException)
+            {
+                if (AWithUserInteraction == true)
+                {
+                    Console.WriteLine();
+                    TLogging.Log("SERVER STOPPED!");
+                    Console.WriteLine();
+                    Console.Write("Press ENTER to end PETRAServerADMIN...");
+                    Console.ReadLine();
+                }
+            }
+            ReturnValue = true;
+        }
+        else
+        {
+            Console.WriteLine("     Shutdown cancelled!");
+            Console.Write(ServerAdminPrompt);
+            ReturnValue = false;
+        }
+
+        return ReturnValue;
+    }
+
+    /// <summary>
     /// shut down the server
     /// </summary>
     /// <param name="TRemote"></param>
@@ -100,7 +164,7 @@ public class TAdminConsole
             {
                 TRemote.StopServer();
             }
-            catch (RemotingException)
+            catch (SocketException)
             {
                 if (AWithUserInteraction == true)
                 {
@@ -286,6 +350,7 @@ public class TAdminConsole
                         Console.WriteLine(Environment.NewLine + "-> Available commands <-");
                         Console.WriteLine("     c: list connected Clients / C: list disconnected Clients");
                         Console.WriteLine("     d: disconnect a certain Client");
+                        Console.WriteLine("     p: perform timed server processing manually now");
                         Console.WriteLine("     q: queue a Client Task for a certain Client");
                         Console.WriteLine("     s: Server Status");
 
@@ -297,7 +362,10 @@ public class TAdminConsole
 
                         Console.WriteLine("     e: export the database to yml.gz");
                         Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
-                        Console.WriteLine("     u: unconditional Server shutdown (forces disconnection of all Clients!)");
+
+                        Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
+                        Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
+
                         Console.WriteLine("     x: exit PETRAServerADMIN");
                         Console.Write(ServerAdminPrompt);
                         break;
@@ -355,6 +423,61 @@ public class TAdminConsole
                         Console.Write(ServerAdminPrompt);
 
                         // queue a Client Task for a certain Client
+                        break;
+
+                    case 'p':
+                    case 'P':
+                        string resp = "";
+
+                        Console.WriteLine("  Server Timed Processing Status: " +
+                        "runs daily at " + TRemote.TimedProcessingDailyStartTime24Hrs + ".");
+                        Console.WriteLine("    Partner Reminders: " + (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders") ? "On" : "Off"));
+                        Console.WriteLine("    Automatic Intranet Export: " +
+                        (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
+                        Console.WriteLine("    Data Checks: " + (TRemote.TimedProcessingJobEnabled("TProcessDataChecks") ? "On" : "Off"));
+
+                        Console.WriteLine("  SMTP Server used for sending e-mails: " + TRemote.SMTPServer);
+
+                        if (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders"))
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Reminder Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TRemote.PerformTimedProcessingNow("TProcessPartnerReminders");
+                            }
+                        }
+
+                        if (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport"))
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Intranet Export Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TRemote.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
+                            }
+                        }
+
+                        if (TRemote.TimedProcessingJobEnabled("TProcessDataChecks"))
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Data Checks Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TRemote.PerformTimedProcessingNow("TProcessDataChecks");
+                            }
+                        }
+
+                        Console.Write(ServerAdminPrompt);
                         break;
 
                     case 's':
@@ -459,6 +582,11 @@ public class TAdminConsole
                         Console.Write(ServerAdminPrompt);
                         break;
 
+                    case 'o':
+                    case 'O':
+                        ReadLineLoopEnd = ShutDownControlled(TRemote, true);
+                        break;
+
                     case 'u':
                     case 'U':
                         ReadLineLoopEnd = ShutDown(TRemote, true);
@@ -509,12 +637,18 @@ public class TAdminConsole
         catch (RemotingException remexp)
         {
             HandleConnectionError(remexp);
-            return;
+
+            Environment.Exit(0);
+
+            // PetraServerAdminConsole application stops here !!!
         }
         catch (System.Net.Sockets.SocketException remexp)
         {
             HandleConnectionError(remexp);
-            return;
+
+            Environment.Exit(0);
+
+            // PetraServerAdminConsole application stops here !!!
         }
         catch (System.Exception)
         {
@@ -598,6 +732,10 @@ public class TAdminConsole
                 if (TAppSettingsManager.GetValue("Command") == "Stop")
                 {
                     ShutDown(TRemote, false);
+                }
+                else if (TAppSettingsManager.GetValue("Command") == "StopAndCloseClients")
+                {
+                    ShutDownControlled(TRemote, false);
                 }
                 else if (TAppSettingsManager.GetValue("Command") == "ConnectedClients")
                 {

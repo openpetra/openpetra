@@ -43,8 +43,11 @@ using Ict.Common.IO;
 namespace Ict.Common.Controls
 {
     /// <summary>
-    /// GUI element that shows a stylized list of items built from an XmlNode
+    /// Displays a stylised list of <see cref="LinkLabel" />s that are built from an <see cref="XmlNode" />.
     /// </summary>
+    /// <remarks>
+    /// Used in OpenPetra Main Menu's Module Navigation to present the available Submodules.
+    ///</remarks>
     public partial class TTaskList : UserControl
     {
         #region global settings

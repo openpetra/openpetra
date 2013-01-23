@@ -91,7 +91,7 @@ namespace Tests.MFinance.Server.ICH
             string CostCentre = "78";
             string Currency = "USD";
 
-            TVerificationResultCollection VerificationResults = null;
+            TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
             string TableForExportHeader = "/** Header **" + "," +
                                           PeriodNumber.ToString() + "," +
@@ -100,7 +100,7 @@ namespace Tests.MFinance.Server.ICH
                                           DateTime.Today.ToShortDateString() + "," +
                                           Currency;
 
-            TGenHOSAFilesReports.ReplaceHeaderInFile(fileName, TableForExportHeader, ref VerificationResults);
+            TGenHOSAFilesReportsWebConnector.ReplaceHeaderInFile(fileName, TableForExportHeader, ref VerificationResults);
 
             Assert.IsFalse(VerificationResults.HasCriticalErrors,
                 "Header Replacement in File Failed! " + VerificationResults.BuildVerificationResultString());
@@ -120,7 +120,13 @@ namespace Tests.MFinance.Server.ICH
             string FileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
             TVerificationResultCollection VerificationResults;
 
-            TGenHOSAFilesReports.GenerateHOSAFiles(LedgerNumber, PeriodNumber, IchNumber, CostCentre, Currency, FileName, out VerificationResults);
+            TGenHOSAFilesReportsWebConnector.GenerateHOSAFiles(LedgerNumber,
+                PeriodNumber,
+                IchNumber,
+                CostCentre,
+                Currency,
+                FileName,
+                out VerificationResults);
 
             Assert.IsFalse(VerificationResults.HasCriticalErrors,
                 "HOSA File Generation Failed!" + VerificationResults.BuildVerificationResultString());
@@ -141,7 +147,7 @@ namespace Tests.MFinance.Server.ICH
             string Currency = "USD";
             TVerificationResultCollection VerificationResults;
 
-            TGenHOSAFilesReports.GenerateHOSAReports(LedgerNumber, PeriodNumber, IchNumber, Currency, out VerificationResults);
+            TGenHOSAFilesReportsWebConnector.GenerateHOSAReports(LedgerNumber, PeriodNumber, IchNumber, Currency, out VerificationResults);
 
             Assert.IsFalse(VerificationResults.HasCriticalErrors,
                 "Performing HOSA Report Generation Failed!" + VerificationResults.BuildVerificationResultString());
@@ -158,8 +164,8 @@ namespace Tests.MFinance.Server.ICH
             string AcctCode = "0200";
             string MonthName = "January";
             int PeriodNumber = 1;
-            DateTime PeriodStartDate = new DateTime(2012, 1, 1);
-            DateTime PeriodEndDate = new DateTime(2012, 1, 31);
+            DateTime PeriodStartDate = new DateTime(2013, 1, 1);
+            DateTime PeriodEndDate = new DateTime(2013, 1, 31);
             string Base = MFinanceConstants.CURRENCY_BASE;
             int IchNumber = 0;
             DataTable TableForExport = new DataTable();
@@ -177,9 +183,6 @@ namespace Tests.MFinance.Server.ICH
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber, out VerificationResults);
 
-            //TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
             VerificationResults = new TVerificationResultCollection();
 
             //Create DataTable to receive exported transactions
@@ -191,7 +194,7 @@ namespace Tests.MFinance.Server.ICH
             TableForExport.Columns.Add("IndividualDebitTotal", typeof(decimal));
             TableForExport.Columns.Add("IndividualCreditTotal", typeof(decimal));
 
-            TGenHOSAFilesReports.ExportGifts(LedgerNumber,
+            TGenHOSAFilesReportsWebConnector.ExportGifts(LedgerNumber,
                 CostCentre,
                 AcctCode,
                 MonthName,
@@ -201,7 +204,6 @@ namespace Tests.MFinance.Server.ICH
                 Base,
                 IchNumber,
                 ref TableForExport,
-                ref DBTransaction,
                 ref VerificationResults);
 
             TableForExport.AcceptChanges();

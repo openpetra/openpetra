@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -151,7 +151,7 @@ namespace Ict.Tools.PatchTool.Library
                 PetraClientProcess.EnableRaisingEvents = false;
                 PetraClientProcess.StartInfo.FileName = TAppSettingsManager.GetValue("OpenPetra.Path.Bin") + Path.DirectorySeparatorChar +
                                                         "PetraClient.exe";
-                PetraClientProcess.StartInfo.Arguments = "-C:\"" + TAppSettingsManager.GetValue("C") + "\"";
+                PetraClientProcess.StartInfo.Arguments = "-C:\"" + TAppSettingsManager.GetValue("ClientConfig") + "\"";
                 PetraClientProcess.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
                 PetraClientProcess.Start();
             }

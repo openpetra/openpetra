@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.CommonDialogs
     /// <summary>
     /// Login Form for the authentication of an OpenPetra user
     /// </summary>
-    public partial class TLoginForm : System.Windows.Forms.Form, Ict.Petra.Client.CommonForms.IFrmPetra
+    public partial class TLoginForm : System.Windows.Forms.Form, IFrmPetra
     {
         private TFrmPetraUtils FPetraUtilsObject;
 

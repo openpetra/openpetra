@@ -72,6 +72,11 @@ namespace Ict.Common.IO
         {
             StringCollection versions = GetVersionsFromDiffZipName(APatchZipFile);
 
+            if (versions.Count < 2)
+            {
+                throw new Exception("GetLatestPatchVersionFromDiffZipName: invalid name " + APatchZipFile);
+            }
+
             return new TFileVersionInfo(versions[1]);
         }
 
@@ -226,9 +231,7 @@ namespace Ict.Common.IO
         /// <summary>eg. bin30 has postfix 30</summary>
         protected string FVersionPostFix;
 
-        /// <summary>
-        /// calculated from FInstallPath and FVersionPostFix
-        /// </summary>
+        /// <summary>todoComment</summary>
         protected string FBinPath;
 
         /// <summary>todoComment</summary>
@@ -1213,6 +1216,20 @@ namespace Ict.Common.IO
 
             if (FLatestAvailablePatch.Compare(testPatchVersion) != 0)
             {
+                // check for a generic patch file, starting from version 0.0.99.99
+                foreach (string patch in AOrderedListOfAllPatches.GetValueList())
+                {
+                    if (patch.Contains("0.0.99.99"))
+                    {
+                        testPatchVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(patch);
+                        ResultPatchList.Clear();
+                        ResultPatchList.Add(patch, patch);
+                    }
+                }
+            }
+
+            if (FLatestAvailablePatch.Compare(testPatchVersion) != 0)
+            {
                 TLogging.Log("missing patchfile from version " + testPatchVersion.ToString() + " to " + FLatestAvailablePatch.ToString());
                 return new SortedList();
             }
@@ -1260,9 +1277,9 @@ namespace Ict.Common.IO
             // copy the PatchTool.exe and required files from the currently installed application to a temp directory
             foreach (string patchExeFile in PatchExecutableFiles)
             {
-                if (File.Exists(FInstallPath + patchExeFile.Substring("openpetraorg".Length)))
+                if (File.Exists(FBinPath + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile)))
                 {
-                    System.IO.File.Copy(FInstallPath + patchExeFile.Substring("openpetraorg".Length),
+                    System.IO.File.Copy(FBinPath + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile),
                         APatchDirectory + Path.DirectorySeparatorChar + Path.GetFileName(patchExeFile), true);
                 }
             }

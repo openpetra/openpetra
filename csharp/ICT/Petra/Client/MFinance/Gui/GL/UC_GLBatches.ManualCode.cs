@@ -132,8 +132,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ALedgerRow ledger =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                          TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
-
-                txtDetailBatchControlTotal.CurrencySymbol = ledger.BaseCurrency;
             }
             else
             {

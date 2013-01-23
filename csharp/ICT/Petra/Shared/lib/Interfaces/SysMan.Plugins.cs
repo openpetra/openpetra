@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -53,7 +53,7 @@ namespace Ict.Petra.Shared.Interfaces.Plugins.MSysMan
         /// <summary>
         /// this will create a new user
         /// </summary>
-        bool CreateUser(string AUsername, string APassword);
+        bool CreateUser(string AUsername, string APassword, string AFamilyName, string AFirstName);
 
         /// <summary>
         /// which functionality is implemented by this dll

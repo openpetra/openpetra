@@ -16,7 +16,7 @@ RootNode:
         READCONTROLSLOCALVARS: BLANK
         SETCONTROLSLOCALVARS: BLANK
         REPORTSETTINGSDIRECTORY: Finance
-        INITUSERCONTROLS: InitReceivingFieldList();
+        #INITUSERCONTROLS: InitReceivingFieldList(); - will be called before ledger is set, so leave out
     Security:
         ModulePermissionRequired: [FINANCE-1]
     Actions:

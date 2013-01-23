@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -160,11 +160,11 @@ namespace Tests.MFinance.Server.Gift
 
             //TODO If this first one works, try different permatations for Assert.AreEqual
             // Test also for exception handling
-            Assert.AreEqual(-12m, TGiftTransactionWebConnector.CalculateAdminFee(MainDS,
+            Assert.AreEqual(12m, TGiftTransactionWebConnector.CalculateAdminFee(MainDS,
                     FLedgerNumber,
-                    "GIF",
-                    -200m,
-                    out VerficationResults), "expect 15");
+                    "GIF2",
+                    100m,
+                    out VerficationResults), "admin fee fixed 12% of 100 expect 12");
         }
     }
 }

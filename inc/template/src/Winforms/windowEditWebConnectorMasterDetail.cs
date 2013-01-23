@@ -61,8 +61,8 @@ namespace {#NAMESPACE}
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
       {#INITUSERCONTROLS}
       FMainDS = new {#DATASETTYPE}();
-      {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+      {#INITMANUALCODE}
 {#IFDEF SAVEDETAILS}
       grdDetails.Enter += new EventHandler(grdDetails_Enter);
       grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
@@ -77,6 +77,55 @@ namespace {#NAMESPACE}
       SetPrimaryKeyControl();
 {#ENDIF SHOWDETAILS}
     }
+
+    #region Show Method overrides
+
+    /// <summary>
+    /// Override of Form.Show(IWin32Window owner) Method. Caters for singleton Forms.
+    /// </summary>
+    /// <param name="owner">Any object that implements <see cref="IWin32Window" /> and represents the top-level window that will own this Form. </param>    
+    public new void Show(IWin32Window owner)
+    {
+        Form OpenScreen = TFormsList.GFormsList[this.GetType().FullName];
+        bool OpenSelf = true;
+
+        if ((OpenScreen != null)
+            && (OpenScreen.Modal != true))            
+        {
+            if (TFormsList.GSingletonForms.Contains(this.GetType().Name)) 
+            {
+//                MessageBox.Show("Activating singleton screen of Type '" + this.GetType().FullName + "'.");
+                                   
+                OpenSelf = false;
+                this.Visible = false;   // needed as this.Close() would otherwise bring this Form to the foreground and OpenScreen.BringToFront() would not help...
+                this.Close();
+                
+                OpenScreen.BringToFront();
+            }            
+        }
+        
+        if (OpenSelf) 
+        {
+            if (owner != null) 
+            {
+                base.Show(owner);    
+            }
+            else
+            {
+                base.Show();
+            }            
+        }        
+    }
+
+    /// <summary>
+    /// Override of Form.Show() Method. Caters for singleton Forms.
+    /// </summary>        
+    public new void Show()
+    {
+        this.Show(null);
+    }
+
+    #endregion
 
     {#EVENTHANDLERSIMPLEMENTATION}
 
