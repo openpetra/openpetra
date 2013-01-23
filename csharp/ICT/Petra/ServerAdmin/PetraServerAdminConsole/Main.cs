@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -350,6 +350,7 @@ public class TAdminConsole
                         Console.WriteLine(Environment.NewLine + "-> Available commands <-");
                         Console.WriteLine("     c: list connected Clients / C: list disconnected Clients");
                         Console.WriteLine("     d: disconnect a certain Client");
+                        Console.WriteLine("     p: perform timed server processing manually now");
                         Console.WriteLine("     q: queue a Client Task for a certain Client");
                         Console.WriteLine("     s: Server Status");
 
@@ -422,6 +423,61 @@ public class TAdminConsole
                         Console.Write(ServerAdminPrompt);
 
                         // queue a Client Task for a certain Client
+                        break;
+
+                    case 'p':
+                    case 'P':
+                        string resp = "";
+
+                        Console.WriteLine("  Server Timed Processing Status: " +
+                        "runs daily at " + TRemote.TimedProcessingDailyStartTime24Hrs + ".");
+                        Console.WriteLine("    Partner Reminders: " + (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders") ? "On" : "Off"));
+                        Console.WriteLine("    Automatic Intranet Export: " +
+                        (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
+                        Console.WriteLine("    Data Checks: " + (TRemote.TimedProcessingJobEnabled("TProcessDataChecks") ? "On" : "Off"));
+
+                        Console.WriteLine("  SMTP Server used for sending e-mails: " + TRemote.SMTPServer);
+
+                        if (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders"))
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Reminder Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TRemote.PerformTimedProcessingNow("TProcessPartnerReminders");
+                            }
+                        }
+
+                        if (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport"))
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Intranet Export Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TRemote.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
+                            }
+                        }
+
+                        if (TRemote.TimedProcessingJobEnabled("TProcessDataChecks"))
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Data Checks Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TRemote.PerformTimedProcessingNow("TProcessDataChecks");
+                            }
+                        }
+
+                        Console.Write(ServerAdminPrompt);
                         break;
 
                     case 's':

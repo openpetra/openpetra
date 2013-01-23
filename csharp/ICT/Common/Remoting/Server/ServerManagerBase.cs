@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -485,6 +485,33 @@ CheckAllClientsDisconnected:
         {
             // implemented in derived class
             return false;
+        }
+
+        /// <summary>
+        /// Allows the server or admin console to run a timed job
+        /// </summary>
+        public virtual void PerformTimedProcessingNow(string AProcessName)
+        {
+            // implemented in derived class
+        }
+
+        /// Is the process job enabled?
+        public virtual bool TimedProcessingJobEnabled(string AProcessName)
+        {
+            // implemented in derived class
+            return false;
+        }
+
+        /// <summary>
+        /// the daily start time for the timed processing
+        /// </summary>
+        public virtual string TimedProcessingDailyStartTime24Hrs
+        {
+            get
+            {
+                // implemented in derived class
+                return string.Empty;
+            }
         }
     }
 }

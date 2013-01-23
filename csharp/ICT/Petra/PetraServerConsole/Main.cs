@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -104,6 +104,16 @@ public class TServer
                 TLogging.Log("Please check your OpenPetra.build.config file ...");
                 TLogging.Log("Maybe a nant initConfigFile helps ...");
                 throw new ApplicationException();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            // Setup Server Timed Processing
+            try
+            {
+                TheServerManager.SetupServerTimedProcessing();
             }
             catch (Exception)
             {
@@ -290,6 +300,7 @@ public class TServer
                             Console.WriteLine("     l: load AppDomain for a fake Client (for debugging purposes only!)");
                         }
 
+                        Console.WriteLine("     p: perform timed server processing manually now");
                         Console.WriteLine("     q: queue a Client Task for a certain Client");
                         Console.WriteLine("     s: Server Status");
 
@@ -435,6 +446,62 @@ public class TServer
                             WriteServerPrompt();
                         }
 
+                        break;
+
+                    case 'p':
+                    case 'P':
+                        string resp = "";
+
+                        Console.WriteLine("  Server Timed Processing Status: " +
+                        "runs daily at " + TheServerManager.TimedProcessingDailyStartTime24Hrs + ".");
+                        Console.WriteLine("    Partner Reminders: " +
+                        (TheServerManager.TimedProcessingJobEnabled("TProcessPartnerReminders") ? "On" : "Off"));
+                        Console.WriteLine("    Automatic Intranet Export: " +
+                        (TheServerManager.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
+                        Console.WriteLine("    Data Checks: " + (TheServerManager.TimedProcessingJobEnabled("TProcessDataChecks") ? "On" : "Off"));
+
+                        Console.WriteLine("  SMTP Server used for sending e-mails: " + TheServerManager.SMTPServer);
+
+                        if (TheServerManager.TimedProcessingJobEnabled("TProcessPartnerReminders"))
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Reminder Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TheServerManager.PerformTimedProcessingNow("TProcessPartnerReminders");
+                            }
+                        }
+
+                        if (TheServerManager.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport"))
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Intranet Export Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TheServerManager.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
+                            }
+                        }
+
+                        if (TheServerManager.TimedProcessingJobEnabled("TProcessDataChecks"))
+                        {
+                            Console.WriteLine("");
+                            Console.WriteLine("Do you want to run Data Checks Processing now?");
+                            Console.Write("Type YES to continue, anything else to skip:");
+                            resp = Console.ReadLine();
+
+                            if (resp == "YES")
+                            {
+                                TheServerManager.PerformTimedProcessingNow("TProcessDataChecks");
+                            }
+                        }
+
+                        WriteServerPrompt();
                         break;
 
                     case 's':
