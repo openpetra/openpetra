@@ -56,16 +56,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private String baseCurrencyOfLedger;
 
-        private const decimal EXCHANGE_RATE_WARNING_RATIO = 1.15m;
+        private const decimal EXCHANGE_RATE_WARNING_RATIO = 1.10m;
 
         // Private variables relating to use when we are MODAL
-        private bool blnIsInModalMode;
-        private bool blnUseDateTimeDefault = false;
-        private String strCurrencyToDefault;
-        private DateTime dateTimeDefault;
-
+        private bool blnIsInModalMode = false;
+        private String modalCurrencyFrom = null;
         private decimal modalRateOfExchange = 1.0m;
-        private DateTime modalEffectiveDate;
+        private DateTime modalEffectiveDate = DateTime.MinValue;
+        private DateTime minModalEffectiveDate = DateTime.MinValue;
+        private DateTime maxModalEffectiveDate = DateTime.MaxValue;
         private int modalEffectiveTime = 0;
 
         // Filters and sorting
@@ -77,14 +76,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private string JournalRowFilter = "(" + AJournalTable.GetTransactionCurrencyDBName() + " = '{0}' OR " +
                                           AJournalTable.GetTransactionCurrencyDBName() + " = '{1}') AND " +
-                                          AJournalTable.GetDateEffectiveDBName() + " = #{2}# AND " +
-                                          AJournalTable.GetExchangeRateTimeDBName() + " = {3} AND " +
+                                          AJournalTable.GetDateEffectiveDBName() + " >= #{2}# AND " +
+                                          AJournalTable.GetDateEffectiveDBName() + " < #{3}# AND " +
                                           AJournalTable.GetJournalStatusDBName() + " = '{4}'";
         private string GiftBatchRowFilter = "(" + AGiftBatchTable.GetCurrencyCodeDBName() + " = '{0}' OR " +
                                             AGiftBatchTable.GetCurrencyCodeDBName() + " = '{1}') AND " +
-                                            AGiftBatchTable.GetGlEffectiveDateDBName() + " = #{2}# AND " +
-                                            AGiftBatchTable.GetExchangeRateToBaseDBName() + " = {3} AND " +
+                                            AGiftBatchTable.GetGlEffectiveDateDBName() + " >= #{2}# AND " +
+                                            AGiftBatchTable.GetGlEffectiveDateDBName() + " < #{3}# AND " +
+                                            AGiftBatchTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
                                             AGiftBatchTable.GetBatchStatusDBName() + " = 'Unposted'";
+
+        // Used to track changes to the currency codes
+        private string FWorkingFromCode = null;
+        private string FWorkingToCode = null;
+        private bool FCanEditCurrentRow = false;
+        private bool FCanDeleteCurrentRow = false;
+        private bool FIsCurrentRowStateAdded = false;
 
         // Used for edit/delete
         bool bCanEditDelete = false;
@@ -223,7 +230,59 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     return true;
                 }
 
-                return SerialisableDS.SaveChanges(GiftBatchTable, TableChanges, AJournalTable.GetTableDBName());
+                return SerialisableDS.SaveChanges(GiftBatchTable, TableChanges, AGiftBatchTable.GetTableDBName());
+            }
+        }
+
+        #endregion
+
+        #region Additional DataSet for Corporate Exchange Rate
+
+        private TCorporateDS FCorporateDS = new TCorporateDS();
+        private class TCorporateDS : TTypedDataSet
+        {
+            private ACorporateExchangeRateTable TableACorporateExchangeRate;
+
+            public ACorporateExchangeRateTable ACorporateExchangeRate
+            {
+                get
+                {
+                    return this.TableACorporateExchangeRate;
+                }
+            }
+
+            protected override void InitTables()
+            {
+                this.Tables.Add(new ACorporateExchangeRateTable("ACorporateExchangeRate"));
+            }
+
+            protected override void InitTables(System.Data.DataSet ds)
+            {
+                if ((ds.Tables.IndexOf("ACorporateExchangeRate") != -1))
+                {
+                    this.Tables.Add(new ACorporateExchangeRateTable("ACorporateExchangeRate"));
+                }
+            }
+
+            protected override void MapTables()
+            {
+                this.InitVars();
+                base.MapTables();
+
+                if ((this.TableACorporateExchangeRate != null))
+                {
+                    this.TableACorporateExchangeRate.InitVars();
+                }
+            }
+
+            public override void InitVars()
+            {
+                this.DataSetName = "PrivateScreenTDS";
+                this.TableACorporateExchangeRate = ((ACorporateExchangeRateTable)(this.Tables["ACorporateExchangeRate"]));
+            }
+
+            protected override void InitConstraints()
+            {
             }
         }
 
@@ -262,8 +321,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // We need to set the RowFilter to something that returns no rows because we will return the rows we actually want
             // in RunOnceOnActivation.  By returning no rows now we reduce some horrible flicker on the screen (and save time!)
             FMainDS.ADailyExchangeRate.DefaultView.RowFilter = String.Format(CultureInfo.InvariantCulture, "{0} = #{1}#",
-                    FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom,
-                    DateTime.MaxValue);
+                FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom,
+                DateTime.MaxValue.ToString("d", CultureInfo.InvariantCulture));
 
             // Now we set some default settings that apply when the screen is MODELESS
             //  (If the screen will be MODAL one of the ShowDialog methods will be called below)
@@ -288,6 +347,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             lblEnableEditDelete.Top = btnEnableEdit.Top;
             lblEnableEditDelete.Height = btnEnableEdit.Height;
             lblEnableEditDelete.TextAlign = ContentAlignment.MiddleCenter;
+
+            // We may need the information from the corporate exchange rate table when we create new rates
+            Ict.Common.Data.TTypedDataTable TypedTable;
+            TRemote.MCommon.DataReader.WebConnectors.GetData(ACorporateExchangeRateTable.GetTableDBName(), null, out TypedTable);
+            FCorporateDS.ACorporateExchangeRate.Merge(TypedTable);
         }
 
         private void RunOnceOnActivationManual()
@@ -302,6 +366,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             this.btnInvertExchangeRate.Click +=
                 new System.EventHandler(this.InvertExchangeRate);
+            this.chkHideOthers.CheckedChanged += new EventHandler(chkHideOthers_CheckedChanged);
 
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
@@ -314,12 +379,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (!blnIsInModalMode)
             {
                 theView.RowFilter = "";
+
+                // Have a last attempt at deciding what the base currency is...
+                if (baseCurrencyOfLedger == null)
+                {
+                    // What ledgers does the user have access to??
+                    ALedgerTable ledgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
+                    DataView ledgerView = ledgers.DefaultView;
+                    ledgerView.RowFilter = "a_ledger_status_l = 1";     // Only view 'in use' ledgers
+                    if (ledgerView.Count > 0)
+                    {
+                        // There is at least one - so default to the currency of the first one
+                        baseCurrencyOfLedger = ((ALedgerRow)ledgerView.Table.Rows[0]).BaseCurrency;
+                    }
+                }
             }
 
             // Having changed the sort order we need to put the correct details in the panel (assuming we have a row to display)
             if (theView.Count > 0)
             {
-                SelectRowInGrid(1);
+                // We have to use this construct because simple ShoWDetails requires two cursor down keypresses to move the cursor
+                // because we have changed the row filter.
+                grdDetails.Selection.Focus(new SourceGrid.Position(1, 0), false);
+                ShowDetails();
+            }
+            else
+            {
+                ShowDetails(null);
             }
         }
 
@@ -401,7 +487,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             baseCurrencyOfLedger = ledger.BaseCurrency;
 
             DateTime dateEnd2 = dteEnd.AddDays(1.0);
-            
+            minModalEffectiveDate = dteStart;
+            maxModalEffectiveDate = dateEnd2;
+
             // Do not use local formats here!
             string filter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' and {2}='{3}' and {4}<#{5}#",
                 ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
@@ -409,13 +497,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
                 baseCurrencyOfLedger,
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
-                dateEnd2);
+                dateEnd2.ToString("d", CultureInfo.InvariantCulture));
 
             if (dteStart > DateTime.MinValue)
             {
                 filter += String.Format(CultureInfo.InvariantCulture, " and {0}>#{1}#",
                     ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
-                    dteStart);
+                    dteStart.ToString("d", CultureInfo.InvariantCulture));
             }
 
             DataView myDataView = FMainDS.ADailyExchangeRate.DefaultView;
@@ -423,8 +511,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             myDataView.Sort = SortByDateDescending;
 
             modalRateOfExchange = ExchangeDefault;
-            strCurrencyToDefault = strCurrencyFrom;
-            dateTimeDefault = dteEnd;
+            modalCurrencyFrom = strCurrencyFrom;
+            modalEffectiveDate = dteEnd;
 
             DefineModalSettings();
 
@@ -463,9 +551,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
                 baseCurrencyOfLedger,
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
-                dateEnd2,
+                dateEnd2.ToString("d", CultureInfo.InvariantCulture),
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
-                dteStart);
+                dteStart.ToString("d", CultureInfo.InvariantCulture));
             DataView myView = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
 
             if (myView.Count > 0)
@@ -480,8 +568,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void DefineModalSettings()
         {
-            blnUseDateTimeDefault = true;
-
             // We need the accept/cancel buttons when MODAL.  It looks better if they are at the top and New is beneath
             btnClose.Visible = true;
             btnCancel.Visible = true;
@@ -502,6 +588,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             mniClose.Text = "Accept";
             this.AcceptButton = btnClose;
             this.CancelButton = btnCancel;
+            chkHideOthers.Visible = false;
 
             blnIsInModalMode = true;
             DialogResult = DialogResult.Cancel;     // assume it is cancelled for now
@@ -519,8 +606,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 return;
             }
-
-            blnUseDateTimeDefault = false;
 
             if (txtDetailRateOfExchange.NumberValueDecimal.HasValue)
             {
@@ -544,7 +629,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // Although the user has clicked Cancel, we need to ask if we need to save any changes that have been made
             if (FPetraUtilsObject.CloseFormCheck())
             {
-                blnUseDateTimeDefault = false;
                 Close();
             }
         }
@@ -557,95 +641,70 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void NewRow(System.Object sender, EventArgs e)
         {
             CreateNewADailyExchangeRate();
+
+            FWorkingFromCode = cmbDetailFromCurrencyCode.GetSelectedString();
+            FWorkingToCode = cmbDetailToCurrencyCode.GetSelectedString();
+            UpdateExchangeRateLabels();
         }
 
         private void NewRowManual(ref ADailyExchangeRateRow ARow)
         {
-            // Now create an appropriate new record
-            // Start with the effective date
-            if (blnUseDateTimeDefault)
+            // We just need to decide on the appropriate currency pair and then call the standard method to get a suggested rate and date
+            if (FPreviouslySelectedDetailRow == null)
             {
-                ARow.DateEffectiveFrom = DateTime.Parse(dateTimeDefault.ToLongDateString());
-            }
-            else
-            {
-                //For Corpoate Exchange Rate must be 1st of the month, for Daily Exchange Rate it must be now
-                ARow.DateEffectiveFrom = DateTime.Parse(DateTime.Now.ToLongDateString());
-            }
-
-            // FromCurrency code
-            if (baseCurrencyOfLedger == null)
-            {
-                ARow.FromCurrencyCode = "USD";
-            }
-            else
-            {
-                ARow.FromCurrencyCode = baseCurrencyOfLedger;
-            }
-
-            // ToCurrency code
-            if (strCurrencyToDefault == null)
-            {
-                if (FPreviouslySelectedDetailRow == null)
+                if (baseCurrencyOfLedger == null)
                 {
-                    // No default specified and no highlighted row
-                    if (baseCurrencyOfLedger == null)
-                    {
-                        if (ARow.FromCurrencyCode == "USD")
-                        {
-                            ARow.ToCurrencyCode = "GBP";
-                        }
-                        else
-                        {
-                            ARow.ToCurrencyCode = "USD";
-                        }
-                    }
-                    else
-                    {
-                        ARow.ToCurrencyCode = baseCurrencyOfLedger;
-                    }
-
-                    ARow.RateOfExchange = 1.0m;
+                    ARow.FromCurrencyCode = "GBP";
+                    ARow.ToCurrencyCode = "USD";
                 }
                 else
                 {
-                    // No default specified - we will assume it is the same as the highlighted row
-                    ARow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
-                    ARow.RateOfExchange = txtDetailRateOfExchange.NumberValueDecimal.Value;
+                    if (modalCurrencyFrom != null)
+                    {
+                        ARow.FromCurrencyCode = modalCurrencyFrom;
+                    }
+                    else
+                    {
+                        if (baseCurrencyOfLedger == "USD")
+                        {
+                            ARow.FromCurrencyCode = "GBP";
+                        }
+                        else
+                        {
+                            ARow.FromCurrencyCode = "USD";
+                        }
+                    }
+
+                    ARow.ToCurrencyCode = baseCurrencyOfLedger;
                 }
             }
             else
             {
-                // Use the spcified default currencyTo
-                ARow.ToCurrencyCode = strCurrencyToDefault;
-                ARow.RateOfExchange = 1.0m;
-            }
-
-            // Now do the effective time.  We default to 2am but if there is a row selected we use the time from there
-            // I don't think that the current time is very useful, since the idea is that this rate should apply to the day as a whole
-            // Use 2am so that if runs are done on a schedule during the night the new rate does not kick in too soon
-            int tryEffectiveTime = 7200;
-
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                tryEffectiveTime = FPreviouslySelectedDetailRow.TimeEffectiveFrom;
-            }
-
-            // Ensure we don't create a duplicate record
-            while (FMainDS.ADailyExchangeRate.Rows.Find(new object[] {
-                           ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                           ARow.DateEffectiveFrom.ToString(), tryEffectiveTime.ToString()
-                       }) != null)
-            {
-                tryEffectiveTime = tryEffectiveTime + 600;              // 10 minute increments
-
-                if (tryEffectiveTime >= 86400)
+                // Use the same settings as the highlighted row
+                // Note that if we have been called modally the ToCurrencyCode will automatically be the baseLedgerCurrency
+                if (modalCurrencyFrom != null)
                 {
-                    tryEffectiveTime = 60;                              // Do not pass midnight!
+                    ARow.FromCurrencyCode = modalCurrencyFrom;
                 }
+                else
+                {
+                    ARow.FromCurrencyCode = cmbDetailFromCurrencyCode.GetSelectedString();
+                }
+
+                ARow.ToCurrencyCode = cmbDetailToCurrencyCode.GetSelectedString();
             }
 
-            ARow.TimeEffectiveFrom = tryEffectiveTime;
+            DateTime suggestedDate;
+            Int32 suggestedTime;
+            decimal suggestedRate;
+            GetSuggestedDateAndRateForCurrencyPair(ARow.FromCurrencyCode,
+                ARow.ToCurrencyCode,
+                out suggestedDate,
+                out suggestedTime,
+                out suggestedRate);
+            ARow.DateEffectiveFrom = suggestedDate;
+            ARow.TimeEffectiveFrom = suggestedTime;
+            ARow.RateOfExchange = suggestedRate;
         }
 
         /// <summary>
@@ -658,19 +717,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             btnEnableEdit.Visible = false;
             lblEnableEditDelete.Visible = true;
             bCanEditDelete = true;
-            grdDetails.Focus();
 
+            this.Cursor = Cursors.WaitCursor;
+ 
             FJournalDS.JournalTable = new AJournalTable();
             Ict.Common.Data.TTypedDataTable TypedJournalTable;
             TRemote.MCommon.DataReader.WebConnectors.GetData(AJournalTable.GetTableDBName(), null, out TypedJournalTable);
             FJournalDS.JournalTable.Merge(TypedJournalTable);
+            FJournalDS.JournalTable.DefaultView.Sort = AJournalTable.GetDateEffectiveDBName() + " ASC";
 
             FGiftBatchDS.GiftBatchTable = new AGiftBatchTable();
             Ict.Common.Data.TTypedDataTable TypedGiftBatchTable;
             TRemote.MCommon.DataReader.WebConnectors.GetData(AGiftBatchTable.GetTableDBName(), null, out TypedGiftBatchTable);
             FGiftBatchDS.GiftBatchTable.Merge(TypedGiftBatchTable);
+            FGiftBatchDS.GiftBatchTable.DefaultView.Sort = AGiftBatchTable.GetGlEffectiveDateDBName() + " ASC";
+            
+            this.Cursor = Cursors.Default;
+
+            CheckIfRateHasBeenUsed(
+                FPreviouslySelectedDetailRow.FromCurrencyCode,
+                FPreviouslySelectedDetailRow.ToCurrencyCode,
+                FPreviouslySelectedDetailRow.DateEffectiveFrom,
+                FPreviouslySelectedDetailRow.TimeEffectiveFrom,
+                FPreviouslySelectedDetailRow.RateOfExchange,
+                out FCanEditCurrentRow,
+                out FCanDeleteCurrentRow);
 
             SetEnabledStates();
+            
+            grdDetails.Focus();
+        }
+
+        void chkHideOthers_CheckedChanged(object sender, EventArgs e)
+        {
+            string rowFilter = String.Empty;
+            if (chkHideOthers.Checked)
+            {
+                rowFilter = String.Format("{0}='{1}'",
+                    ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
+                    cmbDetailToCurrencyCode.GetSelectedString());
+            }
+            FMainDS.ADailyExchangeRate.DefaultView.RowFilter = rowFilter;
+            SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1);
         }
 
         private void DeleteRecord(Object sender, EventArgs e)
@@ -703,7 +791,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e">not used</param>
         private void ValueChangedCurrencyCode(System.Object sender, EventArgs e)
         {
-            SetEnabledStates();
+            // This gets called whenever the text in either combo box changes
+            // So that includes changes just by selecting a different grid row and changes when the user actually makes a change
+            // In addition we also get called when the user just focuses in and out of a combo box without making a change
+            if (FPetraUtilsObject.SuppressChangeDetection)
+            {
+                // We have been invoked from ShowDetails() simply by selecting a different row in the grid.
+                // Reset our flags
+                FWorkingFromCode = null;
+                FWorkingToCode = null;
+            }
+            else
+            {
+                // OK - this could be a real change or it could just be a lost focus
+                string strFrom = cmbDetailFromCurrencyCode.GetSelectedString();
+                string strTo = cmbDetailToCurrencyCode.GetSelectedString();
+
+                // Compare these current values with what we had last time
+                if (strFrom != FWorkingFromCode || strTo != FWorkingToCode)
+                {
+                    // It must be a real change - so we should calculate a new effective date and propose an exchange rate
+                    DateTime suggestedDate;
+                    decimal suggestedRate;
+                    int suggestedTime;
+                    GetSuggestedDateAndRateForCurrencyPair(strFrom, strTo, out suggestedDate, out suggestedTime, out suggestedRate);
+                    dtpDetailDateEffectiveFrom.Date = suggestedDate;
+                    txtDetailTimeEffectiveFrom.Text = new Ict.Common.TypeConverter.TShortTimeConverter().ConvertTo(suggestedTime, typeof(string)).ToString();
+                    txtDetailRateOfExchange.NumberValueDecimal = suggestedRate;
+                }
+                FWorkingFromCode = strFrom;
+                FWorkingToCode = strTo;
+
+                SetEnabledStates();
+            }
         }
 
         /// <summary>
@@ -714,17 +834,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e">not used</param>
         private void InvertExchangeRate(System.Object sender, EventArgs e)
         {
-            decimal? exchangeRate;
-
             try
             {
-                exchangeRate = txtDetailRateOfExchange.NumberValueDecimal;
-                exchangeRate = Math.Round(1 / exchangeRate.Value, 10);
-                txtDetailRateOfExchange.NumberValueDecimal = exchangeRate;
+                txtDetailRateOfExchange.NumberValueDecimal = Math.Round(1 / txtDetailRateOfExchange.NumberValueDecimal.Value, 10);
             }
             catch (Exception)
             {
             }
+
+            UpdateExchangeRateLabels();
         }
 
         /// <summary>
@@ -736,29 +854,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (ARow == null)
             {
                 txtDetailRateOfExchange.NumberValueDecimal = null;
-                UpdateExchangeRateLabels();
+                FIsCurrentRowStateAdded = false;
+            }
+            else
+            {
+                if (ARow.FromCurrencyCode == ARow.ToCurrencyCode)
+                {
+                    ARow.RateOfExchange = 1.0m;
+                }
+
+                if (lblEnableEditDelete.Visible)
+                {
+                    CheckIfRateHasBeenUsed(
+                        ARow.FromCurrencyCode,
+                        ARow.ToCurrencyCode,
+                        ARow.DateEffectiveFrom,
+                        ARow.TimeEffectiveFrom,
+                        ARow.RateOfExchange,
+                        out FCanEditCurrentRow,
+                        out FCanDeleteCurrentRow);
+                }
+
+                FIsCurrentRowStateAdded = ARow.RowState == DataRowState.Added;
+                SetEnabledStates();
             }
 
-            // Sadly this may get called twice, if the currencies are different, but if they were the same we need to be sure to call it once at least
-            SetEnabledStates();
+            UpdateExchangeRateLabels();
         }
 
         private void SetEnabledStates()
         {
-            // Set the Enabled state of the two combo boxes
-            ADailyExchangeRateRow row = FPreviouslySelectedDetailRow;
+            btnClose.Enabled = pnlDetails.Enabled;
 
-            btnClose.Enabled = (row != null);
-
-            if (row == null)
+            if (!pnlDetails.Enabled)
             {
                 return;
             }
 
             // Enable or disable the combo boxes
-            bool bEnable = (row.RowState == DataRowState.Added && !blnIsInModalMode);
+            bool bEnable = (FIsCurrentRowStateAdded && !blnIsInModalMode);
             cmbDetailFromCurrencyCode.Enabled = bEnable;
-            cmbDetailToCurrencyCode.Enabled = bEnable;
+            cmbDetailToCurrencyCode.Enabled = bEnable && !chkHideOthers.Checked;
 
             // Set the Enabled states of txtRateOfExchange and the Invert and Delete buttons
             if (cmbDetailFromCurrencyCode.GetSelectedString() ==
@@ -773,22 +909,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 // Currencies differ
-                bool bCanEdit;
-                bool bCanDelete;
-                CheckIfRateHasBeenUsed(
-                    row.FromCurrencyCode,
-                    row.ToCurrencyCode,
-                    row.DateEffectiveFrom,
-                    row.TimeEffectiveFrom,
-                    row.RateOfExchange,
-                    out bCanEdit,
-                    out bCanDelete);
-                txtDetailRateOfExchange.Enabled = (row.RowState == DataRowState.Added || bCanEdit);
-                btnDelete.Enabled = (row.RowState == DataRowState.Added || bCanDelete);
-                btnInvertExchangeRate.Enabled = true;
+                txtDetailRateOfExchange.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
+                btnInvertExchangeRate.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
+                btnDelete.Enabled = (FIsCurrentRowStateAdded || FCanDeleteCurrentRow);
             }
 
-            UpdateExchangeRateLabels();
+            //UpdateExchangeRateLabels();
         }
 
         private void txtDetailRateOfExchange_TextChanged(object sender, EventArgs e)
@@ -808,7 +934,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             DataView myView = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
 
             // Find our current row
-            int nThis = myView.Find(new object[] { ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom });
+            int nThis = FindRowInDataView(myView, ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom);
             ADailyExchangeRateRow drThis = null;
             ADailyExchangeRateRow drPrev = null;
             ADailyExchangeRateRow drNext = null;
@@ -888,12 +1014,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // OK, so we might have changed the rate
-            if (FJournalDS.HasMatchingUnpostedRate && FJournalDS.MatchingRate != ARow.RateOfExchange)
+            if (FJournalDS.HasMatchingUnpostedRate && (FJournalDS.MatchingRate != ARow.RateOfExchange))
             {
                 // change all the relevant entries
                 DataView dvJournal = FJournalDS.JournalTable.DefaultView;
-                dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode, 
-                    ARow.DateEffectiveFrom, ARow.RateOfExchange, "Unposted");
+                dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
+                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), FJournalDS.MatchingRate, "Unposted");
 
                 for (int i = 0; i < dvJournal.Count; i++)
                 {
@@ -907,12 +1033,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FJournalDS.NeedsSave = true;
             }
 
-            if (FGiftBatchDS.HasMatchingUnpostedRate && FGiftBatchDS.MatchingRate != ARow.RateOfExchange)
+            if (FGiftBatchDS.HasMatchingUnpostedRate && (FGiftBatchDS.MatchingRate != ARow.RateOfExchange))
             {
                 // change all the relevant entries
                 DataView dvGift = FGiftBatchDS.GiftBatchTable.DefaultView;
-                dvGift.RowFilter = String.Format(CultureInfo.InvariantCulture, GiftBatchRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode, 
-                    ARow.DateEffectiveFrom, ARow.RateOfExchange);
+                dvGift.RowFilter = String.Format(CultureInfo.InvariantCulture, GiftBatchRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
+                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), FGiftBatchDS.MatchingRate);
 
                 for (int i = 0; i < dvGift.Count; i++)
                 {
@@ -938,7 +1064,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 decimal inverseRate = Math.Round(1 / ARow.RateOfExchange, 10);
                 decimal inverseRateAlt = Math.Round(1 / mainRow.RateOfExchange, 10);
 
-                if (mainRow.RateOfExchange != inverseRate && ARow.RateOfExchange != inverseRateAlt)
+                if ((mainRow.RateOfExchange != inverseRate) && (ARow.RateOfExchange != inverseRateAlt))
                 {
                     // Neither way matches so we must have made a change that requires an update to the inverse row
                     mainRow.BeginEdit();
@@ -959,7 +1085,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_GLSetup.ValidateDailyExchangeRate(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FPetraUtilsObject.ValidationControlsDict, minModalEffectiveDate, maxModalEffectiveDate);
         }
 
         private void CheckIfRateHasBeenUsed(string FromCurrency,
@@ -980,8 +1106,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (!bCanEditDelete)
+            if (FJournalDS.JournalTable == null || FGiftBatchDS.GiftBatchTable == null || !bCanEditDelete)
             {
+                // We have either been called before we have loaded the tables or edit/delete is not allowed anyway
                 CanEdit = false;
                 CanDelete = false;
                 return;       // Assume it has been used
@@ -989,9 +1116,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // Display a tooltip with our findings
             string tipText = String.Empty;
-            // Set up a row filter on the two tables
+
+            // We need not only the current row info from the exchange rate table, but also the next row later in time, if it exists
+            // Create a special view because we don't know how the grid is sorted
+            string filter =
+                ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + FromCurrency + "' and " +
+                ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + ToCurrency + "'";
+            DataView dvDailyRate = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
+
+            // Find our current row and hence the previous one
+            DateTime ToDate = DateTime.MaxValue;
+            int nThis = FindRowInDataView(dvDailyRate, FromCurrency, ToCurrency, FromDate, FromTime);
+
+            if (nThis > 0)
+            {
+                ToDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+            }
+
+            // Set up a row filter on the two external tables
             DataView dvGift = FGiftBatchDS.GiftBatchTable.DefaultView;
-            dvGift.RowFilter = String.Format(CultureInfo.InvariantCulture, GiftBatchRowFilter, FromCurrency, ToCurrency, FromDate, rate);
+            dvGift.RowFilter =
+                String.Format(CultureInfo.InvariantCulture, GiftBatchRowFilter, FromCurrency, ToCurrency,
+                    FromDate.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d", CultureInfo.InvariantCulture), rate);
             FGiftBatchDS.HasMatchingUnpostedRate = (dvGift.Count > 0);
 
             if (FGiftBatchDS.HasMatchingUnpostedRate)
@@ -1001,7 +1147,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             DataView dvJournal = FJournalDS.JournalTable.DefaultView;
-            dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilter, FromCurrency, ToCurrency, FromDate, FromTime, "Unposted");
+            dvJournal.RowFilter =
+                String.Format(CultureInfo.InvariantCulture, JournalRowFilter, FromCurrency, ToCurrency,
+                    FromDate.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d", CultureInfo.InvariantCulture), "Unposted");
             FJournalDS.HasMatchingUnpostedRate = (dvJournal.Count > 0);
 
             if (FJournalDS.HasMatchingUnpostedRate)
@@ -1017,18 +1165,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     tipText +=
                         String.Format(Catalog.GetString("Used by 1 unposted row in the Journal table dated {0}"),
-                            ((DateTime)dvJournal[0][AJournalTable.ColumnDateOfEntryId]).ToString("dd-MMM-yyyy").ToUpper());
+                            ((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper());
                 }
                 else
                 {
                     tipText += String.Format(Catalog.GetString("Used by {0} unposted rows in the Journal table between {1} and {2}"),
                         dvJournal.Count,
-                        ((DateTime)dvJournal[dvJournal.Count - 1][AJournalTable.ColumnDateOfEntryId]).ToString("dd-MMM-yyyy").ToUpper(),
-                        ((DateTime)dvJournal[0][AJournalTable.ColumnDateOfEntryId]).ToString("dd-MMM-yyyy").ToUpper());
+                        ((DateTime)dvJournal[dvJournal.Count - 1][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper(),
+                        ((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper());
                 }
             }
 
-            dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilter, FromCurrency, ToCurrency, FromDate, FromTime, "Posted");
+            dvJournal.RowFilter =
+                String.Format(CultureInfo.InvariantCulture, JournalRowFilter, FromCurrency, ToCurrency,
+                    FromDate.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d", CultureInfo.InvariantCulture), "Posted");
             bool bHasPostedJournalEntries = (dvJournal.Count > 0);
 
             if (bHasPostedJournalEntries)
@@ -1042,14 +1192,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     tipText +=
                         String.Format(Catalog.GetString("Used by 1 posted row in the Journal table dated {0}"),
-                            ((DateTime)dvJournal[0][AJournalTable.ColumnDateOfEntryId]).ToString("dd-MMM-yyyy").ToUpper());
+                            ((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper());
                 }
                 else
                 {
                     tipText += String.Format(Catalog.GetString("Used by {0} posted rows in the Journal table between {1} and {2}"),
                         dvJournal.Count,
-                        ((DateTime)dvJournal[dvJournal.Count - 1][AJournalTable.ColumnDateOfEntryId]).ToString("dd-MMM-yyyy").ToUpper(),
-                        ((DateTime)dvJournal[0][AJournalTable.ColumnDateOfEntryId]).ToString("dd-MMM-yyyy").ToUpper());
+                        ((DateTime)dvJournal[dvJournal.Count - 1][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper(),
+                        ((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper());
                 }
             }
 
@@ -1075,6 +1225,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // When we return from this method the standard code will do the validation again and might not allow the save to go ahead
             FPetraUtilsObject.VerificationResultCollection.Clear();
             ValidateAllData(false, false);
+
             if (FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
             {
                 return;
@@ -1120,7 +1271,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
                     item.ToCurrencyCode,
                     ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
-                    item.DateEffective,
+                    item.DateEffective.ToString("d", CultureInfo.InvariantCulture),
                     ADailyExchangeRateTable.GetTimeEffectiveFromDBName(),
                     item.TimeEffective,
                     ADailyExchangeRateTable.GetRateOfExchangeDBName(),
@@ -1161,6 +1312,133 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FGiftBatchDS.NeedsSave = false;
             }
+        }
+
+        /// <summary>
+        /// This is the standard method that is used to suggest a rate and effective date for a new condition.
+        /// The suggestions depend on the FromCurrency and ToCurrency and is based on the other values in the table
+        /// The method is called both when creating a new row and when modifying the currencies of an existing row
+        /// </summary>
+        /// <param name="FromCurrency">The FromCurrency</param>
+        /// <param name="ToCurrency">The ToCurrency</param>
+        /// <param name="SuggestedDate">The suggested effective date for the currency pair</param>
+        /// <param name="SuggestedTime">The suggested effective time for the currency pair</param>
+        /// <param name="SuggestedRate">The suggested effective rate of exchange for the currency pair</param>
+        private void GetSuggestedDateAndRateForCurrencyPair(string FromCurrency,
+            string ToCurrency,
+            out DateTime SuggestedDate,
+            out Int32 SuggestedTime,
+            out decimal SuggestedRate)
+        {
+            // Start with the effective date
+            if (blnIsInModalMode && (modalEffectiveDate > DateTime.MinValue))
+            {
+                SuggestedDate = DateTime.Parse(modalEffectiveDate.ToLongDateString());
+            }
+            else
+            {
+                //For Corporate Exchange Rate must be 1st of the month, for Daily Exchange Rate it must be now
+                SuggestedDate = DateTime.Parse(DateTime.Now.ToLongDateString());
+            }
+
+            // Now do the effective time.  We default to 2am but if there is a row selected we use the time from there
+            // I don't think that the current time is very useful, since the idea is that this rate should apply to the day as a whole
+            // Use 2am so that if runs are done on a schedule during the night the new rate does not kick in too soon
+            int tryEffectiveTime = 7200;
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                tryEffectiveTime = FPreviouslySelectedDetailRow.TimeEffectiveFrom;
+            }
+
+            // Ensure we don't create a duplicate record
+            while (FMainDS.ADailyExchangeRate.Rows.Find(new object[] {
+                           FromCurrency, ToCurrency,
+                           SuggestedDate.ToString(), tryEffectiveTime.ToString()
+                       }) != null)
+            {
+                tryEffectiveTime = tryEffectiveTime + 600;              // 10 minute increments
+
+                if (tryEffectiveTime >= 86400)
+                {
+                    tryEffectiveTime = 60;                              // Do not pass midnight!
+                }
+            }
+
+            SuggestedTime = tryEffectiveTime;
+
+            // If we cannot come up with a rate, it will be 0.0 (which is not allowed so it will force the user to enter a better number)
+            SuggestedRate = 0.0m;
+
+            if (FromCurrency == ToCurrency)
+            {
+                // Always 1.0
+                SuggestedRate = 1.0m;
+            }
+            else
+            {
+                // Rate of exchange will be the latest value used, if there is one
+                // Get the most recent value for this currency pair
+                string rowFilter = String.Format("{0}='{1}' AND {2}='{3}'",
+                    ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
+                    FromCurrency,
+                    ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
+                    ToCurrency);
+                string sortBy = String.Format("{0} DESC, {1} DESC",
+                    ADailyExchangeRateTable.GetDateEffectiveFromDBName(), ADailyExchangeRateTable.GetTimeEffectiveFromDBName());
+                DataView dv = new DataView(FMainDS.ADailyExchangeRate, rowFilter, sortBy, DataViewRowState.CurrentRows);
+
+                if (dv.Count > 0)
+                {
+                    // Use this rate
+                    SuggestedRate = ((ADailyExchangeRateRow)dv[0].Row).RateOfExchange;
+                }
+                else
+                {
+                    // As a last resort, try the corporate exchange rate table
+                    dv = FCorporateDS.ACorporateExchangeRate.DefaultView;
+                    dv.RowFilter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' AND {2}='{3}' AND {4} <= #{5}#",
+                        ACorporateExchangeRateTable.GetFromCurrencyCodeDBName(),
+                        FromCurrency,
+                        ACorporateExchangeRateTable.GetToCurrencyCodeDBName(),
+                        ToCurrency,
+                        ACorporateExchangeRateTable.GetDateEffectiveFromDBName(),
+                        SuggestedDate.ToString("d", CultureInfo.InvariantCulture));
+                    dv.Sort = String.Format("{0} DESC", ADailyExchangeRateTable.GetDateEffectiveFromDBName());
+
+                    if (dv.Count > 0)
+                    {
+                        SuggestedRate = ((ACorporateExchangeRateRow)dv[0].Row).RateOfExchange;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// I have had to write this method because I could not get the DataView.Find to work (with dates?)
+        /// </summary>
+        /// <param name="ADataView">The DataView to search</param>
+        /// <param name="FromCurrency"></param>
+        /// <param name="ToCurrency"></param>
+        /// <param name="EffectiveDate"></param>
+        /// <param name="EffectiveTime"></param>
+        /// <returns>The integer row index, or -1 if not found</returns>
+        private Int32 FindRowInDataView(DataView ADataView, String FromCurrency, String ToCurrency, DateTime EffectiveDate, Int32 EffectiveTime)
+        {
+            for (int n = 0; n < ADataView.Count; n++)
+            {
+                object[] itemArray = ADataView[n].Row.ItemArray;
+
+                if (FromCurrency.Equals(itemArray[ADailyExchangeRateTable.ColumnFromCurrencyCodeId])
+                    && ToCurrency.Equals(itemArray[ADailyExchangeRateTable.ColumnToCurrencyCodeId])
+                    && EffectiveDate.Equals(itemArray[ADailyExchangeRateTable.ColumnDateEffectiveFromId])
+                    && EffectiveTime.Equals(itemArray[ADailyExchangeRateTable.ColumnTimeEffectiveFromId]))
+                {
+                    return n;
+                }
+            }
+
+            return -1;
         }
     }
 }
