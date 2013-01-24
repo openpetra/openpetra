@@ -21,6 +21,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.IO;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,6 +43,21 @@ namespace Ict.Testing.Shepherds
     [TestFixture]
     public class Test
     {
+        private string FTestShepherdYAMLFile;
+            
+        /// <summary>
+        /// ...
+        /// </summary>
+        [SetUp]
+        public void Init()
+        {
+            new TAppSettingsManager("../../etc/TestClient.config");
+
+            FTestShepherdYAMLFile = TAppSettingsManager.GetValue("UINavigation.File").Substring(0, TAppSettingsManager.GetValue("UINavigation.File").IndexOf("UINavigation.yml")) +
+                Path.DirectorySeparatorChar + "Shepherd_Church_Definition.yaml";
+            new TLogging("test.log");
+        }
+        
         /// <summary>
         /// TODO Comment
         /// </summary>
@@ -53,7 +69,7 @@ namespace Ict.Testing.Shepherds
             //the attributes that are collected by ParseYAMLFileELements()
             TestLogicInterface testShepherdInterface = new TestLogicInterface();
             TPetraShepherdFormLogic testParseYAMLFileELementsLogic =
-                new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", testShepherdInterface);
+                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, testShepherdInterface);
         }
 
         /// <summary>
@@ -63,7 +79,7 @@ namespace Ict.Testing.Shepherds
         public void TestTPetraShepherdPagesListConstructor()
         {
             TPetraShepherdPagesList testPetraShepherdPagesList =
-                new TPetraShepherdPagesList("Shepherd_Church_Definition.yaml");
+                new TPetraShepherdPagesList(FTestShepherdYAMLFile);
 
             Assert.True(testPetraShepherdPagesList.Pages.Count == 4,
                 "Wrong shepherd page count; expected: " + testPetraShepherdPagesList.Pages.Count);
@@ -82,7 +98,7 @@ namespace Ict.Testing.Shepherds
             Assert.False(testPetraShepherdPagesList.Pages.ContainsKey("00"),
                 "Shepherd inadvertently contained key 00");
 
-            foreach (KeyValuePair <string, TPetraShepherdPage>pair in testPetraShepherdPagesList.Pages)
+            foreach (KeyValuePair<string, TPetraShepherdPage> pair in testPetraShepherdPagesList.Pages)
             {
                 switch (pair.Key)
                 {
@@ -112,7 +128,7 @@ namespace Ict.Testing.Shepherds
         {
             TestLogicInterface thisIsAtest = new TestLogicInterface();
             TPetraShepherdFormLogic testFormLogic =
-                new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", thisIsAtest);
+                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, thisIsAtest);
 
             //TESTS to show that the HandleActionNext() method moves from page to page under normal operating circumstances..
             Assert.AreEqual(testFormLogic.CurrentPage.ID, "5");
@@ -135,12 +151,11 @@ namespace Ict.Testing.Shepherds
         {
             //TESTS to show that the HandleActionNext() method moves from page to
             //page when there is a Page that is not visible
-
             TestLogicInterface thisIsAtest = new TestLogicInterface();
             TPetraShepherdFormLogic testNotVisibleLogic =
-                new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", thisIsAtest);
+                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, thisIsAtest);
 
-            foreach (KeyValuePair <string, TPetraShepherdPage>pair in testNotVisibleLogic.ShepherdPages.Pages)
+            foreach (KeyValuePair<string, TPetraShepherdPage> pair in testNotVisibleLogic.ShepherdPages.Pages)
             {
                 switch (pair.Key)
                 {
@@ -164,12 +179,11 @@ namespace Ict.Testing.Shepherds
         {
             //TESTS to show that the HandleActionNext() method moves from page to page when
             //there is a Page that is not enabled
-
             TestLogicInterface thisIsAtest = new TestLogicInterface();
             TPetraShepherdFormLogic testNotEnabledLogic =
-                new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", thisIsAtest);
+                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, thisIsAtest);
 
-            foreach (KeyValuePair <string, TPetraShepherdPage>pair in testNotEnabledLogic.ShepherdPages.Pages)
+            foreach (KeyValuePair<string, TPetraShepherdPage> pair in testNotEnabledLogic.ShepherdPages.Pages)
             {
                 switch (pair.Key)
                 {
@@ -193,12 +207,11 @@ namespace Ict.Testing.Shepherds
         {
             //TESTS to show that the HandleActionNext() method moves from page to page when
             //there is a Page that is not visible nor enabled
-
             TestLogicInterface thisIsAtest = new TestLogicInterface();
             TPetraShepherdFormLogic testNotVisibleOrEnabledLogic =
-                new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", thisIsAtest);
+                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, thisIsAtest);
 
-            foreach (KeyValuePair <string, TPetraShepherdPage>pair in testNotVisibleOrEnabledLogic.ShepherdPages.Pages)
+            foreach (KeyValuePair<string, TPetraShepherdPage> pair in testNotVisibleOrEnabledLogic.ShepherdPages.Pages)
             {
                 switch (pair.Key)
                 {
@@ -223,7 +236,7 @@ namespace Ict.Testing.Shepherds
         {
             TestLogicInterface test = new TestLogicInterface();
             TPetraShepherdFormLogic testFormLogicSwitchToStartPage =
-                new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", test);
+                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, test);
 
             Assert.AreEqual(testFormLogicSwitchToStartPage.CurrentPage.ID, "5",
                 "The first page was, unexpectedly, not 5.");
@@ -241,7 +254,7 @@ namespace Ict.Testing.Shepherds
         {
             TestLogicInterface test = new TestLogicInterface();
             TPetraShepherdFormLogic testFomLogicSwitchToFinishPage =
-                new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", test);
+                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, test);
 
             Assert.AreEqual(testFomLogicSwitchToFinishPage.CurrentPage.ID, "5",
                 "The first page was, unexpectly, not 5.");
@@ -256,7 +269,7 @@ namespace Ict.Testing.Shepherds
         {
             TestLogicInterface test = new TestLogicInterface();
             TPetraShepherdFormLogic testFormLogicBackButton =
-                new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", test);
+                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, test);
 
             Assert.AreEqual(testFormLogicBackButton.CurrentPage.ID, "5",
                 "The first page of the shephred was not 5, as expected.");
@@ -285,8 +298,8 @@ namespace Ict.Testing.Shepherds
         {
             TestLogicInterface TestLogicInterface = new TestLogicInterface();
             TPetraShepherdFormLogic testFormUpdateShepherdFormProperties =
-                new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", TestLogicInterface);
-            //how do we test the elements of a GUI element?
+                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, TestLogicInterface);
+            ////how do we test the elements of a GUI element?
         }
 
         /// <summary>
@@ -297,7 +310,7 @@ namespace Ict.Testing.Shepherds
         {
             TestLogicInterface TestLogicInterface = new TestLogicInterface();
             TPetraShepherdFormLogic testGetCurrentPageNumber =
-                new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", TestLogicInterface);
+                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, TestLogicInterface);
 
             Assert.AreEqual(testGetCurrentPageNumber.GetCurrentPageNumber(), 1, "The current page was not 1.");
             testGetCurrentPageNumber.HandleActionNext();
@@ -312,7 +325,7 @@ namespace Ict.Testing.Shepherds
         {
             TestLogicInterface TestLogicInterface = new TestLogicInterface();
             TPetraShepherdFormLogic testEnumeratePages =
-                new TPetraShepherdFormLogic("Shepherd_Church_Definition.yaml", TestLogicInterface);
+                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, TestLogicInterface);
 
             Assert.AreEqual(testEnumeratePages.EnumeratePages(), 4,
                 "The current number of visible and inactive pages was not 4.");
