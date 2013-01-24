@@ -106,7 +106,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             TLogging.Log("Entering TPetraShepherdConcreteForm Constructor...");
 
-            FPetraUtilsObject = new TFrmPetraEditUtils(AParentForm, this, stbMain);
+            FPetraUtilsObject = new TFrmPetraEditUtils(AParentForm, this, ShepherdStatusBar);
 
             TLogging.Log("TPetraShepherdConcreteForm Constructor ran.");
         }
@@ -124,37 +124,37 @@ namespace Ict.Petra.Client.CommonForms
 
             if (FLogic.CurrentPage.IsFirstPage)
             {
-                this.btnBack.Enabled = false;
+                ButtonBack.Enabled = false;
             }
             else
             {
-                this.btnBack.Enabled = true;
+                ButtonBack.Enabled = true;
             }
 
             if (FLogic.CurrentPage.IsLastPage)
             {
-                this.btnNext.Enabled = false;
-                this.btnFinish.Enabled = true;
+                ButtonNext.Enabled = false;
+                ButtonFinish.Enabled = true;
             }
             else
             {
-                this.btnNext.Enabled = true;
-                this.btnFinish.Enabled = false;
+                ButtonNext.Enabled = true;
+                ButtonFinish.Enabled = false;
             }
 
-            this.lblPageProgress.Text = "Page: " + FLogic.GetCurrentPageNumber() + "/" + FLogic.EnumeratePages();
-            this.prbPageProgress.Value = ((int)FLogic.GetProgressBarPercentage());
+            PageProgressLabel.Text = "Page: " + FLogic.GetCurrentPageNumber() + "/" + FLogic.EnumeratePages();
+            PageProgressProgressBar.Value = ((int)FLogic.GetProgressBarPercentage());
 
-            this.lblHeading1.Text = FLogic.CurrentPage.Title;
-            this.lblHeading2.Text = FLogic.CurrentPage.Note;
+            Heading1.Text = FLogic.CurrentPage.Title;
+            Heading2.Text = FLogic.CurrentPage.Note;
 
-            pnlCollapsibleNavigation.Text = Catalog.GetString("Shepherd Pages");
-            pnlCollapsibleNavigation.TaskListNode = FLogic.CreateTaskList();
-            pnlCollapsibleNavigation.Show();
+            CollapsibleNavigation.Text = Catalog.GetString("Shepherd Pages");
+            CollapsibleNavigation.TaskListNode = FLogic.CreateTaskList();
+            CollapsibleNavigation.Show();
 
             TLogging.Log("Added a node to the task list.");
 
-            pnlCollapsibleNavigation.RealiseTaskListNow();
+            CollapsibleNavigation.RealiseTaskListNow();
 
             TLogging.Log("UpdateNavigation");
         }
@@ -168,13 +168,13 @@ namespace Ict.Petra.Client.CommonForms
         public void UpdateShepherdFormProperties(string AString, int width, int height)
         {
             TLogging.Log("UpdateShepherdFormProperties in commonForms--PetraShepherdConcreteFormGui");
-            TLogging.Log("Size before UpdateShepherdFormProperties: " + pnlContent.Width + ", height: " + pnlContent.Width);
+            TLogging.Log("Size before UpdateShepherdFormProperties: " + ContentPanel.Width + ", height: " + ContentPanel.Width);
             TLogging.Log("Resizing the shepherd to the following: width: " + width + ", height: " + height);
             Size FormSize = new Size(width, height);
             this.Size = FormSize;
             ShepherdTitle = AString;
 
-            TLogging.Log("Size AFTER UpdateShepherdFormProperties: width: " + pnlContent.Width + ", height: " + pnlContent.Width);
+            TLogging.Log("Size AFTER UpdateShepherdFormProperties: width: " + ContentPanel.Width + ", height: " + ContentPanel.Width);
         }
 
         /// <summary>
@@ -210,8 +210,8 @@ namespace Ict.Petra.Client.CommonForms
             #endregion
 
             // Add the UserControl to the Content Panel, ensuring no other UserControl is left there.
-            pnlContent.Controls.Clear();
-            pnlContent.Controls.Add(PageUserControl);
+            ContentPanel.Controls.Clear();
+            ContentPanel.Controls.Add(PageUserControl);
 
             UpdateNavigation();
         }
@@ -311,7 +311,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             TLogging.Log("Entering TPetraShepherdConcreteForm (Base) Form_Load...");
 
-            FShepherdNavigationHelper = new TShepherdNavigationHelper(FLogic.ShepherdPages, pnlNavigation);
+            FShepherdNavigationHelper = new TShepherdNavigationHelper(FLogic.ShepherdPages, NavigationPanel);
 
             this.Text = ShepherdTitle;
 

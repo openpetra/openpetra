@@ -24,6 +24,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms.Logic;
 
 namespace Ict.Petra.Client.CommonForms
@@ -35,6 +36,131 @@ namespace Ict.Petra.Client.CommonForms
     {
 ////        TPetraShepherdFormLogic FLogic;  TODO
 
+        #region Properties
+        
+        /// <summary>
+        /// Collapsible Navigation.
+        /// </summary>
+        public TPnlCollapsible CollapsibleNavigation
+        {
+            get
+            {
+                return pnlCollapsibleNavigation;
+            }
+        }
+        
+        /// <summary>
+        /// StatusBar of the Shepherd.
+        /// </summary>
+        public TExtStatusBarHelp ShepherdStatusBar
+        {
+            get
+            {
+                return stbMain;
+            }
+        }
+        
+        /// <summary>
+        /// Label for textual displaying of the Page Progress.
+        /// </summary>
+        public Label PageProgressLabel
+        {
+            get
+            {
+                return lblPageProgress;
+            }
+        }
+        
+        /// <summary>
+        /// ProgressBar for visual displaying of the Page Progress.
+        /// </summary>
+        public ProgressBar PageProgressProgressBar
+        {
+            get
+            {
+                return prbPageProgress;
+            }
+        }
+        
+        /// <summary>
+        /// ContentPanel (<c>pnlContent</c> of the Shepherd).
+        /// </summary>
+        public Panel ContentPanel
+        {
+            get
+            {
+                return pnlContent;
+            }
+        }
+        
+        /// <summary>
+        /// Navigation Panel.
+        /// </summary>
+        public Panel NavigationPanel
+        {
+            get
+            {
+                return pnlNavigation;
+            }
+        }
+        
+        /// <summary>
+        /// Finish Button.
+        /// </summary>
+        public Button ButtonFinish
+        {
+            get
+            {
+                return btnFinish;
+            }
+        }
+        
+        /// <summary>
+        /// Next Button.
+        /// </summary>
+        public Button ButtonNext
+        {
+            get
+            {
+                return btnNext;
+            }
+        }
+        
+        /// <summary>
+        /// Back Button.
+        /// </summary>
+        public Button ButtonBack
+        {
+            get
+            {
+                return btnBack;
+            }
+        }
+        
+        /// <summary>
+        /// Heading #1.
+        /// </summary>
+        public Label Heading1
+        {
+            get
+            {
+                return lblHeading1;
+            }
+        }
+        
+        /// <summary>
+        /// Heading #2.
+        /// </summary>
+        public Label Heading2
+        {
+            get
+            {
+                return lblHeading2;    
+            }
+        }
+        
+        #endregion
+        
         #region Constructor
 
         /// <summary>
