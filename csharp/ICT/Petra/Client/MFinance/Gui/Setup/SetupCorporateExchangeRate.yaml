@@ -38,8 +38,8 @@ RootNode:
                 Row3: [txtDetailRateOfExchange, btnInvertExchangeRate, Empty]
                 Row4: [lblValueOneDirection]
                 Row5: [lblValueOtherDirection]
-        cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList, OnLeave=ValueChangedCurrencyCode, ColSpan=2}
-        cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, OnLeave=ValueChangedCurrencyCode, ColSpan=2}
+        cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList, ColSpan=2}
+        cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, ColSpan=2}
         chkHideOthers: {OnlySetOnce=true, CheckBoxAttachedLabel=right, Label=&Hide other 'To' currencies}
         dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate}
         txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100}
