@@ -48,12 +48,15 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
         /// <summary>Holds a typed list of 0..n TPetraShepherdPage's.</summary>
         private TPetraShepherdPagesList FShepherdPages;
+        
         /// <summary>Holds the instance of the Shepherd Form management class.</summary>
         private IPetraShepherdConcreteFormInterface FForm;
+        
         /// <summary>Holds the instance of the current shepherd page.</summary>
         private TPetraShepherdPage FCurrentPage;
-//        /// <summary>'Blackboard' for exchanging data between shepherd pages which isn't stored in the DB.</summary>
-//        private SortedList FPagesDataHeap;   // TODO
+        
+////        /// <summary>'Blackboard' for exchanging data between shepherd pages which isn't stored in the DB.</summary>
+////        private SortedList FPagesDataHeap;   // TODO
 
         #endregion
 
@@ -76,6 +79,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FCurrentPage;
             }
+            
             set
             {
                 FCurrentPage = value;
@@ -100,7 +104,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             FForm = APetraShepherdForm;
 
-            // Take AYamlFile and parse it into an XmlNode structure
+            //// Take AYamlFile and parse it into an XmlNode structure
 
             ParseYAMLFileElements(AYamlFile);
 
@@ -112,9 +116,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             // Iterate over all FPetraShepherdPages and add the VisibleOrEnabledChangedEventHandler
 
-            // FShepherdPages needs to get added an auto-generated TPetraShepherdFinishPage
-            // for the Finish Page (that is not specified in the YAML file!)
-            // Note: That Finish Page (and only this) will have IsLastPage = true!!!
+            //// FShepherdPages needs to get added an auto-generated TPetraShepherdFinishPage
+            //// for the Finish Page (that is not specified in the YAML file!)
+            //// Note: That Finish Page (and only this) will have IsLastPage = true!!!
 
 
             TLogging.Log(
@@ -216,7 +220,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             return FileElementData;
         }
 
-        ///<summary>Returns an instance of a Page UserControl.</summary>
+        /// <summary>Returns an instance of a Page UserControl.</summary>
         protected UserControl InstantiatePageUC(string AID)
         {
             TLogging.Log("SwitchToPage (in TPetraShepherdFormLogic) was called for Page UserControl '" + AID + "'");
@@ -230,7 +234,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         protected void SwitchToPage(string APage)
         {
             TLogging.Log("SwitchToPage (in TPetraShepherdFormLogic) was called for Page '" + APage + "'");
-            // ....
+            //// ....
             CurrentPage = FShepherdPages.Pages[APage];
             TLogging.Log("PetraShepherdConcreteForm: SwitchToPage -- Page number = " + CurrentPage.ID);
             TLogging.Log("The current Total number of pages is = " + EnumeratePages());
@@ -262,7 +266,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TLogging.Log("Enumerate Pages in TPetraShepherdFormLogic -- Counting the total number of pages.");
             int PagesCount = 0;
 
-            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+            foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
             {
                 PagesCount++;
             }
@@ -280,7 +284,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TLogging.Log("GetCurrentPageNumber() in TPetraShepherdConcreteForm.. ");
             int pageCounter = 1;
 
-            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+            foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
             {
                 TLogging.Log("GetCurrentPageNumber loop. Pair.key: " + pair.Key);
                 TLogging.Log("GetCurrentPageNumber loop. CurrentPage.ID: " + CurrentPage.ID);
@@ -314,7 +318,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
         /// <summary>
         /// Switches to the Start page (whatever page this is!).
-        /// Iterates through FShepeherdPages.Pages to find the first page that is both visible and enabled.
+        /// Iterates through FShepherdPages.Pages to find the first page that is both visible and enabled.
         /// </summary>
         public void SwitchToStartPage()
         {
@@ -322,7 +326,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             string startPage = "";             //temporary string to hold the key of the StartPage
 
-            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+            foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
             {
                 if (pair.Value.Visible && pair.Value.Enabled)
                 {
@@ -367,9 +371,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
             bool hasPassedCurrentPage = false;     // used to tell if the iteration has already checked to see if you have passed the current page.
             bool hasPassedItAgain = false;
 
-            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+            foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
             {
-                if (hasPassedCurrentPage)         //TODO: there has to be a better way to handle iterating through the loop one more time; it works now, but is ugly.
+                // TODO: there has to be a better way to handle iterating through the loop one more time; it works now, but is ugly.
+                if (hasPassedCurrentPage)         
                 {
                     hasPassedItAgain = true;
                 }
@@ -392,7 +397,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             TLogging.Log("temporary next page was assigned to " + nextPage + " in HandleActionNext().");
 
-            try // rather than a try/catch statement, the next button should instead be greyed out
+            // TODO: rather than a try/catch statement, the next button should instead be greyed out
+            try
             {
                 SwitchToPage(nextPage);
             }
@@ -419,7 +425,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
             else
             {
-                foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+                foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
                 {
                     if ((pair.Value == CurrentPage) && pair.Value.Enabled && pair.Value.Visible)
                     {
@@ -468,7 +474,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         public void HandleActionFinish()
         {
             TLogging.Log("HandleActionFinish");
-            // .....
+            //// .....
 
             SwitchToFinishPage();
         }
@@ -480,7 +486,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         {
             TLogging.Log("VisibleOrEnabledChangedEventHandler");
 
-            // TODO
+            //// TODO
 
             return String.Empty;
         }
@@ -513,9 +519,9 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             int PageCounter = 1;
 
-            // TODO: Sub-Shepherds
+            //// TODO: Sub-Shepherds
 
-            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
+            foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
             {
                 XmlElement ID = ShepherdPagesNode.OwnerDocument.CreateElement("Page" + PageCounter.ToString());  // <ID>
                 XmlNode IDNode = ShepherdPagesNode.AppendChild(ID);
@@ -546,23 +552,23 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             XmlNode firstPage = root.FirstChild;
 
-// For debugging only
-//			TLogging.Log("Count of child nodes: " + firstPage.ChildNodes.Count);
-//			XmlNodeList PageAttributes = firstPage.ChildNodes;
-//			int counter = 0;
-//			foreach(XmlNode node in PageAttributes)
-//			{
-//				foreach(XmlNode attributeNode in node.ChildNodes)
-//				{
-//
-//					TLogging.Log("Foreach Node Value: " + attributeNode.InnerText);
-//
-//				}
-//				TLogging.Log("Inner foreach: " + counter);
-//				counter++;
-//			}
-//			TLogging.Log("FIRST CHILD NAME: " + root.FirstChild.FirstChild.FirstChild.NextSibling.InnerText);
-//			ChildDisplay(firstPage,0);
+//// For debugging only
+////          TLogging.Log("Count of child nodes: " + firstPage.ChildNodes.Count);
+////          XmlNodeList PageAttributes = firstPage.ChildNodes;
+////          int counter = 0;
+////          foreach(XmlNode node in PageAttributes)
+////          {
+////              foreach(XmlNode attributeNode in node.ChildNodes)
+////              {
+////
+////                  TLogging.Log("Foreach Node Value: " + attributeNode.InnerText);
+////
+////              }
+////              TLogging.Log("Inner foreach: " + counter);
+////              counter++;
+////          }
+////          TLogging.Log("FIRST CHILD NAME: " + root.FirstChild.FirstChild.FirstChild.NextSibling.InnerText);
+////          ChildDisplay(firstPage,0);
 
             return firstPage;
         }
@@ -616,7 +622,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         {
             TLogging.Log("VisibleOrEnabledChangedEventHandler");
 
-            // re-enumerate FShepherdPages!
+            //// re-enumerate FShepherdPages!
 
             FForm.UpdateNavigation();
         }

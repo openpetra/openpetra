@@ -24,15 +24,15 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using Ict.Petra.Client.CommonForms.Logic;
 using System.Xml;
 
 using Ict.Common;
+using Ict.Petra.Client.CommonForms.Logic;
 
 namespace Ict.Petra.Client.CommonForms
 {
-    ///<summary>
-    /// Imlements TPetraShepherdForm (and therefore becomes a WinForm)
+    /// <summary>
+    /// Implements TPetraShepherdForm (and therefore becomes a WinForm)
     /// and handles the GUI behaviour of a Shepherd. Utilises
     /// TPetraShepherdFormLogic for the base Shepherd Logic.
     /// </summary>
@@ -41,25 +41,61 @@ namespace Ict.Petra.Client.CommonForms
         #region Fields
 
         /// <summary>Helper object for Edit screens.</summary>
-        protected TFrmPetraEditUtils FPetraUtilsObject;
+        private TFrmPetraEditUtils FPetraUtilsObject;
 
         /// <summary>Holds the DataSet that contains most data that is used on the screen.</summary>
-        protected DataSet FMainDS;
+        private DataSet FMainDS;
 
-        ///<summary>Name of the YAML file that contains the definition of the Shepherd Pages and the Shepherd overall.</summary>
-        protected string FYamlFile = String.Empty;
+        /// <summary>Name of the YAML file that contains the definition of the Shepherd Pages and the Shepherd overall.</summary>
+        private string FYamlFile = String.Empty;
 
         /// <summary>Name of the Shepherd that will be imported. It has to be a global variable because it has to bounce from.</summary>
-        protected string ShepherdTitle = string.Empty;
+        private string ShepherdTitle = string.Empty;
 
-        ///<summary>Instance of base Shepherd Logic.</summary>
-        protected TPetraShepherdFormLogic FLogic;
+        /// <summary>Instance of base Shepherd Logic.</summary>
+        private TPetraShepherdFormLogic FLogic;
 
-        ///<summary>Instance of helper Class for navigation purposes.</summary>
+        /// <summary>Instance of helper Class for navigation purposes.</summary>
         private TShepherdNavigationHelper FShepherdNavigationHelper;
 
         #endregion
 
+        #region Properties
+        
+        /// <summary>
+        /// Instance of base Shepherd Logic.
+        /// </summary>
+        public TPetraShepherdFormLogic Logic
+        {
+            get
+            {
+                return FLogic;
+            }
+            
+            set
+            {
+                FLogic = value;
+            }
+        }
+        
+        /// <summary>
+        /// Name of the YAML file that contains the definition of the Shepherd Pages and the Shepherd overall.
+        /// </summary>
+        public string YamlFile
+        {
+            get
+            {
+                return FYamlFile;
+            }
+            
+            set
+            {
+                FYamlFile = value;
+            }
+        }
+        
+        #endregion
+        
         #region Constructor
 
         /// <summary>
@@ -202,7 +238,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <returns>True if saving of data succeeded, otherwise false.</returns>
         private Boolean SaveChanges(ref DataSet AInspectDS)
         {
-            // TODO
+            //// TODO
 
             return false;
         }

@@ -29,7 +29,7 @@ namespace Ict.Testing.Shepherds
     /// <summary>
     /// Main entry point for the program.
     /// </summary>
-    class Program
+    public class Program
     {
         /// <summary>
         /// Main entry point for the program.

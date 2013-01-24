@@ -22,7 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 namespace Ict.Petra.Client.MPartner.Gui
 {
-    partial class TShepherdChurchForm
+    public partial class TShepherdChurchForm
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.

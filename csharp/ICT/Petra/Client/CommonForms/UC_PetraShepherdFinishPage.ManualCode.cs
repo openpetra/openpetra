@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.CommonForms
             // TODO: REMOVE the following code once the Properties can be set from the Shepherds!
             SummaryText1 = "bla bla blah";
             SummaryText2 = "test only\r\ntest only too\r\ranother test.";
-//            FurtherActionOnFinish = true;
+////            FurtherActionOnFinish = true;
             chkFurtherActionOnFinish.Visible = true;
         }
 

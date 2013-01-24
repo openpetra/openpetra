@@ -22,7 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 namespace Ict.Petra.Client.CommonForms
 {
-    partial class TPetraShepherdForm
+    public partial class TPetraShepherdForm
     {
         /// <summary>
         /// Designer variable used to keep track of non-visual components.
@@ -77,6 +77,7 @@ namespace Ict.Petra.Client.CommonForms
             this.pnlTop.SuspendLayout();
             this.panel3.SuspendLayout();
             this.SuspendLayout();
+
             //
             // pnlButtons
             //
@@ -92,6 +93,7 @@ namespace Ict.Petra.Client.CommonForms
             this.pnlButtons.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
             this.pnlButtons.Size = new System.Drawing.Size(592, 36);
             this.pnlButtons.TabIndex = 1;
+
             //
             // panel1
             //
@@ -102,6 +104,7 @@ namespace Ict.Petra.Client.CommonForms
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(592, 1);
             this.panel1.TabIndex = 5;
+
             //
             // btnHelp
             //
@@ -114,6 +117,7 @@ namespace Ict.Petra.Client.CommonForms
             this.btnHelp.Text = "&Help";
             this.btnHelp.UseVisualStyleBackColor = true;
             this.btnHelp.Click += new System.EventHandler(this.BtnHelpClick);
+
             //
             // btnCancel
             //
@@ -126,6 +130,7 @@ namespace Ict.Petra.Client.CommonForms
             this.btnCancel.Text = "&Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.BtnCancelClick);
+
             //
             // btnBack
             //
@@ -138,6 +143,7 @@ namespace Ict.Petra.Client.CommonForms
             this.btnBack.Text = "<< &Back";
             this.btnBack.UseVisualStyleBackColor = true;
             this.btnBack.Click += new System.EventHandler(this.BtnBackClick);
+
             //
             // btnNext
             //
@@ -150,6 +156,7 @@ namespace Ict.Petra.Client.CommonForms
             this.btnNext.Text = "&Next >>";
             this.btnNext.UseVisualStyleBackColor = true;
             this.btnNext.Click += new System.EventHandler(this.BtnNextClick);
+
             //
             // btnFinish
             //
@@ -162,6 +169,7 @@ namespace Ict.Petra.Client.CommonForms
             this.btnFinish.Text = "&Finish";
             this.btnFinish.UseVisualStyleBackColor = true;
             this.btnFinish.Click += new System.EventHandler(this.BtnFinishClick);
+
             //
             // pnlNavigation
             //
@@ -175,6 +183,7 @@ namespace Ict.Petra.Client.CommonForms
             this.pnlNavigation.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
             this.pnlNavigation.Size = new System.Drawing.Size(184, 335);
             this.pnlNavigation.TabIndex = 2;
+
             //
             // pnlCollapsibleNavigation
             //
@@ -193,6 +202,7 @@ namespace Ict.Petra.Client.CommonForms
             this.pnlCollapsibleNavigation.UserControlClass = "";
             this.pnlCollapsibleNavigation.UserControlNamespace = "";
             this.pnlCollapsibleNavigation.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
+
             //
             // pnlContent
             //
@@ -204,6 +214,7 @@ namespace Ict.Petra.Client.CommonForms
             this.pnlContent.Padding = new System.Windows.Forms.Padding(5);
             this.pnlContent.Size = new System.Drawing.Size(408, 295);
             this.pnlContent.TabIndex = 3;
+
             //
             // lblHeading2
             //
@@ -218,6 +229,7 @@ namespace Ict.Petra.Client.CommonForms
             this.lblHeading2.Size = new System.Drawing.Size(73, 19);
             this.lblHeading2.TabIndex = 1;
             this.lblHeading2.Text = "Heading #2";
+
             //
             // lblHeading1
             //
@@ -231,6 +243,7 @@ namespace Ict.Petra.Client.CommonForms
             this.lblHeading1.Size = new System.Drawing.Size(81, 13);
             this.lblHeading1.TabIndex = 0;
             this.lblHeading1.Text = "Heading #1";
+
             //
             // pnlHeadings
             //
@@ -244,6 +257,7 @@ namespace Ict.Petra.Client.CommonForms
             this.pnlHeadings.Padding = new System.Windows.Forms.Padding(5, 8, 8, 0);
             this.pnlHeadings.Size = new System.Drawing.Size(329, 40);
             this.pnlHeadings.TabIndex = 4;
+
             //
             // pnlTop
             //
@@ -255,6 +269,7 @@ namespace Ict.Petra.Client.CommonForms
             this.pnlTop.Name = "pnlTop";
             this.pnlTop.Size = new System.Drawing.Size(408, 40);
             this.pnlTop.TabIndex = 5;
+
             //
             // panel3
             //
@@ -265,6 +280,7 @@ namespace Ict.Petra.Client.CommonForms
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(79, 40);
             this.panel3.TabIndex = 5;
+
             //
             // prbPageProgress
             //
@@ -275,6 +291,7 @@ namespace Ict.Petra.Client.CommonForms
             this.prbPageProgress.Name = "prbPageProgress";
             this.prbPageProgress.Size = new System.Drawing.Size(64, 15);
             this.prbPageProgress.TabIndex = 1;
+
             //
             // lblPageProgress
             //
@@ -284,6 +301,7 @@ namespace Ict.Petra.Client.CommonForms
             this.lblPageProgress.TabIndex = 0;
             this.lblPageProgress.Text = "Page n/m";
             this.lblPageProgress.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+
             //
             // stbMain
             //
@@ -292,6 +310,7 @@ namespace Ict.Petra.Client.CommonForms
             this.stbMain.Size = new System.Drawing.Size(592, 22);
             this.stbMain.TabIndex = 6;
             this.stbMain.Text = "tExtStatusBarHelp1";
+
             //
             // TPetraShepherdForm
             //

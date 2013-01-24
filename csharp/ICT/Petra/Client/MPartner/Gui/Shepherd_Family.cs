@@ -39,7 +39,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         #region Fields
 
-        ///<summary>Instance of this Shepherd's Logic.</summary>
+        /// <summary>Instance of this Shepherd's Logic.</summary>
         private TShepherdFamilyFormLogic FSpecificLogic;
 
         private bool FSkipLedgerSelectionPage = false;
@@ -76,11 +76,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TLogging.Log("Entering TShepherdFamilyForm Constructor...");
 
-            FYamlFile = Path.GetDirectoryName(TAppSettingsManager.GetValue("UINavigation.File")) +
+            YamlFile = Path.GetDirectoryName(TAppSettingsManager.GetValue("UINavigation.File")) +
                         Path.DirectorySeparatorChar + "Shepherd_Family_Definition.yaml";
 
-            FLogic = new TShepherdFamilyFormLogic(FYamlFile, this);
-            FSpecificLogic = (TShepherdFamilyFormLogic)FLogic;
+            Logic = new TShepherdFamilyFormLogic(YamlFile, this);
+            FSpecificLogic = (TShepherdFamilyFormLogic)Logic;
 
             //
             // The InitializeComponent() call is required for Windows Forms designer support.
@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             try
             {
-                TLogging.Log("The Family Form Printed an a valid ID: " + FLogic.CurrentPage.ID);
+                TLogging.Log("The Family Form Printed an a valid ID: " + Logic.CurrentPage.ID);
             }
             catch (Exception)
             {

@@ -33,7 +33,7 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public partial class TPetraShepherdForm : Form
     {
-//        TPetraShepherdFormLogic FLogic;  TODO
+////        TPetraShepherdFormLogic FLogic;  TODO
 
         #region Constructor
 

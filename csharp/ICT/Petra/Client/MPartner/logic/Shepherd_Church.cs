@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MPartner.Logic
         {
             TLogging.Log("SkipLedgerSelectionPage got called --> skipping 'Ledger Selection' Shepherd Page!");
 
-            base.SwitchToPage("Name of Church");
+            SwitchToPage("Name of Church");
         }
 
         #endregion

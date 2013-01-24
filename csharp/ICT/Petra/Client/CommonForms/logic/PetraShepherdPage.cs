@@ -39,40 +39,40 @@ namespace Ict.Petra.Client.CommonForms.Logic
         #region Fields
 
         /// <summary>Shepherd Page ID (=a unique ID for each individual Page).</summary>
-        string FID;
+        private string FID;
 
         /// <summary>Shepherd Page Title.</summary>
-        protected string FTitle;
+        private string FTitle;
 
         /// <summary>Shepherd Page Note.</summary>
-        string FNote;
+        private string FNote;
 
         /// <summary>Is the Shepherd Page visible?</summary>
-        bool FVisible = true;
+        private bool FVisible = true;
 
         /// <summary>Is the Shepherd Page enabled?</summary>
-        bool FEnabled = true;
+        private bool FEnabled = true;
 
         /// <summary>Instance of the UserControl on the Shepherd Page.</summary>
-        UserControl FUserControl = null;
+        private UserControl FUserControl = null;
 
         /// <summary>Namespace of the UserControl on the Shepherd Page.</summary>
-        protected string FUserControlNamespace;
+        private string FUserControlNamespace;
 
         /// <summary>Class Name of the UserControl on the Shepherd Page.</summary>
-        protected string FUserControlClassName;
+        private string FUserControlClassName;
 
         /// <summary>Shepherd Help Context.</summary>
-        protected string FHelpContext;
+        private string FHelpContext;
 
         /// <summary>Type of the UserControl on the Shepherd Page.</summary>
-        string FUserControlType;
+        private string FUserControlType;
 
         /// <summary>Is the Shepherd Page the Finish page in the Shepherd?</summary>
-        protected bool FIsLastPage = false;
+        private bool FIsLastPage = false;
 
         /// <summary>Is the Shepherd Page the First page in the Shepherd?</summary>
-        bool FIsFirstPage = false;
+        private bool FIsFirstPage = false;
 
         #endregion
 
@@ -99,6 +99,11 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FTitle;
             }
+            
+            protected set
+            {
+                FTitle = value;
+            }            
         }
 
         /// <summary>Shepherd Page Note.</summary>
@@ -134,13 +139,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
         }
 
-        ///<summary>Is the Shepherd Page enabled?</summary>
+        /// <summary>Is the Shepherd Page enabled?</summary>
         public bool Enabled
         {
             get
             {
                 return FEnabled;
             }
+            
             set
             {
                 if (FEnabled != value)
@@ -159,6 +165,11 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FUserControlNamespace;
             }
+            
+            protected set
+            {
+                FUserControlNamespace = value;
+            }
         }
 
         /// <summary>Class Name of the UserControl on the Shepherd Page.</summary>
@@ -167,6 +178,11 @@ namespace Ict.Petra.Client.CommonForms.Logic
             get
             {
                 return FUserControlClassName;
+            }
+            
+            protected set
+            {
+                FUserControlClassName = value;
             }
         }
 
@@ -191,6 +207,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FUserControlType;
             }
+            
             set
             {
                 FUserControlType = value;
@@ -204,6 +221,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FIsFirstPage;
             }
+            
             set
             {
                 FIsFirstPage = value;
@@ -217,13 +235,14 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FIsLastPage;
             }
+            
             set
             {
                 FIsLastPage = value;
             }
         }
 
-        ///<summary>Instance of the UserControl on the Shepherd Page.</summary>
+        /// <summary>Instance of the UserControl on the Shepherd Page.</summary>
         public UserControl UserControlInstance
         {
             get
@@ -243,7 +262,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
         #region Events
 
-        ///<summary>Raised if value of Visible or Enabled Property changes.</summary>
+        /// <summary>Raised if value of Visible or Enabled Property changes.</summary>
         public event System.EventHandler VisibleOrEnabledChangedEvent;
 
         #endregion
@@ -260,7 +279,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
         /// <summary>
         /// Constructor for individual Shepherd pages. Each time a page is constructed, it
-        /// recieves information from the ShepherdPageNode and stores it in each of the
+        /// receives information from the ShepherdPageNode and stores it in each of the
         /// variables.
         /// </summary>
         /// <remarks>Note that this Constructor is NOT called through inheritance by <see cref="TPetraShepherdFinishPage" />!</remarks>
@@ -327,7 +346,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             FUserControl = (UserControl)Activator.CreateInstance(classType);
 
-            //FUserControl.Controls.Add();
+            ////FUserControl.Controls.Add();
 
             TLogging.Log("PetraShepherdPage: The user control has been realised.");
 
@@ -357,7 +376,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         #region Fields
 
         /// <summary>Dictionary containing a list of TPetraShepherdPage using the page's Unique ID as an identifier.</summary>
-        Dictionary <string, TPetraShepherdPage>FPagesList = new Dictionary <string, TPetraShepherdPage>();
+        private Dictionary<string, TPetraShepherdPage> FPagesList = new Dictionary<string, TPetraShepherdPage>();
 
         #endregion
 
@@ -366,7 +385,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>
         /// Allows for read-only access to a Dictionary of Pages.
         /// </summary>
-        public Dictionary <string, TPetraShepherdPage>Pages
+        public Dictionary<string, TPetraShepherdPage> Pages
         {
             get
             {
@@ -449,8 +468,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <param name="XmlPages">TODO</param>
         public TPetraShepherdFinishPage(XmlDocument XmlPages)
         {
-            base.ID = "FINISHPAGE_MASTER";
-            Init(XmlPages);
+            this.ID = "FINISHPAGE_MASTER";
+            this.Init(XmlPages);
         }
 
         /// <summary>
@@ -460,8 +479,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <param name="SubShepherdName">Name of the Sub-Shepherd.</param>
         public TPetraShepherdFinishPage(XmlDocument XmlPages, string SubShepherdName)
         {
-            base.ID = "FINISHPAGE_CHILD_" + SubShepherdName.ToUpper();
-            Init(XmlPages);
+            this.ID = "FINISHPAGE_CHILD_" + SubShepherdName.ToUpper();
+            this.Init(XmlPages);
         }
 
         #endregion
@@ -500,13 +519,13 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <param name="XmlPages">TODO</param>
         private void Init(XmlDocument XmlPages)
         {
-            base.Enabled = true;
-            base.Visible = true;
-            base.FIsLastPage = false;
-            base.FUserControlClassName = "TUC_PetraShepherdFinishPage";
-            base.FUserControlNamespace = "Ict.Petra.Client.CommonForms";
-            base.FTitle = "Here is a summary of the information you have provided:" + base.ID;
-            base.Note = GetFinishPageNote(XmlPages);
+            this.Enabled = true;
+            this.Visible = true;
+            this.IsLastPage = false;
+            this.UserControlClassName = "TUC_PetraShepherdFinishPage";
+            this.UserControlNamespace = "Ict.Petra.Client.CommonForms";
+            this.Title = "Here is a summary of the information you have provided:" + this.ID;
+            this.Note = this.GetFinishPageNote(XmlPages);
         }
 
         #endregion

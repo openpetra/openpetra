@@ -30,16 +30,16 @@ namespace Ict.Petra.Client.CommonForms.Logic
     /// </summary>
     public interface IPetraShepherdConcreteFormInterface
     {
-        ///<summary>Update navigation buttons and navigation panel.</summary>
+        /// <summary>Update navigation buttons and navigation panel.</summary>
         void UpdateNavigation();
 
-        ///<summary>Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel.</summary>
+        /// <summary>Displays the 'current' Shepherd Page and updates the navigation buttons and Navigation Panel.</summary>
         void ShowCurrentPage();
 
-        ///<summary>Closes the Shepherd without any further ado and without saving.</summary>
+        /// <summary>Closes the Shepherd without any further ado and without saving.</summary>
         void CancelShepherd();
 
-        ///<summary>Modifies the Form's layout according to the passed in Arguments.</summary>
+        /// <summary>Modifies the Form's layout according to the passed in Arguments.</summary>
         void UpdateShepherdFormProperties(string ATitle, int ShepherdWidth, int ShepherdHeight);
     }
 }
