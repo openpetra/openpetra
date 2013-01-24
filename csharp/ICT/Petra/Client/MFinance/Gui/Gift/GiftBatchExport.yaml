@@ -4,8 +4,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     FormType: browse
     Template: window
-    WindowWidth: 600
-    WindowHeight: 700
+    WindowWidth: 480
+    WindowHeight: 660
     Actions:
         actExportBatches: {Label=&Start, ActionClick=ExportBatches}
         actClose: {Label=&Close, ActionClick=BtnCloseClick}
@@ -80,13 +80,15 @@ RootNode:
             Dock:Bottom
             Controls:
                 Row0: [btnHelp, btnOK, btnClose]
-            #ColWidths: [0=Fixed:400,1=Fixed:100,2=Fixed:100]
+            ColWidths: [0=Fixed:320,1=Fixed:45,2=Fixed:45]
         btnHelp: {Action=actHelp}
         btnClose: {Action=actClose}
         btnOK: {Action=actExportBatches}                
         txtFilename: 
             Width:300
         btnBrowseFilename:
+            Label: ...
+            Height: 22
             ActionClick: BtnBrowseClick
         cmbDateFormat:
             OptionalValues: [MM/dd/yyyy,dd/MM/yyyy,yyyy-MM-dd]
