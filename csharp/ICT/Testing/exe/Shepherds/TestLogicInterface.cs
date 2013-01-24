@@ -21,18 +21,6 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
-using System.Threading;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Globalization;
-using System.Xml;
-
-using Ict.Common;
-using Ict.Common.Data;
-using Ict.Petra.Client.CommonForms.Logic;
-using Ict.Petra.Client.MPartner.Gui;
-using NUnit.Framework;
 
 namespace Ict.Testing.Shepherds
 {

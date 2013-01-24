@@ -21,11 +21,9 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
-using System.Windows.Forms;
-using System.Collections;
-using System.Xml;
-using System.Reflection;
 using System.Collections.Generic;
+using System.Windows.Forms;
+using System.Xml;
 
 using Ict.Common;
 using Ict.Common.IO;
