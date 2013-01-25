@@ -89,9 +89,9 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         public static Boolean HasSuspenseAccounts(Int32 ALedgerNumber)
         {
             Boolean ReturnValue;
-            
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            
+
             ReturnValue = (ASuspenseAccountAccess.CountViaALedger(ALedgerNumber, Transaction) > 0);
 
             DBAccess.GDBAccessObj.RollbackTransaction();

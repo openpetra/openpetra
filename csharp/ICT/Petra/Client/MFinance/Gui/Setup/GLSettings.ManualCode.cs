@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private Boolean FCurrencyChangeAllowed;
         private Boolean FWarnings = false;
         private Int32 FCurrentForwardPostingPeriods;
-        
+
         /// <summary>
         /// Maintain settings for this ledger
         /// </summary>
@@ -63,35 +63,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void InitializeManualCode()
         {
             // Panels in group boxes add unwanted extra height -> reduce height manually
-            
+
             int DefaultHeight = nudActualsDataRetention.Height;
             int HeightDifference = pnlSuspenseAccounts.Height - DefaultHeight;
-            
+
             // correct heights of controls
             pnlSuspenseAccounts.Height = DefaultHeight;
             pnlBudget.Height = DefaultHeight;
             pnlFwdPosting.Height = DefaultHeight;
             pnlBranchProcess.Height = DefaultHeight;
-            
-            grpMiscellaneousFlags.Height -= (int)(3.5*HeightDifference);
-            
+
+            grpMiscellaneousFlags.Height -= (int)(3.5 * HeightDifference);
+
             // move controls into the right place after correcting heights
-            chkSuspenseAccountFlag.Location = new System.Drawing.Point(chkSuspenseAccountFlag.Location.X, chkSuspenseAccountFlag.Location.Y - (int)(0.5*HeightDifference));
-            pnlBudget.Location = new System.Drawing.Point(pnlBudget.Location.X, pnlBudget.Location.Y - (int)(1*HeightDifference));
-            chkBudgetControlFlag.Location = new System.Drawing.Point(chkBudgetControlFlag.Location.X, chkBudgetControlFlag.Location.Y - (int)(0.5*HeightDifference));
-            pnlFwdPosting.Location = new System.Drawing.Point(pnlFwdPosting.Location.X, pnlFwdPosting.Location.Y - (int)(2*HeightDifference));
-            chkUseDefaultFwdPostingPeriods.Location = new System.Drawing.Point(chkUseDefaultFwdPostingPeriods.Location.X, chkUseDefaultFwdPostingPeriods.Location.Y - (int)(0.5*HeightDifference));
-            lblNumberFwdPostingPeriods.Location = new System.Drawing.Point(lblNumberFwdPostingPeriods.Location.X, lblNumberFwdPostingPeriods.Location.Y - (int)(0.5*HeightDifference));
-            nudNumberFwdPostingPeriods.Location = new System.Drawing.Point(nudNumberFwdPostingPeriods.Location.X, nudNumberFwdPostingPeriods.Location.Y - (int)(0.5*HeightDifference));
-            pnlBranchProcess.Location = new System.Drawing.Point(pnlBranchProcess.Location.X, pnlBranchProcess.Location.Y - (int)(3*HeightDifference));
-            chkBranchProcessing.Location = new System.Drawing.Point(chkBranchProcessing.Location.X, chkBranchProcessing.Location.Y - (int)(0.5*HeightDifference));
-            
-            grpDataRetention.Location = new System.Drawing.Point(grpDataRetention.Location.X, grpDataRetention.Location.Y - (int)(3.5*HeightDifference));
-            
+            chkSuspenseAccountFlag.Location =
+                new System.Drawing.Point(chkSuspenseAccountFlag.Location.X, chkSuspenseAccountFlag.Location.Y - (int)(0.5 * HeightDifference));
+            pnlBudget.Location = new System.Drawing.Point(pnlBudget.Location.X, pnlBudget.Location.Y - (int)(1 * HeightDifference));
+            chkBudgetControlFlag.Location =
+                new System.Drawing.Point(chkBudgetControlFlag.Location.X, chkBudgetControlFlag.Location.Y - (int)(0.5 * HeightDifference));
+            pnlFwdPosting.Location = new System.Drawing.Point(pnlFwdPosting.Location.X, pnlFwdPosting.Location.Y - (int)(2 * HeightDifference));
+            chkUseDefaultFwdPostingPeriods.Location = new System.Drawing.Point(chkUseDefaultFwdPostingPeriods.Location.X,
+                chkUseDefaultFwdPostingPeriods.Location.Y - (int)(0.5 * HeightDifference));
+            lblNumberFwdPostingPeriods.Location = new System.Drawing.Point(lblNumberFwdPostingPeriods.Location.X,
+                lblNumberFwdPostingPeriods.Location.Y - (int)(0.5 * HeightDifference));
+            nudNumberFwdPostingPeriods.Location = new System.Drawing.Point(nudNumberFwdPostingPeriods.Location.X,
+                nudNumberFwdPostingPeriods.Location.Y - (int)(0.5 * HeightDifference));
+            pnlBranchProcess.Location =
+                new System.Drawing.Point(pnlBranchProcess.Location.X, pnlBranchProcess.Location.Y - (int)(3 * HeightDifference));
+            chkBranchProcessing.Location =
+                new System.Drawing.Point(chkBranchProcessing.Location.X, chkBranchProcessing.Location.Y - (int)(0.5 * HeightDifference));
+
+            grpDataRetention.Location =
+                new System.Drawing.Point(grpDataRetention.Location.X, grpDataRetention.Location.Y - (int)(3.5 * HeightDifference));
+
             if (!FCurrencyChangeAllowed)
             {
-               cmbBaseCurrency.Enabled = false;
-               cmbIntlCurrency.Enabled = false;
+                cmbBaseCurrency.Enabled = false;
+                cmbIntlCurrency.Enabled = false;
             }
         }
 
@@ -103,13 +111,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             ALedgerRow LedgerRow;
             AAccountingSystemParameterRow ParameterRow;
-            
-            if (ADataSet == null
-                || ADataSet.ALedger.Count == 0)
+
+            if ((ADataSet == null)
+                || (ADataSet.ALedger.Count == 0))
             {
                 return;
             }
-            
+
             FPetraUtilsObject.DisableDataChangedEvent();
 
             // set limits to number boxes
@@ -125,17 +133,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 nudGiftDataRetention.Maximum = ParameterRow.GiftDataRetention;
                 nudGiftDataRetention.Minimum = 1;
             }
-            
+
             LedgerRow = (ALedgerRow)ADataSet.ALedger.Rows[0];
-            
+
             if (LedgerRow != null)
             {
                 cmbBaseCurrency.SetSelectedString(LedgerRow.BaseCurrency, -1);
-        
+
                 cmbIntlCurrency.SetSelectedString(LedgerRow.IntlCurrency, -1);
-        
+
                 chkSuspenseAccountFlag.Checked = LedgerRow.SuspenseAccountFlag;
-        
+
                 if (LedgerRow.IsBudgetControlFlagNull())
                 {
                     chkBudgetControlFlag.Checked = false;
@@ -144,7 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     chkBudgetControlFlag.Checked = LedgerRow.BudgetControlFlag;
                 }
-        
+
                 if (LedgerRow.IsNumberFwdPostingPeriodsNull())
                 {
                     nudNumberFwdPostingPeriods.Value = 0;
@@ -160,7 +168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         nudNumberFwdPostingPeriods.Value = LedgerRow.NumberFwdPostingPeriods;
                     }
                 }
-        
+
                 if (LedgerRow.IsBranchProcessingNull())
                 {
                     chkBranchProcessing.Checked = false;
@@ -218,9 +226,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
                 }
             }
+
             FPetraUtilsObject.EnableDataChangedEvent();
         }
-        
+
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
             if (FWarnings)
@@ -239,7 +248,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // (a_ledger_init_flag records are automatically added/removed on server side)
             return TRemote.MFinance.Setup.WebConnectors.SaveLedgerSettings(FLedgerNumber, ref ASubmitChanges, out AVerificationResult);
         }
-        
+
         private void ValidateDataManual(ALedgerRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -264,7 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         VerificationResult = null;
                     }
-    
+
                     // Handle addition/removal to/from TVerificationResultCollection
                     VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
                 }
@@ -278,30 +287,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (ARow.NumberFwdPostingPeriods <= FCurrentForwardPostingPeriods)
                 {
                     VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_NUMBER_FWD_PERIODS_TOO_SMALL, 
-                                                  new string[] { FCurrentForwardPostingPeriods.ToString(), FCurrentForwardPostingPeriods.ToString() })),
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_NUMBER_FWD_PERIODS_TOO_SMALL,
+                                new string[] { FCurrentForwardPostingPeriods.ToString(), FCurrentForwardPostingPeriods.ToString() })),
                         ValidationColumn, ValidationControlsData.ValidationControl);
                 }
                 else
                 {
                     VerificationResult = null;
                 }
-                
+
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
             }
         }
-        
+
         private void UseDefaultFwdPostingPeriodsChanged(Object sender, EventArgs e)
         {
             nudNumberFwdPostingPeriods.Enabled = !chkUseDefaultFwdPostingPeriods.Checked;
             lblNumberFwdPostingPeriods.Enabled = !chkUseDefaultFwdPostingPeriods.Checked;
+
             if (chkUseDefaultFwdPostingPeriods.Checked)
             {
-                if (   FMainDS.AAccountingSystemParameter != null
-                    && FMainDS.AAccountingSystemParameter.Count > 0)
+                if ((FMainDS.AAccountingSystemParameter != null)
+                    && (FMainDS.AAccountingSystemParameter.Count > 0))
                 {
-                    nudNumberFwdPostingPeriods.Value = ((AAccountingSystemParameterRow)FMainDS.AAccountingSystemParameter.Rows[0]).NumberFwdPostingPeriods;
+                    nudNumberFwdPostingPeriods.Value =
+                        ((AAccountingSystemParameterRow)FMainDS.AAccountingSystemParameter.Rows[0]).NumberFwdPostingPeriods;
                 }
                 else
                 {
@@ -309,6 +320,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
         }
-        
     }
 }

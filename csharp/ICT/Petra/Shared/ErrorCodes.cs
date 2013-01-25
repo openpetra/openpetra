@@ -119,7 +119,7 @@ namespace Ict.Petra.Shared
         [ErrCodeAttribute("Too small number of forwarding periods.",
              ErrorMessageText = "There must be at least {0} periods because {1} periods have been used already.")]
         public const String ERR_NUMBER_FWD_PERIODS_TOO_SMALL = "FIN.00002V";
-        
+
         #endregion
 
         #region Partner Module-specific error codes

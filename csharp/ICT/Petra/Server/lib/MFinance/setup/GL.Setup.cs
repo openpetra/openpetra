@@ -78,12 +78,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // now check if currency change would be allowed
             ACurrencyChangeAllowed = true;
+
             if (ATransactionAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
             {
                 // don't allow currency change if transactions exist
                 ACurrencyChangeAllowed = false;
             }
-            
+
             if (ACurrencyChangeAllowed)
             {
                 // don't allow currency change if there are foreign currency accounts for this ledger
@@ -97,13 +98,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TemplateRow.ForeignCurrencyFlag = true;
                 TemplateOperators = new StringCollection();
                 TemplateOperators.Add("=");
+
                 if (AAccountAccess.CountUsingTemplate(TemplateRow, TemplateOperators, Transaction) > 0)
                 {
                     ACurrencyChangeAllowed = false;
                 }
             }
-                
-            
+
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
 
@@ -199,9 +200,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
         }
 
-        private static void AddOrRemoveLedgerInitFlag(Int32 ALedgerNumber, String AInitFlagName, 
-                                                      Boolean AAdd, TDBTransaction ATransaction,
-                                                      ref TVerificationResultCollection AVerificationResult)
+        private static void AddOrRemoveLedgerInitFlag(Int32 ALedgerNumber, String AInitFlagName,
+            Boolean AAdd, TDBTransaction ATransaction,
+            ref TVerificationResultCollection AVerificationResult)
         {
             if (AAdd)
             {
@@ -225,7 +226,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
         }
-        
+
         /// <summary>
         /// save general ledger settings
         /// </summary>
@@ -256,7 +257,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AGeneralLedgerMasterPeriodRow GLMPeriodRow;
             AGeneralLedgerMasterPeriodRow TempGLMPeriodRow;
             AGeneralLedgerMasterPeriodRow NewGLMPeriodRow;
-            
+
             int CurrentNumberFwdPostingPeriods;
             int NewNumberFwdPostingPeriods;
             int CurrentLastFwdPeriod;
@@ -279,6 +280,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
             CurrentNumberFwdPostingPeriods = LedgerRow.NumberFwdPostingPeriods;
             NewNumberFwdPostingPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
+
             if (NewNumberFwdPostingPeriods > CurrentNumberFwdPostingPeriods)
             {
                 // now create new forwarding posting periods (if at all needed)
@@ -287,9 +289,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 while (Period <= LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods)
                 {
-                    AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 
-                                                                                     Period - LedgerRow.NumberOfAccountingPeriods,
-                                                                                     Transaction);
+                    AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                        Period - LedgerRow.NumberOfAccountingPeriods,
+                        Transaction);
                     AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
 
                     NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
@@ -298,14 +300,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     NewAccountingPeriodRow.AccountingPeriodDesc = AccountingPeriodRow.AccountingPeriodDesc;
                     NewAccountingPeriodRow.PeriodStartDate = AccountingPeriodRow.PeriodStartDate.AddYears(1);
                     NewAccountingPeriodRow.PeriodEndDate = AccountingPeriodRow.PeriodEndDate.AddYears(1);
-                    
+
                     NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
-                    
+
                     Period++;
                 }
-                
+
                 AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction, out AVerificationResult);
-                
+
                 // also create new general ledger master periods with balances
                 CurrentLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods;
                 NewLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods;
@@ -315,26 +317,27 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 GLMTable = new AGeneralLedgerMasterTable();
                 AGeneralLedgerMasterRow template = GLMTable.NewRowTyped(false);
-        
+
                 template.LedgerNumber = ALedgerNumber;
                 template.Year = LedgerRow.CurrentFinancialYear;
 
-                // find all general ledger master records of the current financial year for given ledger                
+                // find all general ledger master records of the current financial year for given ledger
                 GLMTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(template, Transaction);
-                
+
                 NewGLMPeriodTable = new AGeneralLedgerMasterPeriodTable();
-                
+
                 foreach (DataRow Row in GLMTable.Rows)
                 {
                     // for each of the general ledger master records of the current financial year set the
-                    // new, extended forwarding glm period records (most likely they will not exist yet 
+                    // new, extended forwarding glm period records (most likely they will not exist yet
                     // but if they do then update values)
                     GLMRow = (AGeneralLedgerMasterRow)Row;
                     GLMPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(GLMRow.GlmSequence, CurrentLastFwdPeriod, Transaction);
+
                     if (GLMPeriodTable.Count > 0)
                     {
                         GLMPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodTable.Rows[0];
-                        
+
                         for (Period = CurrentLastFwdPeriod + 1; Period <= NewLastFwdPeriod; Period++)
                         {
                             if (AGeneralLedgerMasterPeriodAccess.Exists(GLMPeriodRow.GlmSequence, Period, Transaction))
@@ -344,6 +347,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 TempGLMPeriodRow = (AGeneralLedgerMasterPeriodRow)TempGLMPeriodTable.Rows[0];
                                 TempGLMPeriodRow.ActualBase = GLMPeriodRow.ActualBase;
                                 TempGLMPeriodRow.ActualIntl = GLMPeriodRow.ActualIntl;
+
                                 if (!GLMPeriodRow.IsActualForeignNull())
                                 {
                                     TempGLMPeriodRow.ActualForeign = GLMPeriodRow.ActualForeign;
@@ -352,7 +356,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 {
                                     TempGLMPeriodRow.SetActualForeignNull();
                                 }
-                                
+
                                 NewGLMPeriodTable.Merge(TempGLMPeriodTable, true);
                             }
                             else
@@ -363,6 +367,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 NewGLMPeriodRow.PeriodNumber = Period;
                                 NewGLMPeriodRow.ActualBase = GLMPeriodRow.ActualBase;
                                 NewGLMPeriodRow.ActualIntl = GLMPeriodRow.ActualIntl;
+
                                 if (!GLMPeriodRow.IsActualForeignNull())
                                 {
                                     NewGLMPeriodRow.ActualForeign = GLMPeriodRow.ActualForeign;
@@ -371,18 +376,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 {
                                     NewGLMPeriodRow.SetActualForeignNull();
                                 }
-                                
+
                                 NewGLMPeriodTable.Rows.Add(NewGLMPeriodRow);
                             }
                         }
                     }
                 }
 
-                // just one SubmitChanges for all records needed                
+                // just one SubmitChanges for all records needed
                 AGeneralLedgerMasterPeriodAccess.SubmitChanges(NewGLMPeriodTable, Transaction, out AVerificationResult);
             }
-            
-            // update a_ledger_init_flag records for: 
+
+            // update a_ledger_init_flag records for:
             // suspense account flag: "SUSP-ACCT"
             // budget flag: "BUDGET"
             // branch processing: "BRANCH-PROCESS" (this is a new flag for OpenPetra)
@@ -393,8 +398,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AddOrRemoveLedgerInitFlag(ALedgerNumber, "BRANCH-PROCESS", LedgerRow.BranchProcessing, Transaction, ref AVerificationResult);
             AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENCY", !LedgerRow.IsBaseCurrencyNull(), Transaction, ref AVerificationResult);
             AddOrRemoveLedgerInitFlag(ALedgerNumber, "INTL-CURRENCY", !LedgerRow.IsIntlCurrencyNull(), Transaction, ref AVerificationResult);
-            
-            
+
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
                 ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
@@ -407,7 +411,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
             }
 
-            if (   ReturnValue == TSubmitChangesResult.scrOK
+            if ((ReturnValue == TSubmitChangesResult.scrOK)
                 && NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
@@ -416,10 +420,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-            
+
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// save modified account hierarchy etc; does not support moving accounts;
         /// also used for saving cost centre hierarchy and cost centre details
@@ -1591,7 +1595,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          AMotivationDetailFeeTable.GetTableDBName(),
 
                          ABudgetTable.GetTableDBName(),
-                         
+
                          ARecurringGiftDetailTable.GetTableDBName(),
                          ARecurringGiftTable.GetTableDBName(),
                          ARecurringGiftBatchTable.GetTableDBName(),
