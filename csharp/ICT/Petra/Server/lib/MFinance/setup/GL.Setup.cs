@@ -241,7 +241,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             Boolean NewTransaction;
             ALedgerTable LedgerTable;
             ALedgerRow LedgerRow;
