@@ -219,6 +219,7 @@ OpenPetra:
                 #Reports:
                 Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     GeneralLedgerSetup:
+                        LedgerSettings: {Description="Maintain General Ledger Settings", ActionOpenScreen=TFrmGLSettings}
                         ManageAccounts: {Description:Maintain Accounts and modify their hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
                         ManageCostCentres: {Description:Maintain Cost Centres and modify their hierarchy, ActionOpenScreen=TFrmGLCostCentreHierarchy}
                         SetupCostCentreTypes: {Description=Maintain types of Cost Centres, ActionOpenScreen=TFrmSetupCostCentreTypes}

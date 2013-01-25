@@ -1,0 +1,41 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Ledger Settings
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.GL.Data, Ict.Petra.Shared.MFinance.Account.Validation]
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
+    MasterTable: ALedger
+    FormType: edit
+    Template: windowEdit
+    WindowWidth: 700
+    WindowHeight: 500
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [grpCurrencies, grpMiscellaneousFlags, grpDataRetention]
+        grpCurrencies: {Label=Currencies, Stretch=horizontally}
+            Controls: [cmbBaseCurrency, cmbIntlCurrency]
+        grpMiscellaneousFlags: {Label=Miscellaneous, Stretch=horizontally}
+            Controls: [pnlSuspenseAccounts, pnlBudget, pnlFwdPosting, pnlBranchProcess]
+        grpDataRetention: {Label=Data Retention, Stretch=horizontally}
+            Controls: [nudActualsDataRetention, nudBudgetDataRetention, nudGiftDataRetention]
+        pnlSuspenseAccounts:
+            Controls: [chkSuspenseAccountFlag]
+        pnlBudget:
+            Controls: [chkBudgetControlFlag]
+        pnlFwdPosting:
+            ControlsOrientation: horizontal
+            Controls: [chkUseDefaultFwdPostingPeriods, nudNumberFwdPostingPeriods]
+        pnlBranchProcess:
+            Controls: [chkBranchProcessing]
+            
+        cmbBaseCurrency: {List=CurrencyCodeList}
+        cmbIntlCurrency: {List=CurrencyCodeList}
+        chkSuspenseAccountFlag: {Label=Allow use of suspense accounts?, CheckBoxAttachedLabel=right, Validation=true}
+        chkBudgetControlFlag: {Label=Budget control, CheckBoxAttachedLabel=right}
+        chkUseDefaultFwdPostingPeriods: {Label=Use default forward posting periods, CheckBoxAttachedLabel=right, OnChange=UseDefaultFwdPostingPeriodsChanged}
+        nudNumberFwdPostingPeriods: {Label=Forward Posting Periods, Validation=true}
+        chkBranchProcessing: {Label=Branch processing, CheckBoxAttachedLabel=right}
+        nudActualsDataRetention: {Label=Actuals Data Retention Period}
+        nudBudgetDataRetention: {Label=Budget Data Retention Period}
+        nudGiftDataRetention: {Label=Gift Data Retention Period}
