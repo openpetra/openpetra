@@ -80,7 +80,7 @@ RootNode:
             Dock:Bottom
             Controls:
                 Row0: [btnHelp, btnOK, btnClose]
-            ColWidths: [0=Fixed:320,1=Fixed:45,2=Fixed:45]
+            ColWidths: [0=Fixed:320,1=Fixed:42,2=Fixed:45]
         btnHelp: {Action=actHelp}
         btnClose: {Action=actClose}
         btnOK: {Action=actExportBatches}                
