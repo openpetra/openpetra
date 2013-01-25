@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -85,11 +85,16 @@ namespace Tests.MFinance.Server.ICH
         [Test]
         public void TestFileHeaderReplace()
         {
-            string fileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
+            string fileName = TAppSettingsManager.GetValue("Server.PathTemp") + Path.DirectorySeparatorChar + "TestGenHOSAFileHeaderReplace.csv";
             int PeriodNumber = 4;
             string StandardCostCentre = "4300";
             string CostCentre = "78";
             string Currency = "USD";
+
+            StreamWriter sw = new StreamWriter(fileName);
+
+            sw.WriteLine("/** Header **,4,4300,78,18/01/2013,USD");
+            sw.Close();
 
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
@@ -104,6 +109,8 @@ namespace Tests.MFinance.Server.ICH
 
             Assert.IsFalse(VerificationResults.HasCriticalErrors,
                 "Header Replacement in File Failed! " + VerificationResults.BuildVerificationResultString());
+
+            File.Delete(fileName);
         }
 
         /// <summary>
@@ -117,7 +124,7 @@ namespace Tests.MFinance.Server.ICH
             int IchNumber = 1;
             string CostCentre = "73";
             int Currency = 0;  //0 = base 1 = intl
-            string FileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
+            string FileName = TAppSettingsManager.GetValue("Server.PathTemp") + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
             TVerificationResultCollection VerificationResults;
 
             TGenHOSAFilesReportsWebConnector.GenerateHOSAFiles(LedgerNumber,
@@ -133,6 +140,8 @@ namespace Tests.MFinance.Server.ICH
 
             Assert.IsTrue(File.Exists(FileName),
                 "HOSA File did not create!");
+
+            File.Delete(FileName);
         }
 
         /// <summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       christophert, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -319,8 +319,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 Successful = true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                TLogging.Log(e.ToString());
             }
 
             // rollback the reading transaction
@@ -367,8 +368,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 File.WriteAllText(AFileName, newFileContents.ToString());
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                TLogging.Log(e.ToString());
                 retVal = false;
                 AVerificationResult.Add(new TVerificationResult("Generating HOSA Files",
                         "Unable to replace the header in file: " + AFileName,

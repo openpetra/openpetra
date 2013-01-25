@@ -4,7 +4,7 @@
 // @Authors:
 //       christophert, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,7 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -688,7 +689,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
             }
 
-            LogFile = Path.GetTempPath() + @"\Stewardship Import.log";
+            LogFile = Path.GetDirectoryName(TSrvSetting.ServerLogFile) + @"\Stewardship Import.log";
 
             TextWriter LogWrite = new StreamWriter(LogFile);
 
