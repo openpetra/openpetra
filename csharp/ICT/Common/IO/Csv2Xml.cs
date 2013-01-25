@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.IO;
+using System.Data;
 using System.Xml;
 using System.Text;
 using System.Collections;
@@ -258,6 +259,87 @@ namespace Ict.Common.IO
                 }
 
                 pck.SaveAs(AStream);
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// store the data into Excel format, Open Office XML, .xlsx
+        ///
+        /// this makes use of the EPPlus library
+        /// http://epplus.codeplex.com/
+        /// </summary>
+        private static void DataTable2ExcelWorksheet(DataTable table, ExcelWorksheet AWorksheet, bool AWithHashInCaption = true)
+        {
+            Int32 rowCounter = 1;
+            Int16 colCounter = 1;
+
+            // first write the header of the csv file
+            foreach (DataColumn col in table.Columns)
+            {
+                if (AWithHashInCaption)
+                {
+                    AWorksheet.Cells[rowCounter, colCounter].Value = "#" + col.ColumnName;
+                }
+                else
+                {
+                    AWorksheet.Cells[rowCounter, colCounter].Value = col.ColumnName;
+                }
+
+                colCounter++;
+            }
+
+            rowCounter++;
+            colCounter = 1;
+
+            foreach (DataRow row in table.Rows)
+            {
+                foreach (DataColumn col in table.Columns)
+                {
+                    object value = row[col];
+
+                    if (value is DateTime)
+                    {
+                        AWorksheet.Cells[rowCounter, colCounter].Value = (DateTime)value;
+                        AWorksheet.Cells[rowCounter, colCounter].Style.Numberformat.Format = "dd/mm/yyyy";
+                    }
+                    else if (value is Int32 || value is Int64 || value is Int16)
+                    {
+                        AWorksheet.Cells[rowCounter, colCounter].Value = Convert.ToInt64(value);
+                    }
+                    else
+                    {
+                        AWorksheet.Cells[rowCounter, colCounter].Value = value.ToString();
+                    }
+
+                    colCounter++;
+                }
+
+                rowCounter++;
+                colCounter = 1;
+            }
+        }
+
+        /// <summary>
+        /// save a generic DataTable to an Excel file
+        /// </summary>
+        public static bool DataTable2ExcelStream(DataTable table, MemoryStream AStream, bool AWithHashInCaption = true)
+        {
+            try
+            {
+                ExcelPackage pck = new ExcelPackage();
+
+                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(table.TableName);
+
+                DataTable2ExcelWorksheet(table, worksheet, AWithHashInCaption);
+
+                pck.SaveAs(AStream);
+
                 return true;
             }
             catch (Exception e)

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,6 +76,13 @@ namespace Ict.Petra.Client.App.Formatting
             String TmpShortDatePattern;
             Int16 YearStart = 0;
             Int16 RestStart = 0;
+
+            // see StringHelper.DateToLocalizedString
+            // Mono and .Net return different strings for month of March in german culture
+            if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de")
+            {
+                AParseDate = AParseDate.Replace("MÄR", "MRZ");
+            }
 
             AParsedDate = null;
             DateTimeFormatInfo CurrentDateTimeFormatInfo;

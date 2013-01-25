@@ -99,6 +99,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new DateTimePickerReportGenerator());
                 AddControlGenerator(new TextBoxReportGenerator());
                 AddControlGenerator(new TTxtAutoPopulatedButtonLabelGenerator());
+                AddControlGenerator(new TTxtCurrencyTextBoxReportGenerator());
                 AddControlGenerator(new TTxtNumericTextBoxReportGenerator());
                 AddControlGenerator(new ComboBoxReportGenerator());
                 AddControlGenerator(new TcmbAutoPopulatedReportGenerator());
@@ -137,6 +138,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new TreeViewGenerator());
                 AddControlGenerator(new TextBoxGenerator());
                 AddControlGenerator(new TTxtAutoPopulatedButtonLabelGenerator());
+                AddControlGenerator(new TTxtCurrencyTextBoxGenerator());
                 AddControlGenerator(new TTxtNumericTextBoxGenerator());
                 AddControlGenerator(new ComboBoxGenerator());
                 AddControlGenerator(new TcmbAutoPopulatedGenerator());

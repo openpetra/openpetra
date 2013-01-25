@@ -551,6 +551,8 @@ namespace Ict.Common.Controls
                 }
                 catch (System.Reflection.TargetInvocationException E)
                 {
+                    TLogging.Log(E.ToString());
+
                     String msg = E.Message;
 
                     if (E.InnerException != null)
@@ -653,7 +655,8 @@ namespace Ict.Common.Controls
 
             if (InspectNode != null)
             {
-                if (InspectNode.Attributes.Count > 0)
+                if ((InspectNode.Attributes != null)
+                    && (InspectNode.Attributes.Count > 0))
                 {
                     if (InspectNode.Attributes["DependsOnLedger"] != null)
                     {

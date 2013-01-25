@@ -1,10 +1,10 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -70,7 +70,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.pnlTextBoxContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbxPetraLogo)).BeginInit();
             this.SuspendLayout();
-
             //
             // lblTopHorizontalLine
             //
@@ -85,7 +84,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblTopHorizontalLine.TabIndex = 5;
             this.lblTopHorizontalLine.Text = "                  ";
             this.lblTopHorizontalLine.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-
             //
             // lblPetra
             //
@@ -96,11 +94,10 @@ namespace Ict.Petra.Client.CommonDialogs
                 ((byte)(0)));
             this.lblPetra.Location = new System.Drawing.Point(42, -1);
             this.lblPetra.Name = "lblPetra";
-            this.lblPetra.Size = new System.Drawing.Size(164, 31);
+            this.lblPetra.Size = new System.Drawing.Size(163, 31);
             this.lblPetra.TabIndex = 0;
-            this.lblPetra.Text = " O P E N P E T R A ";
+            this.lblPetra.Text = "OpenPetra";
             this.lblPetra.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-
             //
             // lblPetraVersion
             //
@@ -115,7 +112,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblPetraVersion.TabIndex = 2;
             this.lblPetraVersion.Text = "Version";
             this.lblPetraVersion.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-
             //
             // pnlTextBoxContainer
             //
@@ -129,7 +125,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.pnlTextBoxContainer.Name = "pnlTextBoxContainer";
             this.pnlTextBoxContainer.Size = new System.Drawing.Size(244, 90);
             this.pnlTextBoxContainer.TabIndex = 3;
-
             //
             // lblCopyrightNotice
             //
@@ -142,9 +137,8 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblCopyrightNotice.Name = "lblCopyrightNotice";
             this.lblCopyrightNotice.Size = new System.Drawing.Size(238, 18);
             this.lblCopyrightNotice.TabIndex = 8;
-            this.lblCopyrightNotice.Text = "© 1995 - 2009 by OM International";
+            this.lblCopyrightNotice.Text = "© 1995 - 2013 by OM International";
             this.lblCopyrightNotice.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-
             //
             // lblInstallationKind
             //
@@ -159,7 +153,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblInstallationKind.TabIndex = 3;
             this.lblInstallationKind.Text = "Standalone / Network / Remote";
             this.lblInstallationKind.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-
             //
             // pbxPetraLogo
             //
@@ -170,7 +163,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.pbxPetraLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbxPetraLogo.TabIndex = 4;
             this.pbxPetraLogo.TabStop = false;
-
             //
             // TUCPetraLogoAndVersionInfo
             //
@@ -179,7 +171,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.Controls.Add(this.pbxPetraLogo);
             this.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TUCPetraLogoAndVersionInfo";
-            this.Size = new System.Drawing.Size(246, 190);
+            this.Size = new System.Drawing.Size(241, 190);
             this.pnlTextBoxContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbxPetraLogo)).EndInit();
             this.ResumeLayout(false);

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, wolfgangu
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,6 +47,15 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>gift comment type</summary>
         public const string GIFT_COMMENT_TYPE_BOTH = "Both";
+
+        /// <summary>gift type</summary>
+        public const string GIFT_TYPE_GIFT = "Gift";
+
+        /// <summary>gift type</summary>
+        public const string GIFT_TYPE_GIFT_IN_KIND = "Gift In Kind";
+
+        /// <summary>gift type</summary>
+        public const string GIFT_TYPE_OTHER = "Other";
 
         /// <summary>GL Batch</summary>
         public const String BATCH_UNPOSTED = "Unposted";

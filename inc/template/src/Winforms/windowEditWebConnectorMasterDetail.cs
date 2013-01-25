@@ -61,8 +61,8 @@ namespace {#NAMESPACE}
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
       {#INITUSERCONTROLS}
       FMainDS = new {#DATASETTYPE}();
-      {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+      {#INITMANUALCODE}
 {#IFDEF SAVEDETAILS}
       grdDetails.Enter += new EventHandler(grdDetails_Enter);
       grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
@@ -83,7 +83,7 @@ namespace {#NAMESPACE}
     /// <summary>
     /// Override of Form.Show(IWin32Window owner) Method. Caters for singleton Forms.
     /// </summary>
-    /// <param name="owner">Any object that implements <see cref="IWin32Window " /> and represents the top-level window that will own this Form. </param>    
+    /// <param name="owner">Any object that implements <see cref="IWin32Window" /> and represents the top-level window that will own this Form. </param>    
     public new void Show(IWin32Window owner)
     {
         Form OpenScreen = TFormsList.GFormsList[this.GetType().FullName];

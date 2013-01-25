@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -296,14 +296,27 @@ namespace Ict.Petra.Client.App.PetraClient
                     // check for newer patchtool
                     patchTools.CopyLatestPatchProgram(TempPath);
 
+                    string PatchToolExe = TempPath + Path.DirectorySeparatorChar + "Ict.Tools.PatchTool.exe";
+
+                    if (!File.Exists(PatchToolExe))
+                    {
+                        TLogging.Log("cannot find file " + PatchToolExe);
+                    }
+
                     // need to stop petra client, start the patch in temppath, restart Petra client
                     Process PatchProcess = new System.Diagnostics.Process();
                     PatchProcess.EnableRaisingEvents = false;
-                    PatchProcess.StartInfo.FileName = TempPath + Path.DirectorySeparatorChar + "Ict.Tools.PatchTool.exe";
-                    PatchProcess.StartInfo.Arguments = "-action:patchRemote" + " -C:\"" + Path.GetFullPath(TAppSettingsManager.ConfigFileName) +
-                                                       "\" -OpenPetra.Path:\"" + Path.GetFullPath(
-                        TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..") +
-                                                       "\" -OpenPetra.Path.Bin:\"" + Path.GetFullPath(
+                    PatchProcess.StartInfo.FileName = PatchToolExe;
+                    PatchProcess.StartInfo.Arguments = "-action:patchRemote " +
+                                                       "-ClientConfig:\"" + Path.GetFullPath(
+                        TAppSettingsManager.ConfigFileName) + "\" " +
+                                                       "-OpenPetra.Path.Patches:\"" + Path.GetFullPath(
+                        TClientSettings.Petra_Path_Bin + "/../patches30") + "\" " +
+                                                       "-OpenPetra.PathTemp:\"" + Path.GetFullPath(
+                        TClientSettings.Petra_Path_Bin + "/../tmp30") + "\" " +
+                                                       "-OpenPetra.Path:\"" + Path.GetFullPath(
+                        TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..") + "\" " +
+                                                       "-OpenPetra.Path.Bin:\"" + Path.GetFullPath(
                         TClientSettings.Petra_Path_Bin) + "\"";
                     PatchProcess.Start();
 
@@ -385,7 +398,6 @@ namespace Ict.Petra.Client.App.PetraClient
              * This is non-blocking since it is done in a separate Thread, that means
              * that the startup procedure continues while the Splash Screen is initialised and shown!!! */
             FSplashScreen = new TSplashScreenManager(new TSplashScreenCallback(SplashScreenInfoCallback));
-            Shutdown.SplashScreen = FSplashScreen;
             FSplashScreen.Show();
 
             /*
@@ -646,6 +658,9 @@ namespace Ict.Petra.Client.App.PetraClient
 
             // Set up Delegate for the opening of Forms from the Main Menu
             Ict.Common.Controls.TLstTasks.OpenNewOrExistingForm = @Ict.Petra.Client.CommonForms.TFormsList.OpenNewOrExistingForm;
+
+            // Set up Delegate for the retrieval of the list of Currencies from the Cache.
+            Ict.Common.Controls.TTxtCurrencyTextBox.RetrieveCurrencyList = @Ict.Petra.Client.CommonControls.TControlExtensions.RetrieveCurrencyList;
 
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;

@@ -175,7 +175,7 @@ namespace Tests.MFinance.GLBatches
             TextBoxTester txtDetailReference = new TextBoxTester("txtDetailReference");
             txtDetailReference.Properties.Text = "test";
 
-            TTxtNumericTextBoxTester txtDebitAmount = new TTxtNumericTextBoxTester("txtDebitAmount");
+            TTxtCurrencyTextBoxTester txtDebitAmount = new TTxtCurrencyTextBoxTester("txtDebitAmount");
             decimal Amount = 1111.44M;
             txtDebitAmount.Properties.NumberValueDecimal = Amount;
 
@@ -188,7 +188,7 @@ namespace Tests.MFinance.GLBatches
             btnNewTransaction.Click();
             txtDetailNarrative.Properties.Text = "test";
             txtDetailReference.Properties.Text = "test";
-            TTxtNumericTextBoxTester txtCreditAmount = new TTxtNumericTextBoxTester("txtCreditAmount");
+            TTxtCurrencyTextBoxTester txtCreditAmount = new TTxtCurrencyTextBoxTester("txtCreditAmount");
             txtCreditAmount.Properties.NumberValueDecimal = Amount;
 
             cmbDetailAccountCode.Properties.SetSelectedString("0200");
@@ -389,7 +389,7 @@ namespace Tests.MFinance.GLBatches
             TextBoxTester txtDetailReference = new TextBoxTester("txtDetailReference");
             txtDetailReference.Properties.Text = "test";
 
-            TTxtNumericTextBoxTester txtDebitAmount = new TTxtNumericTextBoxTester("txtDebitAmount");
+            TTxtCurrencyTextBoxTester txtDebitAmount = new TTxtCurrencyTextBoxTester("txtDebitAmount");
             decimal Amount = 1111.44M;
             txtDebitAmount.Properties.NumberValueDecimal = Amount;
 
@@ -402,7 +402,7 @@ namespace Tests.MFinance.GLBatches
             btnNewTransaction.Click();
             txtDetailNarrative.Properties.Text = "test";
             txtDetailReference.Properties.Text = "test";
-            TTxtNumericTextBoxTester txtCreditAmount = new TTxtNumericTextBoxTester("txtCreditAmount");
+            TTxtCurrencyTextBoxTester txtCreditAmount = new TTxtCurrencyTextBoxTester("txtCreditAmount");
             txtCreditAmount.Properties.NumberValueDecimal = Amount;
 
             cmbDetailAccountCode.Properties.SetSelectedString("0200");

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -103,6 +103,44 @@ namespace Ict.Petra.Server.App.Core
                 new TErrorLog(),
                 new TMaintenanceLogonMessage(),
                 new TClientAppDomainConnection());
+
+            TTimedProcessing.DailyStartTime24Hrs = TAppSettingsManager.GetValue("Server.Processing.DailyStartTime24Hrs", "00:30");
+
+            if (TAppSettingsManager.GetBoolean("Server.Processing.PartnerReminders.Enabled", true))
+            {
+                Assembly PartnerProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MPartner.processing");
+                Type PartnerReminderClass = PartnerProcessingAssembly.GetType("Ict.Petra.Server.MPartner.Processing.TProcessPartnerReminders");
+                TTimedProcessing.AddProcessingJob(
+                    "TProcessPartnerReminders",
+                    (TTimedProcessing.TProcessDelegate)Delegate.CreateDelegate(
+                        typeof(TTimedProcessing.TProcessDelegate),
+                        PartnerReminderClass,
+                        "Process"));
+            }
+
+            if (TAppSettingsManager.GetBoolean("Server.Processing.AutomatedIntranetExport.Enabled", false))
+            {
+                Assembly CommonProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MCommon.processing");
+                Type IntranetExportClass = CommonProcessingAssembly.GetType("Ict.Petra.Server.MCommon.Processing.TProcessAutomatedIntranetExport");
+                TTimedProcessing.AddProcessingJob(
+                    "TProcessAutomatedIntranetExport",
+                    (TTimedProcessing.TProcessDelegate)Delegate.CreateDelegate(
+                        typeof(TTimedProcessing.TProcessDelegate),
+                        IntranetExportClass,
+                        "Process"));
+            }
+
+            if (TAppSettingsManager.GetBoolean("Server.Processing.DataChecks.Enabled", false))
+            {
+                Assembly CommonProcessingAssembly = Assembly.Load("Ict.Petra.Server.lib.MCommon.processing");
+                Type ProcessDataChecksClass = CommonProcessingAssembly.GetType("Ict.Petra.Server.MCommon.Processing.TProcessDataChecks");
+                TTimedProcessing.AddProcessingJob(
+                    "TProcessDataChecks",
+                    (TTimedProcessing.TProcessDelegate)Delegate.CreateDelegate(
+                        typeof(TTimedProcessing.TProcessDelegate),
+                        ProcessDataChecksClass,
+                        "Process"));
+            }
         }
 
         private List <TDataBase>FDBConnections = new List <TDataBase>();
@@ -213,6 +251,43 @@ namespace Ict.Petra.Server.App.Core
             UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
             return FUserManager.AddUser(AUserID);
+        }
+
+        /// <summary>
+        /// Sets up timed Server processing tasks.
+        /// </summary>
+        /// <description>
+        /// Involves creating Timers and opening and closing of a Database connection
+        /// specifically for that purpose.
+        /// </description>
+        public void SetupServerTimedProcessing()
+        {
+            TTimedProcessing.StartProcessing();
+        }
+
+        /// <summary>
+        /// Allows the server or admin console to run a timed job now
+        /// </summary>
+        public override void PerformTimedProcessingNow(string AProcessName)
+        {
+            TTimedProcessing.RunJobManually(AProcessName);
+        }
+
+        /// Is the process job enabled?
+        public override bool TimedProcessingJobEnabled(string AProcessName)
+        {
+            return TTimedProcessing.IsJobEnabled(AProcessName);
+        }
+
+        /// <summary>
+        /// the daily start time for the timed processing
+        /// </summary>
+        public override string TimedProcessingDailyStartTime24Hrs
+        {
+            get
+            {
+                return TTimedProcessing.DailyStartTime24Hrs;
+            }
         }
     }
 }

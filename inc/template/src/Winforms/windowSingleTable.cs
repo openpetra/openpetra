@@ -62,10 +62,10 @@ namespace {#NAMESPACE}
       TRemote.MCommon.DataReader.WebConnectors.GetData({#DETAILTABLE}Table.GetTableDBName(), null, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
 {#ENDIFN DATASETTYPE}      
-      {#INITMANUALCODE}
 {#IFDEF ACTIONENABLING}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
+      {#INITMANUALCODE}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
@@ -78,7 +78,7 @@ namespace {#NAMESPACE}
     /// <summary>
     /// Override of Form.Show(IWin32Window owner) Method. Caters for singleton Forms.
     /// </summary>
-    /// <param name="owner">Any object that implements <see cref="IWin32Window " /> and represents the top-level window that will own this Form. </param>    
+    /// <param name="owner">Any object that implements <see cref="IWin32Window" /> and represents the top-level window that will own this Form. </param>    
     public new void Show(IWin32Window owner)
     {
         Form OpenScreen = TFormsList.GFormsList[this.GetType().FullName];
