@@ -37,7 +37,7 @@ namespace Ict.Testing.Shepherds
     public class Test
     {
         private string FTestShepherdYAMLFile;
-            
+
         /// <summary>
         /// ...
         /// </summary>
@@ -46,11 +46,12 @@ namespace Ict.Testing.Shepherds
         {
             new TAppSettingsManager("../../etc/TestClient.config");
 
-            FTestShepherdYAMLFile = TAppSettingsManager.GetValue("UINavigation.File").Substring(0, TAppSettingsManager.GetValue("UINavigation.File").IndexOf("UINavigation.yml")) +
-                Path.DirectorySeparatorChar + "Shepherd_Church_Definition.yaml";
+            FTestShepherdYAMLFile = TAppSettingsManager.GetValue("UINavigation.File").Substring(0, TAppSettingsManager.GetValue(
+                    "UINavigation.File").IndexOf("UINavigation.yml")) +
+                                    Path.DirectorySeparatorChar + "Shepherd_Church_Definition.yaml";
             new TLogging("test.log");
         }
-        
+
         /// <summary>
         /// TODO Comment
         /// </summary>
@@ -91,7 +92,7 @@ namespace Ict.Testing.Shepherds
             Assert.False(testPetraShepherdPagesList.Pages.ContainsKey("00"),
                 "Shepherd inadvertently contained key 00");
 
-            foreach (KeyValuePair<string, TPetraShepherdPage> pair in testPetraShepherdPagesList.Pages)
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in testPetraShepherdPagesList.Pages)
             {
                 switch (pair.Key)
                 {
@@ -148,7 +149,7 @@ namespace Ict.Testing.Shepherds
             TPetraShepherdFormLogic testNotVisibleLogic =
                 new TPetraShepherdFormLogic(FTestShepherdYAMLFile, thisIsAtest);
 
-            foreach (KeyValuePair<string, TPetraShepherdPage> pair in testNotVisibleLogic.ShepherdPages.Pages)
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in testNotVisibleLogic.ShepherdPages.Pages)
             {
                 switch (pair.Key)
                 {
@@ -176,7 +177,7 @@ namespace Ict.Testing.Shepherds
             TPetraShepherdFormLogic testNotEnabledLogic =
                 new TPetraShepherdFormLogic(FTestShepherdYAMLFile, thisIsAtest);
 
-            foreach (KeyValuePair<string, TPetraShepherdPage> pair in testNotEnabledLogic.ShepherdPages.Pages)
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in testNotEnabledLogic.ShepherdPages.Pages)
             {
                 switch (pair.Key)
                 {
@@ -204,7 +205,7 @@ namespace Ict.Testing.Shepherds
             TPetraShepherdFormLogic testNotVisibleOrEnabledLogic =
                 new TPetraShepherdFormLogic(FTestShepherdYAMLFile, thisIsAtest);
 
-            foreach (KeyValuePair<string, TPetraShepherdPage> pair in testNotVisibleOrEnabledLogic.ShepherdPages.Pages)
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in testNotVisibleOrEnabledLogic.ShepherdPages.Pages)
             {
                 switch (pair.Key)
                 {

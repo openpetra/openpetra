@@ -40,6 +40,6 @@ namespace Ict.Petra.Client.CommonForms.Logic
         void CancelShepherd();
 
         /// <summary>Modifies the Form's layout according to the passed in Arguments.</summary>
-        void UpdateShepherdFormProperties(string ATitle, int ShepherdWidth, int ShepherdHeight);
+        void UpdateShepherdFormProperties(string ATitle, int AShepherdWidth, int AShepherdHeight);
     }
 }

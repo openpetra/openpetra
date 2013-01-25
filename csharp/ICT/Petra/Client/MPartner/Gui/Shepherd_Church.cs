@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             TLogging.Log("Entering TShepherdChurchForm Constructor...");
 
             YamlFile = Path.GetDirectoryName(TAppSettingsManager.GetValue("UINavigation.File")) +
-                        Path.DirectorySeparatorChar + "Shepherd_Church_Definition.yaml";
+                       Path.DirectorySeparatorChar + "Shepherd_Church_Definition.yaml";
 
             Logic = new TShepherdChurchFormLogic(YamlFile, this);
             FSpecificLogic = (TShepherdChurchFormLogic)Logic;
@@ -97,13 +97,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Load Event for the TShepherdChurchForm.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected override void Form_Load(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected override void Form_Load(object ASender, EventArgs AEventArgs)
         {
             TLogging.Log("Entering TShepherdChurchForm Form_Load...");
 
-            base.Form_Load(sender, e);
+            base.Form_Load(ASender, AEventArgs);
 
             if (FSkipLedgerSelectionPage)
             {

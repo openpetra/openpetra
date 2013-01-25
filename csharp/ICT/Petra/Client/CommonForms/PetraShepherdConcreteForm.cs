@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.CommonForms
         private string FYamlFile = String.Empty;
 
         /// <summary>Name of the Shepherd that will be imported. It has to be a global variable because it has to bounce from.</summary>
-        private string ShepherdTitle = string.Empty;
+        private string FShepherdTitle = string.Empty;
 
         /// <summary>Instance of base Shepherd Logic.</summary>
         private TPetraShepherdFormLogic FLogic;
@@ -61,7 +61,7 @@ namespace Ict.Petra.Client.CommonForms
         #endregion
 
         #region Properties
-        
+
         /// <summary>
         /// Instance of base Shepherd Logic.
         /// </summary>
@@ -71,13 +71,13 @@ namespace Ict.Petra.Client.CommonForms
             {
                 return FLogic;
             }
-            
+
             set
             {
                 FLogic = value;
             }
         }
-        
+
         /// <summary>
         /// Name of the YAML file that contains the definition of the Shepherd Pages and the Shepherd overall.
         /// </summary>
@@ -87,15 +87,15 @@ namespace Ict.Petra.Client.CommonForms
             {
                 return FYamlFile;
             }
-            
+
             set
             {
                 FYamlFile = value;
             }
         }
-        
+
         #endregion
-        
+
         #region Constructor
 
         /// <summary>
@@ -163,16 +163,16 @@ namespace Ict.Petra.Client.CommonForms
         /// Modifies the Form's layout according to the passed in Arguments.
         /// </summary>
         /// <param name="AString">Shepherd Title.</param>
-        /// <param name="width">Width of the Shepherd Form.</param>
-        /// <param name="height">Height of the Shepherd Form.</param>
-        public void UpdateShepherdFormProperties(string AString, int width, int height)
+        /// <param name="AWidth">Width of the Shepherd Form.</param>
+        /// <param name="AHeight">Height of the Shepherd Form.</param>
+        public void UpdateShepherdFormProperties(string AString, int AWidth, int AHeight)
         {
             TLogging.Log("UpdateShepherdFormProperties in commonForms--PetraShepherdConcreteFormGui");
             TLogging.Log("Size before UpdateShepherdFormProperties: " + ContentPanel.Width + ", height: " + ContentPanel.Width);
-            TLogging.Log("Resizing the shepherd to the following: width: " + width + ", height: " + height);
-            Size FormSize = new Size(width, height);
+            TLogging.Log("Resizing the shepherd to the following: width: " + AWidth + ", height: " + AHeight);
+            Size FormSize = new Size(AWidth, AHeight);
             this.Size = FormSize;
-            ShepherdTitle = AString;
+            FShepherdTitle = AString;
 
             TLogging.Log("Size AFTER UpdateShepherdFormProperties: width: " + ContentPanel.Width + ", height: " + ContentPanel.Width);
         }
@@ -251,9 +251,9 @@ namespace Ict.Petra.Client.CommonForms
         /// Overwrites virtual Method in TPetraShepherdForm,
         /// calls Method in TPetraShepherdFormLogic in logic namespace to handle action.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected override void BtnFinishClick(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected override void BtnFinishClick(object ASender, EventArgs AEventArgs)
         {
             FLogic.HandleActionFinish();
         }
@@ -262,9 +262,9 @@ namespace Ict.Petra.Client.CommonForms
         /// Overwrites virtual Method in TPetraShepherdForm,
         /// calls Method in TPetraShepherdFormLogic in logic namespace to handle action.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected override void BtnNextClick(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected override void BtnNextClick(object ASender, EventArgs AEventArgs)
         {
             FLogic.HandleActionNext();
         }
@@ -273,9 +273,9 @@ namespace Ict.Petra.Client.CommonForms
         /// Overwrites virtual Method in TPetraShepherdForm,
         /// calls Method in TPetraShepherdFormLogic in logic namespace to handle action.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected override void BtnBackClick(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected override void BtnBackClick(object ASender, EventArgs AEventArgs)
         {
             FLogic.HandleActionBack();
         }
@@ -284,9 +284,9 @@ namespace Ict.Petra.Client.CommonForms
         /// Overwrites virtual Method in TPetraShepherdForm,
         /// calls Method in TPetraShepherdFormLogic in logic namespace to handle action.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected override void BtnCancelClick(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected override void BtnCancelClick(object ASender, EventArgs AEventArgs)
         {
             FLogic.HandleActionCancel();
         }
@@ -295,9 +295,9 @@ namespace Ict.Petra.Client.CommonForms
         /// Overwrites virtual Method in TPetraShepherdForm,
         /// calls Method in TPetraShepherdFormLogic in logic namespace to handle action.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected override void BtnHelpClick(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected override void BtnHelpClick(object ASender, EventArgs AEventArgs)
         {
             FLogic.HandleActionHelp();
         }
@@ -305,15 +305,15 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// Gets called when the Form is shown but before it's painted.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected override void Form_Load(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected override void Form_Load(object ASender, EventArgs AEventArgs)
         {
             TLogging.Log("Entering TPetraShepherdConcreteForm (Base) Form_Load...");
 
             FShepherdNavigationHelper = new TShepherdNavigationHelper(FLogic.ShepherdPages, NavigationPanel);
 
-            this.Text = ShepherdTitle;
+            this.Text = FShepherdTitle;
 
             ShowCurrentPage();
 
@@ -341,9 +341,9 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// TODO
         /// </summary>
-        public void HookupAllInContainer(Control container)
+        public void HookupAllInContainer(Control AContainer)
         {
-            FPetraUtilsObject.HookupAllInContainer(container);
+            FPetraUtilsObject.HookupAllInContainer(AContainer);
         }
 
         /// <summary>

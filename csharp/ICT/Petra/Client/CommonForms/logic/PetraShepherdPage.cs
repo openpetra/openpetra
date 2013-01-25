@@ -99,11 +99,11 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FTitle;
             }
-            
+
             protected set
             {
                 FTitle = value;
-            }            
+            }
         }
 
         /// <summary>Shepherd Page Note.</summary>
@@ -146,7 +146,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FEnabled;
             }
-            
+
             set
             {
                 if (FEnabled != value)
@@ -165,7 +165,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FUserControlNamespace;
             }
-            
+
             protected set
             {
                 FUserControlNamespace = value;
@@ -179,7 +179,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FUserControlClassName;
             }
-            
+
             protected set
             {
                 FUserControlClassName = value;
@@ -207,7 +207,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FUserControlType;
             }
-            
+
             set
             {
                 FUserControlType = value;
@@ -221,7 +221,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FIsFirstPage;
             }
-            
+
             set
             {
                 FIsFirstPage = value;
@@ -235,7 +235,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FIsLastPage;
             }
-            
+
             set
             {
                 FIsLastPage = value;
@@ -283,33 +283,33 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// variables.
         /// </summary>
         /// <remarks>Note that this Constructor is NOT called through inheritance by <see cref="TPetraShepherdFinishPage" />!</remarks>
-        /// <param name="ShepherdPageNode">XmlNode that represents this Shepherd Page.</param>
-        public TPetraShepherdPage(XmlNode ShepherdPageNode)
+        /// <param name="AShepherdPageNode">XmlNode that represents this Shepherd Page.</param>
+        public TPetraShepherdPage(XmlNode AShepherdPageNode)
         {
             TLogging.Log("Constructor REACHED");
 
-            FID = ShepherdPageNode.Attributes["ID"].Value;
+            FID = AShepherdPageNode.Attributes["ID"].Value;
             TLogging.Log("~~ID Assigned~~ " + FID);
 
-            FTitle = ShepherdPageNode.Attributes["Title"].Value;
+            FTitle = AShepherdPageNode.Attributes["Title"].Value;
             TLogging.Log("~~Title Assigned~~ " + FTitle);
 
-            FNote = ShepherdPageNode.Attributes["Note"].Value;
+            FNote = AShepherdPageNode.Attributes["Note"].Value;
             TLogging.Log("~~Note Assigned~~ " + FNote);
 
-            FVisible = System.Convert.ToBoolean(ShepherdPageNode.Attributes["Visible"].Value);
+            FVisible = System.Convert.ToBoolean(AShepherdPageNode.Attributes["Visible"].Value);
             TLogging.Log("~~Visible Assigned~~ " + System.Convert.ToString(FVisible));
 
-            FEnabled = System.Convert.ToBoolean(ShepherdPageNode.Attributes["Enabled"].Value);
+            FEnabled = System.Convert.ToBoolean(AShepherdPageNode.Attributes["Enabled"].Value);
             TLogging.Log("~~Enabled Assigned~~ " + System.Convert.ToString(FEnabled));
 
-            FUserControlNamespace = ShepherdPageNode.Attributes["UserControlNamespace"].Value;
+            FUserControlNamespace = AShepherdPageNode.Attributes["UserControlNamespace"].Value;
             TLogging.Log("~~UserControlNamespace Assigned~~ " + FUserControlNamespace);
 
-            FUserControlClassName = ShepherdPageNode.Attributes["UserControlClassName"].Value;
+            FUserControlClassName = AShepherdPageNode.Attributes["UserControlClassName"].Value;
             TLogging.Log("~~UserControlClassName Assigned~~ " + FUserControlClassName);
 
-            FHelpContext = ShepherdPageNode.Attributes["HelpContext"].Value;
+            FHelpContext = AShepherdPageNode.Attributes["HelpContext"].Value;
             TLogging.Log("~~HelpContext Assigned~~ " + FHelpContext);
 
             //FUserControlType = ShepherdPageNode.Attributes["UserControlType"].Value;
@@ -376,7 +376,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         #region Fields
 
         /// <summary>Dictionary containing a list of TPetraShepherdPage using the page's Unique ID as an identifier.</summary>
-        private Dictionary<string, TPetraShepherdPage> FPagesList = new Dictionary<string, TPetraShepherdPage>();
+        private Dictionary <string, TPetraShepherdPage>FPagesList = new Dictionary <string, TPetraShepherdPage>();
 
         #endregion
 
@@ -385,7 +385,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>
         /// Allows for read-only access to a Dictionary of Pages.
         /// </summary>
-        public Dictionary<string, TPetraShepherdPage> Pages
+        public Dictionary <string, TPetraShepherdPage>Pages
         {
             get
             {
@@ -465,22 +465,22 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="XmlPages">TODO</param>
-        public TPetraShepherdFinishPage(XmlDocument XmlPages)
+        /// <param name="AXmlPages">TODO</param>
+        public TPetraShepherdFinishPage(XmlDocument AXmlPages)
         {
             this.ID = "FINISHPAGE_MASTER";
-            this.Init(XmlPages);
+            this.Init(AXmlPages);
         }
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="XmlPages">TODO</param>
-        /// <param name="SubShepherdName">Name of the Sub-Shepherd.</param>
-        public TPetraShepherdFinishPage(XmlDocument XmlPages, string SubShepherdName)
+        /// <param name="AXmlPages">TODO</param>
+        /// <param name="ASubShepherdName">Name of the Sub-Shepherd.</param>
+        public TPetraShepherdFinishPage(XmlDocument AXmlPages, string ASubShepherdName)
         {
-            this.ID = "FINISHPAGE_CHILD_" + SubShepherdName.ToUpper();
-            this.Init(XmlPages);
+            this.ID = "FINISHPAGE_CHILD_" + ASubShepherdName.ToUpper();
+            this.Init(AXmlPages);
         }
 
         #endregion
@@ -490,13 +490,13 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="XmlPages">TODO</param>
+        /// <param name="AXmlPages">TODO</param>
         /// <returns></returns>
-        protected string GetFinishPageNote(XmlDocument XmlPages)
+        protected string GetFinishPageNote(XmlDocument AXmlPages)
         {
-            XmlNode FileElementData = XmlPages.DocumentElement;
+            XmlNode FileElementData = AXmlPages.DocumentElement;
 
-            FileElementData = XmlPages.LastChild.LastChild;
+            FileElementData = AXmlPages.LastChild.LastChild;
 
             if (FileElementData.Attributes["FinishPageNote"] != null)
             {
@@ -516,8 +516,8 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="XmlPages">TODO</param>
-        private void Init(XmlDocument XmlPages)
+        /// <param name="AXmlPages">TODO</param>
+        private void Init(XmlDocument AXmlPages)
         {
             this.Enabled = true;
             this.Visible = true;
@@ -525,7 +525,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             this.UserControlClassName = "TUC_PetraShepherdFinishPage";
             this.UserControlNamespace = "Ict.Petra.Client.CommonForms";
             this.Title = "Here is a summary of the information you have provided:" + this.ID;
-            this.Note = this.GetFinishPageNote(XmlPages);
+            this.Note = this.GetFinishPageNote(AXmlPages);
         }
 
         #endregion

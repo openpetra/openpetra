@@ -71,9 +71,9 @@ namespace Ict.Testing.Shepherds
         /// Modifies the Form's layout according to the passed in Arguments.
         /// </summary>
         /// <param name="AString">Shepherd Title.</param>
-        /// <param name="width">Width of the Shepherd Form.</param>
-        /// <param name="height">Height of the Shepherd Form.</param>
-        public void UpdateShepherdFormProperties(string AString, int width, int height)
+        /// <param name="AWidth">Width of the Shepherd Form.</param>
+        /// <param name="AHeight">Height of the Shepherd Form.</param>
+        public void UpdateShepherdFormProperties(string AString, int AWidth, int AHeight)
         {
             System.Console.WriteLine("The ShepherdFormProperties would have been updated if this wasn't a dummy interface.");
         }
@@ -81,8 +81,8 @@ namespace Ict.Testing.Shepherds
         /// <summary>
         /// TODO Comment
         /// </summary>
-        /// <param name="ProgressPercent">TODO</param>
-        public void UpdateProgressBar(int ProgressPercent)
+        /// <param name="AProgressPercent">TODO</param>
+        public void UpdateProgressBar(int AProgressPercent)
         {
             System.Console.WriteLine("The Progress Bar would have been updated if this wasn't a dummy interface.");
         }

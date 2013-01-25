@@ -37,7 +37,7 @@ namespace Ict.Petra.Client.CommonForms
 ////        TPetraShepherdFormLogic FLogic;  TODO
 
         #region Properties
-        
+
         /// <summary>
         /// Collapsible Navigation.
         /// </summary>
@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.CommonForms
                 return pnlCollapsibleNavigation;
             }
         }
-        
+
         /// <summary>
         /// StatusBar of the Shepherd.
         /// </summary>
@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.CommonForms
                 return stbMain;
             }
         }
-        
+
         /// <summary>
         /// Label for textual displaying of the Page Progress.
         /// </summary>
@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.CommonForms
                 return lblPageProgress;
             }
         }
-        
+
         /// <summary>
         /// ProgressBar for visual displaying of the Page Progress.
         /// </summary>
@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.CommonForms
                 return prbPageProgress;
             }
         }
-        
+
         /// <summary>
         /// ContentPanel (<c>pnlContent</c> of the Shepherd).
         /// </summary>
@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.CommonForms
                 return pnlContent;
             }
         }
-        
+
         /// <summary>
         /// Navigation Panel.
         /// </summary>
@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.CommonForms
                 return pnlNavigation;
             }
         }
-        
+
         /// <summary>
         /// Finish Button.
         /// </summary>
@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.CommonForms
                 return btnFinish;
             }
         }
-        
+
         /// <summary>
         /// Next Button.
         /// </summary>
@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.CommonForms
                 return btnNext;
             }
         }
-        
+
         /// <summary>
         /// Back Button.
         /// </summary>
@@ -136,7 +136,7 @@ namespace Ict.Petra.Client.CommonForms
                 return btnBack;
             }
         }
-        
+
         /// <summary>
         /// Heading #1.
         /// </summary>
@@ -147,7 +147,7 @@ namespace Ict.Petra.Client.CommonForms
                 return lblHeading1;
             }
         }
-        
+
         /// <summary>
         /// Heading #2.
         /// </summary>
@@ -155,12 +155,12 @@ namespace Ict.Petra.Client.CommonForms
         {
             get
             {
-                return lblHeading2;    
+                return lblHeading2;
             }
         }
-        
+
         #endregion
-        
+
         #region Constructor
 
         /// <summary>
@@ -181,54 +181,54 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// Virtual Method: implementor should handle action for Finish button click.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected virtual void BtnFinishClick(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected virtual void BtnFinishClick(object ASender, EventArgs AEventArgs)
         {
         }
 
         /// <summary>
         /// Virtual Method: implementor should handle action for Next button click.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected virtual void BtnNextClick(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected virtual void BtnNextClick(object ASender, EventArgs AEventArgs)
         {
         }
 
         /// <summary>
         /// Virtual Method: implementor should handle action for Back button click.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected virtual void BtnBackClick(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected virtual void BtnBackClick(object ASender, EventArgs AEventArgs)
         {
         }
 
         /// <summary>
         /// Virtual Method: implementor should handle action for Cancel button click.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected virtual void BtnCancelClick(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected virtual void BtnCancelClick(object ASender, EventArgs AEventArgs)
         {
         }
 
         /// <summary>
         /// Virtual Method: implementor should handle action for Help button click.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected virtual void BtnHelpClick(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected virtual void BtnHelpClick(object ASender, EventArgs AEventArgs)
         {
         }
 
         /// <summary>
         /// Virtual Method: implementor should handle the loading of the current form.
         /// </summary>
-        /// <param name="sender">Sending Control (supplied by WinForms).</param>
-        /// <param name="e">Event Arguments (supplied by WinForms).</param>
-        protected virtual void Form_Load(object sender, EventArgs e)
+        /// <param name="ASender">Sending Control (supplied by WinForms).</param>
+        /// <param name="AEventArgs">Event Arguments (supplied by WinForms).</param>
+        protected virtual void Form_Load(object ASender, EventArgs AEventArgs)
         {
         }
 

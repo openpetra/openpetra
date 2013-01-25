@@ -46,13 +46,13 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
         /// <summary>Holds a typed list of 0..n TPetraShepherdPage's.</summary>
         private TPetraShepherdPagesList FShepherdPages;
-        
+
         /// <summary>Holds the instance of the Shepherd Form management class.</summary>
         private IPetraShepherdConcreteFormInterface FForm;
-        
+
         /// <summary>Holds the instance of the current shepherd page.</summary>
         private TPetraShepherdPage FCurrentPage;
-        
+
 ////        /// <summary>'Blackboard' for exchanging data between shepherd pages which isn't stored in the DB.</summary>
 ////        private SortedList FPagesDataHeap;   // TODO
 
@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             {
                 return FCurrentPage;
             }
-            
+
             set
             {
                 FCurrentPage = value;
@@ -264,7 +264,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TLogging.Log("Enumerate Pages in TPetraShepherdFormLogic -- Counting the total number of pages.");
             int PagesCount = 0;
 
-            foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
             {
                 PagesCount++;
             }
@@ -282,7 +282,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TLogging.Log("GetCurrentPageNumber() in TPetraShepherdConcreteForm.. ");
             int pageCounter = 1;
 
-            foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
             {
                 TLogging.Log("GetCurrentPageNumber loop. Pair.key: " + pair.Key);
                 TLogging.Log("GetCurrentPageNumber loop. CurrentPage.ID: " + CurrentPage.ID);
@@ -324,7 +324,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             string startPage = "";             //temporary string to hold the key of the StartPage
 
-            foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
             {
                 if (pair.Value.Visible && pair.Value.Enabled)
                 {
@@ -369,10 +369,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
             bool hasPassedCurrentPage = false;     // used to tell if the iteration has already checked to see if you have passed the current page.
             bool hasPassedItAgain = false;
 
-            foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
             {
                 // TODO: there has to be a better way to handle iterating through the loop one more time; it works now, but is ugly.
-                if (hasPassedCurrentPage)         
+                if (hasPassedCurrentPage)
                 {
                     hasPassedItAgain = true;
                 }
@@ -423,7 +423,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
             }
             else
             {
-                foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
+                foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
                 {
                     if ((pair.Value == CurrentPage) && pair.Value.Enabled && pair.Value.Visible)
                     {
@@ -519,7 +519,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
 
             //// TODO: Sub-Shepherds
 
-            foreach (KeyValuePair<string, TPetraShepherdPage> pair in FShepherdPages.Pages)
+            foreach (KeyValuePair <string, TPetraShepherdPage>pair in FShepherdPages.Pages)
             {
                 XmlElement ID = ShepherdPagesNode.OwnerDocument.CreateElement("Page" + PageCounter.ToString());  // <ID>
                 XmlNode IDNode = ShepherdPagesNode.AppendChild(ID);
@@ -578,18 +578,18 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>
         /// This Method is only for debugging the TaskList nodes.
         /// </summary>
-        /// <param name="xnod"></param>
-        /// <param name="level"></param>
-        private static void ChildDisplay(XmlNode xnod, int level)
+        /// <param name="AXnod"></param>
+        /// <param name="ALevel"></param>
+        private static void ChildDisplay(XmlNode AXnod, int ALevel)
         {
             XmlNode xnodWorking;
-            String pad = new String(' ', level * 2);
+            String pad = new String(' ', ALevel * 2);
 
-            TLogging.Log(pad + xnod.Name + "(" + xnod.NodeType.ToString() + ": <" + xnod.Value + ">)");
+            TLogging.Log(pad + AXnod.Name + "(" + AXnod.NodeType.ToString() + ": <" + AXnod.Value + ">)");
 
-            if (xnod.NodeType == XmlNodeType.Element)
+            if (AXnod.NodeType == XmlNodeType.Element)
             {
-                XmlNamedNodeMap mapAttributes = xnod.Attributes;
+                XmlNamedNodeMap mapAttributes = AXnod.Attributes;
 
                 for (int i = 0; i < mapAttributes.Count; i++)
                 {
@@ -597,13 +597,13 @@ namespace Ict.Petra.Client.CommonForms.Logic
                 }
             }
 
-            if (xnod.HasChildNodes)
+            if (AXnod.HasChildNodes)
             {
-                xnodWorking = xnod.FirstChild;
+                xnodWorking = AXnod.FirstChild;
 
                 while (xnodWorking != null)
                 {
-                    ChildDisplay(xnodWorking, level + 1);
+                    ChildDisplay(xnodWorking, ALevel + 1);
                     xnodWorking = xnodWorking.NextSibling;
                 }
             }

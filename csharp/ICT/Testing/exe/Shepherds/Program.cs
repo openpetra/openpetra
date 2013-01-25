@@ -35,8 +35,8 @@ namespace Ict.Testing.Shepherds
         /// Main entry point for the program.
         /// </summary>
         /// <remarks>TODO: This Unit Test should be converted to be a DLL rather than an EXE!</remarks>
-        /// <param name="args">Command Line arguments array.</param>
-        public static void Main(string[] args)
+        /// <param name="AArgs">Command Line arguments array.</param>
+        public static void Main(string[] AArgs)
         {
             Console.WriteLine("Test.");
         }
