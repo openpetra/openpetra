@@ -80,11 +80,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                           AJournalTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
                                           AJournalTable.GetJournalStatusDBName() + " = '{5}'";
         private string JournalRowFilterRange = "(" + AJournalTable.GetTransactionCurrencyDBName() + " = '{0}' OR " +
-                                          AJournalTable.GetTransactionCurrencyDBName() + " = '{1}') AND " +
-                                          AJournalTable.GetDateEffectiveDBName() + " >= #{2}# AND " +
-                                          AJournalTable.GetDateEffectiveDBName() + " < #{3}# AND " +
-                                          AJournalTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
-                                          AJournalTable.GetJournalStatusDBName() + " = '{5}'";
+                                               AJournalTable.GetTransactionCurrencyDBName() + " = '{1}') AND " +
+                                               AJournalTable.GetDateEffectiveDBName() + " >= #{2}# AND " +
+                                               AJournalTable.GetDateEffectiveDBName() + " < #{3}# AND " +
+                                               AJournalTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
+                                               AJournalTable.GetJournalStatusDBName() + " = '{5}'";
         private string GiftBatchRowFilter = "(" + AGiftBatchTable.GetCurrencyCodeDBName() + " = '{0}' OR " +
                                             AGiftBatchTable.GetCurrencyCodeDBName() + " = '{1}') AND " +
                                             AGiftBatchTable.GetGlEffectiveDateDBName() + " >= #{2}# AND " +
@@ -999,7 +999,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             tooltipRateAlert.Hide(cmbDetailFromCurrencyCode);
 
-            if (ARow.RowState == DataRowState.Added || ARow.RowState == DataRowState.Modified)
+            if ((ARow.RowState == DataRowState.Added) || (ARow.RowState == DataRowState.Modified))
             {
                 // We are going to check if the rate of exchange is sensible.  We need our own view because we don't know how the grid is currently sorted
                 string filter =
@@ -1015,7 +1015,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 decimal ratio = 1.0m;
                 string tipText = String.Empty;
 
-                if (nThis >= 0 && ARow.RateOfExchange != 0.0m)
+                if ((nThis >= 0) && (ARow.RateOfExchange != 0.0m))
                 {
                     drThis = (ADailyExchangeRateRow)(myView[nThis]).Row;
 
@@ -1213,11 +1213,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FGiftBatchDS.HasMatchingUnpostedRate)
             {
-                List<int> listLedgers = new List<int>();
+                List <int>listLedgers = new List <int>();
                 FGiftBatchDS.MatchingRate = rate;
+
                 for (int i = 0; i < dvGift.Count; i++)
                 {
                     int ledgerNum = ((AGiftBatchRow)dvGift[i].Row).LedgerNumber;
+
                     if (!listLedgers.Contains(ledgerNum))
                     {
                         listLedgers.Add(ledgerNum);
@@ -1226,7 +1228,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 if (dvGift.Count == 1)
                 {
-                    tipText += 
+                    tipText +=
                         String.Format(Catalog.GetString("Used by 1 row dated {0} in {1} in the Gift Batch table"),
                             StringHelper.DateToLocalizedString((DateTime)dvGift[0][AGiftBatchTable.ColumnGlEffectiveDateId]),
                             GetLedgerListText(listLedgers));
@@ -1235,10 +1237,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     tipText +=
                         String.Format(Catalog.GetString("Used by {0} row(s) between {1} and {2} in {3} in the Gift Batch table"),
-                        dvGift.Count,
-                        StringHelper.DateToLocalizedString((DateTime)dvGift[0][AGiftBatchTable.ColumnGlEffectiveDateId]),
-                        StringHelper.DateToLocalizedString((DateTime)dvGift[dvGift.Count - 1][AGiftBatchTable.ColumnGlEffectiveDateId]),
-                        GetLedgerListText(listLedgers));
+                            dvGift.Count,
+                            StringHelper.DateToLocalizedString((DateTime)dvGift[0][AGiftBatchTable.ColumnGlEffectiveDateId]),
+                            StringHelper.DateToLocalizedString((DateTime)dvGift[dvGift.Count - 1][AGiftBatchTable.ColumnGlEffectiveDateId]),
+                            GetLedgerListText(listLedgers));
                 }
             }
 
@@ -1257,11 +1259,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     tipText += Environment.NewLine;
                 }
 
-                List<int> listLedgers = new List<int>();
+                List <int>listLedgers = new List <int>();
                 FGiftBatchDS.MatchingRate = rate;
+
                 for (int i = 0; i < dvGift.Count; i++)
                 {
                     int ledgerNum = ((AJournalRow)dvJournal[i].Row).LedgerNumber;
+
                     if (!listLedgers.Contains(ledgerNum))
                     {
                         listLedgers.Add(ledgerNum);
@@ -1297,11 +1301,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     tipText += Environment.NewLine;
                 }
 
-                List<int> listLedgers = new List<int>();
+                List <int>listLedgers = new List <int>();
                 FGiftBatchDS.MatchingRate = rate;
+
                 for (int i = 0; i < dvGift.Count; i++)
                 {
                     int ledgerNum = ((AJournalRow)dvJournal[i].Row).LedgerNumber;
+
                     if (!listLedgers.Contains(ledgerNum))
                     {
                         listLedgers.Add(ledgerNum);
@@ -1340,7 +1346,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return;
         }
 
-        private string GetLedgerListText(List<int> ALedgerList)
+        private string GetLedgerListText(List <int>ALedgerList)
         {
             string ledgerText = String.Empty;
 
@@ -1357,7 +1363,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 ledgerText += " #" + ALedgerList[i].ToString();
             }
-            
+
             return ledgerText;
         }
 

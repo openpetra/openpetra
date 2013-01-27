@@ -49,8 +49,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// display data that is about to be validated.</param>
         /// <param name="AMinDateTime">The earliest allowable date.</param>
         /// <param name="AMaxDateTime">The latest allowable date.</param>
-        public static void ValidateDailyExchangeRate(object AContext, ADailyExchangeRateRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict, DateTime AMinDateTime, DateTime AMaxDateTime)
+        public static void ValidateDailyExchangeRate(object AContext,
+            ADailyExchangeRateRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            TValidationControlsDict AValidationControlsDict,
+            DateTime AMinDateTime,
+            DateTime AMaxDateTime)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -89,19 +93,25 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
                 if (VerificationResult == null)
                 {
-                    if (AMinDateTime > DateTime.MinValue && AMaxDateTime < DateTime.MaxValue)
+                    if ((AMinDateTime > DateTime.MinValue) && (AMaxDateTime < DateTime.MaxValue))
                     {
                         // Check that the date is in range
-                        VerificationResult = TDateChecks.IsDateBetweenDates(ARow.DateEffectiveFrom, AMinDateTime, AMaxDateTime,
-                            ValidationControlsData.ValidationControlLabel, TDateBetweenDatesCheckType.dbdctUnspecific, TDateBetweenDatesCheckType.dbdctUnspecific,
-                            AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        VerificationResult = TDateChecks.IsDateBetweenDates(ARow.DateEffectiveFrom,
+                            AMinDateTime,
+                            AMaxDateTime,
+                            ValidationControlsData.ValidationControlLabel,
+                            TDateBetweenDatesCheckType.dbdctUnspecific,
+                            TDateBetweenDatesCheckType.dbdctUnspecific,
+                            AContext,
+                            ValidationColumn,
+                            ValidationControlsData.ValidationControl);
 
                         // Handle addition to/removal from TVerificationResultCollection
                         AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                     }
                     else if (AMaxDateTime < DateTime.MaxValue)
                     {
-                        VerificationResult = TDateChecks.FirstLesserThanSecondDate(ARow.DateEffectiveFrom, AMaxDateTime, 
+                        VerificationResult = TDateChecks.FirstLesserThanSecondDate(ARow.DateEffectiveFrom, AMaxDateTime,
                             ValidationControlsData.ValidationControlLabel, Ict.Common.StringHelper.DateToLocalizedString(AMaxDateTime),
                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
