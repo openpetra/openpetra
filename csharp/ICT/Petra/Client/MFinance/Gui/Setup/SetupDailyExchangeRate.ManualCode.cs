@@ -77,8 +77,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private string JournalRowFilter = "(" + AJournalTable.GetTransactionCurrencyDBName() + " = '{0}' OR " +
                                           AJournalTable.GetTransactionCurrencyDBName() + " = '{1}') AND " +
                                           AJournalTable.GetDateEffectiveDBName() + " >= #{2}# AND " +
+                                          AJournalTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
+                                          AJournalTable.GetJournalStatusDBName() + " = '{5}'";
+        private string JournalRowFilterRange = "(" + AJournalTable.GetTransactionCurrencyDBName() + " = '{0}' OR " +
+                                          AJournalTable.GetTransactionCurrencyDBName() + " = '{1}') AND " +
+                                          AJournalTable.GetDateEffectiveDBName() + " >= #{2}# AND " +
                                           AJournalTable.GetDateEffectiveDBName() + " < #{3}# AND " +
-                                          AJournalTable.GetJournalStatusDBName() + " = '{4}'";
+                                          AJournalTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
+                                          AJournalTable.GetJournalStatusDBName() + " = '{5}'";
         private string GiftBatchRowFilter = "(" + AGiftBatchTable.GetCurrencyCodeDBName() + " = '{0}' OR " +
                                             AGiftBatchTable.GetCurrencyCodeDBName() + " = '{1}') AND " +
                                             AGiftBatchTable.GetGlEffectiveDateDBName() + " >= #{2}# AND " +
@@ -590,22 +596,36 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // Different Dialog Title text - and set the buttons
             this.Text = "Select an Exchange Rate";
-            mniClose.Text = "Accept";
             this.AcceptButton = btnClose;
             this.CancelButton = btnCancel;
             chkHideOthers.Visible = false;
 
             blnIsInModalMode = true;
             DialogResult = DialogResult.Cancel;     // assume it is cancelled for now
+
+            // Redirect the standard close methods to the modal handler and modify the text
+            mniClose.Click -= this.actClose;
+            mniClose.Click += this.CloseDialog;
+            btnClose.Click -= this.actClose;
+            btnClose.Click += this.CloseDialog;
+            mniClose.Text = "Accept";
+            btnClose.Text = "Accept";
         }
 
         /// <summary>
         /// Called in MODAL mode when the user clicks the Accept/Close button ...
+        /// Also called in all modes on grdDetails_DoubleClick
         /// </summary>
         /// <param name="sender">not used</param>
         /// <param name="e">not used</param>
         private void CloseDialog(object sender, EventArgs e)
         {
+            // Don't let double click close us!
+            if (!blnIsInModalMode)
+            {
+                return;
+            }
+
             // If there have been changes we save them without asking, since that is part of the deal of clicking OK
             if (FPetraUtilsObject.HasChanges && !SaveChanges())
             {
@@ -738,6 +758,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             lblEnableEditDelete.Visible = true;
             bCanEditDelete = true;
 
+            // We will use this event to hide the tooltip(s)
+            grdDetails.Leave += new EventHandler(grdDetails_Leave);
+
             this.Cursor = Cursors.WaitCursor;
 
             FJournalDS.JournalTable = new AJournalTable();
@@ -768,7 +791,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdDetails.Focus();
         }
 
-        void chkHideOthers_CheckedChanged(object sender, EventArgs e)
+        private void grdDetails_Leave(object sender, EventArgs e)
+        {
+            tooltipDeleteInfo.Hide(btnInvertExchangeRate);
+        }
+
+        private void chkHideOthers_CheckedChanged(object sender, EventArgs e)
         {
             string rowFilter = String.Empty;
 
@@ -783,7 +811,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1);
         }
 
-        void dtpDetailDateEffectiveFrom_Leave(object sender, EventArgs e)
+        private void dtpDetailDateEffectiveFrom_Leave(object sender, EventArgs e)
         {
             // Note that we use Leave because it is fired before control validation
             // Get a new time and rate for the date
@@ -969,79 +997,80 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void GetDetailDataFromControlsManual(ADailyExchangeRateRow ARow)
         {
-            // We are going to check if the rate of exchange is sensible.  We need our own view because we don't know how the grid is currently sorted
-            string filter =
-                ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + ARow.FromCurrencyCode + "' and " +
-                ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + ARow.ToCurrencyCode + "'";
-            DataView myView = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
+            tooltipRateAlert.Hide(cmbDetailFromCurrencyCode);
 
-            // Find our current row
-            int nThis = FindRowInDataView(myView, ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom);
-            ADailyExchangeRateRow drThis = null;
-            ADailyExchangeRateRow drPrev = null;
-            ADailyExchangeRateRow drNext = null;
-            decimal ratio = 1.0m;
-            string tipText = String.Empty;
-
-            if (nThis >= 0)
+            if (ARow.RowState == DataRowState.Added || ARow.RowState == DataRowState.Modified)
             {
-                drThis = (ADailyExchangeRateRow)(myView[nThis]).Row;
+                // We are going to check if the rate of exchange is sensible.  We need our own view because we don't know how the grid is currently sorted
+                string filter =
+                    ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + ARow.FromCurrencyCode + "' and " +
+                    ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + ARow.ToCurrencyCode + "'";
+                DataView myView = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
 
-                if (nThis >= 1)
+                // Find our current row
+                int nThis = FindRowInDataView(myView, ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom);
+                ADailyExchangeRateRow drThis = null;
+                ADailyExchangeRateRow drPrev = null;
+                ADailyExchangeRateRow drNext = null;
+                decimal ratio = 1.0m;
+                string tipText = String.Empty;
+
+                if (nThis >= 0 && ARow.RateOfExchange != 0.0m)
                 {
-                    drPrev = (ADailyExchangeRateRow)(myView[nThis - 1]).Row;
-                }
+                    drThis = (ADailyExchangeRateRow)(myView[nThis]).Row;
 
-                if (nThis < myView.Count - 1)
-                {
-                    drNext = (ADailyExchangeRateRow)(myView[nThis + 1]).Row;
-                }
-
-                if (drPrev != null)
-                {
-                    ratio = drThis.RateOfExchange / drPrev.RateOfExchange;
-
-                    if (ratio < 1.0m)
+                    if (nThis >= 1)
                     {
-                        ratio = drPrev.RateOfExchange / drThis.RateOfExchange;
+                        drPrev = (ADailyExchangeRateRow)(myView[nThis - 1]).Row;
+                    }
+
+                    if (nThis < myView.Count - 1)
+                    {
+                        drNext = (ADailyExchangeRateRow)(myView[nThis + 1]).Row;
+                    }
+
+                    if (drPrev != null)
+                    {
+                        ratio = drThis.RateOfExchange / drPrev.RateOfExchange;
+
+                        if (ratio < 1.0m)
+                        {
+                            ratio = drPrev.RateOfExchange / drThis.RateOfExchange;
+                        }
+                    }
+
+                    if (drNext != null)
+                    {
+                        decimal tryRatio = drThis.RateOfExchange / drNext.RateOfExchange;
+
+                        if (tryRatio < 1.0m)
+                        {
+                            tryRatio = drNext.RateOfExchange / drThis.RateOfExchange;
+                        }
+
+                        if (tryRatio > ratio)
+                        {
+                            ratio = tryRatio;
+                        }
+                    }
+
+                    if (ratio > EXCHANGE_RATE_WARNING_RATIO)
+                    {
+                        tipText = String.Format(
+                            Catalog.GetString(
+                                "The rate you have entered for {0}->{1} on {2} at {3} differs from the previous or next rate for the same currencies by more than {4:0%}."),
+                            ARow.FromCurrencyCode,
+                            ARow.ToCurrencyCode,
+                            dtpDetailDateEffectiveFrom.Text,
+                            txtDetailTimeEffectiveFrom.Text,
+                            ratio - 1.0m);
                     }
                 }
 
-                if (drNext != null)
+                if (tipText != String.Empty)
                 {
-                    decimal tryRatio = drThis.RateOfExchange / drNext.RateOfExchange;
-
-                    if (tryRatio < 1.0m)
-                    {
-                        tryRatio = drNext.RateOfExchange / drThis.RateOfExchange;
-                    }
-
-                    if (tryRatio > ratio)
-                    {
-                        ratio = tryRatio;
-                    }
+                    tooltipRateAlert.Show(tipText, cmbDetailFromCurrencyCode);
                 }
-
-                if (ratio > EXCHANGE_RATE_WARNING_RATIO)
-                {
-                    tipText = String.Format(
-                        Catalog.GetString(
-                            "The rate you have entered for {0}->{1} on {2} at {3} differs from the previous or next rate for the same currencies by more than {0:0%}."),
-                        ARow.FromCurrencyCode,
-                        ARow.ToCurrencyCode,
-                        dtpDetailDateEffectiveFrom.Text,
-                        txtDetailTimeEffectiveFrom.Text,
-                        ratio - 1.0m);
-                }
-            }
-
-            if (tipText == String.Empty)
-            {
-                tooltipRateAlert.Hide(txtDetailRateOfExchange);
-            }
-            else
-            {
-                tooltipRateAlert.Show(tipText, txtDetailRateOfExchange, 6000);
             }
 
             // Check if the rate was changed - if it was, do we need to save to an external table??
@@ -1144,7 +1173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 CanDelete = true;
                 FJournalDS.HasMatchingUnpostedRate = false;
                 FGiftBatchDS.HasMatchingUnpostedRate = false;
-                tooltipDeleteInfo.Hide(txtDetailRateOfExchange);
+                tooltipDeleteInfo.Hide(btnInvertExchangeRate);
                 return;
             }
 
@@ -1184,14 +1213,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FGiftBatchDS.HasMatchingUnpostedRate)
             {
+                List<int> listLedgers = new List<int>();
                 FGiftBatchDS.MatchingRate = rate;
-                tipText += String.Format(Catalog.GetString("Used by {0} row(s) in the Gift table"), dvGift.Count);
+                for (int i = 0; i < dvGift.Count; i++)
+                {
+                    int ledgerNum = ((AGiftBatchRow)dvGift[i].Row).LedgerNumber;
+                    if (!listLedgers.Contains(ledgerNum))
+                    {
+                        listLedgers.Add(ledgerNum);
+                    }
+                }
+
+                if (dvGift.Count == 1)
+                {
+                    tipText += 
+                        String.Format(Catalog.GetString("Used by 1 row dated {0} in {1} in the Gift Batch table"),
+                            StringHelper.DateToLocalizedString((DateTime)dvGift[0][AGiftBatchTable.ColumnGlEffectiveDateId]),
+                            GetLedgerListText(listLedgers));
+                }
+                else
+                {
+                    tipText +=
+                        String.Format(Catalog.GetString("Used by {0} row(s) between {1} and {2} in {3} in the Gift Batch table"),
+                        dvGift.Count,
+                        StringHelper.DateToLocalizedString((DateTime)dvGift[0][AGiftBatchTable.ColumnGlEffectiveDateId]),
+                        StringHelper.DateToLocalizedString((DateTime)dvGift[dvGift.Count - 1][AGiftBatchTable.ColumnGlEffectiveDateId]),
+                        GetLedgerListText(listLedgers));
+                }
             }
 
             DataView dvJournal = FJournalDS.JournalTable.DefaultView;
             dvJournal.RowFilter =
-                String.Format(CultureInfo.InvariantCulture, JournalRowFilter, FromCurrency, ToCurrency,
-                    FromDate.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d", CultureInfo.InvariantCulture), "Unposted");
+                String.Format(CultureInfo.InvariantCulture, JournalRowFilterRange, FromCurrency, ToCurrency,
+                    FromDate.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d", CultureInfo.InvariantCulture), rate, "Unposted");
             FJournalDS.HasMatchingUnpostedRate = (dvJournal.Count > 0);
 
             if (FJournalDS.HasMatchingUnpostedRate)
@@ -1203,24 +1257,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     tipText += Environment.NewLine;
                 }
 
+                List<int> listLedgers = new List<int>();
+                FGiftBatchDS.MatchingRate = rate;
+                for (int i = 0; i < dvGift.Count; i++)
+                {
+                    int ledgerNum = ((AJournalRow)dvJournal[i].Row).LedgerNumber;
+                    if (!listLedgers.Contains(ledgerNum))
+                    {
+                        listLedgers.Add(ledgerNum);
+                    }
+                }
+
                 if (dvJournal.Count == 1)
                 {
                     tipText +=
-                        String.Format(Catalog.GetString("Used by 1 unposted row in the Journal table dated {0}"),
-                            ((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper());
+                        String.Format(Catalog.GetString("Used by 1 unposted row dated {0} in {1} in the Journal table"),
+                            StringHelper.DateToLocalizedString((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]),
+                            GetLedgerListText(listLedgers));
                 }
                 else
                 {
-                    tipText += String.Format(Catalog.GetString("Used by {0} unposted rows in the Journal table between {1} and {2}"),
+                    tipText += String.Format(Catalog.GetString("Used by {0} unposted rows between {1} and {2} in {3} in the Journal table"),
                         dvJournal.Count,
-                        ((DateTime)dvJournal[dvJournal.Count - 1][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper(),
-                        ((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper());
+                        StringHelper.DateToLocalizedString((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]),
+                        StringHelper.DateToLocalizedString((DateTime)dvJournal[dvJournal.Count - 1][AJournalTable.ColumnDateEffectiveId]),
+                        GetLedgerListText(listLedgers));
                 }
             }
 
             dvJournal.RowFilter =
-                String.Format(CultureInfo.InvariantCulture, JournalRowFilter, FromCurrency, ToCurrency,
-                    FromDate.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d", CultureInfo.InvariantCulture), "Posted");
+                String.Format(CultureInfo.InvariantCulture, JournalRowFilterRange, FromCurrency, ToCurrency,
+                    FromDate.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d", CultureInfo.InvariantCulture), rate, "Posted");
             bool bHasPostedJournalEntries = (dvJournal.Count > 0);
 
             if (bHasPostedJournalEntries)
@@ -1230,18 +1297,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     tipText += Environment.NewLine;
                 }
 
+                List<int> listLedgers = new List<int>();
+                FGiftBatchDS.MatchingRate = rate;
+                for (int i = 0; i < dvGift.Count; i++)
+                {
+                    int ledgerNum = ((AJournalRow)dvJournal[i].Row).LedgerNumber;
+                    if (!listLedgers.Contains(ledgerNum))
+                    {
+                        listLedgers.Add(ledgerNum);
+                    }
+                }
+
                 if (dvJournal.Count == 1)
                 {
                     tipText +=
-                        String.Format(Catalog.GetString("Used by 1 posted row in the Journal table dated {0}"),
-                            ((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper());
+                        String.Format(Catalog.GetString("Used by 1 posted row in dated {0} {1} in the Journal table"),
+                            StringHelper.DateToLocalizedString((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]),
+                            GetLedgerListText(listLedgers));
                 }
                 else
                 {
-                    tipText += String.Format(Catalog.GetString("Used by {0} posted rows in the Journal table between {1} and {2}"),
+                    tipText += String.Format(Catalog.GetString("Used by {0} posted rows between {1} and {2} in {3} in the Journal table"),
                         dvJournal.Count,
-                        ((DateTime)dvJournal[dvJournal.Count - 1][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper(),
-                        ((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]).ToString("dd-MMM-yyyy").ToUpper());
+                        StringHelper.DateToLocalizedString((DateTime)dvJournal[0][AJournalTable.ColumnDateEffectiveId]),
+                        StringHelper.DateToLocalizedString((DateTime)dvJournal[dvJournal.Count - 1][AJournalTable.ColumnDateEffectiveId]),
+                        GetLedgerListText(listLedgers));
                 }
             }
 
@@ -1251,7 +1331,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
-                tooltipDeleteInfo.Show(tipText, btnInvertExchangeRate, 6000);
+                tooltipDeleteInfo.Show(tipText, btnInvertExchangeRate);
             }
 
             // return true if the rate has been used
@@ -1260,7 +1340,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return;
         }
 
-        void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        private string GetLedgerListText(List<int> ALedgerList)
+        {
+            string ledgerText = String.Empty;
+
+            for (int i = 0; i < ALedgerList.Count; i++)
+            {
+                if (i == 0)
+                {
+                    ledgerText = (ALedgerList.Count > 1) ? Catalog.GetString("Ledgers") : Catalog.GetString("Ledger");
+                }
+                else
+                {
+                    ledgerText += ",";
+                }
+
+                ledgerText += " #" + ALedgerList[i].ToString();
+            }
+            
+            return ledgerText;
+        }
+
+        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
             // The user has clicked Save.  We need to consider if we need to make any Inverse currency additions...
             // We need to update the details and validate them first
@@ -1336,7 +1437,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1);
         }
 
-        void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
         {
             // Just quit if we didn't save our stuff
             if (!e.Success)
