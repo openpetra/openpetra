@@ -11,6 +11,7 @@ RootNode:
     Actions:
         actOK: {Label=&OK, ActionClick=RevertAdjust}
         actClose:  {Label=Close, ActionClick=BtnCloseClick}
+        actHelp: {Label=&Help, ActionClick=BtnHelpClick}
     Controls:
         pnlContent:
             Controls: [pnlSelect, pnlDetails, pnlGrid, pnlButtons]
@@ -26,11 +27,14 @@ RootNode:
         pnlButtons:
             Dock: Bottom
             Controls:
-                Row0: [btnOK, btnClose]
+                Row0: [btnHelp, btnOK, btnClose]
+            ColWidths: [0=Fixed:520,1=Fixed:35,2=Fixed:45]
         btnOK:
             Action: actOK
         btnClose: 
             Action: actClose
+        btnHelp:
+            Action: actHelp
         grdDetails:
             TableName: AGiftBatch
             Dock: Fill
