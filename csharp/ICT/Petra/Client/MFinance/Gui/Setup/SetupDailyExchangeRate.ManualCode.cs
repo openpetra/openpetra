@@ -99,9 +99,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private bool bCanEditDelete = false;
         ToolTip tooltipDeleteInfo = new ToolTip();
 
-        // Create a RateAlert tooltip
-        ToolTip tooltipRateAlert = new ToolTip();
-
         #region Base Class for Serializable Data
 
         private class SerialisableDS
@@ -338,10 +335,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             tooltipDeleteInfo.ToolTipTitle = Catalog.GetString("Usage of this Exchange Rate:");
             tooltipDeleteInfo.ShowAlways = true;
             tooltipDeleteInfo.ToolTipIcon = ToolTipIcon.Info;
-
-            tooltipRateAlert.ToolTipTitle = Catalog.GetString("Exchange rate value alert:");
-            tooltipRateAlert.ShowAlways = true;
-            tooltipRateAlert.ToolTipIcon = ToolTipIcon.Warning;
 
             lblEnableEditDelete.BorderStyle = BorderStyle.FixedSingle;
             lblEnableEditDelete.BackColor = Color.LightGreen;
@@ -997,82 +990,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void GetDetailDataFromControlsManual(ADailyExchangeRateRow ARow)
         {
-            tooltipRateAlert.Hide(cmbDetailFromCurrencyCode);
-
-            if ((ARow.RowState == DataRowState.Added) || (ARow.RowState == DataRowState.Modified))
-            {
-                // We are going to check if the rate of exchange is sensible.  We need our own view because we don't know how the grid is currently sorted
-                string filter =
-                    ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + ARow.FromCurrencyCode + "' and " +
-                    ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + ARow.ToCurrencyCode + "'";
-                DataView myView = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
-
-                // Find our current row
-                int nThis = FindRowInDataView(myView, ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom);
-                ADailyExchangeRateRow drThis = null;
-                ADailyExchangeRateRow drPrev = null;
-                ADailyExchangeRateRow drNext = null;
-                decimal ratio = 1.0m;
-                string tipText = String.Empty;
-
-                if ((nThis >= 0) && (ARow.RateOfExchange != 0.0m))
-                {
-                    drThis = (ADailyExchangeRateRow)(myView[nThis]).Row;
-
-                    if (nThis >= 1)
-                    {
-                        drPrev = (ADailyExchangeRateRow)(myView[nThis - 1]).Row;
-                    }
-
-                    if (nThis < myView.Count - 1)
-                    {
-                        drNext = (ADailyExchangeRateRow)(myView[nThis + 1]).Row;
-                    }
-
-                    if (drPrev != null)
-                    {
-                        ratio = drThis.RateOfExchange / drPrev.RateOfExchange;
-
-                        if (ratio < 1.0m)
-                        {
-                            ratio = drPrev.RateOfExchange / drThis.RateOfExchange;
-                        }
-                    }
-
-                    if (drNext != null)
-                    {
-                        decimal tryRatio = drThis.RateOfExchange / drNext.RateOfExchange;
-
-                        if (tryRatio < 1.0m)
-                        {
-                            tryRatio = drNext.RateOfExchange / drThis.RateOfExchange;
-                        }
-
-                        if (tryRatio > ratio)
-                        {
-                            ratio = tryRatio;
-                        }
-                    }
-
-                    if (ratio > EXCHANGE_RATE_WARNING_RATIO)
-                    {
-                        tipText = String.Format(
-                            Catalog.GetString(
-                                "The rate you have entered for {0}->{1} on {2} at {3} differs from the previous or next rate for the same currencies by more than {4:0%}."),
-                            ARow.FromCurrencyCode,
-                            ARow.ToCurrencyCode,
-                            dtpDetailDateEffectiveFrom.Text,
-                            txtDetailTimeEffectiveFrom.Text,
-                            ratio - 1.0m);
-                    }
-                }
-
-                if (tipText != String.Empty)
-                {
-                    tooltipRateAlert.Show(tipText, cmbDetailFromCurrencyCode);
-                }
-            }
-
             // Check if the rate was changed - if it was, do we need to save to an external table??
             if (!txtDetailRateOfExchange.Enabled)
             {
@@ -1157,6 +1074,91 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             TSharedFinanceValidation_GLSetup.ValidateDailyExchangeRate(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict, minModalEffectiveDate, maxModalEffectiveDate);
+
+            // Now make an additional manual check that the rate is sensible
+            TScreenVerificationResult verificationResult = null;
+
+            if ((ARow.RowState == DataRowState.Added) || (ARow.RowState == DataRowState.Modified))
+            {
+                // We are going to check if the rate of exchange is sensible.  We need our own view because we don't know how the grid is currently sorted
+                string filter =
+                    ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + ARow.FromCurrencyCode + "' and " +
+                    ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + ARow.ToCurrencyCode + "'";
+                DataView myView = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
+
+                // Find our current row
+                int nThis = FindRowInDataView(myView, ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom);
+                ADailyExchangeRateRow drThis = null;
+                ADailyExchangeRateRow drPrev = null;
+                ADailyExchangeRateRow drNext = null;
+                decimal ratio = 1.0m;
+                string tipText = String.Empty;
+
+                if ((nThis >= 0) && (ARow.RateOfExchange != 0.0m))
+                {
+                    drThis = (ADailyExchangeRateRow)(myView[nThis]).Row;
+
+                    if (nThis >= 1)
+                    {
+                        drPrev = (ADailyExchangeRateRow)(myView[nThis - 1]).Row;
+                    }
+
+                    if (nThis < myView.Count - 1)
+                    {
+                        drNext = (ADailyExchangeRateRow)(myView[nThis + 1]).Row;
+                    }
+
+                    if (drPrev != null)
+                    {
+                        ratio = drThis.RateOfExchange / drPrev.RateOfExchange;
+
+                        if (ratio < 1.0m)
+                        {
+                            ratio = drPrev.RateOfExchange / drThis.RateOfExchange;
+                        }
+                    }
+
+                    if (drNext != null)
+                    {
+                        decimal tryRatio = drThis.RateOfExchange / drNext.RateOfExchange;
+
+                        if (tryRatio < 1.0m)
+                        {
+                            tryRatio = drNext.RateOfExchange / drThis.RateOfExchange;
+                        }
+
+                        if (tryRatio > ratio)
+                        {
+                            ratio = tryRatio;
+                        }
+                    }
+
+                    if (ratio > EXCHANGE_RATE_WARNING_RATIO)
+                    {
+                        string validationMessage = String.Format(
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_EXCH_RATE_MAY_BE_INCORRECT).ErrorMessageText,
+                            ARow.RateOfExchange,
+                            ARow.FromCurrencyCode,
+                            ARow.ToCurrencyCode,
+                            dtpDetailDateEffectiveFrom.Text,
+                            txtDetailTimeEffectiveFrom.Text,
+                            ratio - 1.0m);
+
+                        // So we have a new warning to raise on a row that has been added/edited
+                        verificationResult = new TScreenVerificationResult(
+                            this,
+                            ARow.Table.Columns[ADailyExchangeRateTable.ColumnRateOfExchangeId],
+                            validationMessage,
+                            Catalog.GetString("Exchange Rate Alert"),
+                            PetraErrorCodes.ERR_EXCH_RATE_MAY_BE_INCORRECT,
+                            txtDetailRateOfExchange,
+                            TResultSeverity.Resv_Noncritical);
+                    }
+                }
+            }
+
+            VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, verificationResult,
+                ARow.Table.Columns[ADailyExchangeRateTable.ColumnRateOfExchangeId]);
         }
 
         private void CheckIfRateHasBeenUsed(string FromCurrency,
