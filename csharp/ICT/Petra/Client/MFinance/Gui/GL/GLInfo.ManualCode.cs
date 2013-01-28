@@ -49,24 +49,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
         }
 
-        private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
-        private Int32 FLedgerNumber;
-
-        /// dataset for the whole screen
-        public Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS MainDS
-        {
-            set
-            {
-                FMainDS = value;
-            }
-        }
-
         /// the ledger that the user is currently working with
         public Int32 LedgerNumber
         {
             set
             {
-                FLedgerNumber = value;
                 ucoLedgerInfo.LedgerNumber = value;
                 this.Text = String.Format(Catalog.GetString("Ledger Info - Ledger {0}"), value.ToString());
             }
