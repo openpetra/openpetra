@@ -376,7 +376,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         #region Fields
 
         /// <summary>Dictionary containing a list of TPetraShepherdPage using the page's Unique ID as an identifier.</summary>
-        private Dictionary <string, TPetraShepherdPage>FPagesList = new Dictionary <string, TPetraShepherdPage>();
+        private Dictionary<string, TPetraShepherdPage> FPagesList = new Dictionary<string, TPetraShepherdPage>();
 
         #endregion
 
@@ -385,7 +385,7 @@ namespace Ict.Petra.Client.CommonForms.Logic
         /// <summary>
         /// Allows for read-only access to a Dictionary of Pages.
         /// </summary>
-        public Dictionary <string, TPetraShepherdPage>Pages
+        public Dictionary<string, TPetraShepherdPage> Pages
         {
             get
             {
@@ -443,10 +443,10 @@ namespace Ict.Petra.Client.CommonForms.Logic
             TLogging.Log("Adding a shepherd finish page: " + shepherdFinishPage.ID);
             FPagesList.Add(shepherdFinishPage.ID, shepherdFinishPage);
 
-            //Temporary Statement to add a subshepherd finish page in addition to the Finish page above
-            TPetraShepherdFinishPage shepherdSubFinishPage = new TPetraShepherdFinishPage(XmlPages, "SubShepherd");
-            TLogging.Log("Adding a shepherd sub-finish page: " + shepherdSubFinishPage.ID);
-            FPagesList.Add(shepherdSubFinishPage.ID, shepherdSubFinishPage);
+////            //Temporary Statement to add a subshepherd finish page in addition to the Finish page above
+////            TPetraShepherdFinishPage shepherdSubFinishPage = new TPetraShepherdFinishPage(XmlPages, "SubShepherd");
+////            TLogging.Log("Adding a shepherd sub-finish page: " + shepherdSubFinishPage.ID);
+////            FPagesList.Add(shepherdSubFinishPage.ID, shepherdSubFinishPage);
 
             TLogging.Log("TPetraShepherdPagesList Constructor ran successfully.");
         }
