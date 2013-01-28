@@ -120,6 +120,13 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "There must be at least {0} periods because {1} periods have been used already.")]
         public const String ERR_NUMBER_FWD_PERIODS_TOO_SMALL = "FIN.00002V";
 
+        /// <summary>Warning message that two exchange rates differ by more than 10%.</summary>
+        [ErrCodeAttribute("Exchange rate may be incorrect.",
+             ErrorMessageText =
+                 "The rate of {0} that you have entered for {1}->{2} on {3} at {4} differs from the previous or next rate for the same currencies by more than {5:0%}.")
+        ]
+        public const String ERR_EXCH_RATE_MAY_BE_INCORRECT = "FIN.00003N";
+
         #endregion
 
         #region Partner Module-specific error codes

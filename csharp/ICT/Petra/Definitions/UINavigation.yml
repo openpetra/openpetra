@@ -180,6 +180,7 @@ OpenPetra:
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Transaction, Batch]
                     General:
+                        LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
                         ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
                         GLRevaluation: {Description:Runs a Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
