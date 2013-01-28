@@ -61,6 +61,34 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
     public partial class TGLSetupWebConnector
     {
         /// <summary>
+        /// returns general ledger information
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLSetupTDS LoadLedgerInfo(Int32 ALedgerNumber)
+        {
+            GLSetupTDS MainDS = new GLSetupTDS();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
+            AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+            AAccountingPeriodAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
+
+            // Remove all Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return MainDS;
+        }
+
+
+        /// <summary>
         /// returns general ledger settings
         /// </summary>
         /// <param name="ALedgerNumber"></param>
