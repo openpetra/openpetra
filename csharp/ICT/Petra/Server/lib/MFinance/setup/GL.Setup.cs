@@ -1707,6 +1707,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             Fields.Add(ALedgerTable.GetLedgerNameDBName());
             Fields.Add(ALedgerTable.GetLedgerNumberDBName());
+            Fields.Add(ALedgerTable.GetBaseCurrencyDBName());
+            Fields.Add(ALedgerTable.GetLedgerStatusDBName());
             return ALedgerAccess.LoadAll(Fields, null, null, 0, 0);
         }
 

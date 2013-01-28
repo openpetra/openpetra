@@ -301,6 +301,34 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                             SubmissionResult = TSubmitChangesResult.scrError;
                         }
                     }
+                    else if (ATablename == AGiftBatchTable.GetTableDBName())
+                    {
+                        // This method is called from ADailyExchangeRate Setup - please do not remove
+                        // The method is not required for changes made to the gift batch screens, which use a TDS
+                        if (AGiftBatchAccess.SubmitChanges((AGiftBatchTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == AJournalTable.GetTableDBName())
+                    {
+                        // This method is called from ADailyExchangeRate Setup - please do not remove
+                        // The method is not required for changes made to the journal screens, which use a TDS
+                        if (AJournalAccess.SubmitChanges((AJournalTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
                     else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                     {
                         if (AAnalysisTypeAccess.SubmitChanges((AAnalysisTypeTable)ASubmitTable, SubmitChangesTransaction,
