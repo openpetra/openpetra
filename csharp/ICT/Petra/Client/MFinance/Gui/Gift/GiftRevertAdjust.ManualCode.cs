@@ -243,22 +243,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     case "ReverseGiftBatch":
                         MessageBox.Show(Catalog.GetString("Your batch has been successfully reversed"),
-                		                Catalog.GetString("Reverse Gift Batch"));
+                        Catalog.GetString("Reverse Gift Batch"));
                         break;
 
                     case "ReverseGiftDetail":
                         MessageBox.Show(Catalog.GetString("Your gift detail has been successfully reversed"),
-                		                Catalog.GetString("Reverse Gift Detail"));
+                        Catalog.GetString("Reverse Gift Detail"));
                         break;
 
                     case "ReverseGift":
                         MessageBox.Show(Catalog.GetString("Your gift has been successfully reversed"),
-                		                Catalog.GetString("Reverse Gift"));
+                        Catalog.GetString("Reverse Gift"));
                         break;
 
                     case "AdjustGift":
                         MessageBox.Show(Catalog.GetString("Your gift has been successfully adjusted"),
-                		                Catalog.GetString("Adjust Gift"));
+                        Catalog.GetString("Adjust Gift"));
                         break;
                 }
 

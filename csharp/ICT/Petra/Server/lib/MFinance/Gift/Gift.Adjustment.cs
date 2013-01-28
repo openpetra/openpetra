@@ -460,7 +460,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //assuming new elements are added after these static borders
 
                 int cycle = 0;
-                
+
                 MainDS.AGift.DefaultView.Sort = string.Format("{0}, {1}",
                     AGiftTable.GetBatchNumberDBName(),
                     AGiftTable.GetGiftTransactionNumberDBName());
@@ -479,7 +479,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         if ((oldGift.BatchNumber == ABatchNumber) && (oldGift.LedgerNumber == ALedgerNumber)
                             && (Function.Equals("ReverseGiftBatch") || (oldGift.GiftTransactionNumber == AGiftNumber)))
                         {
-                        	AGiftRow gift = MainDS.AGift.NewRowTyped(true);
+                            AGiftRow gift = MainDS.AGift.NewRowTyped(true);
                             DataUtilities.CopyAllColumnValuesWithoutPK(oldGift, gift);
                             gift.LedgerNumber = giftBatch.LedgerNumber;
                             gift.BatchNumber = giftBatch.BatchNumber;
@@ -492,7 +492,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             foreach (DataRowView giftDetailRow in MainDS.AGiftDetail.DefaultView)
                             {
-                            	AGiftDetailRow oldGiftDetail = (AGiftDetailRow)giftDetailRow.Row;
+                                AGiftDetailRow oldGiftDetail = (AGiftDetailRow)giftDetailRow.Row;
 
                                 if ((oldGiftDetail.GiftTransactionNumber == oldGift.GiftTransactionNumber)
                                     && (oldGiftDetail.BatchNumber == ABatchNumber)

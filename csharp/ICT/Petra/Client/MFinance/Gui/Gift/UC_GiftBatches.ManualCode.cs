@@ -364,12 +364,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (!ASelectOnly)
             {
-	            FMainDS.AGiftBatch.DefaultView.RowFilter =
-	                String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-	
-	            FPreviouslySelectedDetailRow = null;
-	            grdDetails.DataSource = null;
-	            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
+                FMainDS.AGiftBatch.DefaultView.RowFilter =
+                    String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+
+                FPreviouslySelectedDetailRow = null;
+                grdDetails.DataSource = null;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
             }
 
             if (grdDetails.Rows.Count < 2)
@@ -503,8 +503,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (FPetraUtilsObject.HasChanges)
             {
-            	GetDataFromControls();
+                GetDataFromControls();
             }
+
             this.FPreviouslySelectedDetailRow = null;
             ShowData();
         }
@@ -872,16 +873,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void PostBatch(System.Object sender, EventArgs e)
         {
             int currentBatchNo = 0;
-            
-        	if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+
+            if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
                 return;
             }
-        	
-        	if (rbtAll.Checked)
-        	{
-        		currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
-        	}
+
+            if (rbtAll.Checked)
+            {
+                currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
+            }
 
             TVerificationResultCollection Verifications;
 
@@ -956,10 +957,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     ((TFrmGiftBatch)ParentForm).SaveChanges();
                 }
-                
+
                 if (currentBatchNo > 0)
                 {
-                	RefreshGridData(currentBatchNo, true);
+                    RefreshGridData(currentBatchNo, true);
                 }
             }
         }
