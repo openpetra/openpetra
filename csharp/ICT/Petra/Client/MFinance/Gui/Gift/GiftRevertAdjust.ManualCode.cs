@@ -242,19 +242,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 switch (function)
                 {
                     case "ReverseGiftBatch":
-                        MessageBox.Show(Catalog.GetString("Your batch has been sucessfully reversed"));
+                        MessageBox.Show(Catalog.GetString("Your batch has been successfully reversed"),
+                        Catalog.GetString("Reverse Gift Batch"));
                         break;
 
                     case "ReverseGiftDetail":
-                        MessageBox.Show(Catalog.GetString("Your gift detail has been sucessfully reversed"));
+                        MessageBox.Show(Catalog.GetString("Your gift detail has been successfully reversed"),
+                        Catalog.GetString("Reverse Gift Detail"));
                         break;
 
                     case "ReverseGift":
-                        MessageBox.Show(Catalog.GetString("Your gift has been sucessfully reversed"));
+                        MessageBox.Show(Catalog.GetString("Your gift has been successfully reversed"),
+                        Catalog.GetString("Reverse Gift"));
                         break;
 
                     case "AdjustGift":
-                        MessageBox.Show(Catalog.GetString("Your gift has been sucessfully adjusted"));
+                        MessageBox.Show(Catalog.GetString("Your gift has been successfully adjusted"),
+                        Catalog.GetString("Adjust Gift"));
                         break;
                 }
 
@@ -286,15 +290,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //add the focused event temporarily to allow execution of more manual code right at the
             //  end of the initialisation process.
-            this.btnOK.Enter += new System.EventHandler(this.OKFocussed);
+            this.btnHelp.Enter += new System.EventHandler(this.HelpFocussed);
         }
 
-        private void OKFocussed(System.Object sender, EventArgs e)
+        private void HelpFocussed(System.Object sender, EventArgs e)
         {
             grdDetails.DataSource = null;
             grdDetails.Visible = true;
             dtpEffectiveDate.Focus();
-            this.btnOK.Enter -= new System.EventHandler(this.OKFocussed);
+            this.btnOK.Enter -= new System.EventHandler(this.HelpFocussed);
             chkSelect.Enabled = (giftMainDS == null);
         }
 
