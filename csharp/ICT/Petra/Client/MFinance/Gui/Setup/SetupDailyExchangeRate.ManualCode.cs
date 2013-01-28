@@ -1092,7 +1092,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ADailyExchangeRateRow drPrev = null;
                 ADailyExchangeRateRow drNext = null;
                 decimal ratio = 1.0m;
-                string tipText = String.Empty;
 
                 if ((nThis >= 0) && (ARow.RateOfExchange != 0.0m))
                 {
