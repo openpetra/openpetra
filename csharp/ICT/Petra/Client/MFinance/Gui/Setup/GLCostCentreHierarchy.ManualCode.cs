@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         };
 
         /// <summary>
-        /// Setup the account hierarchy of this ledger
+        /// Setup the CostCentre hierarchy of this ledger
         /// </summary>
         public Int32 LedgerNumber
         {
@@ -776,6 +776,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FPetraUtilsObject.SetChangedFlag();
                 }
             }
-        }
-    }
-}
+        } // UpdateOnControlChanged
+
+
+        private void LinkPartnerCostCentre(object sender, EventArgs e)
+        {
+            TFrmLinkPartnerCostCentre PartnerLinkScreen = new TFrmLinkPartnerCostCentre(this);
+            PartnerLinkScreen.LedgerNumber = FLedgerNumber;
+            PartnerLinkScreen.Show();
+        }  // LinkPartnerCostCentre
+
+    } // TFrmGLCostCentreHierarchy
+} // namespace

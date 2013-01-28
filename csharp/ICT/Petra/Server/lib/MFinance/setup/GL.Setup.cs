@@ -124,6 +124,88 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return MainDS;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable LoadCostCentrePartnerLinks(Int32 ALedgerNumber)
+        {
+            
+            //
+            // Load Partners where PartnerType includes "COSTCENTRE":
+            String SqlQuery = "SELECT p_partner_short_name_c as ShortName,"
+                + "PUB_p_partner.p_partner_key_n as PartnerKey,"
+                + "0 as IsLinked"
+                + " FROM PUB_p_partner, PUB_p_partner_type"
+                + " WHERE PUB_p_partner_type.p_partner_key_n = PUB_p_partner.p_partner_key_n"
+                + " AND PUB_p_partner_type.p_type_code_c = 'COSTCENTRE';";
+
+            DataTable PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", null);
+            PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
+            AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, null);
+            foreach (AValidLedgerNumberRow Row in LinksTbl.Rows)
+            {
+                Int32 RowIdx = PartnerCostCentreTbl.DefaultView.Find(Row.PartnerKey);
+                if (RowIdx >= 0)
+                {
+                    PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = Row.CostCentreCode;
+                }
+
+            }
+
+            return PartnerCostCentreTbl;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="PartnerCostCentreTbl"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static TSubmitChangesResult SaveCostCentrePartnerLinks(
+            Int32 ALedgerNumber, DataTable PartnerCostCentreTbl, out TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, null);
+            LinksTbl.DefaultView.Sort = "p_partner_key";
+
+            foreach (DataRow Row in PartnerCostCentreTbl.Rows)
+            {
+                if (Convert.ToInt32(Row["IsLinked"]) != 0)   // This should be in the LinksTbl - if it's not, I'll add it.
+                {
+                    Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
+                    if (RowIdx < 0)
+                    {
+                        AValidLedgerNumberRow LinksRow = LinksTbl.NewRowTyped();
+                        LinksRow.LedgerNumber = ALedgerNumber;
+                        LinksRow.PartnerKey = Convert.ToInt64(Row["PartnerKey"]);
+                        LinksRow.IltProcessingCentre = 4000000; // This is the ICH ledger number, but I don't know if anyone cares about it!
+                        LinksRow.CostCentreCode = Convert.ToString(Row["IsLinked"]);
+                    }
+                }
+                else                // This should not be in the LinksTbl - if it is, I'll delete it.
+                {
+                    Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
+                    if (RowIdx >= 0)
+                    {
+                        AValidLedgerNumberRow LinksRow = (AValidLedgerNumberRow)LinksTbl.DefaultView[RowIdx].Row;
+                        LinksRow.Delete();
+                    }
+                }
+            }
+
+            if (!AValidLedgerNumberAccess.SubmitChanges(LinksTbl, Transaction, out AVerificationResult))
+            {
+                ReturnValue = TSubmitChangesResult.scrError;
+            }
+            return ReturnValue;
+        }
+
         private static void DropAccountProperties(
             ref GLSetupTDS AInspectDS,
             Int32 ALedgerNumber,
