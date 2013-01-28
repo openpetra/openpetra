@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         private void GenerateHOSAFiles(Object Sender, EventArgs e)
         {
             int Currency = (this.rbtBase.Checked ? 0 : 1); //0 = base 1 = intl
-            string FileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
+            string FileName = TClientSettings.PathTemp + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
             TVerificationResultCollection VerificationResults;
 
             string msg = string.Empty;

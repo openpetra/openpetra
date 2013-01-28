@@ -108,6 +108,20 @@ namespace Ict.Petra.Shared
 
         #endregion
 
+        #region Finance Module-specific error codes
+
+        /// <summary>Suspense accounts exist despite disabling suspense accounts for a ledger.</summary>
+        [ErrCodeAttribute("Suspense Accounts in use.",
+             ErrorMessageText = "The use of suspense accounts cannot be	disabled because there are accounts	currently in use.")]
+        public const String ERR_NO_SUSPENSE_ACCOUNTS_ALLOWED = "FIN.00001V";
+
+        /// <summary>Partner Key is invalid.</summary>
+        [ErrCodeAttribute("Too small number of forwarding periods.",
+             ErrorMessageText = "There must be at least {0} periods because {1} periods have been used already.")]
+        public const String ERR_NUMBER_FWD_PERIODS_TOO_SMALL = "FIN.00002V";
+
+        #endregion
+
         #region Partner Module-specific error codes
 
         /// <summary>Partner Key is invalid.</summary>
