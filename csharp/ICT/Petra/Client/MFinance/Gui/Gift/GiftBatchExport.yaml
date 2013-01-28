@@ -4,8 +4,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     FormType: browse
     Template: window
-    WindowWidth: 660
-    WindowHeight: 700
+    WindowWidth: 480
+    WindowHeight: 660
     Actions:
         actExportBatches: {Label=&Start, ActionClick=ExportBatches}
         actClose: {Label=&Close, ActionClick=BtnCloseClick}
@@ -19,15 +19,23 @@ RootNode:
             Controls:
                 Row0: [rgrDetailSummary]
                 Row0b: [rgrCurrency]
+                Row0c: [EmptyRow1]
                 Row1: [pnlRecipient]
+                Row1b: [EmptyRows2]
                 Row2: [rgrDateOrBatchRange]
                 Row3: [chkIncludeUnposted]
                 Row4: [chkTransactionsOnly]
                 Row5: [chkExtraColumns]
+                Row5b: [EmptyRows3]
                 Row6: [pnlFilename]
                 Row7: [cmbDelimiter]
                 Row8: [cmbDateFormat]
                 Row9: [cmbNumberFormat]
+        EmptyRows1: {Label=.}
+        EmptyRows2:
+        EmptyRows3:
+        #EmptyRows4:
+        #EmptyRows5:
         rgrDetailSummary:
             Label: Detail or Summary
             Controls: [rbtDetail, rbtSummary]
@@ -36,10 +44,12 @@ RootNode:
         rbtSummary:
             Controls: [dtpDateSummary]
         pnlRecipient:
-            Label: Recipient
+            #Label: Recipient
             Controls:
-                Row0: [txtDetailRecipientKey]
-                Row1: [txtDetailFieldKey]         
+                Row0: [lblRecipient]
+                Row1: [txtDetailRecipientKey]
+                Row2: [txtDetailFieldKey]         
+        lblRecipient: {Label=Recipient Details}
         txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey}
         txtDetailFieldKey: {Label=Field, Type=PartnerKey}
         rgrCurrency:
@@ -70,13 +80,15 @@ RootNode:
             Dock:Bottom
             Controls:
                 Row0: [btnHelp, btnOK, btnClose]
-            ColWidths: [0=Fixed:400,1=Fixed:100,2=Fixed:100]
+            ColWidths: [0=Fixed:320,1=Fixed:42,2=Fixed:45]
         btnHelp: {Action=actHelp}
         btnClose: {Action=actClose}
         btnOK: {Action=actExportBatches}                
         txtFilename: 
             Width:300
         btnBrowseFilename:
+            Label: ...
+            Height: 22
             ActionClick: BtnBrowseClick
         cmbDateFormat:
             OptionalValues: [MM/dd/yyyy,dd/MM/yyyy,yyyy-MM-dd]
