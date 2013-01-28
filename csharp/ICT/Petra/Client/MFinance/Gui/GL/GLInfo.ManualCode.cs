@@ -58,6 +58,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 this.Text = String.Format(Catalog.GetString("Ledger Info - Ledger {0}"), value.ToString());
             }
         }
-
     }
 }
