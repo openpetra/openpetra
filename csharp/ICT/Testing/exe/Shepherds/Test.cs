@@ -58,12 +58,12 @@ namespace Ict.Testing.Shepherds
         [Test]
         public void TestTPetraShepherdParseYAMLFileElementsMethod()
         {
-            //This method needs to be tested, still, but I am not sure how to do it yet because the attributes that it currently
-            //collects are not being saved anywhere in the logic yet; it just peeks at them. We need to figure out what to do with
-            //the attributes that are collected by ParseYAMLFileELements()
-            TestLogicInterface testShepherdInterface = new TestLogicInterface();
-            TPetraShepherdFormLogic testParseYAMLFileELementsLogic =
-                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, testShepherdInterface);
+            // TODO: This method needs to be tested, still, but I am not sure how to do it yet because the attributes that it currently
+            // collects are not being saved anywhere in the logic yet; it just peeks at them. We need to figure out what to do with
+            // the attributes that are collected by ParseYAMLFileELements()
+////            TestLogicInterface testShepherdInterface = new TestLogicInterface();                // TODO
+////            TPetraShepherdFormLogic testParseYAMLFileELementsLogic =                            // TODO
+////                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, testShepherdInterface);      // TODO
         }
 
         /// <summary>
@@ -290,10 +290,11 @@ namespace Ict.Testing.Shepherds
         [Test]
         public void TestPetraShepherdFormLogicParseYAMLFileElements()
         {
-            TestLogicInterface TestLogicInterface = new TestLogicInterface();
-            TPetraShepherdFormLogic testFormUpdateShepherdFormProperties =
-                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, TestLogicInterface);
-            ////how do we test the elements of a GUI element?
+            // TODO: How do we test the elements of a GUI element?
+////            TestLogicInterface TestLogicInterface = new TestLogicInterface();               // TODO
+////            TPetraShepherdFormLogic testFormUpdateShepherdFormProperties =                  // TODO
+////                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, TestLogicInterface);     // TODO
+            
         }
 
         /// <summary>

@@ -55,8 +55,8 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>Instance of base Shepherd Logic.</summary>
         private TPetraShepherdFormLogic FLogic;
 
-        /// <summary>Instance of helper Class for navigation purposes.</summary>
-        private TShepherdNavigationHelper FShepherdNavigationHelper;
+////        /// <summary>Instance of helper Class for navigation purposes.</summary>
+////        private TShepherdNavigationHelper FShepherdNavigationHelper;   TODO what was this Class about? Is it still needed?
 
         #endregion
 
@@ -311,7 +311,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             TLogging.Log("Entering TPetraShepherdConcreteForm (Base) Form_Load...");
 
-            FShepherdNavigationHelper = new TShepherdNavigationHelper(FLogic.ShepherdPages, NavigationPanel);
+////            FShepherdNavigationHelper = new TShepherdNavigationHelper(FLogic.ShepherdPages, NavigationPanel);   TODO what was this Class about? Is it still needed?
 
             this.Text = FShepherdTitle;
 
