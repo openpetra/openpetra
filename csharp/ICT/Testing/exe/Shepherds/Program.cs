@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       pauln
 //
 // Copyright 2004-2013 by OM International
 //
@@ -20,43 +20,25 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
-//
 using System;
-using System.Collections;
-using System.IO;
-using System.Windows.Forms;
 
-using Ict.Common.Remoting.Client;
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using GNU.Gettext;
-using Ict.Common;
+using NUnit.Framework;
 
-namespace Ict.Petra.Client.MFinance.Gui.GL
+namespace Ict.Testing.Shepherds
 {
     /// <summary>
-    /// Manual code for the GL Info screen
+    /// Main entry point for the program.
     /// </summary>
-    public partial class TFrmGLInfo
+    public class Program
     {
         /// <summary>
-        /// Initialize values
+        /// Main entry point for the program.
         /// </summary>
-        public void InitializeManualCode()
+        /// <remarks>TODO: This Unit Test should be converted to be a DLL rather than an EXE!</remarks>
+        /// <param name="AArgs">Command Line arguments array.</param>
+        public static void Main(string[] AArgs)
         {
-        }
-
-        /// the ledger that the user is currently working with
-        public Int32 LedgerNumber
-        {
-            set
-            {
-                ucoLedgerInfo.LedgerNumber = value;
-                this.Text = String.Format(Catalog.GetString("Ledger Info - Ledger {0}"), value.ToString());
-            }
+            Console.WriteLine("Test.");
         }
     }
 }

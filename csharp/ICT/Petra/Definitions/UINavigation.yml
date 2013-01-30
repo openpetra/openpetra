@@ -28,6 +28,7 @@ OpenPetra:
                 Partners: {Namespace=Ict.Petra.Client.MPartner.Gui, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Partner]
                     MaintainPartners:
+
                         #ChangeAddress:
                         #MergePartners:
                         FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners, ActionOpenScreen=TPartnerFindScreen, Singleton=true}
@@ -37,6 +38,8 @@ OpenPetra:
                         AddNewFamily: {ActionClick=TPartnerMain.NewPartner, Description=Create a new Partner of Class FAMILY}
                         AddNewPerson: {ActionClick=TPartnerMain.NewPerson, Description=Create a new Partner of Class PERSON}
                         AddNewOrganisation: {ActionClick=TPartnerMain.NewOrganisation, Description=Create a new Partner of Class ORGANISATION}
+#                        AddNewFamilyShepherd: {ActionOpenScreen=TShepherdFamilyForm}
+#                        AddNewChurchShepherd: {ActionOpenScreen=TShepherdChurchForm}
                     Contacts:
                         FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Contacts of Partners}
                     ImportExport: {Label=Import and Export}

@@ -87,7 +87,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return MainDS;
         }
 
-
         /// <summary>
         /// returns general ledger settings
         /// </summary>

@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             dtpPostingAllowedUntil.Enabled = false;
             chkSuspenseAccounts.Enabled = false;
             chkBudgetControl.Enabled = false;
-            
+
             FMainDS = new GLSetupTDS();
         }
 
@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ShowData(FMainDS);
             }
         }
-        
+
         /// <summary>
         /// implement dummy functions so that we can use this control on a yaml form
         /// </summary>
@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             // not implemented
         }
-        
+
         /// <summary>
         /// Show ledger info data from given data set
         /// </summary>
@@ -116,6 +116,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             cmbIntlCurrency.SetSelectedString(LedgerRow.IntlCurrency, -1);
 
             txtAccountingPeriods.NumberValueInt = LedgerRow.NumberOfAccountingPeriods;
+
             if (LedgerRow.CalendarMode)
             {
                 txtCalendarMode.Text = Catalog.GetString("Monthly");
@@ -124,32 +125,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 txtCalendarMode.Text = Catalog.GetString("Non-Monthly");
             }
-            
+
             txtCurrencyRevaluation.Text = LedgerRow.ForexGainsLossesAccount;
             txtCurrentPeriod.NumberValueInt = LedgerRow.CurrentPeriod;
             txtForwardPeriods.NumberValueInt = LedgerRow.NumberFwdPostingPeriods;
-            
-            TempRow = ADataSet.AAccountingPeriod.Rows.Find(new object[] { LedgerRow.LedgerNumber, 
-                                                               LedgerRow.CurrentPeriod});
+
+            TempRow = ADataSet.AAccountingPeriod.Rows.Find(new object[] { LedgerRow.LedgerNumber,
+                                                                          LedgerRow.CurrentPeriod });
+
             if (TempRow != null)
             {
                 AccountingPeriodRow = (AAccountingPeriodRow)TempRow;
                 dtpPeriodStartDate.Date = AccountingPeriodRow.PeriodStartDate.Date;
                 dtpPeriodEndDate.Date = AccountingPeriodRow.PeriodEndDate.Date;
             }
-            
-            TempRow = ADataSet.AAccountingPeriod.Rows.Find(new object[] { LedgerRow.LedgerNumber, 
-                                                               LedgerRow.CurrentPeriod + LedgerRow.NumberFwdPostingPeriods});
-                
+
+            TempRow = ADataSet.AAccountingPeriod.Rows.Find(new object[] { LedgerRow.LedgerNumber,
+                                                                          LedgerRow.CurrentPeriod + LedgerRow.NumberFwdPostingPeriods });
+
             if (TempRow != null)
             {
                 AccountingPeriodRow = (AAccountingPeriodRow)TempRow;
                 dtpPostingAllowedUntil.Date = AccountingPeriodRow.PeriodEndDate.Date;
             }
-            
+
             chkSuspenseAccounts.Checked = LedgerRow.SuspenseAccountFlag;
             chkBudgetControl.Checked = LedgerRow.BudgetControlFlag;
         }
-
     }
 }
