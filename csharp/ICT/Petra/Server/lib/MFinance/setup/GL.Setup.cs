@@ -208,9 +208,24 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return MainDS;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary></summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable LoadLocalSummaryCostCentres(Int32 ALedgerNumber)
+        {
+            String SqlQuery = "SELECT a_cost_centre_code_c AS CostCentreCode, "
+                + "a_cost_centre_name_c AS CostCentreName"
+                + " FROM PUB_a_cost_centre"
+                + " WHERE a_ledger_number_i = " + ALedgerNumber
+                + " AND a_posting_cost_centre_flag_l=FALSE"
+                + " AND a_cost_centre_type_c = 'Local'"
+                + " AND a_cost_centre_to_report_to_c <> '';";
+            DataTable ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", null);
+            return ParentCostCentreTbl;
+        }
+
+        /// <summary></summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
@@ -219,9 +234,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             
             //
             // Load Partners where PartnerType includes "COSTCENTRE":
-            String SqlQuery = "SELECT p_partner_short_name_c as ShortName,"
-                + "PUB_p_partner.p_partner_key_n as PartnerKey,"
-                + "0 as IsLinked"
+            String SqlQuery = "SELECT p_partner_short_name_c as ShortName, "
+                + "PUB_p_partner.p_partner_key_n as PartnerKey, "
+                + "'0' as IsLinked, "
+                + "'0' as ReportsTo"
                 + " FROM PUB_p_partner, PUB_p_partner_type"
                 + " WHERE PUB_p_partner_type.p_partner_key_n = PUB_p_partner.p_partner_key_n"
                 + " AND PUB_p_partner_type.p_type_code_c = 'COSTCENTRE';";
@@ -235,6 +251,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (RowIdx >= 0)
                 {
                     PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = Row.CostCentreCode;
+                    ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, Row.CostCentreCode, null);
+                    if (CCTbl.Rows.Count > 0)
+                    {
+                        PartnerCostCentreTbl.DefaultView[RowIdx].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
+                    }
                 }
 
             }
@@ -253,39 +274,82 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static TSubmitChangesResult SaveCostCentrePartnerLinks(
             Int32 ALedgerNumber, DataTable PartnerCostCentreTbl, out TVerificationResultCollection AVerificationResult)
         {
-            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, null);
-            LinksTbl.DefaultView.Sort = "p_partner_key";
-
-            foreach (DataRow Row in PartnerCostCentreTbl.Rows)
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
+            try
             {
-                if (Convert.ToInt32(Row["IsLinked"]) != 0)   // This should be in the LinksTbl - if it's not, I'll add it.
+                AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                LinksTbl.DefaultView.Sort = "p_partner_key_n";
+
+                ACostCentreTable CostCentreTbl = ACostCentreAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                CostCentreTbl.DefaultView.Sort = "a_cost_centre_code_c";
+
+                foreach (DataRow Row in PartnerCostCentreTbl.Rows)
                 {
-                    Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
-                    if (RowIdx < 0)
+                    String RowCCCode = Convert.ToString(Row["IsLinked"]);
+                    if (RowCCCode != "0")   // This should be in the LinksTbl - if it's not, I'll add it.
+                                            // { AND I probably need to create a CostCentre Row too! }
                     {
-                        AValidLedgerNumberRow LinksRow = LinksTbl.NewRowTyped();
-                        LinksRow.LedgerNumber = ALedgerNumber;
-                        LinksRow.PartnerKey = Convert.ToInt64(Row["PartnerKey"]);
-                        LinksRow.IltProcessingCentre = 4000000; // This is the ICH ledger number, but I don't know if anyone cares about it!
-                        LinksRow.CostCentreCode = Convert.ToString(Row["IsLinked"]);
+                        Int32 CostCentreRowIdx = CostCentreTbl.DefaultView.Find(RowCCCode);
+                        if (CostCentreRowIdx < 0)       // There's no such Cost Centre - I need to create it now.
+                        {
+                            ACostCentreRow NewCostCentreRow = CostCentreTbl.NewRowTyped();
+                            NewCostCentreRow.LedgerNumber = ALedgerNumber;
+                            NewCostCentreRow.CostCentreCode = RowCCCode;
+                            NewCostCentreRow.CostCentreToReportTo = Convert.ToString(Row["ReportsTo"]);
+                            NewCostCentreRow.CostCentreName = Convert.ToString(Row["ShortName"]);
+                            NewCostCentreRow.PostingCostCentreFlag = true;
+                            NewCostCentreRow.CostCentreActiveFlag = true;
+                            CostCentreTbl.Rows.Add(NewCostCentreRow);
+                        }
+
+                        Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
+                        if (RowIdx < 0)
+                        {
+
+                            AValidLedgerNumberRow LinksRow = LinksTbl.NewRowTyped();
+                            LinksRow.LedgerNumber = ALedgerNumber;
+                            LinksRow.PartnerKey = Convert.ToInt64(Row["PartnerKey"]);
+                            LinksRow.IltProcessingCentre = 4000000; // This is the ICH ledger number, but apparently anyone cares about it!
+                            LinksRow.CostCentreCode = RowCCCode;
+                            LinksTbl.Rows.Add(LinksRow);
+                        }
+                        else    // If this partner is already linked to a cost centre, it's possible the user has changed the code!
+                        {
+                            AValidLedgerNumberRow LinksRow = (AValidLedgerNumberRow)LinksTbl.DefaultView[RowIdx].Row;
+                            LinksRow.CostCentreCode = RowCCCode;
+                        }
+                    }
+                    else                // This should not be in the LinksTbl - if it is, I'll delete it.
+                    {
+                        Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
+                        if (RowIdx >= 0)
+                        {
+                            AValidLedgerNumberRow LinksRow = (AValidLedgerNumberRow)LinksTbl.DefaultView[RowIdx].Row;
+                            LinksRow.Delete();
+                        }
                     }
                 }
-                else                // This should not be in the LinksTbl - if it is, I'll delete it.
+
+                if (ACostCentreAccess.SubmitChanges(CostCentreTbl, Transaction, out AVerificationResult))
                 {
-                    Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
-                    if (RowIdx >= 0)
+                    if (AValidLedgerNumberAccess.SubmitChanges(LinksTbl, Transaction, out AVerificationResult))
                     {
-                        AValidLedgerNumberRow LinksRow = (AValidLedgerNumberRow)LinksTbl.DefaultView[RowIdx].Row;
-                        LinksRow.Delete();
+                        ReturnValue = TSubmitChangesResult.scrOK;
                     }
                 }
             }
-
-            if (!AValidLedgerNumberAccess.SubmitChanges(LinksTbl, Transaction, out AVerificationResult))
+        finally
             {
-                ReturnValue = TSubmitChangesResult.scrError;
+                if (ReturnValue == TSubmitChangesResult.scrOK)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
             }
             return ReturnValue;
         }

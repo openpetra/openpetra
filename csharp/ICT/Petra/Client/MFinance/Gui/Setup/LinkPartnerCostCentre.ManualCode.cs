@@ -35,9 +35,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     public partial class TFrmLinkPartnerCostCentre
     {
         private Int32 FLedgerNumber;
-        private DataTable PartnerCostCentreTbl;
-        private DataView LinkedView;
-        private DataView UnlinkedView;
+        private DataTable FPartnerCostCentreTbl;
+        private DataTable FParentCostCentres;
+        private DataView FLinkedView;
+        private DataView FUnlinkedView;
+        private Boolean FDataChanged;
 
         /// <summary>
         /// Setup the Partner - CostCentre links of this ledger
@@ -47,33 +49,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                PartnerCostCentreTbl = TRemote.MFinance.Setup.WebConnectors.LoadCostCentrePartnerLinks(FLedgerNumber);
+                FPartnerCostCentreTbl = TRemote.MFinance.Setup.WebConnectors.LoadCostCentrePartnerLinks(FLedgerNumber);
+                FParentCostCentres = TRemote.MFinance.Setup.WebConnectors.LoadLocalSummaryCostCentres(FLedgerNumber);
             }
         }
 
 
         private void RunOnceOnActivationManual()
         {
-            LinkedView = new DataView(PartnerCostCentreTbl);
-            LinkedView.RowFilter = "IsLinked <> 0";
-            LinkedView.AllowNew = false;
+            cmbReportsTo.Items.Clear();
+            foreach (DataRow Row in FParentCostCentres.Rows)
+            {
+                cmbReportsTo.Items.Add(Row["CostCentreCode"]);
+            }
+            FLinkedView = new DataView(FPartnerCostCentreTbl);
+            FLinkedView.RowFilter = "IsLinked <> '0'";
+            FLinkedView.AllowNew = false;
 
-            UnlinkedView = new DataView(PartnerCostCentreTbl);
-            UnlinkedView.RowFilter = "IsLinked = 0";
-            UnlinkedView.AllowNew = false;
+            FUnlinkedView = new DataView(FPartnerCostCentreTbl);
+            FUnlinkedView.RowFilter = "IsLinked = '0'";
+            FUnlinkedView.AllowNew = false;
 
-            grdLinkedCCs.DataSource = new DevAge.ComponentModel.BoundDataView(LinkedView);
-            grdUnlinkedCCs.DataSource = new DevAge.ComponentModel.BoundDataView(UnlinkedView);
+            grdLinkedCCs.DataSource = new DevAge.ComponentModel.BoundDataView(FLinkedView);
+            grdUnlinkedCCs.DataSource = new DevAge.ComponentModel.BoundDataView(FUnlinkedView);
 
             grdLinkedCCs.Columns.Clear();
-            grdLinkedCCs.AddTextColumn("Partner Name", PartnerCostCentreTbl.Columns["ShortName"], 240);
-            grdLinkedCCs.AddTextColumn("Partner Key", PartnerCostCentreTbl.Columns["PartnerKey"], 90);
-            grdLinkedCCs.AddTextColumn("Cost Centre", PartnerCostCentreTbl.Columns["IsLinked"], 90);
+            grdLinkedCCs.AddTextColumn("Partner Name", FPartnerCostCentreTbl.Columns["ShortName"], 240);
+            grdLinkedCCs.AddTextColumn("Partner Key", FPartnerCostCentreTbl.Columns["PartnerKey"], 90);
+            grdLinkedCCs.AddTextColumn("Cost Centre", FPartnerCostCentreTbl.Columns["IsLinked"], 90);
+            grdLinkedCCs.AddTextColumn("Reports To", FPartnerCostCentreTbl.Columns["ReportsTo"], 90);
             grdLinkedCCs.MouseClick += new MouseEventHandler(grdLinkedCCs_Click);
 
             grdUnlinkedCCs.Columns.Clear();
-            grdUnlinkedCCs.AddTextColumn("Partner Name", PartnerCostCentreTbl.Columns["ShortName"], 240);
-            grdUnlinkedCCs.AddTextColumn("Partner Key", PartnerCostCentreTbl.Columns["PartnerKey"], 90);
+            grdUnlinkedCCs.AddTextColumn("Partner Name", FPartnerCostCentreTbl.Columns["ShortName"], 240);
+            grdUnlinkedCCs.AddTextColumn("Partner Key", FPartnerCostCentreTbl.Columns["PartnerKey"], 90);
             grdUnlinkedCCs.MouseClick += new MouseEventHandler(grdUnlinkedCCs_Click);
 
             btnLink.Text = "\u25B2 Link";
@@ -85,6 +94,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             btnUnlink.Enabled = false;
 
             txtCostCentre.TextChanged += new EventHandler(txtCostCentre_TextChanged);
+            FDataChanged = false;
         }
 
         /// <summary>
@@ -95,8 +105,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult SaveResult = TRemote.MFinance.Setup.WebConnectors.SaveCostCentrePartnerLinks(
-                FLedgerNumber, PartnerCostCentreTbl, out VerificationResult);
-            return (SaveResult == TSubmitChangesResult.scrOK);
+                FLedgerNumber, FPartnerCostCentreTbl, out VerificationResult);
+            if (SaveResult == TSubmitChangesResult.scrOK)
+            {
+                FDataChanged = false;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -118,6 +133,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e"></param>
         private void LinkCostCentre(object sender, EventArgs e)
         {
+            String NewCCCode = txtCostCentre.Text;
+            //
+            // I can link to this Cost Centre, IF it's not already linked to someone else!
+            FPartnerCostCentreTbl.DefaultView.Sort = ("IsLinked");
+            if (FPartnerCostCentreTbl.DefaultView.Find (NewCCCode) >= 0)
+            {
+                MessageBox.Show(String.Format (Catalog.GetString("Error - {0} has already been assigned to a partner."), NewCCCode), 
+                    Catalog.GetString("Link Cost Centre"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            DataRow Row = ((DataRowView)grdUnlinkedCCs.SelectedDataRows[0]).Row;
+            Row["IsLinked"] = NewCCCode;
+            Row["ReportsTo"] = cmbReportsTo.Text;
+            txtCostCentre.ReadOnly = true;
+            txtCostCentre.Text = "";
+            btnLink.Enabled = false;
+            FDataChanged = true;
+            grdUnlinkedCCs.SelectRowInGrid(-1, false);
         }
 
         /// <summary></summary>
@@ -125,11 +159,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e"></param>
         private void UnlinkCostCentre(object sender, EventArgs e)
         {
+            DataRow Row = ((DataRowView)grdLinkedCCs.SelectedDataRows[0]).Row;
+            Row["IsLinked"] = '0';
+            txtCostCentre.Text = "";
+            btnUnlink.Enabled = false;
+            FDataChanged = true;
+            grdLinkedCCs.SelectRowInGrid(-1, false);
         }
 
         private void txtCostCentre_TextChanged(object sender, EventArgs e)
         {
-            btnLink.Enabled = (txtCostCentre.Text != "");            
+            btnLink.Enabled = ((txtCostCentre.ReadOnly == false) && (txtCostCentre.Text != ""));
         }
 
        private void grdLinkedCCs_Click(object sender, EventArgs e)
@@ -137,19 +177,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             btnUnlink.Enabled = true;
             btnLink.Enabled = false;
             DataRow Row = ((DataRowView)grdLinkedCCs.SelectedDataRows[0]).Row;
-            txtPartnerKey.Text = Convert.ToString(Row["PartnerKey"]);
-            txtCostCentre.Text = Convert.ToString(Row["IsLinked"]);
+            txtPartner.Text = Convert.ToString(Row["PartnerKey"]);
             txtCostCentre.ReadOnly = true;
+            cmbReportsTo.Enabled = false;
+            txtCostCentre.Text = Convert.ToString(Row["IsLinked"]);
+            cmbReportsTo.Text = Convert.ToString(Row["ReportsTo"]);
+            grdUnlinkedCCs.SelectRowInGrid(-1, false);
         }
 
         private void grdUnlinkedCCs_Click(object sender, EventArgs e)
         {
             btnUnlink.Enabled = false;
             DataRow Row = ((DataRowView)grdUnlinkedCCs.SelectedDataRows[0]).Row;
-            txtPartnerKey.Text = Convert.ToString(Row["PartnerKey"]);
-            txtCostCentre.Text = "";
+            txtPartner.Text = Convert.ToString(Row["PartnerKey"]);
             txtCostCentre.ReadOnly = false;
-
+            cmbReportsTo.Enabled = true;
+            txtCostCentre.Text = "";
+            grdLinkedCCs.SelectRowInGrid(-1, false);
         }
 
         /// <summary>
@@ -159,6 +203,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e"></param>
         public void BtnOK_Click(object sender, EventArgs e)
         {
+            SaveChanges();
             Close();
         }
     }
