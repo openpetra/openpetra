@@ -1,0 +1,331 @@
+<Project>
+  <Name>Shepherd Framework</Name>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>UML Diagram of all classes involved</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Interface">
+        <Name>IPetraShepherdConcreteFormInterface</Name>
+        <Access>Public</Access>
+        <Location left="687" top="603" />
+        <Size width="541" height="129" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">Void CancelShepherd()</Member>
+        <Member type="Method">Void ShowCurrentPage()</Member>
+        <Member type="Method">Void UpdateNavigation()</Member>
+        <Member type="Method">Void UpdateShepherdFormProperties(String ATitle, Int32 AShepherdWidth, Int32 AShepherdHeight)</Member>
+      </Entity>
+      <Entity type="Class">
+        <Name>TPetraShepherdForm</Name>
+        <Access>Public</Access>
+        <Location left="1281" top="270" />
+        <Size width="346" height="740" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private Button btnBack</Member>
+        <Member type="Field">private Button btnCancel</Member>
+        <Member type="Field">private Button btnFinish</Member>
+        <Member type="Field">private Button btnHelp</Member>
+        <Member type="Field">private Button btnNext</Member>
+        <Member type="Field">private IContainer components</Member>
+        <Member type="Field">private Label lblHeading1</Member>
+        <Member type="Field">private Label lblHeading2</Member>
+        <Member type="Field">private Label lblPageProgress</Member>
+        <Member type="Field">private Panel panel1</Member>
+        <Member type="Field">private Panel panel3</Member>
+        <Member type="Field">private Panel pnlButtons</Member>
+        <Member type="Field">private TPnlCollapsible pnlCollapsibleNavigation</Member>
+        <Member type="Field">private Panel pnlContent</Member>
+        <Member type="Field">private Panel pnlHeadings</Member>
+        <Member type="Field">private Panel pnlNavigation</Member>
+        <Member type="Field">private Panel pnlTop</Member>
+        <Member type="Field">private ProgressBar prbPageProgress</Member>
+        <Member type="Field">private TExtStatusBarHelp stbMain</Member>
+        <Member type="Property">public Button ButtonBack { get; }</Member>
+        <Member type="Property">public Button ButtonFinish { get; }</Member>
+        <Member type="Property">public Button ButtonNext { get; }</Member>
+        <Member type="Property">public TPnlCollapsible CollapsibleNavigation { get; }</Member>
+        <Member type="Property">public Panel ContentPanel { get; }</Member>
+        <Member type="Property">public Label Heading1 { get; }</Member>
+        <Member type="Property">public Label Heading2 { get; }</Member>
+        <Member type="Property">public Panel NavigationPanel { get; }</Member>
+        <Member type="Property">public Label PageProgressLabel { get; }</Member>
+        <Member type="Property">public ProgressBar PageProgressProgressBar { get; }</Member>
+        <Member type="Property">public TExtStatusBarHelp ShepherdStatusBar { get; }</Member>
+        <Member type="Constructor">public TPetraShepherdForm()</Member>
+        <Member type="Method">protected virtual Void BtnBackClick(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">protected virtual Void BtnCancelClick(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">protected virtual Void BtnFinishClick(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">protected virtual Void BtnHelpClick(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">protected virtual Void BtnNextClick(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">protected virtual Void Dispose(Boolean disposing)</Member>
+        <Member type="Method">protected virtual Void Form_Load(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">private Void InitializeComponent()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>TPetraShepherdConcreteForm</Name>
+        <Access>Public</Access>
+        <Location left="733" top="28" />
+        <Size width="456" height="519" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private TPetraShepherdFormLogic FLogic</Member>
+        <Member type="Field">private DataSet FMainDS</Member>
+        <Member type="Field">private TFrmPetraEditUtils FPetraUtilsObject</Member>
+        <Member type="Field">private TShepherdNavigationHelper FShepherdNavigationHelper</Member>
+        <Member type="Field">private String FShepherdTitle</Member>
+        <Member type="Field">private String FYamlFile</Member>
+        <Member type="Property">public TPetraShepherdFormLogic Logic { get; set; }</Member>
+        <Member type="Property">public String YamlFile { get; set; }</Member>
+        <Member type="Constructor">public TPetraShepherdConcreteForm(Form AParentForm)</Member>
+        <Member type="Method">protected virtual Void BtnBackClick(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">protected virtual Void BtnCancelClick(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">protected virtual Void BtnFinishClick(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">protected virtual Void BtnHelpClick(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">protected virtual Void BtnNextClick(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">public Void CancelShepherd()</Member>
+        <Member type="Method">public Boolean CanClose()</Member>
+        <Member type="Method">protected virtual Void Form_Load(Object ASender, EventArgs AEventArgs)</Member>
+        <Member type="Method">public TFrmPetraUtils GetPetraUtilsObject()</Member>
+        <Member type="Method">public Void HookupAllControls()</Member>
+        <Member type="Method">public Void HookupAllInContainer(Control AContainer)</Member>
+        <Member type="Method">public Void RunOnceOnActivation()</Member>
+        <Member type="Method">private Boolean SaveChanges(ref DataSet AInspectDS)</Member>
+        <Member type="Method">public Boolean SaveChanges()</Member>
+        <Member type="Method">public Void ShowCurrentPage()</Member>
+        <Member type="Method">public Void UpdateNavigation()</Member>
+        <Member type="Method">public Void UpdateShepherdFormProperties(String AString, Int32 AWidth, Int32 AHeight)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>TPetraShepherdFormLogic</Name>
+        <Access>Public</Access>
+        <Location left="89" top="28" />
+        <Size width="513" height="519" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private const String FINISHPAGE_NAME = FINISHPAGE_MASTER</Member>
+        <Member type="Field">private const String STARTPAGE_NAME = |||START PAGE|||</Member>
+        <Member type="Field">private TPetraShepherdPage FCurrentPage</Member>
+        <Member type="Field">private IPetraShepherdConcreteFormInterface FForm</Member>
+        <Member type="Field">private TPetraShepherdPagesList FShepherdPages</Member>
+        <Member type="Property">public TPetraShepherdPagesList ShepherdPages { get; }</Member>
+        <Member type="Property">public TPetraShepherdPage CurrentPage { get; set; }</Member>
+        <Member type="Constructor">public TPetraShepherdFormLogic(String AYamlFile, IPetraShepherdConcreteFormInterface APetraShepherdForm)</Member>
+        <Member type="Method">private static Void ChildDisplay(XmlNode AXnod, Int32 ALevel)</Member>
+        <Member type="Method">public XmlNode CreateTaskList()</Member>
+        <Member type="Method">public Int32 EnumeratePages()</Member>
+        <Member type="Method">public Int32 GetCurrentPageNumber()</Member>
+        <Member type="Method">public Single GetProgressBarPercentage()</Member>
+        <Member type="Method">public virtual Void HandleActionBack()</Member>
+        <Member type="Method">public Void HandleActionCancel()</Member>
+        <Member type="Method">public Void HandleActionFinish()</Member>
+        <Member type="Method">public Void HandleActionHelp()</Member>
+        <Member type="Method">public virtual Void HandleActionNext()</Member>
+        <Member type="Method">protected UserControl InstantiatePageUC(String AID)</Member>
+        <Member type="Method">public String PagesDataHeapPeek(String AKey)</Member>
+        <Member type="Method">public Void PagesDataHeapPoke(String AKey, String AValue)</Member>
+        <Member type="Method">protected XmlNode ParseYAMLFileElements(String AYamlFile)</Member>
+        <Member type="Method">public Void SwitchToFinishPage()</Member>
+        <Member type="Method">protected Void SwitchToPage(String APage)</Member>
+        <Member type="Method">public Void SwitchToStartPage()</Member>
+        <Member type="Method">private Void VisibleOrEnabledChangedEventHandler()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>TShepherdNavigationHelper</Name>
+        <Access>Public</Access>
+        <Location left="1349" top="28" />
+        <Size width="517" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">public Int32 TotalPages { get; }</Member>
+        <Member type="Constructor">public TShepherdNavigationHelper(TPetraShepherdPagesList AShepherdPages, Panel APanelCollapsible)</Member>
+        <Member type="Method">public Void Refresh()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>TPetraShepherdPage</Name>
+        <Access>Public</Access>
+        <Location left="89" top="571" />
+        <Size width="300" height="570" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private Boolean FEnabled</Member>
+        <Member type="Field">private String FHelpContext</Member>
+        <Member type="Field">private String FID</Member>
+        <Member type="Field">private Boolean FIsFirstPage</Member>
+        <Member type="Field">private Boolean FIsLastPage</Member>
+        <Member type="Field">private String FNote</Member>
+        <Member type="Field">private String FTitle</Member>
+        <Member type="Field">private UserControl FUserControl</Member>
+        <Member type="Field">private String FUserControlClassName</Member>
+        <Member type="Field">private String FUserControlNamespace</Member>
+        <Member type="Field">private String FUserControlType</Member>
+        <Member type="Field">private Boolean FVisible</Member>
+        <Member type="Property">public UserControl UserControlInstance { get; }</Member>
+        <Member type="Property">public Boolean Enabled { get; set; }</Member>
+        <Member type="Property">public String HelpContext { get; set; }</Member>
+        <Member type="Property">public String ID { get; set; }</Member>
+        <Member type="Property">public Boolean IsFirstPage { get; set; }</Member>
+        <Member type="Property">public Boolean IsLastPage { get; set; }</Member>
+        <Member type="Property">public String Note { get; set; }</Member>
+        <Member type="Property">public String Title { get; protected set; }</Member>
+        <Member type="Property">public String UserControlClassName { get; protected set; }</Member>
+        <Member type="Property">public String UserControlClassType { get; set; }</Member>
+        <Member type="Property">public String UserControlNamespace { get; protected set; }</Member>
+        <Member type="Property">public Boolean Visible { get; set; }</Member>
+        <Member type="Constructor">public TPetraShepherdPage(XmlNode AShepherdPageNode)</Member>
+        <Member type="Constructor">protected TPetraShepherdPage()</Member>
+        <Member type="Method">private Void OnVisibleOrEnabledChangedEvent()</Member>
+        <Member type="Method">private UserControl RealiseUserControl()</Member>
+        <Member type="Event">public event EventHandler VisibleOrEnabledChangedEvent</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>TPetraShepherdPagesList</Name>
+        <Access>Public</Access>
+        <Location left="687" top="754" />
+        <Size width="480" height="128" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private Dictionary&lt;String, TPetraShepherdPage&gt; FPagesList</Member>
+        <Member type="Property">public Dictionary&lt;String, TPetraShepherdPage&gt; Pages { get; }</Member>
+        <Member type="Constructor">public TPetraShepherdPagesList(String AYamlFile)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>TPetraShepherdFinishPage</Name>
+        <Access>Public</Access>
+        <Location left="687" top="906" />
+        <Size width="480" height="145" />
+        <Collapsed>False</Collapsed>
+        <Member type="Constructor">public TPetraShepherdFinishPage(XmlDocument AXmlPages)</Member>
+        <Member type="Constructor">public TPetraShepherdFinishPage(XmlDocument AXmlPages, String ASubShepherdName)</Member>
+        <Member type="Method">protected String GetFinishPageNote(XmlDocument AXmlPages)</Member>
+        <Member type="Method">private Void Init(XmlDocument AXmlPages)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>TUC_PetraShepherdFinishPage</Name>
+        <Access>Public</Access>
+        <Location left="1648" top="270" />
+        <Size width="425" height="570" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private CheckBox chkFurtherActionOnFinish</Member>
+        <Member type="Field">private IContainer components</Member>
+        <Member type="Field">private TFrmPetraEditUtils FPetraUtilsObject</Member>
+        <Member type="Field">private GroupBox grpSummary</Member>
+        <Member type="Field">private Label lblSummaryText1</Member>
+        <Member type="Field">private Label lblSummaryText2</Member>
+        <Member type="Field">private Panel pnlContent</Member>
+        <Member type="Field">private Panel pnlSummary</Member>
+        <Member type="Property">public Boolean FurtherActionOnFinishCheckBoxVisible { get; set; }</Member>
+        <Member type="Property">public Boolean FurtherActionOnFinishChecked { get; set; }</Member>
+        <Member type="Property">public String FurtherActionOnFinishText { get; set; }</Member>
+        <Member type="Property">public TFrmPetraEditUtils PetraUtilsObject { get; set; }</Member>
+        <Member type="Property">public String SummaryText1 { get; set; }</Member>
+        <Member type="Property">public String SummaryText2 { get; set; }</Member>
+        <Member type="Constructor">public TUC_PetraShepherdFinishPage()</Member>
+        <Member type="Method">public Boolean CanClose()</Member>
+        <Member type="Method">private Void chkFurtherActionOnFinishCheckedChanged(Object sender, EventArgs e)</Member>
+        <Member type="Method">protected virtual Void Dispose(Boolean disposing)</Member>
+        <Member type="Method">public TFrmPetraUtils GetPetraUtilsObject()</Member>
+        <Member type="Method">public Void HookupAllControls()</Member>
+        <Member type="Method">public Void HookupAllInContainer(Control container)</Member>
+        <Member type="Method">private Void InitializeComponent()</Member>
+        <Member type="Method">private Void InitializeManualCode()</Member>
+        <Member type="Method">public Void InitUserControl()</Member>
+        <Member type="Method">private Void OnDataLoadingFinished(Object sender, EventArgs e)</Member>
+        <Member type="Method">private Void OnDataLoadingStarted(Object sender, EventArgs e)</Member>
+        <Member type="Method">public Void RunOnceOnActivation()</Member>
+        <Member type="Event">public event EventHandler DataLoadingFinished</Member>
+        <Member type="Event">public event EventHandler DataLoadingStarted</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Generalization" first="2" second="1">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="7" second="5">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+      <Relationship type="Realization" first="2" second="0">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Association" first="2" second="3">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>702</X>
+          <Y>91</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>FLogic</StartRole>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="2" second="4">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1214</X>
+          <Y>140</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>FShepherdNavigationHelper</StartRole>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="3" second="6">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>635</X>
+          <Y>161</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>FShepherdPages</StartRole>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="3" second="0">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>627</X>
+          <Y>144</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>710</X>
+          <Y>577</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>FForm</StartRole>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="3" second="5">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>61</X>
+          <Y>123</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartRole>FCurrentPage</StartRole>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+</Project>
