@@ -240,7 +240,8 @@ OpenPetra:
                         #DeleteCostCentre:
                         #RenameCostCentre:
                         #LinkCostCentreToPartner:
-                    #Other:
+                    Other:
+                        SetupSuspenseAccounts: {Description="Maintain Suspense Accounts", ActionOpenScreen=TFrmSetupSuspenseAccount}
                         #LedgerSetupShepherd:
                         #SetupCalendar:
                         #ChangeNumberOfForwardingPeriods:
