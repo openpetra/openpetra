@@ -1609,11 +1609,33 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     String.Format(
-                        "DELETE FROM PUB_{0} AS GLMP WHERE EXISTS (SELECT * FROM PUB_{1} AS GLM WHERE GLM.a_glm_sequence_i = GLMP.a_glm_sequence_i AND GLM.a_ledger_number_i = ?)",
+                        "DELETE FROM PUB_{0} AS GLMP WHERE EXISTS (SELECT * FROM PUB_{1} AS GLM WHERE GLM.{2} = GLMP.{3} AND GLM.{4} = ?)",
                         AGeneralLedgerMasterPeriodTable.GetTableDBName(),
-                        AGeneralLedgerMasterTable.GetTableDBName()),
+                        AGeneralLedgerMasterTable.GetTableDBName(),
+                        AGeneralLedgerMasterTable.GetGlmSequenceDBName(),
+                        AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName(),
+                        AGeneralLedgerMasterTable.GetLedgerNumberDBName()),
                     Transaction, ledgerparameter);
 
+                DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    String.Format(
+                        "DELETE FROM PUB_{0} AS BudgetPeriod WHERE EXISTS (SELECT * FROM PUB_{1} AS Budget WHERE Budget.{2} = BudgetPeriod.{3} AND Budget.{4} = ?)",
+                        ABudgetPeriodTable.GetTableDBName(),
+                        ABudgetTable.GetTableDBName(),
+                        ABudgetTable.GetBudgetSequenceDBName(),
+                        ABudgetPeriodTable.GetBudgetSequenceDBName(),
+                        ABudgetTable.GetLedgerNumberDBName()),
+                    Transaction, ledgerparameter);
+                
+                // the following tables are not deleted at the moment as they are not in use
+                //      PFoundationProposalDetailTable.GetTableDBName(),
+                //      AEpTransactionTable.GetTableDBName(),
+                //      AEpStatementTable.GetTableDBName(),
+                //      AEpMatchTable.GetTableDBName(),
+                // also: tables referring to ATaxTableTable are not deleted now as they are not yet in use
+                //      (those are tables needed in the accounts receivable module that does not exist yet)
+
+                
                 string[] tablenames = new string[] {
                     AValidLedgerNumberTable.GetTableDBName(),
                          AProcessedFeeTable.GetTableDBName(),
@@ -1621,6 +1643,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          AMotivationDetailFeeTable.GetTableDBName(),
 
                          ABudgetTable.GetTableDBName(),
+                         ABudgetRevisionTable.GetTableDBName(),
 
                          ARecurringGiftDetailTable.GetTableDBName(),
                          ARecurringGiftTable.GetTableDBName(),
@@ -1640,8 +1663,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          ARecurringJournalTable.GetTableDBName(),
                          ARecurringBatchTable.GetTableDBName(),
 
-                         AFreeformAnalysisTable.GetTableDBName(),
-
                          AEpDocumentPaymentTable.GetTableDBName(),
                          AEpPaymentTable.GetTableDBName(),
 
@@ -1652,6 +1673,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          AApDocumentDetailTable.GetTableDBName(),
                          AApDocumentTable.GetTableDBName(),
 
+                         AFreeformAnalysisTable.GetTableDBName(),
+
+                         AEpAccountTable.GetTableDBName(),
+                         ASuspenseAccountTable.GetTableDBName(),
+                         SGroupMotivationTable.GetTableDBName(),
+                         AIchStewardshipTable.GetTableDBName(),
+                         SGroupCostCentreTable.GetTableDBName(),
+                         AAnalysisAttributeTable.GetTableDBName(),
+                         
                          AMotivationDetailTable.GetTableDBName(),
                          AMotivationGroupTable.GetTableDBName(),
                          AFeesReceivableTable.GetTableDBName(),
@@ -1666,12 +1696,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          AAccountingSystemParameterTable.GetTableDBName(),
                          ACostCentreTypesTable.GetTableDBName(),
 
-                         AAnalysisAttributeTable.GetTableDBName(),
-                         ASuspenseAccountTable.GetTableDBName(),
-
                          ALedgerInitFlagTable.GetTableDBName(),
                          ATaxTableTable.GetTableDBName(),
-                         AEpAccountTable.GetTableDBName(),
 
                          AAccountingPeriodTable.GetTableDBName(),
 
