@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.AAccount.Merge(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber));
 
                 LoadDataAndFinishScreenSetup();
-                
+
                 // set up combobox with accounts available for set up as suspense accounts
                 TFinanceControls.InitialiseAccountList(ref cmbDetailSuspenseAccountCode, FLedgerNumber, true, false, false, false);
             }
@@ -74,16 +74,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
-            
+
             // Hook up DataSaved Event to be able to run code after SaveChanges is finished
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(this.OnDataSaved);
 
             // add column for account description
             AddSpecialColumns();
-            
+
             grdDetails.Columns.Clear();
             grdDetails.AddTextColumn("Account Code", FMainDS.ASuspenseAccount.ColumnSuspenseAccountCode);
-            grdDetails.AddTextColumn("Description", 
+            grdDetails.AddTextColumn("Description",
                 FMainDS.ASuspenseAccount.Columns["Parent_" + AAccountTable.GetAccountCodeShortDescDBName()]);
         }
 
@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.ASuspenseAccount.Columns.Remove(FDescriptionColumn);
             }
         }
-        
+
         private void NewRecord(System.Object sender, EventArgs e)
         {
             CreateNewASuspenseAccount();
@@ -134,8 +134,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             DeleteASuspenseAccount();
         }
-        
-        
+
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
             // saving fails if extra columns exist
@@ -147,6 +146,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // need to add columns again once it is saved
             AddSpecialColumns();
         }
-        
     }
 }

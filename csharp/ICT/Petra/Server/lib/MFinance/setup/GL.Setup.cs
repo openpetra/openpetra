@@ -1598,35 +1598,41 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         SUserModuleAccessPermissionTable.GetTableDBName(),
                         SUserModuleAccessPermissionTable.GetModuleIdDBName(),
                         ALedgerNumber),
-                    Transaction);
+                    Transaction, false);
 
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
                         SModuleTable.GetTableDBName(),
                         SModuleTable.GetModuleIdDBName(),
                         ALedgerNumber),
-                    Transaction);
+                    Transaction, false);
 
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     String.Format(
-                        "DELETE FROM PUB_{0} AS GLMP WHERE EXISTS (SELECT * FROM PUB_{1} AS GLM WHERE GLM.{2} = GLMP.{3} AND GLM.{4} = ?)",
+                        "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
                         AGeneralLedgerMasterPeriodTable.GetTableDBName(),
                         AGeneralLedgerMasterTable.GetTableDBName(),
+                        AGeneralLedgerMasterTable.GetTableDBName(),
                         AGeneralLedgerMasterTable.GetGlmSequenceDBName(),
+                        AGeneralLedgerMasterPeriodTable.GetTableDBName(),
                         AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName(),
+                        AGeneralLedgerMasterTable.GetTableDBName(),
                         AGeneralLedgerMasterTable.GetLedgerNumberDBName()),
-                    Transaction, ledgerparameter);
+                    Transaction, false, ledgerparameter);
 
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     String.Format(
-                        "DELETE FROM PUB_{0} AS BudgetPeriod WHERE EXISTS (SELECT * FROM PUB_{1} AS Budget WHERE Budget.{2} = BudgetPeriod.{3} AND Budget.{4} = ?)",
+                        "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
                         ABudgetPeriodTable.GetTableDBName(),
                         ABudgetTable.GetTableDBName(),
+                        ABudgetTable.GetTableDBName(),
                         ABudgetTable.GetBudgetSequenceDBName(),
+                        ABudgetPeriodTable.GetTableDBName(),
                         ABudgetPeriodTable.GetBudgetSequenceDBName(),
+                        ABudgetTable.GetTableDBName(),
                         ABudgetTable.GetLedgerNumberDBName()),
-                    Transaction, ledgerparameter);
-                
+                    Transaction, false, ledgerparameter);
+
                 // the following tables are not deleted at the moment as they are not in use
                 //      PFoundationProposalDetailTable.GetTableDBName(),
                 //      AEpTransactionTable.GetTableDBName(),
@@ -1635,7 +1641,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // also: tables referring to ATaxTableTable are not deleted now as they are not yet in use
                 //      (those are tables needed in the accounts receivable module that does not exist yet)
 
-                
+
                 string[] tablenames = new string[] {
                     AValidLedgerNumberTable.GetTableDBName(),
                          AProcessedFeeTable.GetTableDBName(),
@@ -1681,7 +1687,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          AIchStewardshipTable.GetTableDBName(),
                          SGroupCostCentreTable.GetTableDBName(),
                          AAnalysisAttributeTable.GetTableDBName(),
-                         
+
                          AMotivationDetailTable.GetTableDBName(),
                          AMotivationGroupTable.GetTableDBName(),
                          AFeesReceivableTable.GetTableDBName(),
@@ -1708,7 +1714,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 {
                     DBAccess.GDBAccessObj.ExecuteNonQuery(
                         String.Format("DELETE FROM PUB_{0} WHERE a_ledger_number_i = ?", table),
-                        Transaction, ledgerparameter);
+                        Transaction, false, ledgerparameter);
                 }
 
                 ALedgerAccess.DeleteByPrimaryKey(ALedgerNumber, Transaction);
@@ -1718,7 +1724,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     String.Format("DELETE FROM PUB_{0} WHERE p_partner_key_n = {1}",
                         PPartnerLedgerTable.GetTableDBName(),
                         Convert.ToInt64(ALedgerNumber) * 1000000),
-                    Transaction);
+                    Transaction, false);
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                 {
