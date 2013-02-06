@@ -65,6 +65,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Changing this will stop taborder issues
             sptTransactions.TabStop = false;
+            
+            txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
         }
 
         /// <summary>

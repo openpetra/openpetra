@@ -84,6 +84,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>String for the title</summary>
         private static readonly string StrTitleRecipient = Catalog.GetString("Recipient");
 
+        /// <summary>String for the title</summary>
+        private static readonly string StrWorkerFamily = Catalog.GetString("Worker Family");
+        
         #endregion
 
         /// <summary>String for the partner find</summary>
@@ -1080,14 +1083,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Check entries of String Array
             if (FRestrictToPartnerClasses.Length == 1)
             {
-                /*
-                 * Only one entry -> Set the title, with the first character of the word
-                 * being upper-case, the rest lower-case.
-                 */
+                //
+                // Only one entry
+                //
                 if (FRestrictToPartnerClasses[0] != "")
                 {
-                    this.Text = FRestrictToPartnerClasses[0].Substring(0, 1).ToUpper() +
-                                FRestrictToPartnerClasses[0].Substring(1).ToLower() + StrTitleLastPart;
+                    if (FRestrictToPartnerClasses[0] != "WORKER-FAM")
+                    {
+                        //
+                        // Set the title, with the first character of the word
+                        // being upper-case, the rest lower-case.
+                        //
+                        this.Text = FRestrictToPartnerClasses[0].Substring(0, 1).ToUpper() +
+                                    FRestrictToPartnerClasses[0].Substring(1).ToLower() + StrTitleLastPart;
+                    }
+                    else
+                    {
+                        this.Text = StrWorkerFamily + StrTitleLastPart;
+                    }
                 }
                 else
                 {
