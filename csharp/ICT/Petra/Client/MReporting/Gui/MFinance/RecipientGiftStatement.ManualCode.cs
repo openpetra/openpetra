@@ -80,5 +80,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             txtRecipient.Text = AParameters.Get("param_recipientkey").ToString();
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();
         }
+        
+        #region Event Handlers
+        
+        private void ReportTypeChanged(object ASender, System.EventArgs AEventArgs)
+        {
+            string ReportType = (string)cmbReportType.SelectedItem;
+            
+            if (ReportType == null) 
+            {
+                return;
+            }
+            
+            if ((ReportType == "List")
+               || (ReportType == "Email"))
+            {
+                txtRecipient.PartnerClass = "WORKER";
+            }   
+            else
+            {
+                txtRecipient.PartnerClass = "WORKER,UNIT";
+            }
+        }
+        
+        #endregion
     }
 }
