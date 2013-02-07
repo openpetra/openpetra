@@ -110,6 +110,7 @@ CachedTables:
                 AMotivationDetail: {Enum=MotivationList, Comment="list of motivations (for gifts)", DependsOnLedger=true}
                 AFeesPayable: {DependsOnLedger=true}
                 AFeesReceivable: {DependsOnLedger=true}
+                ASuspenseAccount: {DependsOnLedger=true}
 
             CalculatedLists: {DependsOnLedger=true}
                 AccountingPeriodList:
@@ -118,6 +119,7 @@ CachedTables:
                 CostCentreList:
                 AccountList:
                 AccountHierarchyList:
+                ICHStewardshipList:
     Conference:
         Conference:
             DatabaseTables:

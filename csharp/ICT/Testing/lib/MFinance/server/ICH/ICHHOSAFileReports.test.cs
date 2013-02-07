@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -82,14 +82,22 @@ namespace Tests.MFinance.Server.ICH
         /// Test whether the code opens a text file and replaces the first line
         ///  with the specified string
         /// </summary>
-        [Test, Explicit]
+        [Test]
         public void TestFileHeaderReplace()
         {
-            string fileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
+            string fileName = TAppSettingsManager.GetValue("Server.PathTemp") + Path.DirectorySeparatorChar + "TestGenHOSAFileHeaderReplace.csv";
             int PeriodNumber = 4;
             string StandardCostCentre = "4300";
             string CostCentre = "78";
             string Currency = "USD";
+
+            StreamWriter sw = new StreamWriter(fileName);
+
+            sw.WriteLine("/** Header **,4,4300,78,18/01/2013,USD");
+            sw.Close();
+
+            TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
+
             string TableForExportHeader = "/** Header **" + "," +
                                           PeriodNumber.ToString() + "," +
                                           StandardCostCentre + "," +
@@ -97,13 +105,18 @@ namespace Tests.MFinance.Server.ICH
                                           DateTime.Today.ToShortDateString() + "," +
                                           Currency;
 
-            TGenHOSAFilesReports.ReplaceHeaderInFile(fileName, TableForExportHeader);
+            TGenHOSAFilesReportsWebConnector.ReplaceHeaderInFile(fileName, TableForExportHeader, ref VerificationResults);
+
+            Assert.IsFalse(VerificationResults.HasCriticalErrors,
+                "Header Replacement in File Failed! " + VerificationResults.BuildVerificationResultString());
+
+            File.Delete(fileName);
         }
 
         /// <summary>
         /// Test generation of HOSA files
         /// </summary>
-        [Test]
+        [Test, Explicit]
         public void TestGenerateHOSAFiles()
         {
             int LedgerNumber = FLedgerNumber;
@@ -111,16 +124,24 @@ namespace Tests.MFinance.Server.ICH
             int IchNumber = 1;
             string CostCentre = "73";
             int Currency = 0;  //0 = base 1 = intl
-            string FileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
+            string FileName = TAppSettingsManager.GetValue("Server.PathTemp") + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
             TVerificationResultCollection VerificationResults;
 
-            TGenHOSAFilesReports.GenerateHOSAFiles(LedgerNumber, PeriodNumber, IchNumber, CostCentre, Currency, FileName, out VerificationResults);
+            TGenHOSAFilesReportsWebConnector.GenerateHOSAFiles(LedgerNumber,
+                PeriodNumber,
+                IchNumber,
+                CostCentre,
+                Currency,
+                FileName,
+                out VerificationResults);
 
             Assert.IsFalse(VerificationResults.HasCriticalErrors,
                 "HOSA File Generation Failed!" + VerificationResults.BuildVerificationResultString());
 
             Assert.IsTrue(File.Exists(FileName),
                 "HOSA File did not create!");
+
+            File.Delete(FileName);
         }
 
         /// <summary>
@@ -135,7 +156,7 @@ namespace Tests.MFinance.Server.ICH
             string Currency = "USD";
             TVerificationResultCollection VerificationResults;
 
-            TGenHOSAFilesReports.GenerateHOSAReports(LedgerNumber, PeriodNumber, IchNumber, Currency, out VerificationResults);
+            TGenHOSAFilesReportsWebConnector.GenerateHOSAReports(LedgerNumber, PeriodNumber, IchNumber, Currency, out VerificationResults);
 
             Assert.IsFalse(VerificationResults.HasCriticalErrors,
                 "Performing HOSA Report Generation Failed!" + VerificationResults.BuildVerificationResultString());
@@ -152,8 +173,8 @@ namespace Tests.MFinance.Server.ICH
             string AcctCode = "0200";
             string MonthName = "January";
             int PeriodNumber = 1;
-            DateTime PeriodStartDate = new DateTime(2012, 1, 1);
-            DateTime PeriodEndDate = new DateTime(2012, 1, 31);
+            DateTime PeriodStartDate = new DateTime(2013, 1, 1);
+            DateTime PeriodEndDate = new DateTime(2013, 1, 31);
             string Base = MFinanceConstants.CURRENCY_BASE;
             int IchNumber = 0;
             DataTable TableForExport = new DataTable();
@@ -171,9 +192,6 @@ namespace Tests.MFinance.Server.ICH
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber, out VerificationResults);
 
-            //TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
             VerificationResults = new TVerificationResultCollection();
 
             //Create DataTable to receive exported transactions
@@ -185,7 +203,7 @@ namespace Tests.MFinance.Server.ICH
             TableForExport.Columns.Add("IndividualDebitTotal", typeof(decimal));
             TableForExport.Columns.Add("IndividualCreditTotal", typeof(decimal));
 
-            TGenHOSAFilesReports.ExportGifts(LedgerNumber,
+            TGenHOSAFilesReportsWebConnector.ExportGifts(LedgerNumber,
                 CostCentre,
                 AcctCode,
                 MonthName,
@@ -195,7 +213,6 @@ namespace Tests.MFinance.Server.ICH
                 Base,
                 IchNumber,
                 ref TableForExport,
-                ref DBTransaction,
                 ref VerificationResults);
 
             TableForExport.AcceptChanges();

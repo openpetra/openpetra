@@ -860,7 +860,7 @@ namespace Ict.Common.Verification
 
                 if (ARestrictToTypeWhichRaisesError != null)
                 {
-                    if (si.ResultContext.GetType() == ARestrictToTypeWhichRaisesError)
+                    if ((si.ResultContext.GetType() == ARestrictToTypeWhichRaisesError) || (si.ResultCode == CommonErrorCodes.ERR_DUPLICATE_RECORD))
                     {
                         IncludeVerificationResult = true;
                     }
@@ -1053,6 +1053,67 @@ namespace Ict.Common.Verification
             return Found;
         }
 
+        private void ClassifyExceptions()
+        {
+            // If collection contains an ExceptionResult, remove all non-exceptions
+            TScreenVerificationResult si;
+            Boolean Found = false;
+
+            for (int Counter = 0; Counter <= Count - 1; Counter += 1)
+            {
+                si = (TScreenVerificationResult)(List[Counter]);
+
+                if (si.ResultCode == CommonErrorCodes.ERR_DUPLICATE_RECORD)
+                {
+                    Found = true;
+                    break;
+                }
+            }
+
+            if (!Found)
+            {
+                return;
+            }
+
+            for (int Counter = Count - 1; Counter >= 0; Counter--)
+            {
+                si = (TScreenVerificationResult)(List[Counter]);
+
+                if (si.ResultCode != CommonErrorCodes.ERR_DUPLICATE_RECORD)
+                {
+                    RemoveAt(Counter);
+                }
+            }
+
+            Found = false;
+
+            for (int Counter = 0; Counter <= Count - 1; Counter += 1)
+            {
+                si = (TScreenVerificationResult)(List[Counter]);
+
+                if (si.ResultColumn != null)
+                {
+                    Found = true;
+                    break;
+                }
+            }
+
+            if (!Found)
+            {
+                return;
+            }
+
+            for (int Counter = Count - 1; Counter >= 0; Counter--)
+            {
+                si = (TScreenVerificationResult)(List[Counter]);
+
+                if (si.ResultColumn == null)
+                {
+                    RemoveAt(Counter);
+                }
+            }
+        }
+
         /// <summary>
         /// Adds a <see cref="TVerificationResult" /> for a <see cref="System.Data.DataColumn" />
         /// specified with <paramref name="AResultColumn" />, or removes a
@@ -1158,6 +1219,8 @@ namespace Ict.Common.Verification
                     }
                 }
             }
+
+            ClassifyExceptions();
 
             return ReturnValue;
         }
@@ -1632,7 +1695,22 @@ namespace Ict.Common.Verification
 
                 if (AVerificationResult1.ResultText != AVerificationResult2.ResultText)
                 {
-                    return false;
+                    // There may be some specific result codes that can allow the result text to differ so long as everything else is ok.
+                    // This will happen when the result text changes with the user's INPUT (examples of this are rare!)
+                    // Normally result text is either constant or depends on the current database content which will be constant during a verification run.
+                    // But, for example, the result text for a duplicate record contains a hint indicating the entered data that might be wrong.
+                    // So if the user makes the same error twice but with two different attempts at making a non-duplicate, we need to accept the result
+                    //    as the same but update the old text, replacing it with the latest.
+                    // Other examples of this behaviour may be created in the future, and can be OR'd with the ERR_DUPLICATE_RECORD case
+                    if (AVerificationResult1.ResultCode == CommonErrorCodes.ERR_DUPLICATE_RECORD)
+                    {
+                        // ensure that the ResultText is the most recent instance
+                        AVerificationResult1.OverrideResultText(AVerificationResult2.ResultText);
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
 
                 if (AVerificationResult1.ResultTextCaption != AVerificationResult2.ResultTextCaption)

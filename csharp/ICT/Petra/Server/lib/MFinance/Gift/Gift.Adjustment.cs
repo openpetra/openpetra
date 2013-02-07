@@ -486,7 +486,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             gift.DateEntered = ADateEffective;
                             gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
                             giftBatch.LastGiftNumber++;
-                            gift.LastDetailNumber = 1;
+                            gift.LastDetailNumber = 0;
 
                             MainDS.AGift.Rows.Add(gift);
 
@@ -512,7 +512,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                     AGiftDetailRow giftDetail = MainDS.AGiftDetail.NewRowTyped(true);
                                     DataUtilities.CopyAllColumnValuesWithoutPK(oldGiftDetail, giftDetail);
-                                    giftDetail.DetailNumber = gift.LastDetailNumber++;
+
+                                    giftDetail.DetailNumber = ++gift.LastDetailNumber;
+
                                     giftDetail.LedgerNumber = gift.LedgerNumber;
                                     giftDetail.BatchNumber = giftBatch.BatchNumber;
                                     giftDetail.GiftTransactionNumber = gift.GiftTransactionNumber;

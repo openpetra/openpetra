@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,7 +90,12 @@ namespace Ict.Common.Remoting.Shared
         }
 
         /// <summary>
-        /// command to stop the server
+        /// command to stop the server in a more controlled way than <see cref="StopServer" /> (gets all connected clients to disconnect)
+        /// </summary>
+        bool StopServerControlled(bool AForceAutomaticClosing);
+
+        /// <summary>
+        /// command to stop the server unconditionally (forces 'hard' disconnection of all Clients!)
         /// </summary>
         void StopServer();
 
@@ -149,5 +154,27 @@ namespace Ict.Common.Remoting.Shared
         /// </summary>
         /// <returns></returns>
         bool AddUser(string AUserID);
+
+        /// Allows the server or admin console to run a timed job now
+        void PerformTimedProcessingNow(string AProcessName);
+
+        /// Is the process job enabled?
+        bool TimedProcessingJobEnabled(string AProcessName);
+
+        /// <summary>
+        /// the host name of the smtp server
+        /// </summary>
+        string SMTPServer
+        {
+            get;
+        }
+
+        /// <summary>
+        /// the daily start time for the timed processing
+        /// </summary>
+        string TimedProcessingDailyStartTime24Hrs
+        {
+            get;
+        }
     }
 }

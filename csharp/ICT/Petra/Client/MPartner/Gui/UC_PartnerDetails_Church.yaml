@@ -1,5 +1,6 @@
 RootNode:
     BaseClass: System.Windows.Forms.UserControl
+    InterfaceName: IPetraEditUserControl, Ict.Petra.Client.CommonForms.IFrmPetra
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MPartner.Gui   
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]

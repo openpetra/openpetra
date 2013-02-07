@@ -28,17 +28,20 @@ OpenPetra:
                 Partners: {Namespace=Ict.Petra.Client.MPartner.Gui, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Partner]
                     MaintainPartners:
+
                         #ChangeAddress:
                         #MergePartners:
-                        FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners}
+                        FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners, ActionOpenScreen=TPartnerFindScreen, Singleton=true}
                         WorkWithLastPartner: {Label=Work with Last Partner, Description=Open last Partner worked with, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
                         DeletePartner: {Label=Delete Partner, Description=Delete a selected Partner, ActionClick=TPartnerMain.DeletePartnerRecord}
                     CreatePartner:
                         AddNewFamily: {ActionClick=TPartnerMain.NewPartner, Description=Create a new Partner of Class FAMILY}
                         AddNewPerson: {ActionClick=TPartnerMain.NewPerson, Description=Create a new Partner of Class PERSON}
                         AddNewOrganisation: {ActionClick=TPartnerMain.NewOrganisation, Description=Create a new Partner of Class ORGANISATION}
+#                        AddNewFamilyShepherd: {ActionOpenScreen=TShepherdFamilyForm}
+#                        AddNewChurchShepherd: {ActionOpenScreen=TShepherdChurchForm}
                     Contacts:
-                        FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Partner Contacts}
+                        FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Contacts of Partners}
                     ImportExport: {Label=Import and Export}
                         ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
                         ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
@@ -180,6 +183,7 @@ OpenPetra:
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Transaction, Batch]
                     General:
+                        LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
                         ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
                         GLRevaluation: {Description:Runs a Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
@@ -219,6 +223,7 @@ OpenPetra:
                 #Reports:
                 Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     GeneralLedgerSetup:
+                        LedgerSettings: {Description="Maintain General Ledger Settings", ActionOpenScreen=TFrmGLSettings}
                         ManageAccounts: {Description:Maintain Accounts and modify their hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
                         ManageCostCentres: {Description:Maintain Cost Centres and modify their hierarchy, ActionOpenScreen=TFrmGLCostCentreHierarchy}
                         SetupCostCentreTypes: {Description=Maintain types of Cost Centres, ActionOpenScreen=TFrmSetupCostCentreTypes}
@@ -238,7 +243,8 @@ OpenPetra:
                         #DeleteCostCentre:
                         #RenameCostCentre:
                         #LinkCostCentreToPartner:
-                    #Other:
+                    Other:
+                        SetupSuspenseAccounts: {Description="Maintain Suspense Accounts", ActionOpenScreen=TFrmSetupSuspenseAccount}
                         #LedgerSetupShepherd:
                         #SetupCalendar:
                         #ChangeNumberOfForwardingPeriods:
@@ -250,7 +256,7 @@ OpenPetra:
         CrossLedgerSetup: {Icon=finance_setup.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
             General: {SkipThisLevel=true}
                 Ledger: {DontShowNestedTasksAsLinks=true}
-                    CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedger, PermissionsRequired="FINANCE-3"}
+                    CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedger, PermissionsRequired="FINANCE-3", Singleton=true}
                 Setup: {Label="Finance Setup (Cross-Ledger)", DontShowNestedTasksAsLinks=true}
                     SetupEmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
                     SetupCurrencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency, PermissionsRequired=FINANCE-3}

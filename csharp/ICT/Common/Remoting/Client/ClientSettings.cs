@@ -51,7 +51,6 @@ namespace Ict.Common.Remoting.Client
         private static Boolean UGUIRunningOnNonStandardDPI = false;
         private static String UPetraServerAdmin_Configfile = "";
         private static String UPetraServer_Configfile = "";
-        private static String UPetra_Path_Bin = "";
         private static String UPetra_Path_Dat = "";
         private static String UPetra_Path_Patches = "";
         private static String UPetra_Path_RemotePatches = "";
@@ -210,7 +209,7 @@ namespace Ict.Common.Remoting.Client
         {
             get
             {
-                return UPetra_Path_Bin;
+                return TAppSettingsManager.ApplicationDirectory;
             }
         }
 
@@ -423,16 +422,9 @@ namespace Ict.Common.Remoting.Client
             {
                 UPetraServerAdmin_Configfile = TAppSettingsManager.GetValue("PetraServerAdmin.Configfile");
                 UPetraServer_Configfile = TAppSettingsManager.GetValue("PetraServer.Configfile");
-                UPetra_Path_Bin = Environment.CurrentDirectory;
-                UPetra_Path_Patches = UPetra_Path_Bin + Path.DirectorySeparatorChar + "sa-patches";
+                UPetra_Path_Patches = Petra_Path_Bin + Path.DirectorySeparatorChar + "sa-patches";
                 UPostgreSql_BaseDir = TAppSettingsManager.GetValue("PostgreSQLServer.BaseDirectory");
                 UPostgreSql_DataDir = TAppSettingsManager.GetValue("PostgreSQLServer.DataDirectory");
-            }
-            else
-            {
-                // that is needed for the dynamic loading of reports; sometimes the current directory changes, and we need to know
-                // where the dlls are
-                UPetra_Path_Bin = Environment.CurrentDirectory;
             }
 
             if (URunAsRemote == true)
@@ -445,7 +437,7 @@ namespace Ict.Common.Remoting.Client
             if ((!URunAsRemote) && (!URunAsStandalone))
             {
                 // network version
-                UPetra_Path_Patches = UPetra_Path_Bin + Path.DirectorySeparatorChar + "net-patches";
+                UPetra_Path_Patches = Petra_Path_Bin + Path.DirectorySeparatorChar + "net-patches";
             }
 
             if (TAppSettingsManager.HasValue("StartupMessage"))

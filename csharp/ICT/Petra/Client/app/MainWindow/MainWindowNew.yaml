@@ -19,6 +19,7 @@ RootNode:
         actViewTaskSizeChange: {ActionClick=ViewTaskSizeChange}
         actViewTasksSingleClickExecution: {ActionClick=ViewTasksSingleClickExecution}
         actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
+        actAbout: {Label=&About OpenPetra, ActionId=eHelpAbout, Image: PetraInformation.ico}
         actHelpImproveTranslations: {ActionClick=HelpImproveTranslations}
     Controls:
         pnlContent:
@@ -72,7 +73,7 @@ RootNode:
             mniSeparator: {Label=-}
             mniHelpImproveTranslation: {Label=&Help Improve Translations, Action=actHelpImproveTranslations}    
             mniSeparator: {Label=-}            
-            mniHelpAboutPetra: {Label=&About Petra, ActionId=eAHelpbout}
-            mniHelpDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam}    
+            mniAbout:
+            mniDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam}    
     Toolbar:
     

@@ -4,7 +4,7 @@
 // @Authors:
 //       christophert, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,14 +57,15 @@ using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MFinance.ICH
+namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 {
     /// <summary>
     /// Class for the generation of "Home Office Statement of Accounts" reports for each
     ///   foreign cost centre (ledger/fund).  This is basically a modified Trial Balance.
     /// </summary>
-    public class TGenHOSAFilesReports
+    public class TGenHOSAFilesReportsWebConnector
     {
         /// <summary>
         /// Performs the ICH code to generate HOSA Files/Reports.
@@ -78,6 +79,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AFileName">File name</param>
         /// <param name="AVerificationResult">Error messaging</param>
         /// <returns>Successful or not</returns>
+        [RequireModulePermission("FINANCE-3")]
         public static bool GenerateHOSAFiles(int ALedgerNumber,
             int APeriodNumber,
             int AIchNumber,
@@ -212,7 +214,6 @@ namespace Ict.Petra.Server.MFinance.ICH
                             CurrencySelect,
                             AIchNumber,
                             ref TableForExport,
-                            ref DBTransaction,
                             ref AVerificationResult);
                     }
 
@@ -311,19 +312,23 @@ namespace Ict.Petra.Server.MFinance.ICH
                 TCsv2Xml.Xml2Csv(doc, AFileName);
 
                 //Replace the default CSV header row with OM specific
-                ReplaceHeaderInFile(AFileName, TableForExportHeader);
+                ReplaceHeaderInFile(AFileName, TableForExportHeader, ref AVerificationResult);
 
                 /* Change number format back */
                 //TODO
 
                 Successful = true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                TLogging.Log(e.ToString());
             }
 
             // rollback the reading transaction
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return Successful;
         }
@@ -333,29 +338,48 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// </summary>
         /// <param name="AFileName">File name (including path) to process</param>
         /// <param name="AHeaderText">Text to insert in first line</param>
-        public static void ReplaceHeaderInFile(string AFileName, string AHeaderText)
+        /// <param name="AVerificationResult">Error messaging</param>
+        [RequireModulePermission("FINANCE-3")]
+        public static bool ReplaceHeaderInFile(string AFileName, string AHeaderText, ref TVerificationResultCollection AVerificationResult)
         {
-            StringBuilder newFile = new StringBuilder();
+            bool retVal = true;
 
-            string[] file = File.ReadAllLines(AFileName);
-
-            bool IsFirstLine = true;
-
-            foreach (string line in file)
+            try
             {
-                //If first line
-                if (IsFirstLine)
+                StringBuilder newFileContents = new StringBuilder();
+
+                string[] file = File.ReadAllLines(AFileName);
+
+                bool IsFirstLine = true;
+
+                foreach (string line in file)
                 {
-                    newFile.Append(AHeaderText + "\r\n");
-                    IsFirstLine = false;
+                    //If first line
+                    if (IsFirstLine)
+                    {
+                        newFileContents.Append(AHeaderText + "\r\n");
+                        IsFirstLine = false;
+                    }
+                    else
+                    {
+                        newFileContents.Append(line + "\r\n");
+                    }
                 }
-                else
-                {
-                    newFile.Append(line + "\r\n");
-                }
+
+                File.WriteAllText(AFileName, newFileContents.ToString());
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                retVal = false;
+                AVerificationResult.Add(new TVerificationResult("Generating HOSA Files",
+                        "Unable to replace the header in file: " + AFileName,
+                        "Replacing Header in Text File",
+                        TResultSeverity.Resv_Critical, new Guid()));
+                throw new Exception("Error in generating HOSA Files. Unable to replace the header in file: " + AFileName);
             }
 
-            File.WriteAllText(AFileName, newFile.ToString());
+            return retVal;
         }
 
         /// <summary>
@@ -372,8 +396,8 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="ABase"></param>
         /// <param name="AIchNumber"></param>
         /// <param name="AExportDataTable"></param>
-        /// <param name="ADBTransaction"></param>
         /// <param name="AVerificationResult"></param>
+        [RequireModulePermission("FINANCE-3")]
         public static void ExportGifts(int ALedgerNumber,
             string ACostCentre,
             string AAcctCode,
@@ -384,7 +408,6 @@ namespace Ict.Petra.Server.MFinance.ICH
             string ABase,
             int AIchNumber,
             ref DataTable AExportDataTable,
-            ref TDBTransaction ADBTransaction,
             ref TVerificationResultCollection AVerificationResult)
         {
             /* Define local variables */
@@ -398,11 +421,21 @@ namespace Ict.Petra.Server.MFinance.ICH
             decimal IndividualDebitTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
             decimal IndividualCreditTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
 
+            decimal GiftAmount = 0;
+            decimal IntlGiftAmount = 0;
+
             string ExportDescription = string.Empty;
+            string tmpLastGroup = string.Empty;
+            string tmpLastDetail = string.Empty;
 
             //Export Gifts gi3200-1.i
             //Find and total each gift transaction
             string SQLStmt = TDataBase.ReadSqlFile("ICH.HOSAExportGiftsInner.sql");
+
+            //Begin the transaction
+            bool NewTransaction = false;
+
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             OdbcParameter parameter;
 
@@ -429,7 +462,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             parameter.Value = AAcctCode;
             parameters.Add(parameter);
 
-            DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(SQLStmt, "table", ADBTransaction, parameters.ToArray());
+            DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(SQLStmt, "table", DBTransaction, parameters.ToArray());
 
             foreach (DataRow untypedTransRow in TmpTable.Rows)
             {
@@ -437,8 +470,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                 /* Only do after first loop due to last recipient key check */
 
                 Int32 tmpLastRecipKey = Convert.ToInt32(untypedTransRow[8]);         //a_gift_detail.p_recipient_key_n
-                string tmpLastGroup = untypedTransRow[6].ToString();         //a_motivation_detail.a_motivation_group_code_c
-                string tmpLastDetail = untypedTransRow[7].ToString();         //a_motivation_detail.a_motivation_detail_code_c
+                tmpLastGroup = untypedTransRow[6].ToString();         //a_motivation_detail.a_motivation_group_code_c
+                tmpLastDetail = untypedTransRow[7].ToString();         //a_motivation_detail.a_motivation_detail_code_c
 
                 if ((FirstLoopFlag == false)
                     && ((tmpLastRecipKey != LastRecipKey)
@@ -454,7 +487,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                         if (LastRecipKey != 0)
                         {
                             /* Find partner short name details */
-                            PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, ADBTransaction);
+                            PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, DBTransaction);
                             PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
 
                             LastDetailDesc += " : " + PartnerRow.PartnerShortName;
@@ -465,7 +498,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                         {
                             AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber,
                                 LastGroup,
-                                ADBTransaction);
+                                DBTransaction);
                             AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
 
                             Desc = MotivationGroupRow.MotivationGroupDescription.TrimEnd(new Char[] { (' ') }) + "," + LastDetailDesc;
@@ -492,8 +525,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                     }
                 }
 
-                decimal GiftAmount = Convert.ToDecimal(untypedTransRow[4]);          //a_gift_detail.a_gift_amount_n
-                decimal IntlGiftAmount = Convert.ToDecimal(untypedTransRow[5]);          //a_gift_detail.a_gift_amount_intl_n
+                GiftAmount = Convert.ToDecimal(untypedTransRow[4]);          //a_gift_detail.a_gift_amount_n
+                IntlGiftAmount = Convert.ToDecimal(untypedTransRow[5]);          //a_gift_detail.a_gift_amount_intl_n
 
                 if (ABase == MFinanceConstants.CURRENCY_BASE)
                 {
@@ -536,7 +569,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                     if (LastRecipKey != 0)
                     {
                         /* Find partner short name details */
-                        PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, ADBTransaction);
+                        PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, DBTransaction);
                         PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
 
                         LastDetailDesc += ":" + PartnerRow.PartnerShortName;
@@ -545,7 +578,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                     }
                     else
                     {
-                        AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber, LastGroup, ADBTransaction);
+                        AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber, LastGroup, DBTransaction);
                         AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
 
                         Desc = MotivationGroupRow.MotivationGroupDescription.TrimEnd() + "," + LastDetailDesc;
@@ -566,6 +599,11 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     AExportDataTable.Rows.Add(DR);
                 }
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
         }
 
@@ -610,6 +648,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AIchNumber">ICH number</param>
         /// <param name="ACurrency">Currency</param>
         /// <param name="AVerificationResult">Error messaging</param>
+        [RequireModulePermission("FINANCE-3")]
         public static void GenerateHOSAReports(int ALedgerNumber,
             int APeriodNumber,
             int AIchNumber,

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -212,6 +212,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ShowData();
             ShowDetails(GetCurrentBatchRow());
+
             FBatchLoaded = true;
         }
 
@@ -225,7 +226,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool senderIsRadioButton = (sender is RadioButton);
             int batchNumber = 0;
-            int newRowToSelectAfterFilter = 1;
 
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
@@ -353,12 +353,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FStatusFilter = "1 = 1";
             }
 
-            FPreviouslySelectedDetailRow = null;
-            grdDetails.DataSource = null;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
+            RefreshGridData(batchNumber);
 
-            FMainDS.AGiftBatch.DefaultView.RowFilter =
-                String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+            UpdateChangeableStatus();
+        }
+
+        private void RefreshGridData(int ABatchNumber, bool ASelectOnly = false)
+        {
+            int newRowToSelectAfterFilter = 1;
+
+            if (!ASelectOnly)
+            {
+                FMainDS.AGiftBatch.DefaultView.RowFilter =
+                    String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+
+                FPreviouslySelectedDetailRow = null;
+                grdDetails.DataSource = null;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
+            }
 
             if (grdDetails.Rows.Count < 2)
             {
@@ -368,15 +380,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (FBatchLoaded == true)
             {
                 //Select same row after refilter
-                if (batchNumber > 0)
+                if (ABatchNumber > 0)
                 {
-                    newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber);
+                    newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, ABatchNumber);
                 }
 
                 SelectRowInGrid(newRowToSelectAfterFilter);
             }
-
-            UpdateChangeableStatus();
         }
 
         private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
@@ -417,11 +427,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 Int32 periodNumber = 0;
                 Int32 yearNumber = 0;
-                DateTime dateValue;
-                string aDate = dtpDetailGlEffectiveDate.Text;
 
-                if (DateTime.TryParse(aDate, out dateValue))
+                if (dtpDetailGlEffectiveDate.ValidDate(false))
                 {
+                    DateTime dateValue = dtpDetailGlEffectiveDate.Date.Value;
+
                     FPreviouslySelectedDetailRow.GlEffectiveDate = dateValue;
 
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
@@ -491,7 +501,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// reset the control
         public void ClearCurrentSelection()
         {
-            GetDataFromControls();
+            if (FPetraUtilsObject.HasChanges)
+            {
+                GetDataFromControls();
+            }
+
             this.FPreviouslySelectedDetailRow = null;
             ShowData();
         }
@@ -858,9 +872,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void PostBatch(System.Object sender, EventArgs e)
         {
+            int currentBatchNo = 0;
+
             if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
                 return;
+            }
+
+            if (rbtAll.Checked)
+            {
+                currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
             TVerificationResultCollection Verifications;
@@ -931,6 +952,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 PrintGiftBatchReceipts(PostedGiftTDS);
 
                 RefreshAll();
+
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    ((TFrmGiftBatch)ParentForm).SaveChanges();
+                }
+
+                if (currentBatchNo > 0)
+                {
+                    RefreshGridData(currentBatchNo, true);
+                }
             }
         }
 

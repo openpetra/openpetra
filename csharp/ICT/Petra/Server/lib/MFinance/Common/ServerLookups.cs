@@ -79,5 +79,24 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             return true;
         }
+
+        /// <summary>
+        /// return information if ledger with given number has suspense accounts set up
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean HasSuspenseAccounts(Int32 ALedgerNumber)
+        {
+            Boolean ReturnValue;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            ReturnValue = (ASuspenseAccountAccess.CountViaALedger(ALedgerNumber, Transaction) > 0);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return ReturnValue;
+        }
     }
 }

@@ -185,7 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)
         {
-            txtDetailExchangeRateToBase.Text = FPreviouslySelectedDetailRow.ExchangeRateToBase.ToString("0.00000000");
+            txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
 
@@ -269,9 +269,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
                 txtBatchNumber.Text = FBatchNumber.ToString();
-                txtDebit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
-                txtCredit.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
-                txtControl.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
             }
 
             if (FPreviouslySelectedDetailRow != null)
@@ -509,7 +506,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private decimal GetActualExchangeRateForeign()
         {
-            return Convert.ToDecimal(txtDetailExchangeRateToBase.Text);
+            return txtDetailExchangeRateToBase.NumberValueDecimal.Value;
         }
 
         /// <summary>

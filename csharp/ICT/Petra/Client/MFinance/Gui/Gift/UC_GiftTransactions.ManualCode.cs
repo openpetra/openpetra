@@ -65,7 +65,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Changing this will stop taborder issues
             sptTransactions.TabStop = false;
-            sptTransactions.SplitterDistance = 285; // It says this already in the YAML, but apparently it's ignored?
         }
 
         /// <summary>
@@ -872,7 +871,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (giftBatch == null)
             {
-                MessageBox.Show(Catalog.GetString("Please select a Gift Batch."));
+                MessageBox.Show(Catalog.GetString("Please select a Gift Batch to Reverse."));
                 return;
             }
 
@@ -882,15 +881,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (!reverseWholeBatch && (FPreviouslySelectedDetailRow == null))
-            {
-                MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
-                return;
-            }
-
             if (FPetraUtilsObject.HasChanges)
             {
                 MessageBox.Show(Catalog.GetString("Please save first and than try again!"));
+                return;
+            }
+
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
                 return;
             }
 
@@ -914,6 +913,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
 //                revertForm.GiftBatchRow = giftBatch;   // TODO Decide whether to remove altogether
+
                 revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
 
                 if (revertForm.ShowDialog() == DialogResult.OK)

@@ -43,8 +43,11 @@ using Ict.Common.IO;
 namespace Ict.Common.Controls
 {
     /// <summary>
-    /// GUI element that shows a stylized list of items built from an XmlNode
+    /// Displays a stylised list of <see cref="LinkLabel" />s that are built from an <see cref="XmlNode" />.
     /// </summary>
+    /// <remarks>
+    /// Used in OpenPetra Main Menu's Module Navigation to present the available Submodules.
+    ///</remarks>
     public partial class TTaskList : UserControl
     {
         #region global settings
@@ -654,6 +657,16 @@ namespace Ict.Common.Controls
         /// <returns>string attribute, or empty string if attribute is null.</returns>
         public string GetAttribute(XmlNode node, string attr)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException("Argument 'node' must not be null");
+            }
+
+            if (node.Attributes == null)
+            {
+                throw new ArgumentNullException("Argument 'node' must have Attributes (node.Name='" + node.Name + "')");
+            }
+
             if (node.Attributes[attr] != null)
             {
                 return node.Attributes[attr].Value;
@@ -673,7 +686,15 @@ namespace Ict.Common.Controls
         /// <returns>Boolean whether given Xml Node has the passed attribute set to true</returns>
         public bool AttributeTrue(XmlNode node, string attr, bool TrueByDefault = true)
         {
-            XmlAttributeCollection tmp = node.Attributes;
+            if (node == null)
+            {
+                throw new ArgumentNullException("Argument 'node' must not be null");
+            }
+
+            if (node.Attributes == null)
+            {
+                throw new ArgumentNullException("Argument 'node' must have Attributes (node.Name='" + node.Name + "')");
+            }
 
             if (node.Attributes[attr] == null)
             {
@@ -698,8 +719,6 @@ namespace Ict.Common.Controls
         /// <returns>Boolean whether given Xml Node has the passed attribute set to true</returns>
         public bool AttributeFalse(XmlNode node, string attr)
         {
-            XmlAttributeCollection tmp = node.Attributes;
-
             if (node.Attributes[attr] == null)
             {
                 return false;

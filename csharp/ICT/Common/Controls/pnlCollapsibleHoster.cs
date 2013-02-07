@@ -37,8 +37,14 @@ namespace Ict.Common.Controls
     /// <summary>
     /// UserControl which acts as a hosting container for 1..n 'Collapsible Panels' (<see cref="TPnlCollapsible" />).
     /// </summary>
-    /// <remarks>The Collapsible Panels are realised according to the passed in XmlNodes in Property
-    /// <see cref="MasterXmlNode" />!</remarks>
+    /// <remarks>
+    /// The Collapsible Panels are realised according to the passed in XmlNodes in Property
+    /// <see cref="MasterXmlNode" />.
+    /// Several <see cref="TPnlCollapsible" /> Controls can be expanded in vertical direction at the same time.
+    /// Usually only a single <see cref="LinkLabel" /> in any of the <see cref="TPnlCollapsible" /> Controls can be
+    /// active (=underlined LinkLabel). This can be changed by setting Property <see cref="OnlyOneActiveTaskOnAllCollapsiblePanelsTaskLists" />
+    /// to false.
+    ///</remarks>
     public partial class TPnlCollapsibleHoster : UserControl
     {
         /// <summary></summary>

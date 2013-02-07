@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1481,7 +1481,7 @@ namespace Ict.Common.Printing
                 child.ParentNode.RemoveChild(child);
             }
 
-            return htmlDoc.OuterXml.Replace("&amp;", "&");
+            return htmlDoc.OuterXml.Replace("&amp;", "&").Replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", string.Empty);
         }
     }
 }

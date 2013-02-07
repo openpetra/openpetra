@@ -34,8 +34,8 @@ RootNode:
         pnlDetailButtons:
             Dock: Right
             Controls: [btnAdd, btnCancel]
-        btnAdd: {Action=actNew}
-        btnCancel: {Action=actCancel}
+        btnAdd: {Action=actNew, Stretch=horizontally}
+        btnCancel: {Action=actCancel, Stretch=horizontally}
         grdDetails:
             Dock: Fill
             Columns: [AJournal.JournalNumber, AJournal.JournalStatus, AJournal.JournalDebitTotal, AJournal.JournalCreditTotal, AJournal.TransactionCurrency, AJournal.JournalDescription, AJournal.SubSystemCode, AJournal.TransactionTypeCode]
@@ -60,5 +60,5 @@ RootNode:
         cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList}
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
-        txtDetailExchangeRateToBase: {Label= Exchange Rate to Base, Validation=true}
+        txtDetailExchangeRateToBase: {Label= Exchange Rate to Base, Validation=true, Format=Decimal(10), Width=130}
         btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}

@@ -1,0 +1,43 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: Ict.Petra.Client.CommonForms.TFrmPetraUtils
+    Namespace: Ict.Petra.Client.MFinance.Gui.GL
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
+    FormType: edit
+    Template: usercontrolUnbound
+    Controls:
+        pnlDetails:
+            Controls: 
+                Row0:  [pnlLeft, pnlRight]
+            Dock: Fill
+        
+        pnlLeft:
+            Controls: 
+                Row0: [cmbBaseCurrency]
+                Row1: [txtAccountingPeriods]
+                Row2: [txtCalendarMode]
+                Row3: [txtCurrencyRevaluation]
+                Row4: [txtCurrentPeriod]
+                Row5: [txtForwardPeriods]
+        
+        pnlRight:
+            Controls: 
+                Row0: [cmbIntlCurrency]
+                Row1: [dtpPeriodStartDate]
+                Row2: [dtpPeriodEndDate]
+                Row3: [dtpPostingAllowedUntil]
+                Row4: [chkSuspenseAccounts]
+                Row5: [chkBudgetControl]
+                
+        cmbBaseCurrency: {List=CurrencyCodeList, Width=200}
+        cmbIntlCurrency: {List=CurrencyCodeList, Width=200}
+        txtAccountingPeriods: {Label=Accounting Periods, Format=Integer}
+        txtCalendarMode: {Label=Calendar Mode}
+        txtCurrencyRevaluation: {Label=Currency Revaluation}
+        txtCurrentPeriod: {Label=Current Period, Format=Integer}
+        txtForwardPeriods: {Label=Forward Periods, Format=Integer}
+        dtpPeriodStartDate: {Label=Period Start Date}
+        dtpPeriodEndDate: {Label=Period End Date}
+        dtpPostingAllowedUntil: {Label=Posting allowed until}
+        chkSuspenseAccounts: {Label=Suspense Accounts}
+        chkBudgetControl: {Label=Bugdet Control}

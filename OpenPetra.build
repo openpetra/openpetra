@@ -156,6 +156,7 @@ useful parameters
       <include name="**/*-generated.resx" />
       <include name="**/*-generated.Designer.cs" />
       <include name="**/*.generated.refs" />
+      <include name="**/*.dll.xml" />
       <include name="tmp/**/AssemblyInfo.cs" />
     </fileset>
   </delete>
@@ -295,8 +296,12 @@ useful parameters
 </target>
 
 <target name="generateWinforms">
-  <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
-  <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraClient/PetraClient.build')}" verbose="${verbose}"/>
+  <property name="WithWindowsClient" value="true" overwrite="false"/>
+  <property name="WithLinuxClient" value="false" overwrite="false"/>
+  <if test="${WithWindowsClient or WithLinuxClient}">
+    <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+    <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraClient/PetraClient.build')}" verbose="${verbose}"/>
+  </if>
 </target>
 
 <target name="generateWinform">

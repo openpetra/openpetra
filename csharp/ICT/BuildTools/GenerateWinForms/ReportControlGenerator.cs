@@ -196,7 +196,25 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 ReportControls.GenerateReadSetControls(writer, control.xmlNode, writer.Template, "INTEGERTEXTBOX");
             }
-            else if ((numericType == "Decimal") || (numericType == "Currency"))
+            else if (numericType == "Decimal")
+            {
+                ReportControls.GenerateReadSetControls(writer, control.xmlNode, writer.Template, "DECIMALTEXTBOX");
+            }
+        }
+    }
+
+    /// <summary>
+    /// generator for currency textbox
+    /// </summary>
+    public class TTxtCurrencyTextBoxReportGenerator : TTxtCurrencyTextBoxGenerator
+    {
+        /// <summary>add GeneratedReadSetControls</summary>
+        public override void ApplyDerivedFunctionality(TFormWriter writer, TControlDef control)
+        {
+            TControlDef ctrl = writer.CodeStorage.GetControl(control.xmlNode.Name);
+            string numericType = ctrl.GetAttribute("Format");
+
+            if (numericType == "Currency")
             {
                 ReportControls.GenerateReadSetControls(writer, control.xmlNode, writer.Template, "DECIMALTEXTBOX");
             }

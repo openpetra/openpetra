@@ -146,7 +146,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARow"></param>
         public void GetDetails(PSubscriptionRow ARow)
         {
-            GetDataFromControls(ARow);
+            ValidateAllData(false);
+            //GetDataFromControls(ARow);
         }
 
         /// <summary>

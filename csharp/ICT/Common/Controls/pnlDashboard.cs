@@ -28,10 +28,14 @@ using System.Windows.Forms;
 namespace Ict.Common.Controls
 {
     /// <summary>
-    /// the Dashboard can host several other panels
-    /// each panel has a caption, and can be minimized
-    /// TODO: this is only implemented to host the tasklist at the moment, and does not host panels yet
+    /// The Dashboard can host several <see cref="TLstTasks" /> Controls, which it caches.
+    /// <para>
+    /// TODO: Future plan is to include hosting of 'Collapsible Panels' (<see cref="TPnlCollapsible" />) as well.
+    /// (see Bug #5111 [https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=511]).
+    /// </para>
     /// </summary>
+    /// <remarks>In the OpenPetra Main Menu it represents the area that is right of the Module Navigation and under
+    /// the 'Breadcrumb Trail'.</remarks>
     public class TDashboard : System.Windows.Forms.Panel
     {
         private int FMaxTaskWidth;
@@ -40,7 +44,7 @@ namespace Ict.Common.Controls
         private List <TLstTasks>FTaskLists = new List <TLstTasks>();
 
         /// <summary>
-        /// default constructor
+        /// Constructor.
         /// </summary>
         public TDashboard()
         {
@@ -128,10 +132,11 @@ namespace Ict.Common.Controls
         #region Public Methods
 
         /// <summary>
-        /// quick implementation of hosting task list
-        /// TODO: this needs to support several panels etc
+        /// Shows a <see cref="TLstTasks" /> Control.
         /// </summary>
-        /// <param name="ATaskList"></param>
+        /// <param name="ATaskList">The <see cref="TLstTasks" /> Control that should be shown.
+        /// If that Control was alreay shown it is not instantiated again but just brought to the foreground,
+        /// if it wasn't shown before then an instance of it is created automatically.</param>
         public void ShowTaskList(TLstTasks ATaskList)
         {
             if (ATaskList != null)

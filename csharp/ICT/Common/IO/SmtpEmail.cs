@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -81,6 +81,52 @@ namespace Ict.Common.IO
                     TAppSettingsManager.GetValue("SmtpUser", ""),
                     TAppSettingsManager.GetValue("SmtpPassword", ""));
                 FSmtpClient.EnableSsl = TAppSettingsManager.GetBoolean("SmtpEnableSsl", false);
+            }
+        }
+
+        /// <summary>
+        /// create a mail message and send it
+        /// </summary>
+        /// <returns></returns>
+        public bool SendEmail(string fromemail, string fromDisplayName, string receipients, string subject, string body, string attachfile)
+        {
+            try
+            {
+                MailMessage email = new MailMessage();
+                //From and To
+                email.Sender = new MailAddress(fromemail, fromDisplayName);
+                email.From = new MailAddress(fromemail, fromDisplayName);
+                email.To.Add(receipients);
+
+                //Subject and Body
+                email.Subject = subject;
+                email.Body = body;
+                email.IsBodyHtml = false;
+
+                //Attachement if any:
+                if ((attachfile != null) && (attachfile.Length > 0))
+                {
+                    if (System.IO.File.Exists(attachfile) == true)
+                    {
+                        Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
+
+                        email.Attachments.Add(data);
+                    }
+                    else
+                    {
+                        TLogging.Log("Could not send email");
+                        TLogging.Log("File to attach '" + attachfile + "' does not exist!");
+                        return false;
+                    }
+                }
+
+                return SendMessage(ref email);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log("Could not send email");
+                TLogging.Log(ex.Message);
+                return false;
             }
         }
 

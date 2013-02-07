@@ -2726,8 +2726,8 @@
                 type="varchar"
                 descr=""
                 format="X(48)"
-                label="First Name"
-                help="Enter the person&apos;s full first name"/>
+                label="First Name(s)"
+                help="Enter the first names of the couple (or in case of a single the person&apos;s full first name)"/>
     <tablefield name="p_family_name_c"
                 type="varchar"
                 descr=""

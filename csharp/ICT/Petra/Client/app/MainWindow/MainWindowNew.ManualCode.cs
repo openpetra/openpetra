@@ -46,6 +46,16 @@ namespace Ict.Petra.Client.App.PetraClient
 {
     public partial class TFrmMainWindowNew
     {
+        #region Resource strings
+
+        private readonly string StrCannotClosePetra1stLine = Catalog.GetString("Cannot close Petra Main Menu.");
+        private readonly string StrCannotClosePetra2ndLine = Catalog.GetString("The following window(s) must be closed first:");
+        private readonly string StrCannotClosePetraChangeInfoLine = Catalog.GetString(
+            "Note: Windows with unsaved changes are marked with '(*)' in this list.");
+        private readonly string StrCannotClosePetraTitle = Catalog.GetString("Open Windows Must Be Closed");
+
+        #endregion
+
         private const string VIEWTASKS_TILES = "Tiles";
         private const string VIEWTASKS_LIST = "List";
 
@@ -173,6 +183,46 @@ namespace Ict.Petra.Client.App.PetraClient
             return true;
         }
 
+        /// <summary>
+        /// Recurse through the whole menu hierarachy and record all Singleton screens (=screens for which only one instance is to be opened).
+        /// </summary>
+        /// <param name="AChildNode">'MainMenu' node.</param>
+        static void RecordAllSingletonScreens(XmlNode AChildNode)
+        {
+            XmlNode InspectNode = AChildNode.FirstChild;
+
+            //Iterate through all children nodes of the node
+            while (InspectNode != null)
+            {
+                CheckForAndRecordSingletonScreen(InspectNode);
+
+                // Recurse into deeper levels!
+                RecordAllSingletonScreens(InspectNode);
+
+                InspectNode = InspectNode.NextSibling;
+            }
+        }
+
+        /// <summary>
+        /// Checks if a screen should be a Singleton screen (=screens for which only one instance is to be opened) and record the fact.
+        /// </summary>
+        /// <param name="childNode">Node to inspect.</param>
+        static void CheckForAndRecordSingletonScreen(XmlNode childNode)
+        {
+            string ChildNodeActionOpenScreen = TXMLParser.GetAttribute(childNode, "ActionOpenScreen");
+
+            if (ChildNodeActionOpenScreen.Length > 0)
+            {
+                if (TXMLParser.GetAttribute(childNode, "Singleton").ToLower() == "true")
+                {
+                    if (!TFormsList.GSingletonForms.Contains(ChildNodeActionOpenScreen))
+                    {
+                        TFormsList.GSingletonForms.Add(ChildNodeActionOpenScreen);
+                    }
+                }
+            }
+        }
+
         private static void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers, bool ADontUseDefaultLedger)
         {
             XmlNode childNode = AMenuNode.FirstChild;
@@ -181,6 +231,7 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlAttribute enabledAttribute;
             bool LedgersAvailableToUserCreatedInThisIteration = false;
 
+            //Iterate through all children nodes of the node
             while (childNode != null)
             {
                 if (TXMLParser.GetAttribute(childNode, "DependsOnLedger").ToLower() == "true")
@@ -311,7 +362,9 @@ namespace Ict.Petra.Client.App.PetraClient
                 }
                 else
                 {
+                    // Recurse into deeper levels!
                     AddNavigationForEachLedger(childNode, AAvailableLedgers, ADontUseDefaultLedger);
+
                     childNode = childNode.NextSibling;
                 }
             }
@@ -335,6 +388,11 @@ namespace Ict.Petra.Client.App.PetraClient
             XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
             XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
             XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
+
+            if (TFormsList.GSingletonForms.Count == 0)      // There is no need to re-record all Singleton screens if this was already done once
+            {
+                RecordAllSingletonScreens(MainMenuNode);
+            }
 
             AddNavigationForEachLedger(MainMenuNode, AvailableLedgers, ADontUseDefaultLedger);
 
@@ -504,10 +562,72 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private bool CanCloseManual()
         {
-            StringCollection NonClosableForms;
-            string FirstNonClosableFormKey;
+            Boolean ReturnValue;
+            const String INDENTATION = "   ";
+            StringCollection NonCloseableForms;
+            Boolean CanCloseAllForms;
+            String NonCloseableFormsList = "";
+            String FirstNonCloseableFormKey;
+            String ChangeInfo = "";
+            Int16 FormsCounter;
 
-            return TFormsList.GFormsList.CanCloseAll(out NonClosableForms, out FirstNonClosableFormKey);
+            ReturnValue = false;
+
+            //
+            // Check if any Forms are open that cannot be closed and process those
+            //
+            CanCloseAllForms = TFormsList.GFormsList.CanCloseAll(out NonCloseableForms, out FirstNonCloseableFormKey);
+
+            if (!CanCloseAllForms)
+            {
+                for (FormsCounter = 0; FormsCounter <= NonCloseableForms.Count - 1; FormsCounter += 1)
+                {
+                    NonCloseableFormsList = NonCloseableFormsList + INDENTATION + NonCloseableForms[FormsCounter] + "\r\n";
+                }
+
+                // Remove trailing Line Feed + Carriage Return
+                NonCloseableFormsList = NonCloseableFormsList.Substring(0, NonCloseableFormsList.Length - "\r\n".Length);
+            }
+
+            if (CanCloseAllForms)
+            {
+                //
+                // Any remaining Forms can be closed -> close all Forms, except for this Form.
+                //
+                TFormsList.GFormsList.CloseAllExceptOne(this);
+
+                ReturnValue = true;
+            }
+            else
+            {
+                //
+                // One or more remaining Forms cannot be closed.
+                //
+
+                // Check if any of the Forms in the list has the change indicator
+                if (NonCloseableFormsList.IndexOf(PetraEditForm.FORM_CHANGEDDATAINDICATOR) > 0)
+                {
+                    // Include info about the change indicator in the message
+                    ChangeInfo = "\r\n\r\n" + StrCannotClosePetraChangeInfoLine;
+                }
+
+                // Present list of Forms that still need to be closed to the user
+                MessageBox.Show(
+                    StrCannotClosePetra1stLine + "\r\n" + "\r\n" + StrCannotClosePetra2ndLine + "\r\n" + NonCloseableFormsList + ChangeInfo,
+                    StrCannotClosePetraTitle,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+
+            //
+            // Bring first Form that needs closing to the foreground
+            //
+            if (!CanCloseAllForms)
+            {
+                TFormsList.GFormsList.ShowForm(FirstNonCloseableFormKey);
+            }
+
+            return ReturnValue;
         }
 
         private void HelpImproveTranslations(object sender, EventArgs e)

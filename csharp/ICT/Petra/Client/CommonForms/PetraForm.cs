@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,43 +31,16 @@ using System.ComponentModel.Design;
 using System.Windows.Forms;
 using System.Resources;
 using System.Threading;
+using System.Reflection;
 
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
-//using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.CommonForms
 {
-#if TODO
-    /// This Form is the Base Form for all Petra Forms.
-    ///
-    /// It contains the File and Help Menus, a Toolbar with a Close button,
-    /// a Statusbar and a StatusBarTextProvider.
-    ///
-    /// @Comment All Forms that are used in Petra should inherit from this Form -
-    ///   except for Dialog-style (Modal) Forms, these should inherit from
-    ///   TFrmPetraDialog (in Ict.Petra.Client.CommonDialogs.dll)!
-    public class TFrmPetra : Form
-    {
-        /// <summary>
-        /// Special property to determine whether our code is running in the WinForms Designer.
-        /// The result of this property is correct even if InitializeComponent() wasn't run yet
-        /// (.NET's DesignMode property returns false in that case)!
-        /// </summary>
-        protected bool InDesignMode
-        {
-            get
-            {
-                return (this.GetService(typeof(IDesignerHost)) != null)
-                       || (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime);
-            }
-        }
-    }
-#endif
-
     /// <summary>todoComment</summary>
     public delegate void ActionEventHandler(object sender, ActionEventArgs e);
 
@@ -517,12 +490,19 @@ namespace Ict.Petra.Client.CommonForms
             ExecuteAction(ATag.Id);
         }
 
+        private Assembly CommonDialogsAssembly = null;
+
         /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="id"></param>
         public void ExecuteAction(eActionId id)
         {
+            if (CommonDialogsAssembly == null)
+            {
+                CommonDialogsAssembly = Assembly.LoadFrom("Ict.Petra.Client.CommonDialogs.dll");
+            }
+
             switch (id)
             {
                 case eActionId.eClose:
@@ -540,12 +520,12 @@ namespace Ict.Petra.Client.CommonForms
                     break;
 
                 case eActionId.eHelpAbout:
-#if TODO
-                    using (AboutPetraDialog aboutDialog = new AboutPetraDialog())
+                    System.Type dialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmAboutDialog");
+
+                    using (Form aboutDialog = (Form)Activator.CreateInstance(dialogType, new object[] { this.FWinForm }))
                     {
                         aboutDialog.ShowDialog();
                     }
-#endif
                     break;
 
                 case eActionId.eHelp:
