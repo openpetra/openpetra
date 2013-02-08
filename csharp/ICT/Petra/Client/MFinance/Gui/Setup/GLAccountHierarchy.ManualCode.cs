@@ -577,7 +577,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             trvAccounts.EndUpdate();
 
             trvAccounts.SelectedNode = newNode;
-
+            txtDetailAccountCode.Focus();
             FPetraUtilsObject.SetChangedFlag();
         }
 
@@ -767,15 +767,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (!strNewDetailAccountCode.Equals(strOldDetailAccountCode))
             {
-                FStatus += "AccountCode changed.\r\n";
+                FStatus += String.Format(Catalog.GetString("AccountCode changed to {0}."),strNewDetailAccountCode) + "\r\n";
                 txtStatus.Text = FStatus;
 
-                if (MessageBox.Show(String.Format(Catalog.GetString("You have changed {0} to {1}. Confirm that you want to re-name this account."),
-                            strOldDetailAccountCode,
-                            strNewDetailAccountCode), Catalog.GetString("Rename Account"), MessageBoxButtons.OKCancel) != DialogResult.OK)
+                if (strOldDetailAccountCode.IndexOf(Catalog.GetString("NewAccount")) < 0) // If they're just changing this from the initial value, don't show warning.
                 {
-                    txtDetailAccountCode.Text = strOldDetailAccountCode;
-                    return false;
+                    if (MessageBox.Show(String.Format(Catalog.GetString("You have changed {0} to {1}. Confirm that you want to re-name this account."),
+                                strOldDetailAccountCode,
+                                strNewDetailAccountCode), Catalog.GetString("Rename Account"), MessageBoxButtons.OKCancel) != DialogResult.OK)
+                    {
+                        txtDetailAccountCode.Text = strOldDetailAccountCode;
+                        return false;
+                    }
                 }
 
                 AccountNodeDetails NodeDetails = (AccountNodeDetails)trvAccounts.SelectedNode.Tag;
@@ -798,7 +801,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         Catalog.GetString("Sorry but this account already exists: ") + strNewDetailAccountCode +
                         "\r\n" + Catalog.GetString("You cannot use an account name twice!"),
                         Catalog.GetString("Rename Account"));
-                    throw new CancelSaveException();
+                    txtDetailAccountCode.Text = strOldDetailAccountCode;
+                    txtDetailAccountCode.Focus();
+                    return false;
                 }
 
                 if (NodeDetails.IsNew)

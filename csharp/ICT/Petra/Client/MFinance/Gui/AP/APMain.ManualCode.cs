@@ -579,7 +579,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TLocationPK ResultLocationPK;
 
             // the user has to select an existing partner to make that partner a supplier
-            if (TPartnerFindScreenManager.OpenModalForm("ORGANISATION,FAMILY,CHURCH",
+            if (TPartnerFindScreenManager.OpenModalForm("",
                     out PartnerKey,
                     out ResultStringLbl,
                     out ResultLocationPK,
