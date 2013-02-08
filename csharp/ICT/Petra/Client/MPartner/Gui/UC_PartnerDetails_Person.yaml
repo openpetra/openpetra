@@ -42,7 +42,7 @@ RootNode:
             Padding: 45,0,0,0
         dtpMaritalStatusSince: {Validation=true}
         txtMaritalStatusComment:
-            ColSpan: 3
+            ColSpan: 2
             Width: 345
             Height: 46
             Multiline: true
