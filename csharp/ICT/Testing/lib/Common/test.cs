@@ -1023,7 +1023,8 @@ namespace Ict.Common.Testing
             // is to be added already exists.
             // Thus the uniqueness of all Error codes across OpenPetra can be checked by making a call to 
             // the ErrorCodeInventory.BuildErrorCodeInventory Method with all Classes that hold Error Codes.
-            ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Common.CommonErrorCodes().GetType());
+            // Note: We mustn't add run ErrorCodeInventory.BuildErrorCodeInventory for Ict.Common.CommonErrorCodes()
+            // as this already happened through the 'TestErrorCodes' Unit Test!
             ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Petra.Shared.PetraErrorCodes().GetType());
             ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Common.Verification.TStringChecks().GetType());
         }       
