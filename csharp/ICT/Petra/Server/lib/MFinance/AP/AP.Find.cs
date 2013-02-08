@@ -211,6 +211,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                                   "PUB_a_ap_payment.a_payment_number_i as ApNum, " +
                                   "'' as InvNum, " +
                                   "true as CreditNote, " +
+                                  "PUB_a_ap_payment.a_currency_code_c as Currency, " +
                                   "PUB_a_ap_payment.a_amount_n as Amount, " +
                                   "'' as Status, " +
                                   "0 as DiscountPercent, " +
@@ -228,6 +229,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                                   "a_ap_number_i as ApNum, " +
                                   "a_document_code_c as InvNum, " +
                                   "a_credit_note_flag_l as CreditNote, " +
+                                  "a_currency_code_c AS Currency, " +
                                   "a_total_amount_n as Amount, " +
                                   "a_document_status_c as Status, " +
                                   "a_discount_percentage_n as DiscountPercent, " +
@@ -524,12 +526,13 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             if (!FSearchSupplierOrInvoice) // Find invoices
             {
                 String DocTbl = "PUB_" + AApDocumentTable.GetTableDBName() + ".";
-                // TODO: FSearchSupplierOrInvoice: select invoices
+
                 return DocTbl + AApDocumentTable.GetApNumberDBName() + " AS ApNumber, " +
                        DocTbl + AApDocumentTable.GetDocumentCodeDBName() + " AS DocumentCode, " +
                        "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS PartnerShortName, " +
                        "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + " AS CurrencyCode, " +
                        DocTbl + AApDocumentTable.GetTotalAmountDBName() + " AS TotalAmount, " +
+                       DocTbl + AApDocumentTable.GetCurrencyCodeDBName() + " AS Currency, " +
                        DocTbl + AApDocumentTable.GetTotalAmountDBName() + " AS OutstandingAmount, " +
                        DocTbl + AApDocumentTable.GetDocumentStatusDBName() + " AS DocumentStatus, " +
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + " AS DateIssued, " +

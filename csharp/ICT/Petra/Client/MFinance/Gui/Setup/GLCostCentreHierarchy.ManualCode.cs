@@ -608,8 +608,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private bool CheckCostCentreValueChanged()
         {
             if (FIAmUpdating || (strOldDetailCostCentreCode == null))
+            {
                 return false;
+            }
 
+            if (strOldDetailCostCentreCode.IndexOf("NewCostCentre") == 0) // If this Cost Centre is new, you can re-name it now!
+            {
+                 return false;
+            }
             String strNewDetailCostCentreCode = txtDetailCostCentreCode.Text;
             bool changeAccepted = false;
 

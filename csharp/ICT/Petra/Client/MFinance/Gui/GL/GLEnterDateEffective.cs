@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -75,13 +75,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 StringHelper.DateToLocalizedString(FStartDateCurrentPeriod),
                 StringHelper.DateToLocalizedString(FEndDateLastForwardingPeriod));
 
-            dtpDateEffective.Value = DefaultDate;
+            dtpDateEffective.Date = DefaultDate;
         }
 
         private void BtnOKClick(object sender, EventArgs e)
         {
-            if ((dtpDateEffective.Value < FStartDateCurrentPeriod)
-                || (dtpDateEffective.Value > FEndDateLastForwardingPeriod))
+            if ((dtpDateEffective.Date < FStartDateCurrentPeriod)
+                || (dtpDateEffective.Date > FEndDateLastForwardingPeriod))
             {
                 MessageBox.Show(Catalog.GetString(
                         "Please select a date which is in the valid posting range of your ledger!"),
@@ -101,11 +101,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             get
             {
-                return dtpDateEffective.Value;
+                return dtpDateEffective.Date.Value;
             }
             set
             {
-                dtpDateEffective.Value = value;
+                dtpDateEffective.Date = value;
             }
         }
     }

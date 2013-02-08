@@ -28,7 +28,7 @@ RootNode:
             ControlsOrientation: horizontal
             Dock:Top
         txtSupplierName: {Label=Current Supplier, ReadOnly=true, PartnerShortNameLookup=AApDocument.PartnerKey}
-        txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
+        txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApDocument.CurrencyCode}
         grpDocumentInfo:
             Label: Document Information
             Controls: 

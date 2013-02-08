@@ -39,7 +39,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private DataTable FParentCostCentres;
         private DataView FLinkedView;
         private DataView FUnlinkedView;
-        private Boolean FDataChanged;
 
         /// <summary>
         /// Setup the Partner - CostCentre links of this ledger
@@ -94,7 +93,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             btnUnlink.Enabled = false;
 
             txtCostCentre.TextChanged += new EventHandler(txtCostCentre_TextChanged);
-            FDataChanged = false;
         }
 
         /// <summary>
@@ -108,7 +106,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FLedgerNumber, FPartnerCostCentreTbl, out VerificationResult);
             if (SaveResult == TSubmitChangesResult.scrOK)
             {
-                FDataChanged = false;
                 return true;
             }
             return false;
@@ -150,7 +147,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtCostCentre.ReadOnly = true;
             txtCostCentre.Text = "";
             btnLink.Enabled = false;
-            FDataChanged = true;
             grdUnlinkedCCs.SelectRowInGrid(-1, false);
         }
 
@@ -163,7 +159,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             Row["IsLinked"] = '0';
             txtCostCentre.Text = "";
             btnUnlink.Enabled = false;
-            FDataChanged = true;
             grdLinkedCCs.SelectRowInGrid(-1, false);
         }
 
