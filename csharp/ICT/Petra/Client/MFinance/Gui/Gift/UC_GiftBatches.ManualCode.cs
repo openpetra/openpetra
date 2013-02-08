@@ -919,9 +919,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Thread postingThread = new Thread(() => PostGiftBatch(out Verifications));
 
-            TProgressDialog dialog = new TProgressDialog(postingThread);
-
-            dialog.ShowDialog();
+            using (TProgressDialog dialog = new TProgressDialog(postingThread))
+            {
+                dialog.ShowDialog();
+            }
 
             if ((Verifications != null) && Verifications.HasCriticalErrors)
             {
