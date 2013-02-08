@@ -105,9 +105,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     Thread t = new Thread(() => ProcessDeletion(AMainWindow, ALedgerNumber, LedgerNameAndNumber));
 
-                    TProgressDialog dialog = new TProgressDialog(t);
-
-                    dialog.ShowDialog();
+                    using(TProgressDialog dialog = new TProgressDialog(t))
+                    {
+                        dialog.ShowDialog();
+                    }
 
                     // reload list of Ledger names
                     TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);

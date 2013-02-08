@@ -115,11 +115,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             // load the transactions of the selected statement, and the matches
             Thread t = new Thread(() => GetBankStatementTransactionsAndMatches(AStatementKey));
 
-            TProgressDialog dialog = new TProgressDialog(t);
-
-            if (dialog.ShowDialog() == DialogResult.Cancel)
+            using(TProgressDialog dialog = new TProgressDialog(t)
             {
-                return;
+                if (dialog.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
             }
 
             while (FMainDS.AEpStatement.Rows.Count != 1)
@@ -684,9 +685,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             // load the transactions of the selected statement, and the matches
             Thread t = new Thread(() => CreateGiftBatchThread());
 
-            TProgressDialog dialog = new TProgressDialog(t);
-
-            dialog.ShowDialog();
+            using(TProgressDialog dialog = new TProgressDialog(t))
+            {
+                dialog.ShowDialog();
+            }
         }
 
         private void CreateGLBatch(System.Object sender, EventArgs e)
@@ -786,9 +788,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             // load the transactions of the selected statement, and the matches
             Thread t = new Thread(() => ExportGiftBatchThread());
 
-            TProgressDialog dialog = new TProgressDialog(t);
-
-            dialog.ShowDialog();
+            using(TProgressDialog dialog = new TProgressDialog(t))
+            {
+                dialog.ShowDialog();
+            }
         }
 
         private void PrintReport(System.Object sender, EventArgs e)

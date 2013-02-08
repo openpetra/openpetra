@@ -100,16 +100,17 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
                 Thread t = new Thread(() => ProcessStatementsOnServer(MainDS));
 
-                TProgressDialog dialog = new TProgressDialog(t);
-
-                if (dialog.ShowDialog() == DialogResult.Cancel)
+                using(TProgressDialog dialog = new TProgressDialog(t))
                 {
-                    return false;
-                }
-                else
-                {
-                    AStatementKey = FStatementKey;
-                    return FStatementKey != -1;
+                    if (dialog.ShowDialog() == DialogResult.Cancel)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        AStatementKey = FStatementKey;
+                        return FStatementKey != -1;
+                    }
                 }
             }
 
