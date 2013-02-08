@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,34 +22,34 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Windows.Forms;
-using System.IO;
-using GNU.Gettext;
-using System.Security.Principal;
-using Ict.Petra.Client.App.Core;
 using System.Threading;
+using System.Windows.Forms;
+
 using Ict.Common;
-using Ict.Common.Controls;
-using Ict.Common.Remoting.Shared;
-using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MCommon;
 
 namespace Ict.Petra.Client.CommonDialogs
 {
     /// <summary>
-    /// dialog for watching the progress of a webconnector method, with the option to cancel the job
+    /// Dialog for showing the progress of a webconnector method that is executed in a Thread, giving the option to cancel the job.
     /// </summary>
     public partial class TProgressDialog : System.Windows.Forms.Form
     {
+        private bool FConfirmedClosing = false;
+        private bool FShowCancellationConfirmationQuestion = false;
+        
         /// <summary>
-        /// constructor
+        /// Constructor
         /// </summary>
-        public TProgressDialog(Thread t) : base()
+        /// <param name="AWorkerThread">The Thread that performs the work that the progress dialog shows the progress of.</param>
+        /// <param name="AShowCancellationConfirmationQuestion">In case the user requests a cancellation: should
+        /// a Yes/No MessageBox for the confirmation of the cancellation be shown, or not? NOTE: If that 
+        /// MessageBox should be shown then the consequence of doing this is that the Thread will still be continuing
+        /// the work it is performing until the user chooses 'Yes', which can result in the work being finished
+        /// before the user had a chance to read the message of the MessageBox and press 'Yes' - and that might
+        /// well not be what the user wants!!! So, in general this Argument should be set to true only for
+        /// Threads that are running a substantial amount of time. (Default=false).</param>
+        public TProgressDialog(Thread AWorkerThread, bool AShowCancellationConfirmationQuestion = false) : base()
         {
             //
             // Required for Windows Form Designer support
@@ -62,31 +62,54 @@ namespace Ict.Petra.Client.CommonDialogs
             this.Text = Catalog.GetString("Progress Dialog");
             #endregion
 
+            FShowCancellationConfirmationQuestion = AShowCancellationConfirmationQuestion;
+            
             TRemote.MCommon.WebConnectors.Reset();
-            t.Start();
+            AWorkerThread.Start();
             timer1.Start();
         }
 
-        void BtnCancelClick(object sender, EventArgs e)
+        /// <summary>
+        /// Determines whether the Cancel Button is (or: should be) enabled, or not.
+        /// </summary>
+        public bool AllowCancellation
         {
-            if (MessageBox.Show(Catalog.GetString("Do you really want to cancel?"),
-                    Catalog.GetString("Confirm cancellation"),
+            get
+            {
+                return btnCancel.Enabled;
+            }
+            
+            set
+            {
+                btnCancel.Enabled = value;
+            }
+        }
+        
+        private void BtnCancelClick(object sender, EventArgs e)
+        {
+            DialogResult CancelConfirmationResult = DialogResult.Yes;
+            
+            if (FShowCancellationConfirmationQuestion) 
+            {
+                CancelConfirmationResult = MessageBox.Show(Catalog.GetString("Do you really want to cancel?\r\n\r\nNote: Execution is continuing until 'Yes' is chosen!"),
+                    Catalog.GetString("Confirm Cancellation"),
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                    MessageBoxDefaultButton.Button2);
+            }
+            
+            if (CancelConfirmationResult == DialogResult.Yes)
             {
                 TRemote.MCommon.WebConnectors.CancelJob();
 
                 this.DialogResult = DialogResult.Cancel;
 
-                ConfirmedClosing = true;
+                FConfirmedClosing = true;
                 Close();
             }
         }
 
-        private bool ConfirmedClosing = false;
-
-        void Timer1Tick(object sender, EventArgs e)
+        private void Timer1Tick(object sender, EventArgs e)
         {
             string caption;
             string message;
@@ -105,15 +128,15 @@ namespace Ict.Petra.Client.CommonDialogs
                 if (finished)
                 {
                     this.DialogResult = DialogResult.OK;
-                    ConfirmedClosing = true;
+                    FConfirmedClosing = true;
                     Close();
                 }
             }
         }
 
-        void TProgressDialogFormClosing(object sender, FormClosingEventArgs e)
+        private void TProgressDialogFormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!ConfirmedClosing)
+            if (!FConfirmedClosing)
             {
                 e.Cancel = true;
                 BtnCancelClick(null, null);
