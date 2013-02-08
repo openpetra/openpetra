@@ -17,7 +17,7 @@ RootNode:
             Controls:
                 Row0: [txtPreviousName]
                 Row1: [txtLocalName]
-            ColWidths: [0=Fixed:140]
+            ColWidths: [0=Fixed:310]
             
         txtPreviousName: {DataField=PPartner.PreviousName}
             Stretch: horizontally
@@ -37,6 +37,7 @@ RootNode:
         txtMaritalStatusComment:
             Multiline: true
             ScrollBars: Vertical
+            Width: 345
             Height: 46
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}

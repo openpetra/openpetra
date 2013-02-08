@@ -16,6 +16,7 @@ RootNode:
             Controls:
                 Row0: [txtPreferredName, txtPreviousName]
                 Row1: [txtLocalName]
+            ColWidths: [0=Fixed:155]
 
         txtPreferredName: {DataField=PPerson.PreferedName}            
             Width: 240
@@ -35,11 +36,14 @@ RootNode:
 
         dtpDateOfBirth: {Validation=true}
         txtDecorations:
+            Padding: 45,0,0,0
         cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, Width:200}
         txtAcademicTitle:
+            Padding: 45,0,0,0
         dtpMaritalStatusSince: {Validation=true}
         txtMaritalStatusComment:
-            ColSpan: 2
+            ColSpan: 3
+            Width: 345
             Height: 46
             Multiline: true
             ScrollBars: Vertical            
