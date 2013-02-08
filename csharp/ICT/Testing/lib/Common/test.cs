@@ -28,8 +28,11 @@ using System.Threading;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Globalization;
+
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Verification;
+using Ict.Petra.Shared;
 
 namespace Ict.Common.Testing
 {
@@ -1006,6 +1009,25 @@ namespace Ict.Common.Testing
 
             #endregion
         }
+        
+        /// <summary>
+        /// Tests for the uniquness of Error Codes across OpenPetra. 
+        /// </summary>
+        /// <remarks>Will throw an Ict.Common.EDuplicateErrorCodeException in case a duplicate Error Code exists!!!</remarks>
+        [Test]
+        public void TestErrorCodesUniqueAcrossOpenPetra()
+        {
+            // The following calls each add Error Codes to the central Error Code repository (held in memory).
+            // The ErrorCodeInventory.BuildErrorCodeInventory Method checks that each added Error Code isn't 
+            // already held in it and throws an Ict.Common.EDuplicateErrorCodeException if an Error Code that
+            // is to be added already exists.
+            // Thus the uniqueness of all Error codes across OpenPetra can be checked by making a call to 
+            // the ErrorCodeInventory.BuildErrorCodeInventory Method with all Classes that hold Error Codes.
+            // Note: We mustn't add run ErrorCodeInventory.BuildErrorCodeInventory for Ict.Common.CommonErrorCodes()
+            // as this already happened through the 'TestErrorCodes' Unit Test!
+            ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Petra.Shared.PetraErrorCodes().GetType());
+            ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Common.Verification.TStringChecks().GetType());
+        }       
     }
 
     /// <summary>

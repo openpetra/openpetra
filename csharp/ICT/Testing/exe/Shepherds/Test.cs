@@ -294,7 +294,6 @@ namespace Ict.Testing.Shepherds
 ////            TestLogicInterface TestLogicInterface = new TestLogicInterface();               // TODO
 ////            TPetraShepherdFormLogic testFormUpdateShepherdFormProperties =                  // TODO
 ////                new TPetraShepherdFormLogic(FTestShepherdYAMLFile, TestLogicInterface);     // TODO
-            
         }
 
         /// <summary>
