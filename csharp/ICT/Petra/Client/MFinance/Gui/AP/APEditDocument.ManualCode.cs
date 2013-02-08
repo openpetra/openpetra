@@ -33,6 +33,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
+using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
@@ -81,9 +82,32 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void LookupExchangeRate(Object sender, EventArgs e)
         {
-            decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(txtSupplierCurrency.Text, FLedgerRow.BaseCurrency, DateTime.Now);
+            TFrmSetupDailyExchangeRate setupDailyExchangeRate =
+                new TFrmSetupDailyExchangeRate(FPetraUtilsObject.GetForm());
 
-            txtExchangeRateToBase.NumberValueDecimal = CurrentRate;
+            decimal selectedExchangeRate;
+            DateTime selectedEffectiveDate;
+            int selectedEffectiveTime;
+
+            if (setupDailyExchangeRate.ShowDialog(
+                    FLedgerNumber,
+                    DateTime.Now,
+                    txtSupplierCurrency.Text,
+                    1.0m,
+                    out selectedExchangeRate,
+                    out selectedEffectiveDate,
+                    out selectedEffectiveTime) == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            if (txtExchangeRateToBase.NumberValueDecimal != selectedExchangeRate)
+            {
+                //Enforce save needed condition
+                FPetraUtilsObject.SetChangedFlag();
+            }
+
+            txtExchangeRateToBase.NumberValueDecimal = selectedExchangeRate;
         }
 
         private void EnableControls()
