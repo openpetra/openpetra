@@ -115,7 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             // load the transactions of the selected statement, and the matches
             Thread t = new Thread(() => GetBankStatementTransactionsAndMatches(AStatementKey));
 
-            using(TProgressDialog dialog = new TProgressDialog(t))
+            using (TProgressDialog dialog = new TProgressDialog(t))
             {
                 if (dialog.ShowDialog() == DialogResult.Cancel)
                 {
@@ -685,7 +685,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             // load the transactions of the selected statement, and the matches
             Thread t = new Thread(() => CreateGiftBatchThread());
 
-            using(TProgressDialog dialog = new TProgressDialog(t))
+            using (TProgressDialog dialog = new TProgressDialog(t))
             {
                 dialog.ShowDialog();
             }
@@ -788,7 +788,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             // load the transactions of the selected statement, and the matches
             Thread t = new Thread(() => ExportGiftBatchThread());
 
-            using(TProgressDialog dialog = new TProgressDialog(t))
+            using (TProgressDialog dialog = new TProgressDialog(t))
             {
                 dialog.ShowDialog();
             }

@@ -105,7 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     Thread t = new Thread(() => ProcessDeletion(AMainWindow, ALedgerNumber, LedgerNameAndNumber));
 
-                    using(TProgressDialog dialog = new TProgressDialog(t))
+                    using (TProgressDialog dialog = new TProgressDialog(t))
                     {
                         dialog.ShowDialog();
                     }

@@ -80,14 +80,14 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 {
                     Thread t = new Thread(() => ResetDatabaseInThread(zippedYml));
 
-                    using(TProgressDialog dialog = new TProgressDialog(t))
+                    using (TProgressDialog dialog = new TProgressDialog(t))
                     {
                         if (dialog.ShowDialog() == DialogResult.Cancel)
                         {
                             return;
                         }
                     }
-                    
+
                     if (WebConnectorResult)
                     {
                         // TODO: reset all caches? for comboboxes etc

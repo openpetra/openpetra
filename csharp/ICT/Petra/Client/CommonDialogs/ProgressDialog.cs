@@ -37,13 +37,13 @@ namespace Ict.Petra.Client.CommonDialogs
     {
         private bool FConfirmedClosing = false;
         private bool FShowCancellationConfirmationQuestion = false;
-        
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="AWorkerThread">The Thread that performs the work that the progress dialog shows the progress of.</param>
         /// <param name="AShowCancellationConfirmationQuestion">In case the user requests a cancellation: should
-        /// a Yes/No MessageBox for the confirmation of the cancellation be shown, or not? NOTE: If that 
+        /// a Yes/No MessageBox for the confirmation of the cancellation be shown, or not? NOTE: If that
         /// MessageBox should be shown then the consequence of doing this is that the Thread will still be continuing
         /// the work it is performing until the user chooses 'Yes', which can result in the work being finished
         /// before the user had a chance to read the message of the MessageBox and press 'Yes' - and that might
@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.CommonDialogs
             #endregion
 
             FShowCancellationConfirmationQuestion = AShowCancellationConfirmationQuestion;
-            
+
             TRemote.MCommon.WebConnectors.Reset();
             AWorkerThread.Start();
             timer1.Start();
@@ -78,26 +78,27 @@ namespace Ict.Petra.Client.CommonDialogs
             {
                 return btnCancel.Enabled;
             }
-            
+
             set
             {
                 btnCancel.Enabled = value;
             }
         }
-        
+
         private void BtnCancelClick(object sender, EventArgs e)
         {
             DialogResult CancelConfirmationResult = DialogResult.Yes;
-            
-            if (FShowCancellationConfirmationQuestion) 
+
+            if (FShowCancellationConfirmationQuestion)
             {
-                CancelConfirmationResult = MessageBox.Show(Catalog.GetString("Do you really want to cancel?\r\n\r\nNote: Execution is continuing until 'Yes' is chosen!"),
-                    Catalog.GetString("Confirm Cancellation"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2);
+                CancelConfirmationResult =
+                    MessageBox.Show(Catalog.GetString("Do you really want to cancel?\r\n\r\nNote: Execution is continuing until 'Yes' is chosen!"),
+                        Catalog.GetString("Confirm Cancellation"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2);
             }
-            
+
             if (CancelConfirmationResult == DialogResult.Yes)
             {
                 TRemote.MCommon.WebConnectors.CancelJob();

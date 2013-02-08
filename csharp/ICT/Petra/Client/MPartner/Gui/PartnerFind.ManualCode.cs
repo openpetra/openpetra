@@ -86,7 +86,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>String for the title</summary>
         private static readonly string StrWorkerFamily = Catalog.GetString("Worker Family");
-        
+
         #endregion
 
         /// <summary>String for the partner find</summary>

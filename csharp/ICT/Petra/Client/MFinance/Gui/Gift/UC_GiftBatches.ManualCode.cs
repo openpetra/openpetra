@@ -919,7 +919,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Thread postingThread = new Thread(() => PostGiftBatch(out Verifications));
 
-            using(TProgressDialog dialog = new TProgressDialog(postingThread))
+            using (TProgressDialog dialog = new TProgressDialog(postingThread))
             {
                 dialog.ShowDialog();
             }

@@ -273,7 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     out AMessages,
                     out BatchCount));
 
-            using(TProgressDialog ExportDialog = new TProgressDialog(ExportThread))
+            using (TProgressDialog ExportDialog = new TProgressDialog(ExportThread))
             {
                 ExportDialog.ShowDialog();
             }

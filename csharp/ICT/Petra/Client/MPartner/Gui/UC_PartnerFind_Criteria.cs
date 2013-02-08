@@ -98,11 +98,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         private PartnerFindTDSSearchCriteriaTable FFindCriteriaDataTable;
         private string FPreviouslySelectedPartnerClass = String.Empty;
         private Boolean FPartnerClassUpdateIsAutomatic = false;
-        
+
         #endregion
-        
+
         #region Properties
-       
+
         private string PartnerStatus
         {
             get
@@ -238,14 +238,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
 //                string ValueStringConcat = String.Empty;
-                
+
                 FRestrictedParterClasses = value;
 
                 // are there any restrictions specified?
                 if ((value != null) && (value.Length > 0))
                 {
-// Following lines are for debugging only:                    
-//                    for (int Counter = 0; Counter < value.Length; Counter++) 
+// Following lines are for debugging only:
+//                    for (int Counter = 0; Counter < value.Length; Counter++)
 //                    {
 //                        ValueStringConcat += value[Counter].ToString() + "; ";
 //                    }
@@ -253,7 +253,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // clear table combo is bound to , and start again
                     FPartnerClassDataTable.Rows.Clear();
-                    
+
                     AddPartnerClassesToDataTable(value, true);
 
                     if (FWorkerFamOnly || FWorkerFamPreferred)
@@ -281,7 +281,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
-        
+
         /// <summary>
         /// this provides general functionality for screens
         /// </summary>
@@ -296,19 +296,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPetraUtilsObject = value;
             }
         }
-        
+
         #endregion
 
         #region Events
-       
+
         /// <summary>Event that fires when one of the SearchCriteria's contents is changed.</summary>
         public event System.EventHandler OnCriteriaContentChanged;
-                
+
         /// <summary>todoComment</summary>
         public event FindCriteriaSelectionChangedHandler FindCriteriaSelectionChanged;
-        
+
         #endregion
-            
+
         private void AddPartnerClassesToDataTable(string[] ARestrictedPartnerClasses,
             bool AAllPartnerClasses)
         {
@@ -316,8 +316,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             Boolean WorkerFamOnly = false;
             DataRow PartnerClassDataRow;
 
-            TmpString = ARestrictedPartnerClasses[0];               
-                
+            TmpString = ARestrictedPartnerClasses[0];
+
             if (TmpString.IndexOf("WORKER-FAM") >= 0)
             {
                 // Set this flag is to true because the first item in list will be 'WORKER-FAM'
@@ -366,28 +366,28 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
-            
+
             // ensure top choice is databound
             FFindCriteriaDataTable.Rows[0]["PartnerClass"] = FDefaultPartnerClass;
 
             if (!FDontRecordCurrentWorkerFamOnlySelection)
             {
-MessageBox.Show("Before updating WORKERFAMONLY column...");            
-            FFindCriteriaDataTable.Rows[0]["WORKERFAMONLY"] = WorkerFamOnly || FCurrentWorkerFamOnlySelection;
-MessageBox.Show("After updating WORKERFAMONLY column...");
+                MessageBox.Show("Before updating WORKERFAMONLY column...");
+                FFindCriteriaDataTable.Rows[0]["WORKERFAMONLY"] = WorkerFamOnly || FCurrentWorkerFamOnlySelection;
+                MessageBox.Show("After updating WORKERFAMONLY column...");
             }
-            
+
             cmbPartnerClass.ResetBindings();
-    
+
             if (cmbPartnerClass.Items.Count > 0)
             {
                 cmbPartnerClass.SelectedIndex = 0;
-    
+
                 // this ensures that the checkbox is visible if needed
                 // and disabled if needed
                 // and checked if needed
                 HandlePartnerClassGui();
-            }            
+            }
         }
 
         /// <summary>
@@ -448,7 +448,7 @@ MessageBox.Show("After updating WORKERFAMONLY column...");
 
         private void ChkWorkerFamOnly_CheckedChanged(System.Object sender, System.EventArgs e)
         {
-//MessageBox.Show("ChkWorkerFamOnly_CheckedChanged:  chkWorkerFamOnly.Checked: " + chkWorkerFamOnly.Checked.ToString());            
+//MessageBox.Show("ChkWorkerFamOnly_CheckedChanged:  chkWorkerFamOnly.Checked: " + chkWorkerFamOnly.Checked.ToString());
             if (!FDontRecordCurrentWorkerFamOnlySelection)
             {
 //MessageBox.Show("ChkWorkerFamOnly_CheckedChanged:  chkWorkerFamOnly.Checked: " + chkWorkerFamOnly.Checked.ToString());
@@ -490,21 +490,21 @@ MessageBox.Show("After updating WORKERFAMONLY column...");
             }
 
             FCurrentWorkerFamOnlySelection = chkWorkerFamOnly.Checked;
-            
-            if (!FPartnerClassUpdateIsAutomatic) 
+
+            if (!FPartnerClassUpdateIsAutomatic)
             {
-                if (cmbPartnerClass.SelectedValue != null) 
+                if (cmbPartnerClass.SelectedValue != null)
                 {
-                    FPreviouslySelectedPartnerClass = cmbPartnerClass.SelectedValue.ToString();    
+                    FPreviouslySelectedPartnerClass = cmbPartnerClass.SelectedValue.ToString();
                 }
-            }   
-                        
+            }
+
             HandlePartnerClassGui();
         }
 
         private void HandlePartnerClassGui()
         {
-            FDontRecordCurrentWorkerFamOnlySelection = true;    
+            FDontRecordCurrentWorkerFamOnlySelection = true;
 
             chkWorkerFamOnly.Visible = false;
             pnlPartnerClass.Height = cmbPartnerClass.Height + 3;
@@ -538,7 +538,7 @@ MessageBox.Show("After updating WORKERFAMONLY column...");
                     chkWorkerFamOnly.Checked = true;
                     FFindCriteriaDataTable.Rows[0]["WORKERFAMONLY"] = chkWorkerFamOnly.Checked;
                 }
-                
+
                 pnlPartnerClass.Height = cmbPartnerClass.Height + chkWorkerFamOnly.Height + 3;
 
                 // enable Personal Name field
@@ -570,7 +570,7 @@ MessageBox.Show("After updating WORKERFAMONLY column...");
                 txtPersonalName.Enabled = false;
             }
 
-            FDontRecordCurrentWorkerFamOnlySelection = false;            
+            FDontRecordCurrentWorkerFamOnlySelection = false;
         }
 
         private void BtnLocationKey_Click(System.Object sender, System.EventArgs e)
@@ -591,7 +591,7 @@ MessageBox.Show("After updating WORKERFAMONLY column...");
                 {
                     /* fill in the location key */
                     txtLocationKey.Text = frmPartnerLS.SelectedLocation.LocationKey.ToString();
-        
+
                     /* disable all other controls */
                     this.DisableAllPanel(pnlLocationKey);
                     txtLocationKey.Focus();
@@ -1076,14 +1076,14 @@ MessageBox.Show("After updating WORKERFAMONLY column...");
                 // Here we have a personal name
                 // So make sure that only family and persons in the partner class
                 // combo box
-                FPartnerClassUpdateIsAutomatic = true;                
+                FPartnerClassUpdateIsAutomatic = true;
                 FPartnerClassDataTable.Rows.Clear();
 
                 if (FRestrictedParterClasses.Length > 0)
                 {
                     FDontRecordCurrentWorkerFamOnlySelection = true;
                     InsertRestrictedPartnerClassComboBox(false);
-                    FDontRecordCurrentWorkerFamOnlySelection = false;                    
+                    FDontRecordCurrentWorkerFamOnlySelection = false;
                 }
                 else
                 {
@@ -1121,21 +1121,21 @@ MessageBox.Show("After updating WORKERFAMONLY column...");
 
                         default:
                         {
-                            if (FPreviouslySelectedPartnerClass == "*") 
+                            if (FPreviouslySelectedPartnerClass == "*")
                             {
                                 FPreviouslySelectedPartnerClass = "FAMILY";
                             }
-                            
+
                             // Set Partner Class to Family or Person, depending on what the previous value was
                             // Need to change it twice to get a selected value changed event
-                            cmbPartnerClass.SelectedIndex = - 1;
+                            cmbPartnerClass.SelectedIndex = -1;
                             cmbPartnerClass.SelectedValue = FPreviouslySelectedPartnerClass;
-                            
+
                             break;
                         }
                     }
                 }
-                
+
                 FPartnerClassUpdateIsAutomatic = false;
             }
             else if ((cmbPartnerClass.SelectedValue != null)
@@ -1171,14 +1171,14 @@ MessageBox.Show("After updating WORKERFAMONLY column...");
                         cmbPartnerClass.SelectedIndex = 0;
                         break;
 
-                    default:    
+                    default:
                         cmbPartnerClass.SelectedIndex = 1;
                         cmbPartnerClass.SelectedIndex = 0;
                         break;
                 }
 
                 FPartnerClassUpdateIsAutomatic = false;
-                
+
                 txtPersonalName.Focus();
             }
         }
@@ -1458,9 +1458,8 @@ MessageBox.Show("After updating WORKERFAMONLY column...");
                         {
                             if ((CurrentColumnsContent[CharCounter] != '*')
                                 && (CurrentColumnsContent[CharCounter] != '%'))
-
-                {
-                    return true;
+                            {
+                                return true;
                             }
                         }
                     }
@@ -1657,7 +1656,7 @@ MessageBox.Show("After updating WORKERFAMONLY column...");
             FPetraUtilsObject.SetStatusBarText(txtPhoneNumber, MPartnerResourcestrings.StrPhoneNumberFindHelpText);
             FPetraUtilsObject.SetStatusBarText(txtPartnerKey, StrPartnerKeyFindHelpText);
             FPetraUtilsObject.SetStatusBarText(ucoCountryComboBox, MPartnerResourcestrings.StrCountryHelpText);
-            
+
             this.chkWorkerFamOnly.CheckedChanged += new System.EventHandler(this.ChkWorkerFamOnly_CheckedChanged);
         }
 
