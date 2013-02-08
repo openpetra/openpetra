@@ -115,7 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             // load the transactions of the selected statement, and the matches
             Thread t = new Thread(() => GetBankStatementTransactionsAndMatches(AStatementKey));
 
-            using(TProgressDialog dialog = new TProgressDialog(t)
+            using(TProgressDialog dialog = new TProgressDialog(t))
             {
                 if (dialog.ShowDialog() == DialogResult.Cancel)
                 {
