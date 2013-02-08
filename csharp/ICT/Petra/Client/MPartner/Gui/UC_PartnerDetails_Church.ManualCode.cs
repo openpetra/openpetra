@@ -49,13 +49,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
-        
+
         #region Private Methods
-        
+
         private void InitializeManualCode()
         {
             this.SuspendLayout();
-            
+
             // The following Controls are inside a Panel, but we don't want that to be noticed on the screen
             txtAccomodationSize.Top = txtAccomodationSize.Top - 6;
             cmbAccomodationType.Top = cmbAccomodationType.Top - 7;
@@ -64,12 +64,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             pnlAccomodationDetails.Top = pnlAccomodationDetails.Top - 3;
             pnlAccomodationDetails.Height = pnlAccomodationDetails.Height - 5;
             grpMisc.Height = grpMisc.Height - 7;
-            
-            ShowHideAccomodationData(null, null);            
-            
+
+            ShowHideAccomodationData(null, null);
+
             this.ResumeLayout();
         }
-        
+
         private void ShowHideAccomodationData(object sender, EventArgs e)
         {
             pnlAccomodationDetails.Visible = chkAccomodation.Checked;

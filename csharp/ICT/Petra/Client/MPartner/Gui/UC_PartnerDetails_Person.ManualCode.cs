@@ -39,7 +39,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             lblDecorations.Left = lblDecorations.Left + 45;
             lblAcademicTitle.Left = lblAcademicTitle.Left + 45;
         }
-        
+
         /// <summary>
         /// Gets the data from all controls on this UserControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls

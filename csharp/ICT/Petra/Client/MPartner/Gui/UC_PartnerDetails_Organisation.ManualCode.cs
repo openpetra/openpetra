@@ -32,23 +32,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void InitializeManualCode()
         {
             this.SuspendLayout();
-            
+
             // The following Controls are inside a Panel, but we don't want that to be noticed on the screen
             chkFoundation.Top = chkFoundation.Top - 7;
             chkReligious.Top = chkReligious.Top - 7;
             pnlCheckBoxes.Height = pnlCheckBoxes.Height - 9;
-            
+
             // Now move the rest of the Controls up a bit...
-            for (int Counter = 0; Counter < grpMisc.Controls.Count; Counter++) 
+            for (int Counter = 0; Counter < grpMisc.Controls.Count; Counter++)
             {
-                if (grpMisc.Controls[Counter] != pnlCheckBoxes) 
+                if (grpMisc.Controls[Counter] != pnlCheckBoxes)
                 {
                     grpMisc.Controls[Counter].Top = grpMisc.Controls[Counter].Top - 9;
                 }
             }
-            
+
             ShowHideFoundationTab(null, null);
-            
+
             this.ResumeLayout();
         }
 
