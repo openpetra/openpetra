@@ -269,6 +269,7 @@ namespace Ict.Petra.Client.CommonForms
                 else if (ctrl.GetType() == typeof(TCmbAutoComplete))
                 {
                     ((TCmbAutoComplete)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
+                    ((TCmbAutoComplete)ctrl).TextChanged += new EventHandler(this.MultiEventHandler);
                 }
                 else if (ctrl.GetType() == typeof(TCmbVersatile))
                 {
