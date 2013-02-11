@@ -95,4 +95,13 @@
         <Table sqltable="a_budget_period"/>
         <Table sqltable="a_general_ledger_master_period"/>
     </DataSet>
+    <DataSet name="SuspenseAccountTDS">
+        <Table sqltable="a_suspense_account"/>
+        <Table sqltable="a_account"/>
+
+        <CustomRelation name="SuspenseAccountDescription"
+                childTable="ASuspenseAccount" childFields="LedgerNumber,SuspenseAccountCode"
+                parentTable="AAccount" parentFields="LedgerNumber,AccountCode"
+                createConstraints="false"/>
+    </DataSet>
 </PetraDataSets>

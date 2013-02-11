@@ -341,6 +341,21 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                             SubmissionResult = TSubmitChangesResult.scrError;
                         }
                     }
+                    else if (ATablename == ASuspenseAccountTable.GetTableDBName())
+                    {
+                        if (ASuspenseAccountAccess.SubmitChanges((ASuspenseAccountTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheableFinanceTablesEnum.SuspenseAccountList.ToString());
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
                     else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                     {
                         ValidateInternationalPostalType(ValidationControlsDict, ref AVerificationResult, ASubmitTable);

@@ -16,7 +16,8 @@ RootNode:
             Controls:
                 Row0: [txtPreviousName]
                 Row1: [txtLocalName]
-
+            ColWidths: [0=Fixed:250]
+            
         txtPreviousName: {DataField=PPartner.PreviousName}
             Stretch: horizontally
         txtLocalName: {DataField=PPartner.PartnerShortNameLoc}
@@ -33,7 +34,6 @@ RootNode:
 
         txtBranchCode:
             Label: Bank/Branch Code
-            Stretch: horizontally
             Validation: Pair(txtBic)
             
         txtBic:

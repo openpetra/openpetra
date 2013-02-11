@@ -99,8 +99,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             out AMessages,
                             out ok));
 
-                    TProgressDialog ImportDialog = new TProgressDialog(ImportThread);
-                    ImportDialog.ShowDialog();
+                    using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                    {
+                        ImportDialog.ShowDialog();
+                    }
 
                     ShowMessages(AMessages);
                 }
