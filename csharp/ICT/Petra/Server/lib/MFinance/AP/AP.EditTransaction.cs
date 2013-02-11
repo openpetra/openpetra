@@ -191,33 +191,34 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
             // get the supplier defaults
-            AApSupplierRow Supplier = AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+            AApSupplierRow SupplierRow = AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
 
-            if (Supplier != null)
+            if (SupplierRow != null)
             {
-                if (!Supplier.IsDefaultCreditTermsNull())
+                if (!SupplierRow.IsDefaultCreditTermsNull())
                 {
-                    NewDocumentRow.CreditTerms = Supplier.DefaultCreditTerms;
+                    NewDocumentRow.CreditTerms = SupplierRow.DefaultCreditTerms;
                 }
 
-                if (!Supplier.IsDefaultDiscountDaysNull())
+                if (!SupplierRow.IsDefaultDiscountDaysNull())
                 {
-                    NewDocumentRow.DiscountDays = Supplier.DefaultDiscountDays;
+                    NewDocumentRow.DiscountDays = SupplierRow.DefaultDiscountDays;
                     NewDocumentRow.DiscountPercentage = 0;
                 }
 
-                if (!Supplier.IsDefaultDiscountPercentageNull())
+                if (!SupplierRow.IsDefaultDiscountPercentageNull())
                 {
-                    NewDocumentRow.DiscountPercentage = Supplier.DefaultDiscountPercentage;
+                    NewDocumentRow.DiscountPercentage = SupplierRow.DefaultDiscountPercentage;
                 }
 
-                if (!Supplier.IsDefaultApAccountNull())
+                if (!SupplierRow.IsDefaultApAccountNull())
                 {
-                    NewDocumentRow.ApAccount = Supplier.DefaultApAccount;
+                    NewDocumentRow.ApAccount = SupplierRow.DefaultApAccount;
                 }
             }
 
-            NewDocumentRow.ExchangeRateToBase = TExchangeRateTools.GetDailyExchangeRate(Supplier.CurrencyCode,
+            NewDocumentRow.CurrencyCode = SupplierRow.CurrencyCode;
+            NewDocumentRow.ExchangeRateToBase = TExchangeRateTools.GetDailyExchangeRate(NewDocumentRow.CurrencyCode,
                 LedgerTbl[0].BaseCurrency,
                 DateTime.Now);
 
@@ -327,20 +328,23 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 out IsMyOwnTransaction);
             try
             {
-                foreach (AccountsPayableTDSAApDocumentRow NewDocRow in AInspectDS.AApDocument.Rows)
+                if (AInspectDS.AApDocument != null)
                 {
-                    // Set AP Number if it has not been set yet.
-                    if (NewDocRow.ApNumber < 0)
+                    foreach (AccountsPayableTDSAApDocumentRow NewDocRow in AInspectDS.AApDocument.Rows)
                     {
-                        NewDocRow.ApNumber = NextApDocumentNumber(NewDocRow.LedgerNumber, SubmitChangesTransaction, out AVerificationResult);
+                        // Set AP Number if it has not been set yet.
+                        if (NewDocRow.ApNumber < 0)
+                        {
+                            NewDocRow.ApNumber = NextApDocumentNumber(NewDocRow.LedgerNumber, SubmitChangesTransaction, out AVerificationResult);
+                        }
+
+                        SetOutstandingAmount(NewDocRow, NewDocRow.LedgerNumber, AInspectDS.AApDocumentPayment);
                     }
 
-                    SetOutstandingAmount(NewDocRow, NewDocRow.LedgerNumber, AInspectDS.AApDocumentPayment);
-                }
-
-                if (!AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction, out AVerificationResult))
-                {
-                    SubmissionResult = TSubmitChangesResult.scrError;
+                    if (!AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction, out AVerificationResult))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
                 }
 
                 if ((SubmissionResult == TSubmitChangesResult.scrOK) && (AInspectDS.AApDocumentDetail != null)) // Document detail lines
@@ -701,23 +705,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             foreach (AApDocumentRow row in APDataset.AApDocument.Rows)
             {
-                DataView findSupplier = APDataset.AApSupplier.DefaultView;
-                findSupplier.RowFilter = AApSupplierTable.GetPartnerKeyDBName() + " = " + row.PartnerKey.ToString();
+                string CurrencyCode = (row.CurrencyCode + "|" + row.ExchangeRateToBase.ToString());  // If douments with the same currency are using different
 
-                string CurrencyCode = "";
-
-                if (findSupplier.Count == 0)
-                {
-                    CurrencyCode = (AApSupplierAccess.LoadByPrimaryKey(APDataset, row.PartnerKey, Transaction)).CurrencyCode;
-                }
-                else
-                {
-                    CurrencyCode = ((AApSupplierRow)findSupplier[0].Row).CurrencyCode;
-                }
-
-                CurrencyCode += ("|" + row.ExchangeRateToBase.ToString());  // If douments with the same currency are using different
-                                                                            // exchange rates, I'm going to handle them separately.
-
+                // exchange rates, I'm going to handle them separately.
                 if (!DocumentsByCurrency.ContainsKey(CurrencyCode))
                 {
                     DocumentsByCurrency.Add(CurrencyCode, new List <AApDocumentRow>());
@@ -1144,9 +1134,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 APDataset.AApDocument.DefaultView.RowFilter = AApDocumentTable.GetApDocumentIdDBName() + " = " +
                                                               ((AApDocumentPaymentRow)APDataset.AApDocumentPayment.DefaultView[0].Row).ApDocumentId.
                                                               ToString();
-                row.SupplierKey = ((AApDocumentRow)APDataset.AApDocument.DefaultView[0].Row).PartnerKey;
+                AApDocumentRow documentRow = (AApDocumentRow)APDataset.AApDocument.DefaultView[0].Row;
+                row.SupplierKey = documentRow.PartnerKey;
 
-                string CurrencyCode = (AApSupplierAccess.LoadByPrimaryKey(APDataset, row.SupplierKey, Transaction)).CurrencyCode;
+                string CurrencyCode = documentRow.CurrencyCode;
 
                 if (row.IsExchangeRateToBaseNull())
                 {
@@ -1216,7 +1207,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         AApDocumentPaymentRow documentPayment = (AApDocumentPaymentRow)rowview.Row;
                         APDataset.AApDocument.DefaultView.RowFilter = AApDocumentTable.GetApDocumentIdDBName() + " = " +
                                                                       documentPayment.ApDocumentId.ToString();
-                        AApDocumentRow document = (AApDocumentRow)APDataset.AApDocument.DefaultView[0].Row;
+                        AApDocumentRow documentRow = (AApDocumentRow)APDataset.AApDocument.DefaultView[0].Row;
 
                         // TODO: analysis attributes
 
@@ -1266,11 +1257,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transactionAPAccount.AmountInBaseCurrency = transaction.AmountInBaseCurrency;
                         transactionAPAccount.AmountInIntlCurrency = transaction.AmountInIntlCurrency;
                         transactionAPAccount.TransactionDate = batch.DateEffective;
-                        transactionAPAccount.AccountCode = document.ApAccount;
+                        transactionAPAccount.AccountCode = documentRow.ApAccount;
                         transactionAPAccount.CostCentreCode =
                             TGLTransactionWebConnector.GetStandardCostCentre(payment.LedgerNumber);
                         transactionAPAccount.Narrative = "AP Payment:" + payment.PaymentNumber.ToString() + " AP: " +
-                                                         document.ApNumber.ToString();
+                                                         documentRow.ApNumber.ToString();
                         transactionAPAccount.Reference = payment.Reference;
 
                         // TODO transactionAPAccount.DetailNumber
@@ -1284,7 +1275,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             // may have changed since it was first posted. To keep the ledger balanced,
                             // an adjusting entry is made to the the ForexGainsLossesAccount account.
 
-                            Decimal OriginalBaseAmount = documentPayment.Amount / document.ExchangeRateToBase;
+                            Decimal OriginalBaseAmount = documentPayment.Amount / documentRow.ExchangeRateToBase;
                             Decimal NewBaseAmount = documentPayment.Amount / payment.ExchangeRateToBase;
                             Decimal ForexGain = NewBaseAmount - OriginalBaseAmount;
 
@@ -1330,7 +1321,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 transactionApReval.TransactionNumber = 1;
                                 transactionApReval.Narrative = "AP expense reval";
                                 transactionApReval.Reference = payment.Reference;
-                                transactionApReval.AccountCode = document.ApAccount;
+                                transactionApReval.AccountCode = documentRow.ApAccount;
                                 transactionApReval.CostCentreCode = transaction.CostCentreCode;
                                 transactionApReval.TransactionAmount = 0; // no real value
                                 transactionApReval.TransactionDate = batch.DateEffective;
@@ -1395,39 +1386,39 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     indexDocument = ADataset.AApDocument.DefaultView.Find(ApDocId);
                 }
 
-                if (indexDocument != -1)
+                if (indexDocument != -1)  // If it's not loaded now, something really bad has happened!
                 {
-                    AccountsPayableTDSAApDocumentRow apdocument =
+                    AccountsPayableTDSAApDocumentRow apDocumentRow =
                         (AccountsPayableTDSAApDocumentRow)ADataset.AApDocument.DefaultView[indexDocument].Row;
 
-                    AApSupplierRow supplier = GetSupplier(ADataset.AApSupplier, apdocument.PartnerKey);
+                    AApSupplierRow supplierRow = GetSupplier(ADataset.AApSupplier, apDocumentRow.PartnerKey);
 
-                    if (supplier == null)
+                    if (supplierRow == null)
                     {
                         // I need to load the supplier record into the TDS...
-                        ADataset.Merge(LoadAApSupplier(apdocument.LedgerNumber, apdocument.PartnerKey));
-                        supplier = GetSupplier(ADataset.AApSupplier, apdocument.PartnerKey);
+                        ADataset.Merge(LoadAApSupplier(apDocumentRow.LedgerNumber, apDocumentRow.PartnerKey));
+                        supplierRow = GetSupplier(ADataset.AApSupplier, apDocumentRow.PartnerKey);
                     }
 
-                    if (supplier != null)
+                    if (supplierRow != null)
                     {
                         AccountsPayableTDSAApPaymentRow supplierPaymentsRow = null;
 
                         // My TDS may already have a AApPayment row for this supplier.
                         ADataset.AApPayment.DefaultView.RowFilter = String.Format("{0}='{1}'", AccountsPayableTDSAApPaymentTable.GetSupplierKeyDBName(
-                                ), supplier.PartnerKey);
+                                ), supplierRow.PartnerKey);
 
                         if (ADataset.AApPayment.DefaultView.Count > 0)
                         {
                             supplierPaymentsRow = (AccountsPayableTDSAApPaymentRow)ADataset.AApPayment.DefaultView[0].Row;
 
-                            if (apdocument.CreditNoteFlag)
+                            if (apDocumentRow.CreditNoteFlag)
                             {
-                                supplierPaymentsRow.TotalAmountToPay -= apdocument.OutstandingAmount;
+                                supplierPaymentsRow.TotalAmountToPay -= apDocumentRow.OutstandingAmount;
                             }
                             else
                             {
-                                supplierPaymentsRow.TotalAmountToPay += apdocument.OutstandingAmount;
+                                supplierPaymentsRow.TotalAmountToPay += apDocumentRow.OutstandingAmount;
                             }
 
                             supplierPaymentsRow.Amount = supplierPaymentsRow.TotalAmountToPay; // The user may choose to change the amount paid.
@@ -1437,12 +1428,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             supplierPaymentsRow = ADataset.AApPayment.NewRowTyped();
                             supplierPaymentsRow.LedgerNumber = ADataset.AApDocument[0].LedgerNumber;
                             supplierPaymentsRow.PaymentNumber = -1 * (ADataset.AApPayment.Count + 1);
-                            supplierPaymentsRow.SupplierKey = supplier.PartnerKey;
-                            supplierPaymentsRow.MethodOfPayment = supplier.PaymentType;
-                            supplierPaymentsRow.BankAccount = supplier.DefaultBankAccount;
-                            supplierPaymentsRow.CurrencyCode = supplier.CurrencyCode;
-
-                            supplierPaymentsRow.ExchangeRateToBase = apdocument.ExchangeRateToBase; // The client may change this.
+                            supplierPaymentsRow.SupplierKey = supplierRow.PartnerKey;
+                            supplierPaymentsRow.MethodOfPayment = supplierRow.PaymentType;
+                            supplierPaymentsRow.BankAccount = supplierRow.DefaultBankAccount;
+                            supplierPaymentsRow.CurrencyCode = apDocumentRow.CurrencyCode;
+                            supplierPaymentsRow.ExchangeRateToBase = apDocumentRow.ExchangeRateToBase; // The client may change this.
 
                             // TODO: leave empty
                             supplierPaymentsRow.Reference = "TODO";
@@ -1450,7 +1440,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             TPartnerClass partnerClass;
                             string partnerShortName;
                             TPartnerServerLookups.GetPartnerShortName(
-                                supplier.PartnerKey,
+                                supplierRow.PartnerKey,
                                 out partnerShortName,
                                 out partnerClass);
                             supplierPaymentsRow.SupplierName = Ict.Petra.Shared.MPartner.Calculations.FormatShortName(partnerShortName,
@@ -1458,13 +1448,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                             supplierPaymentsRow.ListLabel = supplierPaymentsRow.SupplierName + " (" + supplierPaymentsRow.MethodOfPayment + ")";
 
-                            if (apdocument.CreditNoteFlag)
+                            if (apDocumentRow.CreditNoteFlag)
                             {
-                                supplierPaymentsRow.TotalAmountToPay = 0 - apdocument.OutstandingAmount;
+                                supplierPaymentsRow.TotalAmountToPay = 0 - apDocumentRow.OutstandingAmount;
                             }
                             else
                             {
-                                supplierPaymentsRow.TotalAmountToPay = apdocument.OutstandingAmount;
+                                supplierPaymentsRow.TotalAmountToPay = apDocumentRow.OutstandingAmount;
                             }
 
                             supplierPaymentsRow.Amount = supplierPaymentsRow.TotalAmountToPay; // The user may choose to change the amount paid.
@@ -1476,11 +1466,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         DocumentPaymentRow.LedgerNumber = supplierPaymentsRow.LedgerNumber;
                         DocumentPaymentRow.PaymentNumber = supplierPaymentsRow.PaymentNumber;
                         DocumentPaymentRow.ApDocumentId = ApDocId;
-                        DocumentPaymentRow.CurrencyCode = supplier.CurrencyCode;
-                        DocumentPaymentRow.Amount = apdocument.TotalAmount;
-                        DocumentPaymentRow.InvoiceTotal = apdocument.OutstandingAmount;
+                        DocumentPaymentRow.Amount = apDocumentRow.TotalAmount;
+                        DocumentPaymentRow.InvoiceTotal = apDocumentRow.OutstandingAmount;
 
-                        if (apdocument.CreditNoteFlag)
+                        if (apDocumentRow.CreditNoteFlag)
                         {
                             DocumentPaymentRow.Amount = 0 - DocumentPaymentRow.Amount;
                             DocumentPaymentRow.InvoiceTotal = 0 - DocumentPaymentRow.InvoiceTotal;
@@ -1492,12 +1481,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         DocumentPaymentRow.HasValidDiscount = false;
                         DocumentPaymentRow.DiscountPercentage = 0;
                         DocumentPaymentRow.UseDiscount = false;
-                        DocumentPaymentRow.DocumentCode = apdocument.DocumentCode;
-                        DocumentPaymentRow.DocType = (apdocument.CreditNoteFlag ? "CREDIT" : "INVOICE");
+                        DocumentPaymentRow.DocumentCode = apDocumentRow.DocumentCode;
+                        DocumentPaymentRow.DocType = (apDocumentRow.CreditNoteFlag ? "CREDIT" : "INVOICE");
                         ADataset.AApDocumentPayment.Rows.Add(DocumentPaymentRow);
-                    }
-                }
-            }
+                    } // supplierRow != null
+
+                } // indexDocument != -1
+
+            }  // foreach document
 
             ADataset.AApPayment.DefaultView.RowFilter = "";
             return true;
@@ -1599,7 +1590,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     {
                         paymentRow.Amount += docPaymentRow.Amount;
                         docPaymentRow.PaymentNumber = NewPaymentNumber;
-                        break;
                     }
                 }
 
@@ -1710,12 +1700,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 AApDocumentPaymentAccess.LoadViaAApPayment(MainDs, ALedgerNumber, APaymentNumber, ReadTransaction);
 
                 // There may be a batch of several invoices in this payment,
-                // but they should all be to the same supplier.
+                // but they must be to the same supplier, and in the same currency!
                 Int64 PartnerKey = 0;
+                AApDocumentRow DocumentRow = null;
 
                 foreach (AccountsPayableTDSAApDocumentPaymentRow Row in MainDs.AApDocumentPayment.Rows)
                 {
-                    AApDocumentRow DocumentRow =
+                    DocumentRow =
                         AApDocumentAccess.LoadByPrimaryKey(MainDs, Row.ApDocumentId, ReadTransaction);
 
                     PartnerKey = DocumentRow.PartnerKey;
@@ -1737,17 +1728,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     }
                 }
 
-                AApSupplierRow SupplierRow =
-                    AApSupplierAccess.LoadByPrimaryKey(MainDs, PartnerKey, ReadTransaction);
-
                 PPartnerRow PartnerRow =
                     PPartnerAccess.LoadByPrimaryKey(MainDs, PartnerKey, ReadTransaction);
                 supplierPaymentsRow.SupplierKey = PartnerKey;
                 supplierPaymentsRow.SupplierName = PartnerRow.PartnerShortName;
-                supplierPaymentsRow.CurrencyCode = SupplierRow.CurrencyCode;
+                supplierPaymentsRow.CurrencyCode = DocumentRow.CurrencyCode;
                 supplierPaymentsRow.ListLabel = supplierPaymentsRow.SupplierName + " (" + supplierPaymentsRow.MethodOfPayment + ")";
                 PPartnerLocationAccess.LoadViaPPartner(MainDs, PartnerKey, ReadTransaction);
                 PLocationAccess.LoadViaPPartner(MainDs, PartnerKey, ReadTransaction);
+                AApSupplierAccess.LoadByPrimaryKey(MainDs, PartnerKey, ReadTransaction);
             }
 
             if (IsMyOwnTransaction)

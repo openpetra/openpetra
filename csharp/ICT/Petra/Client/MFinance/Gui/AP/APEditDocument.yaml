@@ -28,7 +28,7 @@ RootNode:
             ControlsOrientation: horizontal
             Dock:Top
         txtSupplierName: {Label=Current Supplier, ReadOnly=true, PartnerShortNameLookup=AApDocument.PartnerKey}
-        txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
+        txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApDocument.CurrencyCode}
         grpDocumentInfo:
             Label: Document Information
             Controls: 
@@ -60,7 +60,9 @@ RootNode:
             Format: Currency(2)
         txtExchangeRateToBase:
             Label: E&xchange Rate
-            Format: Decimal(5)
+            Format: Decimal(10)
+            ReadOnly: true
+            Width: 120
         btnLookupExchangeRate: {Label=Lookup}
         grpDetails:
             Label: Details

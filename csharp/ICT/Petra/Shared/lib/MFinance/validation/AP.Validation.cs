@@ -38,7 +38,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
     public static partial class TSharedFinanceValidation_AP
     {
         /// <summary>
-        /// Validates the Setup Countries screen data.
+        /// Detail 'Amount' must be positive or 0
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
