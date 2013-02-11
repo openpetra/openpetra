@@ -41,7 +41,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// </summary>
     public partial class TFrmDonorRecipientHistory
     {
-        private DataView FFilteredDataView = null;
         private Int32 FLedgerNumber = -1;
 
         /// the Donor
@@ -92,7 +91,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     gb.ViewModeTDS = FMainDS;
                     // When I call Gift Batch, it will want one row in a LedgerTable!
                     gb.ViewModeTDS.ALedger.Merge(TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber));
-                    gb.ShowDetailsOfOneBatch(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber);
+                    //gb.ShowDetailsOfOneBatch(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber);
                 }
                 finally
                 {
@@ -122,99 +121,152 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        private void SetupGrid()
+        {
+            grdDetails.Columns.Clear();
+            grdDetails.AddDateColumn("Date Entered", FMainDS.Tables["Table"].Columns["DateEntered"]);
+            grdDetails.AddTextColumn("Group", FMainDS.Tables["Table"].Columns["MotivationGroupCode"]);
+            grdDetails.AddTextColumn("Detail", FMainDS.Tables["Table"].Columns["MotivationDetailCode"]);
+            grdDetails.AddTextColumn("Receipt", FMainDS.Tables["Table"].Columns["ReceiptNumber"]);
+            grdDetails.AddCurrencyColumn("Amount (Base)", FMainDS.Tables["Table"].Columns["GiftAmount"]);
+            grdDetails.AddCurrencyColumn("Amount (Intl)", FMainDS.Tables["Table"].Columns["GiftAmountIntl"]);
+            grdDetails.AddCheckBoxColumn("C", FMainDS.Tables["Table"].Columns["ConfidentialGiftFlag"]);
+            grdDetails.AddTextColumn("Batch", FMainDS.Tables["Table"].Columns["BatchNumber"]);
+            grdDetails.AddTextColumn("Trans", FMainDS.Tables["Table"].Columns["GiftTransactionNumber"]);
+            grdDetails.AddTextColumn("Recipient", FMainDS.Tables["Table"].Columns["RecipientDescription"]);
+            grdDetails.AddTextColumn("Reference", FMainDS.Tables["Table"].Columns["Reference"]);
+            grdDetails.AddTextColumn("Comment One", FMainDS.Tables["Table"].Columns["GiftCommentOne"]);
+            grdDetails.AddTextColumn("Comment Type", FMainDS.Tables["Table"].Columns["CommentOneType"]);
+            grdDetails.AddTextColumn("Recipient Ledger", FMainDS.Tables["Table"].Columns["RecipientLedgerNumber"]);
+            grdDetails.AddTextColumn("Recipient", FMainDS.Tables["Table"].Columns["RecipientKey"]);
+            grdDetails.AddCheckBoxColumn("Charge Fee", FMainDS.Tables["Table"].Columns["ChargeFlag"]);
+            grdDetails.AddTextColumn("Method of Payment", FMainDS.Tables["Table"].Columns["MethodOfPaymentCode"]);
+            grdDetails.AddTextColumn("Method of Giving", FMainDS.Tables["Table"].Columns["MethodOfGivingCode"]);
+            grdDetails.AddTextColumn("Cost Centre Code", FMainDS.Tables["Table"].Columns["CostCentreCode"]);
+            grdDetails.AddTextColumn("Comment Two", FMainDS.Tables["Table"].Columns["GiftCommentTwo"]);
+            grdDetails.AddTextColumn("Comment Three", FMainDS.Tables["Table"].Columns["GiftCommentThree"]);
+            grdDetails.AddTextColumn("Mailing Code", FMainDS.Tables["Table"].Columns["MailingCode"]);
+        }
+
         /// <summary>
         /// Browse: (Re)LoadTableContents, called after injection of parameters or manual via button
         /// </summary>
-        public void Search(bool loading)
+        public void Search(bool ALoading)
         {
             TVerificationResultCollection AMessages;
             Hashtable requestParams = new Hashtable();
+
             Int64 donor = Convert.ToInt64(txtDonor.Text);
             Int64 recipient = Convert.ToInt64(txtRecipient.Text);
 
+            string motivationGroup = txtMotivationGroup.Text.Trim();
+            string motivationDetail = txtMotivationDetail.Text.Trim();
+
+            string dateFrom = dtpDateFrom.Date.HasValue ? dtpDateFrom.Date.Value.ToShortDateString() : String.Empty;
+            string dateTo = dtpDateTo.Date.HasValue ? dtpDateTo.Date.Value.ToShortDateString() : String.Empty;
+
             if ((donor == 0) && (recipient == 0))
             {
-                MessageBox.Show(Catalog.GetString("You have to restrict via donor or via recipient"));
+                MessageBox.Show(Catalog.GetString("You have to restrict the search via donor and/or via recipient"),
+                    Catalog.GetString("Donor/Recipient Error"));
+                txtDonor.Focus();
                 return;
             }
 
             if (FLedgerNumber < 0)
             {
-                MessageBox.Show(Catalog.GetString("Select Ledger then press 'Browse'."));
+                MessageBox.Show(Catalog.GetString("Select Ledger then press 'Browse'."), Catalog.GetString("Ledger Error"));
                 return;
             }
 
+            if ((dateFrom.Length == 0) && (dtpDateFrom.Text.Length > 0))
+            {
+                MessageBox.Show(Catalog.GetString("Please enter a valid Date From."), Catalog.GetString("Date From Error"));
+                dtpDateFrom.Focus();
+                dtpDateFrom.SelectAll();
+                return;
+            }
+
+            if ((dateTo.Length == 0) && (dtpDateTo.Text.Length > 0))
+            {
+                MessageBox.Show(Catalog.GetString("Please enter a valid Date To."), Catalog.GetString("Date To Error"));
+                dtpDateTo.Focus();
+                dtpDateTo.SelectAll();
+                return;
+            }
+
+            txtMotivationGroup.Text = txtMotivationGroup.Text.ToUpper();
+            txtMotivationDetail.Text = txtMotivationDetail.Text.ToUpper();
+
+            requestParams.Add("Ledger", FLedgerNumber);
             requestParams.Add("Donor", donor);
             requestParams.Add("Recipient", recipient);
+            requestParams.Add("MotivationGroup", motivationGroup);
+            requestParams.Add("MotivationDetail", motivationDetail);
+            requestParams.Add("DateFrom", dateFrom);
+            requestParams.Add("DateTo", dateTo);
 
-
-            GiftBatchTDS newTDS = TRemote.MFinance.Gift.WebConnectors.LoadDonorRecipientHistory(
-                requestParams,
-                out AMessages);
-
-            if ((AMessages != null) && (AMessages.Count > 0))
+            try
             {
-                MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Error calling Donor/Recipient history"), AMessages));
-                return;
-            }
-            else
-            {
-                FMainDS = newTDS;
-            }
+                Cursor = Cursors.WaitCursor;
+                GiftBatchTDS newTDS = TRemote.MFinance.Gift.WebConnectors.LoadDonorRecipientHistory(
+                    requestParams,
+                    out AMessages);
 
-            if (FMainDS != null)
-            {
-                FFilteredDataView = FMainDS.AGiftDetail.DefaultView;
-                FFilteredDataView.Sort = "DateEntered DESC";
-                FFilteredDataView.AllowNew = false;
-                RowFilter = "";
-
-                if (txtMotivationDetail.Text.Length > 0)
+                if ((AMessages != null) && (AMessages.Count > 0))
                 {
-                    AddRowFilter(AGiftDetailTable.GetMotivationDetailCodeDBName() + " LIKE '" + txtMotivationDetail.Text + "%'");
+                    MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Error calling Donor/Recipient history"), AMessages));
+                    return;
                 }
-
-                if (txtMotivationGroup.Text.Length > 0)
+                else
                 {
-                    AddRowFilter(AGiftDetailTable.GetMotivationGroupCodeDBName() + " LIKE '" + txtMotivationGroup.Text + "%'");
-                }
-
-                if (loading)
-                {
-                    if (FMainDS.AGiftDetail.Count > 0)
+                    if (FMainDS.Tables.Contains("Table"))
                     {
-                        GiftBatchTDSAGiftDetailRow gdr = (GiftBatchTDSAGiftDetailRow)FFilteredDataView[FFilteredDataView.Count - 1].Row;
-                        dtpDateFrom.Date = gdr.DateEntered;
+                        FMainDS.Tables.Remove("Table");
                     }
-                    else
+
+                    FMainDS = newTDS;
+                }
+
+                if (FMainDS != null)
+                {
+                    if (ALoading)
                     {
-                        dtpDateFrom.Date = null;
-                        dtpDateTo.Date = null;
+                        if (FMainDS.Tables["Table"].Rows.Count > 0)
+                        {
+                            //If this form is loaded from elsewhere, set DateFrom to be lowest date in returned Table
+                            DataRow gdr = (DataRow)FMainDS.Tables["Table"].Rows[FMainDS.Tables["Table"].Rows.Count - 1];
+                            dtpDateFrom.Date = Convert.ToDateTime(gdr["DateEntered"]);
+                        }
+                        else
+                        {
+                            dtpDateFrom.Date = null;
+                            dtpDateTo.Date = null;
+                        }
                     }
+
+                    if (grdDetails.Columns.Count < 2)
+                    {
+                        SetupGrid();
+                    }
+
+                    DataView myDataView = FMainDS.Tables["Table"].DefaultView;
+                    myDataView.AllowNew = false;
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
+                    SelectByIndex(0);
+                    txtNumberOfGifts.Text = (grdDetails.Rows.Count - 1).ToString();
+                    grdDetails.Columns[0].Width = 90;     // Date
+                    grdDetails.Columns[2].Width = 80;     // Motiv. Detail
+                    grdDetails.Columns[4].Width = 60;     // Amount
+                    grdDetails.Columns[8].Width = 160;     // Recipient
                 }
 
-                if (dtpDateFrom.Date.HasValue)
-                {
-                    AddRowFilter(String.Format(CultureInfo.InvariantCulture.DateTimeFormat,
-                            "DateEntered  >= #{0}#", dtpDateFrom.Date));
-                }
-
-                if (dtpDateTo.Date.HasValue)
-                {
-                    AddRowFilter(String.Format(CultureInfo.InvariantCulture.DateTimeFormat,
-                            "DateEntered <= #{0}#", dtpDateTo.Date));
-                }
-
-                FFilteredDataView.RowFilter = RowFilter;
-
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FFilteredDataView);
-                SelectByIndex(0);
-                txtNumberOfGifts.Text = Convert.ToString(FFilteredDataView.Count);
                 UpdateTotals();
-                grdDetails.Columns[0].Width = 90; // Date
-                grdDetails.Columns[2].Width = 80; // Motiv. Detail
-                grdDetails.Columns[4].Width = 60; // Amount
-                grdDetails.Columns[8].Width = 160; // Recipient
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
             }
         }
 
@@ -280,25 +332,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void UpdateTotals()
         {
-            Decimal sum = 0;
+            decimal sum = 0;
+            decimal sumIntl = 0;
 
-            if (FFilteredDataView != null)
+            if (grdDetails.Rows.Count > 1)
             {
-                foreach (DataRowView rv in FFilteredDataView)
+                foreach (DataRow rv in FMainDS.Tables["Table"].Rows)
                 {
-                    AGiftDetailRow gdr = (AGiftDetailRow)rv.Row;
-                    sum += gdr.GiftTransactionAmount;
-                    //TODO Convert currencies
-                }
-
-                txtGiftTotal.NumberValueDecimal = sum;
-
-                if (FMainDS.AGiftBatch.Count > 0)
-                {
-                    txtGiftTotal.CurrencySymbol = FMainDS.AGiftBatch[0].CurrencyCode;
+                    DataRow gdr = (DataRow)rv;
+                    sum += (decimal)gdr["GiftAmount"];
+                    sumIntl += (decimal)gdr["GiftAmountIntl"];
                 }
             }
 
+            txtGiftTotal.NumberValueDecimal = sum;
+            txtGiftTotal.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
             txtGiftTotal.ReadOnly = true;
         }
 
