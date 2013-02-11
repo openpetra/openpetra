@@ -644,7 +644,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ALedgerAccess.LoadByPrimaryKey(MainDS, ledgerNumber, Transaction);
 
                 //MainDS.DisableConstraints();
-                DBAccess.GDBAccessObj.Select(MainDS, sqlStmt, String.Empty, Transaction, parameters.ToArray());
+                DBAccess.GDBAccessObj.SelectToTempTable(MainDS, sqlStmt, Transaction, parameters.ToArray(), 0, 0);
 
                 MainDS.AcceptChanges();
             }

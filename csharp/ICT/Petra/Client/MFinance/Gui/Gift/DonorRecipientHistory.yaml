@@ -3,7 +3,6 @@ RootNode:
     FormTitle: Donor Recipient History
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
-    DetailTable: AGift
     TempTable: Table
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: browse
