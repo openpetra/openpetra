@@ -1145,6 +1145,21 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
 
+            //
+            // The imported hierarchy did not include Analysis types, but previously there may have been
+            // AnalysisTypes assigned to accounts, which have now been deleted, or have a different meaning 
+            // in the newly imported hierarchy.
+            //
+            // I'll keep any AnalysisAttribute types that are defined, but unlink them from Accounts.
+
+            foreach (AAnalysisAttributeRow Row in MainDS.AAnalysisAttribute.Rows)
+            {
+                if (Row.LedgerNumber == ALedgerNumber)
+                {
+                    Row.AccountCode = "";
+                }
+            }
+
             TVerificationResultCollection VerificationResult;
             return SaveGLSetupTDS(ALedgerNumber, ref MainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
