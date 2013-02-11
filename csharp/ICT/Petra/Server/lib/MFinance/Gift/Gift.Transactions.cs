@@ -547,27 +547,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AMessages)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            
+
             TDBTransaction Transaction = null;
 
             AMessages = new TVerificationResultCollection();
-            
+
             Int32 ledgerNumber = (Int32)requestParams["Ledger"];
             long recipientKey = (Int64)requestParams["Recipient"];
             long donorKey = (Int64)requestParams["Donor"];
-            
+
             string motivationGroup = (string)requestParams["MotivationGroup"];
             string motivationDetail = (string)requestParams["MotivationDetail"];
-			
+
             string dateFrom = (string)requestParams["DateFrom"];
-			string dateTo = (string)requestParams["DateTo"];
-			DateTime startDate;
-			DateTime endDate;
+            string dateTo = (string)requestParams["DateTo"];
+            DateTime startDate;
+            DateTime endDate;
 
-			bool noDates = (dateFrom.Length == 0 && dateTo.Length == 0);
+            bool noDates = (dateFrom.Length == 0 && dateTo.Length == 0);
 
-			string sqlStmt = string.Empty;
-			
+            string sqlStmt = string.Empty;
+
             try
             {
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -593,34 +593,34 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 param = new OdbcParameter("RecipientKey", OdbcType.BigInt);
                 param.Value = recipientKey;
                 parameters.Add(param);
-  
+
                 noDates = (dateFrom.Length == 0 && dateTo.Length == 0);
                 param = new OdbcParameter("DateAny", OdbcType.Bit);
                 param.Value = noDates;
                 parameters.Add(param);
-                
+
                 if (noDates)
                 {
-                	//These values don't matter because of the value of noDate
-                	startDate = new DateTime(2000, 1, 1);
-                	endDate = new DateTime(2000, 1, 1);
+                    //These values don't matter because of the value of noDate
+                    startDate = new DateTime(2000, 1, 1);
+                    endDate = new DateTime(2000, 1, 1);
                 }
-                else if (dateFrom.Length > 0 && dateTo.Length > 0)
+                else if ((dateFrom.Length > 0) && (dateTo.Length > 0))
                 {
-                	startDate = Convert.ToDateTime(dateFrom); //, new CultureInfo("en-US"));
-                	endDate = Convert.ToDateTime(dateTo); //, new CultureInfo("en-US"));
+                    startDate = Convert.ToDateTime(dateFrom);     //, new CultureInfo("en-US"));
+                    endDate = Convert.ToDateTime(dateTo);     //, new CultureInfo("en-US"));
                 }
                 else if (dateFrom.Length > 0)
                 {
-                	startDate = Convert.ToDateTime(dateFrom);
-                	endDate = new DateTime(2050, 1, 1);
+                    startDate = Convert.ToDateTime(dateFrom);
+                    endDate = new DateTime(2050, 1, 1);
                 }
                 else
                 {
-                	startDate = new DateTime(1965, 1, 1);
-                	endDate = Convert.ToDateTime(dateTo);
+                    startDate = new DateTime(1965, 1, 1);
+                    endDate = Convert.ToDateTime(dateTo);
                 }
-                
+
                 param = new OdbcParameter("DateFrom", OdbcType.Date);
                 param.Value = startDate;
                 parameters.Add(param);
@@ -642,10 +642,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 //Load Ledger Table
                 ALedgerAccess.LoadByPrimaryKey(MainDS, ledgerNumber, Transaction);
-                
+
                 //MainDS.DisableConstraints();
                 DBAccess.GDBAccessObj.Select(MainDS, sqlStmt, String.Empty, Transaction, parameters.ToArray());
-                
+
                 MainDS.AcceptChanges();
             }
             finally

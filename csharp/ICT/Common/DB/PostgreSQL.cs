@@ -431,11 +431,11 @@ namespace Ict.Common.DB
             {
                 if (ADataTableName == String.Empty)
                 {
-	            	((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataSet);
+                    ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataSet);
                 }
                 else
                 {
-                	((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataSet, ADataTableName);
+                    ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataSet, ADataTableName);
                 }
             }
         }
