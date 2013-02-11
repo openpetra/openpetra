@@ -3,10 +3,11 @@ RootNode:
     FormTitle: Donor Recipient History
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
-    DetailTable: AGiftDetail
+    DetailTable: AGift
+    TempTable: Table
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: browse
-    Template: windowSingleTable
+    Template: windowSingleUntypedTempTable
     WindowWidth: 850
     WindowHeight: 650
     Actions:
@@ -40,27 +41,7 @@ RootNode:
             Dock: Fill
             Controls: [grdDetails]
         grdDetails:
-            TableName: AGiftDetail
             Dock: Fill
-            Columns: [DateEntered, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, GiftTransactionAmount, ConfidentialGiftFlag, BatchNumber, GiftTransactionNumber, RecipientDescription, Reference, GiftCommentOne, CommentOneType, RecipientLedgerNumber, RecipientKey, ChargeFlag, MethodOfPaymentCode, MethodOfGivingCode, CostCentreCode, GiftCommentTwo, GiftCommentThree, MailingCode]
-            CustomColumns:
-                MotivationGroupCode: {Label=Group}
-                MotivationDetailCode: {Label=Detail}
-                GiftTransactionAmount: {Label=Amount,Type=Currency}
-                BatchNumber: {Label=Batch}
-                GiftTransactionNumber: {Label=Trans}
-                ConfidentialGiftFlag: {Label=C, Type=Boolean}
-                DateEntered: {Label=Date Entered, Type=DateTime}
-                DonorKey: {Label=Donor Key, Type=PartnerKey}
-                DonorName: {Label=Donor Name, Type=String}
-                DonorClass: {Label=Class, Type=String}
-                RecipientDescription: {Label=Recipient, Type=String}
-                RecipientLedgerNumber: {Label=Recipient Ledger, type=Int}
-                GiftAmount: {Label=Gift Amount, Type=Decimal}
-                MethodOfGivingCode: {Label=Method of Giving, Type=String}
-                MethodOfPaymentCode: {Label=Method of Payment, Type=String}
-                ReceiptNumber: {Label=Receipt, Type=Int32}
-                Reference: {Label=Reference, Type=String}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

@@ -27,6 +27,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
+using System.Globalization;
+using System.IO;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -545,122 +547,105 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AMessages)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
+            
             TDBTransaction Transaction = null;
 
             AMessages = new TVerificationResultCollection();
-            long Recipient = (Int64)requestParams["Recipient"];
-            long Donor = (Int64)requestParams["Donor"];
+            
+            Int32 ledgerNumber = (Int32)requestParams["Ledger"];
+            long recipientKey = (Int64)requestParams["Recipient"];
+            long donorKey = (Int64)requestParams["Donor"];
+            
+            string motivationGroup = (string)requestParams["MotivationGroup"];
+            string motivationDetail = (string)requestParams["MotivationDetail"];
+			
+            string dateFrom = (string)requestParams["DateFrom"];
+			string dateTo = (string)requestParams["DateTo"];
+			DateTime startDate;
+			DateTime endDate;
+
+			bool noDates = (dateFrom.Length == 0 && dateTo.Length == 0);
+
+			string sqlStmt = string.Empty;
+			
             try
             {
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-                // Case 1 : Donor Given : go via AGift
-                // Case 2 : Recipient given go via AGiftDetail
-                // Case 3 : Both given ?
 
-                //AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-                if (Recipient > 0) //Case 2, Case 3
+                sqlStmt = TDataBase.ReadSqlFile("Gift.GetDonationsOfDonorAndOrRecipientTemplate.sql");
+
+                OdbcParameter param;
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+
+                param = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                param.Value = ledgerNumber;
+                parameters.Add(param);
+                param = new OdbcParameter("DonorAny", OdbcType.Bit);
+                param.Value = (donorKey == 0);
+                parameters.Add(param);
+                param = new OdbcParameter("DonorKey", OdbcType.BigInt);
+                param.Value = donorKey;
+                parameters.Add(param);
+                param = new OdbcParameter("RecipientAny", OdbcType.Bit);
+                param.Value = (recipientKey == 0);
+                parameters.Add(param);
+                param = new OdbcParameter("RecipientKey", OdbcType.BigInt);
+                param.Value = recipientKey;
+                parameters.Add(param);
+  
+                noDates = (dateFrom.Length == 0 && dateTo.Length == 0);
+                param = new OdbcParameter("DateAny", OdbcType.Bit);
+                param.Value = noDates;
+                parameters.Add(param);
+                
+                if (noDates)
                 {
-                    AGiftDetailAccess.LoadViaPPartnerRecipientKey(MainDS, Recipient, Transaction);
-
-                    foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
-                    {
-                        AGiftAccess.LoadByPrimaryKey(MainDS,
-                            giftDetail.LedgerNumber,
-                            giftDetail.BatchNumber,
-                            giftDetail.GiftTransactionNumber,
-                            Transaction);
-
-                        if (Donor != 0)
-                        {
-                            AGiftRow newGiftRow = (AGiftRow)MainDS.AGift.Rows.Find(new object[] { giftDetail.LedgerNumber,
-                                                                                                  giftDetail.BatchNumber,
-                                                                                                  giftDetail.GiftTransactionNumber });
-
-                            if (newGiftRow.DonorKey != Donor)
-                            {
-                                if (newGiftRow.RowState != DataRowState.Deleted)
-                                {
-                                    newGiftRow.Delete();
-                                }
-
-                                giftDetail.Delete();
-                            }
-                        }
-                    }
+                	//These values don't matter because of the value of noDate
+                	startDate = new DateTime(2000, 1, 1);
+                	endDate = new DateTime(2000, 1, 1);
                 }
-                else //Case 1
+                else if (dateFrom.Length > 0 && dateTo.Length > 0)
                 {
-                    AGiftAccess.LoadViaPPartner(MainDS, Donor, Transaction);
-
-                    foreach (AGiftRow giftRow in MainDS.AGift.Rows)
-                    {
-                        AGiftDetailAccess.LoadViaAGift(MainDS, giftRow.LedgerNumber, giftRow.BatchNumber, giftRow.GiftTransactionNumber, Transaction);
-                    }
+                	startDate = Convert.ToDateTime(dateFrom); //, new CultureInfo("en-US"));
+                	endDate = Convert.ToDateTime(dateTo); //, new CultureInfo("en-US"));
                 }
-
-                MainDS.AcceptChanges();
-                DataView giftView = new DataView(MainDS.AGift);
-
-                // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
-                foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                else if (dateFrom.Length > 0)
                 {
-                    // get the gift
-                    giftView.RowFilter = AGiftTable.GetGiftTransactionNumberDBName() + " = " + giftDetail.GiftTransactionNumber.ToString();
-                    giftView.RowFilter += " AND " + AGiftTable.GetBatchNumberDBName() + " = " + giftDetail.BatchNumber.ToString();
-                    AGiftRow giftRow = (AGiftRow)giftView[0].Row;
-                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, giftRow.LedgerNumber, giftRow.BatchNumber, Transaction);
-                    PPartnerTable partner;
-                    StringCollection shortName = new StringCollection();
-                    shortName.Add(PPartnerTable.GetPartnerShortNameDBName());
-                    shortName.Add(PPartnerTable.GetPartnerClassDBName());
-
-                    if (!giftDetail.ConfidentialGiftFlag)
-                    {
-                        partner = PPartnerAccess.LoadByPrimaryKey(giftRow.DonorKey, shortName, Transaction);
-
-                        giftDetail.DonorKey = giftRow.DonorKey;
-                        giftDetail.DonorName = partner[0].PartnerShortName;
-                        giftDetail.DonorClass = partner[0].PartnerClass;
-                        partner.Clear();
-                    }
-
-                    giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
-                    giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
-                    giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
-                    giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
-                    giftDetail.Reference = giftRow.Reference;
-
-                    // This may be not very fast we can optimize later
-                    //Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable unitTable = null;
-
-
-                    //do the same for the Recipient
-
-                    //Int64 fieldNumber;
-
-                    //LoadKeyMinistryInsideTrans(ref Transaction, ref unitTable, ref partner, giftDetail.RecipientKey, out fieldNumber);
-                    //giftDetail.RecipientField = fieldNumber;
-
-                    // TODO load speed
-                    partner = PPartnerAccess.LoadByPrimaryKey(giftDetail.RecipientKey, shortName, Transaction);
-
-                    if (partner.Count > 0)
-                    {
-                        giftDetail.RecipientDescription = partner[0].PartnerShortName;
-                    }
-                    else
-                    {
-                        giftDetail.RecipientDescription = "INVALID";
-                    }
-
-                    giftDetail.DateEntered = giftRow.DateEntered;
-
-                    if (TGift.GiftRestricted(giftRow, Transaction))
-                    {
-                        giftDetail.Delete();
-                    }
+                	startDate = Convert.ToDateTime(dateFrom);
+                	endDate = new DateTime(2050, 1, 1);
                 }
+                else
+                {
+                	startDate = new DateTime(1965, 1, 1);
+                	endDate = Convert.ToDateTime(dateTo);
+                }
+                
+                param = new OdbcParameter("DateFrom", OdbcType.Date);
+                param.Value = startDate;
+                parameters.Add(param);
+                param = new OdbcParameter("DateTo", OdbcType.Date);
+                param.Value = endDate;
+                parameters.Add(param);
+                param = new OdbcParameter("MotivationGroupAny", OdbcType.Bit);
+                param.Value = (motivationGroup.Length == 0);
+                parameters.Add(param);
+                param = new OdbcParameter("MotivationGroupCode", OdbcType.VarChar);
+                param.Value = motivationGroup;
+                parameters.Add(param);
+                param = new OdbcParameter("MotivationDetailAny", OdbcType.Bit);
+                param.Value = (motivationDetail.Length == 0);
+                parameters.Add(param);
+                param = new OdbcParameter("MotivationDetailCode", OdbcType.VarChar);
+                param.Value = motivationDetail;
+                parameters.Add(param);
 
+                //Load Ledger Table
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ledgerNumber, Transaction);
+                
+                //MainDS.DisableConstraints();
+                DBAccess.GDBAccessObj.Select(MainDS, sqlStmt, String.Empty, Transaction, parameters.ToArray());
+                
                 MainDS.AcceptChanges();
             }
             finally
