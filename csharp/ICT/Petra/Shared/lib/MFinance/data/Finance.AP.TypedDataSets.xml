@@ -19,14 +19,12 @@
           <CustomField name="DiscountPercentage" type="Decimal"/>
           <CustomField name="DocumentCode" type="string"/>
           <CustomField name="DocType" type="string"/>
-          <CustomField name="CurrencyCode" type="string"/>
           <CustomField name="PayFullInvoice" type="Boolean"/>
           <CustomField name="InvoiceTotal" type="Decimal"/>
       </Table>
       <Table sqltable="a_ap_payment">
           <CustomField name="SupplierKey" type="Int64"/>
           <CustomField name="SupplierName" type="string"/>
-          <CustomField name="CurrencyCode" type="string"/>
           <CustomField name="ListLabel" type="string"/>
           <CustomField name="TotalAmountToPay" type="Decimal"/>
       </Table>
@@ -52,7 +50,6 @@
       </CustomTable>
       <Table sqltable="a_ap_document" name="InvoiceList">
           <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
-          <Field sqltable="a_ap_supplier" sqlfield="a_currency_code_c"/>
           <CustomField name="DateDue" type="DateTime"/>
           <CustomField name="DateDiscountUntil" type="DateTime"/>
           <CustomField name="OutstandingAmount" type="Decimal"/>

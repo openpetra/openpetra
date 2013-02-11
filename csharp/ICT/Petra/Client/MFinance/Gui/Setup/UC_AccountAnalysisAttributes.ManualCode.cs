@@ -84,6 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FAccountCode);
 
                 LoadCmbAnalType();
+                pnlDetails.Enabled = false;
             }
         }
 
@@ -133,6 +134,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 LoadCmbAnalType();
                 cmbDetailAnalTypeCode.Text = ARow.AnalysisTypeCode;
+                pnlDetails.Enabled = false;
             }
         }
 

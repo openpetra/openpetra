@@ -207,6 +207,157 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return MainDS;
         }
 
+        /// <summary></summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable LoadLocalSummaryCostCentres(Int32 ALedgerNumber)
+        {
+            String SqlQuery = "SELECT a_cost_centre_code_c AS CostCentreCode, " +
+                              "a_cost_centre_name_c AS CostCentreName" +
+                              " FROM PUB_a_cost_centre" +
+                              " WHERE a_ledger_number_i = " + ALedgerNumber +
+                              " AND a_posting_cost_centre_flag_l=FALSE" +
+                              " AND a_cost_centre_type_c = 'Local'" +
+                              " AND a_cost_centre_to_report_to_c <> '';";
+            DataTable ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", null);
+
+            return ParentCostCentreTbl;
+        }
+
+        /// <summary></summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable LoadCostCentrePartnerLinks(Int32 ALedgerNumber)
+        {
+            //
+            // Load Partners where PartnerType includes "COSTCENTRE":
+            String SqlQuery = "SELECT p_partner_short_name_c as ShortName, " +
+                              "PUB_p_partner.p_partner_key_n as PartnerKey, " +
+                              "'0' as IsLinked, " +
+                              "'0' as ReportsTo" +
+                              " FROM PUB_p_partner, PUB_p_partner_type" +
+                              " WHERE PUB_p_partner_type.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
+                              " AND PUB_p_partner_type.p_type_code_c = 'COSTCENTRE';";
+
+            DataTable PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", null);
+
+            PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
+            AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, null);
+
+            foreach (AValidLedgerNumberRow Row in LinksTbl.Rows)
+            {
+                Int32 RowIdx = PartnerCostCentreTbl.DefaultView.Find(Row.PartnerKey);
+
+                if (RowIdx >= 0)
+                {
+                    PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = Row.CostCentreCode;
+                    ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, Row.CostCentreCode, null);
+
+                    if (CCTbl.Rows.Count > 0)
+                    {
+                        PartnerCostCentreTbl.DefaultView[RowIdx].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
+                    }
+                }
+            }
+
+            return PartnerCostCentreTbl;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="PartnerCostCentreTbl"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static TSubmitChangesResult SaveCostCentrePartnerLinks(
+            Int32 ALedgerNumber, DataTable PartnerCostCentreTbl, out TVerificationResultCollection AVerificationResult)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
+
+            try
+            {
+                AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                LinksTbl.DefaultView.Sort = "p_partner_key_n";
+
+                ACostCentreTable CostCentreTbl = ACostCentreAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                CostCentreTbl.DefaultView.Sort = "a_cost_centre_code_c";
+
+                foreach (DataRow Row in PartnerCostCentreTbl.Rows)
+                {
+                    String RowCCCode = Convert.ToString(Row["IsLinked"]);
+
+                    if (RowCCCode != "0")   // This should be in the LinksTbl - if it's not, I'll add it.
+                    {                       // { AND I probably need to create a CostCentre Row too! }
+                        Int32 CostCentreRowIdx = CostCentreTbl.DefaultView.Find(RowCCCode);
+
+                        if (CostCentreRowIdx < 0)       // There's no such Cost Centre - I need to create it now.
+                        {
+                            ACostCentreRow NewCostCentreRow = CostCentreTbl.NewRowTyped();
+                            NewCostCentreRow.LedgerNumber = ALedgerNumber;
+                            NewCostCentreRow.CostCentreCode = RowCCCode;
+                            NewCostCentreRow.CostCentreToReportTo = Convert.ToString(Row["ReportsTo"]);
+                            NewCostCentreRow.CostCentreName = Convert.ToString(Row["ShortName"]);
+                            NewCostCentreRow.PostingCostCentreFlag = true;
+                            NewCostCentreRow.CostCentreActiveFlag = true;
+                            CostCentreTbl.Rows.Add(NewCostCentreRow);
+                        }
+
+                        Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
+
+                        if (RowIdx < 0)
+                        {
+                            AValidLedgerNumberRow LinksRow = LinksTbl.NewRowTyped();
+                            LinksRow.LedgerNumber = ALedgerNumber;
+                            LinksRow.PartnerKey = Convert.ToInt64(Row["PartnerKey"]);
+                            LinksRow.IltProcessingCentre = 4000000; // This is the ICH ledger number, but apparently anyone cares about it!
+                            LinksRow.CostCentreCode = RowCCCode;
+                            LinksTbl.Rows.Add(LinksRow);
+                        }
+                        else    // If this partner is already linked to a cost centre, it's possible the user has changed the code!
+                        {
+                            AValidLedgerNumberRow LinksRow = (AValidLedgerNumberRow)LinksTbl.DefaultView[RowIdx].Row;
+                            LinksRow.CostCentreCode = RowCCCode;
+                        }
+                    }
+                    else                // This should not be in the LinksTbl - if it is, I'll delete it.
+                    {
+                        Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
+
+                        if (RowIdx >= 0)
+                        {
+                            AValidLedgerNumberRow LinksRow = (AValidLedgerNumberRow)LinksTbl.DefaultView[RowIdx].Row;
+                            LinksRow.Delete();
+                        }
+                    }
+                }
+
+                if (ACostCentreAccess.SubmitChanges(CostCentreTbl, Transaction, out AVerificationResult))
+                {
+                    if (AValidLedgerNumberAccess.SubmitChanges(LinksTbl, Transaction, out AVerificationResult))
+                    {
+                        ReturnValue = TSubmitChangesResult.scrOK;
+                    }
+                }
+            }
+            finally
+            {
+                if (ReturnValue == TSubmitChangesResult.scrOK)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            return ReturnValue;
+        }
+
         private static void DropAccountProperties(
             ref GLSetupTDS AInspectDS,
             Int32 ALedgerNumber,
@@ -996,6 +1147,21 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     // TODO: what about system accounts? probably alright to ignore here
 
                     accountRow.Delete();
+                }
+            }
+
+            //
+            // The imported hierarchy did not include Analysis types, but previously there may have been
+            // AnalysisTypes assigned to accounts, which have now been deleted, or have a different meaning
+            // in the newly imported hierarchy.
+            //
+            // I'll keep any AnalysisAttribute types that are defined, but unlink them from Accounts.
+
+            foreach (AAnalysisAttributeRow Row in MainDS.AAnalysisAttribute.Rows)
+            {
+                if (Row.LedgerNumber == ALedgerNumber)
+                {
+                    Row.AccountCode = "";
                 }
             }
 
@@ -1825,7 +1991,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         //
-        //    Rename Account: to rename an AccountCode, we need to update lots of values all over the database:
+        //    Rename Account: to rename an AccountCode or a CostCentreCode, we need to update lots of values all over the database:
 
         private static void UpdateAccountField(String ATblName,
             String AFldName,
@@ -1912,67 +2078,35 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 UpdateAccountField("a_ledger", "a_ilt_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_po_accrual_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_profit_loss_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_purchase_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_sales_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_so_accrual_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_stock_adj_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_stock_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_tax_input_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_tax_output_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_cost_of_sales_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_forex_gains_losses_account_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_ret_earnings_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_stock_accrual_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_transaction", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_transaction",
                     "a_primary_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
 /*
  *              UpdateAccountField ("a_this_year_old_transaction","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
@@ -1986,25 +2120,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 UpdateAccountField("a_fees_payable", "a_dr_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_transaction_type",
                     "a_balancing_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_transaction_type",
                     "a_credit_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_transaction_type",
                     "a_debit_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                 AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
 
@@ -2025,32 +2147,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     UpdateAccountField("a_trans_anal_attrib",
                         "a_account_code_c",
-                        AOldCode,
-                        ANewCode,
-                        ALedgerNumber,
-                        Transaction,
-                        ref AttemptedOperation);
+                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_recurring_trans_anal_attrib",
                         "a_account_code_c",
-                        AOldCode,
-                        ANewCode,
-                        ALedgerNumber,
-                        Transaction,
-                        ref AttemptedOperation);
+                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_thisyearold_trans_anal_attrib",
                         "a_account_code_c",
-                        AOldCode,
-                        ANewCode,
-                        ALedgerNumber,
-                        Transaction,
-                        ref AttemptedOperation);
+                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_prev_year_trans_anal_attrib",
                         "a_account_code_c",
-                        AOldCode,
-                        ANewCode,
-                        ALedgerNumber,
-                        Transaction,
-                        ref AttemptedOperation);
+                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                     OldAnalAttribRow.Delete();
@@ -2063,27 +2169,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 UpdateAccountField("a_suspense_account",
                     "a_suspense_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_motivation_detail", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_recurring_transaction",
                     "a_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_gift_batch", "a_bank_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_recurring_gift_batch",
                     "a_bank_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ap_document_detail", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ap_document", "a_ap_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ap_payment", "a_bank_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
@@ -2094,34 +2188,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 UpdateAccountField("a_budget", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_general_ledger_master",
                     "a_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_account_hierarchy_detail",
                     "a_reporting_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_account_hierarchy_detail",
                     "a_account_code_to_report_to_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_account_hierarchy",
                     "a_root_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_account_property", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                //              UpdateAccountField("a_fin_statement_group","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+//              UpdateAccountField("a_fin_statement_group","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                 PrevAccountRow.Delete();
 
@@ -2156,5 +2234,255 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             return RenameComplete;
         }
-    }
-}
+
+        private static bool CostCentreHasChildren(Int32 ALedgerNumber, string ACostCentreCode, TDBTransaction Transaction)
+        {
+            String QuerySql =
+                "SELECT COUNT (*) FROM PUB_a_cost_centre WHERE " +
+                "a_ledger_number_i=" + ALedgerNumber + " AND " +
+                "a_cost_centre_to_report_to_c = '" + ACostCentreCode + "';";
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
+
+            return Convert.ToInt32(SqlResult) > 0;
+        }
+
+        private static bool CostCentreCodeHasBeenUsed(Int32 ALedgerNumber, string ACostCentreCode, TDBTransaction Transaction)
+        {
+            // TODO: enhance sql statement to check for more references to a_cost_centre
+            // TODO:? This method is *almost exactly like* the equivalent AccountCode function.
+            //        With an extra parameter the two could be combined.
+
+            String QuerySql =
+                "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
+                "a_ledger_number_i=" + ALedgerNumber + " AND " +
+                "a_cost_centre_code_c = '" + ACostCentreCode + "';";
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
+            bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
+
+            if (!IsInUse)
+            {
+                QuerySql =
+                    "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
+                    "a_ledger_number_i=" + ALedgerNumber + " AND " +
+                    "a_cost_centre_code_c = '" + ACostCentreCode + "';";
+                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
+                IsInUse = (Convert.ToInt32(SqlResult) > 0);
+            }
+
+            return IsInUse;
+        }
+
+        /// <summary>I can add child accounts to this account if it's a summary account,
+        ///          or if there have never been transactions posted to it.
+        ///
+        ///          (If children are added to this account, it will be promoted to a summary account.)
+        ///
+        ///          I can delete this account if it has no transactions posted as above,
+        ///          AND it has no children.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACostCentreCode"></param>
+        /// <param name="ACanBeParent"></param>
+        /// <param name="ACanDelete"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber, String ACostCentreCode, out bool ACanBeParent, out bool ACanDelete)
+        {
+            ACanBeParent = true;
+            ACanDelete = true;
+            bool DbSuccess = true;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            ACostCentreTable TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
+
+            if (TempTbl.Rows.Count < 1)  // This shouldn't happen..
+            {
+                DbSuccess = false;
+            }
+            else
+            {
+                bool IsParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
+                ACostCentreRow AccountRow = TempTbl[0];
+                ACanBeParent = IsParent; // If it's a summary account, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
+                ACanDelete = !IsParent;
+
+                if (!ACanBeParent || ACanDelete)
+                {
+                    bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
+                    ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
+                    ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
+                }
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return DbSuccess;
+        }
+
+        /// <summary>
+        /// Use this new Cost Centre code instead of that old one.
+        /// THIS RENAMES THE FIELD IN LOTS OF PLACES!
+        /// </summary>
+        /// <param name="AOldCode"></param>
+        /// <param name="ANewCode"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="VerificationResults"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool RenameCostCentreCode(String AOldCode,
+            String ANewCode,
+            Int32 ALedgerNumber,
+            out TVerificationResultCollection VerificationResults)
+        {
+            bool RenameComplete = false;
+            String VerificationContext = "Rename Cost Centre Code";
+            String AttemptedOperation = "";
+
+            VerificationResults = new TVerificationResultCollection();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            try
+            {
+                //
+                // First check whether this new code is available for use!
+                // (Check that the old name exists, and the new name doesn't!)
+                //
+                ACostCentreTable TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ANewCode, Transaction);
+
+                if (TempTbl.Rows.Count > 0)
+                {
+                    VerificationResults.Add(new TVerificationResult(VerificationContext, "Target name is already present",
+                            TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
+                TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, AOldCode, Transaction);
+
+                if (TempTbl.Rows.Count != 1)
+                {
+                    VerificationResults.Add(new TVerificationResult(VerificationContext, "Existing name not accessible",
+                            TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
+                // I can't just rename this,
+                // because lots of tables rely on this entry and I'll break their foreign constraints.
+                // I need to create a new row, point everyone to that, then delete the current row.
+                //
+                ACostCentreRow PrevRow = TempTbl[0];
+                ACostCentreRow NewRow = TempTbl.NewRowTyped();
+                DataUtilities.CopyAllColumnValues(PrevRow, NewRow);
+                NewRow.CostCentreCode = ANewCode;
+                TempTbl.Rows.Add(NewRow);
+
+                if (!ACostCentreAccess.SubmitChanges(TempTbl, Transaction, out VerificationResults))
+                {
+                    return false;
+                }
+
+                TempTbl.AcceptChanges();
+
+                UpdateAccountField("a_cost_centre",
+                    "a_cost_centre_to_report_to_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_transaction", "a_cost_centre_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_recurring_transaction",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_valid_ledger_number",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_motivation_detail",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_fees_receivable",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_fees_payable", "a_cost_centre_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_gift_batch", "a_bank_cost_centre_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_gift_detail", "a_cost_centre_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_recurring_gift_batch",
+                    "a_bank_cost_centre_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_ap_document_detail",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_processed_fee", "a_cost_centre_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_budget", "a_cost_centre_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_general_ledger_master",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+
+
+/*
+ * These tables were previously checked in the 4GL, but they don't exist in Open Petra:
+ *
+ * "a_previous_year_transaction"
+ * "a_ich_stewardship"
+ */
+
+                PrevRow.Delete();
+
+                if (!ACostCentreAccess.SubmitChanges(TempTbl, Transaction, out VerificationResults))
+                {
+                    return false;
+                }
+
+                RenameComplete = true;
+            } // try
+              //
+              // There's no "catch" - if any of the calls above fails (with an SQL problem),
+              // the server task will fail, and cause a descriptive exception on the client.
+              // (And the VerificationResults might also contain a useful string because of "finally" below.)
+              //
+            finally
+            {
+                if (RenameComplete)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    if (AttemptedOperation != "")
+                    {
+                        VerificationResults.Add(new TVerificationResult(VerificationContext, "Problem " + AttemptedOperation,
+                                TResultSeverity.Resv_Critical));
+                    }
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return RenameComplete;
+        } // RenameCostCentreCode
+    } // TGLSetupWebConnector
+} // namespace

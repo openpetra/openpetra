@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void InitializeComponent()
         {
-            this.dtpDateEffective = new System.Windows.Forms.DateTimePicker();
+            this.dtpDateEffective = new Ict.Petra.Client.CommonControls.TtxtPetraDate();
             this.lblDateEffective = new System.Windows.Forms.Label();
             this.lblValidDateRange = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //
             this.dtpDateEffective.Location = new System.Drawing.Point(59, 39);
             this.dtpDateEffective.Name = "dtpDateEffective";
-            this.dtpDateEffective.Size = new System.Drawing.Size(200, 20);
+            this.dtpDateEffective.Size = new System.Drawing.Size(94, 22);
             this.dtpDateEffective.TabIndex = 0;
 
             //
@@ -137,6 +137,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Label lblValidDateRange;
         private System.Windows.Forms.Label lblDateEffective;
-        private System.Windows.Forms.DateTimePicker dtpDateEffective;
+        private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateEffective;
     }
 }
