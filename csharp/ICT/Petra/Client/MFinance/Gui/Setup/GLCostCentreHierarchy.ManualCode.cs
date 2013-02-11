@@ -125,9 +125,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     ((CostCentreNodeDetails)PreviousParentNode.Tag).CostCentreRow.PostingCostCentreFlag = true;
                 }
+
                 FPetraUtilsObject.SetChangedFlag();
             }
-            
         }
 
         private void RunOnceOnActivationManual()
@@ -144,7 +144,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             trvCostCentres.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
             trvCostCentres.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
             trvCostCentres.AllowDrop = true;
-
         }
 
         //
@@ -179,7 +178,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return IsDescendantOf(ADestinationNode.Parent, ADragNode);
         }
 
-
         private void ShowNodeSelected(TreeNode ASelThis)
         {
             if (FSelectedNode != null)
@@ -194,7 +192,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             FSelectedNode = ASelThis;
         }
-
 
         private void treeView_DragOver(object sender, DragEventArgs e)
         {
@@ -288,7 +285,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 Parent.Nodes.Insert(Idx, Child);
             }
         }
- 
+
         // End of (mostly copied) drag-drop functions
 
 
@@ -307,6 +304,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 SetPrimaryKeyReadOnly(!ICanEditCostCentreCode);
             }
         }
+
         /// <summary>
         /// load account hierarchy from the dataset into the tree view
         /// </summary>
@@ -356,6 +354,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void InsertNodeIntoTreeView(TreeNodeCollection AParentNodes, ACostCentreRow ADetailRow)
         {
             TreeNode newNode = AParentNodes.Add(NodeLabel(ADetailRow));
+
             newNode.Name = ADetailRow.CostCentreCode;
             CostCentreNodeDetails NewNodeDetails = new CostCentreNodeDetails();
             NewNodeDetails.CostCentreRow = ADetailRow;
@@ -430,13 +429,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 CostCentreNodeDetails ParentNodeDetails = (CostCentreNodeDetails)FCurrentNode.Tag;
                 ACostCentreRow ParentRow = ParentNodeDetails.CostCentreRow;
                 GetCostCentreAttributes(ref ParentNodeDetails);
+
                 if (!ParentNodeDetails.CanHaveChildren.Value)
                 {
                     MessageBox.Show(
-                        String.Format(Catalog.GetString("Cost Centre {0} is in use and cannot become a summary Cost Centre."), 
-                        ParentRow.CostCentreCode), Catalog.GetString("NewCostCentre"));
+                        String.Format(Catalog.GetString("Cost Centre {0} is in use and cannot become a summary Cost Centre."),
+                            ParentRow.CostCentreCode), Catalog.GetString("NewCostCentre"));
                     return;
                 }
+
                 txtDetailCostCentreCode.Focus();
 
                 string newName = Catalog.GetString("NewCostCentre");
@@ -583,7 +584,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private bool DeleteDataFromSelectedRow(TreeNode ASelectedNode)
         {
             CostCentreNodeDetails NodeDetails = (CostCentreNodeDetails)ASelectedNode.Tag;
+
             GetCostCentreAttributes(ref NodeDetails);
+
             if (NodeDetails.CanDelete.Value)
             {
                 ACostCentreRow SelectedRow = NodeDetails.CostCentreRow;
@@ -599,11 +602,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         /// <summary>
         /// Change CostCentre Value
-        /// 
-        /// The Cost Centre code is a foreign key in loads of tables, 
+        ///
+        /// The Cost Centre code is a foreign key in loads of tables,
         /// so renaming a Cost Centre code is a major work on the server.
         /// From the client's perspective it's easy - we just need to ask the server to do it!
-        /// 
+        ///
         /// </summary>
         private bool CheckCostCentreValueChanged()
         {
@@ -614,8 +617,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (strOldDetailCostCentreCode.IndexOf("NewCostCentre") == 0) // If this Cost Centre is new, you can re-name it now!
             {
-                 return false;
+                return false;
             }
+
             String strNewDetailCostCentreCode = txtDetailCostCentreCode.Text;
             bool changeAccepted = false;
 
@@ -692,14 +696,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         FCurrentNode = null;
 
                         TreeNode[] NewNode = trvCostCentres.Nodes.Find(strNewDetailCostCentreCode, true);
+
                         if (NewNode.Length > 0) // should be - unless the server is faulty!
                         {
                             trvCostCentres.SelectedNode = NewNode[0];
                             ShowDetails(((CostCentreNodeDetails)NewNode[0].Tag).CostCentreRow);
+
                             if (NewNode[0].Parent != null)
                             {
                                 NewNode[0].Parent.Expand();
                             }
+
                             NewNode[0].Expand();
                         }
 
@@ -715,6 +722,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
                 }
             } // if changed
+
             return changeAccepted;
         }
 
@@ -764,6 +772,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (!FIAmUpdating)
             {
                 GetDataFromControlsManual();
+
                 // If txtDetailCostCentreCode is not readonly it may have been changed.
                 // I'll just check that...
                 if (!txtDetailCostCentreCode.ReadOnly)
@@ -772,6 +781,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         return;
                     }  // If the rename didn't happen, I can carry on...
+
                 }
 
                 if (FCurrentNode != null)
@@ -784,13 +794,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         } // UpdateOnControlChanged
 
-
         private void LinkPartnerCostCentre(object sender, EventArgs e)
         {
             TFrmLinkPartnerCostCentre PartnerLinkScreen = new TFrmLinkPartnerCostCentre(this);
+
             PartnerLinkScreen.LedgerNumber = FLedgerNumber;
             PartnerLinkScreen.Show();
         }  // LinkPartnerCostCentre
-
     } // TFrmGLCostCentreHierarchy
 } // namespace

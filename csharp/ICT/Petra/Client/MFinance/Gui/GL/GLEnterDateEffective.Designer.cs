@@ -138,6 +138,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private System.Windows.Forms.Label lblValidDateRange;
         private System.Windows.Forms.Label lblDateEffective;
         private Ict.Petra.Client.CommonControls.TtxtPetraDate dtpDateEffective;
-
     }
 }

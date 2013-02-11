@@ -616,8 +616,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             return true;
         }
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="Atds"></param>
         /// <param name="AApDocument"></param>
@@ -627,15 +628,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (AApDocument.CurrencyCode != Atds.AApSupplier[0].CurrencyCode)
             {
                 System.Windows.Forms.MessageBox.Show(
-                    String.Format(Catalog.GetString("Document {0} cannot be posted because the supplier currency has been changed."), AApDocument.DocumentCode),
+                    String.Format(Catalog.GetString("Document {0} cannot be posted because the supplier currency has been changed."),
+                        AApDocument.DocumentCode),
                     Catalog.GetString("Post Document"));
                 return false;
             }
+
             return true;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="Atds"></param>
         /// <param name="AApDocument"></param>
@@ -649,6 +652,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     Catalog.GetString("Post Document"));
                 return false;
             }
+
             return true;
         }
 

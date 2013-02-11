@@ -768,7 +768,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (!strNewDetailAccountCode.Equals(strOldDetailAccountCode))
             {
-                FStatus += String.Format(Catalog.GetString("AccountCode changed to {0}."),strNewDetailAccountCode) + "\r\n";
+                FStatus += String.Format(Catalog.GetString("AccountCode changed to {0}."), strNewDetailAccountCode) + "\r\n";
                 txtStatus.Text = FStatus;
 
                 if (strOldDetailAccountCode.IndexOf(Catalog.GetString("NewAccount")) < 0) // If they're just changing this from the initial value, don't show warning.

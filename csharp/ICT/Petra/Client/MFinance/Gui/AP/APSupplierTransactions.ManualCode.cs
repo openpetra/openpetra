@@ -347,6 +347,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 DataRow Row = rv.Row;
                 Boolean IsMyCurrency = (Row["Currency"].ToString() == txtSupplierCurrency.Text);
+
                 if (IsMyCurrency)
                 {
                     ListHasItems = true;
@@ -440,7 +441,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 DataRow Row = rv.Row;
 
-                if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0) && ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["Status"].ToString()) < 0))
+                if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0)
+                    && ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["Status"].ToString()) < 0))
                 {
                     Row["Tagged"] = true;
                 }
@@ -455,7 +457,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 DataRow Row = rv.Row;
 
-                if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0) && ("|POSTED|PARTPAID|".IndexOf("|" + Row["Status"].ToString()) >= 0))
+                if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0)
+                    && ("|POSTED|PARTPAID|".IndexOf("|" + Row["Status"].ToString()) >= 0))
                 {
                     Row["Tagged"] = true;
                 }
@@ -651,7 +654,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             foreach (DataRow row in FPagedDataTable.Rows)
             {
-                if ((row["Tagged"].Equals(true)) && (!row["InvNum"].Equals("Payment")) && row["Currency"].ToString() == txtSupplierCurrency.Text)
+                if ((row["Tagged"].Equals(true)) && (!row["InvNum"].Equals("Payment")) && (row["Currency"].ToString() == txtSupplierCurrency.Text))
                 {
                     // TODO: only use tagged rows that can be paid
                     Int32 DocumentId = Convert.ToInt32(row["DocumentId"]);

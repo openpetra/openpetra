@@ -216,6 +216,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     NewDocumentRow.ApAccount = SupplierRow.DefaultApAccount;
                 }
             }
+
             NewDocumentRow.CurrencyCode = SupplierRow.CurrencyCode;
             NewDocumentRow.ExchangeRateToBase = TExchangeRateTools.GetDailyExchangeRate(NewDocumentRow.CurrencyCode,
                 LedgerTbl[0].BaseCurrency,
@@ -705,7 +706,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             foreach (AApDocumentRow row in APDataset.AApDocument.Rows)
             {
                 string CurrencyCode = (row.CurrencyCode + "|" + row.ExchangeRateToBase.ToString());  // If douments with the same currency are using different
-                                                                            // exchange rates, I'm going to handle them separately.
+
+                // exchange rates, I'm going to handle them separately.
                 if (!DocumentsByCurrency.ContainsKey(CurrencyCode))
                 {
                     DocumentsByCurrency.Add(CurrencyCode, new List <AApDocumentRow>());
@@ -1483,7 +1485,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         DocumentPaymentRow.DocType = (apDocumentRow.CreditNoteFlag ? "CREDIT" : "INVOICE");
                         ADataset.AApDocumentPayment.Rows.Add(DocumentPaymentRow);
                     } // supplierRow != null
+
                 } // indexDocument != -1
+
             }  // foreach document
 
             ADataset.AApPayment.DefaultView.RowFilter = "";

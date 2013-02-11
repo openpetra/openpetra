@@ -57,10 +57,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void RunOnceOnActivationManual()
         {
             cmbReportsTo.Items.Clear();
+
             foreach (DataRow Row in FParentCostCentres.Rows)
             {
                 cmbReportsTo.Items.Add(Row["CostCentreCode"]);
             }
+
             FLinkedView = new DataView(FPartnerCostCentreTbl);
             FLinkedView.RowFilter = "IsLinked <> '0'";
             FLinkedView.AllowNew = false;
@@ -96,7 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         public bool SaveChanges()
@@ -104,15 +106,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult SaveResult = TRemote.MFinance.Setup.WebConnectors.SaveCostCentrePartnerLinks(
                 FLedgerNumber, FPartnerCostCentreTbl, out VerificationResult);
+
             if (SaveResult == TSubmitChangesResult.scrOK)
             {
                 return true;
             }
+
             return false;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -122,7 +126,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 SaveChanges();
             }
-            catch (CancelSaveException) { }
+            catch (CancelSaveException)
+            {
+            }
         }
 
         /// <summary></summary>
@@ -131,16 +137,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void LinkCostCentre(object sender, EventArgs e)
         {
             String NewCCCode = txtCostCentre.Text;
+
             //
             // I can link to this Cost Centre, IF it's not already linked to someone else!
             FPartnerCostCentreTbl.DefaultView.Sort = ("IsLinked");
-            if (FPartnerCostCentreTbl.DefaultView.Find (NewCCCode) >= 0)
+
+            if (FPartnerCostCentreTbl.DefaultView.Find(NewCCCode) >= 0)
             {
-                MessageBox.Show(String.Format (Catalog.GetString("Error - {0} has already been assigned to a partner."), NewCCCode), 
+                MessageBox.Show(String.Format(Catalog.GetString("Error - {0} has already been assigned to a partner."), NewCCCode),
                     Catalog.GetString("Link Cost Centre"),
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
             DataRow Row = ((DataRowView)grdUnlinkedCCs.SelectedDataRows[0]).Row;
             Row["IsLinked"] = NewCCCode;
             Row["ReportsTo"] = cmbReportsTo.Text;
@@ -156,6 +165,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void UnlinkCostCentre(object sender, EventArgs e)
         {
             DataRow Row = ((DataRowView)grdLinkedCCs.SelectedDataRows[0]).Row;
+
             Row["IsLinked"] = '0';
             txtCostCentre.Text = "";
             btnUnlink.Enabled = false;
@@ -167,7 +177,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             btnLink.Enabled = ((txtCostCentre.ReadOnly == false) && (txtCostCentre.Text != ""));
         }
 
-       private void grdLinkedCCs_Click(object sender, EventArgs e)
+        private void grdLinkedCCs_Click(object sender, EventArgs e)
         {
             btnUnlink.Enabled = true;
             btnLink.Enabled = false;
@@ -192,7 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -202,5 +212,4 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             Close();
         }
     }
-    
 }
