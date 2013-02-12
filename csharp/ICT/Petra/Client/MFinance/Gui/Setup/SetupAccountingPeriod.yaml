@@ -25,6 +25,7 @@ RootNode:
                 AccountingPeriodDesc: {Label=Description}
                 PeriodStartDate: {Label=Period Start Date, Type=DateTime}
                 PeriodEndDate: {Label=Period End Date, Type=DateTime}
+            SortOrder: AAccountingPeriod.AccountingPeriodNumber ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
@@ -35,5 +36,5 @@ RootNode:
                 Row3: [dtpDetailPeriodEndDate]
         txtDetailAccountingPeriodNumber: {Label=Period Number}
         txtDetailAccountingPeriodDesc: {Label=Description}
-        dtpDetailPeriodStartDate: {Label=Period Start Date}
-        dtpDetailPeriodEndDate: {Label=Period End Date}
+        dtpDetailPeriodStartDate: {Label=Period Start Date, Validation=true}
+        dtpDetailPeriodEndDate: {Label=Period End Date, Validation=Pair(dtpDetailPeriodStartDate)}

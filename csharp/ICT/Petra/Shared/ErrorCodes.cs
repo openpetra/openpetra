@@ -127,6 +127,16 @@ namespace Ict.Petra.Shared
         ]
         public const String ERR_EXCH_RATE_MAY_BE_INCORRECT = "FIN.00003N";
 
+        /// <summary>Period start date cannot be after 28th of a month, otherwise problems with February.</summary>
+        [ErrCodeAttribute("Period start date after 28th of month.",
+             ErrorMessageText = "The period cannot start after the 28th day of the month.")]
+        public const String ERR_PERIOD_START_DAY_AFTER_28 = "FIN.00004V";
+
+        /// <summary>Period date ranges need to make sure that there is no overlap and no gaps in calendar.</summary>
+        [ErrCodeAttribute("Period date range incorrect.",
+             ErrorMessageText = "Period {0} must end one day before the next period begins.")]
+        public const String ERR_PERIOD_DATE_RANGE = "FIN.00005V";
+        
         #endregion
 
         #region Partner Module-specific error codes

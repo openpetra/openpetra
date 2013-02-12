@@ -164,12 +164,12 @@ namespace {#NAMESPACE}
         if (FMainDS.{#DETAILTABLE} != null)
         {
             DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
-{#IFDEF DETAILTABLESORT}
-            myDataView.Sort = "{#DETAILTABLESORT}";
-{#ENDIF DETAILTABLESORT}
-{#IFDEF DETAILTABLEFILTER}
-            myDataView.RowFilter = {#DETAILTABLEFILTER};
-{#ENDIF DETAILTABLEFILTER}
+{#IFDEF GRIDSORT}
+            myDataView.Sort = "{#GRIDSORT}";
+{#ENDIF GRIDSORT}
+{#IFDEF GRIDFILTER}
+            myDataView.RowFilter = {#GRIDFILTER};
+{#ENDIF GRIDFILTER}
             myDataView.AllowNew = false;
             grdDetails.DataSource = myDataView;
             grdDetails.Columns.AutoSizeMode = Fill;

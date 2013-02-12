@@ -181,7 +181,7 @@ namespace {#NAMESPACE}
                 ValidateAllData(true, false);
                 if (keyControl != null) keyControl.Focus();
             }
-			
+            
             return true;
         }
         else
@@ -319,12 +319,12 @@ namespace {#NAMESPACE}
         if (FMainDS.{#DETAILTABLE} != null)
         {
             DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
-{#IFDEF DETAILTABLESORT}
-            myDataView.Sort = "{#DETAILTABLESORT}";
-{#ENDIF DETAILTABLESORT}
-{#IFDEF DETAILTABLEFILTER}
-            myDataView.RowFilter = {#DETAILTABLEFILTER};
-{#ENDIF DETAILTABLEFILTER}
+{#IFDEF GRIDSORT}
+            myDataView.Sort = "{#GRIDSORT}";
+{#ENDIF GRIDSORT}
+{#IFDEF GRIDFILTER}
+            myDataView.RowFilter = {#GRIDFILTER};
+{#ENDIF GRIDFILTER}
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             if (myDataView.Count > 0)
@@ -581,7 +581,7 @@ namespace {#NAMESPACE}
             ShowDetails();
         }
         FPrevRowChangedRow = e.Row;
-	}
+    }
 
     /// <summary>
     /// Standard method to delete the Data Row whose Details are currently displayed.
@@ -591,51 +591,51 @@ namespace {#NAMESPACE}
     /// </summary>
     private void Delete{#DETAILTABLE}()
     {
-		bool allowDeletion = true;
-		bool deletionPerformed = false;
-		string deletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
-		string completionMessage = string.Empty;
-		
-		if (FPreviouslySelectedDetailRow == null)
-		{
-			return;
-		}
-		
-		{#PREDELETEMANUAL}
-		if(allowDeletion)
-		{
-        	if ((MessageBox.Show(deletionQuestion,
-					 Catalog.GetString("Confirm Delete"),
+        bool allowDeletion = true;
+        bool deletionPerformed = false;
+        string deletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+        string completionMessage = string.Empty;
+        
+        if (FPreviouslySelectedDetailRow == null)
+        {
+            return;
+        }
+        
+        {#PREDELETEMANUAL}
+        if(allowDeletion)
+        {
+            if ((MessageBox.Show(deletionQuestion,
+                     Catalog.GetString("Confirm Delete"),
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
-			{
+            {
                 int nSelectedRow = grdDetails.SelectedRowIndex();
 {#IFDEF DELETEROWMANUAL}
-				{#DELETEROWMANUAL}
+                {#DELETEROWMANUAL}
 {#ENDIF DELETEROWMANUAL}
-{#IFNDEF DELETEROWMANUAL}				
-				FPreviouslySelectedDetailRow.Delete();
-				deletionPerformed = true;
-{#ENDIFN DELETEROWMANUAL}				
-			
-				if (deletionPerformed)
-				{
-					FPetraUtilsObject.SetChangedFlag();
+{#IFNDEF DELETEROWMANUAL}               
+                FPreviouslySelectedDetailRow.Delete();
+                deletionPerformed = true;
+{#ENDIFN DELETEROWMANUAL}               
+            
+                if (deletionPerformed)
+                {
+                    FPetraUtilsObject.SetChangedFlag();
                     // Select and display the details of the nearest row to the one previously selected
                     SelectRowInGrid(nSelectedRow);
-				}
-			}
-		}
+                }
+            }
+        }
 
 {#IFDEF POSTDELETEMANUAL}
-		{#POSTDELETEMANUAL}
+        {#POSTDELETEMANUAL}
 {#ENDIF POSTDELETEMANUAL}
 {#IFNDEF POSTDELETEMANUAL}
-		if(deletionPerformed && completionMessage.Length > 0)
-		{
-			MessageBox.Show(completionMessage,
-							 Catalog.GetString("Deletion Completed"));
-		}
+        if(deletionPerformed && completionMessage.Length > 0)
+        {
+            MessageBox.Show(completionMessage,
+                             Catalog.GetString("Deletion Completed"));
+        }
 {#ENDIFN POSTDELETEMANUAL}
 
     }
@@ -688,13 +688,13 @@ namespace {#NAMESPACE}
         {
             if (AIsNewRow)
             {
-				{#SAVEDETAILS}
+                {#SAVEDETAILS}
             }
             else
             {
                 object[] beforeEdit = ARow.ItemArray;
-				ARow.BeginEdit();
-				{#SAVEDETAILS}
+                ARow.BeginEdit();
+                {#SAVEDETAILS}
                 if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
                 {
                     ARow.CancelEdit();

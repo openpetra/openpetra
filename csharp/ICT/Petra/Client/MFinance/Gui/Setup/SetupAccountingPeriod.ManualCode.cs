@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using Ict.Petra.Shared.MFinance;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.MFinance.Logic;
@@ -64,6 +65,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.AAccountingPeriod.Merge(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, FLedgerNumber));
 
                 LoadDataAndFinishScreenSetup();
+                
+                ReadOnly = !TRemote.MFinance.Setup.WebConnectors.IsCalendarChangeAllowed(FLedgerNumber);
             }
         }
 
@@ -80,15 +83,92 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FReadOnly = value;
+
+                txtDetailAccountingPeriodNumber.Enabled = !ReadOnly;
+                txtDetailAccountingPeriodDesc.Enabled = !ReadOnly;
+                dtpDetailPeriodStartDate.Enabled = !ReadOnly;
+                dtpDetailPeriodEndDate.Enabled = !ReadOnly;
             }
         }
         
         private void InitializeManualCode()
         {
-            txtDetailAccountingPeriodNumber.Enabled = !ReadOnly;
-            txtDetailAccountingPeriodDesc.Enabled = !ReadOnly;
-            dtpDetailPeriodStartDate.Enabled = !ReadOnly;
-            dtpDetailPeriodEndDate.Enabled = !ReadOnly;
+        }
+        
+        private void ValidateDataDetailsManual(AAccountingPeriodRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+            AAccountingPeriodRow OtherRow;
+            DataRow OtherDataRow;
+
+            // first run through general checks related to the current AccountingPeriod row
+            TSharedFinanceValidation_GLSetup.ValidateAccountingPeriod(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+            
+            // the following checks need to be done in this ManualCode file as they involve other rows on the screen:
+            
+            // check that there is no gap to previous accounting period
+            ValidationColumn = ARow.Table.Columns[AAccountingPeriodTable.ColumnPeriodStartDateId];
+
+            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (  !ARow.IsPeriodStartDateNull()
+                   && ARow.PeriodStartDate != DateTime.MinValue)
+                {
+                    OtherDataRow = FMainDS.AAccountingPeriod.Rows.Find(new string[] { FLedgerNumber.ToString(), (ARow.AccountingPeriodNumber-1).ToString() });
+                    if (OtherDataRow != null)
+                    {
+                        OtherRow = (AAccountingPeriodRow)OtherDataRow;
+                        if (OtherRow.PeriodEndDate != ARow.PeriodStartDate.Date.AddDays(-1))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PERIOD_DATE_RANGE, 
+                                        new string[] { (ARow.AccountingPeriodNumber-1).ToString() })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                        else
+                        {
+                            VerificationResult = null;
+                        }
+    
+                        // Handle addition/removal to/from TVerificationResultCollection
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                    }
+                }
+            }
+
+            // check that there is no gap to next accounting period
+            ValidationColumn = ARow.Table.Columns[AAccountingPeriodTable.ColumnPeriodEndDateId];
+
+            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (   !ARow.IsPeriodEndDateNull()
+                    && ARow.PeriodEndDate != DateTime.MinValue)
+                {
+                    OtherDataRow = FMainDS.AAccountingPeriod.Rows.Find(new string[] { FLedgerNumber.ToString(), (ARow.AccountingPeriodNumber+1).ToString() });
+                    if (OtherDataRow != null)
+                    {
+                        OtherRow = (AAccountingPeriodRow)OtherDataRow;
+                        if (OtherRow.PeriodStartDate != ARow.PeriodEndDate.Date.AddDays(1))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PERIOD_DATE_RANGE, 
+                                        new string[] { (ARow.AccountingPeriodNumber).ToString() })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                        else
+                        {
+                            VerificationResult = null;
+                        }
+    
+                        // Handle addition/removal to/from TVerificationResultCollection
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                    }
+                }
+            }
         }
     }
 }

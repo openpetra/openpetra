@@ -307,8 +307,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ctrl.GetAttribute("ActionEnterKeyPressed"));
             }
 
-            if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable")
-                && FCodeStorage.HasAttribute("DatasetType"))
+            if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable"))
             {
                 writer.Template.AddToCodelet("SHOWDATA", "");
 
@@ -342,7 +341,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         }
                     }
 
-                    writer.Template.AddToCodelet("DETAILTABLESORT", SortOrder);
+                    writer.Template.AddToCodelet("GRIDSORT", SortOrder);
                 }
 
                 if (ctrl.HasAttribute("RowFilter"))
@@ -370,7 +369,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         FilterString += columnName + " = \" + F" + TTable.NiceFieldName(columnName) + ".ToString()";
                     }
 
-                    writer.Template.AddToCodelet("DETAILTABLEFILTER", FilterString);
+                    writer.Template.AddToCodelet("GRIDFILTER", FilterString);
                 }
             }
 
@@ -506,8 +505,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 //                    ctrl.GetAttribute("ActionFocusRow"));
             }
 
-            if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable")
-                && FCodeStorage.HasAttribute("DatasetType"))
+
+            if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable"))
             {
                 writer.Template.AddToCodelet("SHOWDATA", "");
 
@@ -542,7 +541,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         }
                     }
 
-                    writer.Template.AddToCodelet("DETAILTABLESORT", SortOrder);
+                    writer.Template.AddToCodelet("GRIDSORT", SortOrder);
                 }
 
                 if (ctrl.HasAttribute("RowFilter"))
@@ -570,7 +569,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         FilterString += columnName + " = \" + F" + TTable.NiceFieldName(columnName) + ".ToString()";
                     }
 
-                    writer.Template.AddToCodelet("DETAILTABLEFILTER", FilterString);
+                    writer.Template.AddToCodelet("GRIDFILTER", FilterString);
                 }
             }
 
