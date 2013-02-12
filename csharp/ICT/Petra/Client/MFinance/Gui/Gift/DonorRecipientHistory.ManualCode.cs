@@ -146,6 +146,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.AddTextColumn("Comment Two", FMainDS.Tables["Table"].Columns["GiftCommentTwo"]);
             grdDetails.AddTextColumn("Comment Three", FMainDS.Tables["Table"].Columns["GiftCommentThree"]);
             grdDetails.AddTextColumn("Mailing Code", FMainDS.Tables["Table"].Columns["MailingCode"]);
+
+            grdDetails.Columns[0].Width = 90;     // Date Entered
+            grdDetails.Columns[2].Width = 80;     // Motivation Detail Code
+            grdDetails.Columns[4].Width = 120;     // Amount - Base
+            grdDetails.Columns[5].Width = 120;     // Amount - Intl
+            grdDetails.Columns[9].Width = 160;     // Recipient
         }
 
         /// <summary>
@@ -245,7 +251,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
 
-                    if (grdDetails.Columns.Count < 2)
+                    if (grdDetails.Columns.Count < 1)
                     {
                         SetupGrid();
                     }
@@ -256,10 +262,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     SelectByIndex(0);
                     txtNumberOfGifts.Text = (grdDetails.Rows.Count - 1).ToString();
-                    grdDetails.Columns[0].Width = 90;     // Date
-                    grdDetails.Columns[2].Width = 80;     // Motiv. Detail
-                    grdDetails.Columns[4].Width = 60;     // Amount
-                    grdDetails.Columns[8].Width = 160;     // Recipient
                 }
 
                 UpdateTotals();
