@@ -699,10 +699,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             // since the list of documents can be for several suppliers, the currency might be different; group by currency first
             SortedList <string, List <AApDocumentRow>>DocumentsByCurrency = new SortedList <string, List <AApDocumentRow>>();
 
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
-
             foreach (AApDocumentRow row in APDataset.AApDocument.Rows)
             {
                 string CurrencyCode = (row.CurrencyCode + "|" + row.ExchangeRateToBase.ToString());  // If douments with the same currency are using different
@@ -717,8 +713,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             Int32 CounterJournals = 1;
-
-            // ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
             // Add journal for each currency / Exchange Rate and the transactions
             foreach (string CurrencyCode in DocumentsByCurrency.Keys)
@@ -887,11 +881,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             batch.LastJournal = CounterJournals - 1;
-
-            if (IsMyOwnTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
 
             return GLDataset;
         }
