@@ -223,7 +223,22 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
-                    if (ATablename == ACurrencyTable.GetTableDBName())
+                    if (ATablename == AAccountingPeriodTable.GetTableDBName())
+                    {
+                        if (AAccountingPeriodAccess.SubmitChanges((AAccountingPeriodTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == ACurrencyTable.GetTableDBName())
                     {
                         if (ACurrencyAccess.SubmitChanges((ACurrencyTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
