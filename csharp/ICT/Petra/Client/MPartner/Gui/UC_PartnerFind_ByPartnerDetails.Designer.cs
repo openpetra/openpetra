@@ -194,7 +194,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ((byte)(0)));
             this.ucoPartnerFindCriteria.Location = new System.Drawing.Point(2, 14);
             this.ucoPartnerFindCriteria.Name = "ucoPartnerFindCriteria";
-            this.ucoPartnerFindCriteria.RestrictedPartnerClass = null;
             this.ucoPartnerFindCriteria.Size = new System.Drawing.Size(508, 179);
             this.ucoPartnerFindCriteria.TabIndex = 0;
 

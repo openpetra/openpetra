@@ -16,7 +16,7 @@ RootNode:
             Controls:
                 Row0: [txtPreviousName]
                 Row1: [txtLocalName]
-            ColWidths: [0=Fixed:120]
+            ColWidths: [0=Fixed:225]
 
         txtPreviousName: {DataField=PPartner.PreviousName}
             Stretch: horizontally
@@ -30,7 +30,6 @@ RootNode:
                 Row2: [cmbLanguageCode]
                 Row3: [cmbAcquisitionCode]
                 Row4: [txtContactPartnerKey]
-            ColWidths: [0=Fixed:120]
             
         txtVenueCode:
         

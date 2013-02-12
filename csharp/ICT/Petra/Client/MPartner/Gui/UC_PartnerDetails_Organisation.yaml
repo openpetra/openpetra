@@ -29,13 +29,12 @@ RootNode:
                 Row2: [cmbLanguageCode]
                 Row3: [cmbAcquisitionCode]
                 Row4: [txtContactPartnerKey]
-            ColWidths: [0=Fixed:140]       
 
         pnlCheckBoxes:
             Controls: 
                 Row0: [chkReligious, chkFoundation]
-            ColWidths: [0=Fixed:450]    
-            Margin: 140,0,0,5        
+            ColWidths: [0=Fixed:250]    
+            Margin: 110,0,0,5        
                             
         chkReligious:
             Label: Religious Organisation
@@ -50,7 +49,6 @@ RootNode:
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
 
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
-            Stretch: horizontally
             
         txtContactPartnerKey:
             Label: Contact Partner

@@ -78,8 +78,8 @@
        </environment>
        <arg value="/c" />
        <arg value="start" />
-       <arg value="cmd" /> <!-- This window stays open after the process finishes -->
-       <arg value="/k" />
+<!--       <arg value="cmd" /> --> <!-- This window stays open after the process finishes -->
+<!--       <arg value="/k" />  -->
        <arg value="PetraServerConsole.exe" />
        <arg value="-RunWithoutMenu:false" />
        <arg value="-C:${ServerConfigFile}" />

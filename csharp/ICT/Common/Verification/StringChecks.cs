@@ -39,7 +39,7 @@ namespace Ict.Common.Verification
         /// <summary>Email Address is invalid.</summary>
         [ErrCodeAttribute("Email Address is invalid.",
              FullDescription = "The email address entered is not a valid email address.")]
-        public const String ERR_EMAILADDRESSINVALID = "GENC.00007V";
+        public const String ERR_EMAILADDRESSINVALID = "GENC.00017V";
 
         #region Resourcestrings
 
