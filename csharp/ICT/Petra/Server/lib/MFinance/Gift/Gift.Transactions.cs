@@ -646,7 +646,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 //Can do this if needed: MainDS.DisableConstraints();
                 DBAccess.GDBAccessObj.SelectToTempTable(MainDS, sqlStmt, tempTableName, Transaction, parameters.ToArray(), 0, 0);
-                
+
                 MainDS.AcceptChanges();
             }
             finally

@@ -957,7 +957,7 @@ namespace Ict.Common.DB
                     TLogging.Log(((this.GetType().FullName + ".Select: now filling IDbDataAdapter('" + ADataTableName) + "')..."));
                 }
 
-               	FDataBaseRDBMS.FillAdapter(TheAdapter, ref AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
+                FDataBaseRDBMS.FillAdapter(TheAdapter, ref AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
@@ -1037,8 +1037,9 @@ namespace Ict.Common.DB
                 //Make sure that any previous temp table of the same name is removed first!
                 if (AFillDataSet.Tables.Contains(ADataTempTableName))
                 {
-                	AFillDataSet.Tables.Remove(ADataTempTableName);
+                    AFillDataSet.Tables.Remove(ADataTempTableName);
                 }
+
                 AFillDataSet.Tables.Add(ADataTempTableName);
 
                 FDataBaseRDBMS.FillAdapter(TheAdapter, ref AFillDataSet, AStartRecord, AMaxRecords, ADataTempTableName);

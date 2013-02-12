@@ -111,9 +111,9 @@ CachedTables:
                 AFeesPayable: {DependsOnLedger=true}
                 AFeesReceivable: {DependsOnLedger=true}
                 ASuspenseAccount: {DependsOnLedger=true}
+                AAccountingPeriod: {DependsOnLedger=true}
 
             CalculatedLists: {DependsOnLedger=true}
-                AccountingPeriodList:
                 LedgerNameList: {Comment=names of available ledgers, DependsOnLedger=false}
                 LedgerDetails: {Comment="ledger details (number of accounting periods, current period, etc)"}
                 CostCentreList:

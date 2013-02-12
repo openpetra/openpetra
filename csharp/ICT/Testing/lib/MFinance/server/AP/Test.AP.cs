@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, TimIngham
+//       timop, Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -91,17 +91,6 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             AApSupplierAccess.LoadByPrimaryKey(MainDS, SUPPLIER_PARTNER_KEY, null);
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(intLedgerNumber, null);
 
-            // save the current amount on the AP account
-            decimal APAccountBalanceBefore = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultApAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-            decimal BankAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultBankAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-            decimal ExpAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultExpAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-
             MainDS.AApDocument[0].DocumentCode = "Test" + DateTime.Now.Ticks.ToString();
 
             MainDS.Merge(TAPTransactionWebConnector.CreateAApDocumentDetail(
@@ -129,6 +118,20 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             DateTime PeriodStartDate, PeriodEndDate;
             TFinancialYear.GetStartAndEndDateOfPeriod(intLedgerNumber, LedgerTable[0].CurrentPeriod, out PeriodStartDate, out PeriodEndDate, null);
 
+            // save the current amount on the AP account
+            string BankAccount = MainDS.AApSupplier[0].DefaultBankAccount;
+            string CurrencyCode = MainDS.AApDocument[0].CurrencyCode;
+            string ApAccountCode = MainDS.AApDocument[0].ApAccount;
+            string CostCentreCode = MainDS.AApDocumentDetail[0].CostCentreCode;
+
+            decimal APAccountBalanceBefore = new TGet_GLM_Info(intLedgerNumber,
+                ApAccountCode, CostCentreCode).YtdActual;
+            decimal BankAccountBefore = new TGet_GLM_Info(intLedgerNumber,
+                BankAccount, CostCentreCode).YtdActual;
+            decimal ExpAccountBefore = new TGet_GLM_Info(intLedgerNumber,
+                MainDS.AApSupplier[0].DefaultExpAccount,
+                CostCentreCode).YtdActual;
+
             // Post the AP document
             List <int>documentIds = new List <int>();
             documentIds.Add(MainDS.AApDocument[0].ApDocumentId);
@@ -144,12 +147,11 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             decimal ExpAccountAfter = new TGet_GLM_Info(intLedgerNumber,
                 MainDS.AApSupplier[0].DefaultExpAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+                CostCentreCode).YtdActual;
             Assert.AreEqual(Amount, ExpAccountAfter - ExpAccountBefore, "after posting the invoice, the expense account should be debited");
 
             // Pay the AP document
             int ApDocumentId = MainDS.AApDocument[0].ApDocumentId;
-            string BankAccount = MainDS.AApSupplier[0].DefaultBankAccount;
 
             MainDS = new AccountsPayableTDS();
             AApPaymentRow payment = MainDS.AApPayment.NewRowTyped();
@@ -157,6 +159,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             payment.PaymentNumber = -1;
             payment.Amount = Amount;
             payment.BankAccount = BankAccount;
+            payment.CurrencyCode = CurrencyCode;
             MainDS.AApPayment.Rows.Add(payment);
 
             AApDocumentPaymentRow docPayment = MainDS.AApDocumentPayment.NewRowTyped();
@@ -174,11 +177,9 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             // save the current amount on the AP account
             decimal APAccountBalanceAfter = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultApAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+                ApAccountCode, CostCentreCode).YtdActual;
             decimal BankAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultBankAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+                BankAccount, CostCentreCode).YtdActual;
 
             // check the amount on the AP account
             Assert.AreEqual(0.0m, APAccountBalanceAfter - APAccountBalanceBefore, "after paying the invoice, the AP account should be cleared");
@@ -200,20 +201,6 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             AApSupplierAccess.LoadByPrimaryKey(MainDS, SUPPLIER_FOREIGN_PARTNER_KEY, null);
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(intLedgerNumber, null);
-
-            // save the current amount on the AP account
-            decimal APAccountBalanceBefore = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultApAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-            decimal BankAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultBankAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdForeign;
-            decimal ExpAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultExpAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-            decimal RevalAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                LedgerTable[0].ForexGainsLossesAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
 
             MainDS.AApDocument[0].DocumentCode = "Test" + DateTime.Now.Ticks.ToString();
 
@@ -243,6 +230,24 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             DateTime PeriodStartDate, PeriodEndDate;
             TFinancialYear.GetStartAndEndDateOfPeriod(intLedgerNumber, LedgerTable[0].CurrentPeriod, out PeriodStartDate, out PeriodEndDate, null);
 
+            string BankAccount = MainDS.AApSupplier[0].DefaultBankAccount;
+            string CurrencyCode = MainDS.AApDocument[0].CurrencyCode;
+            string ApAccountCode = MainDS.AApDocument[0].ApAccount;
+            string CostCentreCode = MainDS.AApDocumentDetail[0].CostCentreCode;
+
+            // save the current amount on the AP account
+            decimal APAccountBalanceBefore = new TGet_GLM_Info(intLedgerNumber,
+                ApAccountCode, CostCentreCode).YtdActual;
+            decimal BankAccountBefore = new TGet_GLM_Info(intLedgerNumber,
+                BankAccount, CostCentreCode).YtdForeign;
+
+            decimal ExpAccountBefore = new TGet_GLM_Info(intLedgerNumber,
+                MainDS.AApSupplier[0].DefaultExpAccount,
+                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+            decimal RevalAccountBefore = new TGet_GLM_Info(intLedgerNumber,
+                LedgerTable[0].ForexGainsLossesAccount,
+                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+
             // Post the AP document
             List <int>documentIds = new List <int>();
             documentIds.Add(MainDS.AApDocument[0].ApDocumentId);
@@ -268,7 +273,6 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             // Pay the AP document
             int ApDocumentId = MainDS.AApDocument[0].ApDocumentId;
-            string BankAccount = MainDS.AApSupplier[0].DefaultBankAccount;
 
             MainDS = new AccountsPayableTDS();
             AApPaymentRow payment = MainDS.AApPayment.NewRowTyped();
@@ -277,6 +281,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             payment.Amount = Amount;
             payment.ExchangeRateToBase = ExchangeRatePayment;
             payment.BankAccount = BankAccount;
+            payment.CurrencyCode = CurrencyCode;
             MainDS.AApPayment.Rows.Add(payment);
 
             AApDocumentPaymentRow docPayment = MainDS.AApDocumentPayment.NewRowTyped();
@@ -292,21 +297,18 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                     VerificationResult.BuildVerificationResultString());
             }
 
-            // save the current amount on the AP account
+            // save the current amount on the AP account and Bank Account
             decimal APAccountBalanceAfter = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultApAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+                ApAccountCode, CostCentreCode).YtdActual;
             decimal BankAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultBankAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdForeign;
+                BankAccount, CostCentreCode).YtdForeign;
 
             // check the amount on the AP account
             Assert.AreEqual(0.0m, APAccountBalanceAfter - APAccountBalanceBefore, "after paying the invoice, the AP account should be cleared");
             Assert.AreEqual((-1.0m) * Amount, BankAccountAfter - BankAccountBefore, "after paying the invoice, the bank account should be credited");
 
             decimal RevalAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                LedgerTable[0].ForexGainsLossesAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+                LedgerTable[0].ForexGainsLossesAccount, CostCentreCode).YtdActual;
             Assert.AreEqual(
                 Math.Round((Amount / ExchangeRatePayment) - (Amount / ExchangeRatePosting), 5),
                 Math.Round((RevalAccountAfter - RevalAccountBefore), 5),
@@ -328,20 +330,6 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             AApSupplierAccess.LoadByPrimaryKey(MainDS, SUPPLIER_FOREIGN_PARTNER_KEY, null);
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(intLedgerNumber, null);
-
-            // save the current amount on the AP account
-            decimal APAccountBalanceBefore = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultApAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-            decimal BankAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultBankAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdForeign;
-            // decimal ExpAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-            //    MainDS.AApSupplier[0].DefaultExpAccount,
-            //    MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-            decimal RevalAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                LedgerTable[0].ForexGainsLossesAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
 
             MainDS.AApDocument[0].DocumentCode = "Test Reverse" + DateTime.Now.Ticks.ToString();
 
@@ -370,6 +358,23 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             DateTime PeriodStartDate, PeriodEndDate;
             TFinancialYear.GetStartAndEndDateOfPeriod(intLedgerNumber, LedgerTable[0].CurrentPeriod, out PeriodStartDate, out PeriodEndDate, null);
+
+            // save the current amount on the AP account
+            string BankAccount = MainDS.AApSupplier[0].DefaultBankAccount;
+            string CurrencyCode = MainDS.AApDocument[0].CurrencyCode;
+            string ApAccountCode = MainDS.AApDocument[0].ApAccount;
+            string CostCentreCode = MainDS.AApDocumentDetail[0].CostCentreCode;
+
+            decimal APAccountBalanceBefore = new TGet_GLM_Info(intLedgerNumber,
+                ApAccountCode, CostCentreCode).YtdActual;
+            decimal BankAccountBefore = new TGet_GLM_Info(intLedgerNumber,
+                BankAccount, CostCentreCode).YtdForeign;
+            // decimal ExpAccountBefore = new TGet_GLM_Info(intLedgerNumber,
+            //    MainDS.AApSupplier[0].DefaultExpAccount,
+            //    CostCentreCode).YtdActual;
+            decimal RevalAccountBefore = new TGet_GLM_Info(intLedgerNumber,
+                LedgerTable[0].ForexGainsLossesAccount,
+                CostCentreCode).YtdActual;
 
             // Post the AP document
             List <int>documentIds = new List <int>();
@@ -402,7 +407,6 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             // Pay the AP document
             int ApDocumentId = MainDS.AApDocument[0].ApDocumentId;
-            string BankAccount = MainDS.AApSupplier[0].DefaultBankAccount;
 
             MainDS = new AccountsPayableTDS();
             AApPaymentRow payment = MainDS.AApPayment.NewRowTyped();
@@ -411,6 +415,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             payment.Amount = Amount;
             payment.ExchangeRateToBase = ExchangeRatePayment;
             payment.BankAccount = BankAccount;
+            payment.CurrencyCode = CurrencyCode;
             MainDS.AApPayment.Rows.Add(payment);
 
             AApDocumentPaymentRow docPayment = MainDS.AApDocumentPayment.NewRowTyped();
@@ -485,14 +490,11 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             //
 
             decimal APAccountBalanceAfter = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultApAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+                ApAccountCode, CostCentreCode).YtdActual;
             decimal BankAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultBankAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdForeign;
+                BankAccount, CostCentreCode).YtdForeign;
             decimal RevalAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                LedgerTable[0].ForexGainsLossesAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+                LedgerTable[0].ForexGainsLossesAccount, CostCentreCode).YtdActual;
 
             // check the amount on the AP account
             Assert.AreEqual(APAccountBalanceAfter, APAccountBalanceBefore, "After paying then reversing, the AP account should be as before.");
