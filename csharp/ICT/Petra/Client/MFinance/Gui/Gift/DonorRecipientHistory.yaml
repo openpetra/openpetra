@@ -3,7 +3,7 @@ RootNode:
     FormTitle: Donor Recipient History
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
-    DetailTable: AGift
+    #The value below for TempTable is the default name, so please do not change at this point
     TempTable: Table
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: browse

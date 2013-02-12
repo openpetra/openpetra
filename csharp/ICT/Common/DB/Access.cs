@@ -987,6 +987,82 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
+        /// Puts a temp <see cref="DataTable" /> with the result of a given SQL statement into an existing
+        /// <see cref="DataSet" />.
+        /// The SQL statement is executed in the given transaction context (which should
+        /// have the desired <see cref="IsolationLevel" />). Suitable for parameterised SQL statements.
+        /// </summary>
+        /// <param name="AFillDataSet">Existing <see cref="DataSet" /></param>
+        /// <param name="ASqlStatement">SQL statement</param>
+        /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
+        /// <see cref="IsolationLevel" /></param>
+        /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
+        /// (including parameter Value)</param>
+        /// <param name="AStartRecord">Start record that should be returned</param>
+        /// <param name="AMaxRecords">Maximum number of records that should be returned</param>
+        /// <returns>Existing <see cref="DataSet" />, additionally containing the new <see cref="DataTable" /></returns>
+        public DataSet SelectToTempTable(DataSet AFillDataSet,
+            String ASqlStatement,
+            TDBTransaction AReadTransaction,
+            DbParameter[] AParametersArray,
+            System.Int32 AStartRecord,
+            System.Int32 AMaxRecords)
+        {
+            DataSet ObjReturn;
+            string dataTempTableName = String.Empty;
+
+            if (AFillDataSet == null)
+            {
+                throw new ArgumentNullException("AFillDataSet", "AFillDataSet must not be null!");
+            }
+
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log("Entering " + this.GetType().FullName + ".SelectToTempTable()...");
+                LogSqlStatement(this.GetType().FullName + ".Select()", ASqlStatement, AParametersArray);
+            }
+
+            ObjReturn = null;
+
+            try
+            {
+                IDbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, AParametersArray);
+
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                {
+                    TLogging.Log(((this.GetType().FullName + ".SelectToTempTable: now filling IDbDataAdapter('Table") + "')..."));
+                }
+
+                FDataBaseRDBMS.FillAdapter(TheAdapter, ref AFillDataSet, AStartRecord, AMaxRecords, dataTempTableName);
+
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                {
+                    TLogging.Log(((this.GetType().FullName + ".Select: finished filling IDbDataAdapter(DataTable 'Table") +
+                                  "'). DT Row Count: " + AFillDataSet.Tables[dataTempTableName].Rows.Count.ToString()));
+#if WITH_POSTGRESQL_LOGGING
+                    NpgsqlEventLog.Level = LogLevel.None;
+#endif
+                }
+
+                ObjReturn = AFillDataSet;
+            }
+            catch (Exception exp)
+            {
+                LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
+            }
+
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
+            {
+                if ((ObjReturn != null) && (ObjReturn.Tables[dataTempTableName] != null))
+                {
+                    LogTable(ObjReturn.Tables[dataTempTableName]);
+                }
+            }
+
+            return ObjReturn;
+        }
+
+        /// <summary>
         /// Puts a <see cref="DataTable" /> with the result of a  given SQL statement into an existing
         /// <see cref="DataSet" />.
         /// The SQL statement is executed in the given transaction context (which should
