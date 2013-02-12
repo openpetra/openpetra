@@ -484,6 +484,7 @@ namespace Ict.Common
 
             int position = 0;
             bool escape = false;
+            bool isQuotedText = false;
             StringBuilder value = new StringBuilder();
 
             if (!list.StartsWith(separator))
@@ -503,11 +504,16 @@ namespace Ict.Common
                         }
                     }
 
-                    if (list[position] == '"')
+                    if (list[position] == ' ' && value.Length == 0)
+                    {
+                        // leading spaces are ignored
+                        position++;
+                    }
+                    else if (list[position] == '"')
                     {
                         // TODO: no substring???
                         string quotedstring = list.Substring(position + 1, FindMatchingQuote(list, position) - position);
-
+                        
                         if (value.Length == 0)
                         {
                             value.Append(quotedstring);
@@ -518,10 +524,16 @@ namespace Ict.Common
                         }
 
                         position += quotedstring.Length + 2;
+                        isQuotedText = true;
                     }
                     else
                     {
-                        value.Append(list[position]);
+                        if (!isQuotedText)
+                        {
+                            // Do not append anything (eg trailing spaces) to already quoted text
+                            value.Append(list[position]);
+                        }
+
                         position++;
                     }
 
@@ -550,7 +562,14 @@ namespace Ict.Common
                 }
             }
 
-            return value.ToString();
+            if (isQuotedText)
+            {
+                return value.ToString();
+            }
+            else
+            {
+                return value.ToString().TrimEnd(new char[] { ' ' });
+            }
         }
 
         /// <summary>
@@ -570,6 +589,7 @@ namespace Ict.Common
 
             int position = 0;
             bool escape = false;
+            bool isQuotedText = false;
             StringBuilder value = new StringBuilder();
 
             if (list[0] != separator)
@@ -589,7 +609,12 @@ namespace Ict.Common
                         }
                     }
 
-                    if (list[position] == '"')
+                    if (list[position] == ' ' && separator != ' ' && value.Length == 0)
+                    {
+                        // leading spaces are ignored
+                        position++;
+                    }
+                    else if (list[position] == '"')
                     {
                         // TODO: no substring???
                         char[] quotedstring = new char[FindMatchingQuote(list, position) - position];
@@ -605,10 +630,16 @@ namespace Ict.Common
                         }
 
                         position += quotedstring.Length + 2;
+                        isQuotedText = true;
                     }
                     else
                     {
-                        value.Append(list[position]);
+                        if (!isQuotedText)
+                        {
+                            // Do not append anything (eg trailing spaces) to already quoted text
+                            value.Append(list[position]);
+                        }
+
                         position++;
                     }
 
@@ -637,7 +668,14 @@ namespace Ict.Common
                 }
             }
 
-            return value.ToString();
+            if (isQuotedText)
+            {
+                return value.ToString();
+            }
+            else
+            {
+                return value.ToString().TrimEnd(new char[] { ' ' });
+            }
         }
 
         /// <summary>

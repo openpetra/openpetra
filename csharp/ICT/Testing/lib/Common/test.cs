@@ -327,7 +327,7 @@ namespace Ict.Common.Testing
             Assert.AreEqual("eString:test", StringHelper.AddCSV("", "eString:test", "|"), "Add to empty csv string");
             Assert.AreEqual("a, test ", StringHelper.AddCSV(StringHelper.AddCSV("", "a", ","), " test "), "add string with spaces");
             s = " test ,a";
-            Assert.AreEqual(" test ", StringHelper.GetNextCSV(ref s), "get string with spaces");
+            Assert.AreEqual("test", StringHelper.GetNextCSV(ref s), "get string with spaces");
 
             s = "shortdesc=\"Equipment, General\",longdesc=Equipment";
             Assert.AreEqual("shortdesc=\"Equipment, General\"", StringHelper.GetNextCSV(ref s), "get string with quotes that are not at the start");
