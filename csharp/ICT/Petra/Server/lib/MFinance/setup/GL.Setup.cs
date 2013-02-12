@@ -174,9 +174,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool IsCalendarChangeAllowed(Int32 ALedgerNumber)
         {
+            Boolean NewTransaction;
             Boolean CalendarChangeAllowed = true;
             
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             if (   ABatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0
                 || AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
@@ -185,7 +187,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 CalendarChangeAllowed = false;
             }
             
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return CalendarChangeAllowed;
         }
