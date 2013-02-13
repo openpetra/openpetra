@@ -1064,8 +1064,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void Import(System.Object sender, EventArgs e)
         {
-            TImportExchangeRates.ImportCurrencyExRates(FMainDS.ADailyExchangeRate, "Daily");
-            FPetraUtilsObject.SetChangedFlag();
+            if (ValidateAllData(true, true))
+            {
+                TVerificationResultCollection results = FPetraUtilsObject.VerificationResultCollection;
+
+                TImportExchangeRates.ImportCurrencyExRates(FMainDS.ADailyExchangeRate, "Daily", results);
+                FPetraUtilsObject.SetChangedFlag();
+            }
         }
 
         private void ValidateDataDetailsManual(ADailyExchangeRateRow ARow)

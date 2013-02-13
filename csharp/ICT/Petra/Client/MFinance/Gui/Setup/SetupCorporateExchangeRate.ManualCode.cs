@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Validation;
@@ -447,8 +448,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void Import(System.Object sender, EventArgs e)
         {
-            TImportExchangeRates.ImportCurrencyExRates(FMainDS.ACorporateExchangeRate, "Corporate");
-            FPetraUtilsObject.SetChangedFlag();
+            if (ValidateAllData(true, true))
+            {
+                TVerificationResultCollection results = FPetraUtilsObject.VerificationResultCollection;
+
+                TImportExchangeRates.ImportCurrencyExRates(FMainDS.ACorporateExchangeRate, "Corporate", results);
+                if (results.Count > 0)
+                {
+                    TDataValidation.ProcessAnyDataValidationErrors(true, results, this.GetType(), null);
+                }
+
+                FPetraUtilsObject.SetChangedFlag();
+                results.Clear();
+            }
         }
 
         private void SetEnabledStates(bool RowCanBeChanged)
