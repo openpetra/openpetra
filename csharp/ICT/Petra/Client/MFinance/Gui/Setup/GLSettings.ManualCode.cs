@@ -58,15 +58,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FLedgerNumber = value;
                 FMainDS.Clear();
                 FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadLedgerSettings(FLedgerNumber, out FCalendarStartDate,
-                                                                                      out FCurrencyChangeAllowed, out FCalendarChangeAllowed));
+                        out FCurrencyChangeAllowed, out FCalendarChangeAllowed));
                 FCurrentForwardPostingPeriods = ((ALedgerRow)(FMainDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
-    
+
                 if (!FCurrencyChangeAllowed)
                 {
                     cmbBaseCurrency.Enabled = false;
                     cmbIntlCurrency.Enabled = false;
                 }
-                
+
                 if (!FCalendarChangeAllowed)
                 {
                     rgrCalendarModeRadio.Enabled = false;
@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     FEditCalendar = true;
                 }
-                
+
                 ShowData(FMainDS);
             }
         }
@@ -120,7 +120,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             grpDataRetention.Location =
                 new System.Drawing.Point(grpDataRetention.Location.X, grpDataRetention.Location.Y - (int)(3.5 * HeightDifference));
-
         }
 
         /// <summary>
@@ -165,7 +164,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 cmbBaseCurrency.SetSelectedString(LedgerRow.BaseCurrency, -1);
 
                 cmbIntlCurrency.SetSelectedString(LedgerRow.IntlCurrency, -1);
-                
+
                 if (LedgerRow.CalendarMode)
                 {
                     rbtMonthly.Checked = true;
@@ -174,6 +173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     rbtNonMonthly.Checked = true;
                 }
+
                 CalendarModeChanged(null, null);
 
                 if (LedgerRow.IsNumberOfAccountingPeriodsNull())
@@ -191,7 +191,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         nudNumberOfPeriods.Value = LedgerRow.NumberOfAccountingPeriods;
                     }
                 }
-                
+
                 if (FCalendarStartDate != DateTime.MinValue)
                 {
                     dtpFinancialYearStartDate.Date = FCalendarStartDate;
@@ -212,7 +212,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         nudCurrentPeriod.Value = LedgerRow.CurrentPeriod;
                     }
                 }
-                
+
                 chkSuspenseAccountFlag.Checked = LedgerRow.SuspenseAccountFlag;
 
                 if (LedgerRow.IsBudgetControlFlagNull())
@@ -304,6 +304,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void GetDataFromControlsManual(ALedgerRow ARow)
         {
             ARow.CalendarMode = rbtMonthly.Checked;
+
             if (dtpFinancialYearStartDate.Text.Trim() == "")
             {
                 FCalendarStartDate = DateTime.MinValue;
@@ -313,7 +314,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FCalendarStartDate = dtpFinancialYearStartDate.Date.Value;
             }
         }
-        
+
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
             if (FWarnings)
@@ -330,9 +331,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // save ledger settings now
             // (a_ledger_init_flag records are automatically added/removed on server side)
-            return TRemote.MFinance.Setup.WebConnectors.SaveLedgerSettings(FLedgerNumber, FCalendarStartDate, ref ASubmitChanges, out AVerificationResult);
+            return TRemote.MFinance.Setup.WebConnectors.SaveLedgerSettings(FLedgerNumber,
+                FCalendarStartDate,
+                ref ASubmitChanges,
+                out AVerificationResult);
         }
-        
+
         private void CalendarModeChanged(System.Object sender, EventArgs e)
         {
             nudNumberOfPeriods.Enabled = !rbtMonthly.Checked;
@@ -344,7 +348,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 dtpFinancialYearStartDate.Enabled = true;
                 btnViewCalendar.Text = Catalog.GetString("View Calendar");
                 FEditCalendar = false;
-
             }
             else
             {
@@ -353,7 +356,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 btnViewCalendar.Text = Catalog.GetString("Edit Calendar");
                 FEditCalendar = true;
             }
-            
+
             if (!FCalendarChangeAllowed)
             {
                 rgrCalendarModeRadio.Enabled = false;
@@ -367,13 +370,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void OnBtnCalendar(System.Object sender, EventArgs e)
         {
-            if (   tbbSave.Enabled
+            if (tbbSave.Enabled
                 && FEditCalendar)
             {
                 MessageBox.Show(Catalog.GetString("Please save modified data on this screen before editing the calendar!"),
-                                Catalog.GetString("Edit Calendar"),
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
+                    Catalog.GetString("Edit Calendar"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
             }
             else
             {
@@ -383,7 +386,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 Calendar.Show();
             }
         }
-        
+
         private void ValidateDataManual(ALedgerRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -393,9 +396,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // make sure that Financial Year Start Date is no later than 28th of a month
             // (this field is not part of a_ledger but will be stored in period 1 of a_accounting_period)
-            if (   rbtMonthly.Checked
-                && dtpFinancialYearStartDate.Date != null
-                && dtpFinancialYearStartDate.Date.Value.Day > 28)
+            if (rbtMonthly.Checked
+                && (dtpFinancialYearStartDate.Date != null)
+                && (dtpFinancialYearStartDate.Date.Value.Day > 28))
             {
                 VerificationResult = new TScreenVerificationResult(
                     this,
@@ -412,8 +415,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // make sure that Financial Year Start Date is not empty
             // (this field is not part of a_ledger but will be stored in period 1 of a_accounting_period)
-            if (   rbtMonthly.Checked
-                && dtpFinancialYearStartDate.Date == null)
+            if (rbtMonthly.Checked
+                && (dtpFinancialYearStartDate.Date == null))
             {
                 VerificationResult = new TScreenVerificationResult(
                     this,
@@ -427,10 +430,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 VerificationResult = null;
             }
-            
+
             // Handle addition/removal to/from TVerificationResultCollection
             VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, null);
-            
+
             // check that there no suspense accounts for this ledger if box is unticked
             ValidationColumn = ARow.Table.Columns[ALedgerTable.ColumnSuspenseAccountFlagId];
 

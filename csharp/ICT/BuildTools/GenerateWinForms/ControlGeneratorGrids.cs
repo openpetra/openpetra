@@ -505,7 +505,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 //                    ctrl.GetAttribute("ActionFocusRow"));
             }
 
-
             if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable"))
             {
                 writer.Template.AddToCodelet("SHOWDATA", "");

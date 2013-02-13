@@ -99,7 +99,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static GLSetupTDS LoadLedgerSettings(Int32 ALedgerNumber, out DateTime ACalendarStartDate,
-                                                    out bool ACurrencyChangeAllowed, out bool ACalendarChangeAllowed)
+            out bool ACurrencyChangeAllowed, out bool ACalendarChangeAllowed)
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
@@ -111,16 +111,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // retrieve calendar start date (start date of financial year)
             AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
             ACalendarStartDate = DateTime.MinValue;
+
             if (CalendarTable.Count > 0)
             {
                 ACalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
             }
-            
+
             // now check if currency change would be allowed
             ACurrencyChangeAllowed = true;
 
-            if (   AJournalAccess.CountViaALedger(ALedgerNumber, Transaction) > 0
-                || AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+            if ((AJournalAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                || (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0))
             {
                 // don't allow currency change if journals or gift batches exist
                 ACurrencyChangeAllowed = false;
@@ -131,7 +132,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // don't allow currency change if journals exist
                 ACurrencyChangeAllowed = false;
             }
-            
+
             if (ACurrencyChangeAllowed)
             {
                 // don't allow currency change if there are foreign currency accounts for this ledger
@@ -154,7 +155,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // now check if calendar change would be allowed
             ACalendarChangeAllowed = IsCalendarChangeAllowed(ALedgerNumber);
-            
+
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
 
@@ -176,17 +177,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             Boolean NewTransaction;
             Boolean CalendarChangeAllowed = true;
-            
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            if (   ABatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0
-                || AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+            if ((ABatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                || (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0))
             {
                 // don't allow calendar change if any batch for this ledger exists
                 CalendarChangeAllowed = false;
             }
-            
+
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
@@ -194,7 +195,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             return CalendarChangeAllowed;
         }
-        
+
         /// <summary>
         /// returns all account hierarchies available for this ledger
         /// </summary>
@@ -516,6 +517,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // retrieve currently saved calendar start date (start date of financial year)
             AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
             CurrentCalendarStartDate = DateTime.MinValue;
+
             if (CalendarTable.Count > 0)
             {
                 CurrentCalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
@@ -539,12 +541,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     CreateDefaultCalendar = true;
                 }
             }
-            else if (   ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
-                     && ACalendarStartDate != CurrentCalendarStartDate)
+            else if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
+                     && (ACalendarStartDate != CurrentCalendarStartDate))
             {
                 CreateDefaultCalendar = true;
             }
-                
+
             // now perform the actual update of accounting periods (calendar)
             if (CreateDefaultCalendar)
             {
@@ -556,14 +558,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     TemplateRow.LedgerNumber = ALedgerNumber;
                     AAccountingPeriodAccess.DeleteUsingTemplate(TemplateRow, null, Transaction);
                 }
-                
+
                 // now create all accounting period records according to monthly calendar mode
                 // (at the same time create forwarding periods. If number of forwarding periods also
                 // changes with this saving method then this will be dealt with further down in the code)
                 NewAccountingPeriodTable = new AAccountingPeriodTable();
-                
+
                 PeriodStartDate = ACalendarStartDate;
-    
+
                 for (Period = 1; Period <= 12 + LedgerRow.NumberFwdPostingPeriods; Period++)
                 {
                     NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
@@ -581,7 +583,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                     TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
             }
-            
+
             // check if any new forwarding periods need to be created
             CurrentNumberFwdPostingPeriods = LedgerRow.NumberFwdPostingPeriods;
             NewNumberFwdPostingPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
@@ -590,7 +592,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 // now create new forwarding posting periods (if at all needed)
                 NewAccountingPeriodTable = new AAccountingPeriodTable();
-                
+
                 Period = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods + 1;
 
                 while (Period <= LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods)
@@ -616,7 +618,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                     TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
-                
+
                 // also create new general ledger master periods with balances
                 CurrentLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods;
                 NewLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods;

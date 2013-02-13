@@ -552,6 +552,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             AMessages = new TVerificationResultCollection();
 
+            string tempTableName = (string)requestParams["TempTable"];
             Int32 ledgerNumber = (Int32)requestParams["Ledger"];
             long recipientKey = (Int64)requestParams["Recipient"];
             long donorKey = (Int64)requestParams["Donor"];
@@ -643,8 +644,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //Load Ledger Table
                 ALedgerAccess.LoadByPrimaryKey(MainDS, ledgerNumber, Transaction);
 
-                //MainDS.DisableConstraints();
-                DBAccess.GDBAccessObj.SelectToTempTable(MainDS, sqlStmt, Transaction, parameters.ToArray(), 0, 0);
+                //Can do this if needed: MainDS.DisableConstraints();
+                DBAccess.GDBAccessObj.SelectToTempTable(MainDS, sqlStmt, tempTableName, Transaction, parameters.ToArray(), 0, 0);
 
                 MainDS.AcceptChanges();
             }
