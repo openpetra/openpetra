@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,6 +43,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TFrmGLCostCentreHierarchy
     {
+        private const string INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE = "#UNASSIGNEDDETAILCOSTCENTRECODE#";
+        
         private TreeNode FDragNode = null;
         private TreeNode FDragTarget = null;
         private TreeNode FSelectedNode = null;
@@ -54,6 +56,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private String strOldDetailCostCentreCode; // this string is used to detect that the user has renamed an existing Cost Centre.
         private String strOldDetailCostCentreName;
+
+        private string FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
+
 
         private class CostCentreNodeDetails
         {
@@ -615,125 +620,143 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return false;
             }
 
-            if (strOldDetailCostCentreCode.IndexOf("NewCostCentre") == 0) // If this Cost Centre is new, you can re-name it now!
-            {
-                return false;
-            }
-
             String strNewDetailCostCentreCode = txtDetailCostCentreCode.Text;
             bool changeAccepted = false;
 
-            if (!strNewDetailCostCentreCode.Equals(strOldDetailCostCentreCode))
+            if (strNewDetailCostCentreCode != FRecentlyUpdatedDetailCostCentreCode)
             {
-                FStatus += "AccountCode changed.\r\n";
-                txtStatus.Text = FStatus;
-
-                if (MessageBox.Show(String.Format(Catalog.GetString("You have changed {0} to {1}. Confirm that you want to re-name this account."),
-                            strOldDetailCostCentreCode,
-                            strNewDetailCostCentreCode), Catalog.GetString("Rename Cost Centre"), MessageBoxButtons.OKCancel) != DialogResult.OK)
+                if (strNewDetailCostCentreCode != strOldDetailCostCentreCode)
                 {
-                    txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
-                    return false;
-                }
-
-                CostCentreNodeDetails NodeDetails = (CostCentreNodeDetails)trvCostCentres.SelectedNode.Tag;
-
-                try
-                {
-                    NodeDetails.CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
-
-                    trvCostCentres.BeginUpdate();
-                    trvCostCentres.SelectedNode.Text = strNewDetailCostCentreCode;
-                    trvCostCentres.SelectedNode.Name = strNewDetailCostCentreCode;
-                    trvCostCentres.EndUpdate();
-
-                    changeAccepted = true;
-                }
-                catch (System.Data.ConstraintException)
-                {
-                    MessageBox.Show(
-                        Catalog.GetString("Sorry but this Cost Centre already exists: ") + strNewDetailCostCentreCode +
-                        "\r\n" + Catalog.GetString("You cannot use the same name twice!"),
-                        Catalog.GetString("Rename Cost Centre"));
-                    throw new CancelSaveException();
-                }
-
-                if (NodeDetails.IsNew)
-                {
-                    // This is the code for changes in "un-committed" nodes:
-                    // there are no references to this new row yet, apart from children nodes, so I can just change them here and carry on!
-
-                    // fixup children nodes
-                    foreach (TreeNode childnode in trvCostCentres.SelectedNode.Nodes)
-                    {
-                        ((CostCentreNodeDetails)childnode.Tag).CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
-                    }
-
-                    strOldDetailCostCentreCode = strNewDetailCostCentreCode;
-                    FPetraUtilsObject.HasChanges = true;
-                }
-                else
-                {
-                    FStatus += Catalog.GetString("Updating Cost Centre Code change - please wait.\r\n");
-                    txtStatus.Text = FStatus;
-                    TVerificationResultCollection VerificationResults;
-
-                    // If this code was previously in the DB, I need to assume that there may be transactions posted against it.
-                    // There's a server call I need to use, and after the call I need to re-load this page.
-                    // (No other changes will be lost, because the txtDetailCostCentreCode will have been ReadOnly if there were already changes.)
-                    bool Success = TRemote.MFinance.Setup.WebConnectors.RenameCostCentreCode(strOldDetailCostCentreCode,
-                        strNewDetailCostCentreCode,
-                        FLedgerNumber,
-                        out VerificationResults);
-
-                    if (Success)
-                    {
-                        FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
-                        strOldDetailCostCentreCode = "";
-                        txtDetailCostCentreCode.Text = "";
-                        FPetraUtilsObject.HasChanges = false;
-                        PopulateTreeView();
-                        FCurrentNode = null;
-
-                        TreeNode[] NewNode = trvCostCentres.Nodes.Find(strNewDetailCostCentreCode, true);
-
-                        if (NewNode.Length > 0) // should be - unless the server is faulty!
+                    if (strOldDetailCostCentreCode.IndexOf(Catalog.GetString("NewCostCentre")) < 0) // If they're just changing this from the initial value, don't show warning.
+                    {                         
+                        if (MessageBox.Show(String.Format(Catalog.GetString("You have changed the Cost Centre Code from '{0}' to '{1}'.\r\n\r\nPlease confirm that you want to rename this Cost Centre Code by choosing 'OK'."),
+                                    strOldDetailCostCentreCode,
+                                    strNewDetailCostCentreCode), Catalog.GetString("Rename Cost Centre Code: Confirmation"), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK)
                         {
-                            trvCostCentres.SelectedNode = NewNode[0];
-                            ShowDetails(((CostCentreNodeDetails)NewNode[0].Tag).CostCentreRow);
-
-                            if (NewNode[0].Parent != null)
-                            {
-                                NewNode[0].Parent.Expand();
-                            }
-
-                            NewNode[0].Expand();
+                            txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
+                            return false;
                         }
-
-                        FStatus = "";
-                        txtStatus.Text = FStatus;
-                        FPetraUtilsObject.HasChanges = false;
-                        FPetraUtilsObject.DisableSaveButton();
+                    }
+                    
+                    FRecentlyUpdatedDetailCostCentreCode = strNewDetailCostCentreCode;
+                    CostCentreNodeDetails NodeDetails = (CostCentreNodeDetails)trvCostCentres.SelectedNode.Tag;
+    
+                    try
+                    {
+                        NodeDetails.CostCentreRow.BeginEdit();   
+                        NodeDetails.CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
+                        NodeDetails.CostCentreRow.EndEdit();
+                        
+                        trvCostCentres.BeginUpdate();
+                        trvCostCentres.SelectedNode.Text = strNewDetailCostCentreCode;
+                        trvCostCentres.SelectedNode.Name = strNewDetailCostCentreCode;
+                        trvCostCentres.EndUpdate();
+    
                         changeAccepted = true;
                     }
-                    else
+                    catch (System.Data.ConstraintException)
                     {
-                        MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Cost Centre"));
+                        txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
+                        NodeDetails.CostCentreRow.CancelEdit();
+                        
+                        FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
+                        
+                        FStatus += Catalog.GetString("Cost Centre Code change REJECTED!") + Environment.NewLine;
+                        txtStatus.Text = FStatus;
+                        
+                        MessageBox.Show(String.Format(
+                            Catalog.GetString("Renaming Cost Centre Code '{0}' to '{1}' is not possible because a Cost Centre Code by the name of '{2}' already exists.\r\n\r\n--> Cost Centre Code reverted to previous value!"), 
+                            strOldDetailCostCentreCode, strNewDetailCostCentreCode, strNewDetailCostCentreCode), 
+                            Catalog.GetString("Renaming Not Possible - Conflicts With Existing Cost Centre Code"), 
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        
+                        txtDetailCostCentreCode.Focus();
                     }
-                }
-            } // if changed
-
+    
+        
+                    if (changeAccepted)
+                    {                
+                        if (NodeDetails.IsNew)
+                        {
+                            // This is the code for changes in "un-committed" nodes:
+                            // there are no references to this new row yet, apart from children nodes, so I can just change them here and carry on!
+        
+                            // fixup children nodes
+                            foreach (TreeNode childnode in trvCostCentres.SelectedNode.Nodes)
+                            {
+                                ((CostCentreNodeDetails)childnode.Tag).CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
+                            }
+        
+                            strOldDetailCostCentreCode = strNewDetailCostCentreCode;
+                            FPetraUtilsObject.HasChanges = true;
+                        }
+                        else
+                        {
+                            FStatus += Catalog.GetString("Updating Cost Centre Code change - please wait.\r\n");
+                            txtStatus.Text = FStatus;
+                            TVerificationResultCollection VerificationResults;
+        
+                            // If this code was previously in the DB, I need to assume that there may be transactions posted against it.
+                            // There's a server call I need to use, and after the call I need to re-load this page.
+                            // (No other changes will be lost, because the txtDetailCostCentreCode will have been ReadOnly if there were already changes.)
+                            bool Success = TRemote.MFinance.Setup.WebConnectors.RenameCostCentreCode(strOldDetailCostCentreCode,
+                                strNewDetailCostCentreCode,
+                                FLedgerNumber,
+                                out VerificationResults);
+        
+                            if (Success)
+                            {
+                                FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
+                                strOldDetailCostCentreCode = "";
+                                txtDetailCostCentreCode.Text = "";
+                                FPetraUtilsObject.HasChanges = false;
+                                PopulateTreeView();
+                                FCurrentNode = null;
+        
+                                TreeNode[] NewNode = trvCostCentres.Nodes.Find(strNewDetailCostCentreCode, true);
+        
+                                if (NewNode.Length > 0) // should be - unless the server is faulty!
+                                {
+                                    trvCostCentres.SelectedNode = NewNode[0];
+                                    ShowDetails(((CostCentreNodeDetails)NewNode[0].Tag).CostCentreRow);
+        
+                                    if (NewNode[0].Parent != null)
+                                    {
+                                        NewNode[0].Parent.Expand();
+                                    }
+        
+                                    NewNode[0].Expand();
+                                }
+        
+                                FStatus = "";
+                                txtStatus.Text = FStatus;
+                                FPetraUtilsObject.HasChanges = false;
+                                FPetraUtilsObject.DisableSaveButton();
+                                changeAccepted = true;
+                                
+                                FStatus += String.Format("Cost Centre Code changed to '{0}'.\r\n", strNewDetailCostCentreCode);
+                                txtStatus.Text = FStatus;
+                            }
+                            else
+                            {
+                                MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Cost Centre Code"));
+                            }
+                        }
+                    } // if changeAccepted                    
+                } // if changed
+            }
             return changeAccepted;
         }
 
         private void GetDataFromControlsManual()
         {
-            if (FCurrentNode != null)
+            if ((CheckCostCentreValueChanged())
+                && (FCurrentNode != null))
             {
                 GetDetailsFromControls(GetSelectedDetailRowManual());
 
                 //
-                // If I find that theere's no data in the new node, I'll remove it right now.
+                // If I find that there's no data in the new node, I'll remove it right now.
                 ACostCentreRow SelectedRow = ((CostCentreNodeDetails)FCurrentNode.Tag).CostCentreRow;
 
                 if ((SelectedRow.CostCentreCode == "") && (SelectedRow.CostCentreName == ""))
