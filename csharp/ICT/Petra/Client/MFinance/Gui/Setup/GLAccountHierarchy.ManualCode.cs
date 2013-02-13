@@ -45,7 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     public partial class TFrmGLAccountHierarchy
     {
         private const string INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE = "#UNASSIGNEDDETAILACCOUNTCODE#";
-        
+
         private TreeNode FDragNode = null;
         private TreeNode FDragTarget = null;
         private TreeNode FSelectedNode = null;
@@ -65,9 +65,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         // TreeView Select will be split into a part Before Select and a part
         // after select. Those parameters are for common use
         GLSetupTDSAAccountRow FSelectedAccountRow;
-        
+
         private string FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
-        
+
 
         private class AccountNodeDetails
         {
@@ -768,32 +768,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (strNewDetailAccountCode != strOldDetailAccountCode)
                 {
                     if (strOldDetailAccountCode.IndexOf(Catalog.GetString("NewAccount")) < 0) // If they're just changing this from the initial value, don't show warning.
-                    {                    
-                        if (MessageBox.Show(String.Format(Catalog.GetString("You have changed the Account Code from '{0}' to '{1}'.\r\n\r\nPlease confirm that you want to rename this account by choosing 'OK'."),
+                    {
+                        if (MessageBox.Show(String.Format(Catalog.GetString(
+                                        "You have changed the Account Code from '{0}' to '{1}'.\r\n\r\nPlease confirm that you want to rename this account by choosing 'OK'."),
                                     strOldDetailAccountCode,
-                                    strNewDetailAccountCode), 
-                                    Catalog.GetString("Rename Account: Confirmation"), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK)
+                                    strNewDetailAccountCode),
+                                Catalog.GetString("Rename Account: Confirmation"), MessageBoxButtons.OKCancel,
+                                MessageBoxIcon.Warning) != DialogResult.OK)
                         {
                             txtDetailAccountCode.Text = strOldDetailAccountCode;
                             return false;
                         }
                     }
-    
-                    FRecentlyUpdatedDetailAccountCode = strNewDetailAccountCode;                        
+
+                    FRecentlyUpdatedDetailAccountCode = strNewDetailAccountCode;
                     AccountNodeDetails NodeDetails = (AccountNodeDetails)trvAccounts.SelectedNode.Tag;
-    
+
                     try
                     {
                         NodeDetails.AccountRow.BeginEdit();
                         NodeDetails.AccountRow.AccountCode = strNewDetailAccountCode;
                         NodeDetails.DetailRow.ReportingAccountCode = strNewDetailAccountCode;
                         NodeDetails.AccountRow.EndEdit();
-                        
+
                         trvAccounts.BeginUpdate();
                         trvAccounts.SelectedNode.Text = strNewDetailAccountCode;
                         trvAccounts.SelectedNode.Name = strNewDetailAccountCode;
                         trvAccounts.EndUpdate();
-    
+
                         changeAccepted = true;
                     }
                     catch (System.Data.ConstraintException)
@@ -801,34 +803,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         txtDetailAccountCode.Text = strOldDetailAccountCode;
                         NodeDetails.AccountRow.CancelEdit();
                         NodeDetails.DetailRow.CancelEdit();
-                        
+
                         FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
-                        
+
                         FStatus += Catalog.GetString("Account Code change REJECTED!") + Environment.NewLine;
                         txtStatus.Text = FStatus;
-                        
+
                         MessageBox.Show(String.Format(
-                            Catalog.GetString("Renaming Account Code '{0}' to '{1}' is not possible because an Account Code by the name of '{2}' already exists.\r\n\r\n--> Account Code reverted to previous value!"), 
-                            strOldDetailAccountCode, strNewDetailAccountCode, strNewDetailAccountCode), 
-                            Catalog.GetString("Renaming Not Possible - Conflicts With Existing Account Code"), 
+                                Catalog.GetString(
+                                    "Renaming Account Code '{0}' to '{1}' is not possible because an Account Code by the name of '{2}' already exists.\r\n\r\n--> Account Code reverted to previous value!"),
+                                strOldDetailAccountCode, strNewDetailAccountCode, strNewDetailAccountCode),
+                            Catalog.GetString("Renaming Not Possible - Conflicts With Existing Account Code"),
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        
+
                         txtDetailAccountCode.Focus();
                     }
-    
+
                     if (changeAccepted)
                     {
                         if (NodeDetails.IsNew)
                         {
                             // This is the code for changes in "un-committed" nodes:
                             // there are no references to this new row yet, apart from children nodes, so I can just change them here and carry on!
-        
+
                             // fixup children nodes
                             foreach (TreeNode childnode in trvAccounts.SelectedNode.Nodes)
                             {
                                 ((AccountNodeDetails)childnode.Tag).DetailRow.AccountCodeToReportTo = strNewDetailAccountCode;
                             }
-        
+
                             strOldDetailAccountCode = strNewDetailAccountCode;
                             FPetraUtilsObject.HasChanges = true;
                         }
@@ -837,7 +840,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             FStatus += Catalog.GetString("Updating Account Code change - please wait.\r\n");
                             txtStatus.Text = FStatus;
                             TVerificationResultCollection VerificationResults;
-        
+
                             // If this code was previously in the DB, I need to assume that there may be transactions posted to it.
                             // There's a server call I need to use, and after the call I need to re-load this page.
                             // (No other changes will be lost, because the txtDetailAccountCode will have been ReadOnly if there were already changes.)
@@ -845,7 +848,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 strNewDetailAccountCode,
                                 FLedgerNumber,
                                 out VerificationResults);
-        
+
                             if (Success)
                             {
                                 FMainDS.Clear();
@@ -858,19 +861,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 txtStatus.Text = FStatus;
                                 FPetraUtilsObject.HasChanges = false;
                                 FPetraUtilsObject.DisableSaveButton();
-                                
+
                                 FStatus += String.Format(Catalog.GetString("Account Code changed to '{0}'."), strNewDetailAccountCode) + "\r\n";
-                                txtStatus.Text = FStatus;                                
+                                txtStatus.Text = FStatus;
                             }
                             else
                             {
                                 MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Account"));
                             }
-                        }                   
+                        }
                     } // if changeAccepted
+
                 } // if changed
+
             } // if not handling the same change than before (prevents this method to be run several times for a single change)
-            
+
             return changeAccepted;
         }
     }

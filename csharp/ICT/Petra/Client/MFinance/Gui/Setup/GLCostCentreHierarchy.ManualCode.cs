@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     public partial class TFrmGLCostCentreHierarchy
     {
         private const string INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE = "#UNASSIGNEDDETAILCOSTCENTRECODE#";
-        
+
         private TreeNode FDragNode = null;
         private TreeNode FDragTarget = null;
         private TreeNode FSelectedNode = null;
@@ -628,65 +628,67 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (strNewDetailCostCentreCode != strOldDetailCostCentreCode)
                 {
                     if (strOldDetailCostCentreCode.IndexOf(Catalog.GetString("NewCostCentre")) < 0) // If they're just changing this from the initial value, don't show warning.
-                    {                         
-                        if (MessageBox.Show(String.Format(Catalog.GetString("You have changed the Cost Centre Code from '{0}' to '{1}'.\r\n\r\nPlease confirm that you want to rename this Cost Centre Code by choosing 'OK'."),
+                    {
+                        if (MessageBox.Show(String.Format(Catalog.GetString(
+                                        "You have changed the Cost Centre Code from '{0}' to '{1}'.\r\n\r\nPlease confirm that you want to rename this Cost Centre Code by choosing 'OK'."),
                                     strOldDetailCostCentreCode,
-                                    strNewDetailCostCentreCode), Catalog.GetString("Rename Cost Centre Code: Confirmation"), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK)
+                                    strNewDetailCostCentreCode), Catalog.GetString("Rename Cost Centre Code: Confirmation"),
+                                MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK)
                         {
                             txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
                             return false;
                         }
                     }
-                    
+
                     FRecentlyUpdatedDetailCostCentreCode = strNewDetailCostCentreCode;
                     CostCentreNodeDetails NodeDetails = (CostCentreNodeDetails)trvCostCentres.SelectedNode.Tag;
-    
+
                     try
                     {
-                        NodeDetails.CostCentreRow.BeginEdit();   
+                        NodeDetails.CostCentreRow.BeginEdit();
                         NodeDetails.CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
                         NodeDetails.CostCentreRow.EndEdit();
-                        
+
                         trvCostCentres.BeginUpdate();
                         trvCostCentres.SelectedNode.Text = strNewDetailCostCentreCode;
                         trvCostCentres.SelectedNode.Name = strNewDetailCostCentreCode;
                         trvCostCentres.EndUpdate();
-    
+
                         changeAccepted = true;
                     }
                     catch (System.Data.ConstraintException)
                     {
                         txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
                         NodeDetails.CostCentreRow.CancelEdit();
-                        
+
                         FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
-                        
+
                         FStatus += Catalog.GetString("Cost Centre Code change REJECTED!") + Environment.NewLine;
                         txtStatus.Text = FStatus;
-                        
+
                         MessageBox.Show(String.Format(
-                            Catalog.GetString("Renaming Cost Centre Code '{0}' to '{1}' is not possible because a Cost Centre Code by the name of '{2}' already exists.\r\n\r\n--> Cost Centre Code reverted to previous value!"), 
-                            strOldDetailCostCentreCode, strNewDetailCostCentreCode, strNewDetailCostCentreCode), 
-                            Catalog.GetString("Renaming Not Possible - Conflicts With Existing Cost Centre Code"), 
+                                Catalog.GetString(
+                                    "Renaming Cost Centre Code '{0}' to '{1}' is not possible because a Cost Centre Code by the name of '{2}' already exists.\r\n\r\n--> Cost Centre Code reverted to previous value!"),
+                                strOldDetailCostCentreCode, strNewDetailCostCentreCode, strNewDetailCostCentreCode),
+                            Catalog.GetString("Renaming Not Possible - Conflicts With Existing Cost Centre Code"),
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        
+
                         txtDetailCostCentreCode.Focus();
                     }
-    
-        
+
                     if (changeAccepted)
-                    {                
+                    {
                         if (NodeDetails.IsNew)
                         {
                             // This is the code for changes in "un-committed" nodes:
                             // there are no references to this new row yet, apart from children nodes, so I can just change them here and carry on!
-        
+
                             // fixup children nodes
                             foreach (TreeNode childnode in trvCostCentres.SelectedNode.Nodes)
                             {
                                 ((CostCentreNodeDetails)childnode.Tag).CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
                             }
-        
+
                             strOldDetailCostCentreCode = strNewDetailCostCentreCode;
                             FPetraUtilsObject.HasChanges = true;
                         }
@@ -695,7 +697,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             FStatus += Catalog.GetString("Updating Cost Centre Code change - please wait.\r\n");
                             txtStatus.Text = FStatus;
                             TVerificationResultCollection VerificationResults;
-        
+
                             // If this code was previously in the DB, I need to assume that there may be transactions posted against it.
                             // There's a server call I need to use, and after the call I need to re-load this page.
                             // (No other changes will be lost, because the txtDetailCostCentreCode will have been ReadOnly if there were already changes.)
@@ -703,7 +705,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 strNewDetailCostCentreCode,
                                 FLedgerNumber,
                                 out VerificationResults);
-        
+
                             if (Success)
                             {
                                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
@@ -712,28 +714,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 FPetraUtilsObject.HasChanges = false;
                                 PopulateTreeView();
                                 FCurrentNode = null;
-        
+
                                 TreeNode[] NewNode = trvCostCentres.Nodes.Find(strNewDetailCostCentreCode, true);
-        
+
                                 if (NewNode.Length > 0) // should be - unless the server is faulty!
                                 {
                                     trvCostCentres.SelectedNode = NewNode[0];
                                     ShowDetails(((CostCentreNodeDetails)NewNode[0].Tag).CostCentreRow);
-        
+
                                     if (NewNode[0].Parent != null)
                                     {
                                         NewNode[0].Parent.Expand();
                                     }
-        
+
                                     NewNode[0].Expand();
                                 }
-        
+
                                 FStatus = "";
                                 txtStatus.Text = FStatus;
                                 FPetraUtilsObject.HasChanges = false;
                                 FPetraUtilsObject.DisableSaveButton();
                                 changeAccepted = true;
-                                
+
                                 FStatus += String.Format("Cost Centre Code changed to '{0}'.\r\n", strNewDetailCostCentreCode);
                                 txtStatus.Text = FStatus;
                             }
@@ -742,9 +744,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Cost Centre Code"));
                             }
                         }
-                    } // if changeAccepted                    
+                    } // if changeAccepted
+
                 } // if changed
+
             }
+
             return changeAccepted;
         }
 
