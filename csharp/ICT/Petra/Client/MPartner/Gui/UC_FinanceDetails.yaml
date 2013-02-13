@@ -1,0 +1,48 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    DetailTable: PBankingDetails
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Partner.Validation]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails,pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew: {Stretch=horizontally}
+            Action: actNew
+        btnDelete: {Stretch=horizontally}
+            Action: actDelete
+        grdDetails:
+            Dock: Fill
+            TableName: PBankingDetails
+            Columns: [AccountName, BankAccountNumber, Iban]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails: 
+            Dock: Bottom
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_FinanceDetails
+            Height: 300
+            Controls: 
+                Row0: [grpAccountDetail]
+            
+        grpAccountDetail: {Label=AccountDetail, Strech=horizontally}
+            Controls: [txtAccountName, txtBankAccountNumber, txtIban, txtBankKey]
+    
+        txtAccountName:
+            Label: Account Name       
+        txtBankAccountNumber:
+            Label: Bank Account Number
+        txtIban:
+            Label: IBAN
+        txtBankKey: {Label=Bank, Type=PartnerKey, PartnerClass=BANK}

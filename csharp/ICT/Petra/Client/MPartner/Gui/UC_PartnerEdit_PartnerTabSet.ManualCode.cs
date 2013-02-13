@@ -77,6 +77,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
 
+        private static readonly string StrFinanceDetailsTabHeader = Catalog.GetString("Finance Details");
+
         private static readonly string StrAddressesSingular = Catalog.GetString("Address");
 
         private static readonly string StrSubscriptionsSingular = Catalog.GetString("Subscription");
@@ -508,6 +510,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucFinanceDetails))
+            {
+                TUC_FinanceDetails UCFinanceDetails =
+                    (TUC_FinanceDetails)FTabSetup[TDynamicLoadableUserControls.dlucFinanceDetails];
+
+                if (!UCFinanceDetails.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucOfficeSpecific))
             {
                 TUC_LocalPartnerData UCLocalPartnerData =
@@ -866,6 +879,28 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+                else if (ATabPageEventArgs.Tab == tpgFinanceDetails)
+                {
+                    // see PreInitUserControl below
+                }
+            }
+        }
+
+        /// <summary>
+        /// This Method *CAN* be implemented in ManualCode to perform special initialisations *before*
+        /// InitUserControl() gets called.
+        /// </summary>
+        partial void PreInitUserControl(UserControl AUserControl)
+        {
+            if (AUserControl is TUC_FinanceDetails)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFinanceDetails;
+
+                FUcoFinanceDetails.PartnerEditUIConnector = FPartnerEditUIConnector;
+
+                FUcoFinanceDetails.SpecialInitUserControl(FMainDS);
+
+                CorrectDataGridWidthsAfterDataChange();
             }
         }
 
@@ -1046,6 +1081,45 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tpgNotes.ToolTipText = "Notes are entered";
                 }
             }
+
+            //TODO
+
+/*            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FinanceDetails))
+ *          {
+ *              if (FMainDS.Tables.Contains(PBankingTable.GetTableName()))
+ *              {
+ *                  Calculations.CalculateTabCountsSubscriptions(FMainDS.PSubscription, out CountAll, out CountActive);
+ *                  tpgSubscriptions.Text = String.Format(StrFinanceDetailsTabHeader + " ({0})", CountActive);
+ *              }
+ *              else
+ *              {
+ *                  CountAll = FMainDS.MiscellaneousData[0].ItemsCountSubscriptions;
+ *                  CountActive = FMainDS.MiscellaneousData[0].ItemsCountSubscriptionsActive;
+ *              }
+ *
+ *              if ((CountAll == 0) || (CountAll > 1))
+ *              {
+ *                  DynamicToolTipPart1 = StrFinanceDetailsTabHeader;
+ *              }
+ *              else
+ *              {
+ *                  DynamicToolTipPart1 = StrSubscriptionsSingular;
+ *              }
+ *
+ *              tpgSubscriptions.Text = String.Format(StrFinanceDetailsTabHeader + " ({0})", CountActive);
+ *
+ *              if ((CountActive == 0) || (CountActive > 1))
+ *              {
+ *                  tpgSubscriptions.ToolTipText = String.Format(StrTabHeaderCounterTipPlural + "active", CountAll, CountActive, DynamicToolTipPart1);
+ *              }
+ *              else
+ *              {
+ *                  tpgSubscriptions.ToolTipText = String.Format(StrTabHeaderCounterTipSingular + "active",
+ *                      CountAll,
+ *                      CountActive,
+ *                      DynamicToolTipPart1);
+ *              }
+ *          } */
         }
 
         /// <summary>
@@ -1244,6 +1318,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                             tabPartners.SelectedTab = tpgAddresses;
                         }
 
+                        break;
+
+                    case TPartnerEditTabPageEnum.petpFinanceDetails:
+                        tabPartners.SelectedTab = tpgFinanceDetails;
                         break;
                 }
             }
