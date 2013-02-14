@@ -127,7 +127,7 @@ namespace Ict.Tools.DataDumpPetra2
         {
             if (CurrencyPerPayment == null)
             {
-                SortedList <Int32, string>CurrencyPerDocument = new SortedList <Int32, string>();
+                SortedList <Int64, string>CurrencyPerDocument = new SortedList <Int64, string>();
 
                 TTable documentTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("a_ap_document");
 
@@ -146,7 +146,10 @@ namespace Ict.Tools.DataDumpPetra2
                         break;
                     }
 
-                    CurrencyPerDocument.Add(Convert.ToInt32(GetValue(ColumnNames, OldRow, "a_ap_document_id_i")),
+                    Int64 LedgerAndAPNumber = Convert.ToInt64(GetValue(ColumnNames, OldRow, "a_ledger_number_i")) * 1000000 +
+                                              Convert.ToInt64(GetValue(ColumnNames, OldRow, "a_ap_number_i"));
+
+                    CurrencyPerDocument.Add(LedgerAndAPNumber,
                         GetSupplierCurrency(Convert.ToInt64(GetValue(ColumnNames, OldRow, "p_partner_key_n"))));
                 }
 
@@ -169,9 +172,16 @@ namespace Ict.Tools.DataDumpPetra2
                         break;
                     }
 
-                    CurrencyPerPayment.Add(Convert.ToInt64(GetValue(ColumnNames, OldRow, "a_ledger_number_i")) * 1000000 +
-                        Convert.ToInt64(GetValue(ColumnNames, OldRow, "a_payment_number_i")),
-                        CurrencyPerDocument[Convert.ToInt32(GetValue(ColumnNames, OldRow, "a_ap_document_id_i"))]);
+                    Int64 LedgerAndPaymentNumber = Convert.ToInt64(GetValue(ColumnNames, OldRow, "a_ledger_number_i")) * 1000000 +
+                                                   Convert.ToInt64(GetValue(ColumnNames, OldRow, "a_payment_number_i"));
+
+                    if (!CurrencyPerPayment.ContainsKey(LedgerAndPaymentNumber))
+                    {
+                        CurrencyPerPayment.Add(LedgerAndPaymentNumber,
+                            CurrencyPerDocument[
+                                Convert.ToInt64(GetValue(ColumnNames, OldRow, "a_ledger_number_i")) * 1000000 +
+                                Convert.ToInt64(GetValue(ColumnNames, OldRow, "a_ap_number_i"))]);
+                    }
                 }
             }
 
