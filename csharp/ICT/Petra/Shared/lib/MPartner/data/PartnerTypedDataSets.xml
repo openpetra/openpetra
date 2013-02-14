@@ -64,6 +64,7 @@
       <CustomField name="ItemsCountFamilyMembers" type="Int32"/>
       <CustomField name="ItemsCountInterests" type="Int32"/>
       <CustomField name="ItemsCountReminders" type="Int32"/>
+      <CustomField name="ItemsCountPartnerBankingDetails" type="Int32"/>
       <!-- not in use yet! -->
       <CustomField name="ItemsCountPartnerRelationships" type="Int32"/>
       <!-- not in use yet! -->

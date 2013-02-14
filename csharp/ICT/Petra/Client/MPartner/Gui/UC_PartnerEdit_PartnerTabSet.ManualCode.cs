@@ -882,6 +882,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else if (ATabPageEventArgs.Tab == tpgFinanceDetails)
                 {
                     // see PreInitUserControl below
+                    FUcoFinanceDetails.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
                 }
             }
         }
@@ -1082,44 +1083,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            //TODO
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FinanceDetails))
+            {
+                if (FMainDS.Tables.Contains(PPartnerBankingDetailsTable.GetTableName()))
+                {
+                    CountAll = FMainDS.PPartnerBankingDetails.Rows.Count;
+                }
+                else
+                {
+                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountPartnerBankingDetails;
+                }
 
-/*            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FinanceDetails))
- *          {
- *              if (FMainDS.Tables.Contains(PBankingTable.GetTableName()))
- *              {
- *                  Calculations.CalculateTabCountsSubscriptions(FMainDS.PSubscription, out CountAll, out CountActive);
- *                  tpgSubscriptions.Text = String.Format(StrFinanceDetailsTabHeader + " ({0})", CountActive);
- *              }
- *              else
- *              {
- *                  CountAll = FMainDS.MiscellaneousData[0].ItemsCountSubscriptions;
- *                  CountActive = FMainDS.MiscellaneousData[0].ItemsCountSubscriptionsActive;
- *              }
- *
- *              if ((CountAll == 0) || (CountAll > 1))
- *              {
- *                  DynamicToolTipPart1 = StrFinanceDetailsTabHeader;
- *              }
- *              else
- *              {
- *                  DynamicToolTipPart1 = StrSubscriptionsSingular;
- *              }
- *
- *              tpgSubscriptions.Text = String.Format(StrFinanceDetailsTabHeader + " ({0})", CountActive);
- *
- *              if ((CountActive == 0) || (CountActive > 1))
- *              {
- *                  tpgSubscriptions.ToolTipText = String.Format(StrTabHeaderCounterTipPlural + "active", CountAll, CountActive, DynamicToolTipPart1);
- *              }
- *              else
- *              {
- *                  tpgSubscriptions.ToolTipText = String.Format(StrTabHeaderCounterTipSingular + "active",
- *                      CountAll,
- *                      CountActive,
- *                      DynamicToolTipPart1);
- *              }
- *          } */
+                tpgFinanceDetails.Text = String.Format(StrFinanceDetailsTabHeader + " ({0})", CountAll);
+            }
         }
 
         /// <summary>

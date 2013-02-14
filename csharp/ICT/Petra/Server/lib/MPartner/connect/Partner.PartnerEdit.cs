@@ -354,6 +354,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountFamilyMembers = 0;
             Int32 ItemsCountPartnerInterests = 0;
             Int32 ItemsCountInterests = 0;
+            Int32 ItemsCountPartnerBankingDetails = 0;
             Int64 FoundationOwner1Key = 0;
             Int64 FoundationOwner2Key = 0;
             bool HasEXWORKERPartnerType = false;
@@ -665,6 +666,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     #endregion
 
+                    ItemsCountPartnerBankingDetails = PPartnerBankingDetailsAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
+
                     // Office Specific Data
                     if ((!ADelayedDataLoading) || (ATabPage == TPartnerEditTabPageEnum.petpOfficeSpecific))
                     {
@@ -743,6 +746,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     MiscellaneousDataDR.ItemsCountPartnerRelationships = ItemsCountPartnerRelationships;
                     MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
                     MiscellaneousDataDR.ItemsCountInterests = ItemsCountPartnerInterests;
+                    MiscellaneousDataDR.ItemsCountPartnerBankingDetails = ItemsCountPartnerBankingDetails;
                     MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
                     MiscellaneousDataDR.FoundationOwner1Key = FoundationOwner1Key;
                     MiscellaneousDataDR.FoundationOwner2Key = FoundationOwner2Key;
