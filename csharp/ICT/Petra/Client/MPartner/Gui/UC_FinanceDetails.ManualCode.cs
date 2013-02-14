@@ -98,6 +98,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void NewRowManual(ref PBankingDetailsRow ARow)
         {
+            // TODO check if similar bank accounts with same details exists already
             ARow.BankingDetailsKey = (FMainDS.PBankingDetails.Rows.Count + 1) * -1;
             ARow.BankingType = MPartnerConstants.BANKINGTYPE_BANKACCOUNT;
             ARow.BankKey = 0;
@@ -105,6 +106,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             PPartnerBankingDetailsRow partnerBankingDetails = FMainDS.PPartnerBankingDetails.NewRowTyped();
             partnerBankingDetails.BankingDetailsKey = ARow.BankingDetailsKey;
             partnerBankingDetails.PartnerKey = FMainDS.PPartner[0].PartnerKey;
+            FMainDS.PPartnerBankingDetails.Rows.Add(partnerBankingDetails);
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -120,6 +122,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 int rowIndex = grdDetails.SelectedRowIndex();
+
+                // TODO delete the PPartnerBankingDetails Row as well
+                // TODO what if several people are using the same bank account?
+
                 FPreviouslySelectedDetailRow.Delete();
                 FPetraUtilsObject.SetChangedFlag();
 
@@ -207,7 +213,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (TClientSettings.DelayedDataLoading
                     && (FMainDS.PBankingDetails.Rows.Count == 0))
                 {
-                    FMainDS.Merge(FPartnerEditUIConnector.GetBankingDetails(FMainDS.PPartner[0].PartnerKey));
+                    FMainDS.Merge(FPartnerEditUIConnector.GetBankingDetails());
 
                     // Make DataRows unchanged
                     if (FMainDS.PBankingDetails.Rows.Count > 0)

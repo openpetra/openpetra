@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -142,57 +142,39 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         #region BankingDetails
 
         /// <summary>
-        /// todoComment
+        /// get the banking details of the current partner
         /// </summary>
-        /// <param name="APartnerKey"></param>
-        /// <returns></returns>
-        public PartnerEditTDS GetBankingDetails(System.Int64 APartnerKey)
+        public PartnerEditTDS GetBankingDetails()
         {
-            PartnerEditTDS ReturnValue;
-            TDBTransaction ReadTransaction;
             Boolean NewTransaction;
 
-            TLogging.Log("GetBankingDetails(APartnerKey: System.Int64)", TLoggingType.ToLogfile);
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            ReturnValue = GetBankingDetailsInternal(ReadTransaction, APartnerKey);
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetBankingDetails: committed own transaction.");
-            }
-
-            return ReturnValue;
-        }
-
-        private PartnerEditTDS GetBankingDetailsInternal(TDBTransaction AReadTransaction, System.Int64 APartnerKey)
-        {
-            PartnerEditTDS ReturnValue;
-
-            ReturnValue = FPartnerEditScreenDS;
-            TLogging.Log("GetBankingDetails(AReadTransaction: TDBTransaction; APartnerKey: System.Int64)", TLoggingType.ToLogfile);
-
-            // Get hold of the two tables needed for the banking informaiton:
+            // Get hold of the two tables needed for the banking information:
             // p_partner_banking_details
             // p_banking_details
             try
             {
-                // PPartnerBankingDetailsAccess Table
-                // PPartnerBankingDetailsAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, AReadTransaction);
-                // TLogging.Log('PPartnerBankingDetailsAccess.LoadViaPPartner', [TLoggingType.ToLogfile]);
-                // PBankingDetailsAccess Table
-                PBankingDetailsAccess.LoadViaPBank(FPartnerEditScreenDS, FPartnerKey, AReadTransaction);
-                TLogging.Log("PBankingDetailsAccess.LoadViaPBank", TLoggingType.ToLogfile);
+                PBankingDetailsAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
+                PPartnerBankingDetailsAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
             }
             catch (Exception)
             {
                 TLogging.Log("An exception happened while retrieving data.", TLoggingType.ToLogfile);
                 throw;
             }
-            TLogging.Log("Number of rows loaded: " + FPartnerEditScreenDS.PBankingDetails.Rows.Count.ToString(), TLoggingType.ToLogfile);
-            return ReturnValue;
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetBankingDetails: committed own transaction.");
+                }
+            }
+
+            return FPartnerEditScreenDS;
         }
 
         #endregion
