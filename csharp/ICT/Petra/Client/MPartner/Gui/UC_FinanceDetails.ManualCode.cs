@@ -123,8 +123,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 int rowIndex = grdDetails.SelectedRowIndex();
 
-                // TODO delete the PPartnerBankingDetails Row as well
                 // TODO what if several people are using the same bank account?
+                FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName();
+                FMainDS.PPartnerBankingDetails.DefaultView.FindRows(FPreviouslySelectedDetailRow.BankingDetailsKey)[0].Row.Delete();
 
                 FPreviouslySelectedDetailRow.Delete();
                 FPetraUtilsObject.SetChangedFlag();
