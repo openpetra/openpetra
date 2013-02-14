@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -497,8 +497,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(PastExperienceRow.IsSiteKeyNull() ? 0 : PastExperienceRow.SiteKey);
                 Write(PastExperienceRow.IsKeyNull() ? 0 : PastExperienceRow.Key);
                 Write(PastExperienceRow.IsPrevLocationNull() ? "" : PastExperienceRow.PrevLocation);
-                Write(PastExperienceRow.IsStartDateNull() ? "?" : PastExperienceRow.StartDate.ToString(DATEFORMAT));
-                Write(PastExperienceRow.IsEndDateNull() ? "?" : PastExperienceRow.EndDate.ToString(DATEFORMAT));
+                Write(PastExperienceRow.IsStartDateNull() ? "?" : PastExperienceRow.StartDate.Value.ToString(DATEFORMAT));
+                Write(PastExperienceRow.IsEndDateNull() ? "?" : PastExperienceRow.EndDate.Value.ToString(DATEFORMAT));
                 WriteLine();
                 Write(PastExperienceRow.IsPrevWorkHereNull() ? false : PastExperienceRow.PrevWorkHere);
                 Write(PastExperienceRow.IsPrevWorkNull() ? false : PastExperienceRow.PrevWork);
