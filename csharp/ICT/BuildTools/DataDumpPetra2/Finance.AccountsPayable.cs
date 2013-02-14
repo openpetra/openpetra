@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Ict.Common;
+using Ict.Tools.DBXML;
 
 namespace Ict.Tools.DataDumpPetra2
 {
@@ -85,6 +86,98 @@ namespace Ict.Tools.DataDumpPetra2
             }
         }
 
+        static SortedList <Int64, string>SupplierCurrencies = null;
+        private static string GetSupplierCurrency(Int64 SupplierPartnerKey)
+        {
+            if (SupplierCurrencies == null)
+            {
+                SupplierCurrencies = new SortedList <long, string>();
+
+                // read supplier currencies from a_ap_supplier file
+                TTable supplierTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("a_ap_supplier");
+
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "a_ap_supplier.d.gz",
+                    supplierTableOld.grpTableField.Count);
+
+                StringCollection ColumnNames = GetColumnNames(supplierTableOld);
+
+                while (true)
+                {
+                    string[] OldRow = Parser.ReadNextRow();
+
+                    if (OldRow == null)
+                    {
+                        break;
+                    }
+
+                    SupplierCurrencies.Add(Convert.ToInt64(GetValue(ColumnNames, OldRow, "p_partner_key_n")),
+                        GetValue(ColumnNames, OldRow, "a_currency_code_c"));
+                }
+            }
+
+            return SupplierCurrencies[SupplierPartnerKey];
+        }
+
+        /// <summary>
+        /// payment stored as Int64, ledgernumber*1000000 + payment number
+        /// </summary>
+        static SortedList <Int64, string>CurrencyPerPayment = null;
+        private static string GetSupplierCurrencyFromPayment(Int32 ALedgerNumber, Int32 APaymentNumber)
+        {
+            if (CurrencyPerPayment == null)
+            {
+                SortedList <Int32, string>CurrencyPerDocument = new SortedList <Int32, string>();
+
+                TTable documentTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("a_ap_document");
+
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "a_ap_document.d.gz",
+                    documentTableOld.grpTableField.Count);
+
+                StringCollection ColumnNames = GetColumnNames(documentTableOld);
+
+                while (true)
+                {
+                    string[] OldRow = Parser.ReadNextRow();
+
+                    if (OldRow == null)
+                    {
+                        break;
+                    }
+
+                    CurrencyPerDocument.Add(Convert.ToInt32(GetValue(ColumnNames, OldRow, "a_ap_document_id_i")),
+                        GetSupplierCurrency(Convert.ToInt64(GetValue(ColumnNames, OldRow, "p_partner_key_n"))));
+                }
+
+                CurrencyPerPayment = new SortedList <long, string>();
+
+                TTable documentpaymentTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("a_ap_document_payment");
+
+                Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "a_ap_document_payment.d.gz",
+                    documentpaymentTableOld.grpTableField.Count);
+
+                ColumnNames = GetColumnNames(documentpaymentTableOld);
+
+                while (true)
+                {
+                    string[] OldRow = Parser.ReadNextRow();
+
+                    if (OldRow == null)
+                    {
+                        break;
+                    }
+
+                    CurrencyPerPayment.Add(Convert.ToInt64(GetValue(ColumnNames, OldRow, "a_ledger_number_i")) * 1000000 +
+                        Convert.ToInt64(GetValue(ColumnNames, OldRow, "a_payment_number_i")),
+                        CurrencyPerDocument[Convert.ToInt32(GetValue(ColumnNames, OldRow, "a_ap_document_id_i"))]);
+                }
+            }
+
+            return CurrencyPerPayment[ALedgerNumber * 1000000 + APaymentNumber];
+        }
+
         /// <summary>
         /// fixing table a_ap_document
         /// </summary>
@@ -114,6 +207,24 @@ namespace Ict.Tools.DataDumpPetra2
                 SetValue(AColumnNames, ref ANewRow, "a_date_issued_d",
                     GetValue(AColumnNames, ANewRow, "a_date_entered_d"));
             }
+
+            // we need to set a_currency_code_c which is stored with the supplier
+            SetValue(AColumnNames, ref ANewRow, "a_currency_code_c",
+                GetSupplierCurrency(Convert.ToInt64(GetValue(AColumnNames, ANewRow, "p_partner_key_n"))));
+
+            return true;
+        }
+
+        /// <summary>
+        /// fixing table a_ap_payment
+        /// </summary>
+        public static bool FixAPPayment(StringCollection AColumnNames, ref string[] ANewRow)
+        {
+            // we need to set a_currency_code_c which is stored with the supplier
+            SetValue(AColumnNames, ref ANewRow, "a_currency_code_c",
+                GetSupplierCurrencyFromPayment(
+                    Convert.ToInt32(GetValue(AColumnNames, ANewRow, "a_ledger_number_i")),
+                    Convert.ToInt32(GetValue(AColumnNames, ANewRow, "a_payment_number_i"))));
 
             return true;
         }
