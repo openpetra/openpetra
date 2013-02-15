@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1116,26 +1116,29 @@ namespace Ict.Petra.Client.MPartner.Gui
                             }
 #endif
 
-                            if (AInspectDS.PDataLabelValuePartner != null)
+                            // Delete all added Rows in the original dataset. They will automatically
+                            // be put back in with the Merge. If added Rows are deleted they will
+                            // be removed from the Row collection on the server. In that case the
+                            // client will not be aware of that. For modified Rows: if they are
+                            // deleted on the server they will not be taken out of the collection
+                            // but come back to the client as being marked as 'Deleted'. Therefore
+                            // with deleting the added Rows beforehand we are making sure that
+                            // the dataset on the client is synchronized with the one on the server.
+                            foreach (DataTable t in AInspectDS.Tables)
                             {
-                                // Delete all added Rows in the original dataset. They will automatically
-                                // be put back in with the Merge. If added Rows are deleted they will
-                                // be removed from the Row collection on the server. In that case the
-                                // client will not be aware of that. For modified Rows: if they are
-                                // deleted on the server they will not be taken out of the collection
-                                // but come back to the client as being marked as 'Deleted'. Therefore
-                                // with deleting the added Rows beforehand we are making sure that
-                                // the dataset on the client is synchronized with the one on the server.
-                                NumRows = AInspectDS.PDataLabelValuePartner.Rows.Count;
-
-                                for (RowIndex = NumRows - 1; RowIndex >= 0; RowIndex -= 1)
+                                if ((t == AInspectDS.PBankingDetails) || (t == AInspectDS.PDataLabelValuePartner))
                                 {
-                                    DataRow InspectDR = AInspectDS.PDataLabelValuePartner.Rows[RowIndex];
+                                    NumRows = t.Rows.Count;
 
-                                    // delete all added Rows.
-                                    if (InspectDR.RowState == DataRowState.Added)
+                                    for (RowIndex = NumRows - 1; RowIndex >= 0; RowIndex -= 1)
                                     {
-                                        InspectDR.Delete();
+                                        DataRow InspectDR = t.Rows[RowIndex];
+
+                                        // delete all added Rows.
+                                        if (InspectDR.RowState == DataRowState.Added)
+                                        {
+                                            InspectDR.Delete();
+                                        }
                                     }
                                 }
                             }

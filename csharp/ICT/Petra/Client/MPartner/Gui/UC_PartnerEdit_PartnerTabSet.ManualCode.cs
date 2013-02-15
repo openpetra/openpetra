@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -703,6 +703,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FUcoAddresses.RefreshRecordsAfterMerge();
+
+            if (FUcoFinanceDetails != null)
+            {
+                FUcoFinanceDetails.RefreshRecordsAfterMerge();
+            }
         }
 
         /// <summary>

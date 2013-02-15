@@ -117,8 +117,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this record ({0}).\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.BankingDetailsKey), Catalog.GetString("Confirm Delete"),
+                            "You have choosen to delete the bank account {0}.\n\nDo you really want to delete it?"),
+                        FPreviouslySelectedDetailRow.AccountName), Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 int rowIndex = grdDetails.SelectedRowIndex();
@@ -245,6 +245,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Performs necessary actions after the Merging of rows that were changed on
+        /// the Server side into the Client-side DataSet.
+        /// New rows with negative id numbers in the primary key have been removed, and replaced with the saved rows.
+        /// </summary>
+        public void RefreshRecordsAfterMerge()
+        {
+            FPreviouslySelectedDetailRow = null;
+            grdDetails.Selection.ResetSelection(false);
+            ShowData();
         }
 
         private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
