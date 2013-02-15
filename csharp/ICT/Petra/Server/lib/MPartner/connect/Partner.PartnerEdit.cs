@@ -148,6 +148,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             Boolean NewTransaction;
 
+            PartnerEditTDS localDS = new PartnerEditTDS();
+
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -157,8 +159,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // p_banking_details
             try
             {
-                PBankingDetailsAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
-                PPartnerBankingDetailsAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
+                PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+                PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
             }
             catch (Exception)
             {
@@ -174,7 +176,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
 
-            return FPartnerEditScreenDS;
+            return localDS;
         }
 
         #endregion
