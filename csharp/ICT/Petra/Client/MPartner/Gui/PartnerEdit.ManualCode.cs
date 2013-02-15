@@ -1995,7 +1995,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainFinanceDetails(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpFinanceDetails);
         }
 
         #endregion
