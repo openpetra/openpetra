@@ -171,20 +171,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Gets the data from all controls on this UserControl.
-        /// The data is stored in the DataTables/DataColumns to which the Controls
-        /// are mapped.
-        /// </summary>
-        public void GetDataFromControls2()
-        {
-            // Get data out of the Controls only if there is at least one row of data (Note: Column Headers count as one row)
-            if (grdDetails.Rows.Count > 1)
-            {
-                GetDataFromControls();
-            }
-        }
-
-        /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
         /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
@@ -270,7 +256,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Event Handler for Grid Event
         /// </summary>
-        /// <returns>void</returns>
         private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
             NewRow(this, null);
@@ -279,7 +264,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Event Handler for Grid Event
         /// </summary>
-        /// <returns>void</returns>
         private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
             if (e.Row != -1)
@@ -299,6 +283,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // check if bankkey refers to valid BANK partner
             TSharedPartnerValidation_Partner.ValidateBankingDetails(this, ARow, ref VerificationResultCollection, FValidationControlsDict);
+
+            // GetDataFromControls for PPartner table
+            FMainDS.PPartner[0].ReceiptLetterFrequency = cmbReceiptLetterFrequency.GetSelectedString();
+            FMainDS.PPartner[0].ReceiptEachGift = chkReceiptEachGift.Checked;
+            FMainDS.PPartner[0].AnonymousDonor = chkAnonymousDonor.Checked;
+            FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
+            FMainDS.PPartner[0].FinanceComment = txtFinanceComment.Text;
         }
     }
 }

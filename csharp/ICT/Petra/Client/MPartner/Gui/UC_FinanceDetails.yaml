@@ -12,10 +12,40 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeleteRow}      
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [grpBankAccounts, grpDonorGiftReceipting, grpRecipientGiftReceipting, grpOther]
             Dock: Fill
+        grpDonorGiftReceipting:
+            Label: Gift Receipting (for donors)
+            Dock: Top
+            Controls:
+                Row0: [cmbReceiptLetterFrequency]
+                Row1: [chkReceiptEachGift]
+                Row2: [chkAnonymousDonor]
+        cmbReceiptLetterFrequency:
+            # TODO values
+        chkReceiptEachGift:
+            Label: Printed Receipt for Each Gift
+        chkAnonymousDonor:
+        grpRecipientGiftReceipting:
+            Dock: Top
+            Controls:
+                Row0: [chkEmailGiftStatement]
+        chkEmailGiftStatement:
+            Label: Email Recipient Gift Statement
+        grpOther:
+            Dock: Top
+            Controls: [txtFinanceComment]
+        txtFinanceComment:
+            Multiline: true
+            Height: 60
+            Width: 300
+        grpBankAccounts:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Top
+            Height: 250
         pnlGrid:
             Dock: Fill
+            Height: 100
             Controls: [grdDetails,pnlButtons]
         pnlButtons:
             Dock: Right
@@ -26,13 +56,14 @@ RootNode:
             Action: actDelete
         grdDetails:
             Dock: Fill
+            Height: 100
             TableName: PBankingDetails
             Columns: [AccountName, BankAccountNumber, Iban]
             ActionFocusRow: FocusedRowChanged
         pnlDetails: 
             Dock: Bottom
             Type: Ict.Petra.Client.MPartner.Gui.TUC_FinanceDetails
-            Height: 300
+            Height: 150
             Controls: 
                 Row0: [grpAccountDetail]
             
