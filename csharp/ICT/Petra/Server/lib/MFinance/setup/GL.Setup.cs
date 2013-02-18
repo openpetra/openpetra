@@ -194,7 +194,427 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             return CalendarChangeAllowed;
         }
+
+        /// <summary>
+        /// returns true if subsystem is activated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ASubsystemCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        private static bool IsSubsystemActivated(Int32 ALedgerNumber, String ASubsystemCode)
+        {
+            Boolean NewTransaction;
+            Boolean Activated = false;
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            ASystemInterfaceTable TemplateTable;
+            ASystemInterfaceRow TemplateRow;
+            StringCollection TemplateOperators;
+
+            TemplateTable = new ASystemInterfaceTable();
+            TemplateRow = TemplateTable.NewRowTyped(false);
+            TemplateRow.LedgerNumber = ALedgerNumber;
+            TemplateRow.SubSystemCode = ASubsystemCode;
+            TemplateRow.SetUpComplete = true;
+            TemplateOperators = new StringCollection();
+            TemplateOperators.Add("=");
+
+            if (ASystemInterfaceAccess.CountUsingTemplate(TemplateRow, TemplateOperators, Transaction) > 0)
+            {
+                Activated = true;
+            }
+            
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return Activated;
+        }
+
+        /// <summary>
+        /// returns true if gift receipting subsystem is activated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool IsGiftReceiptingSubsystemActivated(Int32 ALedgerNumber)
+        {
+            return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
+        }
+
+        /// <summary>
+        /// returns true if accounts payable subsystem is activated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool IsAccountsPayableSubsystemActivated(Int32 ALedgerNumber)
+        {
+            return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.AP.ToString());
+        }
+
+        /// <summary>
+        /// activate subsystem for gift receipting for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AStartingReceiptNumber"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static TSubmitChangesResult ActivateGiftReceiptingSubsystem(Int32 ALedgerNumber, 
+                                                                           Int32 AStartingReceiptNumber,
+                                                                           out TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
+            Boolean NewTransaction;
+            
+            AVerificationResult = new TVerificationResultCollection();
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            // if subsystem already active then no need to go further
+            if (!IsGiftReceiptingSubsystemActivated(ALedgerNumber))
+            {
+                // create or update account for Creditor's Control
+                
+                
+                // make sure transaction type exists for gift receipting subsystem
+                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.GR.ToString(), Transaction) == 0)
+                {
+                    ATransactionTypeTable TransactionTypeTable;
+                    ATransactionTypeRow TransactionTypeRow;
+                    
+                    TransactionTypeTable = new ATransactionTypeTable();
+                    TransactionTypeRow = TransactionTypeTable.NewRowTyped();
+                    TransactionTypeRow.LedgerNumber = ALedgerNumber;
+                    TransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                    TransactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
+                    TransactionTypeRow.DebitAccountCode = "CASH";
+                    TransactionTypeRow.CreditAccountCode = "GIFT";
+                    TransactionTypeRow.TransactionTypeDescription = "Gift Receipting";
+                    TransactionTypeRow.SpecialTransactionType = true;
+                    TransactionTypeTable.Rows.Add(TransactionTypeRow);
+                    
+                    if (!ATransactionTypeAccess.SubmitChanges(TransactionTypeTable, Transaction, out AVerificationResult))
+                    {
+                        ReturnValue = TSubmitChangesResult.scrError;
+                    }
+                }
+                
+                if (ReturnValue == TSubmitChangesResult.scrOK)
+                {
+                    ASystemInterfaceTable SystemInterfaceTable;
+                    ASystemInterfaceRow SystemInterfaceRow;
+                    SystemInterfaceTable = ASystemInterfaceAccess.LoadByPrimaryKey(ALedgerNumber, 
+                                                                                   CommonAccountingSubSystemsEnum.GR.ToString(), 
+                                                                                   Transaction);
+                    
+                    if (SystemInterfaceTable.Count == 0)
+                    {
+                        SystemInterfaceRow = SystemInterfaceTable.NewRowTyped();
+                        SystemInterfaceRow.LedgerNumber = ALedgerNumber;
+                        SystemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                        SystemInterfaceRow.SetUpComplete = true;
+                        SystemInterfaceTable.Rows.Add(SystemInterfaceRow);
+                    }
+                    else
+                    {
+                        SystemInterfaceRow = (ASystemInterfaceRow)SystemInterfaceTable.Rows[0];
+                        SystemInterfaceRow.SetUpComplete = true;
+                    }
+                    
+                    if (!ASystemInterfaceAccess.SubmitChanges(SystemInterfaceTable, Transaction, out AVerificationResult))
+                    {
+                        ReturnValue = TSubmitChangesResult.scrError;
+                    }
+                }
+                
+                // now set the starting receipt number
+                if (ReturnValue == TSubmitChangesResult.scrOK)
+                {
+                    ALedgerTable LedgerTable;
+                    ALedgerRow LedgerRow;
+                    
+                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+                    LedgerRow.LastHeaderRNumber = AStartingReceiptNumber;
+    
+                    if (!ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AVerificationResult))
+                    {
+                        ReturnValue = TSubmitChangesResult.scrError;
+                    }
+                }
+            }
+            
+            if ((ReturnValue == TSubmitChangesResult.scrOK)
+                && NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// activate subsystem for accounts payable for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static TSubmitChangesResult ActivateAccountsPayableSubsystem(Int32 ALedgerNumber, 
+                                                                            out TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
+            Boolean NewTransaction;
+            
+            AVerificationResult = new TVerificationResultCollection();
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            // if subsystem already active then no need to go further
+            if (!IsAccountsPayableSubsystemActivated(ALedgerNumber))
+            {
+                // make sure transaction type exists for accounts payable subsystem
+                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.AP.ToString(), Transaction) == 0)
+                {
+                    ATransactionTypeTable TransactionTypeTable;
+                    ATransactionTypeRow TransactionTypeRow;
+                    
+                    TransactionTypeTable = new ATransactionTypeTable();
+                    TransactionTypeRow = TransactionTypeTable.NewRowTyped();
+                    TransactionTypeRow.LedgerNumber = ALedgerNumber;
+                    TransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+                    TransactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
+                    TransactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
+                    TransactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_CREDITORS;
+                    TransactionTypeRow.TransactionTypeDescription = "Input Creditor's Invoice";
+                    TransactionTypeRow.SpecialTransactionType = true;
+                    TransactionTypeTable.Rows.Add(TransactionTypeRow);
+                    
+                    if (!ATransactionTypeAccess.SubmitChanges(TransactionTypeTable, Transaction, out AVerificationResult))
+                    {
+                        ReturnValue = TSubmitChangesResult.scrError;
+                    }
+                }
+
+                // create or update system interface record for accounts payable
+                ASystemInterfaceTable SystemInterfaceTable;
+                ASystemInterfaceRow SystemInterfaceRow;
+                SystemInterfaceTable = ASystemInterfaceAccess.LoadByPrimaryKey(ALedgerNumber, 
+                                                                               CommonAccountingSubSystemsEnum.AP.ToString(), 
+                                                                               Transaction);
+                
+                if (SystemInterfaceTable.Count == 0)
+                {
+                    SystemInterfaceRow = SystemInterfaceTable.NewRowTyped();
+                    SystemInterfaceRow.LedgerNumber = ALedgerNumber;
+                    SystemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+                    SystemInterfaceRow.SetUpComplete = true;
+                    SystemInterfaceTable.Rows.Add(SystemInterfaceRow);
+                }
+                else
+                {
+                    SystemInterfaceRow = (ASystemInterfaceRow)SystemInterfaceTable.Rows[0];
+                    SystemInterfaceRow.SetUpComplete = true;
+                }
+                
+                if (!ASystemInterfaceAccess.SubmitChanges(SystemInterfaceTable, Transaction, out AVerificationResult))
+                {
+                    ReturnValue = TSubmitChangesResult.scrError;
+                }
+            }
+            
+            if ((ReturnValue == TSubmitChangesResult.scrOK)
+                && NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// returns true if subsystem can be deactivated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ASubsystemCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        private static bool CanSubsystemBeDeactivated(Int32 ALedgerNumber, String ASubsystemCode)
+        {
+            Boolean NewTransaction;
+            Boolean Result = false;
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            if (ASubsystemCode == CommonAccountingSubSystemsEnum.GR.ToString())
+            {
+                // for gift receipting don't allow to deactivate if 'Posted' or 'Unposted' gift batches exist
+                AGiftBatchTable TemplateGiftBatchTable;
+                AGiftBatchRow TemplateGiftBatchRow;
+                StringCollection TemplateGiftBatchOperators;
+    
+                TemplateGiftBatchTable = new AGiftBatchTable();
+                TemplateGiftBatchRow = TemplateGiftBatchTable.NewRowTyped(false);
+                TemplateGiftBatchRow.LedgerNumber = ALedgerNumber;
+                TemplateGiftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
+                TemplateGiftBatchOperators = new StringCollection();
+                TemplateGiftBatchOperators.Add("=");
+    
+                if (AGiftBatchAccess.CountUsingTemplate(TemplateGiftBatchRow, TemplateGiftBatchOperators, Transaction) == 0)
+                {
+                    Result = true;
+                }
+    
+                if (!Result)
+                {
+                    TemplateGiftBatchRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
         
+                    if (AGiftBatchAccess.CountUsingTemplate(TemplateGiftBatchRow, TemplateGiftBatchOperators, Transaction) == 0)
+                    {
+                        Result = true;
+                    }
+                }
+            }
+            
+            if (!Result)
+            {
+                AJournalTable TemplateJournalTable;
+                AJournalRow TemplateJournalRow;
+                StringCollection TemplateJournalOperators;
+    
+                TemplateJournalTable = new AJournalTable();
+                TemplateJournalRow = TemplateJournalTable.NewRowTyped(false);
+                TemplateJournalRow.LedgerNumber = ALedgerNumber;
+                TemplateJournalRow.SubSystemCode = ASubsystemCode;
+                TemplateJournalOperators = new StringCollection();
+                TemplateJournalOperators.Add("=");
+    
+                ARecurringJournalTable TemplateRJournalTable;
+                ARecurringJournalRow TemplateRJournalRow;
+                StringCollection TemplateRJournalOperators;
+    
+                TemplateRJournalTable = new ARecurringJournalTable();
+                TemplateRJournalRow = TemplateRJournalTable.NewRowTyped(false);
+                TemplateRJournalRow.LedgerNumber = ALedgerNumber;
+                TemplateRJournalRow.SubSystemCode = ASubsystemCode;
+                TemplateRJournalOperators = new StringCollection();
+                TemplateRJournalOperators.Add("=");
+    
+                // do not allow to deactivate subsystem if journals already exist
+                if (   AJournalAccess.CountUsingTemplate(TemplateJournalRow, TemplateJournalOperators, Transaction) == 0
+                    && ARecurringJournalAccess.CountUsingTemplate(TemplateRJournalRow, TemplateRJournalOperators, Transaction) == 0)
+                {
+                    Result = true;
+                }
+            }
+            
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return Result;
+        }
+
+        /// <summary>
+        /// returns true if gift receipting subsystem can be deactivated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CanGiftReceiptingSubsystemBeDeactivated(Int32 ALedgerNumber)
+        {
+            return CanSubsystemBeDeactivated(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
+        }
+
+        /// <summary>
+        /// returns true if accounts payable subsystem can be deactivated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CanAccountsPayableSubsystemBeDeactivated(Int32 ALedgerNumber)
+        {
+            return CanSubsystemBeDeactivated(ALedgerNumber, CommonAccountingSubSystemsEnum.AP.ToString());
+        }
+        
+        /// <summary>
+        /// deactivate given subsystem for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="SubsystemCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        private static bool DeactivateSubsystem(Int32 ALedgerNumber, String SubsystemCode)
+        {
+            Boolean NewTransaction;
+            bool Deactivated = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            try
+            {
+                ASystemInterfaceAccess.DeleteByPrimaryKey(ALedgerNumber, SubsystemCode, Transaction);
+    
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            
+                Deactivated = true;
+            }
+            finally
+            {
+                
+                if (!Deactivated)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            
+            return Deactivated;
+        }
+        
+        /// <summary>
+        /// deactivate subsystem for gift receipting for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool DeactivateGiftReceiptingSubsystem(Int32 ALedgerNumber)
+        {
+            return DeactivateSubsystem(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
+        }
+
+        /// <summary>
+        /// deactivate subsystem for accounts payable for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool DeactivateAccountsPayableSubsystem(Int32 ALedgerNumber)
+        {
+            return DeactivateSubsystem(ALedgerNumber, CommonAccountingSubSystemsEnum.AP.ToString());
+        }
+
         /// <summary>
         /// returns all account hierarchies available for this ledger
         /// </summary>
@@ -1509,6 +1929,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ANumberOfPeriods,
             Int32 ACurrentPeriod,
             Int32 ANumberOfFwdPostingPeriods,
+            bool AActivateGiftReceipting,
+            Int32 AStartingReceiptNumber,
+            bool AActivateAccountsPayable,
             out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
@@ -1675,22 +2098,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             accountingSystemParameterRow.BudgetDataRetention = ledgerRow.BudgetDataRetention;
             MainDS.AAccountingSystemParameter.Rows.Add(accountingSystemParameterRow);
 
+            // activate GL subsystem (this is always active)
             ASystemInterfaceRow systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
             systemInterfaceRow.LedgerNumber = ANewLedgerNumber;
 
             systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             systemInterfaceRow.SetUpComplete = true;
             MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
-            systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
-            systemInterfaceRow.LedgerNumber = ANewLedgerNumber;
-            systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
-            systemInterfaceRow.SetUpComplete = true;
-            MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
-            systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
-            systemInterfaceRow.LedgerNumber = ANewLedgerNumber;
-            systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
-            systemInterfaceRow.SetUpComplete = true;
-            MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
+
 
             ATransactionTypeRow transactionTypeRow;
 
@@ -1704,6 +2119,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.TransactionTypeDescription = "Allocation Journal";
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+            
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
@@ -1713,6 +2129,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.TransactionTypeDescription = "Reallocation Journal";
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+            
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
@@ -1722,6 +2139,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.TransactionTypeDescription = "Foreign Exchange Revaluation";
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+            
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
@@ -1731,24 +2149,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.TransactionTypeDescription = "Standard Journal";
             transactionTypeRow.SpecialTransactionType = false;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
-            transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
-            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
-            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
-            transactionTypeRow.DebitAccountCode = "CASH";
-            transactionTypeRow.CreditAccountCode = "GIFT";
-            transactionTypeRow.TransactionTypeDescription = "Gift Receipting";
-            transactionTypeRow.SpecialTransactionType = true;
-            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
-            transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
-            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
-            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
-            transactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
-            transactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_CREDITORS;
-            transactionTypeRow.TransactionTypeDescription = "Input Creditor's Invoice";
-            transactionTypeRow.SpecialTransactionType = true;
-            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+
 
             AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ANewLedgerNumber, PartnerKey, null);
 
@@ -1817,11 +2218,24 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber);
             ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
 
+
             // TODO: modify UI navigation yml file etc?
             // TODO: permissions for which users?
 
             TSubmitChangesResult result = GLSetupTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
 
+            // activate gift receipting subsystem            
+            if (AActivateGiftReceipting)
+            {
+                ActivateGiftReceiptingSubsystem(ANewLedgerNumber, AStartingReceiptNumber, out AVerificationResult);
+            }
+
+            // activate accounts payable subsystem
+            if (AActivateAccountsPayable)
+            {
+                ActivateAccountsPayableSubsystem(ANewLedgerNumber, out AVerificationResult);
+            }
+            
             if (result == TSubmitChangesResult.scrOK)
             {
                 // give the current user access permissions to this new ledger
