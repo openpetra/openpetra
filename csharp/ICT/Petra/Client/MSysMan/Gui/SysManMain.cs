@@ -80,11 +80,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 {
                     Thread t = new Thread(() => ResetDatabaseInThread(zippedYml));
 
-                    TProgressDialog dialog = new TProgressDialog(t);
-
-                    if (dialog.ShowDialog() == DialogResult.Cancel)
+                    using (TProgressDialog dialog = new TProgressDialog(t))
                     {
-                        return;
+                        if (dialog.ShowDialog() == DialogResult.Cancel)
+                        {
+                            return;
+                        }
                     }
 
                     if (WebConnectorResult)

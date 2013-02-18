@@ -69,8 +69,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private String FStatusFilter = "";  // filter the status of invoices
         private int[] ColumnWidth =
         {
-            20, 70, 90, 90, 100, 110
+            20, 70, 90, 90, 90, 100, 110
         };
+
 
         /// <summary>
         /// Load the supplier and all the transactions (invoices and payments) that relate to it.
@@ -96,7 +97,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FinishedCheckThread.Start();
 
             grdResult.MouseClick += new MouseEventHandler(grdResult_Click);
-            this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+            this.Text = Catalog.GetString("Supplier Transactions") + " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
         }
 
         private delegate void SimpleDelegate();
@@ -210,6 +211,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"], 70);
             grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"], 90);
             grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"], 2);
+            grdResult.AddTextColumn("Currency", FPagedDataTable.Columns["Currency"], 90);
 //          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
             grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"], 100);
             grdResult.AddDateColumn("Date", FPagedDataTable.Columns["Date"]);
@@ -232,7 +234,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     DataRow Row = rv.Row;
 
-                    if (Row["Amount"].GetType() == typeof(Decimal))
+                    if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Amount"].GetType() == typeof(Decimal)))
                     {
                         if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
                         {
@@ -344,9 +346,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
                 DataRow Row = rv.Row;
-                ListHasItems = true;
+                Boolean IsMyCurrency = (Row["Currency"].ToString() == txtSupplierCurrency.Text);
 
-                if (Row["Tagged"].Equals(true))
+                if (IsMyCurrency)
+                {
+                    ListHasItems = true;
+                }
+
+                if (IsMyCurrency && Row["Tagged"].Equals(true))
                 {
                     // If it's a payment or a credit note, I'll subract it
                     // If it's an invoice, I'll add it!
@@ -434,7 +441,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 DataRow Row = rv.Row;
 
-                if ((Row["Status"].ToString().Length > 0) && ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["Status"].ToString()) < 0))
+                if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0)
+                    && ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["Status"].ToString()) < 0))
                 {
                     Row["Tagged"] = true;
                 }
@@ -449,7 +457,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 DataRow Row = rv.Row;
 
-                if ((Row["Status"].ToString().Length > 0) && ("|POSTED|PARTPAID|".IndexOf("|" + Row["Status"].ToString()) >= 0))
+                if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0)
+                    && ("|POSTED|PARTPAID|".IndexOf("|" + Row["Status"].ToString()) >= 0))
                 {
                     Row["Tagged"] = true;
                 }
@@ -602,7 +611,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             foreach (DataRow row in FPagedDataTable.Rows)
             {
                 if ((row["Tagged"].Equals(true)) && (row["Status"].ToString().Length > 0)   // Invoices have status, Payments don't.
-                    && ("|POSTED|PARTPAID|PAID".IndexOf("|" + row["Status"].ToString()) < 0))
+                    && ("|POSTED|PARTPAID|PAID".IndexOf("|" + row["Status"].ToString()) < 0)
+                    && (row["Currency"].ToString() == txtSupplierCurrency.Text)
+                    )
                 {
                     Int32 DocumentId = Convert.ToInt32(row["DocumentId"]);
                     TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, DocumentId));
@@ -643,7 +654,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             foreach (DataRow row in FPagedDataTable.Rows)
             {
-                if ((row["Tagged"].Equals(true)) && (!row["InvNum"].Equals("Payment")))
+                if ((row["Tagged"].Equals(true)) && (!row["InvNum"].Equals("Payment")) && (row["Currency"].ToString() == txtSupplierCurrency.Text))
                 {
                     // TODO: only use tagged rows that can be paid
                     Int32 DocumentId = Convert.ToInt32(row["DocumentId"]);

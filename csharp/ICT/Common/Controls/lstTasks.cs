@@ -524,6 +524,7 @@ namespace Ict.Common.Controls
             else if (actionOpenScreen.Length > 0)
             {
                 string className = actionOpenScreen;
+                System.Object screen = null;
 
                 System.Type classType = asm.GetType(strNamespace + "." + className);
 
@@ -537,7 +538,6 @@ namespace Ict.Common.Controls
                 // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
                 // delegate as a static function that is available from everywhere?
 
-                System.Object screen = null;
                 try
                 {
                     if (OpenNewOrExistingForm != null)

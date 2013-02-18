@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdDetails.AddTextColumn("Type", FMainDS.AApDocumentPayment.ColumnDocType, 80);
 //          grdDetails.AddTextColumn("Discount used", FMainDS.AApDocumentPayment.ColumnUseDiscount, 80);
             grdDetails.AddCurrencyColumn("Amount", FMainDS.AApDocumentPayment.ColumnAmount);
-            // grdDetails.AddTextColumn("Currency", FMainDS.AApDocumentPayment.ColumnCurrencyCode, 50); // I like this, but it's not required...
+//          grdDetails.AddTextColumn("Currency", FMainDS.AApPayment.ColumnCurrencyCode, 50);  // There's no currencyCode in DocumentPayment!
 
             grdPayments.AddTextColumn("Supplier", FMainDS.AApPayment.ColumnListLabel);
 

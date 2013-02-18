@@ -74,6 +74,17 @@ namespace Ict.Petra.Server.MFinance.GL
             out TVerificationResultCollection AMessages
             )
         {
+
+            Int32 ProgressTrackerCounter = 0;
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Importing GL Batches"),
+                100);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Initializing"),
+                5);
+            
             AMessages = new TVerificationResultCollection();
             GLBatchTDS MainDS = new GLBatchTDS();
             GLSetupTDS SetupDS = new GLSetupTDS();
@@ -92,16 +103,6 @@ namespace Ict.Petra.Server.MFinance.GL
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             Int32 RowNumber = 0;
-
-            Int32 ProgressTrackerCounter = 0;
-
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Importing GL Batches"),
-                100);
-
-            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Parsing first line"),
-                0);
 
             try
             {
@@ -159,7 +160,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 string.Format(Catalog.GetString("Batch {0}"),NewBatch.BatchNumber),
-                                5);
+                                10);
 
                             int PeriodNumber, YearNr;
 
@@ -219,7 +220,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 string.Format(Catalog.GetString("Batch{0}, Journal {1}"), 
                                     NewBatch.BatchNumber, 
                                     NewJournal.JournalNumber),
-                                10);
+                                15);
 
                             MainDS.AJournal.Rows.Add(NewJournal);
 
@@ -427,15 +428,15 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             MainDS.ATransAnalAttrib.AcceptChanges();
 
-                            // Update progress tracker every 50 records
-                            if (++ProgressTrackerCounter % 50 == 0)
+                            // Update progress tracker every 40 records
+                            if (++ProgressTrackerCounter % 40 == 0)
                             {
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    string.Format(Catalog.GetString("Batch {0}, Journal {1}: {3}"),
+                                    string.Format(Catalog.GetString("Batch {0}, Journal {1}: {2}"),
                                         NewBatch.BatchNumber,
                                         NewJournal.JournalNumber,
                                         ProgressTrackerCounter),
-                                        ((ProgressTrackerCounter / 50) + 2) * 10 > 90 ? 90 : ((ProgressTrackerCounter / 50) + 2) * 10);
+                                        ((ProgressTrackerCounter / 40) + 2) * 10 > 90 ? 90 : ((ProgressTrackerCounter / 40) + 2) * 10);
                             }
                         }
                         else

@@ -80,18 +80,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Opens the Partner Find screen (or activates it in case a non-modal instance was already open).
         /// </summary>
-        public static void FindPartner(Form AParentForm)
+        public static TPartnerFindScreen FindPartner(Form AParentForm)
         {
-            bool FormWasAlreadyOpened;
+            TPartnerFindScreen frm = new TPartnerFindScreen(AParentForm);
 
-            TPartnerFindScreen frm = (TPartnerFindScreen)TFormsList.OpenNewOrExistingForm(
-                typeof(Ict.Petra.Client.MPartner.Gui.TPartnerFindScreen), AParentForm, out FormWasAlreadyOpened, false);
-
-            if (!FormWasAlreadyOpened)
-            {
-                frm.SetParameters(false, -1);
-                frm.Show();
-            }
+            frm.SetParameters(false, -1);
+            frm.Show();
+            return frm;
         }
 
         /// <summary>
