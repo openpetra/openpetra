@@ -176,6 +176,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
 
+            localDS.RemoveEmptyTables();
+
             return localDS;
         }
 
@@ -667,6 +669,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
 
                     #endregion
+
+                    // financial details
+                    if ((!ADelayedDataLoading) || (ATabPage == TPartnerEditTabPageEnum.petpFinanceDetails))
+                    {
+                        FPartnerEditScreenDS.Merge(GetBankingDetails());
+                    }
 
                     ItemsCountPartnerBankingDetails = PPartnerBankingDetailsAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
 

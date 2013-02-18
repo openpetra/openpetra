@@ -2505,6 +2505,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerEditTabPageEnum.petpPartnerTypes:
                 case TPartnerEditTabPageEnum.petpPartnerRelationships:
                 case TPartnerEditTabPageEnum.petpNotes:
+                case TPartnerEditTabPageEnum.petpFinanceDetails:
                     FInitiallySelectedTabPage = FShowTabPage;
 
                     break;
@@ -3010,6 +3011,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerEditTabPageEnum.petpPartnerRelationships:
                     FMainDS.PPartnerRelationship.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
                     FMainDS.PPartnerRelationship.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
+                    break;
+
+                case TPartnerEditTabPageEnum.petpFinanceDetails:
                     break;
 
                 case TPartnerEditTabPageEnum.petpContacts:
