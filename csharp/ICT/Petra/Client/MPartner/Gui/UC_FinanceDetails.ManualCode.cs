@@ -84,6 +84,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnDelete.Enabled = false;
                 pnlDetails.Visible = false;
             }
+
+            // if partner is of class FAMILY or class UNIT, enable grpRecipientGiftReceipting
+            grpRecipientGiftReceipting.Enabled = (FMainDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY
+                                                  || FMainDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT);
         }
 
         /// <summary>
@@ -96,12 +100,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.CreateNewPBankingDetails();
         }
 
-        private void NewRowManual(ref PBankingDetailsRow ARow)
+        private void NewRowManual(ref PartnerEditTDSPBankingDetailsRow ARow)
         {
             // TODO check if similar bank accounts with same details exists already
             ARow.BankingDetailsKey = (FMainDS.PBankingDetails.Rows.Count + 1) * -1;
             ARow.BankingType = MPartnerConstants.BANKINGTYPE_BANKACCOUNT;
             ARow.BankKey = 0;
+            ARow.MainAccount = (FMainDS.PBankingDetails.Rows.Count == 0);
 
             PPartnerBankingDetailsRow partnerBankingDetails = FMainDS.PPartnerBankingDetails.NewRowTyped();
             partnerBankingDetails.BankingDetailsKey = ARow.BankingDetailsKey;
@@ -185,52 +190,30 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>true if successful, otherwise false.</returns>
         private Boolean LoadDataOnDemand()
         {
-            Boolean ReturnValue;
-
-            try
+            // Make sure that Typed DataTables are already there at Client side
+            if (FMainDS.PBankingDetails == null)
             {
-                // Make sure that Typed DataTables are already there at Client side
-                if (FMainDS.PBankingDetails == null)
-                {
-                    FMainDS.Tables.Add(new PBankingDetailsTable());
-                    FMainDS.Tables.Add(new PPartnerBankingDetailsTable());
-                    FMainDS.InitVars();
-                }
+                FMainDS.Tables.Add(new PartnerEditTDSPBankingDetailsTable());
+                FMainDS.Tables.Add(new PPartnerBankingDetailsTable());
+                FMainDS.InitVars();
+            }
 
-                if (TClientSettings.DelayedDataLoading
-                    && (FMainDS.PBankingDetails.Rows.Count == 0))
-                {
-                    FMainDS.Merge(FPartnerEditUIConnector.GetBankingDetails());
+            if (TClientSettings.DelayedDataLoading
+                && ((FMainDS.PBankingDetails == null) || (FMainDS.PBankingDetails.Rows.Count == 0)))
+            {
+                FMainDS.Merge(FPartnerEditUIConnector.GetBankingDetails());
 
-                    // Make DataRows unchanged
-                    if (FMainDS.PBankingDetails.Rows.Count > 0)
+                // Make DataRows unchanged
+                if (FMainDS.PBankingDetails.Rows.Count > 0)
+                {
+                    if (FMainDS.PBankingDetails.Rows[0].RowState != DataRowState.Added)
                     {
-                        if (FMainDS.PBankingDetails.Rows[0].RowState != DataRowState.Added)
-                        {
-                            FMainDS.PBankingDetails.AcceptChanges();
-                        }
+                        FMainDS.PBankingDetails.AcceptChanges();
                     }
                 }
-
-                if (FMainDS.PBankingDetails.Rows.Count != 0)
-                {
-                    ReturnValue = true;
-                }
-                else
-                {
-                    ReturnValue = false;
-                }
-            }
-            catch (System.NullReferenceException)
-            {
-                return false;
-            }
-            catch (Exception)
-            {
-                throw;
             }
 
-            return ReturnValue;
+            return FMainDS.PBankingDetails.Rows.Count != 0;
         }
 
         /// <summary>
@@ -290,6 +273,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.PPartner[0].AnonymousDonor = chkAnonymousDonor.Checked;
             FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
             FMainDS.PPartner[0].FinanceComment = txtFinanceComment.Text;
+
+            // TODO validate that there is at least one main account, but not multiple?
+        }
+
+        // set the main account flag, remove that flag from the other accounts (p_banking_details_usage)
+        private void SetMainAccount(System.Object Sender, EventArgs e)
+        {
+            foreach (PartnerEditTDSPBankingDetailsRow r in FMainDS.PBankingDetails.Rows)
+            {
+                if ((r.RowState != DataRowState.Deleted) && (r != FPreviouslySelectedDetailRow) && r.MainAccount)
+                {
+                    r.MainAccount = false;
+                    FPetraUtilsObject.SetChangedFlag();
+                }
+            }
+
+            if (!FPreviouslySelectedDetailRow.MainAccount)
+            {
+                FPreviouslySelectedDetailRow.MainAccount = true;
+                FPetraUtilsObject.SetChangedFlag();
+            }
+
+            // MainAccount PBankingDetailsUsage is processed on the server side!!!
         }
     }
 }

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -87,7 +87,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             TPetraServerConnector.Disconnect();
         }
 
-        private PPartnerRow CreateNewPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
+        /// create a new partner
+        public static PPartnerRow CreateNewPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
         {
             PPartnerRow PartnerRow = AMainDS.PPartner.NewRowTyped();
 
@@ -110,7 +111,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             return PartnerRow;
         }
 
-        private PPartnerRow CreateNewFamilyPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
+        /// create a new family
+        public static PPartnerRow CreateNewFamilyPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
         {
             PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
 
@@ -127,7 +129,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             return PartnerRow;
         }
 
-        private PPersonRow CreateNewPerson(PartnerEditTDS AMainDS,
+        /// create a new person
+        public static PPersonRow CreateNewPerson(PartnerEditTDS AMainDS,
             TPartnerEditUIConnector AConnector,
             Int64 AFamilyKey,
             Int32 ALocationKey,
@@ -159,7 +162,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             return PersonRow;
         }
 
-        private PPartnerRow CreateNewUnitPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
+        /// create a new unit
+        public static PPartnerRow CreateNewUnitPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
         {
             PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
 
@@ -174,7 +178,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             return PartnerRow;
         }
 
-        private PPartnerRow CreateNewOrganisationPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
+        /// create a new organisation
+        public static PPartnerRow CreateNewOrganisationPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
         {
             PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
 
@@ -189,7 +194,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             return PartnerRow;
         }
 
-        private PPartnerRow CreateNewChurchPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
+        /// create a new church
+        public static PPartnerRow CreateNewChurchPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
         {
             TVerificationResultCollection VerificationResult;
 
@@ -218,7 +224,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             return PartnerRow;
         }
 
-        private PPartnerRow CreateNewBankPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
+        /// create a new bank
+        public static PPartnerRow CreateNewBankPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
         {
             PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
 
@@ -233,7 +240,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             return PartnerRow;
         }
 
-        private PPartnerRow CreateNewVenuePartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
+        /// create a new venue
+        public static PPartnerRow CreateNewVenuePartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
         {
             PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
 
@@ -249,7 +257,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             return PartnerRow;
         }
 
-        private void CreateFamilyWithPersonRecords(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
+        /// create a new family with persons
+        public static void CreateFamilyWithPersonRecords(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
         {
             PPartnerRow PartnerRow = CreateNewFamilyPartner(AMainDS, AConnector);
 
@@ -271,7 +280,8 @@ namespace Tests.MPartner.Server.PartnerEdit
                 1);
         }
 
-        private void CreateNewLocation(Int64 APartnerKey, PartnerEditTDS AMainDS)
+        /// create a new location
+        public static void CreateNewLocation(Int64 APartnerKey, PartnerEditTDS AMainDS)
         {
             // avoid duplicate addresses: StreetName contains the partner key
             PLocationRow LocationRow = AMainDS.PLocation.NewRowTyped();

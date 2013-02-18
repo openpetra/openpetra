@@ -1126,7 +1126,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // the dataset on the client is synchronized with the one on the server.
                             foreach (DataTable t in AInspectDS.Tables)
                             {
-                                if ((t == AInspectDS.PBankingDetails) || (t == AInspectDS.PDataLabelValuePartner))
+                                if ((t == AInspectDS.PBankingDetails)
+                                    || (t == AInspectDS.PPartnerBankingDetails)
+                                    || (t == AInspectDS.PDataLabelValuePartner))
                                 {
                                     NumRows = t.Rows.Count;
 

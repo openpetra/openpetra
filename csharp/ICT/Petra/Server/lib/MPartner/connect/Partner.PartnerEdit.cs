@@ -141,6 +141,105 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         #region BankingDetails
 
+        private void PrepareBankingDetailsForSaving(ref PartnerEditTDS AInspectDS, ref TVerificationResultCollection AVerificationResult,
+            TDBTransaction ATransaction)
+        {
+            if ((AInspectDS.PBankingDetails != null) && (AInspectDS.PBankingDetails.Rows.Count > 0))
+            {
+                AInspectDS.Merge(new PBankingDetailsUsageTable());
+                AInspectDS.InitVars();
+                PBankingDetailsUsageAccess.LoadViaPPartner(AInspectDS, FPartnerKey, ATransaction);
+                AInspectDS.PBankingDetailsUsage.AcceptChanges();
+
+
+                // make sure there is at least one main account, or no account at all
+                // make sure there are no multiple main accounts
+
+                PartnerEditTDS LocalDS = new PartnerEditTDS();
+                PBankingDetailsAccess.LoadViaPPartner(LocalDS, FPartnerKey, ATransaction);
+                LocalDS.Merge(AInspectDS.PBankingDetails);
+
+                bool ThereIsAtLeastOneAccount = false;
+
+                // get the main account
+                Int32 MainAccountBankingDetails = Int32.MinValue;
+
+                foreach (PartnerEditTDSPBankingDetailsRow detailRow in LocalDS.PBankingDetails.Rows)
+                {
+                    if (detailRow.RowState != DataRowState.Deleted)
+                    {
+                        ThereIsAtLeastOneAccount = true;
+
+                        if (!detailRow.IsMainAccountNull() && detailRow.MainAccount)
+                        {
+                            if ((MainAccountBankingDetails != Int32.MinValue) && (detailRow.BankingDetailsKey != MainAccountBankingDetails))
+                            {
+                                AVerificationResult.Add(new TVerificationResult(
+                                        String.Format("Banking Details"),
+                                        string.Format("there are multiple main accounts"),
+                                        TResultSeverity.Resv_Critical));
+                                return;
+                            }
+                            else
+                            {
+                                // if the main account has been changed
+                                MainAccountBankingDetails = detailRow.BankingDetailsKey;
+                            }
+                        }
+                    }
+                }
+
+                bool alreadyExists = false;
+
+                foreach (PBankingDetailsUsageRow usageRow in AInspectDS.PBankingDetailsUsage.Rows)
+                {
+                    if (usageRow.Type == MPartnerConstants.BANKINGUSAGETYPE_MAIN)
+                    {
+                        DataRow bdrow = LocalDS.PBankingDetails.Rows.Find(usageRow.BankingDetailsKey);
+
+                        if ((bdrow == null) || (bdrow.RowState == DataRowState.Deleted))
+                        {
+                            // deleting the account
+                            usageRow.Delete();
+                        }
+                        else if (MainAccountBankingDetails == Int32.MinValue)
+                        {
+                            MainAccountBankingDetails = usageRow.BankingDetailsKey;
+                            alreadyExists = true;
+                        }
+                        else if ((MainAccountBankingDetails != Int32.MinValue) && (usageRow.BankingDetailsKey != MainAccountBankingDetails))
+                        {
+                            usageRow.Delete();
+                        }
+                        else
+                        {
+                            alreadyExists = true;
+                        }
+                    }
+                }
+
+                if (!alreadyExists && ThereIsAtLeastOneAccount)
+                {
+                    if (MainAccountBankingDetails == Int32.MinValue)
+                    {
+                        AVerificationResult.Add(new TVerificationResult(
+                                String.Format("Banking Details"),
+                                string.Format("there is no main account"),
+                                TResultSeverity.Resv_Critical));
+                        return;
+                    }
+                    else
+                    {
+                        PBankingDetailsUsageRow newUsageRow = AInspectDS.PBankingDetailsUsage.NewRowTyped(true);
+                        newUsageRow.PartnerKey = FPartnerKey;
+                        newUsageRow.BankingDetailsKey = MainAccountBankingDetails;
+                        newUsageRow.Type = MPartnerConstants.BANKINGUSAGETYPE_MAIN;
+                        AInspectDS.PBankingDetailsUsage.Rows.Add(newUsageRow);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// get the banking details of the current partner
         /// </summary>
@@ -161,6 +260,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+                PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
             }
             catch (Exception)
             {
@@ -176,6 +276,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
 
+            foreach (PartnerEditTDSPBankingDetailsRow bd in localDS.PBankingDetails.Rows)
+            {
+                bd.MainAccount =
+                    (localDS.PBankingDetailsUsage.Rows.Find(
+                         new object[] { FPartnerKey, bd.BankingDetailsKey, MPartnerConstants.BANKINGUSAGETYPE_MAIN }) != null);
+            }
+
+            localDS.PBankingDetailsUsage.Clear();
             localDS.RemoveEmptyTables();
 
             return localDS;
@@ -1826,10 +1934,20 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
-                FSubmissionDS = AInspectDS;
+
                 TVerificationResultCollection SingleVerificationResultCollection;
                 AVerificationResult = new TVerificationResultCollection();
                 TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                PrepareBankingDetailsForSaving(ref AInspectDS, ref AVerificationResult, SubmitChangesTransaction);
+
+                if (AVerificationResult.HasCriticalErrors)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    return TSubmitChangesResult.scrError;
+                }
+
+                FSubmissionDS = AInspectDS;
 
                 try
                 {

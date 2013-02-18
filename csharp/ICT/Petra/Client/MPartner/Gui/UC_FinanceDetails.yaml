@@ -9,7 +9,8 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+        actSetMainAccount: {ActionClick=SetMainAccount}
     Controls:
         pnlContent:
             Controls: [grpBankAccounts, grpDonorGiftReceipting, grpRecipientGiftReceipting, grpOther]
@@ -21,8 +22,7 @@ RootNode:
                 Row0: [cmbReceiptLetterFrequency]
                 Row1: [chkReceiptEachGift]
                 Row2: [chkAnonymousDonor]
-        cmbReceiptLetterFrequency:
-            # TODO values
+        cmbReceiptLetterFrequency: {List=FrequencyList, Width=105}
         chkReceiptEachGift:
             Label: Printed Receipt for Each Gift
         chkAnonymousDonor:
@@ -42,23 +42,27 @@ RootNode:
         grpBankAccounts:
             Controls: [pnlGrid, pnlDetails]
             Dock: Top
-            Height: 250
+            Height: 270
         pnlGrid:
             Dock: Fill
-            Height: 100
+            Height: 120
             Controls: [grdDetails,pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete]
+            Controls: [btnNew, btnDelete, btnSetMainAccount]
         btnNew: {Stretch=horizontally}
             Action: actNew
         btnDelete: {Stretch=horizontally}
             Action: actDelete
+        btnSetMainAccount: {Stretch=horizontally}
+            Action: actSetMainAccount
         grdDetails:
             Dock: Fill
-            Height: 100
+            Height: 120
             TableName: PBankingDetails
-            Columns: [AccountName, BankAccountNumber, Iban]
+            Columns: [MainAccount, AccountName, BankAccountNumber, Iban]
+            CustomColumns:
+                MainAccount: {Label=Main Account, Type=Boolean}
             ActionFocusRow: FocusedRowChanged
         pnlDetails: 
             Dock: Bottom

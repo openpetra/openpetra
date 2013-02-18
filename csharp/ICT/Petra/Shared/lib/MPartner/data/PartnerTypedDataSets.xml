@@ -27,7 +27,9 @@
     <Table sqltable="p_organisation"/>
     <Table sqltable="p_church"/>
     <Table sqltable="p_bank"/>
-    <Table sqltable="p_banking_details"/>
+    <Table sqltable="p_banking_details">
+        <CustomField name="MainAccount" type="Boolean"/>
+    </Table>
     <Table sqltable="p_partner_banking_details"/>
     <Table sqltable="p_banking_details_usage"/>
     <Table sqltable="p_venue"/>
