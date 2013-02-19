@@ -122,13 +122,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e"></param>
         public void FileSave(object sender, EventArgs e)
         {
-            try
-            {
-                SaveChanges();
-            }
-            catch (CancelSaveException)
-            {
-            }
+            SaveChanges();
         }
 
         /// <summary></summary>

@@ -124,28 +124,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void SetupGrid()
         {
             grdDetails.Columns.Clear();
-            grdDetails.AddDateColumn("Date Entered", FMainDS.Tables["Table"].Columns["DateEntered"]);
-            grdDetails.AddTextColumn("Group", FMainDS.Tables["Table"].Columns["MotivationGroupCode"]);
-            grdDetails.AddTextColumn("Detail", FMainDS.Tables["Table"].Columns["MotivationDetailCode"]);
-            grdDetails.AddTextColumn("Receipt", FMainDS.Tables["Table"].Columns["ReceiptNumber"]);
-            grdDetails.AddCurrencyColumn("Amount (Base)", FMainDS.Tables["Table"].Columns["GiftAmount"]);
-            grdDetails.AddCurrencyColumn("Amount (Intl)", FMainDS.Tables["Table"].Columns["GiftAmountIntl"]);
-            grdDetails.AddCheckBoxColumn("C", FMainDS.Tables["Table"].Columns["ConfidentialGiftFlag"]);
-            grdDetails.AddTextColumn("Batch", FMainDS.Tables["Table"].Columns["BatchNumber"]);
-            grdDetails.AddTextColumn("Trans", FMainDS.Tables["Table"].Columns["GiftTransactionNumber"]);
-            grdDetails.AddTextColumn("Recipient", FMainDS.Tables["Table"].Columns["RecipientDescription"]);
-            grdDetails.AddTextColumn("Reference", FMainDS.Tables["Table"].Columns["Reference"]);
-            grdDetails.AddTextColumn("Comment One", FMainDS.Tables["Table"].Columns["GiftCommentOne"]);
-            grdDetails.AddTextColumn("Comment Type", FMainDS.Tables["Table"].Columns["CommentOneType"]);
-            grdDetails.AddTextColumn("Recipient Ledger", FMainDS.Tables["Table"].Columns["RecipientLedgerNumber"]);
-            grdDetails.AddTextColumn("Recipient", FMainDS.Tables["Table"].Columns["RecipientKey"]);
-            grdDetails.AddCheckBoxColumn("Charge Fee", FMainDS.Tables["Table"].Columns["ChargeFlag"]);
-            grdDetails.AddTextColumn("Method of Payment", FMainDS.Tables["Table"].Columns["MethodOfPaymentCode"]);
-            grdDetails.AddTextColumn("Method of Giving", FMainDS.Tables["Table"].Columns["MethodOfGivingCode"]);
-            grdDetails.AddTextColumn("Cost Centre Code", FMainDS.Tables["Table"].Columns["CostCentreCode"]);
-            grdDetails.AddTextColumn("Comment Two", FMainDS.Tables["Table"].Columns["GiftCommentTwo"]);
-            grdDetails.AddTextColumn("Comment Three", FMainDS.Tables["Table"].Columns["GiftCommentThree"]);
-            grdDetails.AddTextColumn("Mailing Code", FMainDS.Tables["Table"].Columns["MailingCode"]);
+            grdDetails.AddDateColumn("Date Entered", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DateEntered"]);
+            grdDetails.AddTextColumn("Group", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MotivationGroupCode"]);
+            grdDetails.AddTextColumn("Detail", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MotivationDetailCode"]);
+            grdDetails.AddTextColumn("Receipt", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ReceiptNumber"]);
+            grdDetails.AddCurrencyColumn("Amount (Base)", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftAmount"]);
+            grdDetails.AddCurrencyColumn("Amount (Intl)", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftAmountIntl"]);
+            grdDetails.AddCheckBoxColumn("C", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ConfidentialGiftFlag"]);
+            grdDetails.AddTextColumn("Batch", FMainDS.Tables[TEMP_TABLE_NAME].Columns["BatchNumber"]);
+            grdDetails.AddTextColumn("Trans", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftTransactionNumber"]);
+            grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientDescription"]);
+            grdDetails.AddTextColumn("Reference", FMainDS.Tables[TEMP_TABLE_NAME].Columns["Reference"]);
+            grdDetails.AddTextColumn("Comment One", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentOne"]);
+            grdDetails.AddTextColumn("Comment Type", FMainDS.Tables[TEMP_TABLE_NAME].Columns["CommentOneType"]);
+            grdDetails.AddTextColumn("Recipient Ledger", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientLedgerNumber"]);
+            grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientKey"]);
+            grdDetails.AddCheckBoxColumn("Charge Fee", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ChargeFlag"]);
+            grdDetails.AddTextColumn("Method of Payment", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MethodOfPaymentCode"]);
+            grdDetails.AddTextColumn("Method of Giving", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MethodOfGivingCode"]);
+            grdDetails.AddTextColumn("Cost Centre Code", FMainDS.Tables[TEMP_TABLE_NAME].Columns["CostCentreCode"]);
+            grdDetails.AddTextColumn("Comment Two", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentTwo"]);
+            grdDetails.AddTextColumn("Comment Three", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentThree"]);
+            grdDetails.AddTextColumn("Mailing Code", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MailingCode"]);
+
+            grdDetails.Columns[0].Width = 90;     // Date Entered
+            grdDetails.Columns[2].Width = 80;     // Motivation Detail Code
+            grdDetails.Columns[4].Width = 120;     // Amount - Base
+            grdDetails.Columns[5].Width = 120;     // Amount - Intl
+            grdDetails.Columns[9].Width = 160;     // Recipient
         }
 
         /// <summary>
@@ -198,6 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtMotivationGroup.Text = txtMotivationGroup.Text.ToUpper();
             txtMotivationDetail.Text = txtMotivationDetail.Text.ToUpper();
 
+            requestParams.Add("TempTable", TEMP_TABLE_NAME);
             requestParams.Add("Ledger", FLedgerNumber);
             requestParams.Add("Donor", donor);
             requestParams.Add("Recipient", recipient);
@@ -220,9 +227,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    if (FMainDS.Tables.Contains("Table"))
+                    if (FMainDS.Tables.Contains(TEMP_TABLE_NAME))
                     {
-                        FMainDS.Tables.Remove("Table");
+                        FMainDS.Tables.Remove(TEMP_TABLE_NAME);
                     }
 
                     FMainDS = newTDS;
@@ -232,10 +239,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     if (ALoading)
                     {
-                        if (FMainDS.Tables["Table"].Rows.Count > 0)
+                        if (FMainDS.Tables[TEMP_TABLE_NAME].Rows.Count > 0)
                         {
                             //If this form is loaded from elsewhere, set DateFrom to be lowest date in returned Table
-                            DataRow gdr = (DataRow)FMainDS.Tables["Table"].Rows[FMainDS.Tables["Table"].Rows.Count - 1];
+                            DataRow gdr = (DataRow)FMainDS.Tables[TEMP_TABLE_NAME].Rows[FMainDS.Tables[TEMP_TABLE_NAME].Rows.Count - 1];
                             dtpDateFrom.Date = Convert.ToDateTime(gdr["DateEntered"]);
                         }
                         else
@@ -245,21 +252,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
 
-                    if (grdDetails.Columns.Count < 2)
+                    if (grdDetails.Columns.Count < 1)
                     {
                         SetupGrid();
                     }
 
-                    DataView myDataView = FMainDS.Tables["Table"].DefaultView;
+                    DataView myDataView = FMainDS.Tables[TEMP_TABLE_NAME].DefaultView;
                     myDataView.AllowNew = false;
                     grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
                     SelectByIndex(0);
                     txtNumberOfGifts.Text = (grdDetails.Rows.Count - 1).ToString();
-                    grdDetails.Columns[0].Width = 90;     // Date
-                    grdDetails.Columns[2].Width = 80;     // Motiv. Detail
-                    grdDetails.Columns[4].Width = 60;     // Amount
-                    grdDetails.Columns[8].Width = 160;     // Recipient
                 }
 
                 UpdateTotals();
@@ -337,7 +340,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (grdDetails.Rows.Count > 1)
             {
-                foreach (DataRow rv in FMainDS.Tables["Table"].Rows)
+                foreach (DataRow rv in FMainDS.Tables[TEMP_TABLE_NAME].Rows)
                 {
                     DataRow gdr = (DataRow)rv;
                     sum += (decimal)gdr["GiftAmount"];

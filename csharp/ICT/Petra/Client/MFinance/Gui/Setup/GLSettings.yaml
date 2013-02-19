@@ -8,13 +8,15 @@ RootNode:
     FormType: edit
     Template: windowEdit
     WindowWidth: 700
-    WindowHeight: 500
+    WindowHeight: 600
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [grpCurrencies, grpMiscellaneousFlags, grpDataRetention]
+            Controls: [grpCurrencies, grpAccountingPeriods, grpMiscellaneousFlags, grpDataRetention]
         grpCurrencies: {Label=Currencies, Stretch=horizontally}
             Controls: [cmbBaseCurrency, cmbIntlCurrency]
+        grpAccountingPeriods: {Label=Accounting Periods, Stretch=horizontally}
+            Controls: [rgrCalendarModeRadio, nudNumberOfPeriods, dtpFinancialYearStartDate, nudCurrentPeriod, btnViewCalendar]
         grpMiscellaneousFlags: {Label=Miscellaneous, Stretch=horizontally}
             Controls: [pnlSuspenseAccounts, pnlBudget, pnlFwdPosting, pnlBranchProcess]
         grpDataRetention: {Label=Data Retention, Stretch=horizontally}
@@ -29,8 +31,26 @@ RootNode:
         pnlBranchProcess:
             Controls: [chkBranchProcessing]
             
+        rgrCalendarModeRadio:
+            Controls: [rbtMonthly, rbtNonMonthly]
+            NoLabel: true
+            BorderVisible: false
+            ControlsOrientation: horizontal
+        rbtMonthly:
+            Label: Monthly
+            OnChange: CalendarModeChanged
+            ParameterValue: Monthly
+        rbtNonMonthly:
+            Label: Non-monthly
+            OnChange: CalendarModeChanged
+            ParameterValue: Non-monthly
+        
         cmbBaseCurrency: {List=CurrencyCodeList}
         cmbIntlCurrency: {List=CurrencyCodeList}
+        nudNumberOfPeriods: {Label=Number of Periods}
+        nudCurrentPeriod: {Label=Current Period}
+        btnViewCalendar: {Label=View Calendar, ActionClick=OnBtnCalendar}
+        dtpFinancialYearStartDate: {Label=First Day of the Financial Year, Align=bottom}
         chkSuspenseAccountFlag: {Label=Allow use of suspense accounts?, CheckBoxAttachedLabel=right, Validation=true}
         chkBudgetControlFlag: {Label=Budget control, CheckBoxAttachedLabel=right}
         chkUseDefaultFwdPostingPeriods: {Label=Use default forward posting periods, CheckBoxAttachedLabel=right, OnChange=UseDefaultFwdPostingPeriodsChanged}

@@ -1141,9 +1141,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("DETAILTABLETYPE", "");
             }
 
-            if (FCodeStorage.HasAttribute("TempTable"))
+            if (FCodeStorage.HasAttribute("TempTableName"))
             {
-                FTemplate.AddToCodelet("TEMPTABLE", FCodeStorage.GetAttribute("TempTable"));
+                FTemplate.AddToCodelet("TEMPTABLENAME", FCodeStorage.GetAttribute("TempTableName"));
             }
 
             if (FCodeStorage.HasAttribute("CacheableTable"))

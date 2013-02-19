@@ -30,6 +30,7 @@ namespace {#NAMESPACE}
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
 {#IFDEF DATASETTYPE}
     private {#DATASETTYPE} FMainDS;
+	const string TEMP_TABLE_NAME = "{#TEMPTABLENAME}";
 {#ENDIF DATASETTYPE}
 {#IFNDEF DATASETTYPE}
     {#INLINETYPEDDATASET}
@@ -58,11 +59,11 @@ namespace {#NAMESPACE}
 {#ENDIFN DATASETTYPE}
       {#INITUSERCONTROLS}    
 {#IFNDEF DATASETTYPE}   
-		if (FMainDS.Tables.Contains("{#TEMPTABLE}"))
+		if (FMainDS.Tables.Contains(TEMP_TABLE_NAME))
 		{
-			FMainDS.Tables.Remove("{#TEMPTABLE}");
+			FMainDS.Tables.Remove(TEMP_TABLE_NAME);
 		}
-		FMainDS.Tables.Add("{#TEMPTABLE}")
+		FMainDS.Tables.Add(TEMP_TABLE_NAME)
 {#ENDIFN DATASETTYPE}      
 {#IFDEF ACTIONENABLING}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
@@ -130,9 +131,9 @@ namespace {#NAMESPACE}
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
         {
             bool found = true;
-            foreach (DataColumn myColumn in FMainDS.Tables["{#TEMPTABLE}"].PrimaryKey)
+            foreach (DataColumn myColumn in FMainDS.Tables[TEMP_TABLE_NAME].PrimaryKey)
             {
-                string value1 = FMainDS.Tables["{#TEMPTABLE}"].Rows[ARowNumberInTable][myColumn].ToString();
+                string value1 = FMainDS.Tables[TEMP_TABLE_NAME].Rows[ARowNumberInTable][myColumn].ToString();
                 string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {

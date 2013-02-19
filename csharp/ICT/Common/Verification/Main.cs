@@ -1045,7 +1045,8 @@ namespace Ict.Common.Verification
             {
                 si = (TScreenVerificationResult)(List[Counter]);
 
-                if (si.ResultColumn.Table == ADataTable)
+                if ((si.ResultColumn != null)
+                    && (si.ResultColumn.Table == ADataTable))
                 {
                     Found = true;
                     break;

@@ -44,15 +44,6 @@ using Ict.Petra.Client.MCommon;
 namespace Ict.Petra.Client.CommonForms
 {
     /// <summary>
-    /// This Exception shall be used to cancel a file save. In this case no warning and
-    /// additional error Message is shown ...
-    /// </summary>
-    public class CancelSaveException : System.Exception
-    {
-    };
-
-
-    /// <summary>
     /// todoComment
     /// </summary>
     public partial class TFrmPetraEditUtils : TFrmPetraUtils
@@ -681,9 +672,6 @@ namespace Ict.Petra.Client.CommonForms
                         {
                             HasChanges = false;
                         }
-                    }
-                    catch (CancelSaveException)
-                    {
                     }
                     catch (Exception)
                     {
