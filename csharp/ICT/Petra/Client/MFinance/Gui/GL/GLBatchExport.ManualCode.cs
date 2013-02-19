@@ -251,7 +251,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 sw1 = new StreamWriter(fileName);
 
                 Thread ExportThread = new Thread(() => ExportAllGLBatchData(ref batches, requestParams, out exportString));
-                using (TProgressDialog ExportDialog = new TProgressDialog(ExportThread);)
+                using (TProgressDialog ExportDialog = new TProgressDialog(ExportThread))
                 {
                     ExportDialog.ShowDialog();
                 }
