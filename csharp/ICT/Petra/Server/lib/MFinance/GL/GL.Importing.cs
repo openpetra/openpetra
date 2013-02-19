@@ -74,7 +74,6 @@ namespace Ict.Petra.Server.MFinance.GL
             out TVerificationResultCollection AMessages
             )
         {
-
             Int32 ProgressTrackerCounter = 0;
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
@@ -84,7 +83,7 @@ namespace Ict.Petra.Server.MFinance.GL
             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Initializing"),
                 5);
-            
+
             AMessages = new TVerificationResultCollection();
             GLBatchTDS MainDS = new GLBatchTDS();
             GLSetupTDS SetupDS = new GLSetupTDS();
@@ -159,7 +158,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewBatch.DateEffective = ImportDate(Catalog.GetString("batch effective date"));
 
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                string.Format(Catalog.GetString("Batch {0}"),NewBatch.BatchNumber),
+                                string.Format(Catalog.GetString("Batch {0}"), NewBatch.BatchNumber),
                                 10);
 
                             int PeriodNumber, YearNr;
@@ -217,8 +216,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             ProgressTrackerCounter = 0;   // counts transactions per journal
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                string.Format(Catalog.GetString("Batch{0}, Journal {1}"), 
-                                    NewBatch.BatchNumber, 
+                                string.Format(Catalog.GetString("Batch{0}, Journal {1}"),
+                                    NewBatch.BatchNumber,
                                     NewJournal.JournalNumber),
                                 15);
 
@@ -436,7 +435,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                         NewBatch.BatchNumber,
                                         NewJournal.JournalNumber,
                                         ProgressTrackerCounter),
-                                        ((ProgressTrackerCounter / 40) + 2) * 10 > 90 ? 90 : ((ProgressTrackerCounter / 40) + 2) * 10);
+                                    ((ProgressTrackerCounter / 40) + 2) * 10 > 90 ? 90 : ((ProgressTrackerCounter / 40) + 2) * 10);
                             }
                         }
                         else

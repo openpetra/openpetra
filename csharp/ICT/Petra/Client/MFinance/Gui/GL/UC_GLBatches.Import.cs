@@ -100,10 +100,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     string importString = File.ReadAllText(dialog.FileName);
 
                     Thread ImportThread = new Thread(() => ImportGLBatches(
-                        requestParams,
-                        importString,
-                        out AMessages,
-                        out ok));
+                            requestParams,
+                            importString,
+                            out AMessages,
+                            out ok));
 
                     using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
                     {

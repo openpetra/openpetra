@@ -157,7 +157,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                             String.Format(Catalog.GetString("Batch {0}, Journal {1}"), batch.BatchNumber, journal.JournalNumber),
-                            (TProgressCounter / 25 + 4) * 5 >90 ? 90 : (TProgressCounter /  25 + 4) * 5);
+                            (TProgressCounter / 25 + 4) * 5 > 90 ? 90 : (TProgressCounter / 25 + 4) * 5);
 
                         if (FSummary)
                         {
@@ -199,7 +199,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (++TProgressCounter % 25 == 0)
                             {
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    String.Format(Catalog.GetString("Batch {0}, Journal {1} - {2}"), batch.BatchNumber, journal.JournalNumber, TProgressJournalCounter),
+                                    String.Format(Catalog.GetString("Batch {0}, Journal {1} - {2}"), batch.BatchNumber, journal.JournalNumber,
+                                        TProgressJournalCounter),
                                     (TProgressCounter / 25 + 4) * 5 > 90 ? 90 : (TProgressCounter / 25 + 4) * 5);
                             }
 

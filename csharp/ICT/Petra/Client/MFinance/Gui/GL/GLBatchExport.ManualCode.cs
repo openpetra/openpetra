@@ -281,8 +281,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ArequestParams"></param>
         /// <param name="exportString"></param>
         private void ExportAllGLBatchData(
-            ref ArrayList Abatches, 
-            Hashtable ArequestParams, 
+            ref ArrayList Abatches,
+            Hashtable ArequestParams,
             out string exportString)
         {
             string AexportString;
@@ -291,8 +291,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             do
             {
                 Acompleted = TRemote.MFinance.GL.WebConnectors.ExportAllGLBatchData(
-                    ref Abatches, 
-                    ArequestParams, 
+                    ref Abatches,
+                    ArequestParams,
                     out AexportString);
             } while (!Acompleted);
 
