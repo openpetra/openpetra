@@ -63,11 +63,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        /// <summary>todoComment</summary>
+        /// <summary>an event that will reload the grid after saving</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 
         /// <summary>
-        /// todoComment
+        /// load the data for this control
         /// </summary>
         public void SpecialInitUserControl(PartnerEditTDS AMainDS)
         {
@@ -102,7 +102,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void NewRowManual(ref PartnerEditTDSPBankingDetailsRow ARow)
         {
-            // TODO check if similar bank accounts with same details exists already
+            // TODO provide a dialog like Petra 2.x to enable the user to reuse an existing account
             ARow.BankingDetailsKey = (FMainDS.PBankingDetails.Rows.Count + 1) * -1;
             ARow.BankingType = MPartnerConstants.BANKINGTYPE_BANKACCOUNT;
             ARow.BankKey = 0;
@@ -274,7 +274,39 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
             FMainDS.PPartner[0].FinanceComment = txtFinanceComment.Text;
 
-            // TODO validate that there is at least one main account, but not multiple?
+            // validate that there is at least one main account, but not multiple?
+            int countMainAccount = 0;
+
+            foreach (PartnerEditTDSPBankingDetailsRow bdrow in FMainDS.PBankingDetails.Rows)
+            {
+                if (bdrow.RowState != DataRowState.Deleted)
+                {
+                    if (bdrow.MainAccount)
+                    {
+                        countMainAccount++;
+                    }
+                }
+            }
+
+            if (countMainAccount == 0)
+            {
+                FPetraUtilsObject.VerificationResultCollection.Add(
+                    new TScreenVerificationResult(
+                        this, null,
+                        Catalog.GetString("You must select one account as main bank account"),
+                        btnSetMainAccount,
+                        TResultSeverity.Resv_Critical));
+            }
+            else if (countMainAccount > 1)
+            {
+                // will we ever get here?
+                FPetraUtilsObject.VerificationResultCollection.Add(
+                    new TScreenVerificationResult(
+                        this, null,
+                        Catalog.GetString("Only one main bank account allowed"),
+                        btnSetMainAccount,
+                        TResultSeverity.Resv_Critical));
+            }
         }
 
         // set the main account flag, remove that flag from the other accounts (p_banking_details_usage)

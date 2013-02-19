@@ -223,8 +223,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     if (MainAccountBankingDetails == Int32.MinValue)
                     {
                         AVerificationResult.Add(new TVerificationResult(
-                                String.Format("Banking Details"),
-                                string.Format("there is no main account"),
+                                "Banking Details",
+                                "there is no main account",
                                 TResultSeverity.Resv_Critical));
                         return;
                     }
