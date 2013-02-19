@@ -61,15 +61,20 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AIsInInfoMode">True means: No Calculation is done, only
         /// verification result messages are collected</param>
         /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
+        /// <returns>false if there's no problem</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool TPeriodYearEnd(
             int ALedgerNum,
             bool AIsInInfoMode,
             out TVerificationResultCollection AVerificationResult)
         {
-            return new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode,
+            bool res = new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode,
                 out AVerificationResult);
+            if (!res)
+            {
+                AVerificationResult.Add(new TVerificationResult("Year End", "Success", "Success", TResultSeverity.Resv_Status));
+            }
+            return res;
         }
     }
 }
@@ -93,7 +98,7 @@ namespace Ict.Petra.Server.MFinance.GL
         public bool RunYearEnd(int ALedgerNum, bool AInfoMode,
             out TVerificationResultCollection AVRCollection)
         {
-            blnIsInInfoMode = AInfoMode;
+            FInfoMode = AInfoMode;
             ledgerInfo = new TLedgerInfo(ALedgerNum);
             verificationResults = new TVerificationResultCollection();
 
@@ -108,7 +113,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         TPeriodEndErrorAndStatusCodes.PEEC_04.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
-                blnCriticalErrors = true;
+                FHasCriticalErrors = true;
             }
             else
             {
@@ -124,16 +129,16 @@ namespace Ict.Petra.Server.MFinance.GL
             RunPeriodEndSequence(new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber, intYear),
                 Catalog.GetString("Set the account period values to the New Year"));
 
-            if (!blnIsInInfoMode)
+            if (!FInfoMode)
             {
-                if (!blnCriticalErrors)
+                if (!FHasCriticalErrors)
                 {
                     carryForward.SetNextPeriod();
                 }
             }
 
             AVRCollection = verificationResults;
-            return blnCriticalErrors;
+            return FHasCriticalErrors;
         }
     }
 
@@ -197,7 +202,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         TPeriodEndErrorAndStatusCodes.PEEC_09.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
-                blnCriticalErrors = true;
+                FHasCriticalErrors = true;
             }
 
             if (!blnExpenseFound)
@@ -208,7 +213,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         TPeriodEndErrorAndStatusCodes.PEEC_10.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
-                blnCriticalErrors = true;
+                FHasCriticalErrors = true;
             }
 
             accountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
@@ -225,7 +230,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         TPeriodEndErrorAndStatusCodes.PEEC_11.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
-                blnCriticalErrors = true;
+                FHasCriticalErrors = true;
             }
 
             costCentres = ACostCentreAccess.LoadViaALedger(ledgerInfo.LedgerNumber, null);
@@ -237,11 +242,11 @@ namespace Ict.Petra.Server.MFinance.GL
         public override int JobSize {
             get
             {
-                bool blnHelp = blnIsInInfoMode;
-                blnIsInInfoMode = true;
+                bool blnHelp = FInfoMode;
+                FInfoMode = true;
                 intCountJobs = 0;
                 RunEndOfPeriodOperation();
-                blnIsInInfoMode = blnHelp;
+                FInfoMode = blnHelp;
                 return intCountJobs;
             }
         }

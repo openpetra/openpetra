@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,7 +33,7 @@ using Ict.Petra.Server.MFinance.GL.Data.Access;
 namespace Ict.Petra.Server.MFinance.Common
 {
     /// <summary>
-    /// If a proceure is defined which shall be assined inside a specific perodic process you have to use this
+    /// If a procedure is defined which shall be assigned inside a specific perodic process you have to use this
     /// class the handle the operation itself and the AbstractPeriodEndOperation class to handle the internal
     /// parts of the operation. <br />
     /// For example the class TMonthEnd and TYearEnd inherits TPeriodEndOperations.<br />
@@ -47,14 +47,14 @@ namespace Ict.Petra.Server.MFinance.Common
         /// So both processes are automatically synchronized. <br />
         /// So do not run any excecutive code if the system is in the info mode.
         /// </summary>
-        protected bool blnIsInInfoMode;
+        protected bool FInfoMode;
 
         /// <summary>
-        /// If the system has run into a critial error, the (either in the info mode or in the executive
-        /// node) you shall not run any executive code any more. But it may be useful to gather more information
-        /// and to the process is not terminated completely.
+        /// If I run into a critial error, (either in info mode or in executive
+        /// mode) I can't run any executive code, but it may be useful to gather more information
+        /// and so the process is not terminated completely.
         /// </summary>
-        protected bool blnCriticalErrors;
+        protected bool FHasCriticalErrors;
 
         /// <summary>
         /// This is the standard VerificationResultCollection for the info and the error messages.
@@ -69,12 +69,12 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             verificationResults = AVerificationResults;
             Apeo.VerificationResultCollection = AVerificationResults;
-            Apeo.IsInInfoMode = blnIsInInfoMode;
+            Apeo.IsInInfoMode = FInfoMode;
             Apeo.RunEndOfPeriodOperation();
 
             if (Apeo.HasCriticalErrors)
             {
-                blnCriticalErrors = true;
+                FHasCriticalErrors = true;
             }
         }
 
@@ -85,7 +85,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AOperationName"></param>
         protected void RunPeriodEndSequence(AbstractPeriodEndOperation Apeo, string AOperationName)
         {
-            Apeo.IsInInfoMode = blnIsInInfoMode;
+            Apeo.IsInInfoMode = FInfoMode;
             Apeo.VerificationResultCollection = verificationResults;
 
             if (Apeo.JobSize == 0)
@@ -120,27 +120,27 @@ namespace Ict.Petra.Server.MFinance.Common
                             TPeriodEndErrorAndStatusCodes.PEEC_02.ToString(),
                             TResultSeverity.Resv_Critical);
                     verificationResults.Add(tvt);
-                    blnCriticalErrors = true;
+                    FHasCriticalErrors = true;
                 }
 
                 if (newApeo.HasCriticalErrors)
                 {
-                    blnCriticalErrors = true;
+                    FHasCriticalErrors = true;
                 }
             }
 
             if (Apeo.HasCriticalErrors)
             {
-                blnCriticalErrors = true;
+                FHasCriticalErrors = true;
             }
         }
     }
 
 
     /// <summary>
-    /// Any periodic end operation shall be inherit and complete this abstract class. The constructor of the
-    /// inhereting class shall handle all parameters which are necessary for the RunEndOfPeriodOperation and
-    /// RunEndOfPeriodOperation shall handle the data base operations
+    /// The period end classes inherit and complete this abstract class. The constructor of the
+    /// inhereting class handles all parameters which are necessary for the RunEndOfPeriodOperation and
+    /// RunEndOfPeriodOperation handles the database operations.
     /// </summary>
     public abstract class AbstractPeriodEndOperation
     {
@@ -152,12 +152,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// See TPeriodEndOperations
         /// </summary>
-        protected bool blnIsInInfoMode = true;
+        protected bool FInfoMode = true;
 
         /// <summary>
         /// See TPeriodEndOperations
         /// </summary>
-        protected bool blnCriticalErrors = false;
+        protected bool FHasCriticalErrors = false;
 
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// JobSize returns the number of database records which are affected in this operation. Be sure
         /// not only to find the databases which are to be changed but also not to find the records which
-        /// are allready changed.
+        /// are already changed.
         /// Or: Be sure that JobSize is zero after RunEndOfPeriodOperation has been done sucessfully.
         /// </summary>
         public abstract int JobSize {
@@ -195,7 +195,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return !(blnCriticalErrors | blnIsInInfoMode);
+                return !(FHasCriticalErrors | FInfoMode);
             }
         }
 
@@ -218,7 +218,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             set
             {
-                blnIsInInfoMode = value;
+                FInfoMode = value;
             }
         }
 
@@ -230,7 +230,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return blnCriticalErrors;
+                return FHasCriticalErrors;
             }
         }
     }
@@ -240,19 +240,14 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public enum TCarryForwardENum
     {
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         Month,
-
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         Year
     }
 
     /// <summary>
-    /// Zentral object which shall switch from one acounting intervall to the next
+    /// Central object to switch to the next accounting period
     /// </summary>
     public class TCarryForward
     {
@@ -328,9 +323,9 @@ namespace Ict.Petra.Server.MFinance.Common
 
         /// <summary>
         /// This value is only defined if the TCarryForwardENum holds the value "year". In normal cases you can
-        /// get the value of the actual accounting year from the table a_accounting_period
-        /// of the open petra database. But this values are changed in the year end routine and in order
-        /// to make sure to get allways the same value, the year is stored in a_ledger_init_flag from the
+        /// get the value of the actual accounting year from the table a_accounting_period,
+        /// but this value is changed in the year end routine and in order
+        /// to make sure I get always the same value, the year is stored in a_ledger_init_flag from the
         /// entrance to the TCarryForwardENum.Year-Period to the next TCarryForwardENum.Month-Period.
         /// </summary>
         public int Year
@@ -464,7 +459,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// Gets the control instance and thros an error if the
+        /// Gets the control instance and throws an error if the
         /// Actual year is not set (other Constructor is used).
         /// </summary>
         /// <returns></returns>
@@ -548,8 +543,8 @@ namespace Ict.Petra.Server.MFinance.Common
     }
 
     /// <summary>
-    /// This Object read all glm year end record of the actual year and creates the start record for
-    /// the next year
+    /// This Object read all glm year end records of the actual year 
+    /// and creates the start record for the next year
     /// </summary>
     public class TGlmNewYearInit : AbstractPeriodEndOperation
     {
@@ -592,10 +587,10 @@ namespace Ict.Petra.Server.MFinance.Common
         public override int JobSize {
             get
             {
-                bool blnOldInfoMode = blnIsInInfoMode;
-                blnIsInInfoMode = true;
+                bool blnOldInfoMode = FInfoMode;
+                FInfoMode = true;
                 RunEndOfPeriodOperation();
-                blnIsInInfoMode = blnOldInfoMode;
+                FInfoMode = blnOldInfoMode;
                 return intEntryCount;
             }
         }
@@ -665,7 +660,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     if (generalLedgerMasterRowTo == null)
                     {
-                        if (!blnIsInInfoMode)
+                        if (!FInfoMode)
                         {
                             generalLedgerMasterRowTo =
                                 (AGeneralLedgerMasterRow)PostingToDS.AGeneralLedgerMaster.NewRowTyped(true);
@@ -677,7 +672,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         ++intEntryCount;
                     }
 
-                    if (!blnIsInInfoMode)
+                    if (!FInfoMode)
                     {
                         generalLedgerMasterRowTo.LedgerNumber = generalLedgerMasterRowFrom.LedgerNumber;
                         generalLedgerMasterRowTo.Year = intNextYear;
@@ -695,12 +690,12 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 if (tSubmitChangesResult == TSubmitChangesResult.scrError)
                 {
-                    blnCriticalErrors = true;
+                    FHasCriticalErrors = true;
                 }
 
                 if (tSubmitChangesResult == TSubmitChangesResult.scrInfoNeeded)
                 {
-                    blnCriticalErrors = true;
+                    FHasCriticalErrors = true;
                 }
             }
         }
@@ -714,45 +709,21 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public enum TYearEndProcessStatus
     {
-        /// <summary>
-        /// Value the status counter is initialized with
-        /// </summary>
+        /// <summary>Status initial value</summary>
         RESET_STATUS = 0,
-
-
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         GIFT_CLOSED_OUT = 1,
-
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         ACCOUNT_CLOSED_OUT = 2,
-
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         GLMASTER_CLOSED_OUT = 3,
-
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         BUDGET_CLOSED_OUT = 4,
-
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         PERIODS_UPDATED = 7,
-
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         SET_NEW_YEAR = 8,
-
-        /// <summary>
-        /// The leger is completely updated ...
-        /// </summary>
+        /// <summary>The leger is completely updated.</summary>
         LEDGER_UPDATED = 10
     }
 
@@ -763,63 +734,45 @@ namespace Ict.Petra.Server.MFinance.Common
     public enum TPeriodEndErrorAndStatusCodes
     {
         /// <summary>
-        /// If a periodic end operation shall be done at least on one data base record
-        /// (something like the calculation of the admin fees) this hin is shon to indicate
-        /// tha no database records are affected.
+        /// If a periodic end operation shall be done at least on one database record
+        /// (something like the calculation of the admin fees) this error is shown to indicate
+        /// tha no database records were affected.
         /// </summary>
-        PEEC_01,
+            PEEC_01,
 
         /// <summary>
-        /// Afte a specific perdio end operation has been done, the programm calculates again the
+        /// Afte a specific period end operation has been done, the programm calculates again the
         /// number of database records which shall be changed. If this value is non zero, this
         /// error is shown.
         /// Type: Critical.
         /// </summary>
             PEEC_02,
 
-        /// <summary>
-        /// The user has required a period month end but a year end should be done first.
-        /// </summary>
+        /// <summary>The user has required a month end but a year end should be done first.</summary>
             PEEC_03,
 
-        /// <summary>
-        /// The user has required a period year end but a month end should be done first.
-        /// </summary>
+        /// <summary>The user has required a year end but a month end should be done first.</summary>
             PEEC_04,
 
-        /// <summary>
-        /// A revaluation should be done befor the month end ..
-        /// </summary>
+        /// <summary>A revaluation should be done before the month end.</summary>
             PEEC_05,
 
-        /// <summary>
-        /// Unposted batches are found
-        /// </summary>
+        /// <summary>Unposted batches prevent period close.</summary>
             PEEC_06,
 
-        /// <summary>
-        /// Suspensed accountes are found
-        /// </summary>
+            /// <summary>Suspensed accountes prevent period close.</summary>
             PEEC_07,
 
-        /// <summary>
-        /// Unposted gift batches are found ...
-        /// </summary>
+            /// <summary>Unposted gift batches are found prevent period close.</summary>
             PEEC_08,
 
-        /// <summary>
-        /// No income accounts have been found ...
-        /// </summary>
+        /// <summary>No income accounts have been found.</summary>
             PEEC_09,
 
-        /// <summary>
-        /// No expense accounts have been found ...
-        /// </summary>
+        /// <summary>No expense accounts have been found.</summary>
             PEEC_10,
 
-        /// <summary>
-        /// No ICH_ACCT Account is defined
-        /// </summary>
+        /// <summary>No ICH_ACCT Account is defined.</summary>
             PEEC_11,
     }
 }

@@ -46,9 +46,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             set
             {
                 FLedgerNumber = value;
-                bool blnErrorStatus = RunPeriodEnd(INFORMATION_MODE);
-                tbxMessage.Text = verificationResult.BuildVerificationResultString();
-                btnPeriodEnd.Enabled = !blnErrorStatus;
+                string msg;
+
+                bool ErrorStatus = RunPeriodEnd(INFORMATION_MODE);
+                msg = verificationResult.BuildVerificationResultString();
+                if (ErrorStatus)
+                {
+                    msg = Catalog.GetString("The server returned this message:")
+                    + "\r\n\r\n" + msg + "\r\n";
+                }
+                msg += Catalog.GetString("Press the button below to close the current period.");
+                tbxMessage.Text = msg;
+                btnPeriodEnd.Enabled = true;
                 this.OnResizeEnd(new EventArgs());
             }
         }
@@ -61,7 +70,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void PeriodEndButtonClick(object btn, EventArgs e)
         {
             RunPeriodEnd(CALCULATION_MODE);
-            tbxMessage.Text = verificationResult.BuildVerificationResultString();
+            tbxMessage.Text = Catalog.GetString("The server returned this message:")
+                + "\r\n\r\n"
+                + verificationResult.BuildVerificationResultString();
             btnPeriodEnd.Visible = false;
             btnCancel.Text = Catalog.GetString("Done");
 

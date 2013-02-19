@@ -645,7 +645,8 @@ namespace Ict.Common.Verification
     {
         #region Resourcestrings
 
-        private static readonly string StrMessageFooter = Catalog.GetString("  Context: {0}; Severity: {1}.\r\n    Problem: {2}\r\n    Code: {3}");
+        private static readonly string StrErrorFooter = Catalog.GetString("  Context: {0}; Severity: {1}.\r\n    Problem: {2}\r\n    Code: {3}");
+        private static readonly string StrStatusFooter = Catalog.GetString("  Context: {0}\r\n    Status: {2}\r\n");
 
         #endregion
 
@@ -961,8 +962,9 @@ namespace Ict.Common.Verification
             {
                 si = (TVerificationResult)(List[i]);
 
+                String Formatter = (si.ResultSeverity == TResultSeverity.Resv_Status ? StrStatusFooter : StrErrorFooter);
                 ReturnValue = ReturnValue +
-                              (String.Format(StrMessageFooter,
+                              (String.Format(Formatter,
                                    new object[] { si.ResultContext, si.ResultSeverity, si.ResultText, si.ResultCode })) +
                               Environment.NewLine + Environment.NewLine;
             }

@@ -3,9 +3,11 @@ RootNode:
     FormTitle: Maintain Receivable Administration Grants
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DetailTable: AFeesReceivable
+    CacheableTable: FeesReceivableList
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
-    Template: windowMaintainTable
+    Template: windowMaintainCacheableTable
+    CacheableTableSpecificFilter: Ledger
     WindowWidth: 790
     WindowHeight: 500
     Actions:

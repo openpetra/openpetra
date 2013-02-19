@@ -594,7 +594,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                  *  change of a gift from one field to another)  */
                 //IF lv_ich_total_n NE 0 THEN DO:
                 //RUN gl1130o.p
-                if (ICHTotal != 0)
+                if (ICHTotal == 0)
+                {
+                    IsSuccessful = true;
+                }
+                else
                 {
                     //Create a transaction
                     if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
