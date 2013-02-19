@@ -46,6 +46,7 @@ using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
@@ -1916,6 +1917,283 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             CreateCostCentresRecursively(ref AMainDS, ALedgerNumber, ref ImportedCostCentreNames, root, null);
         }
 
+        private static void CreateMotivationDetailFee(ref GLSetupTDS AMainDS,
+            Int32 ALedgerNumber,
+            XmlNode ACurrentNode,
+            string AMotivationGroupCode,
+            string AMotivationDetailCode)
+        {
+            AMotivationDetailFeeRow newMotivationDetailFee = null;
+
+            string MotivationDetailFeeCode = TYml2Xml.GetElementName(ACurrentNode);
+
+            // does this motivation detail fee already exist?
+            DataRow existingMotivationDetailFee = AMainDS.AMotivationDetailFee.Rows.Find(new object[] { ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, MotivationDetailFeeCode });
+
+            if (existingMotivationDetailFee == null)
+            {
+                newMotivationDetailFee = AMainDS.AMotivationDetailFee.NewRowTyped();
+                newMotivationDetailFee.LedgerNumber = ALedgerNumber;
+                newMotivationDetailFee.MotivationGroupCode = AMotivationGroupCode;
+                newMotivationDetailFee.MotivationDetailCode = AMotivationDetailCode;
+                newMotivationDetailFee.FeeCode = MotivationDetailFeeCode;
+                AMainDS.AMotivationDetailFee.Rows.Add(newMotivationDetailFee);
+            }
+        }
+
+        private static void CreateMotivationDetail(ref GLSetupTDS AMainDS,
+            Int32 ALedgerNumber,
+            XmlNode ACurrentNode,
+            string AMotivationGroupCode)
+        {
+            AMotivationDetailRow newMotivationDetail = null;
+
+            string MotivationDetailCode = TYml2Xml.GetElementName(ACurrentNode);
+
+            // does this motivation already exist?
+            bool newRow = false;
+            DataRow existingMotivationDetail = AMainDS.AMotivationDetail.Rows.Find(new object[] { ALedgerNumber, AMotivationGroupCode, MotivationDetailCode });
+
+            if (existingMotivationDetail != null)
+            {
+                newMotivationDetail = (AMotivationDetailRow)existingMotivationDetail;
+            }
+            else
+            {
+                newRow = true;
+                newMotivationDetail = AMainDS.AMotivationDetail.NewRowTyped();
+            }
+
+            newMotivationDetail.LedgerNumber = ALedgerNumber;
+            newMotivationDetail.MotivationGroupCode = AMotivationGroupCode;
+            newMotivationDetail.MotivationDetailCode = MotivationDetailCode;
+            if (TYml2Xml.HasAttribute(ACurrentNode, "accountcode"))
+            {
+                newMotivationDetail.AccountCode = TYml2Xml.GetAttribute(ACurrentNode, "accountcode");
+            }
+            newMotivationDetail.CostCentreCode = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
+                
+            if (TYml2Xml.HasAttribute(ACurrentNode, "description"))
+            {
+                newMotivationDetail.MotivationDetailDesc = TYml2Xml.GetAttribute(ACurrentNode, "description");
+                newMotivationDetail.MotivationDetailDescLocal = newMotivationDetail.MotivationDetailDesc;
+            }
+            
+            if (newRow)
+            {
+                AMainDS.AMotivationDetail.Rows.Add(newMotivationDetail);
+            }
+
+            foreach (XmlNode child in ACurrentNode.ChildNodes)
+            {
+                CreateMotivationDetailFee(ref AMainDS, ALedgerNumber, child, newMotivationDetail.MotivationGroupCode, 
+                                          newMotivationDetail.MotivationDetailCode);
+            }
+        }
+        
+        private static void CreateMotivationGroup(ref GLSetupTDS AMainDS,
+            Int32 ALedgerNumber,
+            XmlNode ACurrentNode)
+        {
+            AMotivationGroupRow newMotivationGroup = null;
+
+            string MotivationGroupCode = TYml2Xml.GetElementName(ACurrentNode);
+
+            // does this motivation already exist?
+            bool newRow = false;
+            DataRow existingMotivationGroup = AMainDS.AMotivationGroup.Rows.Find(new object[] { ALedgerNumber, MotivationGroupCode });
+
+            if (existingMotivationGroup != null)
+            {
+                newMotivationGroup = (AMotivationGroupRow)existingMotivationGroup;
+            }
+            else
+            {
+                newRow = true;
+                newMotivationGroup = AMainDS.AMotivationGroup.NewRowTyped();
+            }
+
+            newMotivationGroup.LedgerNumber = ALedgerNumber;
+            newMotivationGroup.MotivationGroupCode = MotivationGroupCode;
+            if (TYml2Xml.HasAttribute(ACurrentNode, "desclocal"))
+            {
+                newMotivationGroup.MotivationGroupDescLocal = TYml2Xml.GetAttribute(ACurrentNode, "desclocal");
+            }
+            if (TYml2Xml.HasAttribute(ACurrentNode, "description"))
+            {
+                newMotivationGroup.MotivationGroupDescription = TYml2Xml.GetAttribute(ACurrentNode, "description");
+            }
+            
+            if (newMotivationGroup.MotivationGroupDescription.Length == 0)
+            {
+                newMotivationGroup.MotivationGroupDescription = newMotivationGroup.MotivationGroupDescLocal;
+            }
+
+            if (newRow)
+            {
+                AMainDS.AMotivationGroup.Rows.Add(newMotivationGroup);
+            }
+
+            foreach (XmlNode child in ACurrentNode.ChildNodes)
+            {
+                CreateMotivationDetail(ref AMainDS, ALedgerNumber, child, newMotivationGroup.MotivationGroupCode);
+            }
+        }
+        
+        /// import motivation groups, details into an empty new ledger
+        private static void ImportDefaultMotivations(ref GLSetupTDS AMainDS, Int32 ALedgerNumber)
+        {
+            XmlDocument doc;
+            TYml2Xml ymlFile;
+            string Filename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
+                              Path.DirectorySeparatorChar +
+                              "DefaultMotivations.yml";
+
+            try
+            {
+                ymlFile = new TYml2Xml(Filename);
+                doc = ymlFile.ParseYML2XML();
+            }
+            catch (XmlException exp)
+            {
+                throw new Exception(
+                    Catalog.GetString("There was a problem with the syntax of the file.") +
+                    Environment.NewLine +
+                    exp.Message +
+                    Environment.NewLine +
+                    Filename);
+            }
+
+            XmlNode root = doc.FirstChild.NextSibling;
+
+            foreach (XmlNode child in root)
+            {
+                CreateMotivationGroup(ref AMainDS, ALedgerNumber, child);
+            }
+            
+        }
+
+        /// import records for fees payable or receivable into an empty new ledger
+        private static void ImportDefaultAdminGrantsPayableReceivable(ref GLSetupTDS AMainDS, Int32 ALedgerNumber)
+        {
+            AFeesPayableRow newFeesPayableRow = null;
+            AFeesReceivableRow newFeesReceivableRow = null;
+            bool newRow;
+            DataRow existingRow;
+            
+            bool IsFeesPayable;
+            string FeeCode;
+                
+            XmlDocument doc;
+            TYml2Xml ymlFile;
+            string Filename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
+                              Path.DirectorySeparatorChar +
+                              "DefaultAdmintGrantsPayableReceivable.yml";
+
+            try
+            {
+                ymlFile = new TYml2Xml(Filename);
+                doc = ymlFile.ParseYML2XML();
+            }
+            catch (XmlException exp)
+            {
+                throw new Exception(
+                    Catalog.GetString("There was a problem with the syntax of the file.") +
+                    Environment.NewLine +
+                    exp.Message +
+                    Environment.NewLine +
+                    Filename);
+            }
+
+            XmlNode root = doc.FirstChild.NextSibling;
+
+            foreach (XmlNode child in root)
+            {
+                FeeCode = TYml2Xml.GetElementName(child);
+                
+                IsFeesPayable = (   TYml2Xml.GetAttribute(child, "feespayable") == "yes"
+                                 || TYml2Xml.GetAttribute(child, "feespayable") == "true");
+
+                if (IsFeesPayable)
+                {
+                    // does this fee already exist?
+                    newRow = false;
+                    existingRow = AMainDS.AFeesPayable.Rows.Find(new object[] { ALedgerNumber, FeeCode });
+        
+                    if (existingRow != null)
+                    {
+                        newFeesPayableRow = (AFeesPayableRow)existingRow;
+                    }
+                    else
+                    {
+                        newRow = true;
+                        newFeesPayableRow = AMainDS.AFeesPayable.NewRowTyped();
+                    }
+        
+                    newFeesPayableRow.LedgerNumber = ALedgerNumber;
+                    newFeesPayableRow.FeeCode = FeeCode;
+                    newFeesPayableRow.ChargeOption = TYml2Xml.GetAttribute(child, "chargeoption");
+                    if (TYml2Xml.HasAttribute(child, "percentage"))
+                    {
+                        newFeesPayableRow.ChargePercentage = Convert.ToInt32(TYml2Xml.GetAttribute(child, "percentage"));
+                    }
+
+                    newFeesPayableRow.CostCentreCode = TYml2Xml.GetAttribute(child, "costcentrecode");
+                    newFeesPayableRow.AccountCode = TYml2Xml.GetAttribute(child, "accountcode");
+                    newFeesPayableRow.DrAccountCode = TYml2Xml.GetAttribute(child, "draccountcode");
+                    
+                    if (TYml2Xml.HasAttribute(child, "description"))
+                    {
+                        newFeesPayableRow.FeeDescription = TYml2Xml.GetAttribute(child, "description");
+                    }
+                    
+                    if (newRow)
+                    {
+                        AMainDS.AFeesPayable.Rows.Add(newFeesPayableRow);
+                    }
+                }
+                else
+                {
+                    // does this fee already exist?
+                    newRow = false;
+                    existingRow = AMainDS.AFeesReceivable.Rows.Find(new object[] { ALedgerNumber, FeeCode });
+        
+                    if (existingRow != null)
+                    {
+                        newFeesReceivableRow = (AFeesReceivableRow)existingRow;
+                    }
+                    else
+                    {
+                        newRow = true;
+                        newFeesReceivableRow = AMainDS.AFeesReceivable.NewRowTyped();
+                    }
+        
+                    newFeesReceivableRow.LedgerNumber = ALedgerNumber;
+                    newFeesReceivableRow.FeeCode = FeeCode;
+                    newFeesReceivableRow.ChargeOption = TYml2Xml.GetAttribute(child, "chargeoption");
+                    if (TYml2Xml.HasAttribute(child, "percentage"))
+                    {
+                        newFeesReceivableRow.ChargePercentage = Convert.ToInt32(TYml2Xml.GetAttribute(child, "percentage"));
+                    }
+
+                    newFeesReceivableRow.CostCentreCode = TYml2Xml.GetAttribute(child, "costcentrecode");
+                    newFeesReceivableRow.AccountCode = TYml2Xml.GetAttribute(child, "accountcode");
+                    newFeesReceivableRow.DrAccountCode = TYml2Xml.GetAttribute(child, "draccountcode");
+                    
+                    if (TYml2Xml.HasAttribute(child, "description"))
+                    {
+                        newFeesReceivableRow.FeeDescription = TYml2Xml.GetAttribute(child, "description");
+                    }
+                    
+                    if (newRow)
+                    {
+                        AMainDS.AFeesReceivable.Rows.Add(newFeesReceivableRow);
+                    }
+                }
+            }
+            
+        }
+        
         /// <summary>
         /// create a new ledger and do the initial setup
         /// </summary>
@@ -2178,45 +2456,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             costCentreTypesRow.Deletable = false;
             MainDS.ACostCentreTypes.Rows.Add(costCentreTypesRow);
 
-            AMotivationGroupRow motivationGroupRow = MainDS.AMotivationGroup.NewRowTyped();
-            motivationGroupRow.LedgerNumber = ANewLedgerNumber;
-            motivationGroupRow.MotivationGroupCode = "GIFT";
-            motivationGroupRow.MotivationGroupDescLocal = Catalog.GetString("Gifts");
-            motivationGroupRow.MotivationGroupDescription = motivationGroupRow.MotivationGroupDescLocal;
-            MainDS.AMotivationGroup.Rows.Add(motivationGroupRow);
-
-            AMotivationDetailRow motivationDetailRow = MainDS.AMotivationDetail.NewRowTyped();
-            motivationDetailRow.LedgerNumber = ANewLedgerNumber;
-            motivationDetailRow.MotivationGroupCode = "GIFT";
-            motivationDetailRow.MotivationDetailCode = "SUPPORT";
-            motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Personal Support");
-            motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
-            motivationDetailRow.AccountCode = "0100";
-            motivationDetailRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
-            MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
-
-            motivationDetailRow = MainDS.AMotivationDetail.NewRowTyped();
-            motivationDetailRow.LedgerNumber = ANewLedgerNumber;
-            motivationDetailRow.MotivationGroupCode = "GIFT";
-            motivationDetailRow.MotivationDetailCode = "FIELD";
-            motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Gifts for Field");
-            motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
-            motivationDetailRow.AccountCode = "0200";
-            motivationDetailRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
-            MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
-
-            motivationDetailRow = MainDS.AMotivationDetail.NewRowTyped();
-            motivationDetailRow.LedgerNumber = ANewLedgerNumber;
-            motivationDetailRow.MotivationGroupCode = "GIFT";
-            motivationDetailRow.MotivationDetailCode = "KEYMIN";
-            motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Key Ministry Gift");
-            motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
-            motivationDetailRow.AccountCode = "0400";
-            motivationDetailRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
-            MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
 
             ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber);
             ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
+            ImportDefaultMotivations(ref MainDS, ANewLedgerNumber);
+            ImportDefaultAdmintGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
 
 
             // TODO: modify UI navigation yml file etc?

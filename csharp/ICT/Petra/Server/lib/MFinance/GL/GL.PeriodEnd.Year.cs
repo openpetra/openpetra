@@ -402,7 +402,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private string GetStandardCostCentre()
         {
-            return ledgerInfo.LedgerNumber.ToString() + "00";
+            return TLedgerInfo.GetStandardCostCentre(ledgerInfo.LedgerNumber);
         }
     }
 }

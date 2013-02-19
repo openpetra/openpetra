@@ -122,7 +122,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
 
                 DateTime PeriodEndDate = AccountingPeriodRow.PeriodEndDate;
-                string StandardCostCentre = ALedgerNumber.ToString() + "00";
+                string StandardCostCentre = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
                 DateTime DateToday = DateTime.Today;
 
                 //First four fields are constant for each row
