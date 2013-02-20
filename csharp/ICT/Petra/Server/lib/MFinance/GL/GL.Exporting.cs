@@ -34,6 +34,7 @@ using Ict.Common.DB;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
@@ -87,6 +88,17 @@ namespace Ict.Petra.Server.MFinance.GL
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            UInt32 TProgressCounter = 0;
+            UInt32 TProgressJournalCounter = 0;
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Exporting GL Batches"),
+                100);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Retrieving records"),
+                10);
+
             while (batches.Count > 0)
             {
                 Int32 ABatchNumber = (Int32)batches[0];
@@ -125,6 +137,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
             foreach (ABatchRow batch in FMainDS.ABatch.Rows)
             {
+                TProgressCounter = 0;
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    String.Format(Catalog.GetString("Batch {0}"), batch.BatchNumber),
+                    20);
+
                 if (!FTransactionsOnly & !FSummary)
                 {
                     WriteBatchLine(batch);
@@ -135,6 +153,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     if (journal.BatchNumber.Equals(batch.BatchNumber) && journal.LedgerNumber.Equals(batch.LedgerNumber))
                     {
+                        TProgressJournalCounter = 0;
+
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            String.Format(Catalog.GetString("Batch {0}, Journal {1}"), batch.BatchNumber, journal.JournalNumber),
+                            (TProgressCounter / 25 + 4) * 5 > 90 ? 90 : (TProgressCounter / 25 + 4) * 5);
+
                         if (FSummary)
                         {
                             String mapCurrency = FUseBaseCurrency ? FBaseCurrency : journal.TransactionCurrency;
@@ -170,6 +194,16 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         foreach (DataRowView dv in FMainDS.ATransaction.DefaultView)
                         {
+                            TProgressJournalCounter++;
+
+                            if (++TProgressCounter % 25 == 0)
+                            {
+                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                    String.Format(Catalog.GetString("Batch {0}, Journal {1} - {2}"), batch.BatchNumber, journal.JournalNumber,
+                                        TProgressJournalCounter),
+                                    (TProgressCounter / 25 + 4) * 5 > 90 ? 90 : (TProgressCounter / 25 + 4) * 5);
+                            }
+
                             ATransactionRow transaction = (ATransactionRow)dv.Row;
 
                             if (FSummary)
@@ -224,6 +258,10 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (FSummary)
             {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Summarizing"),
+                    95);
+
                 //To simplify matters this is always written even if there are no batches
                 if (!FTransactionsOnly)
                 {
@@ -247,6 +285,13 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             exportString = FStringWriter.ToString();
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("GL batch export successful"),
+                100);
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
             return true;
         }
 
