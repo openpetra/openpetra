@@ -2460,7 +2460,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber);
             ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
             ImportDefaultMotivations(ref MainDS, ANewLedgerNumber);
-            ImportDefaultAdmintGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
+            ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
 
 
             // TODO: modify UI navigation yml file etc?
