@@ -851,9 +851,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // Careful: modify gift cost centre and account and recipient field only when the amount is positive.
             // adjustments and reversals must remain on the original value
             transactionForTotals.AccountCode = giftBatch.BankAccountCode;
-            transactionForTotals.CostCentreCode =
-                TGLTransactionWebConnector.GetStandardCostCentre(
-                    ALedgerNumber);
+            transactionForTotals.CostCentreCode =TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
             transactionForTotals.Narrative = "Deposit from receipts - Gift Batch " + giftBatch.BatchNumber.ToString();
             transactionForTotals.Reference = "GB" + giftBatch.BatchNumber.ToString();
 

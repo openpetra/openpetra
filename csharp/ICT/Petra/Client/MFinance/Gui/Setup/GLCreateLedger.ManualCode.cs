@@ -52,8 +52,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             cmbBaseCurrency.SetSelectedString("EUR");
             cmbIntlCurrency.SetSelectedString("USD");
             cmbCountryCode.SetSelectedString("DE");
+            
+            ActivateGiftReceipting_Changed(null, null);
         }
 
+        private void ActivateGiftReceipting_Changed(System.Object sender, EventArgs e)
+        {
+            if (chkActivateGiftReceipting.Checked)
+            {
+                lblStartingReceiptNumber.Enabled = true;
+                txtStartingReceiptNumber.Enabled = true;
+                txtStartingReceiptNumber.NumberValueInt = 1;
+            }
+            else
+            {
+                lblStartingReceiptNumber.Enabled = false;
+                txtStartingReceiptNumber.Enabled = false;
+                txtStartingReceiptNumber.NumberValueInt = null;
+            }
+        }
+        
         private void BtnOK_Click(System.Object sender, EventArgs e)
         {
             MethodInfo method;
@@ -74,6 +92,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     Catalog.GetString("Problem: No Ledger has been created"));
             }
 
+            if (   chkActivateGiftReceipting.Checked
+                && (   txtStartingReceiptNumber.NumberValueInt == null
+                    || txtStartingReceiptNumber.NumberValueInt <= 0))
+            {
+                MessageBox.Show(Catalog.GetString("Starting Receipt Number must be 1 or higher!"),
+                                Catalog.GetString("Problem: No Ledger has been created"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                return;
+            }
+
+            Int32 StartingReceiptNumber = 1;
+            if (txtStartingReceiptNumber.NumberValueInt != null)
+            {
+                StartingReceiptNumber = Convert.ToInt32(txtStartingReceiptNumber.NumberValueInt) - 1;
+            }
+            
             if (!TRemote.MFinance.Setup.WebConnectors.CreateNewLedger(
                     Convert.ToInt32(nudLedgerNumber.Value),
                     txtLedgerName.Text,
@@ -84,6 +119,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     Convert.ToInt32(nudNumberOfPeriods.Value),
                     Convert.ToInt32(nudCurrentPeriod.Value),
                     Convert.ToInt32(nudNumberOfFwdPostingPeriods.Value),
+                    chkActivateGiftReceipting.Checked,
+                    StartingReceiptNumber,
+                    chkActivateAccountsPayable.Checked,
                     out VerificationResult))
             {
                 if (VerificationResult != null)

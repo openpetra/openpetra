@@ -594,7 +594,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static string GetStandardCostCentre(Int32 ALedgerNumber)
         {
-            return String.Format("{0:##00}00", ALedgerNumber);
+            return TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
         }
 
         /// <summary>

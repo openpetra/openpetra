@@ -264,6 +264,22 @@ namespace Ict.Petra.Server.MFinance.Common
                 return row.IltProcessingCentre;
             }
         }
+
+        /// <summary>
+        /// return standard cost centre to be used for given ledger number
+        /// </summary>
+        public string GetStandardCostCentre()
+        {
+            return GetStandardCostCentre(LedgerNumber);
+        }
+
+        /// <summary>
+        /// return standard cost centre to be used for given ledger number
+        /// </summary>
+        public static string GetStandardCostCentre(int ALedgerNumber)
+        {
+            return String.Format("{0:##00}00", ALedgerNumber);
+        }
     }
 
     /// <summary>
