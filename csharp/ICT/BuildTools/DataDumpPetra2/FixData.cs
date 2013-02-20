@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -316,6 +316,11 @@ namespace Ict.Tools.DataDumpPetra2
             if (ATableName == "a_ap_document")
             {
                 return TFinanceAccountsPayableUpgrader.FixAPDocument(AColumnNames, ref ANewRow);
+            }
+
+            if (ATableName == "a_ap_payment")
+            {
+                return TFinanceAccountsPayableUpgrader.FixAPPayment(AColumnNames, ref ANewRow);
             }
 
             if (ATableName == "a_ap_anal_attrib")

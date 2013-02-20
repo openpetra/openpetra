@@ -15704,7 +15704,7 @@
                 label="Start Date"
                 columnlabel="Start Date"
                 help="Start date of previous experience."
-                notnull="yes" />
+                notnull="no" />
     <tablefield name="pm_end_date_d"
                 type="date"
                 descr="End date of previous experience."
@@ -15712,7 +15712,7 @@
                 label="End Date"
                 columnlabel="End Date"
                 help="End date of previous experience."
-                notnull="yes" />
+                notnull="no" />
     <tablefield name="pm_prev_location_c"
                 type="varchar"
                 descr="Location of previous work . "
