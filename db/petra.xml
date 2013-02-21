@@ -12505,6 +12505,11 @@
                 label="Total Amount"
                 notnull="yes"
                 initial="0"/>
+    <tablefield name="a_currency_code_c"
+                type="varchar"
+                descr="the currency of the document"
+                format="X(8)"
+                notnull="yes"/>
     <tablefield name="a_exchange_rate_to_base_n"
                 type="number"
                 length="24"
@@ -12726,6 +12731,11 @@
                 descr="The amount of money that was paid"
                 format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
                 label="Amount"/>
+    <tablefield name="a_currency_code_c"
+                type="varchar"
+                descr="the currency of the document"
+                format="X(8)"
+                notnull="yes"/>
     <tablefield name="a_exchange_rate_to_base_n"
                 type="number"
                 length="24"
@@ -15694,7 +15704,7 @@
                 label="Start Date"
                 columnlabel="Start Date"
                 help="Start date of previous experience."
-                notnull="yes" />
+                notnull="no" />
     <tablefield name="pm_end_date_d"
                 type="date"
                 descr="End date of previous experience."
@@ -15702,7 +15712,7 @@
                 label="End Date"
                 columnlabel="End Date"
                 help="End date of previous experience."
-                notnull="yes" />
+                notnull="no" />
     <tablefield name="pm_prev_location_c"
                 type="varchar"
                 descr="Location of previous work . "

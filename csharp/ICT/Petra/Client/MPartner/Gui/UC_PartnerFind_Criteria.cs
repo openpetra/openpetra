@@ -79,20 +79,29 @@ namespace Ict.Petra.Client.MPartner.Gui
         private const String StrSpacer = "Spacer";
         private const String StrBeginGroup = "BeginGroup";
 
-        /// <summary>Private Declarations</summary>
+        #region Fields
+
+        private TFrmPetraUtils FPetraUtilsObject;
         private ArrayList FCriteriaFieldsLeft;
         private ArrayList FCriteriaFieldsRight;
         private Boolean FCriteriaSetupMode;
         private TSelectedCriteriaPanel FSelectedPanel;
         private DataTable FPartnerClassDataTable;
-        private DataSet FFindCriteriaDataSet = new DataSet();
         private Boolean FWorkerFamOnly;
+        private Boolean FWorkerFamPreferred;
         private string[] FRestrictedParterClasses;
         private String FDefaultPartnerClass;
         private PartnerFindTDSSearchCriteriaRow FDefaultValues;
-
-// TODO        private int FPreviousSelectedPartnerClass;
         private Boolean FShowAllPartnerClasses;
+        private Boolean FCurrentWorkerFamOnlySelection;
+        private Boolean FDontRecordCurrentWorkerFamOnlySelection;
+        private PartnerFindTDSSearchCriteriaTable FFindCriteriaDataTable;
+        private string FPreviouslySelectedPartnerClass = String.Empty;
+        private Boolean FPartnerClassUpdateIsAutomatic = false;
+
+        #endregion
+
+        #region Properties
 
         private string PartnerStatus
         {
@@ -208,8 +217,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private PartnerFindTDSSearchCriteriaTable FFindCriteriaDataTable;
-
         /// <summary>todoComment</summary>
         public DataTable CriteriaData
         {
@@ -219,10 +226,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return FFindCriteriaDataTable;
             }
         }
-
-        /// Event that fires when one of the SearchCriteria's contents is changed.following line appeers to be brokne by the disigner regularlycorrect line is: property OnCriteriaContentChanged: System.EventHandler add OnCriteriaContentChanged remove
-        /// <summary>OnCriteriaContentChanged;</summary>
-        public event System.EventHandler OnCriteriaContentChanged;
 
         /// <summary>todoComment</summary>
         public String[] RestrictedPartnerClass
@@ -234,78 +237,158 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             set
             {
-                DataRow PartnerClassDataRow;
-                String tmpString;
-                Boolean miWorkerFamOnly;
+//                string ValueStringConcat = String.Empty;
 
                 FRestrictedParterClasses = value;
-
-                // this flag is set to true IF the FIRST item in list will be WORKER-FAM
-                miWorkerFamOnly = false;
 
                 // are there any restrictions specified?
                 if ((value != null) && (value.Length > 0))
                 {
+// Following lines are for debugging only:
+//                    for (int Counter = 0; Counter < value.Length; Counter++)
+//                    {
+//                        ValueStringConcat += value[Counter].ToString() + "; ";
+//                    }
+//MessageBox.Show("set_RestrictedPartnerClass called. value=" + ValueStringConcat);
+
                     // clear table combo is bound to , and start again
                     FPartnerClassDataTable.Rows.Clear();
-                    tmpString = value[0];
 
-                    if (tmpString.IndexOf("WORKER-FAM") >= 0)
+                    AddPartnerClassesToDataTable(value, true);
+
+                    if (FWorkerFamOnly || FWorkerFamPreferred)
                     {
-                        // first item selected will be WORKER-FAM
-                        miWorkerFamOnly = true;
+                        FCurrentWorkerFamOnlySelection = true;
+
+                        /* this ensures that the checkbox is visible if needed */
+                        /* and disabled if needed */
+                        /* and checked if needed */
+                        HandlePartnerClassGui();
                     }
-
-                    tmpString = tmpString.Replace("WORKER-FAM", "FAMILY");
-                    FDefaultPartnerClass = tmpString;
-
-                    foreach (String eachPart in value)
-                    {
-                        // .Split(new (array [] of Char, (','))) do
-
-                        // MessageBox.Show('eachPart: ' + eachPart);
-                        if (eachPart == "WORKER-FAM")
-                        {
-                            // add FAMILY Row has own special case
-                            PartnerClassDataRow = FPartnerClassDataTable.NewRow();
-
-                            // Add FAMILY not WORKER-FAM
-                            PartnerClassDataRow["PartnerClass"] = "FAMILY";
-                            FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
-
-                            // set the flag, so combo box handler knows this is the case
-                            FWorkerFamOnly = true;
-                        }
-                        else
-                        {
-                            // just add item
-                            PartnerClassDataRow = FPartnerClassDataTable.NewRow();
-                            PartnerClassDataRow["PartnerClass"] = eachPart;
-                            FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
-                        }
-                    }
-
-                    // end for each
-                    // ensure top choice is databound
-                    FFindCriteriaDataTable.Rows[0]["PartnerClass"] = FDefaultPartnerClass;
-                    FFindCriteriaDataTable.Rows[0]["WORKERFAMONLY"] = miWorkerFamOnly;
-                    cmbPartnerClass.ResetBindings();
                 }
-
-                if (cmbPartnerClass.Items.Count > 0)
+                else
                 {
-                    cmbPartnerClass.SelectedIndex = 0;
+//MessageBox.Show("set_RestrictedPartnerClass called. value=none specified");
+                    if (cmbPartnerClass.Items.Count > 0)
+                    {
+                        cmbPartnerClass.SelectedIndex = 0;
 
-                    // this ensures that the checkbox is visible if needed
-                    // and disabled if needed
-                    // and checked if needed
-                    HandlePartnerClassGui();
+                        /* this ensures that the checkbox is visible if needed */
+                        /* and disabled if needed */
+                        /* and checked if needed */
+                        HandlePartnerClassGui();
+                    }
                 }
             }
         }
 
+        /// <summary>
+        /// this provides general functionality for screens
+        /// </summary>
+        public TFrmPetraUtils PetraUtilsObject
+        {
+            get
+            {
+                return FPetraUtilsObject;
+            }
+            set
+            {
+                FPetraUtilsObject = value;
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>Event that fires when one of the SearchCriteria's contents is changed.</summary>
+        public event System.EventHandler OnCriteriaContentChanged;
+
         /// <summary>todoComment</summary>
         public event FindCriteriaSelectionChangedHandler FindCriteriaSelectionChanged;
+
+        #endregion
+
+        private void AddPartnerClassesToDataTable(string[] ARestrictedPartnerClasses,
+            bool AAllPartnerClasses)
+        {
+            String TmpString;
+            Boolean WorkerFamOnly = false;
+            DataRow PartnerClassDataRow;
+
+            TmpString = ARestrictedPartnerClasses[0];
+
+            if (TmpString.IndexOf("WORKER-FAM") >= 0)
+            {
+                // Set this flag is to true because the first item in list will be 'WORKER-FAM'
+                WorkerFamOnly = true;
+            }
+
+            TmpString = TmpString.Replace("WORKER-FAM", "FAMILY");
+            FDefaultPartnerClass = TmpString;
+
+            foreach (String eachPart in ARestrictedPartnerClasses)
+            {
+// MessageBox.Show("eachPart: " + eachPart);
+
+                if (eachPart == "WORKER-FAM")
+                {
+                    // Add FAMILY Row has own special case!
+                    PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+
+                    // Add FAMILY not WORKER-FAM
+                    PartnerClassDataRow["PartnerClass"] = "FAMILY";
+                    FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+
+                    // Set the flag, so combo box handler knows this is the case
+                    FWorkerFamOnly = true;
+                }
+                else
+                {
+                    if ((AAllPartnerClasses)
+                        || ((eachPart == "PERSON")
+                            || (eachPart == "FAMILY")))
+                    {
+                        // add item if it isn't already there
+                        if (FPartnerClassDataTable.Select("PartnerClass = '" + eachPart + "'").Length == 0)
+                        {
+                            PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                            PartnerClassDataRow["PartnerClass"] = eachPart;
+                            FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+                        }
+                        else if (eachPart == "FAMILY")
+                        {
+                            // for the case where OM-FAM and FAMILY are both in the value:
+                            // set the flags, so combo box handler knows this is the case
+                            FWorkerFamOnly = false;
+                            FWorkerFamPreferred = true;
+                        }
+                    }
+                }
+            }
+
+            // ensure top choice is databound
+            FFindCriteriaDataTable.Rows[0]["PartnerClass"] = FDefaultPartnerClass;
+
+            if (!FDontRecordCurrentWorkerFamOnlySelection)
+            {
+                MessageBox.Show("Before updating WORKERFAMONLY column...");
+                FFindCriteriaDataTable.Rows[0]["WORKERFAMONLY"] = WorkerFamOnly || FCurrentWorkerFamOnlySelection;
+                MessageBox.Show("After updating WORKERFAMONLY column...");
+            }
+
+            cmbPartnerClass.ResetBindings();
+
+            if (cmbPartnerClass.Items.Count > 0)
+            {
+                cmbPartnerClass.SelectedIndex = 0;
+
+                // this ensures that the checkbox is visible if needed
+                // and disabled if needed
+                // and checked if needed
+                HandlePartnerClassGui();
+            }
+        }
 
         /// <summary>
         /// constructor
@@ -348,23 +431,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             #endregion
         }
 
-        private TFrmPetraUtils FPetraUtilsObject;
-
-        /// <summary>
-        /// this provides general functionality for screens
-        /// </summary>
-        public TFrmPetraUtils PetraUtilsObject
-        {
-            get
-            {
-                return FPetraUtilsObject;
-            }
-            set
-            {
-                FPetraUtilsObject = value;
-            }
-        }
-
         private void RbtStatusActive_Click(System.Object sender, System.EventArgs e)
         {
             this.PartnerStatus = "ACTIVE";
@@ -378,6 +444,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void RbtPrivate_Click(System.Object sender, System.EventArgs e)
         {
             this.PartnerStatus = "PRIVATE";
+        }
+
+        private void ChkWorkerFamOnly_CheckedChanged(System.Object sender, System.EventArgs e)
+        {
+//MessageBox.Show("ChkWorkerFamOnly_CheckedChanged:  chkWorkerFamOnly.Checked: " + chkWorkerFamOnly.Checked.ToString());
+            if (!FDontRecordCurrentWorkerFamOnlySelection)
+            {
+//MessageBox.Show("ChkWorkerFamOnly_CheckedChanged:  chkWorkerFamOnly.Checked: " + chkWorkerFamOnly.Checked.ToString());
+                FCurrentWorkerFamOnlySelection = chkWorkerFamOnly.Checked;
+            }
         }
 
         private void CmbPartnerClass_SelectedValueChanged(System.Object sender, System.EventArgs e)
@@ -413,21 +489,32 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            FCurrentWorkerFamOnlySelection = chkWorkerFamOnly.Checked;
+
+            if (!FPartnerClassUpdateIsAutomatic)
+            {
+                if (cmbPartnerClass.SelectedValue != null)
+                {
+                    FPreviouslySelectedPartnerClass = cmbPartnerClass.SelectedValue.ToString();
+                }
+            }
+
             HandlePartnerClassGui();
         }
 
         private void HandlePartnerClassGui()
         {
+            FDontRecordCurrentWorkerFamOnlySelection = true;
+
             chkWorkerFamOnly.Visible = false;
-            chkWorkerFamOnly.Checked = false;
             pnlPartnerClass.Height = cmbPartnerClass.Height + 3;
 
-            // the partner class combo might not be on the form!
+//MessageBox.Show(String.Format("HandlePartnerClassGui:  FWorkerFamOnly: {0}; FWorkerFamPreferred: {1}; FCurrentWorkerFamOnlySelection: {2}", FWorkerFamOnly, FWorkerFamPreferred, FCurrentWorkerFamOnlySelection));
+
+            // The partner class combo might not be on the Form!
             if (cmbPartnerClass.SelectedValue == null)
             {
-                return;
-
-                // get out of here!
+                return;     // get out of here!
             }
 
             if (cmbPartnerClass.SelectedValue.ToString() == "FAMILY")
@@ -439,11 +526,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     chkWorkerFamOnly.Checked = true;
                     chkWorkerFamOnly.Enabled = false;
+                    FFindCriteriaDataTable.Rows[0]["WORKERFAMONLY"] = chkWorkerFamOnly.Checked;
+                }
+
+                if (!FCurrentWorkerFamOnlySelection)
+                {
+                    chkWorkerFamOnly.Checked = false;
+                }
+                else if (FWorkerFamPreferred || FCurrentWorkerFamOnlySelection)
+                {
+                    chkWorkerFamOnly.Checked = true;
+                    FFindCriteriaDataTable.Rows[0]["WORKERFAMONLY"] = chkWorkerFamOnly.Checked;
                 }
 
                 pnlPartnerClass.Height = cmbPartnerClass.Height + chkWorkerFamOnly.Height + 3;
 
-                // enable personal Name field
+                // enable Personal Name field
                 if (txtPersonalName.Enabled == false)
                 {
                     txtPersonalName.Enabled = true;
@@ -471,38 +569,49 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // and when it is enabled
                 txtPersonalName.Enabled = false;
             }
+
+            FDontRecordCurrentWorkerFamOnlySelection = false;
         }
 
         private void BtnLocationKey_Click(System.Object sender, System.EventArgs e)
         {
 // TODO BtnLocationKey_Click
 #if TODO
-            TPartnerLocationFind frmPartnerLS;
+            TLocationFindDialogWinForm frmPartnerLS;
+            bool Cancelled = false;
 
-            // hourglass cursor
+            /* hourglass cursor */
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
             Application.DoEvents();
 
-            // give windows half a chance to show cursor
-            frmPartnerLS = new TPartnerLocationFind();
-
-            if (frmPartnerLS.ShowDialog() == DialogResult.OK)
+            /* give windows half a chance to show cursor */
+            using (frmPartnerLS = new TLocationFindDialogWinForm())
             {
-                // fill in the location key
-                txtLocationKey.Text = frmPartnerLS.SelectedLocation.LocationKey.ToString();
+                if (frmPartnerLS.ShowDialog() == DialogResult.OK)
+                {
+                    /* fill in the location key */
+                    txtLocationKey.Text = frmPartnerLS.SelectedLocation.LocationKey.ToString();
 
-                // disable all other controls
-                this.DisableAllPanel(pnlLocationKey);
-
-                // KICK the databinding which hasn't notices the textbox has changed
-                txtLocationKey.Focus();
+                    /* disable all other controls */
+                    this.DisableAllPanel(pnlLocationKey);
+                    txtLocationKey.Focus();
+                }
+                else
+                {
+                    Cancelled = true;
+                }
             }
 
-            // normal mouse cursor
+            /* normal mouse cursor */
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+
+            /* give windows half a chance to show cursor */
             Application.DoEvents();
 
-            // give windows half a chance to show cursor
+            if ((!Cancelled) && (PerformSearch != null))
+            {
+                PerformSearch(this, new System.EventArgs());
+            }
 #endif
         }
 
@@ -743,39 +852,57 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ACriteriaControl"></param>
         public void GeneralLeaveHandler(TextBox ATextBox, SplitButton ACriteriaControl)
         {
-            TMatches NewMatchValue;
+            TMatches NewMatchValue = TMatches.BEGINS;
             string TextBoxText = ATextBox.Text;
             string CriteriaValue;
 
             //            TLogging.Log("GeneralLeaveHandler for " + ATextBox.Name + ". SplitButton: " + ACriteriaControl.Name);
 
-            if (ATextBox.Text.Contains("*"))
+            if (TextBoxText.Contains("*")
+                || (TextBoxText.Contains("%")))
             {
-                if (ATextBox.Text.StartsWith("*")
-                    && !(ATextBox.Text.EndsWith("*")))
+                if (TextBoxText.StartsWith("*")
+                    && !(TextBoxText.EndsWith("*")))
                 {
                     //                    TLogging.Log(ATextBox.Name + " starts with *");
                     NewMatchValue = TMatches.ENDS;
                 }
-                else if (ATextBox.Text.EndsWith("*")
-                         && !(ATextBox.Text.StartsWith("*")))
+                else if (TextBoxText.EndsWith("*")
+                         && !(TextBoxText.StartsWith("*")))
                 {
                     //                    TLogging.Log(ATextBox.Name + " ends with *");
                     NewMatchValue = TMatches.BEGINS;
                 }
-                else
+                else if (TextBoxText.EndsWith("*")
+                         && (TextBoxText.StartsWith("*")))
                 {
                     //                    TLogging.Log(ATextBox.Name + " contains *");
                     NewMatchValue = TMatches.CONTAINS;
                 }
 
-                // See what the Criteria Value would be without any 'joker' characters ( * )
+                /*
+                 * Replace * character(s) in the middle of the text with % character(s)
+                 * to make the SQL-92 'LIKE' operator do what the user intended...
+                 */
+                for (int Counter = 1; Counter < TextBoxText.Length - 1; Counter++)
+                {
+                    if (TextBoxText[Counter] == '*')
+                    {
+                        TextBoxText = TextBoxText.Substring(0, Counter) +
+                                      '%' + TextBoxText.Substring(Counter + 1, TextBoxText.Length - (Counter + 1));
+                    }
+                }
+
+                /*
+                 * See what the Criteria Value would be without any 'joker' characters
+                 * ( * and % ).
+                 */
                 CriteriaValue = TextBoxText.Replace("*", String.Empty);
+                CriteriaValue = CriteriaValue.Replace("%", String.Empty);
 
                 if (CriteriaValue != String.Empty)
                 {
                     // There is still a valid CriteriaValue
-
                     FFindCriteriaDataTable.Rows[0].BeginEdit();
                     ACriteriaControl.SelectedValue = Enum.GetName(typeof(TMatches), NewMatchValue);
                     FFindCriteriaDataTable.Rows[0].EndEdit();
@@ -807,15 +934,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (AAssociatedTextBox != null)
                 {
+                    // Remove * Joker character(s)
                     NewText = AAssociatedTextBox.Text.Replace("*", String.Empty);
+
+                    // If an EXACT search is wanted, we need to remove the % Joker character(s) as well
+                    if (ALastSelection == TMatches.EXACT)
+                    {
+                        NewText = NewText.Replace("%", String.Empty);
+                    }
 
 //                    TLogging.Log(
 //                        "RemoveJokersFromTextBox:  Associated TextBox's (" + AAssociatedTextBox.Name + ") Text (1): " + AAssociatedTextBox.Text);
-
 //                    FFindCriteriaDataTable.Rows[0].BeginEdit();
 //                    AAssociatedTextBox.Text = AAssociatedTextBox.Text.Replace("*", String.Empty);
 //                    FFindCriteriaDataTable.Rows[0].EndEdit();
-
                     string fieldname = ((TextBox)AAssociatedTextBox).DataBindings[0].BindingMemberInfo.BindingMember;
                     FFindCriteriaDataTable.Rows[0][fieldname] = NewText;
                     fieldname = ((SplitButton)ASplitButton).DataBindings[0].BindingMemberInfo.BindingMember;
@@ -934,9 +1066,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtPersonalName_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            GeneralKeyHandler(txtPersonalName, critPersonalName, e);
             DataRow PartnerClassDataRow;
-            int selectedIndex = 0;
+
+            GeneralKeyHandler(txtPersonalName, critPersonalName, e);
 
             if ((txtPersonalName.Text.Length > 0)
                 && FShowAllPartnerClasses)
@@ -944,13 +1076,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Here we have a personal name
                 // So make sure that only family and persons in the partner class
                 // combo box
-
-                selectedIndex = cmbPartnerClass.SelectedIndex;
+                FPartnerClassUpdateIsAutomatic = true;
                 FPartnerClassDataTable.Rows.Clear();
 
                 if (FRestrictedParterClasses.Length > 0)
                 {
+                    FDontRecordCurrentWorkerFamOnlySelection = true;
                     InsertRestrictedPartnerClassComboBox(false);
+                    FDontRecordCurrentWorkerFamOnlySelection = false;
                 }
                 else
                 {
@@ -988,25 +1121,22 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         default:
                         {
+                            if (FPreviouslySelectedPartnerClass == "*")
+                            {
+                                FPreviouslySelectedPartnerClass = "FAMILY";
+                            }
+
                             // Set Partner Class to Family or Person, depending on what the previous value was
                             // Need to change it twice to get a selected value changed event
-                            switch (selectedIndex)
-                            {
-                                case 1:
-                                    cmbPartnerClass.SelectedIndex = 1;
-                                    cmbPartnerClass.SelectedIndex = 0;
-                                    break;
-
-                                default:
-                                    cmbPartnerClass.SelectedIndex = 0;
-                                    cmbPartnerClass.SelectedIndex = 1;
-                                    break;
-                            }
+                            cmbPartnerClass.SelectedIndex = -1;
+                            cmbPartnerClass.SelectedValue = FPreviouslySelectedPartnerClass;
 
                             break;
                         }
                     }
                 }
+
+                FPartnerClassUpdateIsAutomatic = false;
             }
             else if ((cmbPartnerClass.SelectedValue != null)
                      && (txtPersonalName.Text.Length == 0)
@@ -1014,11 +1144,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 // We don't have a personal name
                 // We show all available types in the partner class combo box.
+                FPartnerClassUpdateIsAutomatic = true;
                 FPartnerClassDataTable.Rows.Clear();
 
                 if (FRestrictedParterClasses.Length > 0)
                 {
+                    FDontRecordCurrentWorkerFamOnlySelection = true;
                     InsertRestrictedPartnerClassComboBox(true);
+                    FDontRecordCurrentWorkerFamOnlySelection = false;
                 }
                 else
                 {
@@ -1043,6 +1176,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                         cmbPartnerClass.SelectedIndex = 0;
                         break;
                 }
+
+                FPartnerClassUpdateIsAutomatic = false;
+
+                txtPersonalName.Focus();
             }
         }
 
@@ -1052,45 +1189,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AllPartnerClasses">true: all items are inserted. false: only family and person items are inserted</param>
         private void InsertRestrictedPartnerClassComboBox(Boolean AllPartnerClasses)
         {
-            DataRow PartnerClassDataRow;
-
             if (!AllPartnerClasses)
             {
-                foreach (String ClassItem in FRestrictedParterClasses)
-                {
-                    if ((ClassItem == "PERSON")
-                        || (ClassItem == "FAMILY"))
-                    {
-                        PartnerClassDataRow = FPartnerClassDataTable.NewRow();
-                        PartnerClassDataRow["PartnerClass"] = ClassItem;
-                        FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
-                    }
-
-                    if (ClassItem == "WORKER-FAM")
-                    {
-                        PartnerClassDataRow = FPartnerClassDataTable.NewRow();
-                        PartnerClassDataRow["PartnerClass"] = "FAMILY";
-                        FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
-                    }
-                }
+                AddPartnerClassesToDataTable(FRestrictedParterClasses, false);
             }
             else
             {
-                foreach (String ClassItem in FRestrictedParterClasses)
+                AddPartnerClassesToDataTable(FRestrictedParterClasses, true);
+
+                if (cmbPartnerClass.Items.Count > 0)
                 {
-                    if (ClassItem == "WORKER-FAM")
-                    {
-                        PartnerClassDataRow = FPartnerClassDataTable.NewRow();
-                        PartnerClassDataRow["PartnerClass"] = "FAMILY";
-                        FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
-                    }
-                    else
-                    {
-                        // just add item
-                        PartnerClassDataRow = FPartnerClassDataTable.NewRow();
-                        PartnerClassDataRow["PartnerClass"] = ClassItem;
-                        FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
-                    }
+                    cmbPartnerClass.SelectedIndex = 0;
+
+                    /* this ensures that the checkbox is visible if needed */
+                    /* and disabled if needed */
+                    /* and checked if needed */
+                    HandlePartnerClassGui();
                 }
             }
         }
@@ -1114,21 +1228,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUserDefaults.PARTNER_FINDOPTIONS_EXACTPARTNERKEYMATCHSEARCH,
                     true))
             {
-                Int64 PartnerKey = 0;
-
-                try
-                {
-                    PartnerKey = System.Convert.ToInt64(txtPartnerKey.Text);
-                }
-                catch (Exception)
-                {
-                }
-
-                if (PartnerKey == 0)
+                if (System.Convert.ToInt64(txtPartnerKey.Text) == 0)
                 {
                     this.EnableAllPanel();
                 }
-                else
+
+                if (System.Convert.ToInt64(txtPartnerKey.Text) != 0)
                 {
                     this.DisableAllPanel(pnlPartnerKey);
                 }
@@ -1303,6 +1408,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>true if there are any search criterias </returns>
         public bool HasSearchCriteria()
         {
+            string CurrentColumnsContent;
+
             if (FFindCriteriaDataTable.Rows.Count != 1)
             {
                 return true;
@@ -1313,6 +1420,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             for (int Counter = 0; Counter < SearchDataRow.ItemArray.Length; ++Counter)
             {
+                CurrentColumnsContent = SearchDataRow[Counter].ToString();
+
                 if (FFindCriteriaDataTable.Columns[Counter].ColumnName.EndsWith("Match"))
                 {
                     // ignore changes of the Values like "ExactPartnerKeyMatch" or
@@ -1323,8 +1432,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (FFindCriteriaDataTable.Columns[Counter].ColumnName.CompareTo("PartnerStatus") == 0)
                 {
-                    if ((SearchDataRow[Counter].ToString() == "ALL")
-                        || (SearchDataRow[Counter].ToString() == "ACTIVE"))
+                    if ((CurrentColumnsContent == "ALL")
+                        || (CurrentColumnsContent == "ACTIVE"))
                     {
                         // if there is partner status "All" or "Active" marked
                         // treat it as if there is no search criteria selected
@@ -1336,9 +1445,28 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
 
-                if (SearchDataRow[Counter].ToString() != FDefaultValues[Counter].ToString())
+                if ((CurrentColumnsContent != FDefaultValues[Counter].ToString())
+                    && (CurrentColumnsContent != "*")
+                    && (CurrentColumnsContent != "%"))
                 {
-                    return true;
+                    if ((CurrentColumnsContent.Length > 1)
+                        && ((CurrentColumnsContent.StartsWith("*"))
+                            || (CurrentColumnsContent.StartsWith("%"))))
+                    {
+                        // Ensure that the whole string doesn't consist just of * characters
+                        for (int CharCounter = 1; CharCounter < CurrentColumnsContent.Length; CharCounter++)
+                        {
+                            if ((CurrentColumnsContent[CharCounter] != '*')
+                                && (CurrentColumnsContent[CharCounter] != '%'))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -1442,21 +1570,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 //            MessageBox.Show("FindCriteriaUserDefaultRestore:  PartnerStatusUserDefault: " + PartnerStatusUserDefault);
 
-            if (PartnerStatusUserDefault == "ACTIVE")
-            {
-                rbtStatusActive.Checked = true;
-                FFindCriteriaDataTable.Rows[0]["PartnerStatus"] = "ACTIVE";
-            }
-            else if (PartnerStatusUserDefault == "ALL")
-            {
-                rbtStatusAll.Checked = true;
-                FFindCriteriaDataTable.Rows[0]["PartnerStatus"] = "ALL";
-            }
-            else
-            {
-                rbtPrivate.Checked = true;
-                FFindCriteriaDataTable.Rows[0]["PartnerStatus"] = "PRIVATE";
-            }
+            this.PartnerStatus = PartnerStatusUserDefault;
         }
 
         /// <summary>
@@ -1498,10 +1612,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void InitUserControl()
         {
-            SingleLineFlow LayoutManagerLeftColumn = new SingleLineFlow(pnlLeftColumn, 1, 1);
+            SingleLineFlow LayoutManagerLeftColumn;
+            SingleLineFlow LayoutManagerRightColumn;
 
+            LayoutManagerLeftColumn = new SingleLineFlow(pnlLeftColumn, 1, 1);             // 22
             LayoutManagerLeftColumn.SpacerDistance = 7;
-            SingleLineFlow LayoutManagerRightColumn = new SingleLineFlow(pnlRightColumn, 1, 1);
+            LayoutManagerRightColumn = new SingleLineFlow(pnlRightColumn, 1, 1);             // 22
             LayoutManagerRightColumn.SpacerDistance = 7;
             FWorkerFamOnly = false;
             FDefaultPartnerClass = "*";
@@ -1517,9 +1633,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // FFindCriteriaDataTable := new DataTable('FindCriteria');
             FFindCriteriaDataTable.ColumnChanging += new DataColumnChangeEventHandler(this.OnCriteriaChanging);
-
-            FFindCriteriaDataSet.DataSetName = "FindCriteriaDataSet";
-            FFindCriteriaDataSet.Tables.AddRange(new System.Data.DataTable[] { this.FFindCriteriaDataTable });
 
             // Set status bar texts
             FPetraUtilsObject.SetStatusBarText(txtPartnerName, StrPartnerNameFindHelptext);
@@ -1543,6 +1656,44 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetStatusBarText(txtPhoneNumber, MPartnerResourcestrings.StrPhoneNumberFindHelpText);
             FPetraUtilsObject.SetStatusBarText(txtPartnerKey, StrPartnerKeyFindHelpText);
             FPetraUtilsObject.SetStatusBarText(ucoCountryComboBox, MPartnerResourcestrings.StrCountryHelpText);
+
+            this.chkWorkerFamOnly.CheckedChanged += new System.EventHandler(this.ChkWorkerFamOnly_CheckedChanged);
+        }
+
+        /// <summary>
+        /// <summary> Clean up any resources being used. </summary>
+        /// </summary>
+        /// <returns>void</returns>
+        protected override void Dispose(Boolean Disposing)
+        {
+            if (Disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+
+                    /*
+                     * Although it seems very strange, the removal of DataBindings of the Criteria Controls
+                     * in here is necessary! If this isn't done, a HashTable deep inside the inner workings
+                     * of WinForm's DataBinding is holding a reference to this UserControl even after it has
+                     * been disposed... Very strange, must have to do something with our Criteria Controls,
+                     * but couldn't figure out yet what it is or how to fix it. (ChristianK)
+                     */
+                    critPhoneNumber.DataBindings.Clear();
+                    critAddress1.DataBindings.Clear();
+                    critAddress2.DataBindings.Clear();
+                    critAddress3.DataBindings.Clear();
+                    critEmail.DataBindings.Clear();
+                    critPartnerName.DataBindings.Clear();
+                    critPersonalName.DataBindings.Clear();
+                    critPreviousName.DataBindings.Clear();
+                    critPostCode.DataBindings.Clear();
+                    critCity.DataBindings.Clear();
+                    critCounty.DataBindings.Clear();
+                }
+            }
+
+            base.Dispose(Disposing);
         }
 
         /// <summary>

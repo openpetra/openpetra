@@ -987,6 +987,91 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
+        /// Puts a temp <see cref="DataTable" /> with the result of a given SQL statement into an existing
+        /// <see cref="DataSet" />.
+        /// The SQL statement is executed in the given transaction context (which should
+        /// have the desired <see cref="IsolationLevel" />). Suitable for parameterised SQL statements.
+        /// </summary>
+        /// <param name="AFillDataSet">Existing <see cref="DataSet" /></param>
+        /// <param name="ASqlStatement">SQL statement</param>
+        /// <param name="ADataTempTableName">Name that the temp <see cref="DataTable" /> should get</param>
+        /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
+        /// <see cref="IsolationLevel" /></param>
+        /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
+        /// (including parameter Value)</param>
+        /// <param name="AStartRecord">Start record that should be returned</param>
+        /// <param name="AMaxRecords">Maximum number of records that should be returned</param>
+        /// <returns>Existing <see cref="DataSet" />, additionally containing the new <see cref="DataTable" /></returns>
+        public DataSet SelectToTempTable(DataSet AFillDataSet,
+            String ASqlStatement,
+            String ADataTempTableName,
+            TDBTransaction AReadTransaction,
+            DbParameter[] AParametersArray,
+            System.Int32 AStartRecord,
+            System.Int32 AMaxRecords)
+        {
+            DataSet ObjReturn;
+
+            if (AFillDataSet == null)
+            {
+                throw new ArgumentNullException("AFillDataSet", "AFillDataSet must not be null!");
+            }
+
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log("Entering " + this.GetType().FullName + ".SelectToTempTable()...");
+                LogSqlStatement(this.GetType().FullName + ".Select()", ASqlStatement, AParametersArray);
+            }
+
+            ObjReturn = null;
+
+            try
+            {
+                IDbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, AParametersArray);
+
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                {
+                    TLogging.Log(((this.GetType().FullName + ".Select: now filling IDbDataAdapter('" + ADataTempTableName) + "')..."));
+                }
+
+                //Make sure that any previous temp table of the same name is removed first!
+                if (AFillDataSet.Tables.Contains(ADataTempTableName))
+                {
+                    AFillDataSet.Tables.Remove(ADataTempTableName);
+                }
+
+                AFillDataSet.Tables.Add(ADataTempTableName);
+
+                FDataBaseRDBMS.FillAdapter(TheAdapter, ref AFillDataSet, AStartRecord, AMaxRecords, ADataTempTableName);
+
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                {
+                    TLogging.Log(((this.GetType().FullName + ".Select: finished filling IDbDataAdapter(DataTable '" +
+                                   ADataTempTableName) + "'). DT Row Count: " + AFillDataSet.Tables[ADataTempTableName].Rows.Count.ToString()));
+#if WITH_POSTGRESQL_LOGGING
+                    NpgsqlEventLog.Level = LogLevel.None;
+#endif
+                }
+
+                ObjReturn = AFillDataSet;
+            }
+            catch (Exception exp)
+            {
+                LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
+            }
+
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
+            {
+                if ((ObjReturn != null) && (ObjReturn.Tables[ADataTempTableName] != null))
+                {
+                    LogTable(ObjReturn.Tables[ADataTempTableName]);
+                }
+            }
+
+            return ObjReturn;
+        }
+
+        /// <summary>
         /// Puts a <see cref="DataTable" /> with the result of a  given SQL statement into an existing
         /// <see cref="DataSet" />.
         /// The SQL statement is executed in the given transaction context (which should

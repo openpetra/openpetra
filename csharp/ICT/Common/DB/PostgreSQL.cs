@@ -429,7 +429,14 @@ namespace Ict.Common.DB
             }
             else
             {
-                ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataSet, ADataTableName);
+                if (ADataTableName == String.Empty)
+                {
+                    ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataSet);
+                }
+                else
+                {
+                    ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataSet, ADataTableName);
+                }
             }
         }
 

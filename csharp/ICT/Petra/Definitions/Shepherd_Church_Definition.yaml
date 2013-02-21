@@ -1,0 +1,48 @@
+Shepherd:
+    Title: Add New Church Shepherd
+    Width: 700
+    Height: 500
+    FinishPageNote: Don't forget to click the finish button!
+    ShepherdPages:
+        PartnerDetailsChurch:
+            ID: 5
+            Title: Personnel Shepherd
+            Note: This is a test, this is only a test.
+            Visible: True
+            Enabled: True
+            UserControlNamespace: Ict.Petra.Client.MPartner.Gui
+            UserControlClassName: TUC_PartnerDetails_Church
+            HelpContext: HELPME!!!
+            
+        SubShepherd.ShepherdFamily:
+            ShepherdYAMLFile: Shepherd_Family_Definition.yaml
+            ImportPages: [all]
+            
+        PartnerDetailsFamily:
+            ID: 56
+            Title: Other Shepherd
+            Note: Giggity giggity goo
+            Visible: True
+            Enabled: True
+            UserControlNamespace: Ict.Petra.Client.MPartner.Gui
+            UserControlClassName: TUC_PartnerDetails_Family
+            HelpContext: You cannot be helped 
+            
+        SubShepherd.ShepherdTestOnly:
+            ShepherdYAMLFile: Shepherd_Test_Only.yaml
+            ImportPages: [1,2,4,6]
+            
+        ShepherdPage.FinalShepherd:
+            ID: 12
+            Title: Final Shepherd 
+            Note: This is a temporary note 
+            Visible: True
+            Enabled: True 
+            UserControlNamespace: Ict.Petra.Client.MPartner.Gui
+            UserControlClassName: TUC_PartnerDetails_Family
+            HelpContext: No one can be helped 
+            UserControlType: OnceUponATime
+            
+        SubShepherd.ShepherdTestSecond:
+            ShepherdYAMLFile: Shepherd_Test_Only.yaml
+            ImportPages: [1,2,4,6]

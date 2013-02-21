@@ -1,0 +1,34 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    InterfaceName: IPetraEditUserControl, Ict.Petra.Client.CommonForms.IFrmPetra
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.CommonForms
+    FormType: edit
+    Template: usercontrolUnbound
+    Controls:
+        pnlContent:
+            Controls: [grpSummary, chkFurtherActionOnFinish]
+#            Padding: 5, 5, 5, 0
+            Dock: Fill
+            
+        grpSummary:
+            Dock: Fill
+            Padding: 5, 3, 5, 5
+            Controls: [pnlSummary]
+            
+        pnlSummary:            
+            Controls: [lblSummaryText1, lblSummaryText2]
+            Dock: Fill
+            Padding: 2, 2, 2, 2
+            BackColor: System.Drawing.Color.White
+
+        lblSummaryText1:            
+
+        lblSummaryText2:
+
+        chkFurtherActionOnFinish:
+            Visible: false
+            Dock: Bottom
+            Padding: 5, 8, 5, 3
+            Label: Further action on finish
+            CheckBoxAttachedLabel: right

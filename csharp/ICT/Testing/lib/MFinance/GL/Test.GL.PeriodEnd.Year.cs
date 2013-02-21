@@ -250,7 +250,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // create new ledger 2010 which is in year 2010
             TGLSetupWebConnector.CreateNewLedger(intLedgerNumber2010, "NUnit test 2010", "99", "EUR", "USD", new DateTime(2010,
                     1,
-                    1), 12, 1, 8, out verificationResult);
+                    1), 12, 1, 8, true, 1, true, out verificationResult);
 
             // We are in 2010 and this and 2011 is not a leap year
             TAccountPeriodToNewYear accountPeriodToNewYear =

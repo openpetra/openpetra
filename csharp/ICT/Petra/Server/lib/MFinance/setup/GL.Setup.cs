@@ -25,6 +25,7 @@ using System;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
+using System.Globalization;
 using System.Xml;
 using System.IO;
 using GNU.Gettext;
@@ -43,7 +44,9 @@ using Ict.Petra.Shared.MFinance.AR.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
@@ -91,10 +94,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// returns general ledger settings
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="ACalendarStartDate"></param>
         /// <param name="ACurrencyChangeAllowed"></param>
+        /// <param name="ACalendarChangeAllowed"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLSetupTDS LoadLedgerSettings(Int32 ALedgerNumber, out bool ACurrencyChangeAllowed)
+        public static GLSetupTDS LoadLedgerSettings(Int32 ALedgerNumber, out DateTime ACalendarStartDate,
+            out bool ACurrencyChangeAllowed, out bool ACalendarChangeAllowed)
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
@@ -103,12 +109,28 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
             AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
+            // retrieve calendar start date (start date of financial year)
+            AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+            ACalendarStartDate = DateTime.MinValue;
+
+            if (CalendarTable.Count > 0)
+            {
+                ACalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
+            }
+
             // now check if currency change would be allowed
             ACurrencyChangeAllowed = true;
 
-            if (ATransactionAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+            if ((AJournalAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                || (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0))
             {
-                // don't allow currency change if transactions exist
+                // don't allow currency change if journals or gift batches exist
+                ACurrencyChangeAllowed = false;
+            }
+
+            if (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+            {
+                // don't allow currency change if journals exist
                 ACurrencyChangeAllowed = false;
             }
 
@@ -132,6 +154,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
 
+            // now check if calendar change would be allowed
+            ACalendarChangeAllowed = IsCalendarChangeAllowed(ALedgerNumber);
+
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
 
@@ -141,6 +166,455 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             return MainDS;
+        }
+
+        /// <summary>
+        /// returns true if calendar change is allowed for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool IsCalendarChangeAllowed(Int32 ALedgerNumber)
+        {
+            Boolean NewTransaction;
+            Boolean CalendarChangeAllowed = true;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            if ((ABatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                || (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0))
+            {
+                // don't allow calendar change if any batch for this ledger exists
+                CalendarChangeAllowed = false;
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return CalendarChangeAllowed;
+        }
+
+        /// <summary>
+        /// returns true if subsystem is activated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ASubsystemCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        private static bool IsSubsystemActivated(Int32 ALedgerNumber, String ASubsystemCode)
+        {
+            Boolean NewTransaction;
+            Boolean Activated = false;
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            ASystemInterfaceTable TemplateTable;
+            ASystemInterfaceRow TemplateRow;
+            StringCollection TemplateOperators;
+
+            TemplateTable = new ASystemInterfaceTable();
+            TemplateRow = TemplateTable.NewRowTyped(false);
+            TemplateRow.LedgerNumber = ALedgerNumber;
+            TemplateRow.SubSystemCode = ASubsystemCode;
+            TemplateRow.SetUpComplete = true;
+            TemplateOperators = new StringCollection();
+            TemplateOperators.Add("=");
+
+            if (ASystemInterfaceAccess.CountUsingTemplate(TemplateRow, TemplateOperators, Transaction) > 0)
+            {
+                Activated = true;
+            }
+            
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return Activated;
+        }
+
+        /// <summary>
+        /// returns true if gift receipting subsystem is activated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool IsGiftReceiptingSubsystemActivated(Int32 ALedgerNumber)
+        {
+            return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
+        }
+
+        /// <summary>
+        /// returns true if accounts payable subsystem is activated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool IsAccountsPayableSubsystemActivated(Int32 ALedgerNumber)
+        {
+            return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.AP.ToString());
+        }
+
+        /// <summary>
+        /// activate subsystem for gift receipting for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AStartingReceiptNumber"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static TSubmitChangesResult ActivateGiftReceiptingSubsystem(Int32 ALedgerNumber, 
+                                                                           Int32 AStartingReceiptNumber,
+                                                                           out TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
+            Boolean NewTransaction;
+            
+            AVerificationResult = new TVerificationResultCollection();
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            // if subsystem already active then no need to go further
+            if (!IsGiftReceiptingSubsystemActivated(ALedgerNumber))
+            {
+                // create or update account for Creditor's Control
+                
+                
+                // make sure transaction type exists for gift receipting subsystem
+                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.GR.ToString(), Transaction) == 0)
+                {
+                    ATransactionTypeTable TransactionTypeTable;
+                    ATransactionTypeRow TransactionTypeRow;
+                    
+                    TransactionTypeTable = new ATransactionTypeTable();
+                    TransactionTypeRow = TransactionTypeTable.NewRowTyped();
+                    TransactionTypeRow.LedgerNumber = ALedgerNumber;
+                    TransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                    TransactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
+                    TransactionTypeRow.DebitAccountCode = "CASH";
+                    TransactionTypeRow.CreditAccountCode = "GIFT";
+                    TransactionTypeRow.TransactionTypeDescription = "Gift Receipting";
+                    TransactionTypeRow.SpecialTransactionType = true;
+                    TransactionTypeTable.Rows.Add(TransactionTypeRow);
+                    
+                    if (!ATransactionTypeAccess.SubmitChanges(TransactionTypeTable, Transaction, out AVerificationResult))
+                    {
+                        ReturnValue = TSubmitChangesResult.scrError;
+                    }
+                }
+                
+                if (ReturnValue == TSubmitChangesResult.scrOK)
+                {
+                    ASystemInterfaceTable SystemInterfaceTable;
+                    ASystemInterfaceRow SystemInterfaceRow;
+                    SystemInterfaceTable = ASystemInterfaceAccess.LoadByPrimaryKey(ALedgerNumber, 
+                                                                                   CommonAccountingSubSystemsEnum.GR.ToString(), 
+                                                                                   Transaction);
+                    
+                    if (SystemInterfaceTable.Count == 0)
+                    {
+                        SystemInterfaceRow = SystemInterfaceTable.NewRowTyped();
+                        SystemInterfaceRow.LedgerNumber = ALedgerNumber;
+                        SystemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                        SystemInterfaceRow.SetUpComplete = true;
+                        SystemInterfaceTable.Rows.Add(SystemInterfaceRow);
+                    }
+                    else
+                    {
+                        SystemInterfaceRow = (ASystemInterfaceRow)SystemInterfaceTable.Rows[0];
+                        SystemInterfaceRow.SetUpComplete = true;
+                    }
+                    
+                    if (!ASystemInterfaceAccess.SubmitChanges(SystemInterfaceTable, Transaction, out AVerificationResult))
+                    {
+                        ReturnValue = TSubmitChangesResult.scrError;
+                    }
+                }
+                
+                // now set the starting receipt number
+                if (ReturnValue == TSubmitChangesResult.scrOK)
+                {
+                    ALedgerTable LedgerTable;
+                    ALedgerRow LedgerRow;
+                    
+                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+                    LedgerRow.LastHeaderRNumber = AStartingReceiptNumber;
+    
+                    if (!ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AVerificationResult))
+                    {
+                        ReturnValue = TSubmitChangesResult.scrError;
+                    }
+                }
+            }
+            
+            if ((ReturnValue == TSubmitChangesResult.scrOK)
+                && NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// activate subsystem for accounts payable for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static TSubmitChangesResult ActivateAccountsPayableSubsystem(Int32 ALedgerNumber, 
+                                                                            out TVerificationResultCollection AVerificationResult)
+        {
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
+            Boolean NewTransaction;
+            
+            AVerificationResult = new TVerificationResultCollection();
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            // if subsystem already active then no need to go further
+            if (!IsAccountsPayableSubsystemActivated(ALedgerNumber))
+            {
+                // make sure transaction type exists for accounts payable subsystem
+                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.AP.ToString(), Transaction) == 0)
+                {
+                    ATransactionTypeTable TransactionTypeTable;
+                    ATransactionTypeRow TransactionTypeRow;
+                    
+                    TransactionTypeTable = new ATransactionTypeTable();
+                    TransactionTypeRow = TransactionTypeTable.NewRowTyped();
+                    TransactionTypeRow.LedgerNumber = ALedgerNumber;
+                    TransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+                    TransactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
+                    TransactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
+                    TransactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_CREDITORS;
+                    TransactionTypeRow.TransactionTypeDescription = "Input Creditor's Invoice";
+                    TransactionTypeRow.SpecialTransactionType = true;
+                    TransactionTypeTable.Rows.Add(TransactionTypeRow);
+                    
+                    if (!ATransactionTypeAccess.SubmitChanges(TransactionTypeTable, Transaction, out AVerificationResult))
+                    {
+                        ReturnValue = TSubmitChangesResult.scrError;
+                    }
+                }
+
+                // create or update system interface record for accounts payable
+                ASystemInterfaceTable SystemInterfaceTable;
+                ASystemInterfaceRow SystemInterfaceRow;
+                SystemInterfaceTable = ASystemInterfaceAccess.LoadByPrimaryKey(ALedgerNumber, 
+                                                                               CommonAccountingSubSystemsEnum.AP.ToString(), 
+                                                                               Transaction);
+                
+                if (SystemInterfaceTable.Count == 0)
+                {
+                    SystemInterfaceRow = SystemInterfaceTable.NewRowTyped();
+                    SystemInterfaceRow.LedgerNumber = ALedgerNumber;
+                    SystemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+                    SystemInterfaceRow.SetUpComplete = true;
+                    SystemInterfaceTable.Rows.Add(SystemInterfaceRow);
+                }
+                else
+                {
+                    SystemInterfaceRow = (ASystemInterfaceRow)SystemInterfaceTable.Rows[0];
+                    SystemInterfaceRow.SetUpComplete = true;
+                }
+                
+                if (!ASystemInterfaceAccess.SubmitChanges(SystemInterfaceTable, Transaction, out AVerificationResult))
+                {
+                    ReturnValue = TSubmitChangesResult.scrError;
+                }
+            }
+            
+            if ((ReturnValue == TSubmitChangesResult.scrOK)
+                && NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// returns true if subsystem can be deactivated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ASubsystemCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        private static bool CanSubsystemBeDeactivated(Int32 ALedgerNumber, String ASubsystemCode)
+        {
+            Boolean NewTransaction;
+            Boolean Result = false;
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            if (ASubsystemCode == CommonAccountingSubSystemsEnum.GR.ToString())
+            {
+                // for gift receipting don't allow to deactivate if 'Posted' or 'Unposted' gift batches exist
+                AGiftBatchTable TemplateGiftBatchTable;
+                AGiftBatchRow TemplateGiftBatchRow;
+                StringCollection TemplateGiftBatchOperators;
+    
+                TemplateGiftBatchTable = new AGiftBatchTable();
+                TemplateGiftBatchRow = TemplateGiftBatchTable.NewRowTyped(false);
+                TemplateGiftBatchRow.LedgerNumber = ALedgerNumber;
+                TemplateGiftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
+                TemplateGiftBatchOperators = new StringCollection();
+                TemplateGiftBatchOperators.Add("=");
+    
+                if (AGiftBatchAccess.CountUsingTemplate(TemplateGiftBatchRow, TemplateGiftBatchOperators, Transaction) == 0)
+                {
+                    Result = true;
+                }
+    
+                if (!Result)
+                {
+                    TemplateGiftBatchRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
+        
+                    if (AGiftBatchAccess.CountUsingTemplate(TemplateGiftBatchRow, TemplateGiftBatchOperators, Transaction) == 0)
+                    {
+                        Result = true;
+                    }
+                }
+            }
+            
+            if (!Result)
+            {
+                AJournalTable TemplateJournalTable;
+                AJournalRow TemplateJournalRow;
+                StringCollection TemplateJournalOperators;
+    
+                TemplateJournalTable = new AJournalTable();
+                TemplateJournalRow = TemplateJournalTable.NewRowTyped(false);
+                TemplateJournalRow.LedgerNumber = ALedgerNumber;
+                TemplateJournalRow.SubSystemCode = ASubsystemCode;
+                TemplateJournalOperators = new StringCollection();
+                TemplateJournalOperators.Add("=");
+    
+                ARecurringJournalTable TemplateRJournalTable;
+                ARecurringJournalRow TemplateRJournalRow;
+                StringCollection TemplateRJournalOperators;
+    
+                TemplateRJournalTable = new ARecurringJournalTable();
+                TemplateRJournalRow = TemplateRJournalTable.NewRowTyped(false);
+                TemplateRJournalRow.LedgerNumber = ALedgerNumber;
+                TemplateRJournalRow.SubSystemCode = ASubsystemCode;
+                TemplateRJournalOperators = new StringCollection();
+                TemplateRJournalOperators.Add("=");
+    
+                // do not allow to deactivate subsystem if journals already exist
+                if (   AJournalAccess.CountUsingTemplate(TemplateJournalRow, TemplateJournalOperators, Transaction) == 0
+                    && ARecurringJournalAccess.CountUsingTemplate(TemplateRJournalRow, TemplateRJournalOperators, Transaction) == 0)
+                {
+                    Result = true;
+                }
+            }
+            
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return Result;
+        }
+
+        /// <summary>
+        /// returns true if gift receipting subsystem can be deactivated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CanGiftReceiptingSubsystemBeDeactivated(Int32 ALedgerNumber)
+        {
+            return CanSubsystemBeDeactivated(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
+        }
+
+        /// <summary>
+        /// returns true if accounts payable subsystem can be deactivated for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CanAccountsPayableSubsystemBeDeactivated(Int32 ALedgerNumber)
+        {
+            return CanSubsystemBeDeactivated(ALedgerNumber, CommonAccountingSubSystemsEnum.AP.ToString());
+        }
+        
+        /// <summary>
+        /// deactivate given subsystem for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="SubsystemCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        private static bool DeactivateSubsystem(Int32 ALedgerNumber, String SubsystemCode)
+        {
+            Boolean NewTransaction;
+            bool Deactivated = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            try
+            {
+                ASystemInterfaceAccess.DeleteByPrimaryKey(ALedgerNumber, SubsystemCode, Transaction);
+    
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            
+                Deactivated = true;
+            }
+            finally
+            {
+                
+                if (!Deactivated)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            
+            return Deactivated;
+        }
+        
+        /// <summary>
+        /// deactivate subsystem for gift receipting for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool DeactivateGiftReceiptingSubsystem(Int32 ALedgerNumber)
+        {
+            return DeactivateSubsystem(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
+        }
+
+        /// <summary>
+        /// deactivate subsystem for accounts payable for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool DeactivateAccountsPayableSubsystem(Int32 ALedgerNumber)
+        {
+            return DeactivateSubsystem(ALedgerNumber, CommonAccountingSubSystemsEnum.AP.ToString());
         }
 
         /// <summary>
@@ -207,6 +681,157 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return MainDS;
         }
 
+        /// <summary></summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable LoadLocalSummaryCostCentres(Int32 ALedgerNumber)
+        {
+            String SqlQuery = "SELECT a_cost_centre_code_c AS CostCentreCode, " +
+                              "a_cost_centre_name_c AS CostCentreName" +
+                              " FROM PUB_a_cost_centre" +
+                              " WHERE a_ledger_number_i = " + ALedgerNumber +
+                              " AND a_posting_cost_centre_flag_l=FALSE" +
+                              " AND a_cost_centre_type_c = 'Local'" +
+                              " AND a_cost_centre_to_report_to_c <> '';";
+            DataTable ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", null);
+
+            return ParentCostCentreTbl;
+        }
+
+        /// <summary></summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable LoadCostCentrePartnerLinks(Int32 ALedgerNumber)
+        {
+            //
+            // Load Partners where PartnerType includes "COSTCENTRE":
+            String SqlQuery = "SELECT p_partner_short_name_c as ShortName, " +
+                              "PUB_p_partner.p_partner_key_n as PartnerKey, " +
+                              "'0' as IsLinked, " +
+                              "'0' as ReportsTo" +
+                              " FROM PUB_p_partner, PUB_p_partner_type" +
+                              " WHERE PUB_p_partner_type.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
+                              " AND PUB_p_partner_type.p_type_code_c = 'COSTCENTRE';";
+
+            DataTable PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", null);
+
+            PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
+            AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, null);
+
+            foreach (AValidLedgerNumberRow Row in LinksTbl.Rows)
+            {
+                Int32 RowIdx = PartnerCostCentreTbl.DefaultView.Find(Row.PartnerKey);
+
+                if (RowIdx >= 0)
+                {
+                    PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = Row.CostCentreCode;
+                    ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, Row.CostCentreCode, null);
+
+                    if (CCTbl.Rows.Count > 0)
+                    {
+                        PartnerCostCentreTbl.DefaultView[RowIdx].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
+                    }
+                }
+            }
+
+            return PartnerCostCentreTbl;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="PartnerCostCentreTbl"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static TSubmitChangesResult SaveCostCentrePartnerLinks(
+            Int32 ALedgerNumber, DataTable PartnerCostCentreTbl, out TVerificationResultCollection AVerificationResult)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
+
+            try
+            {
+                AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                LinksTbl.DefaultView.Sort = "p_partner_key_n";
+
+                ACostCentreTable CostCentreTbl = ACostCentreAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                CostCentreTbl.DefaultView.Sort = "a_cost_centre_code_c";
+
+                foreach (DataRow Row in PartnerCostCentreTbl.Rows)
+                {
+                    String RowCCCode = Convert.ToString(Row["IsLinked"]);
+
+                    if (RowCCCode != "0")   // This should be in the LinksTbl - if it's not, I'll add it.
+                    {                       // { AND I probably need to create a CostCentre Row too! }
+                        Int32 CostCentreRowIdx = CostCentreTbl.DefaultView.Find(RowCCCode);
+
+                        if (CostCentreRowIdx < 0)       // There's no such Cost Centre - I need to create it now.
+                        {
+                            ACostCentreRow NewCostCentreRow = CostCentreTbl.NewRowTyped();
+                            NewCostCentreRow.LedgerNumber = ALedgerNumber;
+                            NewCostCentreRow.CostCentreCode = RowCCCode;
+                            NewCostCentreRow.CostCentreToReportTo = Convert.ToString(Row["ReportsTo"]);
+                            NewCostCentreRow.CostCentreName = Convert.ToString(Row["ShortName"]);
+                            NewCostCentreRow.PostingCostCentreFlag = true;
+                            NewCostCentreRow.CostCentreActiveFlag = true;
+                            CostCentreTbl.Rows.Add(NewCostCentreRow);
+                        }
+
+                        Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
+
+                        if (RowIdx < 0)
+                        {
+                            AValidLedgerNumberRow LinksRow = LinksTbl.NewRowTyped();
+                            LinksRow.LedgerNumber = ALedgerNumber;
+                            LinksRow.PartnerKey = Convert.ToInt64(Row["PartnerKey"]);
+                            LinksRow.IltProcessingCentre = 4000000; // This is the ICH ledger number, but apparently anyone cares about it!
+                            LinksRow.CostCentreCode = RowCCCode;
+                            LinksTbl.Rows.Add(LinksRow);
+                        }
+                        else    // If this partner is already linked to a cost centre, it's possible the user has changed the code!
+                        {
+                            AValidLedgerNumberRow LinksRow = (AValidLedgerNumberRow)LinksTbl.DefaultView[RowIdx].Row;
+                            LinksRow.CostCentreCode = RowCCCode;
+                        }
+                    }
+                    else                // This should not be in the LinksTbl - if it is, I'll delete it.
+                    {
+                        Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
+
+                        if (RowIdx >= 0)
+                        {
+                            AValidLedgerNumberRow LinksRow = (AValidLedgerNumberRow)LinksTbl.DefaultView[RowIdx].Row;
+                            LinksRow.Delete();
+                        }
+                    }
+                }
+
+                if (ACostCentreAccess.SubmitChanges(CostCentreTbl, Transaction, out AVerificationResult))
+                {
+                    if (AValidLedgerNumberAccess.SubmitChanges(LinksTbl, Transaction, out AVerificationResult))
+                    {
+                        ReturnValue = TSubmitChangesResult.scrOK;
+                    }
+                }
+            }
+            finally
+            {
+                if (ReturnValue == TSubmitChangesResult.scrOK)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            return ReturnValue;
+        }
+
         private static void DropAccountProperties(
             ref GLSetupTDS AInspectDS,
             Int32 ALedgerNumber,
@@ -258,12 +883,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// save general ledger settings
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="ACalendarStartDate"></param>
         /// <param name="AInspectDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
         public static TSubmitChangesResult SaveLedgerSettings(
             Int32 ALedgerNumber,
+            DateTime ACalendarStartDate,
             ref GLSetupTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -289,6 +916,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             int CurrentLastFwdPeriod;
             int NewLastFwdPeriod;
             int Period;
+            DateTime PeriodStartDate;
+            DateTime CurrentCalendarStartDate;
+            Boolean CreateDefaultCalendar = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
@@ -301,9 +931,81 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 return TSubmitChangesResult.scrNothingToBeSaved;
             }
 
-            // check if any new forwarding periods need to be created
+            // load ledger row currently saved in database so it can be used for comparison with modified data
             LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
             LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+
+            // retrieve currently saved calendar start date (start date of financial year)
+            AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+            CurrentCalendarStartDate = DateTime.MinValue;
+
+            if (CalendarTable.Count > 0)
+            {
+                CurrentCalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
+            }
+
+            // update accounting periods (calendar): this only needs to be done if the calendar mode is changed
+            // or if calendar mode is monthly and the start date has changed
+            if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode != LedgerRow.CalendarMode)
+            {
+                if (!((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode)
+                {
+                    // non-monthly: no need to modify accounting periods as they can be used as basis for calendar
+                    // however, if no accounting periods exist yet then make sure they are created based on month initially
+                    if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) == 0)
+                    {
+                        CreateDefaultCalendar = true;
+                    }
+                }
+                else
+                {
+                    CreateDefaultCalendar = true;
+                }
+            }
+            else if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
+                     && (ACalendarStartDate != CurrentCalendarStartDate))
+            {
+                CreateDefaultCalendar = true;
+            }
+
+            // now perform the actual update of accounting periods (calendar)
+            if (CreateDefaultCalendar)
+            {
+                // first make sure all accounting period records are deleted
+                if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                {
+                    AAccountingPeriodTable TemplateTable = new AAccountingPeriodTable();
+                    AAccountingPeriodRow TemplateRow = TemplateTable.NewRowTyped(false);
+                    TemplateRow.LedgerNumber = ALedgerNumber;
+                    AAccountingPeriodAccess.DeleteUsingTemplate(TemplateRow, null, Transaction);
+                }
+
+                // now create all accounting period records according to monthly calendar mode
+                // (at the same time create forwarding periods. If number of forwarding periods also
+                // changes with this saving method then this will be dealt with further down in the code)
+                NewAccountingPeriodTable = new AAccountingPeriodTable();
+
+                PeriodStartDate = ACalendarStartDate;
+
+                for (Period = 1; Period <= 12 + LedgerRow.NumberFwdPostingPeriods; Period++)
+                {
+                    NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
+                    NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
+                    NewAccountingPeriodRow.AccountingPeriodNumber = Period;
+                    NewAccountingPeriodRow.PeriodStartDate = PeriodStartDate;
+                    NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-1);
+                    NewAccountingPeriodRow.AccountingPeriodDesc = PeriodStartDate.ToString("MMMM");
+                    NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
+                    PeriodStartDate = PeriodStartDate.AddMonths(1);
+                }
+
+                AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction, out AVerificationResult);
+
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                    TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+            }
+
+            // check if any new forwarding periods need to be created
             CurrentNumberFwdPostingPeriods = LedgerRow.NumberFwdPostingPeriods;
             NewNumberFwdPostingPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
 
@@ -311,6 +1013,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 // now create new forwarding posting periods (if at all needed)
                 NewAccountingPeriodTable = new AAccountingPeriodTable();
+
                 Period = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods + 1;
 
                 while (Period <= LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods)
@@ -334,10 +1037,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction, out AVerificationResult);
 
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                    TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+
                 // also create new general ledger master periods with balances
                 CurrentLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods;
                 NewLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods;
-                // the following 2 lines would need to replace the 2 lines above if not all possible forward periods are created initially
+                // TODO: the following 2 lines would need to replace the 2 lines above if not all possible forward periods are created initially
                 //CurrentLastFwdPeriod = LedgerRow.CurrentPeriod + CurrentNumberFwdPostingPeriods;
                 //NewLastFwdPeriod = LedgerRow.CurrentPeriod + NewNumberFwdPostingPeriods;
 
@@ -419,11 +1125,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // branch processing: "BRANCH-PROCESS" (this is a new flag for OpenPetra)
             // base currency: "CURRENCY"
             // international currency: "INTL-CURRENCY" (this is a new flag for OpenPetra)
+            // current period (start of ledger date): CURRENT-PERIOD
+            // calendar settings: CAL
             AddOrRemoveLedgerInitFlag(ALedgerNumber, "SUSP-ACCT", LedgerRow.SuspenseAccountFlag, Transaction, ref AVerificationResult);
             AddOrRemoveLedgerInitFlag(ALedgerNumber, "BUDGET", LedgerRow.BudgetControlFlag, Transaction, ref AVerificationResult);
             AddOrRemoveLedgerInitFlag(ALedgerNumber, "BRANCH-PROCESS", LedgerRow.BranchProcessing, Transaction, ref AVerificationResult);
             AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENCY", !LedgerRow.IsBaseCurrencyNull(), Transaction, ref AVerificationResult);
             AddOrRemoveLedgerInitFlag(ALedgerNumber, "INTL-CURRENCY", !LedgerRow.IsIntlCurrencyNull(), Transaction, ref AVerificationResult);
+            AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENT-PERIOD", !LedgerRow.IsCurrentPeriodNull(), Transaction, ref AVerificationResult);
+            AddOrRemoveLedgerInitFlag(ALedgerNumber, "CAL", !LedgerRow.IsNumberOfAccountingPeriodsNull(), Transaction, ref AVerificationResult);
 
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
@@ -999,6 +1709,21 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
 
+            //
+            // The imported hierarchy did not include Analysis types, but previously there may have been
+            // AnalysisTypes assigned to accounts, which have now been deleted, or have a different meaning
+            // in the newly imported hierarchy.
+            //
+            // I'll keep any AnalysisAttribute types that are defined, but unlink them from Accounts.
+
+            foreach (AAnalysisAttributeRow Row in MainDS.AAnalysisAttribute.Rows)
+            {
+                if (Row.LedgerNumber == ALedgerNumber)
+                {
+                    Row.AccountCode = "";
+                }
+            }
+
             TVerificationResultCollection VerificationResult;
             return SaveGLSetupTDS(ALedgerNumber, ref MainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
@@ -1194,6 +1919,283 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             CreateCostCentresRecursively(ref AMainDS, ALedgerNumber, ref ImportedCostCentreNames, root, null);
         }
 
+        private static void CreateMotivationDetailFee(ref GLSetupTDS AMainDS,
+            Int32 ALedgerNumber,
+            XmlNode ACurrentNode,
+            string AMotivationGroupCode,
+            string AMotivationDetailCode)
+        {
+            AMotivationDetailFeeRow newMotivationDetailFee = null;
+
+            string MotivationDetailFeeCode = TYml2Xml.GetElementName(ACurrentNode);
+
+            // does this motivation detail fee already exist?
+            DataRow existingMotivationDetailFee = AMainDS.AMotivationDetailFee.Rows.Find(new object[] { ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, MotivationDetailFeeCode });
+
+            if (existingMotivationDetailFee == null)
+            {
+                newMotivationDetailFee = AMainDS.AMotivationDetailFee.NewRowTyped();
+                newMotivationDetailFee.LedgerNumber = ALedgerNumber;
+                newMotivationDetailFee.MotivationGroupCode = AMotivationGroupCode;
+                newMotivationDetailFee.MotivationDetailCode = AMotivationDetailCode;
+                newMotivationDetailFee.FeeCode = MotivationDetailFeeCode;
+                AMainDS.AMotivationDetailFee.Rows.Add(newMotivationDetailFee);
+            }
+        }
+
+        private static void CreateMotivationDetail(ref GLSetupTDS AMainDS,
+            Int32 ALedgerNumber,
+            XmlNode ACurrentNode,
+            string AMotivationGroupCode)
+        {
+            AMotivationDetailRow newMotivationDetail = null;
+
+            string MotivationDetailCode = TYml2Xml.GetElementName(ACurrentNode);
+
+            // does this motivation already exist?
+            bool newRow = false;
+            DataRow existingMotivationDetail = AMainDS.AMotivationDetail.Rows.Find(new object[] { ALedgerNumber, AMotivationGroupCode, MotivationDetailCode });
+
+            if (existingMotivationDetail != null)
+            {
+                newMotivationDetail = (AMotivationDetailRow)existingMotivationDetail;
+            }
+            else
+            {
+                newRow = true;
+                newMotivationDetail = AMainDS.AMotivationDetail.NewRowTyped();
+            }
+
+            newMotivationDetail.LedgerNumber = ALedgerNumber;
+            newMotivationDetail.MotivationGroupCode = AMotivationGroupCode;
+            newMotivationDetail.MotivationDetailCode = MotivationDetailCode;
+            if (TYml2Xml.HasAttribute(ACurrentNode, "accountcode"))
+            {
+                newMotivationDetail.AccountCode = TYml2Xml.GetAttribute(ACurrentNode, "accountcode");
+            }
+            newMotivationDetail.CostCentreCode = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
+                
+            if (TYml2Xml.HasAttribute(ACurrentNode, "description"))
+            {
+                newMotivationDetail.MotivationDetailDesc = TYml2Xml.GetAttribute(ACurrentNode, "description");
+                newMotivationDetail.MotivationDetailDescLocal = newMotivationDetail.MotivationDetailDesc;
+            }
+            
+            if (newRow)
+            {
+                AMainDS.AMotivationDetail.Rows.Add(newMotivationDetail);
+            }
+
+            foreach (XmlNode child in ACurrentNode.ChildNodes)
+            {
+                CreateMotivationDetailFee(ref AMainDS, ALedgerNumber, child, newMotivationDetail.MotivationGroupCode, 
+                                          newMotivationDetail.MotivationDetailCode);
+            }
+        }
+        
+        private static void CreateMotivationGroup(ref GLSetupTDS AMainDS,
+            Int32 ALedgerNumber,
+            XmlNode ACurrentNode)
+        {
+            AMotivationGroupRow newMotivationGroup = null;
+
+            string MotivationGroupCode = TYml2Xml.GetElementName(ACurrentNode);
+
+            // does this motivation already exist?
+            bool newRow = false;
+            DataRow existingMotivationGroup = AMainDS.AMotivationGroup.Rows.Find(new object[] { ALedgerNumber, MotivationGroupCode });
+
+            if (existingMotivationGroup != null)
+            {
+                newMotivationGroup = (AMotivationGroupRow)existingMotivationGroup;
+            }
+            else
+            {
+                newRow = true;
+                newMotivationGroup = AMainDS.AMotivationGroup.NewRowTyped();
+            }
+
+            newMotivationGroup.LedgerNumber = ALedgerNumber;
+            newMotivationGroup.MotivationGroupCode = MotivationGroupCode;
+            if (TYml2Xml.HasAttribute(ACurrentNode, "desclocal"))
+            {
+                newMotivationGroup.MotivationGroupDescLocal = TYml2Xml.GetAttribute(ACurrentNode, "desclocal");
+            }
+            if (TYml2Xml.HasAttribute(ACurrentNode, "description"))
+            {
+                newMotivationGroup.MotivationGroupDescription = TYml2Xml.GetAttribute(ACurrentNode, "description");
+            }
+            
+            if (newMotivationGroup.MotivationGroupDescription.Length == 0)
+            {
+                newMotivationGroup.MotivationGroupDescription = newMotivationGroup.MotivationGroupDescLocal;
+            }
+
+            if (newRow)
+            {
+                AMainDS.AMotivationGroup.Rows.Add(newMotivationGroup);
+            }
+
+            foreach (XmlNode child in ACurrentNode.ChildNodes)
+            {
+                CreateMotivationDetail(ref AMainDS, ALedgerNumber, child, newMotivationGroup.MotivationGroupCode);
+            }
+        }
+        
+        /// import motivation groups, details into an empty new ledger
+        private static void ImportDefaultMotivations(ref GLSetupTDS AMainDS, Int32 ALedgerNumber)
+        {
+            XmlDocument doc;
+            TYml2Xml ymlFile;
+            string Filename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
+                              Path.DirectorySeparatorChar +
+                              "DefaultMotivations.yml";
+
+            try
+            {
+                ymlFile = new TYml2Xml(Filename);
+                doc = ymlFile.ParseYML2XML();
+            }
+            catch (XmlException exp)
+            {
+                throw new Exception(
+                    Catalog.GetString("There was a problem with the syntax of the file.") +
+                    Environment.NewLine +
+                    exp.Message +
+                    Environment.NewLine +
+                    Filename);
+            }
+
+            XmlNode root = doc.FirstChild.NextSibling;
+
+            foreach (XmlNode child in root)
+            {
+                CreateMotivationGroup(ref AMainDS, ALedgerNumber, child);
+            }
+            
+        }
+
+        /// import records for fees payable or receivable into an empty new ledger
+        private static void ImportDefaultAdminGrantsPayableReceivable(ref GLSetupTDS AMainDS, Int32 ALedgerNumber)
+        {
+            AFeesPayableRow newFeesPayableRow = null;
+            AFeesReceivableRow newFeesReceivableRow = null;
+            bool newRow;
+            DataRow existingRow;
+            
+            bool IsFeesPayable;
+            string FeeCode;
+                
+            XmlDocument doc;
+            TYml2Xml ymlFile;
+            string Filename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
+                              Path.DirectorySeparatorChar +
+                              "DefaultAdmintGrantsPayableReceivable.yml";
+
+            try
+            {
+                ymlFile = new TYml2Xml(Filename);
+                doc = ymlFile.ParseYML2XML();
+            }
+            catch (XmlException exp)
+            {
+                throw new Exception(
+                    Catalog.GetString("There was a problem with the syntax of the file.") +
+                    Environment.NewLine +
+                    exp.Message +
+                    Environment.NewLine +
+                    Filename);
+            }
+
+            XmlNode root = doc.FirstChild.NextSibling;
+
+            foreach (XmlNode child in root)
+            {
+                FeeCode = TYml2Xml.GetElementName(child);
+                
+                IsFeesPayable = (   TYml2Xml.GetAttribute(child, "feespayable") == "yes"
+                                 || TYml2Xml.GetAttribute(child, "feespayable") == "true");
+
+                if (IsFeesPayable)
+                {
+                    // does this fee already exist?
+                    newRow = false;
+                    existingRow = AMainDS.AFeesPayable.Rows.Find(new object[] { ALedgerNumber, FeeCode });
+        
+                    if (existingRow != null)
+                    {
+                        newFeesPayableRow = (AFeesPayableRow)existingRow;
+                    }
+                    else
+                    {
+                        newRow = true;
+                        newFeesPayableRow = AMainDS.AFeesPayable.NewRowTyped();
+                    }
+        
+                    newFeesPayableRow.LedgerNumber = ALedgerNumber;
+                    newFeesPayableRow.FeeCode = FeeCode;
+                    newFeesPayableRow.ChargeOption = TYml2Xml.GetAttribute(child, "chargeoption");
+                    if (TYml2Xml.HasAttribute(child, "percentage"))
+                    {
+                        newFeesPayableRow.ChargePercentage = Convert.ToInt32(TYml2Xml.GetAttribute(child, "percentage"));
+                    }
+
+                    newFeesPayableRow.CostCentreCode = TYml2Xml.GetAttribute(child, "costcentrecode");
+                    newFeesPayableRow.AccountCode = TYml2Xml.GetAttribute(child, "accountcode");
+                    newFeesPayableRow.DrAccountCode = TYml2Xml.GetAttribute(child, "draccountcode");
+                    
+                    if (TYml2Xml.HasAttribute(child, "description"))
+                    {
+                        newFeesPayableRow.FeeDescription = TYml2Xml.GetAttribute(child, "description");
+                    }
+                    
+                    if (newRow)
+                    {
+                        AMainDS.AFeesPayable.Rows.Add(newFeesPayableRow);
+                    }
+                }
+                else
+                {
+                    // does this fee already exist?
+                    newRow = false;
+                    existingRow = AMainDS.AFeesReceivable.Rows.Find(new object[] { ALedgerNumber, FeeCode });
+        
+                    if (existingRow != null)
+                    {
+                        newFeesReceivableRow = (AFeesReceivableRow)existingRow;
+                    }
+                    else
+                    {
+                        newRow = true;
+                        newFeesReceivableRow = AMainDS.AFeesReceivable.NewRowTyped();
+                    }
+        
+                    newFeesReceivableRow.LedgerNumber = ALedgerNumber;
+                    newFeesReceivableRow.FeeCode = FeeCode;
+                    newFeesReceivableRow.ChargeOption = TYml2Xml.GetAttribute(child, "chargeoption");
+                    if (TYml2Xml.HasAttribute(child, "percentage"))
+                    {
+                        newFeesReceivableRow.ChargePercentage = Convert.ToInt32(TYml2Xml.GetAttribute(child, "percentage"));
+                    }
+
+                    newFeesReceivableRow.CostCentreCode = TYml2Xml.GetAttribute(child, "costcentrecode");
+                    newFeesReceivableRow.AccountCode = TYml2Xml.GetAttribute(child, "accountcode");
+                    newFeesReceivableRow.DrAccountCode = TYml2Xml.GetAttribute(child, "draccountcode");
+                    
+                    if (TYml2Xml.HasAttribute(child, "description"))
+                    {
+                        newFeesReceivableRow.FeeDescription = TYml2Xml.GetAttribute(child, "description");
+                    }
+                    
+                    if (newRow)
+                    {
+                        AMainDS.AFeesReceivable.Rows.Add(newFeesReceivableRow);
+                    }
+                }
+            }
+            
+        }
+        
         /// <summary>
         /// create a new ledger and do the initial setup
         /// </summary>
@@ -1207,6 +2209,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ANumberOfPeriods,
             Int32 ACurrentPeriod,
             Int32 ANumberOfFwdPostingPeriods,
+            bool AActivateGiftReceipting,
+            Int32 AStartingReceiptNumber,
+            bool AActivateAccountsPayable,
             out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
@@ -1373,22 +2378,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             accountingSystemParameterRow.BudgetDataRetention = ledgerRow.BudgetDataRetention;
             MainDS.AAccountingSystemParameter.Rows.Add(accountingSystemParameterRow);
 
+            // activate GL subsystem (this is always active)
             ASystemInterfaceRow systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
             systemInterfaceRow.LedgerNumber = ANewLedgerNumber;
 
             systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
             systemInterfaceRow.SetUpComplete = true;
             MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
-            systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
-            systemInterfaceRow.LedgerNumber = ANewLedgerNumber;
-            systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
-            systemInterfaceRow.SetUpComplete = true;
-            MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
-            systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
-            systemInterfaceRow.LedgerNumber = ANewLedgerNumber;
-            systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
-            systemInterfaceRow.SetUpComplete = true;
-            MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
+
 
             ATransactionTypeRow transactionTypeRow;
 
@@ -1402,6 +2399,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.TransactionTypeDescription = "Allocation Journal";
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+            
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
@@ -1411,6 +2409,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.TransactionTypeDescription = "Reallocation Journal";
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+            
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
@@ -1420,6 +2419,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.TransactionTypeDescription = "Foreign Exchange Revaluation";
             transactionTypeRow.SpecialTransactionType = true;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+            
             transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
             transactionTypeRow.LedgerNumber = ANewLedgerNumber;
             transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
@@ -1429,24 +2429,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             transactionTypeRow.TransactionTypeDescription = "Standard Journal";
             transactionTypeRow.SpecialTransactionType = false;
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
-            transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
-            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
-            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
-            transactionTypeRow.DebitAccountCode = "CASH";
-            transactionTypeRow.CreditAccountCode = "GIFT";
-            transactionTypeRow.TransactionTypeDescription = "Gift Receipting";
-            transactionTypeRow.SpecialTransactionType = true;
-            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
-            transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
-            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
-            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
-            transactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
-            transactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_CREDITORS;
-            transactionTypeRow.TransactionTypeDescription = "Input Creditor's Invoice";
-            transactionTypeRow.SpecialTransactionType = true;
-            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+
 
             AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ANewLedgerNumber, PartnerKey, null);
 
@@ -1475,51 +2458,30 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             costCentreTypesRow.Deletable = false;
             MainDS.ACostCentreTypes.Rows.Add(costCentreTypesRow);
 
-            AMotivationGroupRow motivationGroupRow = MainDS.AMotivationGroup.NewRowTyped();
-            motivationGroupRow.LedgerNumber = ANewLedgerNumber;
-            motivationGroupRow.MotivationGroupCode = "GIFT";
-            motivationGroupRow.MotivationGroupDescLocal = Catalog.GetString("Gifts");
-            motivationGroupRow.MotivationGroupDescription = motivationGroupRow.MotivationGroupDescLocal;
-            MainDS.AMotivationGroup.Rows.Add(motivationGroupRow);
-
-            AMotivationDetailRow motivationDetailRow = MainDS.AMotivationDetail.NewRowTyped();
-            motivationDetailRow.LedgerNumber = ANewLedgerNumber;
-            motivationDetailRow.MotivationGroupCode = "GIFT";
-            motivationDetailRow.MotivationDetailCode = "SUPPORT";
-            motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Personal Support");
-            motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
-            motivationDetailRow.AccountCode = "0100";
-            motivationDetailRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
-            MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
-
-            motivationDetailRow = MainDS.AMotivationDetail.NewRowTyped();
-            motivationDetailRow.LedgerNumber = ANewLedgerNumber;
-            motivationDetailRow.MotivationGroupCode = "GIFT";
-            motivationDetailRow.MotivationDetailCode = "FIELD";
-            motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Gifts for Field");
-            motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
-            motivationDetailRow.AccountCode = "0200";
-            motivationDetailRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
-            MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
-
-            motivationDetailRow = MainDS.AMotivationDetail.NewRowTyped();
-            motivationDetailRow.LedgerNumber = ANewLedgerNumber;
-            motivationDetailRow.MotivationGroupCode = "GIFT";
-            motivationDetailRow.MotivationDetailCode = "KEYMIN";
-            motivationDetailRow.MotivationDetailDesc = Catalog.GetString("Key Ministry Gift");
-            motivationDetailRow.MotivationDetailDescLocal = motivationDetailRow.MotivationDetailDesc;
-            motivationDetailRow.AccountCode = "0400";
-            motivationDetailRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
-            MainDS.AMotivationDetail.Rows.Add(motivationDetailRow);
 
             ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber);
             ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
+            ImportDefaultMotivations(ref MainDS, ANewLedgerNumber);
+            ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
+
 
             // TODO: modify UI navigation yml file etc?
             // TODO: permissions for which users?
 
             TSubmitChangesResult result = GLSetupTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
 
+            // activate gift receipting subsystem            
+            if (AActivateGiftReceipting)
+            {
+                ActivateGiftReceiptingSubsystem(ANewLedgerNumber, AStartingReceiptNumber, out AVerificationResult);
+            }
+
+            // activate accounts payable subsystem
+            if (AActivateAccountsPayable)
+            {
+                ActivateAccountsPayableSubsystem(ANewLedgerNumber, out AVerificationResult);
+            }
+            
             if (result == TSubmitChangesResult.scrOK)
             {
                 // give the current user access permissions to this new ledger
@@ -1598,21 +2560,49 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         SUserModuleAccessPermissionTable.GetTableDBName(),
                         SUserModuleAccessPermissionTable.GetModuleIdDBName(),
                         ALedgerNumber),
-                    Transaction);
+                    Transaction, false);
 
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
                         SModuleTable.GetTableDBName(),
                         SModuleTable.GetModuleIdDBName(),
                         ALedgerNumber),
-                    Transaction);
+                    Transaction, false);
 
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     String.Format(
-                        "DELETE FROM PUB_{0} AS GLMP WHERE EXISTS (SELECT * FROM PUB_{1} AS GLM WHERE GLM.a_glm_sequence_i = GLMP.a_glm_sequence_i AND GLM.a_ledger_number_i = ?)",
+                        "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
                         AGeneralLedgerMasterPeriodTable.GetTableDBName(),
-                        AGeneralLedgerMasterTable.GetTableDBName()),
-                    Transaction, ledgerparameter);
+                        AGeneralLedgerMasterTable.GetTableDBName(),
+                        AGeneralLedgerMasterTable.GetTableDBName(),
+                        AGeneralLedgerMasterTable.GetGlmSequenceDBName(),
+                        AGeneralLedgerMasterPeriodTable.GetTableDBName(),
+                        AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName(),
+                        AGeneralLedgerMasterTable.GetTableDBName(),
+                        AGeneralLedgerMasterTable.GetLedgerNumberDBName()),
+                    Transaction, false, ledgerparameter);
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    String.Format(
+                        "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
+                        ABudgetPeriodTable.GetTableDBName(),
+                        ABudgetTable.GetTableDBName(),
+                        ABudgetTable.GetTableDBName(),
+                        ABudgetTable.GetBudgetSequenceDBName(),
+                        ABudgetPeriodTable.GetTableDBName(),
+                        ABudgetPeriodTable.GetBudgetSequenceDBName(),
+                        ABudgetTable.GetTableDBName(),
+                        ABudgetTable.GetLedgerNumberDBName()),
+                    Transaction, false, ledgerparameter);
+
+                // the following tables are not deleted at the moment as they are not in use
+                //      PFoundationProposalDetailTable.GetTableDBName(),
+                //      AEpTransactionTable.GetTableDBName(),
+                //      AEpStatementTable.GetTableDBName(),
+                //      AEpMatchTable.GetTableDBName(),
+                // also: tables referring to ATaxTableTable are not deleted now as they are not yet in use
+                //      (those are tables needed in the accounts receivable module that does not exist yet)
+
 
                 string[] tablenames = new string[] {
                     AValidLedgerNumberTable.GetTableDBName(),
@@ -1621,6 +2611,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          AMotivationDetailFeeTable.GetTableDBName(),
 
                          ABudgetTable.GetTableDBName(),
+                         ABudgetRevisionTable.GetTableDBName(),
 
                          ARecurringGiftDetailTable.GetTableDBName(),
                          ARecurringGiftTable.GetTableDBName(),
@@ -1640,8 +2631,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          ARecurringJournalTable.GetTableDBName(),
                          ARecurringBatchTable.GetTableDBName(),
 
-                         AFreeformAnalysisTable.GetTableDBName(),
-
                          AEpDocumentPaymentTable.GetTableDBName(),
                          AEpPaymentTable.GetTableDBName(),
 
@@ -1651,6 +2640,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          ACrdtNoteInvoiceLinkTable.GetTableDBName(),
                          AApDocumentDetailTable.GetTableDBName(),
                          AApDocumentTable.GetTableDBName(),
+
+                         AFreeformAnalysisTable.GetTableDBName(),
+
+                         AEpAccountTable.GetTableDBName(),
+                         ASuspenseAccountTable.GetTableDBName(),
+                         SGroupMotivationTable.GetTableDBName(),
+                         AIchStewardshipTable.GetTableDBName(),
+                         SGroupCostCentreTable.GetTableDBName(),
+                         AAnalysisAttributeTable.GetTableDBName(),
 
                          AMotivationDetailTable.GetTableDBName(),
                          AMotivationGroupTable.GetTableDBName(),
@@ -1666,12 +2664,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          AAccountingSystemParameterTable.GetTableDBName(),
                          ACostCentreTypesTable.GetTableDBName(),
 
-                         AAnalysisAttributeTable.GetTableDBName(),
-                         ASuspenseAccountTable.GetTableDBName(),
-
                          ALedgerInitFlagTable.GetTableDBName(),
                          ATaxTableTable.GetTableDBName(),
-                         AEpAccountTable.GetTableDBName(),
 
                          AAccountingPeriodTable.GetTableDBName(),
 
@@ -1682,7 +2676,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 {
                     DBAccess.GDBAccessObj.ExecuteNonQuery(
                         String.Format("DELETE FROM PUB_{0} WHERE a_ledger_number_i = ?", table),
-                        Transaction, ledgerparameter);
+                        Transaction, false, ledgerparameter);
                 }
 
                 ALedgerAccess.DeleteByPrimaryKey(ALedgerNumber, Transaction);
@@ -1692,7 +2686,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     String.Format("DELETE FROM PUB_{0} WHERE p_partner_key_n = {1}",
                         PPartnerLedgerTable.GetTableDBName(),
                         Convert.ToInt64(ALedgerNumber) * 1000000),
-                    Transaction);
+                    Transaction, false);
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                 {
@@ -1793,7 +2787,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         //
-        //    Rename Account: to rename an AccountCode, we need to update lots of values all over the database:
+        //    Rename Account: to rename an AccountCode or a CostCentreCode, we need to update lots of values all over the database:
 
         private static void UpdateAccountField(String ATblName,
             String AFldName,
@@ -1880,67 +2874,35 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 UpdateAccountField("a_ledger", "a_ilt_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_po_accrual_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_profit_loss_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_purchase_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_sales_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_so_accrual_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_stock_adj_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_stock_gl_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_tax_input_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_tax_output_gl_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_cost_of_sales_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger",
                     "a_forex_gains_losses_account_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_ret_earnings_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ledger", "a_stock_accrual_gl_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_transaction", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_transaction",
                     "a_primary_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
 /*
  *              UpdateAccountField ("a_this_year_old_transaction","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
@@ -1954,25 +2916,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 UpdateAccountField("a_fees_payable", "a_dr_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_transaction_type",
                     "a_balancing_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_transaction_type",
                     "a_credit_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_transaction_type",
                     "a_debit_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                 AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
 
@@ -1993,32 +2943,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     UpdateAccountField("a_trans_anal_attrib",
                         "a_account_code_c",
-                        AOldCode,
-                        ANewCode,
-                        ALedgerNumber,
-                        Transaction,
-                        ref AttemptedOperation);
+                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_recurring_trans_anal_attrib",
                         "a_account_code_c",
-                        AOldCode,
-                        ANewCode,
-                        ALedgerNumber,
-                        Transaction,
-                        ref AttemptedOperation);
+                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_thisyearold_trans_anal_attrib",
                         "a_account_code_c",
-                        AOldCode,
-                        ANewCode,
-                        ALedgerNumber,
-                        Transaction,
-                        ref AttemptedOperation);
+                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_prev_year_trans_anal_attrib",
                         "a_account_code_c",
-                        AOldCode,
-                        ANewCode,
-                        ALedgerNumber,
-                        Transaction,
-                        ref AttemptedOperation);
+                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                     OldAnalAttribRow.Delete();
@@ -2031,27 +2965,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 UpdateAccountField("a_suspense_account",
                     "a_suspense_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_motivation_detail", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_recurring_transaction",
                     "a_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_gift_batch", "a_bank_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_recurring_gift_batch",
                     "a_bank_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ap_document_detail", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ap_document", "a_ap_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_ap_payment", "a_bank_account_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
@@ -2062,34 +2984,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 UpdateAccountField("a_budget", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_general_ledger_master",
                     "a_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_account_hierarchy_detail",
                     "a_reporting_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_account_hierarchy_detail",
                     "a_account_code_to_report_to_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_account_hierarchy",
                     "a_root_account_code_c",
-                    AOldCode,
-                    ANewCode,
-                    ALedgerNumber,
-                    Transaction,
-                    ref AttemptedOperation);
+                    AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                 UpdateAccountField("a_account_property", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                //              UpdateAccountField("a_fin_statement_group","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+//              UpdateAccountField("a_fin_statement_group","a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                 PrevAccountRow.Delete();
 
@@ -2124,5 +3030,255 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             return RenameComplete;
         }
-    }
-}
+
+        private static bool CostCentreHasChildren(Int32 ALedgerNumber, string ACostCentreCode, TDBTransaction Transaction)
+        {
+            String QuerySql =
+                "SELECT COUNT (*) FROM PUB_a_cost_centre WHERE " +
+                "a_ledger_number_i=" + ALedgerNumber + " AND " +
+                "a_cost_centre_to_report_to_c = '" + ACostCentreCode + "';";
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
+
+            return Convert.ToInt32(SqlResult) > 0;
+        }
+
+        private static bool CostCentreCodeHasBeenUsed(Int32 ALedgerNumber, string ACostCentreCode, TDBTransaction Transaction)
+        {
+            // TODO: enhance sql statement to check for more references to a_cost_centre
+            // TODO:? This method is *almost exactly like* the equivalent AccountCode function.
+            //        With an extra parameter the two could be combined.
+
+            String QuerySql =
+                "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
+                "a_ledger_number_i=" + ALedgerNumber + " AND " +
+                "a_cost_centre_code_c = '" + ACostCentreCode + "';";
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
+            bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
+
+            if (!IsInUse)
+            {
+                QuerySql =
+                    "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
+                    "a_ledger_number_i=" + ALedgerNumber + " AND " +
+                    "a_cost_centre_code_c = '" + ACostCentreCode + "';";
+                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
+                IsInUse = (Convert.ToInt32(SqlResult) > 0);
+            }
+
+            return IsInUse;
+        }
+
+        /// <summary>I can add child accounts to this account if it's a summary account,
+        ///          or if there have never been transactions posted to it.
+        ///
+        ///          (If children are added to this account, it will be promoted to a summary account.)
+        ///
+        ///          I can delete this account if it has no transactions posted as above,
+        ///          AND it has no children.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACostCentreCode"></param>
+        /// <param name="ACanBeParent"></param>
+        /// <param name="ACanDelete"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber, String ACostCentreCode, out bool ACanBeParent, out bool ACanDelete)
+        {
+            ACanBeParent = true;
+            ACanDelete = true;
+            bool DbSuccess = true;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            ACostCentreTable TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
+
+            if (TempTbl.Rows.Count < 1)  // This shouldn't happen..
+            {
+                DbSuccess = false;
+            }
+            else
+            {
+                bool IsParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
+                ACostCentreRow AccountRow = TempTbl[0];
+                ACanBeParent = IsParent; // If it's a summary account, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
+                ACanDelete = !IsParent;
+
+                if (!ACanBeParent || ACanDelete)
+                {
+                    bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
+                    ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
+                    ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
+                }
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return DbSuccess;
+        }
+
+        /// <summary>
+        /// Use this new Cost Centre code instead of that old one.
+        /// THIS RENAMES THE FIELD IN LOTS OF PLACES!
+        /// </summary>
+        /// <param name="AOldCode"></param>
+        /// <param name="ANewCode"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="VerificationResults"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool RenameCostCentreCode(String AOldCode,
+            String ANewCode,
+            Int32 ALedgerNumber,
+            out TVerificationResultCollection VerificationResults)
+        {
+            bool RenameComplete = false;
+            String VerificationContext = "Rename Cost Centre Code";
+            String AttemptedOperation = "";
+
+            VerificationResults = new TVerificationResultCollection();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            try
+            {
+                //
+                // First check whether this new code is available for use!
+                // (Check that the old name exists, and the new name doesn't!)
+                //
+                ACostCentreTable TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ANewCode, Transaction);
+
+                if (TempTbl.Rows.Count > 0)
+                {
+                    VerificationResults.Add(new TVerificationResult(VerificationContext, "Target name is already present",
+                            TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
+                TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, AOldCode, Transaction);
+
+                if (TempTbl.Rows.Count != 1)
+                {
+                    VerificationResults.Add(new TVerificationResult(VerificationContext, "Existing name not accessible",
+                            TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
+                // I can't just rename this,
+                // because lots of tables rely on this entry and I'll break their foreign constraints.
+                // I need to create a new row, point everyone to that, then delete the current row.
+                //
+                ACostCentreRow PrevRow = TempTbl[0];
+                ACostCentreRow NewRow = TempTbl.NewRowTyped();
+                DataUtilities.CopyAllColumnValues(PrevRow, NewRow);
+                NewRow.CostCentreCode = ANewCode;
+                TempTbl.Rows.Add(NewRow);
+
+                if (!ACostCentreAccess.SubmitChanges(TempTbl, Transaction, out VerificationResults))
+                {
+                    return false;
+                }
+
+                TempTbl.AcceptChanges();
+
+                UpdateAccountField("a_cost_centre",
+                    "a_cost_centre_to_report_to_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_transaction", "a_cost_centre_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_recurring_transaction",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_valid_ledger_number",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_motivation_detail",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_fees_receivable",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_fees_payable", "a_cost_centre_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_gift_batch", "a_bank_cost_centre_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_gift_detail", "a_cost_centre_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_recurring_gift_batch",
+                    "a_bank_cost_centre_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_ap_document_detail",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_processed_fee", "a_cost_centre_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_budget", "a_cost_centre_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_general_ledger_master",
+                    "a_cost_centre_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+
+
+/*
+ * These tables were previously checked in the 4GL, but they don't exist in Open Petra:
+ *
+ * "a_previous_year_transaction"
+ * "a_ich_stewardship"
+ */
+
+                PrevRow.Delete();
+
+                if (!ACostCentreAccess.SubmitChanges(TempTbl, Transaction, out VerificationResults))
+                {
+                    return false;
+                }
+
+                RenameComplete = true;
+            } // try
+              //
+              // There's no "catch" - if any of the calls above fails (with an SQL problem),
+              // the server task will fail, and cause a descriptive exception on the client.
+              // (And the VerificationResults might also contain a useful string because of "finally" below.)
+              //
+            finally
+            {
+                if (RenameComplete)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    if (AttemptedOperation != "")
+                    {
+                        VerificationResults.Add(new TVerificationResult(VerificationContext, "Problem " + AttemptedOperation,
+                                TResultSeverity.Resv_Critical));
+                    }
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return RenameComplete;
+        } // RenameCostCentreCode
+    } // TGLSetupWebConnector
+} // namespace

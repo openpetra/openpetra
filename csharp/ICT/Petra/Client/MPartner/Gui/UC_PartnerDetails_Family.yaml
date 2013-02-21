@@ -1,5 +1,6 @@
 RootNode:
     BaseClass: System.Windows.Forms.UserControl
+    InterfaceName: IPetraEditUserControl, Ict.Petra.Client.CommonForms.IFrmPetra
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MPartner.Gui   
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
@@ -16,7 +17,7 @@ RootNode:
             Controls:
                 Row0: [txtPreviousName]
                 Row1: [txtLocalName]
-            ColWidths: [0=Fixed:140]
+            ColWidths: [0=Fixed:310]
             
         txtPreviousName: {DataField=PPartner.PreviousName}
             Stretch: horizontally
@@ -36,6 +37,7 @@ RootNode:
         txtMaritalStatusComment:
             Multiline: true
             ScrollBars: Vertical
+            Width: 345
             Height: 46
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}

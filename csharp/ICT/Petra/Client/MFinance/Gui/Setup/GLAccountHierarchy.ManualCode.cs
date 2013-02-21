@@ -2,9 +2,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, wolfgangu
+//      timop, wolfgangu
+//      Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,6 +44,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TFrmGLAccountHierarchy
     {
+        private const string INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE = "#UNASSIGNEDDETAILACCOUNTCODE#";
+
         private TreeNode FDragNode = null;
         private TreeNode FDragTarget = null;
         private TreeNode FSelectedNode = null;
@@ -62,6 +65,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         // TreeView Select will be split into a part Before Select and a part
         // after select. Those parameters are for common use
         GLSetupTDSAAccountRow FSelectedAccountRow;
+
+        private string FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
+
 
         private class AccountNodeDetails
         {
@@ -577,7 +583,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             trvAccounts.EndUpdate();
 
             trvAccounts.SelectedNode = newNode;
-
+            txtDetailAccountCode.Focus();
             FPetraUtilsObject.SetChangedFlag();
         }
 
@@ -713,12 +719,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // Here it shall be tested ...
             if (!txtDetailAccountCode.ReadOnly)
             {
-                ChangeAccountCodeValue();
-            }
-
-            if (FCurrentNode != null)
-            {
-                GetDetailsFromControls(GetSelectedDetailRowManual());
+                if ((ChangeAccountCodeValue())
+                    && (FCurrentNode != null))
+                {
+                    GetDetailsFromControls(GetSelectedDetailRowManual());
+                }
             }
         }
 
@@ -742,14 +747,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e">Actually it is only the Leave-Event</param>
         public void ChangeAccountCodeValue(object sender, EventArgs e)
         {
-            try
-            {
-                ChangeAccountCodeValue();
-            }
-            catch (CancelSaveException)
-            {
-            }
-            ;
+            ChangeAccountCodeValue();
         }
 
         /// <summary>
@@ -765,89 +763,118 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             String strNewDetailAccountCode = txtDetailAccountCode.Text;
             bool changeAccepted = false;
 
-            if (!strNewDetailAccountCode.Equals(strOldDetailAccountCode))
+            if (strNewDetailAccountCode != FRecentlyUpdatedDetailAccountCode)
             {
-                FStatus += "AccountCode changed.\r\n";
-                txtStatus.Text = FStatus;
-
-                if (MessageBox.Show(String.Format(Catalog.GetString("You have changed {0} to {1}. Confirm that you want to re-name this account."),
-                            strOldDetailAccountCode,
-                            strNewDetailAccountCode), Catalog.GetString("Rename Account"), MessageBoxButtons.OKCancel) != DialogResult.OK)
+                if (strNewDetailAccountCode != strOldDetailAccountCode)
                 {
-                    txtDetailAccountCode.Text = strOldDetailAccountCode;
-                    return false;
-                }
-
-                AccountNodeDetails NodeDetails = (AccountNodeDetails)trvAccounts.SelectedNode.Tag;
-
-                try
-                {
-                    NodeDetails.AccountRow.AccountCode = strNewDetailAccountCode;
-                    NodeDetails.DetailRow.ReportingAccountCode = strNewDetailAccountCode;
-
-                    trvAccounts.BeginUpdate();
-                    trvAccounts.SelectedNode.Text = strNewDetailAccountCode;
-                    trvAccounts.SelectedNode.Name = strNewDetailAccountCode;
-                    trvAccounts.EndUpdate();
-
-                    changeAccepted = true;
-                }
-                catch (System.Data.ConstraintException)
-                {
-                    MessageBox.Show(
-                        Catalog.GetString("Sorry but this account already exists: ") + strNewDetailAccountCode +
-                        "\r\n" + Catalog.GetString("You cannot use an account name twice!"),
-                        Catalog.GetString("Rename Account"));
-                    throw new CancelSaveException();
-                }
-
-                if (NodeDetails.IsNew)
-                {
-                    // This is the code for changes in "un-committed" nodes:
-                    // there are no references to this new row yet, apart from children nodes, so I can just change them here and carry on!
-
-                    // fixup children nodes
-                    foreach (TreeNode childnode in trvAccounts.SelectedNode.Nodes)
+                    if (strOldDetailAccountCode.IndexOf(Catalog.GetString("NewAccount")) < 0) // If they're just changing this from the initial value, don't show warning.
                     {
-                        ((AccountNodeDetails)childnode.Tag).DetailRow.AccountCodeToReportTo = strNewDetailAccountCode;
+                        if (MessageBox.Show(String.Format(Catalog.GetString(
+                                        "You have changed the Account Code from '{0}' to '{1}'.\r\n\r\nPlease confirm that you want to rename this account by choosing 'OK'."),
+                                    strOldDetailAccountCode,
+                                    strNewDetailAccountCode),
+                                Catalog.GetString("Rename Account: Confirmation"), MessageBoxButtons.OKCancel,
+                                MessageBoxIcon.Warning) != DialogResult.OK)
+                        {
+                            txtDetailAccountCode.Text = strOldDetailAccountCode;
+                            return false;
+                        }
                     }
 
-                    strOldDetailAccountCode = strNewDetailAccountCode;
-                    FPetraUtilsObject.HasChanges = true;
-                }
-                else
-                {
-                    FStatus += Catalog.GetString("Updating AccountCode change - please wait.\r\n");
-                    txtStatus.Text = FStatus;
-                    TVerificationResultCollection VerificationResults;
+                    FRecentlyUpdatedDetailAccountCode = strNewDetailAccountCode;
+                    AccountNodeDetails NodeDetails = (AccountNodeDetails)trvAccounts.SelectedNode.Tag;
 
-                    // If this code was previously in the DB, I need to assume that there may be transactions posted to it.
-                    // There's a server call I need to use, and after the call I need to re-load this page.
-                    // (No other changes will be lost, because the txtDetailAccountCode will have been ReadOnly if there were already changes.)
-                    bool Success = TRemote.MFinance.Setup.WebConnectors.RenameAccountCode(strOldDetailAccountCode,
-                        strNewDetailAccountCode,
-                        FLedgerNumber,
-                        out VerificationResults);
-
-                    if (Success)
+                    try
                     {
-                        FMainDS.Clear();
-                        FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
-                        strOldDetailAccountCode = "";
-                        FPetraUtilsObject.HasChanges = false;
-                        PopulateTreeView();
-                        ShowDetailsManual(null);
-                        FStatus = "";
+                        NodeDetails.AccountRow.BeginEdit();
+                        NodeDetails.AccountRow.AccountCode = strNewDetailAccountCode;
+                        NodeDetails.DetailRow.ReportingAccountCode = strNewDetailAccountCode;
+                        NodeDetails.AccountRow.EndEdit();
+
+                        trvAccounts.BeginUpdate();
+                        trvAccounts.SelectedNode.Text = strNewDetailAccountCode;
+                        trvAccounts.SelectedNode.Name = strNewDetailAccountCode;
+                        trvAccounts.EndUpdate();
+
+                        changeAccepted = true;
+                    }
+                    catch (System.Data.ConstraintException)
+                    {
+                        txtDetailAccountCode.Text = strOldDetailAccountCode;
+                        NodeDetails.AccountRow.CancelEdit();
+                        NodeDetails.DetailRow.CancelEdit();
+
+                        FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
+
+                        FStatus += Catalog.GetString("Account Code change REJECTED!") + Environment.NewLine;
                         txtStatus.Text = FStatus;
-                        FPetraUtilsObject.HasChanges = false;
-                        FPetraUtilsObject.DisableSaveButton();
+
+                        MessageBox.Show(String.Format(
+                                Catalog.GetString(
+                                    "Renaming Account Code '{0}' to '{1}' is not possible because an Account Code by the name of '{2}' already exists.\r\n\r\n--> Account Code reverted to previous value!"),
+                                strOldDetailAccountCode, strNewDetailAccountCode, strNewDetailAccountCode),
+                            Catalog.GetString("Renaming Not Possible - Conflicts With Existing Account Code"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        txtDetailAccountCode.Focus();
                     }
-                    else
+
+                    if (changeAccepted)
                     {
-                        MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Account"));
-                    }
-                }
-            } // if changed
+                        if (NodeDetails.IsNew)
+                        {
+                            // This is the code for changes in "un-committed" nodes:
+                            // there are no references to this new row yet, apart from children nodes, so I can just change them here and carry on!
+
+                            // fixup children nodes
+                            foreach (TreeNode childnode in trvAccounts.SelectedNode.Nodes)
+                            {
+                                ((AccountNodeDetails)childnode.Tag).DetailRow.AccountCodeToReportTo = strNewDetailAccountCode;
+                            }
+
+                            strOldDetailAccountCode = strNewDetailAccountCode;
+                            FPetraUtilsObject.HasChanges = true;
+                        }
+                        else
+                        {
+                            FStatus += Catalog.GetString("Updating Account Code change - please wait.\r\n");
+                            txtStatus.Text = FStatus;
+                            TVerificationResultCollection VerificationResults;
+
+                            // If this code was previously in the DB, I need to assume that there may be transactions posted to it.
+                            // There's a server call I need to use, and after the call I need to re-load this page.
+                            // (No other changes will be lost, because the txtDetailAccountCode will have been ReadOnly if there were already changes.)
+                            bool Success = TRemote.MFinance.Setup.WebConnectors.RenameAccountCode(strOldDetailAccountCode,
+                                strNewDetailAccountCode,
+                                FLedgerNumber,
+                                out VerificationResults);
+
+                            if (Success)
+                            {
+                                FMainDS.Clear();
+                                FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
+                                strOldDetailAccountCode = "";
+                                FPetraUtilsObject.HasChanges = false;
+                                PopulateTreeView();
+                                ShowDetailsManual(null);
+                                FStatus = "";
+                                txtStatus.Text = FStatus;
+                                FPetraUtilsObject.HasChanges = false;
+                                FPetraUtilsObject.DisableSaveButton();
+
+                                FStatus += String.Format(Catalog.GetString("Account Code changed to '{0}'."), strNewDetailAccountCode) + "\r\n";
+                                txtStatus.Text = FStatus;
+                            }
+                            else
+                            {
+                                MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Account"));
+                            }
+                        }
+                    } // if changeAccepted
+
+                } // if changed
+
+            } // if not handling the same change than before (prevents this method to be run several times for a single change)
 
             return changeAccepted;
         }

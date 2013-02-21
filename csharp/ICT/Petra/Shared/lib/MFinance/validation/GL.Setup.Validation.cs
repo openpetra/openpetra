@@ -289,5 +289,33 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
         }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AContext"></param>
+        /// <param name="ARow"></param>
+        /// <param name="AVerificationResultCollection"></param>
+        /// <param name="AValidationControlsDict"></param>
+        public static void ValidateAccountingPeriod(object AContext, AAccountingPeriodRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // 'Period End Date' must be later than 'Period Start Date'
+            ValidationColumn = ARow.Table.Columns[AAccountingPeriodTable.ColumnPeriodEndDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(ARow.PeriodEndDate, ARow.PeriodStartDate,
+                    ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
     }
 }

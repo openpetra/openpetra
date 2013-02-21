@@ -1,5 +1,6 @@
 RootNode:
     BaseClass: System.Windows.Forms.UserControl
+    InterfaceName: IPetraEditUserControl, Ict.Petra.Client.CommonForms.IFrmPetra
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MPartner.Gui   
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
@@ -16,7 +17,7 @@ RootNode:
             Controls:
                 Row0: [txtPreviousName]
                 Row1: [txtLocalName]
-            ColWidths: [0=Fixed:140, 1=Fixed:300]
+            ColWidths: [0=Fixed:130, 1=Fixed:300]
             
         txtPreviousName: {DataField=PPartner.PreviousName}
             Stretch: horizontally
@@ -30,9 +31,9 @@ RootNode:
                 Row2: [cmbLanguageCode]
                 Row3: [cmbAcquisitionCode]
                 Row4: [txtContactPartnerKey]
-                Row5: [chkAccomodation, txtAccomodationSize, cmbAccomodationType]
+                Row5: [chkAccomodation, pnlAccomodationDetails]
 
-        cmbDenominationCode: {List=DenominationList}
+        cmbDenominationCode: {List=DenominationList, ColSpan=3}
         
         txtApproximateSize:
             Width: 45
@@ -40,24 +41,31 @@ RootNode:
             
         chkMapOnFile:
             CheckBoxAttachedLabel: right
+            Padding: 90,0,0,0
             
         chkPrayerGroup:
             CheckBoxAttachedLabel: right
+            Padding: 105,0,0,0
             
-        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
-            ColSpan: 3
+        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList, ColSpan=3}
             
         chkAccomodation:
             OnChange: ShowHideAccomodationData
             
         txtAccomodationSize:
             Width: 45
-            
+
         cmbAccomodationType: {DataField=AccomodationType, List=AccommodationCodeList}
             Width: 100
         
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
-            ColSpan: 3
+        pnlAccomodationDetails:
+            Controls: [txtAccomodationSize, cmbAccomodationType]
+            ControlsOrientation: horizontal
+            Padding: 83,0,0,0
+            Margin: 0,0,0,0
+            ColSpan: 2
+            
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, ColSpan=3}
             
         txtContactPartnerKey:
             ColSpan: 3

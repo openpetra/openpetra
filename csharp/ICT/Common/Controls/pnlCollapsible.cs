@@ -413,7 +413,10 @@ namespace Ict.Common.Controls
             {
                 FTaskListInstance = value;
 
-                UpdateTaskList();
+                if (value != null)
+                {
+                    UpdateTaskList();
+                }
             }
         }
 
@@ -430,7 +433,10 @@ namespace Ict.Common.Controls
             {
                 FPnlCollapsibleHoster = value;
 
-                UpdateCollapsiblePanelHoster();
+                if (value != null)
+                {
+                    UpdateCollapsiblePanelHoster();
+                }
             }
         }
 

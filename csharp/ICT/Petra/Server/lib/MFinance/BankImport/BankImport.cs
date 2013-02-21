@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -823,7 +823,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     trans.JournalNumber = gljournalRow.JournalNumber;
                     trans.TransactionNumber = gljournalRow.LastTransactionNumber + 1;
                     trans.AccountCode = stmt.BankAccountCode;
-                    trans.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
+                    trans.CostCentreCode = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
                     trans.Reference = match.Reference;
                     trans.Narrative = match.Narrative;
                     trans.TransactionDate = transactionRow.DateEffective;

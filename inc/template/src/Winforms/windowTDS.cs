@@ -498,9 +498,7 @@ namespace {#NAMESPACE}
     /// auto generated
     public void FileSave(object sender, EventArgs e)
     {
-      try {
          SaveChanges();
-      } catch (CancelSaveException) {}
     }
 
     /// <summary>

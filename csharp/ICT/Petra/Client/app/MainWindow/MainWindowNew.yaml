@@ -4,7 +4,7 @@ RootNode:
     FormType: navigation
     Namespace: Ict.Petra.Client.App.PetraClient
     Icon: petraico-big.ico
-    WindowWidth: 828
+    WindowWidth: 831
     WindowHeight: 600
     Events:
         Activated: {class=System.EventHandler,method=FPetraUtilsObject.TFrmPetra_Activated}

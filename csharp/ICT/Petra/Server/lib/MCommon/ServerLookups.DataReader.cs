@@ -227,7 +227,22 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 try
                 {
-                    if (ATablename == ACurrencyTable.GetTableDBName())
+                    if (ATablename == AAccountingPeriodTable.GetTableDBName())
+                    {
+                        if (AAccountingPeriodAccess.SubmitChanges((AAccountingPeriodTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == ACurrencyTable.GetTableDBName())
                     {
                         if (ACurrencyAccess.SubmitChanges((ACurrencyTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
@@ -351,6 +366,21 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                         if (AAnalysisTypeAccess.SubmitChanges((AAnalysisTypeTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == ASuspenseAccountTable.GetTableDBName())
+                    {
+                        if (ASuspenseAccountAccess.SubmitChanges((ASuspenseAccountTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheableFinanceTablesEnum.SuspenseAccountList.ToString());
+
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         else

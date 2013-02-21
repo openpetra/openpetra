@@ -16,7 +16,7 @@ RootNode:
             Controls:
                 Row0: [txtPreviousName]
                 Row1: [txtLocalName]
-            ColWidths: [0=Fixed:120]
+            ColWidths: [0=Fixed:240]
             
         txtPreviousName: {DataField=PPartner.PreviousName}
             Stretch: horizontally
@@ -44,26 +44,28 @@ RootNode:
             Width: 100
             ReadOnly: true
             Validation: false
-            Label: Parent
+            Label: Parent Unit
+
         lblParentName:
-            Width: 170
-            Nolabel: true
+            Width: 180
+            NoLabel: true
+
         btnOrganise:
             ActionClick: OpenUnitHierarchy
-            Label: Organise..
+            Label: Position in Unit Hierarchy...
 
         grpOutreachInfo: {Label=Outreach Information, Dock=Top}
             Controls: 
                 Row0: [txtOutreachCode]
                 Row1: [txtOutreachCost, cmbOutreachCostCurrencyCode]
-            ColWidths: [0=Fixed:120, 1=Fixed:100, 2=Fixed:65]
+            ColWidths: [0=Fixed:120]
             
         txtOutreachCode:
-            Witdh: 170
+            Width: 165
             ColSpan: 2
             
         txtOutreachCost:
-            Width: 90
+            Width: 100
 
         cmbOutreachCostCurrencyCode: {List=CurrencyCodeList}
             Width: 60
