@@ -127,6 +127,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                 {
                     tempTable = AJournalAccess.LoadAll(ReadTransaction);
                 }
+                else if (ATablename == ALedgerTable.GetTableDBName())
+                {
+                    tempTable = ALedgerAccess.LoadAll(ReadTransaction);
+                }
                 else if (ATablename == MExtractMasterTable.GetTableDBName())
                 {
                     if (ASearchCriteria == null)
@@ -320,6 +324,19 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                         // This method is called from ADailyExchangeRate Setup - please do not remove
                         // The method is not required for changes made to the journal screens, which use a TDS
                         if (AJournalAccess.SubmitChanges((AJournalTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == ALedgerTable.GetTableDBName())
+                    {
+                        // This method is called from ADailyExchangeRate Testing - please do not remove
+                        if (ALedgerAccess.SubmitChanges((ALedgerTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
