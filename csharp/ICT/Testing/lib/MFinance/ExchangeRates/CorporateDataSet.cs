@@ -69,6 +69,45 @@ namespace Tests.MFinance.Client.ExchangeRates
 
                 return SerialisableDS.SaveChanges(ACorporateExchangeRate, TableChanges, ACorporateExchangeRateTable.GetTableDBName());
             }
+
+            public static void DeleteAllRows()
+            {
+                DataView view = FMainDS.ACorporateExchangeRate.DefaultView;
+
+                for (int i = view.Count - 1; i >= 0; i--)
+                {
+                    view[i].Delete();
+                }
+            }
+
+            public static void InsertStandardRows()
+            {
+                for (int i = 0; i <= StandardData.GetUpperBound(0); i++)
+                {
+                    AddARow(StandardData[i, 0].ToString(),
+                        StandardData[i, 1].ToString(),
+                        DateTime.Parse(StandardData[i, 2].ToString(), CultureInfo.InvariantCulture),
+                        Convert.ToDecimal(StandardData[i, 3]));
+                    Console.WriteLine("Inserted standard data to row {0}: {1}->{2} {3} @ {4}",
+                        i + 1,
+                        StandardData[i, FFromCurrencyId],
+                        StandardData[i, FToCurrencyId],
+                        StandardData[i, FDateEffectiveId],
+                        StandardData[i, FRateOfExchangeId]);
+                }
+            }
+
+            private static void AddARow(String FromCurrency, String ToCurrency, DateTime EffectiveDate, decimal Rate)
+            {
+                ACorporateExchangeRateRow newRow = FMainDS.ACorporateExchangeRate.NewRowTyped();
+
+                newRow.FromCurrencyCode = FromCurrency;
+                newRow.ToCurrencyCode = ToCurrency;
+                newRow.DateEffectiveFrom = EffectiveDate;
+                newRow.TimeEffectiveFrom = 0;
+                newRow.RateOfExchange = Rate;
+                FMainDS.ACorporateExchangeRate.Rows.Add(newRow);
+            }
         }
 
         #endregion
@@ -82,7 +121,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// Also USD as To is specified before GBP but on screen it will be the other way round
         /// This is IMPORTANT for the test
         /// </summary>
-        private object[, ] StandardData =
+        private static object[, ] StandardData =
         {
             { "GBP", "USD", "1900-06-01", 0.50m },
             { "GBP", "USD", "1900-07-01", 0.55m },
@@ -135,49 +174,6 @@ namespace Tests.MFinance.Client.ExchangeRates
         private decimal EffectiveRate()
         {
             return Convert.ToDecimal(StandardData[FCurrentDataId, FRateOfExchangeId]);
-        }
-
-        #endregion
-
-        #region Standard Data manipulation ( Add/Insert/Delete )
-
-        private void DeleteAllRows()
-        {
-            DataView view = FMainDS.ACorporateExchangeRate.DefaultView;
-
-            for (int i = view.Count - 1; i >= 0; i--)
-            {
-                view[i].Delete();
-            }
-        }
-
-        private void InsertStandardRows()
-        {
-            for (int i = 0; i <= StandardData.GetUpperBound(0); i++)
-            {
-                AddARow(StandardData[i, 0].ToString(),
-                    StandardData[i, 1].ToString(),
-                    DateTime.Parse(StandardData[i, 2].ToString(), CultureInfo.InvariantCulture),
-                    Convert.ToDecimal(StandardData[i, 3]));
-                Console.WriteLine("Inserted standard data to row {0}: {1}->{2} {3} @ {4}",
-                    i + 1,
-                    StandardData[i, FFromCurrencyId],
-                    StandardData[i, FToCurrencyId],
-                    StandardData[i, FDateEffectiveId],
-                    StandardData[i, FRateOfExchangeId]);
-            }
-        }
-
-        private void AddARow(String FromCurrency, String ToCurrency, DateTime EffectiveDate, decimal Rate)
-        {
-            ACorporateExchangeRateRow newRow = FMainDS.ACorporateExchangeRate.NewRowTyped();
-
-            newRow.FromCurrencyCode = FromCurrency;
-            newRow.ToCurrencyCode = ToCurrency;
-            newRow.DateEffectiveFrom = EffectiveDate;
-            newRow.TimeEffectiveFrom = 0;
-            newRow.RateOfExchange = Rate;
-            FMainDS.ACorporateExchangeRate.Rows.Add(newRow);
         }
 
         #endregion

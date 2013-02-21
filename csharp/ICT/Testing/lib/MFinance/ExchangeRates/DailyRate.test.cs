@@ -49,16 +49,20 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// This test suite will delete all the existing rows in the Corporate Exchange rate table
+// This test suite will delete all the existing rows in the Daily Exchange rate table
 // It will not affect any other tables
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace Tests.MFinance.Client.ExchangeRates
 {
-    /// Testing the Corporate Exchange rate screen
+    /// Testing the Daily Exchange rate screen
+    /// This part of the class tests the screen as a MODELESS dialog
+    /// - See DailyRateModal.test.cs for MODAL tests
     [TestFixture]
     public partial class TDailyExchangeRateTest : NUnitFormTest
     {
+        private Boolean FConnectedToServer = false;
+
         #region Setup and TearDown
 
         /// <summary>
@@ -68,7 +72,16 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             new TLogging("TestClient.log");
 
-            TPetraConnector.Connect("../../etc/TestClient.config");
+            FConnectedToServer = false;
+            try
+            {
+                TPetraConnector.Connect("../../etc/TestClient.config");
+                FConnectedToServer = true;
+            }
+            catch (Exception)
+            {
+                Assert.Fail("Failed to connect to the Petra Server.  Have you forgotten to launch the Server Console");
+            }
 
             // We use a special FIN. finance module error code which we need to register
             ErrorCodeInventory.RegisteredTypes.Add(new Ict.Petra.Shared.PetraErrorCodes().GetType());
@@ -79,8 +92,17 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public override void TearDown()
         {
-            DeleteAllRows();
+            if (!FConnectedToServer)
+            {
+                return;
+            }
+
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
+
+            FCorporateDS.DeleteAllCorporateRates();
+            FLedgerDS.DeleteTestLedgerIfExists();
+            FGiftAndJournal.Clean();
 
             TPetraConnector.Disconnect();
         }
@@ -96,7 +118,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void LoadEmptyTable()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
@@ -135,8 +157,8 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void LoadTableContainingData()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
-            InsertStandardRows();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
             FMainDS.SaveChanges();
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
@@ -144,6 +166,10 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
+
+            // Modal controls
+            Button btnClose = (new ButtonTester("btnClose", FModalFormName)).Properties;
+            Button btnCancel = (new ButtonTester("btnCancel", FModalFormName)).Properties;
 
             // Grid
             TSgrdDataGrid grdDetails = (TSgrdDataGrid)(new TSgrdDataGridPagedTester("grdDetails", mainScreen)).Properties;
@@ -158,6 +184,8 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Start of testing...
             Assert.IsFalse(btnSave.Enabled, "The Save button should be disabled when the screen is loaded");
             Assert.IsTrue(pnlDetails.Enabled, "The Details Panel should be enabled on initial load");
+            Assert.IsFalse(btnClose.Visible, "The Accept button should not be visible on a modeless form");
+            Assert.IsFalse(btnCancel.Visible, "The Cancel but should not be visible on a modeless form");
 
             // Check the number of rows in the grid
             Assert.AreEqual(FAllRowCount + 1, grdDetails.Rows.Count);
@@ -221,7 +249,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void AddRowToEmptyTable()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
@@ -297,8 +325,8 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void AddRowToTable()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
-            InsertStandardRows();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
             FMainDS.SaveChanges();
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
@@ -385,6 +413,100 @@ namespace Tests.MFinance.Client.ExchangeRates
 
         #endregion
 
+        #region Add row to an empty table but with data in the corporate rate table
+
+        /// <summary>
+        /// Test adding rows with no data in the Exchange Rate table, but with possible data in the Corporate Rate table
+        /// </summary>
+        [Test]
+        public void AddRowFromCorporateToEmptyTable()
+        {
+            FMainDS.LoadAll();
+            FMainDS.DeleteAllRows();
+            FMainDS.SaveChanges();
+
+            // Work out our currency expectations
+            string baseCurrency = GetDefaultBaseCurrency();
+            string expectedFromCurrency = "USD";
+            if (baseCurrency == "USD")
+            {
+                expectedFromCurrency = "GBP";
+            }
+
+            // Create a corporate rate valid from yesterday
+            FCorporateDS.CreateCorporateRate(expectedFromCurrency, baseCurrency, DateTime.Today.AddDays(-1), 2.0m);
+
+            TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
+            mainScreen.Show();
+
+            // Controls
+            ButtonTester btnNew = new ButtonTester("btnNew", mainScreen);
+            TCmbAutoPopulated cmbFromCurrency = (new TCmbAutoPopulatedTester("cmbDetailFromCurrencyCode", mainScreen)).Properties;
+            TCmbAutoPopulated cmbToCurrency = (new TCmbAutoPopulatedTester("cmbDetailToCurrencyCode", mainScreen)).Properties;
+            TtxtPetraDate dtpEffectiveDate = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", mainScreen)).Properties;
+            TTxtNumericTextBox txtExchangeRate = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", mainScreen)).Properties;
+
+            // Create a new row
+            btnNew.Click();
+
+            Assert.AreEqual(expectedFromCurrency, cmbFromCurrency.GetSelectedString());
+            Assert.AreEqual(baseCurrency, cmbToCurrency.GetSelectedString());
+            Assert.AreEqual(DateTime.Today, dtpEffectiveDate.Date);
+            Assert.AreEqual(2.0m, txtExchangeRate.NumberValueDecimal, "The rate should be the rate from the corporate excahnge rate table");
+
+            // change the date to an earlier date - the rate hould revert to 0.0,
+            dtpEffectiveDate.Focus();
+            dtpEffectiveDate.Date = DateTime.Today.AddYears(-1);
+            txtExchangeRate.Focus();
+            Assert.AreEqual(0.0m, txtExchangeRate.NumberValueDecimal, "After changing the date the rate should now be 0.0m");
+        }
+
+        #endregion
+
+        #region Load the screen from a table with existing data but with data in the corporate rate table
+
+        /// <summary>
+        /// Test adding rows with existing data in the Exchange Rate table, but with possible data in the Corporate Rate table
+        /// </summary>
+        [Test]
+        public void AddRowFromCorporate()
+        {
+            FMainDS.LoadAll();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
+            FMainDS.SaveChanges();
+
+            // Create a corporate rate valid from yesterday
+            FCorporateDS.CreateCorporateRate("GBP", "USD", DateTime.Today.AddDays(-1), 0.515m);
+
+            TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
+            mainScreen.Show();
+
+            // Controls
+            ButtonTester btnNew = new ButtonTester("btnNew", mainScreen);
+            TCmbAutoPopulated cmbFromCurrency = (new TCmbAutoPopulatedTester("cmbDetailFromCurrencyCode", mainScreen)).Properties;
+            TCmbAutoPopulated cmbToCurrency = (new TCmbAutoPopulatedTester("cmbDetailToCurrencyCode", mainScreen)).Properties;
+            TtxtPetraDate dtpEffectiveDate = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", mainScreen)).Properties;
+            TTxtNumericTextBox txtExchangeRate = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", mainScreen)).Properties;
+
+            // Create a new row based on the last row
+            SelectRowInGrid(8);
+            btnNew.Click();
+
+            Assert.AreEqual(EffectiveCurrency(FFromCurrencyId), cmbFromCurrency.GetSelectedString());
+            Assert.AreEqual(EffectiveCurrency(FToCurrencyId), cmbToCurrency.GetSelectedString());
+            Assert.AreEqual(DateTime.Today, dtpEffectiveDate.Date);
+            Assert.AreEqual(0.515m, txtExchangeRate.NumberValueDecimal, "The rate should be the rate from the corporate exchange rate table");
+
+            // change the date to an earlier date - the rate hould revert to the prior daily rate,
+            dtpEffectiveDate.Focus();
+            dtpEffectiveDate.Date = DateTime.Today.AddYears(-1);
+            txtExchangeRate.Focus();
+            Assert.AreEqual(StandardData[Row2DataId(7), FRateOfExchangeId], txtExchangeRate.NumberValueDecimal, "After changing the date the rate should now be based on previous daily rates");
+        }
+
+        #endregion
+
         #region Edit a New Row
 
         /// <summary>
@@ -394,8 +516,8 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void EditRow()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
-            InsertStandardRows();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
             FMainDS.SaveChanges();
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
@@ -439,7 +561,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Focus on the from currency, then change it to 'BEF'
             cmbFromCurrency.Focus();
-            cmbFromCurrency.SetSelectedString("BEF");
+            cmbFromCurrency.SetSelectedString(STANDARD_TEST_CURRENCY);
             cmbToCurrency.Focus();
 
             // Now check the date and rate.  Time should be back to O2:00 and rate should be 0.00 because this currency has never been used
@@ -460,7 +582,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Repeat for the To currency
             cmbToCurrency.Focus();
-            cmbToCurrency.SetSelectedString("BEF");
+            cmbToCurrency.SetSelectedString(STANDARD_TEST_CURRENCY);
             dtpEffectiveDate.Focus();
 
             // Now check the date and rate.  Date should be back to this month and rate should be 0.00 because this currency has never been used
@@ -515,8 +637,8 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void InvertRate()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
-            InsertStandardRows();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
             FMainDS.SaveChanges();
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
@@ -565,7 +687,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void SaveAndCancel()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
@@ -648,7 +770,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void Import()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
 
             TVerificationResultCollection results = new TVerificationResultCollection();
@@ -659,52 +781,52 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("daily-csv/GoodImport-WithTime.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("daily-csv/BadCurrencyImport.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("daily-csv/BadDateImport.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INVALIDDATE, firstResultCode);
 
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("daily-csv/BadRateImport.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INVALIDNUMBER, firstResultCode);
 
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("daily-csv/BadTimeImport.csv", "\t", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INVALIDINTEGERTIME, firstResultCode);
 
             // Run the test(s) that have duplicates
-            DeleteAllRows();
-            InsertStandardRows();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
             RunTestImport("daily-csv/GoodImport-WithDuplicates.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(12, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // And Headers
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("daily-csv/GoodImport-WithTimeAndHeader.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // Test a date/rate only file - this is tab separated
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("daily-csv/USD_EUR.csv", "\t", results, out resultText, out firstResultCode);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // Test a file with its own inverses
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("daily-csv/GoodImport-WithInverses.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(4, FMainDS.ADailyExchangeRate.Rows.Count, "Wrong number of rows after successful import");
@@ -721,7 +843,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void Validation()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
 
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);

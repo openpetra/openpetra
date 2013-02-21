@@ -59,6 +59,8 @@ namespace Tests.MFinance.Client.ExchangeRates
     [TestFixture]
     public partial class TCorporateExchangeRateTest : NUnitFormTest
     {
+        private Boolean FConnectedToServer = false;
+
         #region Setup and TearDown
 
         /// <summary>
@@ -68,7 +70,16 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             new TLogging("TestClient.log");
 
-            TPetraConnector.Connect("../../etc/TestClient.config");
+            FConnectedToServer = false;
+            try
+            {
+                TPetraConnector.Connect("../../etc/TestClient.config");
+                FConnectedToServer = true;
+            }
+            catch (Exception)
+            {
+                Assert.Fail("Failed to connect to the Petra Server.  Have you forgotten to launch the Server Console");
+            }
         }
 
         /// <summary>
@@ -76,7 +87,12 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public override void TearDown()
         {
-            DeleteAllRows();
+            if (!FConnectedToServer)
+            {
+                return;
+            }
+
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
             
             TPetraConnector.Disconnect();
@@ -93,7 +109,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void LoadEmptyTable()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
 
             TFrmSetupCorporateExchangeRate mainScreen = new TFrmSetupCorporateExchangeRate(null);
@@ -132,8 +148,8 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void LoadTableContainingData()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
-            InsertStandardRows();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
             FMainDS.SaveChanges();
 
             TFrmSetupCorporateExchangeRate mainScreen = new TFrmSetupCorporateExchangeRate(null);
@@ -218,7 +234,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void AddRowToEmptyTable()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
 
             TFrmSetupCorporateExchangeRate mainScreen = new TFrmSetupCorporateExchangeRate(null);
@@ -294,8 +310,8 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void AddRowToTable()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
-            InsertStandardRows();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
             FMainDS.SaveChanges();
 
             TFrmSetupCorporateExchangeRate mainScreen = new TFrmSetupCorporateExchangeRate(null);
@@ -378,8 +394,8 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void EditRow()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
-            InsertStandardRows();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
             FMainDS.SaveChanges();
 
             TFrmSetupCorporateExchangeRate mainScreen = new TFrmSetupCorporateExchangeRate(null);
@@ -489,8 +505,8 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void InvertRate()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
-            InsertStandardRows();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
             FMainDS.SaveChanges();
 
             TFrmSetupCorporateExchangeRate mainScreen = new TFrmSetupCorporateExchangeRate(null);
@@ -539,7 +555,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void SaveAndCancel()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
 
             TFrmSetupCorporateExchangeRate mainScreen = new TFrmSetupCorporateExchangeRate(null);
@@ -622,7 +638,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void Import()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
 
             TVerificationResultCollection results = new TVerificationResultCollection();
@@ -633,48 +649,48 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ACorporateExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("corporate-csv/BadCurrencyImport.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, firstResultCode);
 
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("corporate-csv/BadDateImport.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INVALIDDATE, firstResultCode);
 
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("corporate-csv/BadRateImport.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INVALIDNUMBER, firstResultCode);
 
             // Test for a missing column
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("corporate-csv/MissingColumn.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(1, results.Count);
             Assert.AreEqual(CommonErrorCodes.ERR_INFORMATIONMISSING, firstResultCode);
 
             // Run the test(s) that have duplicates
-            DeleteAllRows();
-            InsertStandardRows();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
             RunTestImport("corporate-csv/GoodImport-WithDuplicates.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(12, FMainDS.ACorporateExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // And Headers
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("corporate-csv/GoodImport-WithHeader.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ACorporateExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // Test a date/rate only file - this is tab separated
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("corporate-csv/USD_EUR.csv", "\t", results, out resultText, out firstResultCode);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(8, FMainDS.ACorporateExchangeRate.Rows.Count, "Wrong number of rows after successful import");
 
             // Test a file with its own inverses
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             RunTestImport("corporate-csv/GoodImport-WithInverses.csv", ",", results, out resultText, out firstResultCode);
             Assert.AreEqual(String.Empty, resultText, "Errors during import...");
             Assert.AreEqual(4, FMainDS.ACorporateExchangeRate.Rows.Count, "Wrong number of rows after successful import");
@@ -691,7 +707,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         public void Validation()
         {
             FMainDS.LoadAll();
-            DeleteAllRows();
+            FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
 
             TFrmSetupCorporateExchangeRate mainScreen = new TFrmSetupCorporateExchangeRate(null);
