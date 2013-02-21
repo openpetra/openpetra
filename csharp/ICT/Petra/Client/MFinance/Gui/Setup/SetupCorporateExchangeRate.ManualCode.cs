@@ -295,7 +295,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         /// Updates the lblValueOneDirection and lblValueOtherDirection labels
         /// </summary>
-        private void UpdateExchangeRateLabels()
+        private void UpdateExchangeRateLabels(Object sender = null, EventArgs e = null)
         {
             // Call can cope with null for Row, but rate must have a valid value
             if (txtDetailRateOfExchange.NumberValueDecimal.HasValue)
