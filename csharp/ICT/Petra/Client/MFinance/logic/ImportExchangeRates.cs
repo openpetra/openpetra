@@ -245,9 +245,9 @@ namespace Ict.Petra.Client.MFinance.Logic
                     {
                         //Read the values for the current line
                         //From currency
-                        Currencies[0] = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false).ToString();
+                        Currencies[0] = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false, true).ToString();
                         //To currency
-                        Currencies[1] = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false).ToString();
+                        Currencies[1] = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false, true).ToString();
                     }
 
                     // Perform validation on the From and To currencies at this point!!
@@ -261,7 +261,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                     }
 
                     // Date parsing as in Petra 2.x instead of using XML date format!!!
-                    string DateEffectiveStr = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false).Replace("\"", String.Empty);
+                    string DateEffectiveStr = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false, true).Replace("\"", String.Empty);
                     DateTime DateEffective;
                     if (!DateTime.TryParse(DateEffectiveStr, MyCultureInfoDate, DateTimeStyles.None, out DateEffective))
                     {
@@ -275,7 +275,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                     decimal ExchangeRate = 0.0m;
                     try
                     {
-                        string ExchangeRateString = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false).Replace(ThousandsSeparator, "").Replace(
+                        string ExchangeRateString = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false, true).Replace(ThousandsSeparator, "").Replace(
                             DecimalSeparator, ".").Replace("\"", String.Empty);
 
                         ExchangeRate = Convert.ToDecimal(ExchangeRateString, System.Globalization.CultureInfo.InvariantCulture);
@@ -297,7 +297,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                         if ((IsShortFileFormat && NumCols == 3) ||
                             (!IsShortFileFormat && NumCols == 5))
                         {
-                            string timeEffectiveStr = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false);
+                            string timeEffectiveStr = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false, true);
                             int t = (int)new Ict.Common.TypeConverter.TShortTimeConverter().ConvertTo(timeEffectiveStr, typeof(int));
                             if (t < 0)
                             {
