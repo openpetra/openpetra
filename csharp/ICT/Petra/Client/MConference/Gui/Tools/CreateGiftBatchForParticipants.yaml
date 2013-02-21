@@ -1,0 +1,16 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Create Gift batch for Participants
+    Namespace: Ict.Petra.Client.MConference.Gui.Tools
+    FormType: browse
+    Template: window
+    WindowWidth: 858
+    #WindowHeight: 900
+    Actions:
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid]
+            Dock: Fill
+        pnlGrid:
+    Menu:
+    Toolbar:

@@ -343,6 +343,8 @@ OpenPetra:
             Main: {SkipThisLevel=true}
                 Find: {Namespace=Ict.Petra.Client.MConference.Gui, DontShowNestedTasksAsLinks=true}
                     FindConference: {ActionOpenScreen=TFrmConferenceFindForm}
+                Tools: {Namespace=Ict.Petra.Client.MConference.Gui.Tools, DontShowNestedTasksAsLinks=true}
+                    CreateGiftBatchForParticipants: {ActionOpenScreen=TFrmCreateGiftBatchForParticipants}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     Reports:
                         AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}
