@@ -77,18 +77,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private string JournalRowFilter = "(" + AJournalTable.GetTransactionCurrencyDBName() + " = '{0}' OR " +
                                           AJournalTable.GetTransactionCurrencyDBName() + " = '{1}') AND " +
                                           AJournalTable.GetDateEffectiveDBName() + " >= #{2}# AND " +
-                                          AJournalTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
-                                          AJournalTable.GetJournalStatusDBName() + " = '{5}'";
+                                          AJournalTable.GetExchangeRateToBaseDBName() + " = {3} AND " +
+                                          AJournalTable.GetJournalStatusDBName() + " = '{4}'";
         private string JournalRowFilterRange = "(" + AJournalTable.GetTransactionCurrencyDBName() + " = '{0}' OR " +
                                                AJournalTable.GetTransactionCurrencyDBName() + " = '{1}') AND " +
                                                AJournalTable.GetDateEffectiveDBName() + " >= #{2}# AND " +
-                                               AJournalTable.GetDateEffectiveDBName() + " < #{3}# AND " +
+                                               AJournalTable.GetDateEffectiveDBName() + " <= #{3}# AND " +
                                                AJournalTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
                                                AJournalTable.GetJournalStatusDBName() + " = '{5}'";
         private string GiftBatchRowFilter = "(" + AGiftBatchTable.GetCurrencyCodeDBName() + " = '{0}' OR " +
                                             AGiftBatchTable.GetCurrencyCodeDBName() + " = '{1}') AND " +
                                             AGiftBatchTable.GetGlEffectiveDateDBName() + " >= #{2}# AND " +
-                                            AGiftBatchTable.GetGlEffectiveDateDBName() + " < #{3}# AND " +
+                                            AGiftBatchTable.GetGlEffectiveDateDBName() + " <= #{3}# AND " +
                                             AGiftBatchTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
                                             AGiftBatchTable.GetBatchStatusDBName() + " = 'Unposted'";
 
@@ -314,6 +314,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        /// <summary>
+        /// Gets the current text from the rate usage tooltip (used by the test software)
+        /// </summary>
+        public string Usage
+        {
+            get
+            {
+                return tooltipDeleteInfo.GetToolTip(btnInvertExchangeRate);
+            }
+        }
+
         private void InitializeManualCode()
         {
             // This code runs just before the auto-generated code binds the data to the grid
@@ -492,7 +503,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             DateTime dateEnd2 = dteEnd.AddDays(1.0);
             minModalEffectiveDate = dteStart;
-            maxModalEffectiveDate = dateEnd2;
+            maxModalEffectiveDate = dteEnd;
 
             // Do not use local formats here!
             string filter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' and {2}='{3}' and {4}<#{5}#",
@@ -644,6 +655,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e">not used</param>
         private void CancelDialog(object sender, EventArgs e)
         {
+            if (btnCancel.DialogResult == DialogResult.Abort)
+            {
+                FPetraUtilsObject.DisableSaveButton();
+            }
+
             // Although the user has clicked Cancel, we need to ask if we need to save any changes that have been made
             if (FPetraUtilsObject.CloseFormCheck())
             {
@@ -841,7 +857,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         /// Updates the lblValueOneDirection and lblValueOtherDirection labels
         /// </summary>
-        private void UpdateExchangeRateLabels()
+        private void UpdateExchangeRateLabels(object Sender = null, EventArgs e = null)
         {
             // Call can cope with null for Row, but rate must have a valid value
             if (txtDetailRateOfExchange.NumberValueDecimal.HasValue)
@@ -918,6 +934,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 txtDetailRateOfExchange.NumberValueDecimal = null;
                 FIsCurrentRowStateAdded = false;
+                btnDelete.Enabled = false;
             }
             else
             {
@@ -942,6 +959,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 SetEnabledStates();
             }
 
+            btnClose.Enabled = ARow != null;
             UpdateExchangeRateLabels();
         }
 
@@ -976,8 +994,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 btnInvertExchangeRate.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
                 btnDelete.Enabled = (FIsCurrentRowStateAdded || FCanDeleteCurrentRow);
             }
-
-            //UpdateExchangeRateLabels();
         }
 
         private void txtDetailRateOfExchange_TextChanged(object sender, EventArgs e)
@@ -1219,9 +1235,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FGiftBatchDS.HasMatchingUnpostedRate)
             {
-                List <int>listLedgers = new List <int>();
                 FGiftBatchDS.MatchingRate = rate;
 
+                List <int>listLedgers = new List <int>();
                 for (int i = 0; i < dvGift.Count; i++)
                 {
                     int ledgerNum = ((AGiftBatchRow)dvGift[i].Row).LedgerNumber;
@@ -1260,15 +1276,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FJournalDS.MatchingRate = rate;
 
-                if (tipText != String.Empty)
-                {
-                    tipText += Environment.NewLine;
-                }
-
                 List <int>listLedgers = new List <int>();
-                FGiftBatchDS.MatchingRate = rate;
-
-                for (int i = 0; i < dvGift.Count; i++)
+                for (int i = 0; i < dvJournal.Count; i++)
                 {
                     int ledgerNum = ((AJournalRow)dvJournal[i].Row).LedgerNumber;
 
@@ -1276,6 +1285,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         listLedgers.Add(ledgerNum);
                     }
+                }
+
+                if (tipText != String.Empty)
+                {
+                    tipText += Environment.NewLine;
                 }
 
                 if (dvJournal.Count == 1)
@@ -1302,15 +1316,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (bHasPostedJournalEntries)
             {
-                if (tipText != String.Empty)
-                {
-                    tipText += Environment.NewLine;
-                }
+                FJournalDS.MatchingRate = rate;
 
                 List <int>listLedgers = new List <int>();
-                FGiftBatchDS.MatchingRate = rate;
-
-                for (int i = 0; i < dvGift.Count; i++)
+                for (int i = 0; i < dvJournal.Count; i++)
                 {
                     int ledgerNum = ((AJournalRow)dvJournal[i].Row).LedgerNumber;
 
@@ -1318,6 +1327,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         listLedgers.Add(ledgerNum);
                     }
+                }
+
+                if (tipText != String.Empty)
+                {
+                    tipText += Environment.NewLine;
                 }
 
                 if (dvJournal.Count == 1)
