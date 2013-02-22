@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     FCanGiftReceiptingBeDeactivated = TRemote.MFinance.Setup.WebConnectors.CanGiftReceiptingSubsystemBeDeactivated(FLedgerNumber);
                 }
-                
+
                 if (FAccountsPayableActivated)
                 {
                     FCanAccountsPayableBeDeactivated = TRemote.MFinance.Setup.WebConnectors.CanAccountsPayableSubsystemBeDeactivated(FLedgerNumber);
@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 UpdateControls();
             }
         }
-        
+
         private void InitializeManualCode()
         {
             txtGiftReceiptingStatus.ReadOnly = true;
@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void UpdateControls()
         {
             btnActivateGiftReceipting.Enabled = !FGiftReceiptingActivated;
-            
+
             lblStartingReceiptNumber.Visible = !FGiftReceiptingActivated;
             txtStartingReceiptNumber.Visible = !FGiftReceiptingActivated;
 
@@ -98,9 +98,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 btnActivateGiftReceipting.Text = Catalog.GetString("Activate Gift Receipting");
             }
 
-            
             btnActivateAccountsPayable.Enabled = !FAccountsPayableActivated;
-            
+
             if (FAccountsPayableActivated)
             {
                 txtAccountsPayableStatus.Text = Catalog.GetString("Activated");
@@ -113,22 +112,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 btnActivateAccountsPayable.Text = Catalog.GetString("Activate Accounts Payable");
             }
         }
-        
+
         private void BtnActivateGiftReceipting_Click(System.Object sender, EventArgs e)
         {
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult Result;
-            
+
             if (FGiftReceiptingActivated)
             {
                 // deactivate gift receipting
                 if (MessageBox.Show(Catalog.GetString("Do you want to deactivate Gift Receipting Subsystem?"),
-                                    Catalog.GetString("Deactivate Gift Receipting"), 
-                                    MessageBoxButtons.YesNo, 
-                                    MessageBoxIcon.Question) == DialogResult.Yes)
+                        Catalog.GetString("Deactivate Gift Receipting"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     FGiftReceiptingActivated = !TRemote.MFinance.Setup.WebConnectors.DeactivateGiftReceiptingSubsystem(FLedgerNumber);
-                    
+
                     UpdateControls();
                 }
             }
@@ -136,30 +135,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // activate gift receipting
                 if (MessageBox.Show(String.Format(Catalog.GetString("Do you want to activate Gift Receipting Subsystem " +
-                                                                    "with Receipting Start Number {0}?"), txtStartingReceiptNumber.NumberValueInt),
-                                    Catalog.GetString("Activate Gift Receipting"), 
-                                    MessageBoxButtons.YesNo, 
-                                    MessageBoxIcon.Question) == DialogResult.Yes)
+                                "with Receipting Start Number {0}?"), txtStartingReceiptNumber.NumberValueInt),
+                        Catalog.GetString("Activate Gift Receipting"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    if (   txtStartingReceiptNumber.NumberValueInt == null
-                        || txtStartingReceiptNumber.NumberValueInt <= 0)
+                    if ((txtStartingReceiptNumber.NumberValueInt == null)
+                        || (txtStartingReceiptNumber.NumberValueInt <= 0))
                     {
                         MessageBox.Show(Catalog.GetString("Starting Receipt Number must be 1 or higher!"),
-                                        Catalog.GetString("Activate Gift Receipting"),
-                                        MessageBoxButtons.OK,
-                                        MessageBoxIcon.Error);
+                            Catalog.GetString("Activate Gift Receipting"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                         return;
                     }
-                    
+
                     Result = TRemote.MFinance.Setup.WebConnectors.
-                        ActivateGiftReceiptingSubsystem(FLedgerNumber, Convert.ToInt32(txtStartingReceiptNumber.NumberValueInt) - 1, out VerificationResult);
+                             ActivateGiftReceiptingSubsystem(FLedgerNumber, Convert.ToInt32(
+                            txtStartingReceiptNumber.NumberValueInt) - 1, out VerificationResult);
                     FGiftReceiptingActivated = (Result == TSubmitChangesResult.scrOK);
 
                     if (FGiftReceiptingActivated)
                     {
                         FCanGiftReceiptingBeDeactivated = TRemote.MFinance.Setup.WebConnectors.CanGiftReceiptingSubsystemBeDeactivated(FLedgerNumber);
                     }
-                    
+
                     UpdateControls();
                 }
             }
@@ -172,14 +172,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FAccountsPayableActivated)
             {
-                // deactivate accounts payable   
+                // deactivate accounts payable
                 if (MessageBox.Show(Catalog.GetString("Do you want to deactivate Accounts Payable Subsystem?"),
-                                    Catalog.GetString("Deactivate Accounts Payable"), 
-                                    MessageBoxButtons.YesNo, 
-                                    MessageBoxIcon.Question) == DialogResult.Yes)
+                        Catalog.GetString("Deactivate Accounts Payable"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     FAccountsPayableActivated = !TRemote.MFinance.Setup.WebConnectors.DeactivateAccountsPayableSubsystem(FLedgerNumber);
-                    
+
                     UpdateControls();
                 }
             }
@@ -187,19 +187,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // activate accounts payable
                 if (MessageBox.Show(Catalog.GetString("Do you want to activate Accounts Payable Subsystem?"),
-                                    Catalog.GetString("Activate Accounts Payable"), 
-                                    MessageBoxButtons.YesNo, 
-                                    MessageBoxIcon.Question) == DialogResult.Yes)
+                        Catalog.GetString("Activate Accounts Payable"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     Result = TRemote.MFinance.Setup.WebConnectors.
-                                      ActivateAccountsPayableSubsystem(FLedgerNumber, out VerificationResult);
+                             ActivateAccountsPayableSubsystem(FLedgerNumber, out VerificationResult);
                     FAccountsPayableActivated = (Result == TSubmitChangesResult.scrOK);
- 
+
                     if (FAccountsPayableActivated)
                     {
-                        FCanAccountsPayableBeDeactivated = TRemote.MFinance.Setup.WebConnectors.CanAccountsPayableSubsystemBeDeactivated(FLedgerNumber);
+                        FCanAccountsPayableBeDeactivated = TRemote.MFinance.Setup.WebConnectors.CanAccountsPayableSubsystemBeDeactivated(
+                            FLedgerNumber);
                     }
-                    
+
                     UpdateControls();
                 }
             }
