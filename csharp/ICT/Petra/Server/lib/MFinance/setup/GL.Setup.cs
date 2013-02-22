@@ -2094,7 +2094,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             TYml2Xml ymlFile;
             string Filename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
                               Path.DirectorySeparatorChar +
-                              "DefaultAdmintGrantsPayableReceivable.yml";
+                              "DefaultAdminGrantsPayableReceivable.yml";
 
             try
             {
