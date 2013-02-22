@@ -255,8 +255,8 @@ namespace Ict.Petra.Server.MFinance.GL
                       TLedgerInitFlagEnum.Revaluation).Flag))
             {
                 TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("A revaluation must be done first"),
-                    Catalog.GetString("Please run a revalution for the ledger first."), "",
+                    Catalog.GetString("Ledger revaluation"),
+                    Catalog.GetString("Please run a ledger revalution first."), "",
                     TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
                 // Error is critical but additional checks shall be done
                 verificationResults.Add(tvr);
@@ -465,8 +465,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     for (int i = 1; i < Rows; ++i)
                     {
-                        strH += ", " +
-                                (string)dataTable.Rows[i][AGiftBatchTable.GetBatchNumberDBName()];
+                        strH += (", " + Convert.ToString(dataTable.Rows[i][AGiftBatchTable.GetBatchNumberDBName()]));
                     }
                 }
             }

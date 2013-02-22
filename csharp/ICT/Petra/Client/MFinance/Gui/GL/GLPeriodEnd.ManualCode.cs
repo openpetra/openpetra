@@ -35,7 +35,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         const bool INFORMATION_MODE = true;
         const bool CALCULATION_MODE = false;
 
-        TVerificationResultCollection verificationResult;
+        TVerificationResultCollection FverificationResult;
         private Int32 FLedgerNumber;
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 string msg;
 
                 bool ErrorStatus = RunPeriodEnd(INFORMATION_MODE);
-                msg = verificationResult.BuildVerificationResultString();
+                msg = FverificationResult.BuildVerificationResultString();
                 if (ErrorStatus)
                 {
                     msg = Catalog.GetString("The server returned this message:")
@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             RunPeriodEnd(CALCULATION_MODE);
             tbxMessage.Text = Catalog.GetString("The server returned this message:")
                 + "\r\n\r\n"
-                + verificationResult.BuildVerificationResultString();
+                + FverificationResult.BuildVerificationResultString();
             btnPeriodEnd.Visible = false;
             btnCancel.Text = Catalog.GetString("Done");
 
@@ -87,12 +87,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (blnIsInMonthMode)
             {
                 blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodMonthEnd(
-                    FLedgerNumber, AInInfoMode, out verificationResult);
+                    FLedgerNumber, AInInfoMode, out FverificationResult);
             }
             else
             {
                 blnErrorStatus = TRemote.MFinance.GL.WebConnectors.TPeriodYearEnd(
-                    FLedgerNumber, AInInfoMode, out verificationResult);
+                    FLedgerNumber, AInInfoMode, out FverificationResult);
             }
 
             return blnErrorStatus;

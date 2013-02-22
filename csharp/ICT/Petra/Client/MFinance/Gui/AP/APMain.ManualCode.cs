@@ -118,6 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             DataTable CriteriaTable = new DataTable();
             CriteriaTable.Columns.Add("LedgerNumber", typeof(Int32));
             CriteriaTable.Columns.Add("SupplierId", typeof(string));
+            CriteriaTable.Columns.Add("DaysPlus", typeof(decimal));
 
             decimal DaysPlus = -1;
 
@@ -139,7 +140,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 DaysPlus = 0;
             }
 
-            CriteriaTable.Columns.Add("DaysPlus", typeof(decimal));
             DataRow row = CriteriaTable.NewRow();
             row["DaysPlus"] = DaysPlus;
             row["SupplierId"] = cmbSupplierCode.Text;
@@ -149,10 +149,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Start the asynchronous search operation on the PetraServer
             if (FSearchForSuppliers)
             {
+                grdSupplierResult.DataSource = null;
+                FSupplierTable = null;
                 FSupplierFindObject.FindSupplier(CriteriaTable);
             }
             else
             {
+                grdInvoiceResult.DataSource = null;
+                FInvoiceTable = null;
                 FInvoiceFindObject.FindInvoices(CriteriaTable);
             }
 
@@ -646,29 +650,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        private void SupplierOutstandingOpt(object sender, EventArgs e)
-        {
-        }
-
-        private void SetDueFilters(object sender, EventArgs e)
-        {
-            bool CanShow =
-                (chkDueToday.CheckState == CheckState.Checked)
-                || (chkOverdue.CheckState == CheckState.Checked)
-                || (chkDueFuture.CheckState == CheckState.Checked);
-
-            if (!CanShow)
-            {
-                chkShowOutstandingAmounts.CheckState = CheckState.Unchecked;
-            }
-
-            chkShowOutstandingAmounts.Enabled = CanShow;
-        }
-
         private void SetSupplierFilters(object sender, EventArgs e)
         {
             String CurrencyRowFilter = "";
-            String ActiveRowFilter = "";
+            String SupplierActiveRowFilter = "";
 
             String CurrencyCode = cmbSupplierCurrency.cmbCombobox.Text;
 
@@ -679,26 +664,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (chkHideInactiveSuppliers.CheckState == CheckState.Checked)
             {
-                ActiveRowFilter = "StatusCode='ACTIVE'";
+                SupplierActiveRowFilter = "StatusCode='ACTIVE'";
             }
 
-            String RowFilter = CurrencyRowFilter;
+            String SupplierRowFilter = CurrencyRowFilter;
 
-            if ((CurrencyRowFilter != "") && (ActiveRowFilter != ""))
+            if ((CurrencyRowFilter != "") && (SupplierActiveRowFilter != ""))
             {
-                RowFilter += " AND ";
+                SupplierRowFilter += " AND ";
             }
 
-            RowFilter += ActiveRowFilter;
+            SupplierRowFilter += SupplierActiveRowFilter;
 
             if (grdSupplierResult.IsInitialised)
             {
-                grdSupplierResult.PagedDataTable.DefaultView.RowFilter = RowFilter;
-            }
-
-            if (grdInvoiceResult.IsInitialised)
-            {
-                grdInvoiceResult.PagedDataTable.DefaultView.RowFilter = RowFilter;
+                grdSupplierResult.PagedDataTable.DefaultView.RowFilter = SupplierRowFilter;
             }
         }
 
@@ -937,6 +917,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 tbbPostTagged.Visible = true;
                 tbbPayTagged.Visible = true;
                 tbbReverseTagged.Visible = true;
+                pnlInvSearchFilter.Visible = true;
+                pnlSupplierSearchFilter.Visible = false;
             }
             else // Suppliers
             {
@@ -954,6 +936,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 tbbPostTagged.Visible = false;
                 tbbPayTagged.Visible = false;
                 tbbReverseTagged.Visible = false;
+                pnlInvSearchFilter.Visible = false;
+                pnlSupplierSearchFilter.Visible = true;
             }
 
             RefreshSumTagged(null, null);

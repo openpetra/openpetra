@@ -72,38 +72,41 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlDockSupplierCode, pnlSearchFilter, pnlSearchButtons, tabSearchResult]
-        pnlDockSupplierCode:
-            Controls: [cmbSupplierCode]
-            Dock: Top
-            Margin: 0
+            Controls: [pnlSearchButtons, tabSearchResult]
         cmbSupplierCode: {Label=S&earch Supplier, AutoComplete=SupplierSearchHistory, Tooltip=Search by supplier name or partner key}
-        pnlSearchFilter:
-            Dock: Top
-            Margin: 0
-            Controls: [chkDueToday, chkOverdue, chkDueFuture]
-            ControlsOrientation: horizontal
-        chkDueToday: {OnChange=SetDueFilters, Label=Due &Today}
-            CheckBoxAttachedLabel: right
-        chkOverdue: {OnChange=SetDueFilters, Label=&Overdue, CheckBoxAttachedLabel=right}        
-        chkDueFuture: {OnChange=SetDueFilters}
-            Label: Due &Within
-            CheckBoxAttachedLabel: right
-            Controls: [nudNumberTimeUnits, cmbTimeUnit]
-            ControlsOrientation: horizontal
             
-        nudNumberTimeUnits: {OnChange=SetDueFilters, NoLabel=true}
+        nudNumberTimeUnits: {NoLabel=true}
             Width:50
-        cmbTimeUnit: {OnChange=SetDueFilters}
+        cmbTimeUnit:
             NoLabel: true
             OptionalValues: [=Days, Weeks, Months]
             Width:70
         pnlSearchButtons:
-            Controls: [btnSearch]
+            Controls: [btnSearch, pnlSearchFilters]
             ControlsOrientation: horizontal
             Dock: Top
             Margin: 0
         btnSearch: {Action=actSearch, AcceptButton=true}
+        pnlSearchFilters:
+            Controls: [pnlSupplierSearchFilter, pnlInvSearchFilter]
+            Width:600
+            Height: 40
+        pnlSupplierSearchFilter:
+            Dock: Top
+            Controls: [cmbSupplierCode]
+            Margin: 0
+        pnlInvSearchFilter:
+            Dock: Top
+            Margin: 0
+            Controls: [chkDueToday, chkDueFuture]
+            ControlsOrientation: horizontal
+        chkDueToday: {Label=Due &Today}
+            CheckBoxAttachedLabel: right
+        chkDueFuture:
+            Label: Due &Within
+            CheckBoxAttachedLabel: right
+            Controls: [nudNumberTimeUnits, cmbTimeUnit]
+            ControlsOrientation: horizontal
         tabSearchResult:
             Controls: [tpgSuppliers, tpgOutstandingInvoices]
             Dock: Fill
@@ -111,20 +114,19 @@ RootNode:
         tpgSuppliers:
             Controls: [pnlSupplierOptions, grdSupplierResult]
         tpgOutstandingInvoices:
-            Controls: [pnlTaggingOptions, grdInvoiceResult]
+            Controls: [pnlInvoiceOptions, grdInvoiceResult]
         pnlSupplierOptions:
             ControlsOrientation: horizontal
-            Controls: [chkShowOutstandingAmounts, chkHideInactiveSuppliers, cmbSupplierCurrency]
+            Controls: [chkHideInactiveSuppliers, cmbSupplierCurrency]
             Dock: Top
             Height: 30
             Margin: 0
         grdSupplierResult: {Dock=Fill, ActionDoubleClick=actSupplierTransactions, SelectedRowActivates=cndSelectedSupplier}
 
         grdInvoiceResult: {Dock=Fill, ActionDoubleClick=actShowInvoice}
-        chkShowOutstandingAmounts: {Label=Show Outstanding &Amounts, CheckBoxAttachedLabel=right,  OnChange=SupplierOutstandingOpt, Enabled=false}
         chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers, CheckBoxAttachedLabel=right,  OnChange=SetSupplierFilters}
         cmbSupplierCurrency: {Label=C&urrency, List=CurrencyCodeList, OnChange=SetSupplierFilters, Width=200}
-        pnlTaggingOptions:
+        pnlInvoiceOptions:
             Controls: [btnTagAllPostable, btnTagAllPayable, btnUntagAll, txtSumTagged, btnTagAllApprovable]
             ControlsOrientation: horizontal
             Dock: Top
@@ -138,6 +140,7 @@ RootNode:
         btnUntagAll: {Label=&Untag all}
             Action: actUntagAll
         txtSumTagged: {Label=Sum of Tagged, ReadOnly=true}
+
     Toolbar:
         tbbNewSupplier: {Action=actNewSupplier}
         tbbEditSupplier: {Action=actEditSupplier}

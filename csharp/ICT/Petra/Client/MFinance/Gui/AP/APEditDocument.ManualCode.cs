@@ -39,12 +39,14 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPEditDocument
     {
-        Int32 FLedgerNumber;
+        Int32 FDocumentLedgerNumber;
         ALedgerRow FLedgerRow = null;
 
         /// <summary>
@@ -90,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             int selectedEffectiveTime;
 
             if (setupDailyExchangeRate.ShowDialog(
-                    FLedgerNumber,
+                    FDocumentLedgerNumber,
                     DateTime.Now,
                     txtSupplierCurrency.Text,
                     1.0m,
@@ -266,14 +268,28 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
             AApSupplierRow SupplierRow = FMainDS.AApSupplier[0];
+            FDocumentLedgerNumber = DocumentRow.LedgerNumber;
+
+            //
+            // If this document's currency is that of my own ledger,
+            // I need to disable the rate of exchange field.
+            ALedgerRow ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                     TCacheableFinanceTablesEnum.LedgerDetails, FDocumentLedgerNumber))[0];
+
+            String MyCurrencyCode = ledger.BaseCurrency;
+            if (DocumentRow.CurrencyCode == MyCurrencyCode)
+            {
+                txtExchangeRateToBase.Enabled = false;
+                btnLookupExchangeRate.Enabled = false;
+            }
 
             txtTotalAmount.CurrencySymbol = DocumentRow.CurrencyCode;
             txtDetailAmount.CurrencySymbol = DocumentRow.CurrencyCode;
 
-            FLedgerNumber = DocumentRow.LedgerNumber;
-            this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+            this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FDocumentLedgerNumber);
 
-            ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
+            ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FDocumentLedgerNumber);
             FLedgerRow = Tbl[0];
             txtDetailBaseAmount.CurrencySymbol = FLedgerRow.BaseCurrency;
             dtpDateDue.Date = DocumentRow.DateIssued.AddDays(Convert.ToDouble(nudCreditTerms.Value));
@@ -779,7 +795,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 Int32 DocumentId = FMainDS.AApDocument[0].ApDocumentId;
                 FMainDS.Clear();
                 FPreviouslySelectedDetailRow = null;
-                LoadAApDocument(FLedgerNumber, DocumentId);
+                LoadAApDocument(FDocumentLedgerNumber, DocumentId);
 
                 //
                 // Also refresh the opener?
@@ -806,7 +822,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             List <int>PayTheseDocs = new List <int>();
 
             PayTheseDocs.Add(FMainDS.AApDocument[0].ApDocumentId);
-            PaymentScreen.AddDocumentsToPayment(FMainDS, FLedgerNumber, PayTheseDocs);
+            PaymentScreen.AddDocumentsToPayment(FMainDS, FDocumentLedgerNumber, PayTheseDocs);
             PaymentScreen.Show();
         }
     }
