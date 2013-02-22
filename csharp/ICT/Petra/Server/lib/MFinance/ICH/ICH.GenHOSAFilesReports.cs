@@ -104,7 +104,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             decimal CreditTotal;  //FORMAT "->>>,>>>,>>>,>>9.99"
             int Choice;
 
-            string StandardCostCentre = ALedgerNumber.ToString() + "00";
+            string StandardCostCentre = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
 
             DataTable TableForExport = new DataTable();
 

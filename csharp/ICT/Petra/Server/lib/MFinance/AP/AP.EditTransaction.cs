@@ -1247,8 +1247,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transactionAPAccount.AmountInIntlCurrency = transaction.AmountInIntlCurrency;
                         transactionAPAccount.TransactionDate = batch.DateEffective;
                         transactionAPAccount.AccountCode = documentRow.ApAccount;
-                        transactionAPAccount.CostCentreCode =
-                            TGLTransactionWebConnector.GetStandardCostCentre(payment.LedgerNumber);
+                        transactionAPAccount.CostCentreCode = TLedgerInfo.GetStandardCostCentre(payment.LedgerNumber);
                         transactionAPAccount.Narrative = "AP Payment:" + payment.PaymentNumber.ToString() + " AP: " +
                                                          documentRow.ApNumber.ToString();
                         transactionAPAccount.Reference = payment.Reference;

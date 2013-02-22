@@ -52,8 +52,16 @@ namespace Ict.Tools.DataDumpPetra2
             else
             {
                 // parse _seqvals.d
-                StreamReader sr = new StreamReader(filename.Replace("_Sequences.txt", "_seqvals.d"));
+                string filenameseqvals = filename.Replace("_Sequences.txt", "_seqvals.d");
 
+                if (!File.Exists(filenameseqvals))
+                {
+                    TLogging.Log("Warning: cannot find file " + filenameseqvals);
+
+                    return;
+                }
+
+                StreamReader sr = new StreamReader(filenameseqvals);
                 Sequences = new SortedList <string, long>();
 
                 foreach (TSequence newSequence in ASequencesToBeMigrated)
