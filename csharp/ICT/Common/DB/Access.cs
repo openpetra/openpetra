@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -422,6 +422,7 @@ namespace Ict.Common.DB
 
         #endregion
 
+        private static bool FCheckedDatabaseVersion = false;
 
         /// <summary>
         /// Establishes (opens) a DB connection to a specified RDBMS.
@@ -522,7 +523,12 @@ namespace Ict.Common.DB
                 throw new EDBConnectionNotEstablishedException(CurrentConnectionInstance.GetConnectionString() + ' ' + exp.ToString());
             }
 
-            CheckDatabaseVersion();
+            // only check database version once when working with multiple connections
+            if (!FCheckedDatabaseVersion)
+            {
+                CheckDatabaseVersion();
+                FCheckedDatabaseVersion = true;
+            }
         }
 
         /// <summary>

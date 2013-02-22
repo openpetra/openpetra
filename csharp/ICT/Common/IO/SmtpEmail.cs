@@ -143,6 +143,13 @@ namespace Ict.Common.IO
                 return false;
             }
 
+            if (FSmtpClient.Host.EndsWith("example.org"))
+            {
+                TLogging.Log("Not sending the email, since the configuration is just with an example server: " + FSmtpClient.Host);
+                TLogging.Log("You can configure the mail settings in the config file.");
+                return false;
+            }
+
             //Attempt to send the email
             try
             {
