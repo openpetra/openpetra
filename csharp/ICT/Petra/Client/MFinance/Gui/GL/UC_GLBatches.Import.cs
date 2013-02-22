@@ -37,6 +37,8 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using System.Threading;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -94,16 +96,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     requestParams.Add("NewLine", Environment.NewLine);
 
 
-                    String importString;
-                    TVerificationResultCollection AMessages;
+                    TVerificationResultCollection AMessages = new TVerificationResultCollection();
+                    string importString = File.ReadAllText(dialog.FileName);
 
+                    Thread ImportThread = new Thread(() => ImportGLBatches(
+                            requestParams,
+                            importString,
+                            out AMessages,
+                            out ok));
 
-                    importString = File.ReadAllText(dialog.FileName);
+                    using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                    {
+                        ImportDialog.ShowDialog();
+                    }
 
-                    ok = TRemote.MFinance.GL.WebConnectors.ImportGLBatches(
-                        requestParams,
-                        importString,
-                        out AMessages);
                     ShowMessages(AMessages);
                 }
 
@@ -129,6 +135,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TUserDefaults.SetDefault("Imp Options", impOptions);
             TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);
             TUserDefaults.SaveChangedUserDefaults();
+        }
+
+        /// <summary>
+        /// Wrapper method to handle returned bool value from remoting call to ImportGLBatches
+        /// </summary>
+        /// <param name="ARequestParams"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="AMessages"></param>
+        /// <param name="ok"></param>
+        private void ImportGLBatches(
+            Hashtable ARequestParams,
+            string AImportString,
+            out TVerificationResultCollection AMessages,
+            out bool ok)
+        {
+            TVerificationResultCollection AResultMessages;
+            bool ImportIsSuccessful;
+
+            ImportIsSuccessful = TRemote.MFinance.GL.WebConnectors.ImportGLBatches(
+                ARequestParams,
+                AImportString,
+                out AResultMessages);
+
+            ok = ImportIsSuccessful;
+            AMessages = AResultMessages;
         }
 
         private void ShowMessages(TVerificationResultCollection AMessages)

@@ -672,7 +672,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             bool AllValidationsOK = true;
-            
+
             AVerificationResult = new TVerificationResultCollection();
 
             if (AInspectDS.AGiftBatch != null)
@@ -707,36 +707,38 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if (AllValidationsOK)
             {
                 SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-                
-                if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.Tables.Contains("AGiftBatch") && AInspectDS.Tables.Contains("AGift"))
-                {
-					DataRow[] foundGiftForDeletion = AInspectDS.AGift.Select(String.Format("{0} = '{1}'",
-							                	                                AGiftTable.GetGiftStatusDBName(),
-							                	                                MFinanceConstants.GIFT_BATCH_GIFT_TO_DELETE_STATUS));
-					if (foundGiftForDeletion.Length == 1)
-					{
-						//A gift has been deleted
-                		//Accept the deletion of the single details row
-						AInspectDS.AGiftDetail.AcceptChanges();
-						AInspectDS.AGift.AcceptChanges();
-						
-	                	AGiftBatchTable clientBatchTable = (AGiftBatchTable)AInspectDS.AGiftBatch;
-	                	AGiftBatchRow clientBatchRow = (AGiftBatchRow)clientBatchTable.Rows[0];
-	                	
-	                	AGiftRow giftRowClient = (AGiftRow)foundGiftForDeletion[0];
-						
-	                	giftRowClient.Delete();
-	                	
-	                	clientBatchRow.LastGiftNumber--;
 
-	                	SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-	                	
-                		//Accept the deletion of the single details row
-						AInspectDS.AGiftDetail.AcceptChanges();
-						AInspectDS.AGift.AcceptChanges();
-						AInspectDS.AGiftBatch.AcceptChanges();
-                	}
-                	
+                if ((SubmissionResult == TSubmitChangesResult.scrOK) && AInspectDS.Tables.Contains("AGiftBatch")
+                    && AInspectDS.Tables.Contains("AGift"))
+                {
+                    DataRow[] foundGiftForDeletion = AInspectDS.AGift.Select(String.Format("{0} = '{1}'",
+                            AGiftTable.GetGiftStatusDBName(),
+                            MFinanceConstants.GIFT_BATCH_GIFT_TO_DELETE_STATUS));
+
+                    if (foundGiftForDeletion.Length == 1)
+                    {
+                        //A gift has been deleted
+                        //Accept the deletion of the single details row
+                        AInspectDS.AGiftDetail.AcceptChanges();
+                        AInspectDS.AGift.AcceptChanges();
+
+                        AGiftBatchTable clientBatchTable = (AGiftBatchTable)AInspectDS.AGiftBatch;
+                        AGiftBatchRow clientBatchRow = (AGiftBatchRow)clientBatchTable.Rows[0];
+
+                        AGiftRow giftRowClient = (AGiftRow)foundGiftForDeletion[0];
+
+                        giftRowClient.Delete();
+
+                        clientBatchRow.LastGiftNumber--;
+
+                        SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+
+                        //Accept the deletion of the single details row
+                        AInspectDS.AGiftDetail.AcceptChanges();
+                        AInspectDS.AGift.AcceptChanges();
+                        AInspectDS.AGiftBatch.AcceptChanges();
+                    }
+
                     // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
                     // TODO: calculate hash of saved batch or batch of saved gift
                 }
@@ -747,11 +749,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
         private bool CheckGiftNumbersAreConsecutive()
         {
-        	//TODO
-        	return true;
+            //TODO
+            return true;
         }
-        
-        
+
         /// <summary>
         /// this will store all new and modified recurring batches, recurring gift transactions and recurring details
         /// </summary>
@@ -883,9 +884,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // Careful: modify gift cost centre and account and recipient field only when the amount is positive.
             // adjustments and reversals must remain on the original value
             transactionForTotals.AccountCode = giftBatch.BankAccountCode;
-            transactionForTotals.CostCentreCode =
-                TGLTransactionWebConnector.GetStandardCostCentre(
-                    ALedgerNumber);
+            transactionForTotals.CostCentreCode = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
             transactionForTotals.Narrative = "Deposit from receipts - Gift Batch " + giftBatch.BatchNumber.ToString();
             transactionForTotals.Reference = "GB" + giftBatch.BatchNumber.ToString();
 
