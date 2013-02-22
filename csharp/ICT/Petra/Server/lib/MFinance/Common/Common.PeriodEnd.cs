@@ -543,7 +543,7 @@ namespace Ict.Petra.Server.MFinance.Common
     }
 
     /// <summary>
-    /// This Object read all glm year end records of the actual year 
+    /// This Object read all glm year end records of the actual year
     /// and creates the start record for the next year
     /// </summary>
     public class TGlmNewYearInit : AbstractPeriodEndOperation
@@ -738,7 +738,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// (something like the calculation of the admin fees) this error is shown to indicate
         /// tha no database records were affected.
         /// </summary>
-            PEEC_01,
+        PEEC_01,
 
         /// <summary>
         /// Afte a specific period end operation has been done, the programm calculates again the
@@ -760,10 +760,10 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>Unposted batches prevent period close.</summary>
             PEEC_06,
 
-            /// <summary>Suspensed accountes prevent period close.</summary>
+        /// <summary>Suspensed accountes prevent period close.</summary>
             PEEC_07,
 
-            /// <summary>Unposted gift batches are found prevent period close.</summary>
+        /// <summary>Unposted gift batches are found prevent period close.</summary>
             PEEC_08,
 
         /// <summary>No income accounts have been found.</summary>

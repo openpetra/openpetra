@@ -268,6 +268,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
             AApSupplierRow SupplierRow = FMainDS.AApSupplier[0];
+
             FDocumentLedgerNumber = DocumentRow.LedgerNumber;
 
             //
@@ -278,6 +279,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                      TCacheableFinanceTablesEnum.LedgerDetails, FDocumentLedgerNumber))[0];
 
             String MyCurrencyCode = ledger.BaseCurrency;
+
             if (DocumentRow.CurrencyCode == MyCurrencyCode)
             {
                 txtExchangeRateToBase.Enabled = false;

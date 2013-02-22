@@ -645,7 +645,7 @@ namespace Ict.Common.Verification
     {
         #region Resourcestrings
 
-        private static readonly string StrErrorFooter  = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1}, Code={3})");
+        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1}, Code={3})");
         private static readonly string StrStatusFooter = Catalog.GetString("{0}\r\n    Status: {2}\r\n");
 
         #endregion
@@ -970,12 +970,13 @@ namespace Ict.Common.Verification
                         Status = "Critical";
                         Formatter = StrErrorFooter;
                         break;
+
                     case TResultSeverity.Resv_Noncritical:
                         Status = "Non-critical";
                         Formatter = StrErrorFooter;
                         break;
                 }
-                
+
                 ReturnValue = ReturnValue +
                               (String.Format(Formatter,
                                    new object[] { si.ResultContext, Status, si.ResultText, si.ResultCode })) +

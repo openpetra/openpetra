@@ -74,11 +74,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             )
         {
 /*
-            if (TLogging.DL >= 9)
-            {
-                //Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation called.");
-            }
-*/
+ *          if (TLogging.DL >= 9)
+ *          {
+ *              //Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation called.");
+ *          }
+ */
             AVerificationResult = new TVerificationResultCollection();
 
             //Begin the transaction
@@ -94,12 +94,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
                     }
+
 /*
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction committed!");
-                    }
-*/
+ *                  if (TLogging.DL >= 8)
+ *                  {
+ *                      Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction committed!");
+ *                  }
+ */
                     return GenerateICHStewardshipBatch(ALedgerNumber, APeriodNumber, ref AVerificationResult);
                 }
                 else
@@ -108,24 +109,26 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
+
 /*
-                    if (TLogging.DL >= 8)
-                    {
-                        Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction ROLLED BACK because of an error!");
-                    }
-*/
+ *                  if (TLogging.DL >= 8)
+ *                  {
+ *                      Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction ROLLED BACK because of an error!");
+ *                  }
+ */
                     return false;
                 }
             }
             catch (Exception Exp)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
+
 /*
-                if (TLogging.DL >= 8)
-                {
-                    Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction ROLLED BACK because an exception occurred!");
-                }
-*/
+ *              if (TLogging.DL >= 8)
+ *              {
+ *                  Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction ROLLED BACK because an exception occurred!");
+ *              }
+ */
                 TLogging.Log(Exp.Message);
                 TLogging.Log(Exp.StackTrace);
 
@@ -595,8 +598,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 //RUN gl1130o.p
                 if (ICHTotal == 0)
                 {
-                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Generating the ICH batch"), 
-                        Catalog.GetString("No ICH batch was generated."), TResultSeverity.Resv_Status));
+                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Generating the ICH batch"),
+                            Catalog.GetString("No ICH batch was generated."), TResultSeverity.Resv_Status));
                     IsSuccessful = true;
                 }
                 else
@@ -867,8 +870,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         TLogging.Log("No fees to charge were found");
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Admin Fee Batch"),
-                            String.Format(Catalog.GetString("No admin fees charged in period ({0})."), APeriodNumber),
-                            TResultSeverity.Resv_Status));
+                                String.Format(Catalog.GetString("No admin fees charged in period ({0})."), APeriodNumber),
+                                TResultSeverity.Resv_Status));
                     }
 
                     IsSuccessful = true;
@@ -1123,9 +1126,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         // MESSAGE "No fees to charge were found.(2)" VIEW-AS ALERT-BOX MESSAGE.
                         IsSuccessful = true;
-                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Admin Fee Batch"), 
-                            String.Format(Catalog.GetString("No admin fees charged in period ({0})."), APeriodNumber), 
-                            TResultSeverity.Resv_Status));
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Admin Fee Batch"),
+                                String.Format(Catalog.GetString("No admin fees charged in period ({0})."), APeriodNumber),
+                                TResultSeverity.Resv_Status));
 
                         //UNDO Post_To_Ledger, LEAVE Post_To_Ledger.
                     }

@@ -70,10 +70,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             bool res = new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode,
                 out AVerificationResult);
+
             if (!res)
             {
                 AVerificationResult.Add(new TVerificationResult("Year End", "Success", "Success", TResultSeverity.Resv_Status));
             }
+
             return res;
         }
     }

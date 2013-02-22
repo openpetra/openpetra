@@ -167,8 +167,10 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                         out VerificationResult);
 
                         Cursor = Cursors.Default;
-                        String ResultMsg = (retVal ? Catalog.GetString("Stewardship Calculation Completed Successfully") : Catalog.GetString("UNSUCCESSFUL Stewardship Calculation!"));
-                        MessageBox.Show(Messages.BuildMessageFromVerificationResult(ResultMsg,VerificationResult));
+                        String ResultMsg =
+                            (retVal ? Catalog.GetString("Stewardship Calculation Completed Successfully") : Catalog.GetString(
+                                 "UNSUCCESSFUL Stewardship Calculation!"));
+                        MessageBox.Show(Messages.BuildMessageFromVerificationResult(ResultMsg, VerificationResult));
                         break;
 
                     case TICHReportingPeriodSelectionModeEnum.rpsmICHStatement:

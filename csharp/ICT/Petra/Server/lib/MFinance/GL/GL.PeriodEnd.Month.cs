@@ -71,9 +71,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             bool res = new TMonthEnd().RunMonthEnd(ALedgerNumber, AInfoMode,
                 out AVerificationResults);
+
             if (!res && !AInfoMode)
             {
                 AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, ledgerInfo.CurrentPeriod, null);
+
                 if (PeriodTbl.Rows.Count > 0)
                 {
                     AVerificationResults.Add(
@@ -84,6 +86,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             TResultSeverity.Resv_Status));
                 }
             }
+
             return res;
         }
     }
@@ -142,16 +145,18 @@ namespace Ict.Petra.Server.MFinance.GL
             if (AInfoMode)
             {
                 AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, FledgerInfo.CurrentPeriod, null);
+
                 if (PeriodTbl.Rows.Count > 0)
                 {
                     verificationResults.Add(
                         new TVerificationResult(
                             Catalog.GetString("Month End"),
-                            String.Format(Catalog.GetString("Current period is {0} - {1}"), 
-                                PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()), 
+                            String.Format(Catalog.GetString("Current period is {0} - {1}"),
+                                PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()),
                             TResultSeverity.Resv_Status));
                 }
             }
+
             TCarryForward carryForward = new TCarryForward(FledgerInfo);
 
             if (carryForward.GetPeriodType != TCarryForwardENum.Month)
@@ -169,11 +174,13 @@ namespace Ict.Petra.Server.MFinance.GL
 
 
             TVerificationResultCollection IchVerificationReults;
+
             if (!StewardshipCalculationDelegate(ALedgerNumber, FledgerInfo.CurrentPeriod,
-                out IchVerificationReults))
+                    out IchVerificationReults))
             {
                 FHasCriticalErrors = true;
             }
+
             // Merge VerificationResults:
             verificationResults.AddCollection(IchVerificationReults);
 
@@ -189,16 +196,16 @@ namespace Ict.Petra.Server.MFinance.GL
 
             //
             // The 4GL code throws out these reports:
-            //   
+            //
             //     Admin fee calculations report.
-            //     ICH stewardship report. 
-            //     "Trial Balance" with account details. 
+            //     ICH stewardship report.
+            //     "Trial Balance" with account details.
             //     HOSA for each foreign cost centre (ledger/fund).
-            //     Income Statement/Profit & Loss 
+            //     Income Statement/Profit & Loss
             //     Current Accounts Payable if interfaced.  M025
             //     AFO report.
             //     Executive Summary Report.
-            // 
+            //
             AVRCollection = verificationResults;
             return FHasCriticalErrors;
         }
@@ -326,8 +333,9 @@ namespace Ict.Petra.Server.MFinance.GL
         private void CheckForSuspenseAcountsZero()
         {
             if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
-                // This means: The last accounting period of the year is running!
             {
+                // This means: The last accounting period of the year is running!
+
                 if (getSuspenseAccountInfo == null)
                 {
                     getSuspenseAccountInfo =
@@ -515,7 +523,7 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Produces a comma separated list of suspense account codes 
+        /// Produces a comma separated list of suspense account codes
         /// for use in the status message(s).
         /// </summary>
         /// <returns></returns>
