@@ -65,8 +65,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             // get a list of potential suppliers
             string sqlGetSupplierPartnerKeys =
-                "SELECT PUB_a_ap_supplier.p_partner_key_n, PUB_a_ap_supplier.a_currency_code_c "
-                + "FROM PUB_p_organisation, PUB_a_ap_supplier WHERE PUB_a_ap_supplier.p_partner_key_n = PUB_p_organisation.p_partner_key_n";
+                "SELECT PUB_a_ap_supplier.p_partner_key_n, PUB_a_ap_supplier.a_currency_code_c " +
+                "FROM PUB_p_organisation, PUB_a_ap_supplier WHERE PUB_a_ap_supplier.p_partner_key_n = PUB_p_organisation.p_partner_key_n";
             DataTable SupplierKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetSupplierPartnerKeys, "keys", null);
 
             // get a list of potential expense account codes
