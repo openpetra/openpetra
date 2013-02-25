@@ -25,7 +25,7 @@ SELECT
         AND Trans.a_account_code_c = ? 
         AND Trans.a_cost_centre_code_c = ? 
         AND Trans.a_transaction_status_l = true 
-		AND NOT (LEFT(Trans.a_narrative_c, 22) = ? --a_narrative_c BEGINS "Year end re-allocation"
+		AND NOT (Trans.a_narrative_c LIKE (? || '%')
 			     AND Trans.a_system_generated_l = true) 
 		AND ((Trans.a_ich_number_i + ?) = Trans.a_ich_number_i
 		     OR Trans.a_ich_number_i = ?) 

@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnCancel.UseVisualStyleBackColor = true;
 
 
-            this.ClientSize = new System.Drawing.Size(600, 500);
+            this.ClientSize = new System.Drawing.Size(400, 300);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnPeriodEnd);
             this.Controls.Add(this.tbxMessage);
