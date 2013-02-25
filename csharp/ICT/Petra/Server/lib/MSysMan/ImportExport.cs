@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -257,6 +257,12 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction, false);
                 }
 
+                if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    return false;
+                }
+
                 TSimpleYmlParser ymlParser = new TSimpleYmlParser(PackTools.UnzipString(AZippedNewDatabaseData));
 
                 ymlParser.ParseCaptions();
@@ -287,12 +293,21 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     return false;
                 }
 
+                if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    return false;
+                }
+
                 DBAccess.GDBAccessObj.CommitTransaction();
+
                 tables.Remove("s_user");
                 tables.Remove("s_module");
                 tables.Remove("s_user_module_access_permission");
                 tables.Remove("s_system_defaults");
                 tables.Remove("s_system_status");
+
+                FCurrencyPerLedger = new SortedList <int, string>();
 
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -372,6 +387,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             return false;
         }
 
+        private static SortedList <Int32, string>FCurrencyPerLedger = new SortedList <int, string>();
+
         private static bool LoadTable(string ATableName, TSimpleYmlParser AYmlParser, TDBTransaction ATransaction)
         {
             if (!AYmlParser.StartParseList(StringHelper.UpperCamelCase(ATableName, false, false) + "Table"))
@@ -420,6 +437,12 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 }
 
                 InsertStatement.Append("(");
+
+                // needed for workaround for version 0.2.24, AAPDocument.BaseCurrency and AAPPayment.BaseCurrency;
+                if (ATableName == "a_ledger")
+                {
+                    FCurrencyPerLedger.Add(Convert.ToInt32(RowDetails["LedgerNumber"]), RowDetails["BaseCurrency"]);
+                }
 
                 bool firstColumn = true;
 
@@ -499,7 +522,28 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     }
                     else
                     {
-                        InsertStatement.Append("NULL"); // DEFAULT
+                        // the following statements are for the demo databases generated before version 0.2.24.
+                        // CurrencyCode was added to a_ap_document and a_ap_payment.
+                        // it is impossible during the load, to get the correct currencycode, via the supplier, because a_ap_supplier is loaded after a_ap_document.
+                        // as a temporary workaround, and because we are still in Alpha, we are using the Base currency of the ledger
+                        if ((ATableName == "a_ap_document") && (col.ColumnName == "CurrencyCode"))
+                        {
+                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
+                            p.Value = FCurrencyPerLedger[Convert.ToInt32(RowDetails["LedgerNumber"])];
+                            Parameters.Add(p);
+                            InsertStatement.Append("?");
+                        }
+                        else if ((ATableName == "a_ap_payment") && (col.ColumnName == "CurrencyCode"))
+                        {
+                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
+                            p.Value = FCurrencyPerLedger[Convert.ToInt32(RowDetails["LedgerNumber"])];
+                            Parameters.Add(p);
+                            InsertStatement.Append("?");
+                        }
+                        else
+                        {
+                            InsertStatement.Append("NULL"); // DEFAULT
+                        }
                     }
                 }
 
