@@ -453,6 +453,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 TVerificationResultCollection results = FPetraUtilsObject.VerificationResultCollection;
 
                 TImportExchangeRates.ImportCurrencyExRates(FMainDS.ACorporateExchangeRate, "Corporate", results);
+
                 if (results.Count > 0)
                 {
                     TDataValidation.ProcessAnyDataValidationErrors(true, results, this.GetType(), null);

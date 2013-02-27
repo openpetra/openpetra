@@ -108,8 +108,10 @@ namespace Ict.Testing.NUnitPetraClient
                     // need to accept the new modification ID
                     ATable.AcceptChanges();
                     return true;
+
                 case TSubmitChangesResult.scrNothingToBeSaved:
                     return true;
+
                 case TSubmitChangesResult.scrError:
                     Console.WriteLine("Error saving data prior to test: Submission of data failed");
                     break;
@@ -121,6 +123,5 @@ namespace Ict.Testing.NUnitPetraClient
 
             return false;
         }
-
     }
 }

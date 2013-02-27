@@ -71,7 +71,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             public static bool SaveChanges()
             {
                 TTypedDataTable TableChanges = ADailyExchangeRate.GetChangesTyped();
-                
+
                 return SerialisableDS.SaveChanges(ADailyExchangeRate, TableChanges, ADailyExchangeRateTable.GetTableDBName());
             }
 
@@ -84,6 +84,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                 }
 
                 DataView view = FMainDS.ADailyExchangeRate.DefaultView;
+
                 for (int i = view.Count - 1; i >= 0; i--)
                 {
                     view[i].Delete();
@@ -127,6 +128,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             public static void AddARow(String FromCurrency, String ToCurrency, DateTime EffectiveDate, decimal Rate)
             {
                 ADailyExchangeRateRow newRow = FMainDS.ADailyExchangeRate.NewRowTyped();
+
                 newRow.FromCurrencyCode = FromCurrency;
                 newRow.ToCurrencyCode = ToCurrency;
                 newRow.DateEffectiveFrom = EffectiveDate;
@@ -147,7 +149,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// Also USD as To is specified before GBP but on screen it will be the other way round
         /// This is IMPORTANT for the test
         /// </summary>
-        private static object[,] StandardData =
+        private static object[, ] StandardData =
         {
             { "GBP", "USD", "1900-06-01", 0.50m },
             { "GBP", "USD", "1900-07-01", 0.51m },
@@ -155,11 +157,11 @@ namespace Tests.MFinance.Client.ExchangeRates
             { "GBP", "USD", "2999-07-01", 0.53m },
             { "USD", "GBP", "1900-06-01", 2.00m },
             { "USD", "GBP", "1900-07-01", 1.9607843137m },
-            { "USD", "GBP", "2999-06-01", 1.9230769231m},
+            { "USD", "GBP", "2999-06-01", 1.9230769231m },
             { "USD", "GBP", "2999-07-01", 1.8867924528m }
         };
 
-        private static object[,] StandardModalData =
+        private static object[, ] StandardModalData =
         {
             { "GBP", STANDARD_TEST_CURRENCY, "1900-06-01", 0.50m },
             { "GBP", STANDARD_TEST_CURRENCY, "1900-07-01", 0.51m },
@@ -238,6 +240,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             public static void CreateCorporateRate(string FromCurrencyCode, string ToCurrencyCode, DateTime EffectiveDate, decimal RateOfExchange)
             {
                 FCorporateDS.LoadAll();
+
                 if (FCorporateDS.ACorporateRateTable.Rows.Find(new object[] { FromCurrencyCode, ToCurrencyCode, EffectiveDate }) != null)
                 {
                     // exists already
@@ -264,6 +267,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                 }
 
                 DataView dv = new DataView(FCorporateDS.ACorporateRateTable, null, null, DataViewRowState.CurrentRows);
+
                 for (int i = dv.Count - 1; i >= 0; i--)
                 {
                     // exists already
@@ -299,7 +303,9 @@ namespace Tests.MFinance.Client.ExchangeRates
             public static void CreateTestLedger()
             {
                 FLedgerDS.LoadAll();
-                DataView dv = new DataView(FLedgerDS.ALedger, "a_ledger_number_i=" + STANDARD_TEST_LEDGER_NUMBER.ToString(), null, DataViewRowState.CurrentRows);
+                DataView dv = new DataView(FLedgerDS.ALedger,
+                    "a_ledger_number_i=" + STANDARD_TEST_LEDGER_NUMBER.ToString(), null, DataViewRowState.CurrentRows);
+
                 if (dv.Count > 0)
                 {
                     // exists already
@@ -326,7 +332,9 @@ namespace Tests.MFinance.Client.ExchangeRates
                     return;
                 }
 
-                DataView dv = new DataView(FLedgerDS.ALedger, "a_ledger_number_i=" + STANDARD_TEST_LEDGER_NUMBER.ToString(), null, DataViewRowState.CurrentRows);
+                DataView dv = new DataView(FLedgerDS.ALedger,
+                    "a_ledger_number_i=" + STANDARD_TEST_LEDGER_NUMBER.ToString(), null, DataViewRowState.CurrentRows);
+
                 if (dv.Count > 0)
                 {
                     // exists already
@@ -444,6 +452,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
                 // Work out the path to the file
                 string TestFile = Path.GetFullPath(TAppSettingsManager.GetValue("Testing.Path") + "/lib/MFinance/ExchangeRates/sql/" + AFileName);
+
                 Assert.IsTrue(File.Exists(TestFile));
 
                 // Read the content
@@ -456,10 +465,12 @@ namespace Tests.MFinance.Client.ExchangeRates
 
                 // Execute the query
                 int nRowsAffected = 0;
+
                 if (sql != String.Empty)
                 {
                     Boolean IsNewTransaction;
-                    TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out IsNewTransaction);
+                    TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                        out IsNewTransaction);
                     nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(sql, WriteTransaction, true);
                 }
 

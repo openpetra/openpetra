@@ -94,7 +94,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
-            
+
             TPetraConnector.Disconnect();
         }
 
@@ -157,7 +157,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Toolstrip
             ToolStripButton btnSave = (new ToolStripButtonTester("tbbSave", mainScreen)).Properties;
-            
+
             // Grid
             TSgrdDataGrid grdDetails = (TSgrdDataGrid)(new TSgrdDataGridPagedTester("grdDetails", mainScreen)).Properties;
 
@@ -178,27 +178,36 @@ namespace Tests.MFinance.Client.ExchangeRates
             FCurrentDataId = Row2DataId(1);
 
             // Check the content of the details panel matches the last item in standard data (because sorting will have put it first)
-            Assert.AreEqual(EffectiveCurrency(FFromCurrencyId), cmbFromCurrency.GetSelectedString(), "The From currency on row 1 should be {0}", EffectiveCurrency(FFromCurrencyId));
-            Assert.AreEqual(EffectiveCurrency(FToCurrencyId), cmbToCurrency.GetSelectedString(), "The To currency on row 1 should be {0}", EffectiveCurrency(FToCurrencyId));
+            Assert.AreEqual(EffectiveCurrency(FFromCurrencyId),
+                cmbFromCurrency.GetSelectedString(), "The From currency on row 1 should be {0}", EffectiveCurrency(FFromCurrencyId));
+            Assert.AreEqual(EffectiveCurrency(FToCurrencyId),
+                cmbToCurrency.GetSelectedString(), "The To currency on row 1 should be {0}", EffectiveCurrency(FToCurrencyId));
             Assert.AreEqual(EffectiveDate(), dtpEffectiveDate.Date, "The effective date on row 1 should be {0}", EffectiveDate().ToString());
 
             // Select the second row - which will be the last but one item of standard data
             SelectRowInGrid(2);
 
             // Check the details again for this row
-            Assert.AreEqual(EffectiveCurrency(FFromCurrencyId), cmbFromCurrency.GetSelectedString(), "The From currency on row 2 should be {0}", EffectiveCurrency(FFromCurrencyId));
-            Assert.AreEqual(EffectiveCurrency(FToCurrencyId), cmbToCurrency.GetSelectedString(), "The To currency on row 2 should be {0}", EffectiveCurrency(FToCurrencyId));
+            Assert.AreEqual(EffectiveCurrency(FFromCurrencyId),
+                cmbFromCurrency.GetSelectedString(), "The From currency on row 2 should be {0}", EffectiveCurrency(FFromCurrencyId));
+            Assert.AreEqual(EffectiveCurrency(FToCurrencyId),
+                cmbToCurrency.GetSelectedString(), "The To currency on row 2 should be {0}", EffectiveCurrency(FToCurrencyId));
             Assert.AreEqual(EffectiveDate(), dtpEffectiveDate.Date, "The effective date on row 2 should be {0}", EffectiveDate().ToString());
 
             // Now hide the other currencies
             chkHideOthers.Checked = true;
 
             // The number of rows in the grid should have changed
-            Assert.AreEqual(FHiddenRowCount + 1, grdDetails.Rows.Count, "The grid should have {0} rows when the checkbox is checked", FHiddenRowCount + 1);
+            Assert.AreEqual(FHiddenRowCount + 1,
+                grdDetails.Rows.Count,
+                "The grid should have {0} rows when the checkbox is checked",
+                FHiddenRowCount + 1);
 
             // But the details should still be the same
-            Assert.AreEqual(EffectiveCurrency(FFromCurrencyId), cmbFromCurrency.GetSelectedString(), "The From currency on row 2 should be {0}", EffectiveCurrency(FFromCurrencyId));
-            Assert.AreEqual(EffectiveCurrency(FToCurrencyId), cmbToCurrency.GetSelectedString(), "The To currency on row 2 should be {0}", EffectiveCurrency(FToCurrencyId));
+            Assert.AreEqual(EffectiveCurrency(FFromCurrencyId),
+                cmbFromCurrency.GetSelectedString(), "The From currency on row 2 should be {0}", EffectiveCurrency(FFromCurrencyId));
+            Assert.AreEqual(EffectiveCurrency(FToCurrencyId),
+                cmbToCurrency.GetSelectedString(), "The To currency on row 2 should be {0}", EffectiveCurrency(FToCurrencyId));
             Assert.AreEqual(EffectiveDate(), dtpEffectiveDate.Date, "The effective date on row 2 should be {0}", EffectiveDate().ToString());
             Assert.IsFalse(cmbToCurrency.Enabled, "The To Currency should be disabled when the checkbox is checked");
 
@@ -207,18 +216,25 @@ namespace Tests.MFinance.Client.ExchangeRates
             SelectRowInGrid(FAllRowCount);
 
             // Check the details - should be the first item of standard data
-            Assert.AreEqual(EffectiveCurrency(FFromCurrencyId), cmbFromCurrency.GetSelectedString(), "The From currency on row {0} should be {1}", FAllRowCount, EffectiveCurrency(FFromCurrencyId));
-            Assert.AreEqual(EffectiveCurrency(FToCurrencyId), cmbToCurrency.GetSelectedString(), "The To currency on row {0} should be {1}", FAllRowCount, EffectiveCurrency(FToCurrencyId));
-            Assert.AreEqual(EffectiveDate(), dtpEffectiveDate.Date, "The effective date on row {0} should be {1}", FAllRowCount, EffectiveDate().ToString());
+            Assert.AreEqual(EffectiveCurrency(FFromCurrencyId),
+                cmbFromCurrency.GetSelectedString(), "The From currency on row {0} should be {1}", FAllRowCount, EffectiveCurrency(FFromCurrencyId));
+            Assert.AreEqual(EffectiveCurrency(FToCurrencyId),
+                cmbToCurrency.GetSelectedString(), "The To currency on row {0} should be {1}", FAllRowCount, EffectiveCurrency(FToCurrencyId));
+            Assert.AreEqual(EffectiveDate(), dtpEffectiveDate.Date, "The effective date on row {0} should be {1}", FAllRowCount,
+                EffectiveDate().ToString());
 
             // Hide other To currencies again - now the selected row will have jumped higher
             chkHideOthers.Checked = true;
-            Assert.AreEqual(FHiddenRowCount, grdDetails.SelectedRowIndex(), "When the checkbox is checked the selected row should be {0}", FHiddenRowCount);
+            Assert.AreEqual(FHiddenRowCount,
+                grdDetails.SelectedRowIndex(), "When the checkbox is checked the selected row should be {0}", FHiddenRowCount);
 
             // But the details should again be the same as before the checkbox check
-            Assert.AreEqual(EffectiveCurrency(FFromCurrencyId), cmbFromCurrency.GetSelectedString(), "The From currency on row {0} should be {1}", FHiddenRowCount, EffectiveCurrency(FFromCurrencyId));
-            Assert.AreEqual(EffectiveCurrency(FToCurrencyId), cmbToCurrency.GetSelectedString(), "The To currency on row {0} should be {1}", FHiddenRowCount, EffectiveCurrency(FToCurrencyId));
-            Assert.AreEqual(EffectiveDate(), dtpEffectiveDate.Date, "The effective date on row {0} should be {1}", FHiddenRowCount, EffectiveDate().ToString());
+            Assert.AreEqual(EffectiveCurrency(FFromCurrencyId),
+                cmbFromCurrency.GetSelectedString(), "The From currency on row {0} should be {1}", FHiddenRowCount, EffectiveCurrency(FFromCurrencyId));
+            Assert.AreEqual(EffectiveCurrency(FToCurrencyId),
+                cmbToCurrency.GetSelectedString(), "The To currency on row {0} should be {1}", FHiddenRowCount, EffectiveCurrency(FToCurrencyId));
+            Assert.AreEqual(EffectiveDate(), dtpEffectiveDate.Date, "The effective date on row {0} should be {1}", FHiddenRowCount,
+                EffectiveDate().ToString());
 
             mainScreen.Close();
         }
@@ -253,7 +269,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             TCmbAutoPopulated cmbToCurrency = (new TCmbAutoPopulatedTester("cmbDetailToCurrencyCode", mainScreen)).Properties;
             TtxtPetraDate dtpEffectiveDate = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", mainScreen)).Properties;
             TTxtNumericTextBox txtExchangeRate = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", mainScreen)).Properties;
-            
+
             Assert.IsFalse(btnSave.Enabled, "The Save button should be disabled when the screen is loaded");
             btnNew.Click();
             Assert.IsTrue(btnSave.Enabled, "The Save button should be enabled after adding a new row");
@@ -261,10 +277,12 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Work out our expectations
             string baseCurrency = GetDefaultBaseCurrency();
             string expectedFromCurrency = "USD";
+
             if (baseCurrency == "USD")
             {
                 expectedFromCurrency = "GBP";
             }
+
             DateTime expectedDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             // Check the details panel after adding the new row
@@ -295,7 +313,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(expectedFromCurrency, cmbToCurrency.GetSelectedString());
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(0.5m, txtExchangeRate.NumberValueDecimal);
-            
+
             mainScreen.Close();
         }
 
@@ -379,7 +397,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             mainScreen.SaveChanges();
             Assert.IsFalse(btnSave.Enabled, "The Save button should be disabled after the new row has been saved");
             Assert.AreEqual(13, grdDetails.Rows.Count, "There should be 12 rows in the grid after saving 2 new rows");
-            
+
             mainScreen.Close();
         }
 
@@ -417,7 +435,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Select the first row in the grid.  New rows should be based on data row 5
             SelectRowInGrid(1, 5);
-            
+
             // Add three rows
             btnNew.Click();
             btnNew.Click();
@@ -565,7 +583,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             ToolStripButtonTester btnSave = new ToolStripButtonTester("tbbSave", mainScreen);
             ButtonTester btnNew = new ButtonTester("btnNew", mainScreen);
             TTxtNumericTextBox txtExchangeRate = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", mainScreen)).Properties;
-            
+
             // Add new row, save and close
             btnNew.Click();
             txtExchangeRate.NumberValueDecimal = 10m;
@@ -772,6 +790,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             ALedgerTable ledgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
             DataView ledgerView = ledgers.DefaultView;
+
             ledgerView.RowFilter = "a_ledger_status_l = 1";     // Only view 'in use' ledgers
 
             if (ledgerView.Count > 0)
@@ -783,15 +802,21 @@ namespace Tests.MFinance.Client.ExchangeRates
             return null;
         }
 
-        private void RunTestImport(string AFileName, string ACSVSeparator, TVerificationResultCollection AResults, out string AResultText, out string AFirstResultCode)
+        private void RunTestImport(string AFileName,
+            string ACSVSeparator,
+            TVerificationResultCollection AResults,
+            out string AResultText,
+            out string AFirstResultCode)
         {
             string TestFile = Path.GetFullPath(TAppSettingsManager.GetValue("Testing.Path") + "/lib/MFinance/ExchangeRates/" + AFileName);
+
             Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
 
             AResults.Clear();
             TImportExchangeRates.ImportCurrencyExRates(FMainDS.ACorporateExchangeRate, TestFile, ACSVSeparator, "Corporate", AResults);
 
             AResultText = String.Empty;
+
             for (int i = 0; i < AResults.Count; i++)
             {
                 AResultText += String.Format("{0}: {1}{2}", i.ToString(), AResults[i].ResultText, Environment.NewLine);
@@ -803,6 +828,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             }
 
             AFirstResultCode = String.Empty;
+
             if (AResults.Count > 0)
             {
                 AFirstResultCode = AResults[0].ResultCode;

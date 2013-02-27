@@ -101,10 +101,20 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ACSVSeparator">The separator that the file uses</param>
         /// <param name="AImportMode">Determines whether corporate or daily exchange rates specified - either 'Daily' or 'Corporate'</param>
         /// <param name="AResultCollection">A validation collection to which errors will be added</param>
-        public static void ImportCurrencyExRates(TTypedDataTable AExchangeRateDT, string AImportFileName, string ACSVSeparator, string AImportMode, TVerificationResultCollection AResultCollection)
+        public static void ImportCurrencyExRates(TTypedDataTable AExchangeRateDT,
+            string AImportFileName,
+            string ACSVSeparator,
+            string AImportMode,
+            TVerificationResultCollection AResultCollection)
         {
             // Test import always uses standard file with US formats
-            ImportCurrencyExRatesFromCSV(AExchangeRateDT, AImportFileName, ACSVSeparator, TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN, "MM/dd/yyyy", AImportMode, AResultCollection);
+            ImportCurrencyExRatesFromCSV(AExchangeRateDT,
+                AImportFileName,
+                ACSVSeparator,
+                TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN,
+                "MM/dd/yyyy",
+                AImportMode,
+                AResultCollection);
         }
 
         /// <summary>
@@ -180,6 +190,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 }
 
                 int LineNumber = 0;
+
                 while (!DataFile.EndOfStream)
                 {
                     string Line = DataFile.ReadLine();
@@ -191,15 +202,18 @@ namespace Ict.Petra.Client.MFinance.Logic
                         // see if the first line is a text header - look for digits
                         // A valid header would look like:  From,To,Date,Rate
                         bool bFoundDigit = false;
+
                         for (int i = 0; i < Line.Length; i++)
                         {
                             char c = Line[i];
-                            if (c >= '0' && c <= '9')
+
+                            if ((c >= '0') && (c <= '9'))
                             {
                                 bFoundDigit = true;
                                 break;
                             }
                         }
+
                         if (!bFoundDigit)
                         {
                             // No digits so we will assume the line is a header
@@ -219,24 +233,36 @@ namespace Ict.Petra.Client.MFinance.Logic
                     {
                         // raise an error
                         string resultText = String.Format(Catalog.GetString("Failed to import the CSV currency file:{0}   {1}{0}{0}"),
-                                Environment.NewLine, ADataFilename);
-                        resultText += String.Format(Catalog.GetString("Line #{1} contains {2} column(s). Import files with names like 'USD_HKD.csv', where the From and To currencies are given in the name, should contain 2 or 3 columns:{0}{0}"),
+                            Environment.NewLine, ADataFilename);
+                        resultText +=
+                            String.Format(Catalog.GetString(
+                                    "Line #{1} contains {2} column(s). Import files with names like 'USD_HKD.csv', where the From and To currencies are given in the name, should contain 2 or 3 columns:{0}{0}"),
                                 Environment.NewLine, LineNumber, NumCols.ToString());
-                        resultText += String.Format(Catalog.GetString("  1. Effective Date{0}  2. Exchange Rate{0}  3. Effective time in seconds (Optional for Daily Rate only)"),
+                        resultText +=
+                            String.Format(Catalog.GetString(
+                                    "  1. Effective Date{0}  2. Exchange Rate{0}  3. Effective time in seconds (Optional for Daily Rate only)"),
                                 Environment.NewLine);
-                        TVerificationResult result = new TVerificationResult(AImportMode, resultText, CommonErrorCodes.ERR_INFORMATIONMISSING, TResultSeverity.Resv_Critical);
+                        TVerificationResult result = new TVerificationResult(AImportMode,
+                            resultText,
+                            CommonErrorCodes.ERR_INFORMATIONMISSING,
+                            TResultSeverity.Resv_Critical);
                         AResultCollection.Add(result);
                         return;
                     }
                     else if (!IsShortFileFormat && (NumCols < 4))
                     {
                         string resultText = String.Format(Catalog.GetString("Failed to import the CSV currency file:{0}   {1}{0}{0}"),
-                                Environment.NewLine, ADataFilename);
+                            Environment.NewLine, ADataFilename);
                         resultText += String.Format(Catalog.GetString("Line #{1} contains {2} column(s). It should have 4 or 5 as follows:{0}{0}"),
-                                Environment.NewLine, LineNumber, NumCols.ToString());
-                        resultText += String.Format(Catalog.GetString("    1. From Currency{0}    2. To Currency{0}    3. Effective Date{0}    4. Exchange Rate{0}    5. Effective time in seconds (Optional for Daily Rate only)"),
+                            Environment.NewLine, LineNumber, NumCols.ToString());
+                        resultText +=
+                            String.Format(Catalog.GetString(
+                                    "    1. From Currency{0}    2. To Currency{0}    3. Effective Date{0}    4. Exchange Rate{0}    5. Effective time in seconds (Optional for Daily Rate only)"),
                                 Environment.NewLine);
-                        TVerificationResult result = new TVerificationResult(AImportMode, resultText, CommonErrorCodes.ERR_INFORMATIONMISSING, TResultSeverity.Resv_Critical);
+                        TVerificationResult result = new TVerificationResult(AImportMode,
+                            resultText,
+                            CommonErrorCodes.ERR_INFORMATIONMISSING,
+                            TResultSeverity.Resv_Critical);
                         AResultCollection.Add(result);
                         return;
                     }
@@ -251,11 +277,14 @@ namespace Ict.Petra.Client.MFinance.Logic
                     }
 
                     // Perform validation on the From and To currencies at this point!!
-                    if (allCurrencies.Rows.Find(Currencies[0]) == null || allCurrencies.Rows.Find(Currencies[1]) == null)
+                    if ((allCurrencies.Rows.Find(Currencies[0]) == null) || (allCurrencies.Rows.Find(Currencies[1]) == null))
                     {
                         // raise an error
                         string resultText = String.Format(Catalog.GetString("Invalid currency in import file in line #{0}"), LineNumber.ToString());
-                        TVerificationResult result = new TVerificationResult(AImportMode, resultText, CommonErrorCodes.ERR_INCONGRUOUSSTRINGS, TResultSeverity.Resv_Critical);
+                        TVerificationResult result = new TVerificationResult(AImportMode,
+                            resultText,
+                            CommonErrorCodes.ERR_INCONGRUOUSSTRINGS,
+                            TResultSeverity.Resv_Critical);
                         AResultCollection.Add(result);
                         return;
                     }
@@ -263,11 +292,16 @@ namespace Ict.Petra.Client.MFinance.Logic
                     // Date parsing as in Petra 2.x instead of using XML date format!!!
                     string DateEffectiveStr = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false, true).Replace("\"", String.Empty);
                     DateTime DateEffective;
+
                     if (!DateTime.TryParse(DateEffectiveStr, MyCultureInfoDate, DateTimeStyles.None, out DateEffective))
                     {
                         // raise an error
-                        string resultText = String.Format(Catalog.GetString("Invalid date ({0}) in import file in line #{1}"), DateEffectiveStr, LineNumber.ToString());
-                        TVerificationResult result = new TVerificationResult(AImportMode, resultText, CommonErrorCodes.ERR_INVALIDDATE, TResultSeverity.Resv_Critical);
+                        string resultText = String.Format(Catalog.GetString(
+                                "Invalid date ({0}) in import file in line #{1}"), DateEffectiveStr, LineNumber.ToString());
+                        TVerificationResult result = new TVerificationResult(AImportMode,
+                            resultText,
+                            CommonErrorCodes.ERR_INVALIDDATE,
+                            TResultSeverity.Resv_Critical);
                         AResultCollection.Add(result);
                         return;
                     }
@@ -275,30 +309,37 @@ namespace Ict.Petra.Client.MFinance.Logic
                     decimal ExchangeRate = 0.0m;
                     try
                     {
-                        string ExchangeRateString = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false, true).Replace(ThousandsSeparator, "").Replace(
-                            DecimalSeparator, ".").Replace("\"", String.Empty);
+                        string ExchangeRateString =
+                            StringHelper.GetNextCSV(ref Line, ACSVSeparator, false, true).Replace(ThousandsSeparator, "").Replace(
+                                DecimalSeparator, ".").Replace("\"", String.Empty);
 
                         ExchangeRate = Convert.ToDecimal(ExchangeRateString, System.Globalization.CultureInfo.InvariantCulture);
                     }
                     catch (Exception)
                     {
                         // raise an error
-                        string resultText = String.Format(Catalog.GetString("Invalid rate of exchange in import file in line #{0}"), LineNumber.ToString());
-                        TVerificationResult result = new TVerificationResult(AImportMode, resultText, CommonErrorCodes.ERR_INVALIDNUMBER, TResultSeverity.Resv_Critical);
+                        string resultText = String.Format(Catalog.GetString(
+                                "Invalid rate of exchange in import file in line #{0}"), LineNumber.ToString());
+                        TVerificationResult result = new TVerificationResult(AImportMode,
+                            resultText,
+                            CommonErrorCodes.ERR_INVALIDNUMBER,
+                            TResultSeverity.Resv_Critical);
                         AResultCollection.Add(result);
                         return;
                     }
 
                     int TimeEffective = 7200;
+
                     if (AImportMode == "Daily")
                     {
                         // Daily rate imports can have an optional final column which is the time
                         // Otherwise we assume the time is a default of 7200 (02:00am)
-                        if ((IsShortFileFormat && NumCols == 3) ||
-                            (!IsShortFileFormat && NumCols == 5))
+                        if ((IsShortFileFormat && (NumCols == 3))
+                            || (!IsShortFileFormat && (NumCols == 5)))
                         {
                             string timeEffectiveStr = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false, true);
                             int t = (int)new Ict.Common.TypeConverter.TShortTimeConverter().ConvertTo(timeEffectiveStr, typeof(int));
+
                             if (t < 0)
                             {
                                 // it wasn't in the format 02:00
@@ -309,15 +350,19 @@ namespace Ict.Petra.Client.MFinance.Logic
                                 }
                             }
 
-                            if (t >= 0 && t < 86400)
+                            if ((t >= 0) && (t < 86400))
                             {
                                 TimeEffective = t;
                             }
                             else
                             {
                                 // raise an error
-                                string resultText = String.Format(Catalog.GetString("Invalid effective time in import file in line #{0}"), LineNumber.ToString());
-                                TVerificationResult result = new TVerificationResult(AImportMode, resultText, CommonErrorCodes.ERR_INVALIDINTEGERTIME, TResultSeverity.Resv_Critical);
+                                string resultText = String.Format(Catalog.GetString(
+                                        "Invalid effective time in import file in line #{0}"), LineNumber.ToString());
+                                TVerificationResult result = new TVerificationResult(AImportMode,
+                                    resultText,
+                                    CommonErrorCodes.ERR_INVALIDINTEGERTIME,
+                                    TResultSeverity.Resv_Critical);
                                 AResultCollection.Add(result);
                                 return;
                             }

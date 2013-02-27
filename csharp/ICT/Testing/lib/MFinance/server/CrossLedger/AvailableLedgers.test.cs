@@ -53,10 +53,10 @@ namespace Tests.MFinance.Server.CrossLedger
     {
         // Our working data set
         GLSetupTDS FMainDS = null;
-        
+
         // Class members for our test environment
         int FInitialLedgerCount = -1;
-        List<int> FTestLedgerList = new List<int>();
+        List <int>FTestLedgerList = new List <int>();
         Boolean FInitSucceeded = false;
         String FInitExceptionMessage = String.Empty;
 
@@ -70,7 +70,7 @@ namespace Tests.MFinance.Server.CrossLedger
 
             // These will be our test ledger numbers
             FTestLedgerList.AddRange(new int[] { 9997, 9998, 9999 });
-            
+
             // Load existing data
             FMainDS = new GLSetupTDS();
 
@@ -142,6 +142,7 @@ namespace Tests.MFinance.Server.CrossLedger
         public void TestGetAvailableLedgers()
         {
             DataView ledgerView = TGLSetupWebConnector.GetAvailableLedgers().DefaultView;
+
             ledgerView.RowFilter = "";     // All ledgers
 
             int ExpectedCount = FInitialLedgerCount + FTestLedgerList.Count;
@@ -157,6 +158,7 @@ namespace Tests.MFinance.Server.CrossLedger
         public void TestGetAvailableInUseLedgers()
         {
             DataView ledgerView = TGLSetupWebConnector.GetAvailableLedgers().DefaultView;
+
             ledgerView.RowFilter = "a_ledger_status_l = 1";     // Only view 'in use' ledgers
 
             int ExpectedCount = FInitialLedgerCount + FTestLedgerList.Count - 1;
@@ -172,6 +174,7 @@ namespace Tests.MFinance.Server.CrossLedger
         public void TestGetAvailableJPYLedgers()
         {
             DataView ledgerView = TGLSetupWebConnector.GetAvailableLedgers().DefaultView;
+
             ledgerView.RowFilter = "a_base_currency_c = 'JPY'";     // Only view 'in use' ledgers
 
             int ExpectedCount = 1;
@@ -180,12 +183,10 @@ namespace Tests.MFinance.Server.CrossLedger
             Console.WriteLine("New 'JPY' ledger count is {0}", ledgerView.Count.ToString());
         }
 
-
-
         ///////////////////////////////////////////////////////////////////////////////
         // Private Helper functions used in setup and tear down
 
-        private Boolean FindTestRows(List<Int32> ALedgerNumberList)
+        private Boolean FindTestRows(List <Int32>ALedgerNumberList)
         {
             // Check whether our test rows already exist
             foreach (Int32 LedgerNumber in ALedgerNumberList)
@@ -203,10 +204,11 @@ namespace Tests.MFinance.Server.CrossLedger
         {
             // Create a new row and specify the column values that are part of our test
             ALedgerRow newRow = FMainDS.ALedger.NewRowTyped();
+
             newRow.LedgerNumber = ALedgerNumber;
             newRow.LedgerName = ALedgerName;
             newRow.LedgerStatus = ALedgerStatus;
-            
+
             if (ALedgerCurrency != null)
             {
                 newRow.BaseCurrency = ALedgerCurrency;
@@ -222,6 +224,7 @@ namespace Tests.MFinance.Server.CrossLedger
         private void DeleteTestRowIfExists(Int32 ALedgerNumber)
         {
             DataRow deleteRow = FMainDS.ALedger.Rows.Find(new object[] { ALedgerNumber });
+
             if (deleteRow != null)
             {
                 deleteRow.Delete();

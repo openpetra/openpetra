@@ -352,14 +352,24 @@ namespace Ict.Common.Testing
             // Quoted headers (keep spaces)
             s = "Col 1, \"Col 2\" xx , \"Col \"\"3\"\" \" ";
             Assert.AreEqual("Col 1", StringHelper.GetNextCSV(ref s, ",", false), "Typical CSV File import with quotes column 1 (keep spaces)");
-            Assert.AreEqual(" \"Col 2\" xx ", StringHelper.GetNextCSV(ref s, ",", false), "Typical CSV File with quotes import column 2 (keep spaces)");
-            Assert.AreEqual(" \"Col \"3\" \" ", StringHelper.GetNextCSV(ref s, ",", false), "Typical CSV File with quotes import column 3 (keep spaces)");
+            Assert.AreEqual(" \"Col 2\" xx ", StringHelper.GetNextCSV(ref s,
+                    ",",
+                    false), "Typical CSV File with quotes import column 2 (keep spaces)");
+            Assert.AreEqual(" \"Col \"3\" \" ", StringHelper.GetNextCSV(ref s,
+                    ",",
+                    false), "Typical CSV File with quotes import column 3 (keep spaces)");
 
             // Same quoted headers (remove spaces)
             s = "Col 1, \" Col 2 \" , \"Col \"\"3\"\" \" ";
             Assert.AreEqual("Col 1", StringHelper.GetNextCSV(ref s, ",", false, true), "Typical CSV File import with quotes column 1 (remove spaces)");
-            Assert.AreEqual(" Col 2 ", StringHelper.GetNextCSV(ref s, ",", false, true), "Typical CSV File import with quotes column 2 (remove spaces)");
-            Assert.AreEqual("Col \"3\" ", StringHelper.GetNextCSV(ref s, ",", false, true), "Typical CSV File import with quotes column 3 (remove spaces)");
+            Assert.AreEqual(" Col 2 ", StringHelper.GetNextCSV(ref s,
+                    ",",
+                    false,
+                    true), "Typical CSV File import with quotes column 2 (remove spaces)");
+            Assert.AreEqual("Col \"3\" ", StringHelper.GetNextCSV(ref s,
+                    ",",
+                    false,
+                    true), "Typical CSV File import with quotes column 3 (remove spaces)");
 
             /* ,B�cker,"test"",","test""",test,"test, hallo","test""tst","24/03/1999","0400" */
             myTest = new String[] {

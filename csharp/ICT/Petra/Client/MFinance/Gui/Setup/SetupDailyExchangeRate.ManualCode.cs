@@ -1031,6 +1031,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             while (nThis > 0)
             {
                 DateTime tryDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+
                 if (tryDate == ARow.DateEffectiveFrom)
                 {
                     // keep going till we find a different date because different times on the same date don't count
@@ -1049,9 +1050,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // change all the relevant entries
                 DataView dvJournal = FJournalDS.JournalTable.DefaultView;
                 dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilterRange, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d", CultureInfo.InvariantCulture), FJournalDS.MatchingRate, "Unposted");
+                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d",
+                        CultureInfo.InvariantCulture), FJournalDS.MatchingRate, "Unposted");
 
-                for (int i = dvJournal.Count - 1; i >= 0 ; i--)
+                for (int i = dvJournal.Count - 1; i >= 0; i--)
                 {
                     AJournalRow row = ((AJournalRow)dvJournal[i].Row);
                     row.BeginEdit();
@@ -1068,9 +1070,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // change all the relevant entries
                 DataView dvGift = FGiftBatchDS.GiftBatchTable.DefaultView;
                 dvGift.RowFilter = String.Format(CultureInfo.InvariantCulture, GiftBatchRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d", CultureInfo.InvariantCulture), FGiftBatchDS.MatchingRate);
+                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d",
+                        CultureInfo.InvariantCulture), FGiftBatchDS.MatchingRate);
 
-                for (int i = dvGift.Count - 1; i >= 0 ; i--)
+                for (int i = dvGift.Count - 1; i >= 0; i--)
                 {
                     AGiftBatchRow row = ((AGiftBatchRow)dvGift[i].Row);
                     row.BeginEdit();
@@ -1250,6 +1253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             while (nThis > 0)
             {
                 DateTime tryDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+
                 if (tryDate == FromDate)
                 {
                     // keep going till we find a different date because different times on the same date don't count
@@ -1274,6 +1278,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FGiftBatchDS.MatchingRate = rate;
 
                 List <int>listLedgers = new List <int>();
+
                 for (int i = 0; i < dvGift.Count; i++)
                 {
                     int ledgerNum = ((AGiftBatchRow)dvGift[i].Row).LedgerNumber;
@@ -1313,6 +1318,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FJournalDS.MatchingRate = rate;
 
                 List <int>listLedgers = new List <int>();
+
                 for (int i = 0; i < dvJournal.Count; i++)
                 {
                     int ledgerNum = ((AJournalRow)dvJournal[i].Row).LedgerNumber;
@@ -1355,6 +1361,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FJournalDS.MatchingRate = rate;
 
                 List <int>listLedgers = new List <int>();
+
                 for (int i = 0; i < dvJournal.Count; i++)
                 {
                     int ledgerNum = ((AJournalRow)dvJournal[i].Row).LedgerNumber;
@@ -1511,6 +1518,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // Finally, save any changes to the extra data sets
             bool bUpdateAfterSave = false;
+
             if (FJournalDS.NeedsSave && FJournalDS.SaveChanges())
             {
                 FJournalDS.NeedsSave = false;

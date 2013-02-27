@@ -462,7 +462,10 @@ namespace Ict.Common
         /// <param name="ATryAllSeparators">if this is true, a number of default separators (slash, comma, etc) will be used</param>
         /// <param name="ARemoveLeadingAndTrailingSpaces">if this is true, leading and trailing spaces will be discarded (useful for file imports)</param>
         /// <returns>the first value of the list</returns>
-        public static string GetNextCSV(ref string list, string separator, Boolean ATryAllSeparators = false, Boolean ARemoveLeadingAndTrailingSpaces = false)
+        public static string GetNextCSV(ref string list,
+            string separator,
+            Boolean ATryAllSeparators = false,
+            Boolean ARemoveLeadingAndTrailingSpaces = false)
         {
             if (list.Length == 0)
             {
@@ -505,7 +508,7 @@ namespace Ict.Common
                         }
                     }
 
-                    if (list[position] == ' ' && value.Length == 0 && ARemoveLeadingAndTrailingSpaces)
+                    if ((list[position] == ' ') && (value.Length == 0) && ARemoveLeadingAndTrailingSpaces)
                     {
                         // leading spaces are ignored
                         position++;
@@ -514,7 +517,7 @@ namespace Ict.Common
                     {
                         // TODO: no substring???
                         string quotedstring = list.Substring(position + 1, FindMatchingQuote(list, position) - position);
-                        
+
                         if (value.Length == 0)
                         {
                             value.Append(quotedstring);
@@ -616,7 +619,7 @@ namespace Ict.Common
                         }
                     }
 
-                    if (list[position] == ' ' && separator != ' ' && value.Length == 0 && ARemoveLeadingAndTrailingSpaces)
+                    if ((list[position] == ' ') && (separator != ' ') && (value.Length == 0) && ARemoveLeadingAndTrailingSpaces)
                     {
                         // leading spaces are ignored
                         position++;

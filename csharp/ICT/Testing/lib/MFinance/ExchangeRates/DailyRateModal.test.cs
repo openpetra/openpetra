@@ -63,36 +63,36 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// <summary>
         /// Performing tests on a modal dialog needs a different approach from tests on a simple class or a modeless screen.
         /// Here are some tips to help design your test.
-        /// 
-        /// NUnitForms has a recommended method for handling modal dialogs.  It involves specifying a one-shot delegate to that gets invoked 
-        /// when the modal screen is displayed.  This works well for Message Boxes and the like but I could not get it to work with my 
+        ///
+        /// NUnitForms has a recommended method for handling modal dialogs.  It involves specifying a one-shot delegate to that gets invoked
+        /// when the modal screen is displayed.  This works well for Message Boxes and the like but I could not get it to work with my
         /// daily exchange rate screen.  Fortunately NUnitForms previously used a different method for working with dialogs, and although it
         /// has been marked as [Obsolete], it still works!  So the modal tests written here all use this 'old' method successfully.
-        /// 
-        /// The [Test] code involves creating a public void method as usual.  In this method you 
+        ///
+        /// The [Test] code involves creating a public void method as usual.  In this method you
         ///    perform some initialisation
         ///    call the NUnitForms method:  ExpectModal("AFormName", AHandlerMethodName)
         ///    instantiate your modal form: DialogResult result = myDialog.ShowModal()
         ///    test the return values after the dialog has closed.
-        ///    
-        /// Then you create another public void method (AHandlerMethodName()) and in there you do the Assert's and button pushes to test the 
+        ///
+        /// Then you create another public void method (AHandlerMethodName()) and in there you do the Assert's and button pushes to test the
         /// behaviour of the dialog itself.
-        /// 
+        ///
         /// There are some things you need to know about coding this dialog handler:
         /// * You need to call the Activate method using the FormTester.Properties.Activate().  If you do not do this the dialog constructor
         ///     will run but you will not get the RunOnceOnActivation code to run, which may contain important initialisation actions.
         /// * You need to be sure that you close the dialog so that control returns to the [Test] method.
-        ///     If the dialog does not close the whole Unit Test will hang indefinitely.  The effect of this requirement is that, if any of 
+        ///     If the dialog does not close the whole Unit Test will hang indefinitely.  The effect of this requirement is that, if any of
         ///     your Assert tests fail the dialog remains open and needs you to manually close it.  (Possibly this is a Debug build behaviour
         ///     and a release build of the DLL may behave differently, but I have not checked that.)
-        ///     
+        ///
         ///     Your code will probably have a few button clicks and a number of Assert's and then will close the dialog with a button click.
         ///     The requirement to ensure that the dialog closes even if an Assert fires means that you need to enclose all the actions in the dialog
         ///     inside a try/catch block, so that you can close the dialog in the catch or a finally block.
         /// * In order to return the Assert to the main [Test] routine, your catch block needs to save the exception information in a global variable.
         ///     The catch block then needs to return a different DialogResult (I use Abort).  Then the main [Test] method knows whether the dialog
         ///     closed with an error or not.
-        ///     
+        ///
         /// If you look at the code here you will see that I use a couple of helper methods to
         /// * Call the modal handler method.  Since this method is marked as [Obsolete] I use a #pragma statement to turn off the resultant compiler warning.
         /// * Handle the exception message from the try/catch block.  This formats the message ready for the main method to use in an Assert.Fail().
@@ -106,14 +106,14 @@ namespace Tests.MFinance.Client.ExchangeRates
         const int STANDARD_TEST_LEDGER_NUMBER = 9997;                               // On modal form tests we create a special ledger #9997 for test use
         const string STANDARD_TEST_CURRENCY = "BEF";                                // On modal form tests our ledger currency is always BEF
         const decimal STANDARD_RATE_OF_EXCHANGE = 1.50m;                            // A rate of exchange we use in testing
-        
+
         /// <summary>
         /// An effective date we often use in testing.  It is not the earliest date in the table, but it is earlier than 'Today'.
         /// The standard modal data also has two dates much later than 'Today' (the year 2999 actually!)
         /// </summary>
         private DateTime FStandardEffectiveDate = new DateTime(2000, 12, 31);
 
-        
+
         // The class variable we use to pass exceptions in the dialog back to this test class thread
         private String FModalAssertResult = String.Empty;
 
@@ -136,7 +136,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             // define our working date range
             DateTime dtStart = new DateTime(2000, 01, 01);
             DateTime dtEnd = new DateTime(2000, 12, 31);
-            
+
             // First test is with empty data - should return 1.0m
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             decimal result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP");
@@ -146,7 +146,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.InsertStandardModalRows();
             FMainDS.SaveChanges();
 
-            mainScreen = new TFrmSetupDailyExchangeRate(null); 
+            mainScreen = new TFrmSetupDailyExchangeRate(null);
             result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP");
             Assert.AreEqual(1.0m, result, "The result should be 1.0m because there is no data in the date range");
 
@@ -157,7 +157,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.AddARow("GBP", STANDARD_TEST_CURRENCY, new DateTime(2000, 6, 20), 2.10m);
             FMainDS.SaveChanges();
 
-            mainScreen = new TFrmSetupDailyExchangeRate(null); 
+            mainScreen = new TFrmSetupDailyExchangeRate(null);
             result = mainScreen.GetLastExchangeValueOfInterval(STANDARD_TEST_LEDGER_NUMBER, dtStart, dtEnd, "GBP");
             Assert.AreEqual(2.15m, result);
         }
@@ -186,8 +186,14 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Open the screen modally on our test ledger using a 'from' currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             CreateModalFormHandler(FModalFormName, LoadModalEmptyTableHandler);
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER, FStandardEffectiveDate, "GBP", 1.0m, out selectedRate, out selectedDate, out selectedTime);
-            
+            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
+                FStandardEffectiveDate,
+                "GBP",
+                1.0m,
+                out selectedRate,
+                out selectedDate,
+                out selectedTime);
+
             // Check the result for any assertions
             if (dlgResult == DialogResult.Abort)
             {
@@ -202,7 +208,9 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Check we did also save the result
             FMainDS.LoadAll();
-            ADailyExchangeRateRow row = (ADailyExchangeRateRow)FMainDS.ADailyExchangeRate.Rows.Find(new object[] { "GBP", STANDARD_TEST_CURRENCY, FStandardEffectiveDate, 7200 });
+            ADailyExchangeRateRow row =
+                (ADailyExchangeRateRow)FMainDS.ADailyExchangeRate.Rows.Find(new object[] { "GBP", STANDARD_TEST_CURRENCY, FStandardEffectiveDate,
+                                                                                           7200 });
             Assert.IsNotNull(row, "The selected exchange rate was not saved");
             Assert.AreEqual(STANDARD_RATE_OF_EXCHANGE, row.RateOfExchange);
         }
@@ -214,13 +222,14 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
+
             formTester.Properties.Activate();
 
             // Controls
             ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
             ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
             ButtonTester btnCancelTester = new ButtonTester("btnCancel", FModalFormName);
-            
+
             Button btnNew = btnNewTester.Properties;
             Button btnClose = btnCloseTester.Properties;
             Button btnDelete = (new ButtonTester("btnDelete", FModalFormName)).Properties;
@@ -300,7 +309,14 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             CreateModalFormHandler(FModalFormName, LoadModalTableHandler);
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER, FStandardEffectiveDate, "GBP", 1.0m, out selectedRate, out selectedDate, out selectedTime);
+            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
+                FStandardEffectiveDate,
+                "GBP",
+                1.0m,
+                out selectedRate,
+                out selectedDate,
+                out selectedTime);
+
             if (dlgResult == DialogResult.Abort)
             {
                 Assert.Fail(FModalAssertResult);
@@ -318,6 +334,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
+
             formTester.Properties.Activate();
 
             // Controls
@@ -388,7 +405,9 @@ namespace Tests.MFinance.Client.ExchangeRates
             // This test sets up a date range
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             CreateModalFormHandler(FModalFormName, ModalValidationHandler);
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER, FStandardEffectiveDate.AddDays(-10), FStandardEffectiveDate, "GBP", 1.0m, out selectedRate, out selectedDate, out selectedTime);
+            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER, FStandardEffectiveDate.AddDays(
+                    -10), FStandardEffectiveDate, "GBP", 1.0m, out selectedRate, out selectedDate, out selectedTime);
+
             if (dlgResult == DialogResult.Abort)
             {
                 Assert.Fail(FModalAssertResult);
@@ -408,6 +427,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
+
             formTester.Properties.Activate();
 
             // Controls
@@ -440,7 +460,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                 btnNewTester.Click();
                 Assert.IsTrue(dlgDisplayed, "The date chosen for the test should have raised a validation errror");
                 Assert.IsTrue(dlgText.Contains(CommonErrorCodes.ERR_DATENOTINDATERANGE));
-                
+
                 // Set up another popup handler
                 dlgText = String.Empty;
                 dlgDisplayed = false;
@@ -494,7 +514,14 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             CreateModalFormHandler(FModalFormName, ExchangeRateUsage1Handler);
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER, FStandardEffectiveDate, "GBP", 1.0m, out selectedRate, out selectedDate, out selectedTime);
+            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
+                FStandardEffectiveDate,
+                "GBP",
+                1.0m,
+                out selectedRate,
+                out selectedDate,
+                out selectedTime);
+
             if (dlgResult == DialogResult.Abort)
             {
                 Assert.Fail(FModalAssertResult);
@@ -510,6 +537,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
+
             formTester.Properties.Activate();
 
             // Controls
@@ -557,6 +585,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                     SelectRowInGrid(i);
                     string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
                     Console.WriteLine("Grid row {0}: rate: {1}: {2}", i, txtRateOfExchange.NumberValueDecimal.Value.ToString(), Usage);
+
                     switch (i)
                     {
                         case 1:             // 0.5225
@@ -566,6 +595,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                             Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table");
                             Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
                             break;
+
                         case 3:             // 0.5155
                             Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table");
                             Assert.IsTrue(Usage.Contains("2 posted"), "Expected 2 posted rows in Journal table");
@@ -574,6 +604,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                             Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
                             Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references");
                             break;
+
                         default:
                             Assert.AreEqual(String.Empty, Usage);
                             break;
@@ -614,7 +645,14 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             CreateModalFormHandler(FModalFormName, ExchangeRateUsage2Handler);
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER, FStandardEffectiveDate, "GBP", 1.0m, out selectedRate, out selectedDate, out selectedTime);
+            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
+                FStandardEffectiveDate,
+                "GBP",
+                1.0m,
+                out selectedRate,
+                out selectedDate,
+                out selectedTime);
+
             if (dlgResult == DialogResult.Abort)
             {
                 Assert.Fail(FModalAssertResult);
@@ -630,6 +668,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
+
             formTester.Properties.Activate();
 
             // Controls
@@ -668,6 +707,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                     SelectRowInGrid(i);
                     string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
                     Console.WriteLine("Grid row {0}: rate: {1}: {2}", i, txtRateOfExchange.NumberValueDecimal.Value.ToString(), Usage);
+
                     switch (i)
                     {
                         case 1:             // 0.5225
@@ -677,6 +717,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                             Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table");
                             Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
                             break;
+
                         case 2:             // 0.5155
                             Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table");
                             Assert.IsTrue(Usage.Contains("3 posted"), "Expected 3 posted rows in Journal table");
@@ -685,6 +726,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                             Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
                             Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references");
                             break;
+
                         default:
                             Assert.AreEqual(String.Empty, Usage);
                             break;
@@ -725,7 +767,14 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             CreateModalFormHandler(FModalFormName, ExchangeRateUsage3Handler);
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER, FStandardEffectiveDate, "GBP", 1.0m, out selectedRate, out selectedDate, out selectedTime);
+            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
+                FStandardEffectiveDate,
+                "GBP",
+                1.0m,
+                out selectedRate,
+                out selectedDate,
+                out selectedTime);
+
             if (dlgResult == DialogResult.Abort)
             {
                 Assert.Fail(FModalAssertResult);
@@ -741,6 +790,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
+
             formTester.Properties.Activate();
 
             // Controls
@@ -779,6 +829,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                     SelectRowInGrid(i);
                     string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
                     Console.WriteLine("Grid row {0}: rate: {1}: {2}", i, txtRateOfExchange.NumberValueDecimal.Value.ToString(), Usage);
+
                     switch (i)
                     {
                         case 1:             // 0.5225
@@ -788,6 +839,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                             Assert.IsFalse(Usage.Contains("Batch table"), "Expected no references to the Gift Batch table");
                             Assert.IsFalse(Usage.Contains(" posted"), "Expected no posted references");
                             break;
+
                         case 2:             // 0.5155
                             Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table");
                             Assert.IsTrue(Usage.Contains("1 posted"), "Expected 1 posted rows in Journal table");
@@ -796,6 +848,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                             Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
                             Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references");
                             break;
+
                         default:
                             Assert.AreEqual(String.Empty, Usage);
                             break;
@@ -836,7 +889,14 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             CreateModalFormHandler(FModalFormName, ExchangeRateUsage4Handler);
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER, FStandardEffectiveDate, "GBP", 1.0m, out selectedRate, out selectedDate, out selectedTime);
+            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
+                FStandardEffectiveDate,
+                "GBP",
+                1.0m,
+                out selectedRate,
+                out selectedDate,
+                out selectedTime);
+
             if (dlgResult == DialogResult.Abort)
             {
                 Assert.Fail(FModalAssertResult);
@@ -852,6 +912,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
+
             formTester.Properties.Activate();
 
             // Controls
@@ -890,6 +951,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                     SelectRowInGrid(i);
                     string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
                     Console.WriteLine("Grid row {0}: rate: {1}: {2}", i, txtRateOfExchange.NumberValueDecimal.Value.ToString(), Usage);
+
                     switch (i)
                     {
                         case 2:             // 0.5155
@@ -900,6 +962,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                             Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references");
                             Assert.IsFalse(Usage.Contains(" posted"), "Expected no posted references");
                             break;
+
                         default:
                             Assert.AreEqual(String.Empty, Usage);
                             break;
@@ -940,7 +1003,14 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             CreateModalFormHandler(FModalFormName, ExchangeRateUsage5Handler);
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER, FStandardEffectiveDate, "GBP", 1.0m, out selectedRate, out selectedDate, out selectedTime);
+            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
+                FStandardEffectiveDate,
+                "GBP",
+                1.0m,
+                out selectedRate,
+                out selectedDate,
+                out selectedTime);
+
             if (dlgResult == DialogResult.Abort)
             {
                 Assert.Fail(FModalAssertResult);
@@ -956,6 +1026,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
+
             formTester.Properties.Activate();
 
             // Controls
@@ -1031,7 +1102,14 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
             CreateModalFormHandler(FModalFormName, EditUsedRateHandler);
-            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER, FStandardEffectiveDate, "GBP", 1.0m, out selectedRate, out selectedDate, out selectedTime);
+            DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
+                FStandardEffectiveDate,
+                "GBP",
+                1.0m,
+                out selectedRate,
+                out selectedDate,
+                out selectedTime);
+
             if (dlgResult == DialogResult.Abort)
             {
                 Assert.Fail(FModalAssertResult);
@@ -1058,6 +1136,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
+
             formTester.Properties.Activate();
 
             // Controls
@@ -1177,6 +1256,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         {
             ExpectModal(AModalFormName, AHandlerMethod);
         }
+
 #pragma warning restore
 
         #endregion
