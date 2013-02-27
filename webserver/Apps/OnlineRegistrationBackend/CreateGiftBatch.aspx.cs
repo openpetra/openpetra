@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,6 +68,8 @@ namespace Ict.Petra.WebServer.MConference
             string GiftTransactions2 = TConferenceCreateGiftBatch.CreateGiftTransactions(EnteredValues,
                 TAppSettingsManager.GetInt64("ConferenceTool.UnknownPartnerKey"),
                 TAppSettingsManager.GetValue("ConferenceTool.UnknownPartnerName"),
+                4000000,
+                true,
                 TAppSettingsManager.GetValue("ConferenceTool.TemplateApplication"),
                 TAppSettingsManager.GetValue("ConferenceTool.TemplateManualApplication"),
                 TAppSettingsManager.GetValue("ConferenceTool.TemplateConferenceFee"),

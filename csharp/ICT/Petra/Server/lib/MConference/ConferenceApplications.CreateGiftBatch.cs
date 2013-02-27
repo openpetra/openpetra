@@ -47,7 +47,7 @@ using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPartner.Import;
 using Ict.Petra.Server.MPartner.ImportExport;
 
-namespace Ict.Petra.Server.MConference.Applications
+namespace Ict.Petra.Server.MConference.WebConnectors
 {
     /// <summary>
     /// For creating gift batches for conference payments
@@ -111,14 +111,19 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="AInputPartnerKeysAndPaymentInfo">CSV text with partner key and columns for payment information</param>
         /// <param name="AUnknownPartner"></param>
         /// <param name="AUnkownPartnerName"></param>
+        /// <param name="ADefaultPartnerLedger"></param>
+        /// <param name="AValidatePartnerKeys"></param>
         /// <param name="ATemplateApplicationFee"></param>
         /// <param name="ATemplateManualApplication"></param>
         /// <param name="ATemplateConferenceFee"></param>
         /// <param name="ATemplateDonation"></param>
         /// <returns></returns>
+        [RequireModulePermission("CONFERENCE")]
         static public string CreateGiftTransactions(string AInputPartnerKeysAndPaymentInfo,
             Int64 AUnknownPartner,
             string AUnkownPartnerName,
+            Int64 ADefaultPartnerLedger,
+            bool AValidatePartnerKeys,
             string ATemplateApplicationFee,
             string ATemplateManualApplication,
             string ATemplateConferenceFee,
@@ -152,11 +157,17 @@ namespace Ict.Petra.Server.MConference.Applications
                     string reference = string.Empty;
 
                     string line = InputLine;
+
+                    if (line.Trim().Length == 0)
+                    {
+                        continue;
+                    }
+
                     Int64 RegistrationKey = Convert.ToInt64(StringHelper.GetNextCSV(ref line, InputSeparator, ""));
 
                     if (RegistrationKey < 1000000)
                     {
-                        RegistrationKey += 4000000;
+                        RegistrationKey += ADefaultPartnerLedger;
                     }
 
                     decimal ConferenceFee = Convert.ToDecimal(StringHelper.GetNextCSV(ref line, InputSeparator, PreviousConferenceFee.ToString()));
@@ -180,10 +191,14 @@ namespace Ict.Petra.Server.MConference.Applications
                         PreviousManualApplicationFee = ManualApplicationFee;
                     }
 
-                    string PersonFirstnameLastname;
+                    string PersonFirstnameLastname = string.Empty;
                     Int64 LocalPartnerKey;
 
-                    if (!GetPartner(RegistrationOffice, RegistrationKey, out LocalPartnerKey, out PersonFirstnameLastname, Transaction))
+                    if (!AValidatePartnerKeys)
+                    {
+                        LocalPartnerKey = RegistrationKey;
+                    }
+                    else if (!GetPartner(RegistrationOffice, RegistrationKey, out LocalPartnerKey, out PersonFirstnameLastname, Transaction))
                     {
                         Console.WriteLine("Cannot find partner key " + RegistrationKey.ToString() + " in row " + RowCount.ToString());
                         LocalPartnerKey = AUnknownPartner;
@@ -192,7 +207,8 @@ namespace Ict.Petra.Server.MConference.Applications
                         // we need to have a different reference, otherwise the gifts will be grouped for unknown donor, split gifts
                         reference = RowCount.ToString();
                     }
-                    else if (LocalPartnerKey == -1)
+
+                    if (LocalPartnerKey == -1)
                     {
                         Console.WriteLine(
                             "Problem: no person key available from Petra. " + RegistrationKey.ToString() + " in row " + RowCount.ToString());

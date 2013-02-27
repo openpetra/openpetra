@@ -7,10 +7,15 @@ RootNode:
     WindowWidth: 858
     #WindowHeight: 900
     Actions:
+        actExportGiftBatch: {Label=&Export Gift Batch, ActionClick=ExportGiftBatch}
     Controls:
         pnlContent:
-            Controls: [pnlGrid]
+            Controls: [txtPasteData]
             Dock: Fill
-        pnlGrid:
+        txtPasteData:
+            Dock: Top
+            Multiline: true
+            Height:400
     Menu:
     Toolbar:
+        tbbExportGiftBatch:
