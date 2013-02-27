@@ -1017,15 +1017,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
+            // We need not only the current row info from the exchange rate table, but also the next row later in time, if it exists
+            // Create a special view because we don't know how the grid is sorted
+            string filter =
+                ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + ARow.FromCurrencyCode + "' and " +
+                ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + ARow.Table + "'";
+            DataView dvDailyRate = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
+
+            // Find our current row and hence the previous one
+            DateTime ToDate = DateTime.MaxValue;
+            int nThis = FindRowInDataView(dvDailyRate, ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom);
+
+            while (nThis > 0)
+            {
+                DateTime tryDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+                if (tryDate == ARow.DateEffectiveFrom)
+                {
+                    // keep going till we find a different date because different times on the same date don't count
+                    nThis--;
+                }
+                else
+                {
+                    ToDate = tryDate;
+                    break;
+                }
+            }
+
             // OK, so we might have changed the rate
             if (FJournalDS.HasMatchingUnpostedRate && (FJournalDS.MatchingRate != ARow.RateOfExchange))
             {
                 // change all the relevant entries
                 DataView dvJournal = FJournalDS.JournalTable.DefaultView;
-                dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), FJournalDS.MatchingRate, "Unposted");
+                dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilterRange, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
+                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d", CultureInfo.InvariantCulture), FJournalDS.MatchingRate, "Unposted");
 
-                for (int i = 0; i < dvJournal.Count; i++)
+                for (int i = dvJournal.Count - 1; i >= 0 ; i--)
                 {
                     AJournalRow row = ((AJournalRow)dvJournal[i].Row);
                     row.BeginEdit();
@@ -1042,9 +1068,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // change all the relevant entries
                 DataView dvGift = FGiftBatchDS.GiftBatchTable.DefaultView;
                 dvGift.RowFilter = String.Format(CultureInfo.InvariantCulture, GiftBatchRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), FGiftBatchDS.MatchingRate);
+                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d", CultureInfo.InvariantCulture), FGiftBatchDS.MatchingRate);
 
-                for (int i = 0; i < dvGift.Count; i++)
+                for (int i = dvGift.Count - 1; i >= 0 ; i--)
                 {
                     AGiftBatchRow row = ((AGiftBatchRow)dvGift[i].Row);
                     row.BeginEdit();
@@ -1221,9 +1247,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             DateTime ToDate = DateTime.MaxValue;
             int nThis = FindRowInDataView(dvDailyRate, FromCurrency, ToCurrency, FromDate, FromTime);
 
-            if (nThis > 0)
+            while (nThis > 0)
             {
-                ToDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+                DateTime tryDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+                if (tryDate == FromDate)
+                {
+                    // keep going till we find a different date because different times on the same date don't count
+                    nThis--;
+                }
+                else
+                {
+                    ToDate = tryDate;
+                    break;
+                }
             }
 
             // Set up a row filter on the two external tables
@@ -1465,6 +1501,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
         {
+            FIsCurrentRowStateAdded = FPreviouslySelectedDetailRow.RowState == DataRowState.Added;
+
             // Just quit if we didn't save our stuff
             if (!e.Success)
             {
@@ -1472,14 +1510,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // Finally, save any changes to the extra data sets
+            bool bUpdateAfterSave = false;
             if (FJournalDS.NeedsSave && FJournalDS.SaveChanges())
             {
                 FJournalDS.NeedsSave = false;
+                bUpdateAfterSave = true;
             }
 
             if (FGiftBatchDS.NeedsSave && FGiftBatchDS.SaveChanges())
             {
                 FGiftBatchDS.NeedsSave = false;
+                bUpdateAfterSave = true;
+            }
+
+            if (bUpdateAfterSave)
+            {
+                ShowDetailsManual(FPreviouslySelectedDetailRow);
             }
         }
 
