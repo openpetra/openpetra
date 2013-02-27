@@ -32,7 +32,7 @@ using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces;
+using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 
