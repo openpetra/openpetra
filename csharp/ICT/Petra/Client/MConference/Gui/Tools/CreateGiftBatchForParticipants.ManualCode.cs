@@ -51,7 +51,8 @@ namespace Ict.Petra.Client.MConference.Gui.Tools
             if (sd.ShowDialog() == DialogResult.OK)
             {
                 string content = TRemote.MConference.WebConnectors.CreateGiftTransactions(
-                    txtPasteData.Text,
+                    txtPaymentData.Text,
+                    txtPartnerKeyMatching.Text,
                     TAppSettingsManager.GetInt64("ConferenceTool.UnknownPartnerKey"),
                     TAppSettingsManager.GetValue("ConferenceTool.UnknownPartnerName"),
                     TAppSettingsManager.GetInt64("ConferenceTool.DefaultPartnerLedger"),

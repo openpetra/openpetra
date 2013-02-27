@@ -106,9 +106,53 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         }
 
         /// <summary>
+        /// this is needed for TS2013
+        /// </summary>
+        /// <param name="APartnerKeyMatching"></param>
+        /// <returns></returns>
+        static private SortedList <long, long>GetMatchingPartnerKeys(string APartnerKeyMatching)
+        {
+            SortedList <long, long>result = new SortedList <long, long>();
+
+            if (APartnerKeyMatching.Trim().Length > 0)
+            {
+                string InputSeparator = ",";
+
+                if (APartnerKeyMatching.Contains("\t"))
+                {
+                    InputSeparator = "\t";
+                }
+                else if (APartnerKeyMatching.Contains(";"))
+                {
+                    InputSeparator = ";";
+                }
+
+                string[] InputLines = APartnerKeyMatching.Replace("\r", "").Split(new char[] { '\n' });
+
+                foreach (string InputLine in InputLines)
+                {
+                    string line = InputLine;
+
+                    if (line.Trim().Length == 0)
+                    {
+                        continue;
+                    }
+
+                    Int64 RegistrationKey = Convert.ToInt64(StringHelper.GetNextCSV(ref line, InputSeparator, ""));
+                    Int64 PartnerKey = Convert.ToInt64(StringHelper.GetNextCSV(ref line, InputSeparator, ""));
+
+                    result.Add(RegistrationKey, PartnerKey);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// this is needed to create gift transactions CSV file for import into Petra 2.x
         /// </summary>
         /// <param name="AInputPartnerKeysAndPaymentInfo">CSV text with partner key and columns for payment information</param>
+        /// <param name="APartnerKeyMatching">CSV text with conference partner key and the person key in the local Petra system</param>
         /// <param name="AUnknownPartner"></param>
         /// <param name="AUnkownPartnerName"></param>
         /// <param name="ADefaultPartnerLedger"></param>
@@ -120,6 +164,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// <returns></returns>
         [RequireModulePermission("CONFERENCE")]
         static public string CreateGiftTransactions(string AInputPartnerKeysAndPaymentInfo,
+            string APartnerKeyMatching,
             Int64 AUnknownPartner,
             string AUnkownPartnerName,
             Int64 ADefaultPartnerLedger,
@@ -146,6 +191,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 InputSeparator = ";";
             }
 
+            SortedList <Int64, Int64>MatchingPartnerKeys = GetMatchingPartnerKeys(APartnerKeyMatching);
+
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             try
@@ -164,6 +212,11 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                     }
 
                     Int64 RegistrationKey = Convert.ToInt64(StringHelper.GetNextCSV(ref line, InputSeparator, ""));
+
+                    if (MatchingPartnerKeys.ContainsKey(RegistrationKey))
+                    {
+                        RegistrationKey = MatchingPartnerKeys[RegistrationKey];
+                    }
 
                     if (RegistrationKey < 1000000)
                     {

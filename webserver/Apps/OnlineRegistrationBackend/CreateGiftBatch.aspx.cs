@@ -66,6 +66,7 @@ namespace Ict.Petra.WebServer.MConference
 
             // TODO: these parameters are currently the same for all offices
             string GiftTransactions2 = TConferenceCreateGiftBatch.CreateGiftTransactions(EnteredValues,
+                string.Empty,
                 TAppSettingsManager.GetInt64("ConferenceTool.UnknownPartnerKey"),
                 TAppSettingsManager.GetValue("ConferenceTool.UnknownPartnerName"),
                 4000000,

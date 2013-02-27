@@ -10,9 +10,20 @@ RootNode:
         actExportGiftBatch: {Label=&Export Gift Batch, ActionClick=ExportGiftBatch}
     Controls:
         pnlContent:
-            Controls: [txtPasteData]
+            Controls: [tabPaste]
             Dock: Fill
-        txtPasteData:
+        tabPaste:
+            Controls: [tpgPaymentData,tpgPartnerKeyMatching]
+            Dock: Fill
+        tpgPaymentData:
+            Controls: [txtPaymentData]
+        tpgPartnerKeyMatching:
+            Controls: [txtPartnerKeyMatching]
+        txtPaymentData:
+            Dock: Top
+            Multiline: true
+            Height:400
+        txtPartnerKeyMatching:
             Dock: Top
             Multiline: true
             Height:400
