@@ -977,8 +977,8 @@ namespace {#NAMESPACE}
                         break;
 
                     case TSubmitChangesResult.scrInfoNeeded:
-
-                        // TODO scrInfoNeeded
+                        MessageBox.Show(VerificationResult.BuildVerificationResultString(), Catalog.GetString ("Save Document"));
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
                         this.Cursor = Cursors.Default;
                         break;
                 }

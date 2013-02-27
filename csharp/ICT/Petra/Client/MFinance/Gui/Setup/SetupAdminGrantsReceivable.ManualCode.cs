@@ -56,8 +56,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-
+                FFilter = FLedgerNumber;
                 TSetupAdminGrants.PopulateComboBoxes(cmbDetailCostCentreCode, cmbDetailAccountCode, cmbDetailDrAccountCode, FLedgerNumber, true);
+                LoadDataAndFinishScreenSetup();
             }
         }
 

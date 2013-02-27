@@ -65,7 +65,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             // get a list of potential suppliers
             string sqlGetSupplierPartnerKeys =
-                "SELECT PUB_a_ap_supplier.p_partner_key_n FROM PUB_p_organisation, PUB_a_ap_supplier WHERE PUB_a_ap_supplier.p_partner_key_n = PUB_p_organisation.p_partner_key_n";
+                "SELECT PUB_a_ap_supplier.p_partner_key_n, PUB_a_ap_supplier.a_currency_code_c " +
+                "FROM PUB_p_organisation, PUB_a_ap_supplier WHERE PUB_a_ap_supplier.p_partner_key_n = PUB_p_organisation.p_partner_key_n";
             DataTable SupplierKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetSupplierPartnerKeys, "keys", null);
 
             // get a list of potential expense account codes
@@ -78,7 +79,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             {
                 int supplierID = Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "Supplier")) % SupplierKeys.Rows.Count;
                 Int64 SupplierKey = Convert.ToInt64(SupplierKeys.Rows[supplierID].ItemArray[0]);
-
+                String CurrencyCode = Convert.ToString(SupplierKeys.Rows[supplierID].ItemArray[1]);
                 AApDocumentRow invoiceRow = MainDS.AApDocument.NewRowTyped(true);
 
                 invoiceRow.LedgerNumber = FLedgerNumber;
@@ -90,6 +91,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 invoiceRow.DateIssued = Convert.ToDateTime(TXMLParser.GetAttribute(RecordNode, "DateIssued"));
                 invoiceRow.DateEntered = invoiceRow.DateIssued;
                 invoiceRow.TotalAmount = Convert.ToDecimal(TXMLParser.GetAttribute(RecordNode, "Amount")) / 100.0m;
+                invoiceRow.CurrencyCode = CurrencyCode;
                 invoiceRow.ApAccount = "9100";
                 invoiceRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
                 invoiceRow.LastDetailNumber = 1;
