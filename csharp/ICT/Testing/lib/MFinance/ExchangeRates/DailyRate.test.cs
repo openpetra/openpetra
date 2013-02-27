@@ -628,6 +628,130 @@ namespace Tests.MFinance.Client.ExchangeRates
 
         #endregion
 
+        #region Delete Rows (including saved but not used rows)
+
+        /// <summary>
+        /// Add rows and then delete them.  Also delete rows that have been saved but are not used.
+        /// </summary>
+        [Test]
+        public void DeleteRows()
+        {
+            FMainDS.LoadAll();
+            FMainDS.DeleteAllRows();
+            FMainDS.InsertStandardRows();
+            FMainDS.SaveChanges();
+
+            TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
+            mainScreen.Show();
+
+            // Toolstrip
+            ToolStripButtonTester btnSaveTester = new ToolStripButtonTester("tbbSave", mainScreen);
+            ButtonTester btnNewTester = new ButtonTester("btnNew", mainScreen);
+            ButtonTester btnDeleteTester = new ButtonTester("btnDelete", mainScreen);
+            ButtonTester btnEnableEdit = new ButtonTester("btnEnableEdit", mainScreen);
+            TSgrdDataGridPagedTester grdTester = new TSgrdDataGridPagedTester("grdDetails", mainScreen);
+            TSgrdDataGrid grdDetails = (TSgrdDataGrid)grdTester.Properties;
+            TTxtNumericTextBox txtExchangeRate = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", mainScreen)).Properties;
+            
+            // All rows in grid should be non-deletable because they are saved
+            Assert.AreEqual(9, grdDetails.Rows.Count);
+            Assert.IsFalse(btnDeleteTester.Properties.Enabled);
+
+            // Create 3 new rows
+            btnNewTester.Click();
+            btnNewTester.Click();
+            btnNewTester.Click();
+            
+            Assert.AreEqual(12, grdDetails.Rows.Count);
+            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+
+            // New rows should be deletable
+            Assert.IsTrue(btnDeleteTester.Properties.Enabled);
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+            btnDeleteTester.Click();
+            Assert.IsTrue(btnDeleteTester.Properties.Enabled);
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+            btnDeleteTester.Click();
+            Assert.IsTrue(btnDeleteTester.Properties.Enabled);
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+            btnDeleteTester.Click();
+
+            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+
+            // Now we should be back to not being able to delete a saved row
+            Assert.IsFalse(btnDeleteTester.Properties.Enabled);
+            Assert.AreEqual(9, grdDetails.Rows.Count);
+
+            // Activate deletion of saved rows
+            btnEnableEdit.Click();
+
+            // Now we should be able to delete the row we could not delete before
+            Assert.IsTrue(btnDeleteTester.Properties.Enabled);
+
+            // Change to the first row
+            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+            SelectRowInGrid(1);
+            Assert.AreEqual(1, grdDetails.SelectedRowIndex());
+
+            // So now we should have our 2 rows far in the future at the top which are not used anywhere
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+            btnDeleteTester.Click();
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+            btnDeleteTester.Click();
+
+            // Should still be on row 1 with 7 grid rows now that 2 have gone
+            Assert.AreEqual(1, grdDetails.SelectedRowIndex());
+            Assert.IsTrue(btnDeleteTester.Properties.Enabled);
+            Assert.AreEqual(7, grdDetails.Rows.Count);
+
+            // Delete rows starting at the bottom
+            SelectRowInGrid(6);
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+            btnDeleteTester.Click();
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                MessageBoxTester tester = new MessageBoxTester(hWnd);
+                tester.SendCommand(MessageBoxTester.Command.Yes);
+            };
+            btnDeleteTester.Click();
+
+            Assert.AreEqual(4, grdDetails.SelectedRowIndex());
+            Assert.IsTrue(btnDeleteTester.Properties.Enabled);
+            Assert.AreEqual(5, grdDetails.Rows.Count);
+
+            // Save the new settings - deleting does not remove inverse rows when saved
+            Assert.IsTrue(btnSaveTester.Properties.Enabled);
+            btnSaveTester.Click();
+            Assert.IsFalse(btnSaveTester.Properties.Enabled);
+            Assert.AreEqual(5, grdDetails.Rows.Count);
+        }
+
+        #endregion
+
         #region Invert Rate Test
 
         /// <summary>
