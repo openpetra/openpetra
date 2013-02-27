@@ -73,11 +73,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             out TVerificationResultCollection AVerificationResult
             )
         {
-            if (TLogging.DL >= 9)
-            {
-                //Console.WriteLine(this.GetType().FullName + ": PerformStewardshipCalculation called.");
-            }
-
+/*
+ *          if (TLogging.DL >= 9)
+ *          {
+ *              //Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation called.");
+ *          }
+ */
             AVerificationResult = new TVerificationResultCollection();
 
             //Begin the transaction
@@ -94,11 +95,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         DBAccess.GDBAccessObj.CommitTransaction();
                     }
 
-                    if (TLogging.DL >= 8)
-                    {
-                        //Console.WriteLine(this.GetType().FullName + ".PerformStewardshipCalculation: Transaction committed!");
-                    }
-
+/*
+ *                  if (TLogging.DL >= 8)
+ *                  {
+ *                      Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction committed!");
+ *                  }
+ */
                     return GenerateICHStewardshipBatch(ALedgerNumber, APeriodNumber, ref AVerificationResult);
                 }
                 else
@@ -108,11 +110,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
 
-                    if (TLogging.DL >= 8)
-                    {
-                        //Console.WriteLine(this.GetType().FullName + ".PerformStewardshipCalculation: Transaction ROLLED BACK because of an error!");
-                    }
-
+/*
+ *                  if (TLogging.DL >= 8)
+ *                  {
+ *                      Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction ROLLED BACK because of an error!");
+ *                  }
+ */
                     return false;
                 }
             }
@@ -120,11 +123,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
-                if (TLogging.DL >= 8)
-                {
-                    //Console.WriteLine(this.GetType().FullName + ".PerformStewardshipCalculation: Transaction ROLLED BACK because an exception occurred!");
-                }
-
+/*
+ *              if (TLogging.DL >= 8)
+ *              {
+ *                  Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction ROLLED BACK because an exception occurred!");
+ *              }
+ */
                 TLogging.Log(Exp.Message);
                 TLogging.Log(Exp.StackTrace);
 
@@ -273,7 +277,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
 
                 //Process expense accounts
-                AccountRow = null;
                 AccountRow = (AAccountRow)PostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.EXPENSE_HEADING });
 
                 if (AccountRow != null)
@@ -299,7 +302,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
 
                 //Process P&L accounts
-                AccountRow = null;
                 AccountRow = (AAccountRow)PostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.PROFIT_AND_LOSS_HEADING });
 
                 if (AccountRow != null)
@@ -594,7 +596,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                  *  change of a gift from one field to another)  */
                 //IF lv_ich_total_n NE 0 THEN DO:
                 //RUN gl1130o.p
-                if (ICHTotal != 0)
+                if (ICHTotal == 0)
+                {
+                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Generating the ICH batch"),
+                            Catalog.GetString("No ICH batch was generated."), TResultSeverity.Resv_Status));
+                    IsSuccessful = true;
+                }
+                else
                 {
                     //Create a transaction
                     if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
@@ -861,6 +869,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     if (TLogging.DebugLevel > 0)
                     {
                         TLogging.Log("No fees to charge were found");
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Admin Fee Batch"),
+                                String.Format(Catalog.GetString("No admin fees charged in period ({0})."), APeriodNumber),
+                                TResultSeverity.Resv_Status));
                     }
 
                     IsSuccessful = true;
@@ -1115,6 +1126,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         // MESSAGE "No fees to charge were found.(2)" VIEW-AS ALERT-BOX MESSAGE.
                         IsSuccessful = true;
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Admin Fee Batch"),
+                                String.Format(Catalog.GetString("No admin fees charged in period ({0})."), APeriodNumber),
+                                TResultSeverity.Resv_Status));
+
                         //UNDO Post_To_Ledger, LEAVE Post_To_Ledger.
                     }
                     else
