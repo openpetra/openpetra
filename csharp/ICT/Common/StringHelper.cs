@@ -485,7 +485,7 @@ namespace Ict.Common
 
             int position = 0;
             bool escape = false;
-            bool isQuotedText = false;
+            bool isFinalisedQuotedText = false;
             StringBuilder value = new StringBuilder();
 
             if (!list.StartsWith(separator))
@@ -526,14 +526,17 @@ namespace Ict.Common
 
                         position += quotedstring.Length + 2;
 
-                        // If we are not to add trailing spaces we set isQuotedText = true
-                        isQuotedText = ARemoveLeadingAndTrailingSpaces;
+                        // If we are not to add trailing spaces we set isFinalisedQuotedText = true
+                        if (ARemoveLeadingAndTrailingSpaces)
+                        {
+                            isFinalisedQuotedText = true;
+                        }
                     }
                     else
                     {
-                        if (!isQuotedText)
+                        if (!isFinalisedQuotedText)
                         {
-                            // Do not append anything (eg trailing spaces) to already quoted text
+                            // Do not append anything (eg trailing spaces) to already finalised quoted text
                             value.Append(list[position]);
                         }
 
@@ -565,7 +568,7 @@ namespace Ict.Common
                 }
             }
 
-            if (isQuotedText || !ARemoveLeadingAndTrailingSpaces)
+            if (isFinalisedQuotedText || !ARemoveLeadingAndTrailingSpaces)
             {
                 return value.ToString();
             }
@@ -593,7 +596,7 @@ namespace Ict.Common
 
             int position = 0;
             bool escape = false;
-            bool isQuotedText = false;
+            bool isFinalisedQuotedText = false;
             StringBuilder value = new StringBuilder();
 
             if (list[0] != separator)
@@ -635,14 +638,17 @@ namespace Ict.Common
 
                         position += quotedstring.Length + 2;
 
-                        // If we are not to add trailing spaces we set isQuotedText = true
-                        isQuotedText = ARemoveLeadingAndTrailingSpaces;
+                        // If we are not to add trailing spaces we set isFinalisedQuotedText = true
+                        if (ARemoveLeadingAndTrailingSpaces)
+                        {
+                            isFinalisedQuotedText = true;
+                        }
                     }
                     else
                     {
-                        if (!isQuotedText)
+                        if (!isFinalisedQuotedText)
                         {
-                            // Do not append anything (eg trailing spaces) to already quoted text
+                            // Do not append anything (eg trailing spaces) to already finalised quoted text
                             value.Append(list[position]);
                         }
 
@@ -674,7 +680,7 @@ namespace Ict.Common
                 }
             }
 
-            if (isQuotedText || !ARemoveLeadingAndTrailingSpaces)
+            if (isFinalisedQuotedText || !ARemoveLeadingAndTrailingSpaces)
             {
                 return value.ToString();
             }
