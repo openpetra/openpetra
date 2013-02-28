@@ -63,6 +63,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// create a new recurring batch with a consecutive batch number in the ledger,
+        /// and immediately store the batch and the new number in the database
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static RecurringGLBatchTDS CreateARecurringBatch(Int32 ALedgerNumber)
+        {
+            return TGLPosting.CreateARecurringBatch(ALedgerNumber);
+        }
+        
+        /// <summary>
         /// loads a list of batches for the given ledger;
         /// also get the ledger for the base currency etc
         /// </summary>
@@ -279,6 +291,136 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// loads a list of batches for the given ledger;
+        /// also get the ledger for the base currency etc
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AFilterBatchStatus"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static RecurringGLBatchTDS LoadARecurringBatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus)
+        {
+            RecurringGLBatchTDS MainDS = new RecurringGLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+            string SelectClause =
+                String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
+                    ARecurringBatchTable.GetTableDBName(),
+                    ARecurringBatchTable.GetLedgerNumberDBName(),
+                    ALedgerNumber);
+
+            string FilterByBatchStatus = string.Empty;
+
+            if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
+            {
+                // FilterByBatchStatus is empty
+            }
+            else if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
+            {
+                FilterByBatchStatus =
+                    string.Format(" AND {0} = '{1}'",
+                        ARecurringBatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED);
+            }
+
+            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByBatchStatus,
+                MainDS.ARecurringBatch.TableName, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of recurring journals for the given ledger and batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static RecurringGLBatchTDS LoadARecurringJournal(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            RecurringGLBatchTDS MainDS = new RecurringGLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+        
+        /// <summary>
+        /// loads a list of transactions for the given ledger and batch and journal with analysis attributes
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static RecurringGLBatchTDS LoadARecurringTransactionWithAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            string strAnalAttr = string.Empty;
+
+            RecurringGLBatchTDS MainDS = new RecurringGLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ARecurringTransactionAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+
+            foreach (RecurringGLBatchTDSARecurringTransactionRow transRow in MainDS.ARecurringTransaction.Rows)
+            {
+                ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(MainDS,
+                    ALedgerNumber,
+                    ABatchNumber,
+                    AJournalNumber,
+                    transRow.TransactionNumber,
+                    Transaction);
+
+                foreach (DataRowView rv in MainDS.ARecurringTransAnalAttrib.DefaultView)
+                {
+                    ARecurringTransAnalAttribRow Row = (ARecurringTransAnalAttribRow)rv.Row;
+
+                    if (strAnalAttr.Length > 0)
+                    {
+                        strAnalAttr += ", ";
+                    }
+
+                    strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                }
+
+                transRow.AnalysisAttributes = strAnalAttr;
+
+                //clear the attributes string and table
+                strAnalAttr = string.Empty;
+
+                if (MainDS.ARecurringTransAnalAttrib.Count > 0)
+                {
+                    MainDS.ARecurringTransAnalAttrib.Clear();
+                }
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+        
+        /// <summary>
+        /// loads a list of Recurring attributes for the given transaction (identified by ledger,batch,journal and transaction number)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="ATransactionNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static RecurringGLBatchTDS LoadARecurringTransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
+        {
+            RecurringGLBatchTDS MainDS = new RecurringGLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+        
+        /// <summary>
         /// this will store all new and modified batches, journals, transactions
         /// </summary>
         /// <param name="AInspectDS"></param>
@@ -490,6 +632,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// this will store all new and modified recurring batches, journals, transactions
+        /// </summary>
+        /// <param name="AInspectDS"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static TSubmitChangesResult SaveRecurringGLBatchTDS(ref RecurringGLBatchTDS AInspectDS,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            
+            //TODO
+            
+            TSubmitChangesResult SubmissionResult = RecurringGLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+
+            return SubmissionResult;
+        }
+        
+        /// <summary>
         /// post a GL Batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -641,6 +802,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             return TGLPosting.CancelGLBatch(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
+        
         /// <summary>
         /// export all the Data of the batches array list to a String
         /// </summary>

@@ -45,7 +45,15 @@ RootNode:
         btnTestPostBatch: {Stretch=horizontally}
         grdDetails:
             Dock: Fill
-            Columns: [ABatch.BatchNumber, ABatch.BatchStatus, ABatch.DateEffective, ABatch.BatchDebitTotal, ABatch.BatchCreditTotal, ABatch.BatchControlTotal, ABatch.BatchDescription]
+            Columns: [BatchNumber, BatchStatus, DateEffective, BatchDebitTotal, BatchCreditTotal, BatchControlTotal, BatchDescription]
+            CustomColumns:
+                BatchNumber: {Label=Batch, Type=Integer}
+                BatchStatus: {Label=Status}
+                DateEffective: {Label=Status, Type=DateTime}
+                BatchDebitTotal: {Label=Debit Total, Type=Currency}
+                BatchCreditTotal: {Label=Credit Total, Type=Currency}
+                BatchControlTotal: {Label=Hash Total, Type=Currency}
+                BatchDescription: {Label=Description}
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowJournalTab
             ActionEnterKeyPressed: ShowJournalTab

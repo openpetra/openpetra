@@ -1367,6 +1367,63 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
+        /// create a new recurring batch.
+        /// it is already stored to the database, to avoid problems with LastBatchNumber
+        /// </summary>
+        public static RecurringGLBatchTDS CreateARecurringBatch(Int32 ALedgerNumber)
+        {
+            bool NewTransactionStarted = false;
+
+            RecurringGLBatchTDS MainDS = null;
+
+            //Error handling
+            string ErrorContext = "Create a recurring Batch";
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            TVerificationResultCollection VerificationResult = null;
+
+            try
+            {
+                MainDS = new RecurringGLBatchTDS();
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                                 (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
+
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                ARecurringBatchRow NewRow = MainDS.ARecurringBatch.NewRowTyped(true);
+                NewRow.LedgerNumber = ALedgerNumber;
+                MainDS.ALedger[0].LastRecurringBatchNumber++;
+                NewRow.BatchNumber = MainDS.ALedger[0].LastRecurringBatchNumber;
+                MainDS.ARecurringBatch.Rows.Add(NewRow);
+
+                if (RecurringGLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+                {
+                    MainDS.AcceptChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    String.Format(Catalog.GetString("Unknown error while creating a recurring batch for Ledger: {0}." +
+                            Environment.NewLine + Environment.NewLine + ex.ToString()),
+                        ALedgerNumber);
+                ErrorType = TResultSeverity.Resv_Critical;
+                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+            }
+            finally
+            {
+                if (NewTransactionStarted)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+
+            return MainDS;
+        }
+        
+        /// <summary>
         /// Create a new journal as per gl1120.i
         /// </summary>
         public static bool CreateAJournal(

@@ -2,16 +2,14 @@ RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
-    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
-    DetailTable: AJournal
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.RecurringGLBatchTDS
+    DetailTable: ARecurringJournal
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Account.Validation, Ict.Petra.Shared.MFinance.GL.Data]
     FormType: edit
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
-        actCancel:
-            Label: &Cancel
-            ActionClick: CancelRow
+        actCancel: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
@@ -33,15 +31,14 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnAdd, btnCancel]
+            Controls: [btnAdd, btnDelete]
         btnAdd: {Action=actNew, Stretch=horizontally}
-        btnCancel: {Action=actCancel, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
         grdDetails:
             Dock: Fill
-            Columns: [JournalNumber, JournalStatus, JournalDebitTotal, JournalCreditTotal, TransactionCurrency, JournalDescription, SubSystemCode, TransactionTypeCode]
+            Columns: [JournalNumber, JournalDebitTotal, JournalCreditTotal, TransactionCurrency, JournalDescription, SubSystemCode, TransactionTypeCode]
             CustomColumns:
                 JournalNumber: {Label=Journal, Type=Integer}
-                JournalStatus: {Label=Journal Status}
                 JournalDebitTotal: {Label=Debit Total, Type=Currency}
                 JournalCreditTotal: {Label=Credit Total, Type=Currency}
                 TransactionCurrency: {Label=Currency}
@@ -51,8 +48,8 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
             ActionEnterKeyPressed: ShowTransactionTab
-            SortOrder: AJournal.JournalNumber ASC
-            RowFilter: AJournal.BatchNumber
+            SortOrder: ARecurringJournal.JournalNumber ASC
+            RowFilter: ARecurringJournal.BatchNumber
         pnlDetails:
             Dock: Bottom
             Controls: 
@@ -60,14 +57,9 @@ RootNode:
                 Row1: [cmbDetailSubSystemCode]
                 Row2: [cmbDetailTransactionTypeCode]
                 Row3: [cmbDetailTransactionCurrency]
-                Row4: [dtpDetailDateEffective]
-                Row5: [txtDetailExchangeRateToBase, btnGetSetExchangeRate]
         txtDetailJournalDescription: {Label=Journal Description, Width=350}
         # SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
         # transaction type depends on the ledger and the selected sub system; see BeforeShowDetailsManual
         cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList}
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
-        dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
-        txtDetailExchangeRateToBase: {Label= Exchange Rate to Base, Validation=true, Format=Decimal(10), Width=130}
-        btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}
