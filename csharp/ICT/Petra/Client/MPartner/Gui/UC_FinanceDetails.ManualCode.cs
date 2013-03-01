@@ -265,7 +265,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             // check if bankkey refers to valid BANK partner
-            TSharedPartnerValidation_Partner.ValidateBankingDetails(this, ARow, ref VerificationResultCollection, FValidationControlsDict);
+            TSharedPartnerValidation_Partner.ValidateBankingDetails(this,
+                ARow,
+                FMainDS.PBankingDetails,
+                ref VerificationResultCollection,
+                FValidationControlsDict);
 
             // GetDataFromControls for PPartner table
             FMainDS.PPartner[0].ReceiptLetterFrequency = cmbReceiptLetterFrequency.GetSelectedString();
@@ -273,40 +277,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.PPartner[0].AnonymousDonor = chkAnonymousDonor.Checked;
             FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
             FMainDS.PPartner[0].FinanceComment = txtFinanceComment.Text;
-
-            // validate that there is at least one main account, but not multiple?
-            int countMainAccount = 0;
-
-            foreach (PartnerEditTDSPBankingDetailsRow bdrow in FMainDS.PBankingDetails.Rows)
-            {
-                if (bdrow.RowState != DataRowState.Deleted)
-                {
-                    if (bdrow.MainAccount)
-                    {
-                        countMainAccount++;
-                    }
-                }
-            }
-
-            if (countMainAccount == 0)
-            {
-                FPetraUtilsObject.VerificationResultCollection.Add(
-                    new TScreenVerificationResult(
-                        this, ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnMainAccount,
-                        Catalog.GetString("You must select one account as main bank account"),
-                        btnSetMainAccount,
-                        TResultSeverity.Resv_Critical));
-            }
-            else if (countMainAccount > 1)
-            {
-                // will we ever get here?
-                FPetraUtilsObject.VerificationResultCollection.Add(
-                    new TScreenVerificationResult(
-                        this, ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnMainAccount,
-                        Catalog.GetString("Only one main bank account allowed"),
-                        btnSetMainAccount,
-                        TResultSeverity.Resv_Critical));
-            }
         }
 
         // set the main account flag, remove that flag from the other accounts (p_banking_details_usage)

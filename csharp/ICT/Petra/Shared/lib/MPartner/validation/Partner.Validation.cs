@@ -609,11 +609,13 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="ABankingDetails">test if there is only one main account</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         public static void ValidateBankingDetails(object AContext, PBankingDetailsRow ARow,
+            PBankingDetailsTable ABankingDetails,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
@@ -642,6 +644,44 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
                 AVerificationResultCollection.Remove(ValidationColumn);
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+            }
+
+            // validate that there is at least one main account, but not multiple?
+            int countMainAccount = 0;
+
+            foreach (PartnerEditTDSPBankingDetailsRow bdrow in ABankingDetails.Rows)
+            {
+                if (bdrow.RowState != DataRowState.Deleted)
+                {
+                    if (bdrow.MainAccount)
+                    {
+                        countMainAccount++;
+                    }
+                }
+            }
+
+            if (countMainAccount == 0)
+            {
+                AVerificationResultCollection.Add(
+                    new TScreenVerificationResult(
+                        new TVerificationResult(
+                            AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_ONLYONEMAINACCOUNT)),
+                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnMainAccount,
+                        ValidationControlsData.ValidationControl
+                        ));
+            }
+            else if (countMainAccount > 1)
+            {
+                // will we ever get here?
+                AVerificationResultCollection.Add(
+                    new TScreenVerificationResult(
+                        new TVerificationResult(
+                            AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_ATLEASTONEMAINACCOUNT)),
+                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnMainAccount,
+                        ValidationControlsData.ValidationControl
+                        ));
             }
         }
     }
