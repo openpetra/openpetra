@@ -38,6 +38,7 @@ using Ict.Common.Verification;
 using PetraWebService;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.MConference.Applications;
+using Ict.Petra.Server.MConference.WebConnectors;
 
 namespace Ict.Petra.WebServer.MConference
 {
