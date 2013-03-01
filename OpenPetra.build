@@ -32,6 +32,8 @@ list of available commands:
 compat:
   createSQLStatements: generates the sql create table statements etc from the petra.xml
   dbdoc: generates database design documentation using sql2diagram
+  apiDoc: generates doxygen doc
+  errorCodeDoc: generates doc for used error codes
   schemaSpy: generates database documentation using schemaSpy
   recreateDatabase: needed after changes in table structure in petra.xml
   resetDatabase: just resets the data, resets the permissions
@@ -87,6 +89,12 @@ useful parameters
   <exec program="${external.doxygen}">
     <arg value="&quot;${external.doxygen.configfile}&quot;" />
   </exec>  
+</target>
+
+<target name="errorCodeDoc" description="Generates documentation of the error codes" >
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" 
+    commandline="&quot;-csharppath:${dir.csharp}&quot; -do:errorcodedoc" />
 </target>
 
 <target name="translation" description="create the dlls with the i18n messages" >
