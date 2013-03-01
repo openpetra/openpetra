@@ -1572,14 +1572,14 @@ namespace Ict.Common.Verification.Testing
             Testname = "Test with 'test@test.com.x'";
             TestResult = TStringChecks.ValidateEmail("test@test.com.x");
             ExpectedResult = new TVerificationResult(null, String.Format(ExpectedErrorText, "test@test.com.x"),
-                "GENC.00007V", TResultSeverity.Resv_Critical);
+                "GENC.00017V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
             Testname = "Test with 'test@test.com.x'";
             TestResult = TStringChecks.ValidateEmail("test@test.com.x", TestContext, TestColumn, TestControl);
             ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn,
-                String.Format(ExpectedErrorText, "test@test.com.x"), "GENC.00007V", TestControl,
+                String.Format(ExpectedErrorText, "test@test.com.x"), "GENC.00017V", TestControl,
                 TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
@@ -1601,7 +1601,7 @@ namespace Ict.Common.Verification.Testing
             ExpectedResult = new TVerificationResult(null, String.Format(ExpectedErrorText + Environment.NewLine +
                     "Note: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses.",
                     "test@test.com;;"),
-                "GENC.00007V", TResultSeverity.Resv_Critical);
+                "GENC.00017V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
@@ -1610,7 +1610,7 @@ namespace Ict.Common.Verification.Testing
             ExpectedResult = new TVerificationResult(null, String.Format(ExpectedErrorText + Environment.NewLine +
                     "Note: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses.",
                     "test@test.com; ,"),
-                "GENC.00007V", TResultSeverity.Resv_Critical);
+                "GENC.00017V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
@@ -1619,7 +1619,7 @@ namespace Ict.Common.Verification.Testing
             ExpectedResult = new TVerificationResult(null, String.Format(ExpectedErrorText + Environment.NewLine +
                     "Reason: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses. However, in this case only ONE e-mail address is allowed!",
                     "test@test.com;blah@blah.org"),
-                "GENC.00007V", TResultSeverity.Resv_Critical);
+                "GENC.00017V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
@@ -1628,7 +1628,7 @@ namespace Ict.Common.Verification.Testing
             ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, String.Format(ExpectedErrorText + Environment.NewLine +
                     "Reason: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses. However, in this case only ONE e-mail address is allowed!",
                     "test@test.com;blah@blah.org"),
-                "GENC.00007V", TestControl, TResultSeverity.Resv_Critical);
+                "GENC.00017V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
@@ -1640,7 +1640,7 @@ namespace Ict.Common.Verification.Testing
             ExpectedResult = new TVerificationResult(null, String.Format(ExpectedErrorText + Environment.NewLine +
                     "Note: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses.",
                     "test@test.com.x;blah@blah.org", "test@test.com.x"),
-                "GENC.00007V", TResultSeverity.Resv_Critical);
+                "GENC.00017V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
@@ -1649,7 +1649,7 @@ namespace Ict.Common.Verification.Testing
             ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, String.Format(ExpectedErrorText + Environment.NewLine +
                     "Note: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses.",
                     "test@test.com.x;blah@blah.org", "test@test.com.x"),
-                "GENC.00007V", TestControl, TResultSeverity.Resv_Critical);
+                "GENC.00017V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
@@ -1658,7 +1658,7 @@ namespace Ict.Common.Verification.Testing
             ExpectedResult = new TVerificationResult(null, String.Format(ExpectedErrorText + Environment.NewLine +
                     "Note: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses.",
                     "test@test.com;blah@blah.org.a", "blah@blah.org.a"),
-                "GENC.00007V", TResultSeverity.Resv_Critical);
+                "GENC.00017V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
@@ -1667,7 +1667,7 @@ namespace Ict.Common.Verification.Testing
             ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, String.Format(ExpectedErrorText + Environment.NewLine +
                     "Note: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses.",
                     "test@test.com.x,", "test@test.com.x"),
-                "GENC.00007V", TestControl, TResultSeverity.Resv_Critical);
+                "GENC.00017V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
