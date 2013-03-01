@@ -292,7 +292,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPetraUtilsObject.VerificationResultCollection.Add(
                     new TScreenVerificationResult(
-                        this, null,
+                        this, ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnMainAccount,
                         Catalog.GetString("You must select one account as main bank account"),
                         btnSetMainAccount,
                         TResultSeverity.Resv_Critical));
@@ -302,7 +302,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // will we ever get here?
                 FPetraUtilsObject.VerificationResultCollection.Add(
                     new TScreenVerificationResult(
-                        this, null,
+                        this, ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnMainAccount,
                         Catalog.GetString("Only one main bank account allowed"),
                         btnSetMainAccount,
                         TResultSeverity.Resv_Critical));
