@@ -102,7 +102,9 @@ namespace Ict.Tools.GenerateI18N
                 }
                 else if (TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "errorcodedoc"))
                 {
-                    TGenerateErrorCodeDoc.Execute(TAppSettingsManager.GetValue("csharppath"));
+                    TGenerateErrorCodeDoc.Execute(TAppSettingsManager.GetValue("csharppath"),
+                        TAppSettingsManager.GetValue("templatefilepath"),
+                        TAppSettingsManager.GetValue("outfilepath"));
                 }
                 else if (TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "yamlfiles"))
                 {

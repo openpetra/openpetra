@@ -25,6 +25,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Tools.CodeGeneration;
@@ -42,17 +43,69 @@ public class TGenerateErrorCodeDoc
     /// <summary>
     /// create HTML file with central documentation of error codes used throughout OpenPetra code
     /// </summary>
-    public static bool Execute(string ACSharpPath)
+    public static bool Execute(string ACSharpPath, string ATemplateFilePath, string AOutFilePath)
     {
+        Dictionary <string, ICSharpCode.NRefactory.Ast.Attribute>ErrorCodes = new Dictionary <string, ICSharpCode.NRefactory.Ast.Attribute>();
         CSParser parsedFile = new CSParser(ACSharpPath + "/ICT/Common/ErrorCodes.cs");
 
-        ProcessFile(parsedFile);
+        ProcessFile(parsedFile, ref ErrorCodes);
         parsedFile = new CSParser(ACSharpPath + "/ICT/Petra/Shared/ErrorCodes.cs");
-        ProcessFile(parsedFile);
+        ProcessFile(parsedFile, ref ErrorCodes);
         parsedFile = new CSParser(ACSharpPath + "/ICT/Common/Verification/StringChecks.cs");
-        ProcessFile(parsedFile);
+        ProcessFile(parsedFile, ref ErrorCodes);
 
-        return true;
+        ProcessTemplate t = new ProcessTemplate(ATemplateFilePath);
+
+        Dictionary <string, ProcessTemplate>snippets = new Dictionary <string, ProcessTemplate>();
+
+        snippets.Add("GENC", t.GetSnippet("TABLE"));
+        snippets["GENC"].SetCodelet("TABLEDESCRIPTION", "GENERAL (<i>Ict.Common libraries only</i>)");
+        snippets.Add("GEN", t.GetSnippet("TABLE"));
+        snippets["GEN"].SetCodelet("TABLEDESCRIPTION", "GENERAL (openPETRA)");
+        snippets.Add("PARTN", t.GetSnippet("TABLE"));
+        snippets["PARTN"].SetCodelet("TABLEDESCRIPTION", "PARTNER Module");
+        snippets.Add("PERS", t.GetSnippet("TABLE"));
+        snippets["PERS"].SetCodelet("TABLEDESCRIPTION", "PERSONNEL Module");
+        snippets.Add("FIN", t.GetSnippet("TABLE"));
+        snippets["FIN"].SetCodelet("TABLEDESCRIPTION", "FINANCE Module");
+        snippets.Add("CONF", t.GetSnippet("TABLE"));
+        snippets["CONF"].SetCodelet("TABLEDESCRIPTION", "CONFERENCE Module");
+        snippets.Add("FINDEV", t.GetSnippet("TABLE"));
+        snippets["FINDEV"].SetCodelet("TABLEDESCRIPTION", "FINANCIAL DEVELOPMENT Module");
+        snippets.Add("SYSMAN", t.GetSnippet("TABLE"));
+        snippets["SYSMAN"].SetCodelet("TABLEDESCRIPTION", "SYSTEM MANAGER Module");
+
+        foreach (string snippetkey in snippets.Keys)
+        {
+            snippets[snippetkey].SetCodelet("ABBREVIATION", snippetkey);
+            snippets[snippetkey].SetCodelet("ROWS", string.Empty);
+        }
+
+        foreach (string code in ErrorCodes.Keys)
+        {
+            foreach (string snippetkey in snippets.Keys)
+            {
+                if (code.StartsWith(snippetkey + "."))
+                {
+                    ProcessTemplate row = t.GetSnippet("ROW");
+                    row.SetCodelet("CODE", code);
+
+                    foreach (Expression e in ErrorCodes[code].PositionalArguments)
+                    {
+                        row.AddToCodelet("DESCRIPTION", (((PrimitiveExpression)e).Value.ToString()));
+                    }
+
+                    snippets[snippetkey].InsertSnippet("ROWS", row);
+                }
+            }
+        }
+
+        foreach (string snippetkey in snippets.Keys)
+        {
+            t.InsertSnippet("TABLES", snippets[snippetkey]);
+        }
+
+        return t.FinishWriting(AOutFilePath, ".html", true);
     }
 
     private static string ExpressionToString(Expression e)
@@ -68,7 +121,7 @@ public class TGenerateErrorCodeDoc
         }
     }
 
-    private static void ProcessFile(CSParser AParsedFile)
+    private static void ProcessFile(CSParser AParsedFile, ref Dictionary <string, ICSharpCode.NRefactory.Ast.Attribute>AErrorCodes)
     {
         foreach (TypeDeclaration t in AParsedFile.GetClasses())
         {
@@ -91,6 +144,8 @@ public class TGenerateErrorCodeDoc
                                 {
                                     if (attr.Name == "ErrCodeAttribute")
                                     {
+                                        AErrorCodes.Add(((PrimitiveExpression)vd.Initializer).Value.ToString(),
+                                            attr);
                                         TLogging.Log("");
                                         TLogging.Log("");
                                         TLogging.Log("");

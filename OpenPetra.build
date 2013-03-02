@@ -94,7 +94,7 @@ useful parameters
 <target name="errorCodeDoc" description="Generates documentation of the error codes" >
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
   <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" 
-    commandline="&quot;-csharppath:${dir.csharp}&quot; -do:errorcodedoc" />
+    commandline="&quot;-csharppath:${dir.csharp}&quot; &quot;-templatefilepath:${dir.incdir.template}/doc/errorcodes.html&quot; &quot;-outfilepath:${dir.delivery}/errorcodes.html&quot; -do:errorcodedoc" />
 </target>
 
 <target name="translation" description="create the dlls with the i18n messages" >
