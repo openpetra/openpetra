@@ -47,27 +47,28 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             set
             {
                 FLedgerNumber = value;
+
+                string CheckedMember = "CHECKED";
+                string DisplayMember = "Field Name";
+                string ValueMember = "Field Key";
+
+                DataTable Table = TRemote.MFinance.Reporting.WebConnectors.GetReceivingFields(FLedgerNumber, out DisplayMember, out ValueMember);
+
+                DataColumn FirstColumn = new DataColumn(CheckedMember, typeof(bool));
+
+                FirstColumn.DefaultValue = false;
+                Table.Columns.Add(FirstColumn);
+
+                clbFields.Columns.Clear();
+                clbFields.AddCheckBoxColumn("", Table.Columns[CheckedMember], 17, false);
+                clbFields.AddTextColumn(Catalog.GetString("Field Key"), Table.Columns[ValueMember], 80);
+                clbFields.AddTextColumn(Catalog.GetString("Field Name"), Table.Columns[DisplayMember], 200);
+                clbFields.DataBindGrid(Table, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
             }
         }
 
         private void InitReceivingFieldList()
         {
-            string CheckedMember = "CHECKED";
-            string DisplayMember = "Field Name";
-            string ValueMember = "Field Key";
-
-            DataTable Table = TRemote.MFinance.Reporting.WebConnectors.GetReceivingFields(FLedgerNumber, out DisplayMember, out ValueMember);
-
-            DataColumn FirstColumn = new DataColumn(CheckedMember, typeof(bool));
-
-            FirstColumn.DefaultValue = false;
-            Table.Columns.Add(FirstColumn);
-
-            clbFields.Columns.Clear();
-            clbFields.AddCheckBoxColumn("", Table.Columns[CheckedMember], 17, false);
-            clbFields.AddTextColumn(Catalog.GetString("Field Key"), Table.Columns[ValueMember], 80);
-            clbFields.AddTextColumn(Catalog.GetString("Field Name"), Table.Columns[DisplayMember], 200);
-            clbFields.DataBindGrid(Table, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
