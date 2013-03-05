@@ -111,7 +111,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     }
                     else if (AMaxDateTime < DateTime.MaxValue)
                     {
-                        VerificationResult = TDateChecks.FirstLesserThanSecondDate(ARow.DateEffectiveFrom, AMaxDateTime,
+                        VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate(ARow.DateEffectiveFrom, AMaxDateTime,
                             ValidationControlsData.ValidationControlLabel, Ict.Common.StringHelper.DateToLocalizedString(AMaxDateTime),
                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
@@ -120,7 +120,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     }
                     else if (AMinDateTime > DateTime.MinValue)
                     {
-                        VerificationResult = TDateChecks.FirstGreaterThanSecondDate(ARow.DateEffectiveFrom, AMinDateTime,
+                        VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(ARow.DateEffectiveFrom, AMinDateTime,
                             ValidationControlsData.ValidationControlLabel, Ict.Common.StringHelper.DateToLocalizedString(AMinDateTime),
                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 

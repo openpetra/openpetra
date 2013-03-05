@@ -25,10 +25,12 @@ using System;
 using System.IO;
 using System.Data;
 using System.Collections.Generic;
-
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
+using Ict.Petra.Server.MSysMan.Cacheable.WebConnectors;
+using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
 namespace Ict.Petra.Server.MCommon.Processing
 {
@@ -37,13 +39,37 @@ namespace Ict.Petra.Server.MCommon.Processing
     /// </summary>
     public class TProcessDataChecks
     {
+        private const string PROCESSDATACHECK_LAST_RUN = "PROCESSDATACHECK_LAST_RUN";
         /// <summary>
         /// Gets called in regular intervals from a Timer in Class TTimedProcessing.
         /// </summary>
         /// <param name="ADBAccessObj">Instantiated DB Access object with opened DB connection.</param>
-        public static void Process(TDataBase ADBAccessObj)
+        /// <param name="ARunManually">this is true if the process was called manually from the server admin console</param>
+        public static void Process(TDataBase ADBAccessObj, bool ARunManually)
         {
+            // only check once a day (or as specified in config file), if not manually called
+            if (!ARunManually)
+            {
+                DateTime LastRun =
+                    TVariant.DecodeFromString(
+
+
+                        TSystemDefaults.GetSystemDefault(
+                            PROCESSDATACHECK_LAST_RUN,
+                            new TVariant(DateTime.MinValue).EncodeToString())).ToDate();
+
+                if (LastRun.AddDays(TAppSettingsManager.GetInt16("DataChecks.RunEveryXDays", 1)) > DateTime.Now)
+                {
+                    // do not run the data check more than once a day or a week (depending on configuration setting), too many emails
+                    TLogging.LogAtLevel(1, "TProcessDataChecks.Process: not running, since last run was at " + LastRun.ToString());
+                    return;
+                }
+            }
+
+            TLogging.LogAtLevel(1, "TProcessDataChecks.Process: Checking Modules");
             CheckModule(ADBAccessObj, "DataCheck.MPartner.");
+
+            TSystemDefaults.SetSystemDefault(PROCESSDATACHECK_LAST_RUN, new TVariant(DateTime.Now).EncodeToString());
         }
 
         private static void CheckModule(TDataBase ADBAccessObj, string AModule)

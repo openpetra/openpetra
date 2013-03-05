@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -149,6 +149,8 @@ namespace Ict.Common
         [ErrCodeAttribute("Duplicate record",
              ErrorMessageText = "A record with these key value(s) already exists:")]
         public const String ERR_DUPLICATE_RECORD = "GENC.00016V";
+
+        // Note: GENC.0017V is already defined in Ict.Common.Verification.TStringChecks...
 
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";

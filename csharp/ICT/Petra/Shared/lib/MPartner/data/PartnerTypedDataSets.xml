@@ -27,7 +27,9 @@
     <Table sqltable="p_organisation"/>
     <Table sqltable="p_church"/>
     <Table sqltable="p_bank"/>
-    <Table sqltable="p_banking_details"/>
+    <Table sqltable="p_banking_details">
+        <CustomField name="MainAccount" type="Boolean"/>
+    </Table>
     <Table sqltable="p_partner_banking_details"/>
     <Table sqltable="p_banking_details_usage"/>
     <Table sqltable="p_venue"/>
@@ -64,6 +66,7 @@
       <CustomField name="ItemsCountFamilyMembers" type="Int32"/>
       <CustomField name="ItemsCountInterests" type="Int32"/>
       <CustomField name="ItemsCountReminders" type="Int32"/>
+      <CustomField name="ItemsCountPartnerBankingDetails" type="Int32"/>
       <!-- not in use yet! -->
       <CustomField name="ItemsCountPartnerRelationships" type="Int32"/>
       <!-- not in use yet! -->

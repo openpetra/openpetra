@@ -58,7 +58,8 @@ namespace Ict.Petra.Server.MPartner.Processing
         /// Gets called in regular intervals from a Timer in Class TTimedProcessing.
         /// </summary>
         /// <param name="ADBAccessObj">Already instatiated DB Access object with opened DB connection.</param>
-        public static void Process(TDataBase ADBAccessObj)
+        /// <param name="ARunManually">this is true if the process was called manually from the server admin console</param>
+        public static void Process(TDataBase ADBAccessObj, bool ARunManually)
         {
             bool NewTransaction;
             bool LastReminderDateAcquired;
@@ -228,7 +229,7 @@ namespace Ict.Petra.Server.MPartner.Processing
                 {
                     ADBAccessObj.CommitTransaction();
 
-                    TLogging.Log(TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " ran succesfully.");
+                    TLogging.LogAtLevel(1, TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " ran succesfully.");
                 }
                 else
                 {

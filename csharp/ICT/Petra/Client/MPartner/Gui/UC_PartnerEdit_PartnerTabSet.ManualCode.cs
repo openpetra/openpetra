@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,6 +76,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 // TODO        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
 
         private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
+
+        private static readonly string StrFinanceDetailsTabHeader = Catalog.GetString("Finance Details");
 
         private static readonly string StrAddressesSingular = Catalog.GetString("Address");
 
@@ -508,6 +510,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucFinanceDetails))
+            {
+                TUC_FinanceDetails UCFinanceDetails =
+                    (TUC_FinanceDetails)FTabSetup[TDynamicLoadableUserControls.dlucFinanceDetails];
+
+                if (!UCFinanceDetails.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucOfficeSpecific))
             {
                 TUC_LocalPartnerData UCLocalPartnerData =
@@ -690,6 +703,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FUcoAddresses.RefreshRecordsAfterMerge();
+
+            if (FUcoFinanceDetails != null)
+            {
+                FUcoFinanceDetails.RefreshRecordsAfterMerge();
+            }
         }
 
         /// <summary>
@@ -866,6 +884,29 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+                else if (ATabPageEventArgs.Tab == tpgFinanceDetails)
+                {
+                    // see PreInitUserControl below
+                    FUcoFinanceDetails.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+                }
+            }
+        }
+
+        /// <summary>
+        /// This Method *CAN* be implemented in ManualCode to perform special initialisations *before*
+        /// InitUserControl() gets called.
+        /// </summary>
+        partial void PreInitUserControl(UserControl AUserControl)
+        {
+            if (AUserControl is TUC_FinanceDetails)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFinanceDetails;
+
+                FUcoFinanceDetails.PartnerEditUIConnector = FPartnerEditUIConnector;
+
+                FUcoFinanceDetails.SpecialInitUserControl(FMainDS);
+
+                CorrectDataGridWidthsAfterDataChange();
             }
         }
 
@@ -1045,6 +1086,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tpgNotes.Text = String.Format(StrNotesTabHeader + " ({0})", (char)8730);
                     tpgNotes.ToolTipText = "Notes are entered";
                 }
+            }
+
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FinanceDetails))
+            {
+                if (FMainDS.Tables.Contains(PPartnerBankingDetailsTable.GetTableName()))
+                {
+                    CountAll = FMainDS.PPartnerBankingDetails.Rows.Count;
+                }
+                else
+                {
+                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountPartnerBankingDetails;
+                }
+
+                tpgFinanceDetails.Text = String.Format(StrFinanceDetailsTabHeader + " ({0})", CountAll);
             }
         }
 
@@ -1244,6 +1299,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                             tabPartners.SelectedTab = tpgAddresses;
                         }
 
+                        break;
+
+                    case TPartnerEditTabPageEnum.petpFinanceDetails:
+                        tabPartners.SelectedTab = tpgFinanceDetails;
                         break;
                 }
             }
