@@ -49,6 +49,14 @@ namespace Ict.Petra.Server.MReporting.MFinance
         {
         }
 
+        /// <summary>
+        /// Don't remember anything from the last report...
+        /// </summary>
+        public static void FlushSqlCache()
+        {
+            ActualsCache.Invalidate();
+        }
+
         private string UnitKeyToForeignCostCentre(Int64 pv_unit_partner_key_n)
         {
             string ReturnValue;

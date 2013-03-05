@@ -449,26 +449,20 @@ namespace Ict.Petra.Server.MReporting
         /// <returns></returns>
         public TRptLevel GetLevel(string name)
         {
-            TRptLevel element;
-            int counter;
-
-            counter = 0;
-
+            
             if (rptGrpLevel == null)
             {
                 return null;
             }
 
-            while (counter < rptGrpLevel.Count)
+            for (int counter = 0; counter < rptGrpLevel.Count; counter++)
             {
-                element = (TRptLevel)rptGrpLevel[counter];
+                TRptLevel element = (TRptLevel)rptGrpLevel[counter];
 
                 if (element.strName == name)
                 {
                     return element;
                 }
-
-                counter++;
             }
 
             TLogging.Log("could not find level \"" + name + "\"");
@@ -482,31 +476,25 @@ namespace Ict.Petra.Server.MReporting
         /// <returns></returns>
         public TRptCalculation GetCalculation(string name)
         {
-            TRptCalculation ReturnValue;
-            TRptCalculation element;
-            int counter;
-
-            counter = 0;
-            ReturnValue = null;
 
             if (rptGrpCalculation == null)
             {
                 return null;
             }
 
-            while (counter < rptGrpCalculation.Count)
-            {
-                element = (TRptCalculation)rptGrpCalculation[counter];
+            name = name.ToLower();
 
-                if (element.strId.ToLower() == name.ToLower())
+            for (int counter = 0; counter < rptGrpCalculation.Count;  counter++)
+            {
+                TRptCalculation element = (TRptCalculation)rptGrpCalculation[counter];
+
+                if (element.strId.ToLower() == name)
                 {
                     return element;
                 }
-
-                counter++;
             }
 
-            return ReturnValue;
+            return null;
         }
     }
 
@@ -624,39 +612,23 @@ namespace Ict.Petra.Server.MReporting
         /// </summary>
         public void Clear()
         {
-            int counter;
-
-            counter = 0;
-
-            while (counter < reports.Count)
-            {
-                reports.RemoveAt(counter);
-                counter = 0;
-            }
+            reports.Clear();
         }
 
         /// <summary>
-        /// clear one specific report
+        /// clear any reports with this id
         /// </summary>
         /// <param name="reportId"></param>
         public void Clear(string reportId)
         {
-            TReportDefinition element;
-            int counter;
-
-            counter = 0;
-
-            while (counter < reports.Count)
+            for (int counter = 0;counter < reports.Count; counter++)
             {
-                element = (TReportDefinition)reports[counter];
+                TReportDefinition element = (TReportDefinition)reports[counter];
 
                 if (element.id == reportId)
                 {
                     reports.RemoveAt(counter);
-                    return;
                 }
-
-                counter++;
             }
         }
 
@@ -682,30 +654,17 @@ namespace Ict.Petra.Server.MReporting
         /// <returns></returns>
         public TRptReport Get(string reportId)
         {
-            TRptReport ReturnValue;
-            TReportDefinition element;
-            int counter;
-
-            counter = 0;
-            ReturnValue = null;
-
-            while (counter < reports.Count)
+            for (int counter=0; counter < reports.Count; counter++)
             {
-                element = (TReportDefinition)reports[counter];
+                TReportDefinition element = (TReportDefinition)reports[counter];
 
                 if (element.id == reportId)
                 {
                     return element.GetReport();
                 }
-
-                counter++;
             }
-
-            return ReturnValue;
+            return null;
         }
-
-        // if report has no calculation with this name,
-        // a calculation from any report is selected, and the calculation is returned
 
         /// <summary>
         /// if report has no calculation with this name,
@@ -716,7 +675,6 @@ namespace Ict.Petra.Server.MReporting
         {
             TRptCalculation ReturnValue;
             TReportDefinition element;
-            int counter;
 
             ReturnValue = null;
 
@@ -727,9 +685,7 @@ namespace Ict.Petra.Server.MReporting
 
             if (ReturnValue == null)
             {
-                counter = 0;
-
-                while (counter < reports.Count)
+                for (int counter = 0; counter < reports.Count;  counter++)
                 {
                     element = (TReportDefinition)reports[counter];
                     ReturnValue = element.rptReport.GetCalculation(name);
@@ -738,8 +694,6 @@ namespace Ict.Petra.Server.MReporting
                     {
                         return ReturnValue;
                     }
-
-                    counter++;
                 }
             }
 
@@ -748,22 +702,18 @@ namespace Ict.Petra.Server.MReporting
 
         /// <summary>
         /// this function is used for calculations that are based on a function, e.g. variance
-        /// it returns true, if the calcution returns "functionresult"
+        /// it returns true, if the calcution returns "functionresult", OR IF IT'S NOT FOUND
         /// </summary>
         /// <returns>void</returns>
         public Boolean IsFunctionCalculation(TRptReport report, string name)
         {
-            Boolean ReturnValue;
-            TRptCalculation rptCalculation;
-
-            ReturnValue = true;
-
             if (name.Length == 0)
             {
                 return false;
             }
 
-            rptCalculation = GetCalculation(report, name);
+            Boolean ReturnValue = true;
+            TRptCalculation rptCalculation = GetCalculation(report, name);
 
             if (rptCalculation != null)
             {

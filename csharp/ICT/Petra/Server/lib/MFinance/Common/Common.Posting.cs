@@ -148,8 +148,8 @@ namespace Ict.Petra.Server.MFinance.Common
             if (!ABatchAccess.Exists(ALedgerNumber, ABatchNumber, Transaction))
             {
                 AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        Catalog.GetString("The batch does not exist at all."),
+                        String.Format(Catalog.GetString("Cannot access Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                        Catalog.GetString("Batch not found."),
                         TResultSeverity.Resv_Critical));
 
                 if (NewTransaction)
@@ -290,11 +290,11 @@ namespace Ict.Petra.Server.MFinance.Common
             // Calculate the credit and debit totals
             GLRoutines.UpdateTotalsOfBatch(ref ADataSet, ABatchToPost);
 
-            if (Convert.ToDecimal(ABatchToPost.BatchCreditTotal) != Convert.ToDecimal(ABatchToPost.BatchDebitTotal))
+            if (ABatchToPost.BatchCreditTotal != ABatchToPost.BatchDebitTotal)
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("It does not balance: Debit is {0:n2}, Credit is {1:n2}"), ABatchToPost.BatchDebitTotal,
+                        String.Format(Catalog.GetString("It does not balance: Debit is {0}, Credit is {1}"), ABatchToPost.BatchDebitTotal,
                             ABatchToPost.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
@@ -306,7 +306,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         TResultSeverity.Resv_Critical));
             }
             else if ((ABatchToPost.BatchControlTotal != 0)
-                     && (Convert.ToDecimal(ABatchToPost.BatchControlTotal) != Convert.ToDecimal(ABatchToPost.BatchCreditTotal)))
+                     && (ABatchToPost.BatchControlTotal != ABatchToPost.BatchCreditTotal))
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
@@ -379,11 +379,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 journal.DateEffective = ABatchToPost.DateEffective;
                 journal.JournalPeriod = ABatchToPost.BatchPeriod;
 
-                if (Convert.ToDecimal(journal.JournalCreditTotal) != Convert.ToDecimal(journal.JournalDebitTotal))
+                if (journal.JournalCreditTotal != journal.JournalDebitTotal)
                 {
                     AVerifications.Add(new TVerificationResult(
                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
-                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1:n2}, Credit is {2:n2}"),
+                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1}, Credit is {2}"),
                                 journal.JournalNumber,
                                 journal.JournalDebitTotal, journal.JournalCreditTotal),
                             TResultSeverity.Resv_Critical));
@@ -1242,13 +1242,13 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// cancel a GL Batch
+        /// Tell me whether this Batch can be cancelled
         /// </summary>
         /// <param name="AMainDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
-        public static bool CancelGLBatch(out GLBatchTDS AMainDS,
+        public static bool GLBatchCanBeCancelled(out GLBatchTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
@@ -1281,6 +1281,41 @@ namespace Ict.Petra.Server.MFinance.Common
 
             return true;
         }
+
+        /// <summary>
+        /// If a Batch has been created then found to be not required, it can be deleted here.
+        /// (This was added for ICH and Stewardship calculations, which can otherwise leave empty batches in the ledger.)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        /// <returns></returns>
+        public static bool DeleteGLBatch(
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications)
+    {
+            GLBatchTDS TempTDS;
+            if (!GLBatchCanBeCancelled(out TempTDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            {
+                return false;
+            }
+            else
+            {
+                ABatchRow BatchRow = TempTDS.ABatch[0];
+                //
+                // If I'm deleting the most recent entry (which is almost certainly the case)
+                // I can wind back the Ledger's LastBatchNumber so as not to leave a gap.
+                //
+                if (BatchRow.BatchNumber == TempTDS.ALedger[0].LastBatchNumber)
+                {
+                    TempTDS.ALedger[0].LastBatchNumber--;
+                }
+
+                BatchRow.Delete();
+                return (GLBatchTDSAccess.SubmitChanges(TempTDS, out AVerifications) == TSubmitChangesResult.scrOK);
+            }
+    }
 
         /// <summary>
         /// create a new batch.
@@ -1345,24 +1380,77 @@ namespace Ict.Petra.Server.MFinance.Common
         /// create a new batch.
         /// it is already stored to the database, to avoid problems with LastBatchNumber
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchDescription"></param>
+        /// <param name="ABatchControlTotal"></param>
+        /// <param name="ADateEffective"></param>
+        /// <returns></returns>
         public static GLBatchTDS CreateABatch(
             Int32 ALedgerNumber,
             string ABatchDescription,
             decimal ABatchControlTotal,
             DateTime ADateEffective)
         {
-            GLBatchTDS MainDS = CreateABatch(ALedgerNumber);
-            ABatchRow NewRow = MainDS.ABatch[0];
+            bool NewTransactionStarted = false;
 
-            int FinancialYear, FinancialPeriod;
+            GLBatchTDS MainDS = null;
 
-            TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out FinancialYear, out FinancialPeriod, null, false);
-            NewRow.DateEffective = ADateEffective;
-            NewRow.BatchPeriod = FinancialPeriod;
-            NewRow.BatchYear = FinancialYear;
-            NewRow.BatchDescription = ABatchDescription;
-            NewRow.BatchControlTotal = ABatchControlTotal;
+            //Error handling
+            string ErrorContext = "Create a Batch";
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            TVerificationResultCollection VerificationResult = null;
 
+            try
+            {
+                MainDS = new GLBatchTDS();
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                                 (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
+
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
+                NewRow.LedgerNumber = ALedgerNumber;
+                MainDS.ALedger[0].LastBatchNumber++;
+                NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
+                NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
+
+                int FinancialYear, FinancialPeriod;
+                if (ADateEffective != null)
+                {
+                    TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out FinancialYear, out FinancialPeriod, null, false);
+                    NewRow.DateEffective = ADateEffective;
+                    NewRow.BatchPeriod = FinancialPeriod;
+                    NewRow.BatchYear = FinancialYear;
+                }
+                NewRow.BatchDescription = ABatchDescription;
+                NewRow.BatchControlTotal = ABatchControlTotal;
+                MainDS.ABatch.Rows.Add(NewRow);
+
+                if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+                {
+                    MainDS.AcceptChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
+                            Environment.NewLine + Environment.NewLine + ex.ToString()),
+                        ALedgerNumber);
+                ErrorType = TResultSeverity.Resv_Critical;
+                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+            }
+            finally
+            {
+                if (NewTransactionStarted)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
             return MainDS;
         }
 

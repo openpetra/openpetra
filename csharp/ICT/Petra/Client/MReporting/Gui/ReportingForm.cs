@@ -565,10 +565,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             catch (Exception e)
             {
-//              if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)  // I always want this, whatever my debug level?
                 {
                     MessageBox.Show(e.ToString());
-                    MessageBox.Show(e.Message);
                 }
             }
         }
