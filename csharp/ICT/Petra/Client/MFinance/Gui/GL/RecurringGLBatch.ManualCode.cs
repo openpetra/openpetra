@@ -242,7 +242,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     this.ucoRecurringTransactions.CancelChangesToFixedBatches();
                     this.ucoRecurringJournals.CancelChangesToFixedBatches();
-                    SaveChanges();
+                    //TODO SaveChanges();
                     this.tpgTransactions.Enabled = false;
                 }
 
@@ -306,14 +306,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
         {
-            FPetraUtilsObject.VerificationResultCollection.Clear();
+            //TODO FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!SaveChanges())
-            {
-                e.Cancel = true;
-
-                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
-            }
+            //TODO if (!SaveChanges())
+            //TODO {
+            //TODO     e.Cancel = true;
+            //TODO 
+            //TODO     FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            //TODO }
         }
 
         private void SelectTabManual(int ASelectedTabIndex)

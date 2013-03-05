@@ -63,7 +63,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                 {
-                    if (grdDetails.SelectedRowIndex() > 0)
+                    if (grdDetails.SelectedRowIndex() > 0
+                        && GetSelectedDetailRow().RowState != DataRowState.Deleted)
                     {
                         GetDetailsFromControls(GetSelectedDetailRow());
                     }
@@ -265,10 +266,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
-            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
-            {
-                return;
-            }
+            //TODO if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+            //TODO {
+            //TODO     return;
+            //TODO }
+
+            FPetraUtilsObject.VerificationResultCollection.Clear();
 
             this.CreateNewARecurringJournal();
 
@@ -344,57 +347,158 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// remove journals
+        /// Performs checks to determine whether a deletion of the current
+        ///  row is permissable
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void DeleteRecord(System.Object sender, EventArgs e)
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(ARecurringJournalRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
             {
-                return;
+                MessageBox.Show(Catalog.GetString("No Recurring GL Journal is selected to delete."),
+                    Catalog.GetString("Deleting Recurring GL Journal"));
+                return false;
+            }
+            else
+            {
+                // ask if the user really wants to cancel the journal
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring GL Journal no: {0} ?"),
+                    ARowToDelete.JournalNumber);
+                return true;
+            }
+        }
+
+        private void DeleteRecord(System.Object sender, EventArgs e)
+        {
+            this.DeleteARecurringJournal();
+        }
+
+        /// <summary>
+        /// Deletes the current row and optionally populates a completion message
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to delete</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        /// <returns>true if row deletion is successful</returns>
+        private bool DeleteRowManual(ARecurringJournalRow ARowToDelete, out string ACompletionMessage)
+        {
+            bool deletionSuccessful = false;
+
+            int batchNumber = ARowToDelete.BatchNumber;
+            int journalNumber = ARowToDelete.JournalNumber;
+
+            try
+            {
+                // Delete on client side data through views that is already loaded. Data that is not 
+                // loaded yet will be deleted with cascading delete on server side so we don't have
+                // to worry about this here.
+
+                ACompletionMessage = String.Format(Catalog.GetString("Journal no.: {0} deleted successfully."),
+                    journalNumber);
+
+                // Delete the associated recurring transaction analysis attributes
+                DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
+                viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5}",
+                    ARecurringTransAnalAttribTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                    batchNumber,
+                    ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                    journalNumber);
+
+                foreach (DataRowView row in viewRecurringTransAnalAttrib)
+                {
+                    row.Delete();
+                }
+
+                // Delete the associated recurring transactions
+                DataView viewRecurringTransaction = new DataView(FMainDS.ARecurringTransaction);
+                viewRecurringTransaction.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5}",
+                    ARecurringTransactionTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    ARecurringTransactionTable.GetBatchNumberDBName(),
+                    batchNumber,
+                    ARecurringTransactionTable.GetJournalNumberDBName(),
+                    journalNumber);
+
+                foreach (DataRowView row in viewRecurringTransaction)
+                {
+                    row.Delete();
+                }
+
+                // Delete the recurring journal row.
+                ARowToDelete.Delete();
+
+                FPreviouslySelectedDetailRow = null;
+
+                deletionSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                ACompletionMessage = ex.Message;
+                MessageBox.Show(ex.Message,
+                    "Deletion Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
 
-            int currentRowIndex = grdDetails.SelectedRowIndex();
+            return deletionSuccessful;
+        }
 
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have chosen to delete this journal ({0}).\n\nDo you really want to delete it?"),
-                            FPreviouslySelectedDetailRow.JournalNumber),
-                        Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+        /// <summary>
+        /// Code to be run after the deletion process
+        /// </summary>
+        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
+        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
+        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        private void PostDeleteManual(ARecurringJournalRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            /*Code to execute after the delete has occurred*/
+            if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
-                FPreviouslySelectedDetailRow.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
-                ARecurringBatchRow batchrow = ((TFrmRecurringGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
-                batchrow.BatchCreditTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
-                batchrow.BatchDebitTotal -= FPreviouslySelectedDetailRow.JournalDebitTotal;
+                //MessageBox.Show(ACompletionMessage,
+                //    "Deletion completed",
+                //    MessageBoxButtons.OK,
+                //    MessageBoxIcon.Information);
 
-                if (batchrow.BatchControlTotal != 0)
-                {
-                    batchrow.BatchControlTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
-                }
-
-                FPreviouslySelectedDetailRow.JournalCreditTotal = 0;
-                FPreviouslySelectedDetailRow.JournalDebitTotal = 0;
-
-                foreach (ATransactionRow transaction in FMainDS.ARecurringTransaction.Rows)     //alle? ist das richtig?
-                {
-                    transaction.Delete();
-                }
-
-                SelectRowInGrid(currentRowIndex);
-
-                ((TFrmRecurringGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-                FPetraUtilsObject.SetChangedFlag();
-                UpdateChangeableStatus();
-
-                if (grdDetails.Rows.Count < 2)
+                if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
                 {
                     ClearControls();
                 }
             }
-        }
+            else if (!AAllowDeletion)
+            {
+                //message to user
+                MessageBox.Show(ACompletionMessage,
+                    "Deletion not allowed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            else if (!ADeletionPerformed)
+            {
+                //message to user
+                MessageBox.Show(ACompletionMessage,
+                    "Deletion failed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
 
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmRecurringGLBatch)ParentForm).EnableTransactions();
+            }
+            else
+            {
+                ((TFrmRecurringGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                ((TFrmRecurringGLBatch)ParentForm).DisableTransactions();
+            }
+        }
+        
         private void ClearControls()
         {
             FPetraUtilsObject.DisableDataChangedEvent();

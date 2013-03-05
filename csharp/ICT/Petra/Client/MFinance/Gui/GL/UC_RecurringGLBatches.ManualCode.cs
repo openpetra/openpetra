@@ -77,6 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
+                ClearControls();
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
             }
 
@@ -126,8 +127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                    && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
 
             FPetraUtilsObject.EnableAction("actSubmitBatch", allowSubmit);
-            FPetraUtilsObject.EnableAction("actTestSubmitBatch", allowSubmit);
-            FPetraUtilsObject.EnableAction("actCancel", allowSubmit);
+            FPetraUtilsObject.EnableAction("actDelete", allowSubmit);
             pnlDetails.Enabled = allowSubmit;
             pnlDetailsProtected = !allowSubmit;
 
@@ -217,7 +217,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Controls the enabled status of the Cancel, Test and Post buttons
+        /// Controls the enabled status of the Delete and Submit buttons
         /// </summary>
         /// <param name="AEnable"></param>
         private void EnableButtonControl(bool AEnable)
@@ -256,13 +256,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 rbtEditing.Checked = true;
             }
-            else if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
-            {
-                return;
-            }
+            //TODO else if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+            //TODO {
+            //TODO     return;
+            //TODO }
 
             //FPreviouslySelectedDetailRow = null;
 
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+            
             pnlDetails.Enabled = true;
 
             //ClearDetailControls();
@@ -292,7 +294,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchDescription.Text = "Please enter a batch description";
             txtDetailBatchDescription.Focus();
 
-            ((TFrmRecurringGLBatch)ParentForm).SaveChanges();
+            //TODO ((TFrmRecurringGLBatch)ParentForm).SaveChanges();
 
             //Enable the Journals if not already enabled
             ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
@@ -381,115 +383,180 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Cancel a batch (there is no deletion of batches)
+        /// Performs checks to determine whether a deletion of the current
+        ///  row is permissable
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteRecord(System.Object sender, EventArgs e)
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(ARecurringBatchRow ARowToDelete, ref string ADeletionQuestion)
         {
-            //this.DeleteARecurringBatch();
-            
-            if (FPreviouslySelectedDetailRow == null)
+            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
             {
-                return;
+                MessageBox.Show(Catalog.GetString("No Recurring GL Batch is selected to delete."),
+                    Catalog.GetString("Deleting Recurring GL Batch"));
+                return false;
             }
-
-            int newCurrentRowPos = grdDetails.SelectedRowIndex();
-
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                ||
-                (MessageBox.Show(String.Format(Catalog.GetString("You have chosen to cancel this batch ({0}).\n\nDo you really want to cancel it?"),
-                         FSelectedBatchNumber),
-                     Catalog.GetString("Confirm Cancel"),
-                     MessageBoxButtons.YesNo,
-                     MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
+            else
             {
-                TVerificationResultCollection Verifications;
-                GLBatchTDS mergeDS;
-                //save the position of the actual row
-                //int rowIndex = CurrentRowIndex();
-
-//TODO                if (!TRemote.MFinance.GL.WebConnectors.CancelRecurringGLBatch(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
-                if (!TRemote.MFinance.GL.WebConnectors.CancelGLBatch(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
-                {
-                    string ErrorMessages = String.Empty;
-
-                    foreach (TVerificationResult verif in Verifications)
-                    {
-                        ErrorMessages += "[" + verif.ResultContext + "] " +
-                                         verif.ResultTextCaption + ": " +
-                                         verif.ResultText + Environment.NewLine;
-                    }
-
-                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Cancel batch failed"));
-                    return;
-                }
-                else
-                {
-                    FMainDS.Merge(mergeDS);
-                    //GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-                    FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-                    //grdDetails.Refresh();
-
-                    foreach (ARecurringJournalRow journal in FMainDS.ARecurringJournal.Rows)
-                    {
-                        if (journal.BatchNumber == FSelectedBatchNumber)
-                        {
-                            journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
-                            journal.JournalCreditTotal = 0;
-                            journal.JournalDebitTotal = 0;
-                        }
-                    }
-
-                    FPreviouslySelectedDetailRow.BatchCreditTotal = 0;
-                    FPreviouslySelectedDetailRow.BatchDebitTotal = 0;
-                    FPreviouslySelectedDetailRow.BatchControlTotal = 0;
-                    DataView transactionDV = new DataView(FMainDS.ARecurringTransaction, String.Format("{0} = {1}",
-                            ARecurringTransactionTable.GetBatchNumberDBName(),
-                            FSelectedBatchNumber), "", DataViewRowState.CurrentRows);
-
-                    while (transactionDV.Count > 0)
-                    {
-                        transactionDV[0].Delete();
-                    }
-
-                    //Select and call the event that doesn't occur automatically
-                    SelectRowInGrid(newCurrentRowPos);
-
-                    //If some row(s) still exist after deletion
-                    if (grdDetails.Rows.Count < 2)
-                    {
-                        EnableButtonControl(false);
-                        ClearDetailControls();
-
-                        ((TFrmRecurringGLBatch)ParentForm).DisableJournals();
-                        ((TFrmRecurringGLBatch)ParentForm).DisableTransactions();
-                        ((TFrmRecurringGLBatch)ParentForm).DisableAttributes();
-                    }
-
-                    ((TFrmRecurringGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-                    FPetraUtilsObject.SetChangedFlag();
-
-                    //Need to call save
-                    if (((TFrmRecurringGLBatch)ParentForm).SaveChanges())
-                    {
-                        MessageBox.Show(Catalog.GetString("The recurring batch has been cancelled successfully!"),
-                            Catalog.GetString("Success"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        //((TFrmRecurringGLBatch)ParentForm).GetJournalsControl() .ClearCurrentSelection();
-                    }
-                    else
-                    {
-                        // saving failed, therefore do not try to post
-                        MessageBox.Show(Catalog.GetString(
-                                "The recurring batch has been cancelled but there were problems during saving; ") + Environment.NewLine +
-                            Catalog.GetString("Please try and save the cancellation immediately."),
-                            Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
+                // ask if the user really wants to cancel the batch
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring GL Batch no: {0} ?"),
+                    ARowToDelete.BatchNumber);
+                return true;
             }
         }
 
+        private void DeleteRecord(System.Object sender, EventArgs e)
+        {
+            this.DeleteARecurringBatch();
+        }
+
+        /// <summary>
+        /// Deletes the current row and optionally populates a completion message
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to delete</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        /// <returns>true if row deletion is successful</returns>
+        private bool DeleteRowManual(ARecurringBatchRow ARowToDelete, out string ACompletionMessage)
+        {
+            bool deletionSuccessful = false;
+
+            int batchNumber = ARowToDelete.BatchNumber;
+
+            try
+            {
+                // Delete on client side data through views that is already loaded. Data that is not 
+                // loaded yet will be deleted with cascading delete on server side so we don't have
+                // to worry about this here.
+
+                ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
+                    batchNumber);
+
+                // Delete the associated recurring transaction analysis attributes
+                DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
+                viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                    ARecurringTransAnalAttribTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                    batchNumber);
+
+                foreach (DataRowView row in viewRecurringTransAnalAttrib)
+                {
+                    row.Delete();
+                }
+
+                // Delete the associated recurring transactions
+                DataView viewRecurringTransaction = new DataView(FMainDS.ARecurringTransaction);
+                viewRecurringTransaction.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                    ARecurringTransactionTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    ARecurringTransactionTable.GetBatchNumberDBName(),
+                    batchNumber);
+
+                foreach (DataRowView row in viewRecurringTransaction)
+                {
+                    row.Delete();
+                }
+
+                // Delete the associated recurring journals
+                DataView viewRecurringJournal = new DataView(FMainDS.ARecurringJournal);
+                viewRecurringJournal.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                    ARecurringJournalTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    ARecurringJournalTable.GetBatchNumberDBName(),
+                    batchNumber);
+
+                foreach (DataRowView row in viewRecurringJournal)
+                {
+                    row.Delete();
+                }
+                
+                // Delete the recurring batch row.
+                ARowToDelete.Delete();
+
+                FPreviouslySelectedDetailRow = null;
+
+                deletionSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                ACompletionMessage = ex.Message;
+                MessageBox.Show(ex.Message,
+                    "Deletion Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+
+            return deletionSuccessful;
+        }
+
+        /// <summary>
+        /// Code to be run after the deletion process
+        /// </summary>
+        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
+        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
+        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        private void PostDeleteManual(ARecurringBatchRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            /*Code to execute after the delete has occurred*/
+            if (ADeletionPerformed && (ACompletionMessage.Length > 0))
+            {
+                //MessageBox.Show(ACompletionMessage,
+                //    "Deletion completed",
+                //    MessageBoxButtons.OK,
+                //    MessageBoxIcon.Information);
+
+                if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
+                {
+                    ClearControls();
+                }
+            }
+            else if (!AAllowDeletion)
+            {
+                //message to user
+                MessageBox.Show(ACompletionMessage,
+                    "Deletion not allowed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            else if (!ADeletionPerformed)
+            {
+                //message to user
+                MessageBox.Show(ACompletionMessage,
+                    "Deletion failed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
+            }
+            else
+            {
+                ((TFrmRecurringGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                ((TFrmRecurringGLBatch)ParentForm).DisableJournals();
+            }
+        }
+        
+        private void ClearControls()
+        {
+            try
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                txtDetailBatchDescription.Clear();
+                txtDetailBatchControlTotal.NumberValueDecimal = 0;
+            }
+            finally
+            {
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
+        }
+        
         /// <summary>
         /// UpdateTotals
         /// </summary>
@@ -527,24 +594,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
             
-            //TODO
-            
-        }
-
-        /// <summary>
-        /// this function calculates the balances of the accounts involved, if this batch would be submitted
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TestSubmitBatch(System.Object sender, EventArgs e)
-        {
-            //TVerificationResultCollection Verifications;
-
-            if (!SaveBatchForSubmitting())
-            {
-                return;
-            }
-
             //TODO
             
         }

@@ -549,7 +549,7 @@ namespace {#NAMESPACE}
     /// <param name="AControl">Do not use</param>
     private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow, bool AIsNewRow = false, Control AControl=null)
     {
-        if (ARow != null && !pnlDetailsProtected && !grdDetails.Sorting)
+        if (ARow != null && ARow.RowState != DataRowState.Deleted && !pnlDetailsProtected && !grdDetails.Sorting)
         {
             if (AIsNewRow)
             {

@@ -80,7 +80,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATransactionNumber"></param>
         public void LoadAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
         {
-            if (FBatchNumber != -1)
+            if (FBatchNumber != -1
+                && FPreviouslySelectedDetailRow != null
+                && FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted)
             {
                 GetDataFromControls();
             }
@@ -386,41 +388,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 i--;
             }
-        }
-
-        /// <summary>
-        /// remove all attributes if the transaction is deleted (needed?))
-        /// </summary>
-        /// <param name="trans">Row of the transaction where the attributes are deleted</param>
-
-        public void DeleteTransactionAttributes(RecurringGLBatchTDSARecurringTransactionRow trans)
-        {
-            if (trans == null)
-            {
-                return;
-            }
-
-            int NumRows = FMainDS.ARecurringTransAnalAttrib.Rows.Count;
-
-            for (int RowIndex = NumRows - 1; RowIndex >= 0; RowIndex -= 1)
-            {
-                ARecurringTransAnalAttribRow row = (ARecurringTransAnalAttribRow)FMainDS.ARecurringTransAnalAttrib.Rows[RowIndex];
-
-                if (
-                    row.TransactionNumber.Equals(trans.TransactionNumber)
-                    && row.JournalNumber.Equals(trans.JournalNumber)
-                    && row.BatchNumber.Equals(trans.BatchNumber)
-                    && row.LedgerNumber.Equals(trans.LedgerNumber)
-
-                    )
-                {
-                    row.Delete();
-                }
-            }
-
-            FPreviouslySelectedDetailRow = null;
-
-            FPetraUtilsObject.SetChangedFlag();
         }
 
         /// <summary>

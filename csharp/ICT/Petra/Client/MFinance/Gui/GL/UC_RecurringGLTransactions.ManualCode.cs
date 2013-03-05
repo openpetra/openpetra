@@ -74,7 +74,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 && (FMainDS.ARecurringTransaction.DefaultView.Count > 0))
             {
                 //Same as previously selected
-                if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
+                if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) 
+                    && (grdDetails.SelectedRowIndex() > 0)
+                    && GetSelectedDetailRow().RowState != DataRowState.Deleted)
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
                 }
@@ -232,11 +234,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
-            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
-            {
-                return;
-            }
+            //TODO if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+            //TODO {
+            //TODO     return;
+            //TODO }
 
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+            
             this.CreateNewARecurringTransaction();
             ProcessAnalysisAttributes();
 
@@ -533,42 +537,143 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// remove transactions
+        /// Performs checks to determine whether a deletion of the current
+        ///  row is permissable
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void DeleteRecord(System.Object sender, EventArgs e)
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(ARecurringTransactionRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
             {
-                return;
+                MessageBox.Show(Catalog.GetString("No Recurring GL Transaction is selected to delete."),
+                    Catalog.GetString("Deleting Recurring GL Transaction"));
+                return false;
             }
-
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have chosen to delete this transaction ({0}).\n\nDo you really want to delete it?"),
-                            FPreviouslySelectedDetailRow.TransactionNumber), Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+            else
             {
-                int rowIndex = grdDetails.SelectedRowIndex();
+                // ask if the user really wants to cancel the transaction
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring GL Transaction no: {0} ?"),
+                    ARowToDelete.TransactionNumber);
+                return true;
+            }
+        }
 
-                //TODO ((TFrmRecurringGLBatch)ParentForm).GetAttributesControl().DeleteTransactionAttributes(FPreviouslySelectedDetailRow);
-                FPreviouslySelectedDetailRow.Delete();
+        private void DeleteRecord(System.Object sender, EventArgs e)
+        {
+            this.DeleteARecurringTransaction();
+        }
+
+        /// <summary>
+        /// Deletes the current row and optionally populates a completion message
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to delete</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        /// <returns>true if row deletion is successful</returns>
+        private bool DeleteRowManual(ARecurringTransactionRow ARowToDelete, out string ACompletionMessage)
+        {
+            bool deletionSuccessful = false;
+
+            int batchNumber = ARowToDelete.BatchNumber;
+            int journalNumber = ARowToDelete.JournalNumber;
+            int transactionNumber = ARowToDelete.TransactionNumber;
+
+            try
+            {
+                // Delete on client side data through views that is already loaded. Data that is not 
+                // loaded yet will be deleted with cascading delete on server side so we don't have
+                // to worry about this here.
+
+                ACompletionMessage = String.Format(Catalog.GetString("Transaction no.: {0} deleted successfully."),
+                    transactionNumber);
+
+                // Delete the associated recurring transaction analysis attributes
+                DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
+                viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5} AND {6} = {7}",
+                    ARecurringTransAnalAttribTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                    batchNumber,
+                    ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                    journalNumber,
+                    ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                    transactionNumber);
+
+                foreach (DataRowView row in viewRecurringTransAnalAttrib)
+                {
+                    row.Delete();
+                }
+
+                // Delete the recurring transaction row.
+                ARowToDelete.Delete();
 
                 FPreviouslySelectedDetailRow = null;
 
-                FPetraUtilsObject.SetChangedFlag();
+                deletionSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                ACompletionMessage = ex.Message;
+                MessageBox.Show(ex.Message,
+                    "Deletion Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
 
-                SelectRowInGrid(rowIndex);
+            return deletionSuccessful;
+        }
 
-                if (grdDetails.Rows.Count < 2)
+        /// <summary>
+        /// Code to be run after the deletion process
+        /// </summary>
+        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
+        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
+        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        private void PostDeleteManual(ARecurringTransactionRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            /*Code to execute after the delete has occurred*/
+            if (ADeletionPerformed && (ACompletionMessage.Length > 0))
+            {
+                //MessageBox.Show(ACompletionMessage,
+                //    "Deletion completed",
+                //    MessageBoxButtons.OK,
+                //    MessageBoxIcon.Information);
+
+                if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
                 {
                     ClearControls();
-                    ((TFrmRecurringGLBatch)ParentForm).DisableAttributes();
-                    pnlDetails.Enabled = false;
                 }
+            }
+            else if (!AAllowDeletion)
+            {
+                //message to user
+                MessageBox.Show(ACompletionMessage,
+                    "Deletion not allowed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+            else if (!ADeletionPerformed)
+            {
+                //message to user
+                MessageBox.Show(ACompletionMessage,
+                    "Deletion failed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
 
-                UpdateTotals();
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmRecurringGLBatch)ParentForm).EnableAttributes();
+            }
+            else
+            {
+                ((TFrmRecurringGLBatch)ParentForm).GetAttributesControl().ClearCurrentSelection();
+                ((TFrmRecurringGLBatch)ParentForm).DisableAttributes();
             }
         }
 
@@ -635,8 +740,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
+            
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
+            
             //Local validation
             if ((txtDebitAmount.NumberValueDecimal == 0) && (txtCreditAmount.NumberValueDecimal == 0))
             {
