@@ -1,0 +1,36 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: HOSA
+    WindowWidth: 650
+    WindowHeight: 600
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        XMLFILES: [Finance\\\\hosa.xml,Finance\\\\accountdetailcommon.xml,Finance\\\\finance.xml,common.xml]
+        REPORTNAME: HOSA
+        CURRENTREPORT: HOSA
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [uco_GeneralSettings, pnlCostCentre]
+        uco_GeneralSettings:
+            Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
+            Height: 250
+            Dock: Top
+        pnlCostCentre:
+            Dock: Top
+            Controls: [rgrFilterCostCentres, cmbCostCentreCode]
+        rgrFilterCostCentres:
+            OptionalValues: [Fields, Departments, Personal Costcentres]
+            NoParameter: true
+        cmbCostCentreCode:
+           List: UserDefinedList
+           ParameterName: param_cost_centre_codes
