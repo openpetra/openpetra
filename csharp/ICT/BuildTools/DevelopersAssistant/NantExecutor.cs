@@ -50,6 +50,7 @@ namespace Ict.Tools.DevelopersAssistant
         // This is the processID for the cmd window that is hosting the server process (rather than the server ProcessID itself)
         // We need to keep this so that when we have successfully stopped the server we can kill its containing cmd window
         private static int _serverProcessID = 0;
+        private static bool _serverProcessIdIsCmdWindow = false;
 
         /// <summary>
         /// Checks if the server console process is running and, if necessary, determines the ProcessID of the containing command window
@@ -84,10 +85,16 @@ namespace Ict.Tools.DevelopersAssistant
                             if (ts < tsSmallest)
                             {
                                 _serverProcessID = cmdProcesses[i].Id;
+                                _serverProcessIdIsCmdWindow = true;
                                 tsSmallest = ts;
                             }
                         }
                     }
+                }
+                else
+                {
+                    _serverProcessID = allProcesses[0].Id;
+                    _serverProcessIdIsCmdWindow = false;
                 }
             }
 
@@ -143,7 +150,7 @@ namespace Ict.Tools.DevelopersAssistant
             // Launch the stop task
             bool bRet = LaunchExe("nant.bat", "stopPetraServer -logfile:opda.txt", BranchLocation);
 
-            if (bRet)
+            if (bRet && _serverProcessIdIsCmdWindow)
             {
                 // That command window will have closed but we will be left with the cmd window that hosted the server
                 // We find all cmd windows that are running:  if we know the ProcessID that we started we can just kill that one
@@ -175,9 +182,9 @@ namespace Ict.Tools.DevelopersAssistant
                     OutputText.AppendText(OutputText.OutputStream.Both,
                         String.Format("\r\nFailed to find ProcessID {0} so cmd window was not closed\r\n", _serverProcessID));
                 }
-
-                _serverProcessID = 0;
             }
+
+            _serverProcessID = 0;
 
             return bRet;
         }
