@@ -50,27 +50,28 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 FLedgerNumber = value;
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
+
+                string CheckedMember = "CHECKED";
+                string DisplayMember = "Field Name";
+                string ValueMember = "Field Key";
+
+                FFieldTable = TRemote.MFinance.Reporting.WebConnectors.GetReceivingFields(FLedgerNumber, out DisplayMember, out ValueMember);
+
+                DataColumn FirstColumn = new DataColumn(CheckedMember, typeof(bool));
+
+                FirstColumn.DefaultValue = false;
+                FFieldTable.Columns.Add(FirstColumn);
+
+                clbFields.Columns.Clear();
+                clbFields.AddCheckBoxColumn("", FFieldTable.Columns[CheckedMember], 17, false);
+                clbFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns[ValueMember], 80);
+                clbFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns[DisplayMember], 200);
+                clbFields.DataBindGrid(FFieldTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
             }
         }
 
         private void InitFieldList()
         {
-            string CheckedMember = "CHECKED";
-            string DisplayMember = "Field Name";
-            string ValueMember = "Field Key";
-
-            FFieldTable = TRemote.MFinance.Reporting.WebConnectors.GetReceivingFields(FLedgerNumber, out DisplayMember, out ValueMember);
-
-            DataColumn FirstColumn = new DataColumn(CheckedMember, typeof(bool));
-
-            FirstColumn.DefaultValue = false;
-            FFieldTable.Columns.Add(FirstColumn);
-
-            clbFields.Columns.Clear();
-            clbFields.AddCheckBoxColumn("", FFieldTable.Columns[CheckedMember], 17, false);
-            clbFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns[ValueMember], 80);
-            clbFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns[DisplayMember], 200);
-            clbFields.DataBindGrid(FFieldTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
 
         private void UnselectAllFields(object sender, EventArgs e)

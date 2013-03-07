@@ -265,10 +265,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void RunOnceOnActivationManual()
         {
-            trvAccounts.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
-            trvAccounts.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
-            trvAccounts.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
-            trvAccounts.AllowDrop = true;
+            // AlanP March 2013:  Use a try/catch block because nUnit testing on this screen does not support Drag/Drop in multi-threaded model
+            // It is easier to do this than to configure all the different test execution methods to use STA
+            try
+            {
+                trvAccounts.AllowDrop = true;
+                trvAccounts.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
+                trvAccounts.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
+                trvAccounts.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
+            }
+            catch (InvalidOperationException)
+            {
+                // ex.Message is: DragDrop registration did not succeed.
+                // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
+            }
         }
 
         private void AutoFillDescriptions(object sender, EventArgs e)

@@ -45,15 +45,15 @@ namespace Tests.MainNavigationScreens
 {
     /// Testing the screens that can be opened from the main navigation
     [TestFixture]
-    public class TMainNavigationTest
+    public class TMainNavigationTest : NUnitFormTest
     {
         private XPathNavigator FNavigator;
+        private Boolean FConnectedToServer = false;
 
         /// <summary>
         /// start the gui program
         /// </summary>
-        [TestFixtureSetUp]
-        public void Setup()
+        public override void Setup()
         {
             // Before Execution of any Test we should do something like
             // nant stopPetraServer
@@ -69,7 +69,16 @@ namespace Tests.MainNavigationScreens
                     writer.WriteLine("");
                 }
 
-            TPetraConnector.Connect("../../etc/TestClient.config");
+            FConnectedToServer = false;
+            try
+            {
+                TPetraConnector.Connect("../../etc/TestClient.config");
+                FConnectedToServer = true;
+            }
+            catch (Exception)
+            {
+                Assert.Fail("Failed to connect to the Petra Server.  Have you forgotten to launch the Server Console");
+            }
 
             TLstTasks.Init(UserInfo.GUserInfo.UserID, TFrmMainWindowNew.HasAccessPermission);
 
@@ -78,9 +87,9 @@ namespace Tests.MainNavigationScreens
             XmlNode MainMenuNode = TFrmMainWindowNew.BuildNavigationXml(false);
 
             // saving a xml file for better understanding how to use the XPath commands
-            StreamWriter sw = new StreamWriter(TAppSettingsManager.GetValue("UINavigation.File") + ".xml");
-            sw.WriteLine(TXMLParser.XmlToStringIndented(MainMenuNode.OwnerDocument));
-            sw.Close();
+            //StreamWriter sw = new StreamWriter(TAppSettingsManager.GetValue("UINavigation.File") + ".xml");
+            //sw.WriteLine(TXMLParser.XmlToStringIndented(MainMenuNode.OwnerDocument));
+            //sw.Close();
 
             FNavigator = MainMenuNode.OwnerDocument.CreateNavigator();
         }
@@ -88,9 +97,13 @@ namespace Tests.MainNavigationScreens
         /// <summary>
         /// clean up, disconnect from OpenPetra server
         /// </summary>
-        [TestFixtureTearDown]
-        public void TearDown()
+        public override void TearDown()
         {
+            if (!FConnectedToServer)
+            {
+                return;
+            }
+
             TPetraConnector.Disconnect();
         }
 
@@ -109,66 +122,14 @@ namespace Tests.MainNavigationScreens
                 if (iterator.Current is IHasXmlNode)
                 {
                     XmlNode ActionNode = ((IHasXmlNode)iterator.Current).GetNode();
-                    TLogging.Log(ActionNode.Name + " " + ActionNode.Attributes["ActionOpenScreen"].Value);
+
+                    // look at the permissions module the window came from
+                    string Module = TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
+                    TLogging.Log(String.Format("{0,-36}{1,-36}{2}", ActionNode.Name, ActionNode.Attributes["ActionOpenScreen"].Value, Module));
                 }
             }
         }
 
-        /// <summary>
-        /// verify that user can open the Partner Find screen
-        /// </summary>
-        [Test]
-        [Ignore("problem with exception ThreadStateException")]
-        public void TestOpenPartnerFind()
-        {
-            // get the node that opens the screen
-            XPathExpression expr = FNavigator.Compile("//*[@ActionClick='TFrmPartnerMain.FindPartner']");
-            XPathNodeIterator iterator = FNavigator.Select(expr);
-
-            iterator.MoveNext();
-
-            if (iterator.Current is IHasXmlNode)
-            {
-                XmlNode ActionNode = ((IHasXmlNode)iterator.Current).GetNode();
-
-                TLogging.Log(ActionNode.Name + " " + ActionNode.Attributes["ActionClick"].Value);
-
-                // set apartment state to STA, otherwise Partner Find would not open, ThreadStateException
-                // this does not seem to work
-                Thread.CurrentThread.SetApartmentState(ApartmentState.STA);
-
-                // open the screen.
-                Assert.AreEqual(String.Empty,
-                    TLstTasks.ExecuteAction(ActionNode, null));
-            }
-        }
-
-        /// <summary>
-        /// verify that user can open the language setting dialog
-        /// </summary>
-        [Test]
-        public void TestLanguageDialog()
-        {
-            // get the node that opens the screen
-            XPathExpression expr = FNavigator.Compile("//*[@ActionOpenScreen='TFrmMaintainLanguageCulture']");
-            XPathNodeIterator iterator = FNavigator.Select(expr);
-
-            iterator.MoveNext();
-
-            if (iterator.Current is IHasXmlNode)
-            {
-                XmlNode ActionNode = ((IHasXmlNode)iterator.Current).GetNode();
-
-                TLogging.Log(ActionNode.Name + " " + ActionNode.Attributes["ActionOpenScreen"].Value);
-
-                // open the screen.
-                Assert.AreEqual(String.Empty,
-                    TLstTasks.ExecuteAction(ActionNode, null));
-
-                Assert.AreEqual(Catalog.GetString("Maintain Language and Culture"),
-                    TLstTasks.LastOpenedScreen.Text);
-            }
-        }
 
         /// <summary>
         /// verify that user DEMO cannot open the System Manager module
@@ -213,19 +174,29 @@ namespace Tests.MainNavigationScreens
             XPathNodeIterator iterator = FNavigator.Select(expr);
 
             //create counter variables to keep track of number of failures (might do with lists soon...for modules(?))
-            int NoPermissionCount = 0;
+            int NoSysManPermissionCount = 0;
+            int NoOtherPermissionCount = 0;
             int BadFailures = 0;
             int TotalWindowsOpened = 0;
 
-            List <String>notOpened = new List <String>();
-            List <String>permissions = new List <String>();
-            List <String>workingWindows = new List <String>();
+            List<String> notOpened = new List<String>();
+            List<String> sysManPermissions = new List<String>();
+            List<String> otherPermissions = new List<String>();
+            List<String> workingWindows = new List<String>();
 
             while (iterator.MoveNext())
             {
                 if (iterator.Current is IHasXmlNode)
                 {
                     XmlNode ActionNode = ((IHasXmlNode)iterator.Current).GetNode();
+
+                    string className = ActionNode.Attributes["ActionOpenScreen"].Value;
+                    if (className == "TFrmBankStatementImport")
+                    {
+                        // skip this one because it pops up an additional dialog that requires user input
+                        continue;
+                    }
+
                     // look at the permissions module the window came from
                     string Module = TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
 
@@ -236,7 +207,10 @@ namespace Tests.MainNavigationScreens
                     {
                         Assert.AreEqual(String.Empty,
                             TLstTasks.ExecuteAction(ActionNode, null));
-                        TLstTasks.LastOpenedScreen.Close();
+                        if (TLstTasks.LastOpenedScreen != null)
+                        {
+                            TLstTasks.LastOpenedScreen.Close();
+                        }
                         TotalWindowsOpened++;
                         string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
                                                  Module;
@@ -269,10 +243,18 @@ namespace Tests.MainNavigationScreens
                             }
                             else
                             {
-                                NoPermissionCount++;
-                                string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
-                                                         TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
-                                permissions.Add(WindowAndModule);
+                                string permissions = TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
+                                string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " + permissions;
+                                if (permissions.Contains("SYSMAN"))
+                                {
+                                    NoSysManPermissionCount++;
+                                    sysManPermissions.Add(WindowAndModule);
+                                }
+                                else
+                                {
+                                    NoOtherPermissionCount++;
+                                    otherPermissions.Add(WindowAndModule);
+                                }
                             }
                         }
                         else
@@ -295,22 +277,28 @@ namespace Tests.MainNavigationScreens
                         string ledgerNumber = TXMLParser.GetAttributeRecursive(ActionNode, "LedgerNumber", true);
                         string ledger = "LEDGER00" + ledgerNumber;
 
-                        if (!UserInfo.GUserInfo.IsInModule(ledger))
+                        if (ledgerNumber != String.Empty && !UserInfo.GUserInfo.IsInModule(ledger))
                         {
-                            NoPermissionCount++;
+                            NoOtherPermissionCount++;
                             string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
                                                      TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired",
                                 true) + Environment.NewLine +
                                                      "                                 " + ledger;
-                            permissions.Add(WindowAndModule);
+                            otherPermissions.Add(WindowAndModule);
                         }
                         else
                         {
                             BadFailures++;
                             string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
                                                      TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired",
-                                true) + Environment.NewLine +
-                                                     "                                 " + ledger;
+                                true);
+
+                            if (ledgerNumber != String.Empty)
+                            {
+                                WindowAndModule += (Environment.NewLine +
+                                                     "                                 " + ledger);
+                            }
+
                             notOpened.Add(WindowAndModule);
                         }
                     }
@@ -320,7 +308,8 @@ namespace Tests.MainNavigationScreens
             //Give stats about where failures were
             //feel free to change any formatting, I'm not in love with it right now
             string notOpenedString = string.Join(Environment.NewLine + "      ", notOpened.ToArray());
-            string permissionsString = string.Join(Environment.NewLine + "      ", permissions.ToArray());
+            string sysManPermissionsString = string.Join(Environment.NewLine + "      ", sysManPermissions.ToArray());
+            string otherPermissionsString = string.Join(Environment.NewLine + "      ", otherPermissions.ToArray());
             string workingWindowsString = string.Join(Environment.NewLine + "      ", workingWindows.ToArray());
 
             //print the permissions the user should have
@@ -329,15 +318,22 @@ namespace Tests.MainNavigationScreens
 
             TLogging.Log(Environment.NewLine + Environment.NewLine + "Statistics: " + Environment.NewLine + "Number of windows opened: " +
                 TotalWindowsOpened + Environment.NewLine + "      " + workingWindowsString + Environment.NewLine +
-                Environment.NewLine + Environment.NewLine + Environment.NewLine + "Permission Exceptions: " +
-                permissions.Count + Environment.NewLine + "      " + permissionsString + Environment.NewLine +
+                Environment.NewLine + Environment.NewLine + Environment.NewLine + "SYSMAN Permission Exceptions: " +
+                sysManPermissions.Count + Environment.NewLine + "      " + sysManPermissionsString + Environment.NewLine +
+                Environment.NewLine + Environment.NewLine + Environment.NewLine + "Other Permission Exceptions: " +
+                otherPermissions.Count + Environment.NewLine + "      " + otherPermissionsString + Environment.NewLine +
                 Environment.NewLine + Environment.NewLine + "Windows that should be opened but couldn't: " +
                 notOpened.Count + Environment.NewLine + "      " + notOpenedString + Environment.NewLine);
 
             //Now the loop is finished so fail if there were exceptions
+            Assert.GreaterOrEqual(TotalWindowsOpened, 200, "Expected to open at least 200 windows");
+            Assert.GreaterOrEqual(sysManPermissions.Count, 3, "Expected to fail to open at least 3 windows requiring SYSMAN permissions");
+            Assert.AreEqual(notOpened.Count, 0, "Failed to open at least one window for unexplained reasons");
+            Assert.AreEqual(otherPermissions.Count, 0, "Unexpected failure to open some windows due to a permissions error, when we should have had sufficient permission");
+
             if (BadFailures > 0)
             {
-                Assert.Fail();
+                Assert.Fail(String.Format("General failure to successfully open {0} window(s).  Maybe there was an exception??", BadFailures));
             }
         }
 
@@ -359,8 +355,10 @@ namespace Tests.MainNavigationScreens
         [Test]
         public void TestBrokenClientPermissions()
         {
+            // Give the user access at the client end to open the screen
             TLstTasks.Init(UserInfo.GUserInfo.UserID, TruePermission);
 
+            // Check that the user is 'demo'
             Assert.AreEqual("demo", UserInfo.GUserInfo.UserID.ToLower(), "Test should be run with DEMO user");
 
             // get the node that opens the screen TFrmMaintainUsers
@@ -375,19 +373,15 @@ namespace Tests.MainNavigationScreens
 
                 TLogging.Log(ActionNode.Name + " " + ActionNode.Attributes["ActionOpenScreen"].Value);
 
+                // Check that the node does not give permission to user 'demo'
                 Assert.AreEqual(false, TFrmMainWindowNew.HasAccessPermission(ActionNode, UserInfo.GUserInfo.UserID, false),
                     "user DEMO should not have permissions for TFrmMaintainUsers");
 
-                try
-                {
-                    TLstTasks.ExecuteAction(ActionNode, null);
+                string errorResult = TLstTasks.ExecuteAction(ActionNode, null);
 
-                    Assert.Fail("Demo was able to open the screen!");
-                }
-                catch (ApplicationException e)
-                {
-                    Assert.AreEqual(e.Message, "Exception has been thrown by the target of an invocation.");
-                }
+                // The server should have rejected us
+                Assert.AreNotEqual(String.Empty, errorResult, "Demo was able to open the screen!");
+                Assert.IsTrue(errorResult.Contains("LoadUsersAndModulePermissions"), "Expected the fail reason to be module access permission");
             }
         }
     }
