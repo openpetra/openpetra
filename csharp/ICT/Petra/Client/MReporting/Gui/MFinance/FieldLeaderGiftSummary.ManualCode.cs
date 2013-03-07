@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
         }
 
-        private void InitFieldList()
+        private void RunOnceOnActivationManual() // Formerly InitFieldList
         {
             string CheckedMember = "CHECKED";
             string DisplayMember = "Field Name";
@@ -70,7 +70,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             FirstColumn.DefaultValue = false;
             FFieldTable.Columns.Add(FirstColumn);
-
+            rbtAllFields.Select();
+            cmbCurrency.SelectedIndex = 0;
             clbFields.Columns.Clear();
             clbFields.AddCheckBoxColumn("", FFieldTable.Columns[CheckedMember], 17, false);
             clbFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns[ValueMember], 80);

@@ -66,45 +66,6 @@
 							AND PUB_a_account.a_account_code_c = PUB_a_transaction.a_account_code_c
 							AND PUB_a_account.a_ledger_number_i = {{param_ledger_number_i}}
 						
-							
-						UNION
-						
-						SELECT DISTINCT
-							PUB_a_previous_year_transaction.a_account_code_c AS AccountCode,
-							PUB_a_account.a_account_code_short_desc_c
-						FROM
-							PUB_a_previous_year_transaction, PUB_a_general_ledger_master, PUB_a_account
-						WHERE
-								PUB_a_previous_year_transaction.a_account_code_c = PUB_a_general_ledger_master.a_account_code_c
-							AND PUB_a_previous_year_transaction.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c
-							AND PUB_a_general_ledger_master.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_previous_year_transaction.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_previous_year_transaction.a_transaction_status_l = true
-							AND NOT (PUB_a_previous_year_transaction.a_narrative_c Like "Year end re-allocation%")
-							AND PUB_a_previous_year_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							AND PUB_a_previous_year_transaction.a_account_code_c &lt;= '4000'
-							AND PUB_a_account.a_account_code_c = PUB_a_previous_year_transaction.a_account_code_c
-							AND PUB_a_account.a_ledger_number_i = {{param_ledger_number_i}}
-							
-						UNION
-						
-						SELECT DISTINCT
-							PUB_a_this_year_old_transaction.a_account_code_c AS AccountCode,
-							PUB_a_account.a_account_code_short_desc_c
-						FROM
-							PUB_a_this_year_old_transaction, PUB_a_general_ledger_master, PUB_a_account
-						WHERE
-								PUB_a_this_year_old_transaction.a_account_code_c = PUB_a_general_ledger_master.a_account_code_c
-							AND PUB_a_this_year_old_transaction.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c
-							AND PUB_a_general_ledger_master.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_this_year_old_transaction.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_this_year_old_transaction.a_transaction_status_l = true
-							AND NOT (PUB_a_this_year_old_transaction.a_narrative_c Like "Year end re-allocation%")
-							AND PUB_a_this_year_old_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							AND PUB_a_this_year_old_transaction.a_account_code_c &lt;= '4000'
-							AND PUB_a_account.a_account_code_c = PUB_a_this_year_old_transaction.a_account_code_c
-							AND PUB_a_account.a_ledger_number_i = {{param_ledger_number_i}}
-							
 						ORDER BY
 							AccountCode
 						</value>
@@ -244,88 +205,6 @@
 				</query>
 			</calculation>
 			
-			<calculation id="SelectPreviousTransactionGifts" returns="GiftAmount, PartnerName, TransactionDate, a_debit_credit_indicator_l" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SELECT SUM (PUB_a_previous_year_transaction.a_amount_in_base_currency_n) AS GiftAmount,
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SELECT SUM (PUB_a_previous_year_transaction.a_transaction_amount_n) AS GiftAmount,
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-								PUB_a_previous_year_transaction.a_narrative_c AS PartnerName,
-								PUB_a_previous_year_transaction.a_transaction_date_d AS TransactionDate,
-								PUB_a_previous_year_transaction.a_debit_credit_indicator_l
-							FROM
-								PUB_a_previous_year_transaction
-							WHERE
-									PUB_a_previous_year_transaction.a_account_code_c = {AccountCode}
-								AND PUB_a_previous_year_transaction.a_cost_centre_code_c = {CostCentreCode}
-								AND PUB_a_previous_year_transaction.a_ledger_number_i = {{param_ledger_number_i}}
-								AND PUB_a_previous_year_transaction.a_transaction_status_l = true
-								AND (PUB_a_previous_year_transaction.a_system_generated_l = false
-									OR ( PUB_a_previous_year_transaction.a_system_generated_l = true
-										AND NOT (PUB_a_previous_year_transaction.a_narrative_c LIKE "Gifts received - Gift Batch%"
-												OR PUB_a_previous_year_transaction.a_narrative_c LIKE "GB - Gift Batch%"
-												OR PUB_a_previous_year_transaction.a_narrative_c LIKE "Year end re-allocation%" ) ) )
-								AND PUB_a_previous_year_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							GROUP BY	
-								PUB_a_previous_year_transaction.a_narrative_c,
-								PUB_a_previous_year_transaction.a_transaction_date_d,
-								PUB_a_previous_year_transaction.a_debit_credit_indicator_l
-							ORDER BY
-								PUB_a_previous_year_transaction.a_transaction_date_d
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectOldTransactionGifts" returns="GiftAmount, PartnerName, TransactionDate, a_debit_credit_indicator_l" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SELECT SUM (PUB_a_this_year_old_transaction.a_amount_in_base_currency_n) AS GiftAmount,
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SELECT SUM (PUB_a_this_year_old_transaction.a_transaction_amount_n) AS GiftAmount,
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-								PUB_a_this_year_old_transaction.a_narrative_c AS PartnerName,
-								PUB_a_this_year_old_transaction.a_transaction_date_d AS TransactionDate,
-								PUB_a_this_year_old_transaction.a_debit_credit_indicator_l
-							FROM
-								PUB_a_this_year_old_transaction
-							WHERE
-									PUB_a_this_year_old_transaction.a_account_code_c = {AccountCode}
-								AND PUB_a_this_year_old_transaction.a_cost_centre_code_c = {CostCentreCode}
-								AND PUB_a_this_year_old_transaction.a_ledger_number_i = {{param_ledger_number_i}}
-								AND PUB_a_this_year_old_transaction.a_transaction_status_l = true
-								AND (PUB_a_this_year_old_transaction.a_system_generated_l = false
-									OR ( PUB_a_this_year_old_transaction.a_system_generated_l = true
-										AND NOT (PUB_a_this_year_old_transaction.a_narrative_c LIKE "Gifts received - Gift Batch%"
-												OR PUB_a_this_year_old_transaction.a_narrative_c LIKE "GB - Gift Batch%"
-												OR PUB_a_this_year_old_transaction.a_narrative_c LIKE "Year end re-allocation%" ) ) )
-								AND PUB_a_this_year_old_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							GROUP BY	
-								PUB_a_this_year_old_transaction.a_narrative_c,
-								PUB_a_this_year_old_transaction.a_transaction_date_d,
-								PUB_a_this_year_old_transaction.a_debit_credit_indicator_l
-							ORDER BY
-								PUB_a_this_year_old_transaction.a_transaction_date_d
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
 			<calculation id="CountCurrentGiftsAccount" returns="CurrentCountAccount" returnsFormat="row">
 				<query>
 					<queryDetail>
@@ -339,42 +218,6 @@
 							AND PUB_a_transaction.a_transaction_status_l = true
 							AND PUB_a_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
 							AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="CountOldGiftsAccount" returns="OldCountAccount" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT COUNT (PUB_a_this_year_old_transaction.a_amount_in_base_currency_n) AS OldCountAccount
-							FROM
-								PUB_a_this_year_old_transaction
-						WHERE
-								PUB_a_this_year_old_transaction.a_account_code_c = {AccountCode}
-							AND PUB_a_this_year_old_transaction.a_ledger_number_i ={{param_ledger_number_i}}
-							AND PUB_a_this_year_old_transaction.a_transaction_status_l = true
-							AND PUB_a_this_year_old_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
-							AND PUB_a_this_year_old_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="CountPreviousGiftsAccount" returns="PreviousCountAccount" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT COUNT (PUB_a_previous_year_transaction.a_amount_in_base_currency_n) AS PreviousCountAccount
-							FROM
-								PUB_a_previous_year_transaction
-						WHERE
-								PUB_a_previous_year_transaction.a_account_code_c = {AccountCode}
-							AND PUB_a_previous_year_transaction.a_ledger_number_i ={{param_ledger_number_i}}
-							AND PUB_a_previous_year_transaction.a_transaction_status_l = true
-							AND PUB_a_previous_year_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
-							AND PUB_a_previous_year_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
 						</value>
 					</queryDetail>
 				</query>
@@ -394,46 +237,6 @@
 							AND PUB_a_transaction.a_transaction_status_l = true
 							AND PUB_a_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
 							AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="CountOldGifts" returns="OldCount" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT COUNT (PUB_a_this_year_old_transaction.a_transaction_status_l) AS OldCount
-							FROM
-								PUB_a_this_year_old_transaction
-						WHERE
-								PUB_a_this_year_old_transaction.a_account_code_c = {AccountCode}
-							AND PUB_a_this_year_old_transaction.a_cost_centre_code_c = {CostCentreCode}
-							AND PUB_a_this_year_old_transaction.a_ledger_number_i ={{param_ledger_number_i}}
-							AND PUB_a_this_year_old_transaction.a_transaction_status_l = true
-							AND PUB_a_this_year_old_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
-							AND PUB_a_this_year_old_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="CountPreviousGifts" returns="PreviousCount" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT COUNT (PUB_a_previous_year_transaction.a_transaction_status_l) AS PreviousCount
-							FROM
-								PUB_a_previous_year_transaction
-						WHERE
-								PUB_a_previous_year_transaction.a_account_code_c = {AccountCode}
-							AND PUB_a_previous_year_transaction.a_cost_centre_code_c = {CostCentreCode}
-							AND PUB_a_previous_year_transaction.a_ledger_number_i ={{param_ledger_number_i}}
-							AND PUB_a_previous_year_transaction.a_transaction_status_l = true
-							AND PUB_a_previous_year_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
-							AND PUB_a_previous_year_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						
 						</value>
 					</queryDetail>
 				</query>
@@ -488,8 +291,6 @@
 					<queryDetail>
 						<value text="NO-SQL"/>
 						<value calculation="CountCurrentGifts"/>
-						<value calculation="CountOldGifts"/>
-						<value calculation="CountPreviousGifts"/>
 						<value function="assign(TransactionCount, add({CurrentCount}, {OldCount}))"/>
 						<value function="assign(TransactionCount, add({TransactionCount}, {PreviousCount}))"/>
 					</queryDetail>
@@ -501,8 +302,6 @@
 					<queryDetail>
 						<value text="NO-SQL"/>
 						<value calculation="CountCurrentGiftsAccount"/>
-						<value calculation="CountOldGiftsAccount"/>
-						<value calculation="CountPreviousGiftsAccount"/>
 						<value function="assign(TransactionCountAccount, add({CurrentCountAccount}, {OldCountAccount}))"/>
 						<value function="assign(TransactionCountAccount, add({TransactionCountAccount}, {PreviousCountAccount}))"/>
 					</queryDetail>
@@ -647,7 +446,6 @@
             AND a_transaction.a_transaction_status_l = true
             AND NOT (a_transaction.a_narrative_c BEGINS "Year end re-allocation")
             AND a_transaction.a_transaction_date_d BETWEEN param_from_date AND param_to_date
-			The same requirement is also valid for PUB_a_previous_year_transaction and PUB_a_previous_year_transaction 
 			
 			That's the reason why we have AccountLevel0, AccountLevel1, AccountLevel2 and
 			CostCentreLevel0, CostCentreLevel1, CostCentreLevel2
@@ -731,8 +529,6 @@
 				<detail>
 					<lowerLevelReport level="GiftLevel1" calculation="SelectGifts"></lowerLevelReport>
 					<lowerLevelReport level="GiftLevel2" calculation="SelectCurrentTransactionGifts"></lowerLevelReport>
-					<lowerLevelReport level="GiftLevel2" calculation="SelectOldTransactionGifts"></lowerLevelReport>
-					<lowerLevelReport level="GiftLevel2" calculation="SelectPreviousTransactionGifts"></lowerLevelReport>
 				</detail>
 				<footer>
 					<field whichfield="left 0" pos="0cm" width="0.5cm">

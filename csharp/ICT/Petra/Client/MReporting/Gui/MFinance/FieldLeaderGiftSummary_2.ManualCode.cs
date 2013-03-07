@@ -56,6 +56,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
         }
 
+        private void RunOnceOnActivationManual()
+        {
+            cmbCurrency.SelectedIndex = 0;
+        }
+
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if ((AReportAction == TReportActionEnum.raGenerate)
