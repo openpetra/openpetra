@@ -12,6 +12,7 @@
 		<reportparameters>
 			<reportparameter name="param_account_hierarchy_c"/>
 			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_ich_number"/> <!-- 0 means that all ich runs will be considered -->
 			<reportparameter name="param_start_period_i"/>
 			<reportparameter name="param_end_period_i"/>
 			<reportparameter name="param_start_date"/>
@@ -25,8 +26,7 @@
 				<option name="International"/>
 				<option name="Transaction"/>
 			</reportparameter>
-			<reportparameter name="param_cost_centre_code_start"/>
-            <reportparameter name="param_cost_centre_code_end"/><!-- for HOSAs, this should be the same as param_cost_centre_code_start -->
+			<reportparameter name="param_cost_centre_codes"/><!-- for HOSAs, this should be only one costcentre -->
 		</reportparameters>
 		
 		<reportheader/>
@@ -52,7 +52,6 @@
 					<value function="getAccountingHierarchy({param_account_hierarchy_c})"/>
 				</fielddetail>
 			</field>
-
 
 			<field whichfield="descr2" width="7 cm"><value text="Currency: "/>
 				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
@@ -93,7 +92,17 @@
             <field whichfield="left1" pos="0 cm" width="7 cm"><value text = "CostCentre/Account"/></field>
 		</pageheader>
 		
-		<calculations>		
+		<calculations>
+                
+			<!-- Select transactions or gifts -->
+			<calculation id="Select Transactions of Account Or Gifts"
+					returns="automatic"
+					returnsFormat="row">
+				<query>
+					<!-- TODO select the transactions if this is not an INCOME account -->
+					<queryDetail><value>Ict.Petra.Server.MFinance.queries.QueryHOSAReport.CalculateGifts</value></queryDetail>
+				</query>
+			</calculation> <!-- Select Transactions -->
 
 			<calculation id="Debit" 
 					returnsFormat="#,##0.00; ; ; ;" returns="amount">
@@ -124,7 +133,7 @@
 			</calculation>
 			<calculation id="Transaction Narrative" 
 					returnsFormat="text" returns="text" align="left">
-				<caption><value text=" "/></caption>
+				<caption><value text="Description/Gift Totals/Recipient Key and Name"/></caption>
 				<query>
 					<queryDetail><value variable="a_narrative_c"/></queryDetail>
 				</query>
@@ -269,7 +278,7 @@
 					<value text=", "/><value variable="cost_centre_name"/></field>
 			</header>
 			<detail>
-				<lowerLevelReport level="TransactionDetail" calculation ="Select Transactions of AccountCostCentre"/>
+				<lowerLevelReport level="TransactionDetail" calculation ="Select Transactions of Account Or Gifts"/>
 			</detail>
 			<footer>
 				<field whichfield="left 0" pos = "2cm" width="2cm" align="right"><value text="Sub Total:"/></field>

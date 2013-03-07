@@ -55,12 +55,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddColumnLayout(0, 8, 0, 3);
             ACalc.AddColumnLayout(1, 11, 0, 3);
-            ACalc.SetMaxDisplayColumns(2);
+            ACalc.AddColumnLayout(2, 14, 0, 7);
+            ACalc.SetMaxDisplayColumns(3);
             ACalc.AddColumnCalculation(0, "Debit");
             ACalc.AddColumnCalculation(1, "Credit");
+            ACalc.AddColumnCalculation(2, "Transaction Narrative");
             ACalc.AddParameter("param_daterange", "false");
             ACalc.AddParameter("param_rgrAccounts", "AllAccounts");
             ACalc.AddParameter("param_rgrCostCentres", "CostCentreList");
+            // TODO need to allow to specify an ICH run number
+            ACalc.AddParameter("param_ich_number", 0);
         }
     }
 }
