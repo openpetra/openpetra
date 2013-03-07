@@ -56,11 +56,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// and immediately store the batch and the new number in the database
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="ACommitTransaction"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
+        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean ACommitTransaction = true)
         {
-            return TGLPosting.CreateABatch(ALedgerNumber);
+            return TGLPosting.CreateABatch(ALedgerNumber, ACommitTransaction);
         }
 
         /// <summary>
@@ -906,6 +907,148 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             return Result;
         }
 
+        /// <summary>
+        /// create a GL batch from a recurring GL batch
+        /// including journals, transactions and attributes
+        /// </summary>
+        /// <param name="requestParams">HashTable with many parameters</param>
+        /// <param name="AMessages">Output structure for user error messages</param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean SubmitRecurringGLBatch(Hashtable requestParams, out TVerificationResultCollection AMessages)
+        {
+            Boolean NewTransaction = false;
+            Boolean success = false;
+
+            AMessages = new TVerificationResultCollection();
+            GLBatchTDS GLMainDS = new GLBatchTDS();
+            ABatchRow BatchRow;
+            Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
+            Int32 ABatchNumber = (Int32)requestParams["ABatchNumber"];
+            DateTime AEffectiveDate = (DateTime)requestParams["AEffectiveDate"];
+            Decimal AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBase"];
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+                //TODO: make sure that recurring GL batch is fully loaded, including journals, transactions and attributes
+                RecurringGLBatchTDS RGLMainDS = new RecurringGLBatchTDS(); //TODO = LoadRecurringGLBatchData(ALedgerNumber, ABatchNumber);
+                ARecurringBatchAccess.LoadByPrimaryKey(RGLMainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+                
+                // Assuming all relevant data is loaded in FMainDS
+                foreach (ARecurringBatchRow recBatch  in RGLMainDS.ARecurringBatch.Rows)
+                {
+                    if ((recBatch.BatchNumber == ABatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
+                    {
+                        Decimal batchTotal = 0;
+                        GLMainDS = CreateABatch(ALedgerNumber, false);
+
+                        BatchRow = GLMainDS.ABatch.NewRowTyped();
+                        BatchRow.DateEffective = AEffectiveDate;
+                        BatchRow.BatchDescription = recBatch.BatchDescription;
+                        BatchRow.BatchControlTotal = recBatch.BatchControlTotal;
+
+                        foreach (ARecurringJournalRow recJournal in RGLMainDS.ARecurringJournal.Rows)
+                        {
+                            if ((recJournal.BatchNumber == ABatchNumber) && (recJournal.LedgerNumber == ALedgerNumber))
+                            {
+                                // create the journal from recJournal
+                                AJournalRow JournalRow = GLMainDS.AJournal.NewRowTyped();
+                                JournalRow.LedgerNumber = BatchRow.LedgerNumber;
+                                JournalRow.BatchNumber = BatchRow.BatchNumber;
+                                JournalRow.JournalNumber = BatchRow.LastJournal + 1;
+                                JournalRow.JournalDescription = recJournal.JournalDescription;
+                                JournalRow.SubSystemCode = recJournal.SubSystemCode;
+                                JournalRow.TransactionTypeCode = recJournal.TransactionTypeCode;
+                                JournalRow.TransactionCurrency = recJournal.TransactionCurrency;
+                                JournalRow.ExchangeRateToBase = AExchangeRateToBase;
+                                JournalRow.DateEffective = AEffectiveDate;
+                                JournalRow.JournalPeriod = recJournal.JournalPeriod;
+                                
+                                GLMainDS.AJournal.Rows.Add(JournalRow);
+                                BatchRow.LastJournal++;
+
+                                //TODO (not here, but in the client or while posting) Check for expired key ministry (while Posting)
+
+                                foreach (ARecurringTransactionRow recTransaction in RGLMainDS.ARecurringTransaction.Rows)
+                                {
+                                    if (   (recTransaction.JournalNumber == recJournal.JournalNumber)
+                                        && (recTransaction.BatchNumber == ABatchNumber) 
+                                        && (recTransaction.LedgerNumber == ALedgerNumber))
+                                    {
+                                        ATransactionRow TransactionRow = GLMainDS.ATransaction.NewRowTyped();
+                                        TransactionRow.LedgerNumber = JournalRow.LedgerNumber;
+                                        TransactionRow.BatchNumber = JournalRow.BatchNumber;
+                                        TransactionRow.JournalNumber = JournalRow.JournalNumber;
+                                        TransactionRow.TransactionNumber = JournalRow.LastTransactionNumber + 1;
+                                        JournalRow.LastTransactionNumber++;
+                                        
+                                        TransactionRow.Narrative = recTransaction.Narrative;
+                                        TransactionRow.AccountCode = recTransaction.AccountCode;
+                                        TransactionRow.CostCentreCode = recTransaction.CostCentreCode;
+                                        TransactionRow.TransactionAmount = recTransaction.TransactionAmount;
+                                        // TODO convert with exchange rate to get the amount in base currency
+                                        // TransactionRow.AmountInBaseCurrency =
+                                        TransactionRow.AmountInBaseCurrency = recTransaction.AmountInBaseCurrency;
+                                        TransactionRow.TransactionDate = AEffectiveDate;
+                                        TransactionRow.DebitCreditIndicator = recTransaction.DebitCreditIndicator;
+                                        TransactionRow.HeaderNumber = recTransaction.HeaderNumber;
+                                        TransactionRow.DetailNumber = recTransaction.DetailNumber;
+                                        TransactionRow.SubType = recTransaction.SubType;
+                                        TransactionRow.Reference = recTransaction.Reference;
+
+                                        GLMainDS.ATransaction.Rows.Add(TransactionRow);
+                                    }
+                                }
+
+                                //batch.BatchTotal = batchTotal;
+                            }
+                        }
+                    }
+                }
+
+                if (ABatchAccess.SubmitChanges(GLMainDS.ABatch, Transaction, out AMessages))
+                {
+                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
+                    {
+                        if (AJournalAccess.SubmitChanges(GLMainDS.AJournal, Transaction, out AMessages))
+                        {
+                            if (ATransactionAccess.SubmitChanges(GLMainDS.ATransaction, Transaction, out AMessages))
+                            {
+                                if (ATransAnalAttribAccess.SubmitChanges(GLMainDS.ATransAnalAttrib, Transaction, out AMessages))
+                                {
+                                    success = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (success)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    GLMainDS.AcceptChanges();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    GLMainDS.RejectChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw new Exception("Error in SubmitRecurringGLBatch", ex);
+            }
+            return success;
+        }
+        
         /// <summary>
         /// return the name of the standard costcentre for the given ledger;
         /// this supports up to 4 digit ledgers

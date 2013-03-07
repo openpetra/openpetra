@@ -14,17 +14,7 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
-        pnlInfo: 
-            ControlsOrientation: horizontal
-            Controls: [rgrShowBatches]
-            Dock: Top
-        rgrShowBatches: 
-            Label: Show batches available for
-            ControlsOrientation: horizontal
-            SuppressChangeDetection: true
-            OptionalValues: [Submitting, =Editing, All]
-            OnChange: RefreshFilter
+            Controls: [pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]

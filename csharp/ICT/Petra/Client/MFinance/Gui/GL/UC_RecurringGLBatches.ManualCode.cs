@@ -51,8 +51,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FSelectedBatchNumber = -1;
-        private string FStatusFilter = "1 = 1";
-        private string FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
         private DateTime FDefaultDate = DateTime.Today;
 
         /// <summary>
@@ -62,8 +60,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void LoadBatches(Int32 ALedgerNumber)
         {
             FLedgerNumber = ALedgerNumber;
-
-            rbtEditing.Checked = true;
 
             FPetraUtilsObject.DisableDataChangedEvent();
             FPetraUtilsObject.EnableDataChangedEvent();
@@ -252,11 +248,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //TODO Int32 yearNumber = 0;
             //TODO Int32 periodNumber = 0;
 
-            if (!rbtEditing.Checked)
-            {
-                rbtEditing.Checked = true;
-            }
-            //TODO else if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+            //TODO if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
             //TODO {
             //TODO     return;
             //TODO }
@@ -612,121 +604,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return rowIndex;
         }
 
-        private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
-        {
-            if (AToggleOn)
-            {
-                rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-                rbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-                rbtSubmitting.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-            }
-            else
-            {
-                rbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-                rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-                rbtSubmitting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-            }
-        }
-
         void RefreshFilter(Object sender, EventArgs e)
         {
-            int batchNumber = 0;
             int newRowToSelectAfterFilter = 1;
-            bool senderIsRadioButton = (sender is RadioButton);
 
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
                 return;
             }
-            else if ((sender != null) && senderIsRadioButton)
-            {
-                //Avoid repeat events
-                RadioButton rbt = (RadioButton)sender;
 
-                if (rbt.Name.Contains(FCurrentBatchViewOption))
-                {
-                    return;
-                }
-            }
-
-            //Record the current batch
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
-
-                if (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-                {
-                    FPetraUtilsObject.DisableSaveButton();
-                }
-            }
-
-            if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
-            {
-                if (senderIsRadioButton)
-                {
-                    //Need to cancel the change of option button
-                    if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_EDITING) && (rbtEditing.Checked == false))
-                    {
-                        ToggleOptionButtonCheckedEvent(false);
-                        rbtEditing.Checked = true;
-                        ToggleOptionButtonCheckedEvent(true);
-                    }
-                    else if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_ALL) && (rbtAll.Checked == false))
-                    {
-                        ToggleOptionButtonCheckedEvent(false);
-                        rbtAll.Checked = true;
-                        ToggleOptionButtonCheckedEvent(true);
-                    }
-                    else if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_POSTING) && (rbtSubmitting.Checked == false))
-                    {
-                        ToggleOptionButtonCheckedEvent(false);
-                        rbtSubmitting.Checked = true;
-                        ToggleOptionButtonCheckedEvent(true);
-                    }
-                }
-
-                return;
-            }
-
-            ClearCurrentSelection();
-
-            if (rbtEditing.Checked)
-            {
-                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
-
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing));
-                FStatusFilter = String.Format("{0} = '{1}'",
-                    ARecurringBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED);
-                btnNew.Enabled = true;
-            }
-            else if (rbtSubmitting.Checked)
-            {
-                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_POSTING;
-
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting));
-                FStatusFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2}))",
-                    ARecurringBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED,
-                    ARecurringBatchTable.GetBatchCreditTotalDBName(),
-                    ARecurringBatchTable.GetBatchDebitTotalDBName(),
-                    ARecurringBatchTable.GetBatchControlTotalDBName());
-            }
-            else //(rbtAll.Checked)
-            {
-                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_ALL;
-
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
-                FStatusFilter = "1 = 1";
-                btnNew.Enabled = true;
-            }
-
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
+            btnNew.Enabled = true;
+                
             FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringBatch.DefaultView);
-
-            FMainDS.ARecurringBatch.DefaultView.RowFilter =
-                String.Format("({0})", FStatusFilter);
 
             if (grdDetails.Rows.Count < 2)
             {
@@ -738,12 +630,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                //Select same row after refilter
-                if (batchNumber > 0)
-                {
-                    newRowToSelectAfterFilter = GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber);
-                }
-
                 SelectRowInGrid(newRowToSelectAfterFilter);
 
                 UpdateChangeableStatus();

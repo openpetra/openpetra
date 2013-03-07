@@ -1286,7 +1286,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// create a new batch.
         /// it is already stored to the database, to avoid problems with LastBatchNumber
         /// </summary>
-        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
+        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean ACommitTransaction = true)
         {
             bool NewTransactionStarted = false;
 
@@ -1332,7 +1332,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             finally
             {
-                if (NewTransactionStarted)
+                if (NewTransactionStarted && ACommitTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
