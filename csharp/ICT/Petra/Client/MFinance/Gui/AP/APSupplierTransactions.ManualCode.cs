@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             20, 70, 90, 90, 90, 100, 110
         };
-
+        private string FAgedOlderThan;
 
         /// <summary>
         /// Load the supplier and all the transactions (invoices and payments) that relate to it.
@@ -85,6 +85,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FMainDS = TRemote.MFinance.AP.WebConnectors.LoadAApSupplier(ALedgerNumber, APartnerKey);
 
             FSupplierRow = FMainDS.AApSupplier[0];
+
+            //
+            // Transactions older than
+            DateTime AgedOlderThan = DateTime.Now;
+            AgedOlderThan = AgedOlderThan.AddMonths(0 - FSupplierRow.PreferredScreenDisplay);
+            FAgedOlderThan = AgedOlderThan.ToString("u");
+
             txtSupplierName.Text = FMainDS.PPartner[0].PartnerShortName;
             txtSupplierCurrency.Text = FSupplierRow.CurrencyCode;
             FFindObject = TRemote.MFinance.AP.UIConnectors.Find();
@@ -416,6 +423,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FStatusFilter = "(Status = '' OR Status='" + SelectedItem + "')";
             }
 
+            if (chkHideAgedTransactions.Checked)
+            {
+                if (FStatusFilter != "")
+                {
+                    FStatusFilter += " AND ";
+                }
+                FStatusFilter += ("(Date >'" + FAgedOlderThan + "')");
+            }
             UpdateRowFilter();
         }
 
