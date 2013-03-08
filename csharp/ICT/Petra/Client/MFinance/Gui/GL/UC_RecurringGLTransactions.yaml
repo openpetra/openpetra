@@ -2,7 +2,7 @@ RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
-    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.RecurringGLBatchTDS
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     DetailTable: ARecurringTransaction
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Account.Validation, Ict.Petra.Shared.MFinance.GL.Data]
     FormType: edit

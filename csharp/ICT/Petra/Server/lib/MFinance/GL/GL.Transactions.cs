@@ -56,14 +56,26 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// and immediately store the batch and the new number in the database
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
+        {
+            return TGLPosting.CreateABatch(ALedgerNumber, true);
+        }
+
+        /// <summary>
+        /// create a new batch with a consecutive batch number in the ledger,
+        /// and immediately store the batch and the new number in the database
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
         /// <param name="ACommitTransaction"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean ACommitTransaction = true)
+        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean ACommitTransaction)
         {
             return TGLPosting.CreateABatch(ALedgerNumber, ACommitTransaction);
         }
-
+        
         /// <summary>
         /// create a new recurring batch with a consecutive batch number in the ledger,
         /// and immediately store the batch and the new number in the database
@@ -71,7 +83,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static RecurringGLBatchTDS CreateARecurringBatch(Int32 ALedgerNumber)
+        public static GLBatchTDS CreateARecurringBatch(Int32 ALedgerNumber)
         {
             return TGLPosting.CreateARecurringBatch(ALedgerNumber);
         }
@@ -299,9 +311,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AFilterBatchStatus"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static RecurringGLBatchTDS LoadARecurringBatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus)
+        public static GLBatchTDS LoadARecurringBatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus)
         {
-            RecurringGLBatchTDS MainDS = new RecurringGLBatchTDS();
+            GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
@@ -340,9 +352,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static RecurringGLBatchTDS LoadARecurringJournal(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GLBatchTDS LoadARecurringJournal(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            RecurringGLBatchTDS MainDS = new RecurringGLBatchTDS();
+            GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
@@ -358,16 +370,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AJournalNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static RecurringGLBatchTDS LoadARecurringTransactionWithAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        public static GLBatchTDS LoadARecurringTransactionWithAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             string strAnalAttr = string.Empty;
 
-            RecurringGLBatchTDS MainDS = new RecurringGLBatchTDS();
+            GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ARecurringTransactionAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
 
-            foreach (RecurringGLBatchTDSARecurringTransactionRow transRow in MainDS.ARecurringTransaction.Rows)
+            foreach (GLBatchTDSARecurringTransactionRow transRow in MainDS.ARecurringTransaction.Rows)
             {
                 ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(MainDS,
                     ALedgerNumber,
@@ -412,9 +424,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ATransactionNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static RecurringGLBatchTDS LoadARecurringTransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
+        public static GLBatchTDS LoadARecurringTransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
         {
-            RecurringGLBatchTDS MainDS = new RecurringGLBatchTDS();
+            GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, Transaction);
@@ -640,7 +652,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static TSubmitChangesResult SaveRecurringGLBatchTDS(ref RecurringGLBatchTDS AInspectDS,
+        public static TSubmitChangesResult SaveRecurringGLBatchTDS(ref GLBatchTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
             bool NewTransaction = false;
@@ -677,7 +689,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ARecurringTransAnalAttribTable TransAnalAttribTable = new ARecurringTransAnalAttribTable();
             ARecurringTransAnalAttribRow TemplateTransAnalAttribRow = TransAnalAttribTable.NewRowTyped(false);
             
-            RecurringGLBatchTDS DeletedDS =  new RecurringGLBatchTDS();
+            GLBatchTDS DeletedDS =  new GLBatchTDS();
             ARecurringTransAnalAttribTable DeletedTransAnalAttribTable;
             
             // in this method we also think about deleted batches, journals, transactions where subsequent information
@@ -790,7 +802,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
                 
                 // now submit the actual dataset                
-                SubmissionResult = RecurringGLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
                 if (NewTransaction)
                 {
@@ -937,7 +949,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
                 //TODO: make sure that recurring GL batch is fully loaded, including journals, transactions and attributes
-                RecurringGLBatchTDS RGLMainDS = new RecurringGLBatchTDS(); //TODO = LoadRecurringGLBatchData(ALedgerNumber, ABatchNumber);
+                GLBatchTDS RGLMainDS = new GLBatchTDS(); //TODO = LoadRecurringGLBatchData(ALedgerNumber, ABatchNumber);
                 ARecurringBatchAccess.LoadByPrimaryKey(RGLMainDS, ALedgerNumber, ABatchNumber, Transaction);
 
                 
@@ -947,7 +959,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     if ((recBatch.BatchNumber == ABatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
                     {
                         Decimal batchTotal = 0;
-                        GLMainDS = CreateABatch(ALedgerNumber, false);
+                        GLMainDS = CreateARecurringBatch(ALedgerNumber);
 
                         BatchRow = GLMainDS.ABatch.NewRowTyped();
                         BatchRow.DateEffective = AEffectiveDate;

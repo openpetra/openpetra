@@ -2,7 +2,7 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Recurring GL Batches
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
-    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.RecurringGLBatchTDS
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     FormType: browse
     Template: windowTDS
     WindowWidth: 760

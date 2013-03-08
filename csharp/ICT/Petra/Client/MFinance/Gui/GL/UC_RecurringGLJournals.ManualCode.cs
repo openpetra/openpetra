@@ -288,7 +288,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// make sure the correct journal number is assigned and the batch.lastJournal is updated
         /// </summary>
         /// <param name="ANewRow"></param>
-        public void NewRowManual(ref RecurringGLBatchTDSARecurringJournalRow ANewRow)
+        public void NewRowManual(ref GLBatchTDSARecurringJournalRow ANewRow)
         {
             DataView view = new DataView(FMainDS.ARecurringBatch);
 

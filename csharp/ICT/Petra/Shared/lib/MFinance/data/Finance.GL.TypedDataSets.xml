@@ -16,10 +16,7 @@
             <CustomField name="AnalysisAttributes" type="string"/>
         </Table>
         <Table sqltable="a_trans_anal_attrib" />	
-    </DataSet>
 
-    <DataSet name="RecurringGLBatchTDS">
-        <Table sqltable="a_ledger"/>
         <Table sqltable="a_recurring_batch"/>
         <Table sqltable="a_recurring_journal">
             <CustomField name="JournalDebitTotalBase" type="decimal"/>
@@ -31,7 +28,7 @@
         </Table>
         <Table sqltable="a_recurring_trans_anal_attrib" />	
     </DataSet>
-    
+
     <DataSet name="GLPostingTDS">
         <Table sqltable="a_ledger"/>
         <Table sqltable="a_account"/>

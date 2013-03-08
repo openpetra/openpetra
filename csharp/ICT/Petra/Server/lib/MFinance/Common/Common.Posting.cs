@@ -1370,11 +1370,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// create a new recurring batch.
         /// it is already stored to the database, to avoid problems with LastBatchNumber
         /// </summary>
-        public static RecurringGLBatchTDS CreateARecurringBatch(Int32 ALedgerNumber)
+        public static GLBatchTDS CreateARecurringBatch(Int32 ALedgerNumber)
         {
             bool NewTransactionStarted = false;
 
-            RecurringGLBatchTDS MainDS = null;
+            GLBatchTDS MainDS = null;
 
             //Error handling
             string ErrorContext = "Create a recurring Batch";
@@ -1385,7 +1385,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                MainDS = new RecurringGLBatchTDS();
+                MainDS = new GLBatchTDS();
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
                                                  (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
@@ -1398,7 +1398,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 NewRow.BatchNumber = MainDS.ALedger[0].LastRecurringBatchNumber;
                 MainDS.ARecurringBatch.Rows.Add(NewRow);
 
-                if (RecurringGLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+                if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
                     MainDS.AcceptChanges();
                 }

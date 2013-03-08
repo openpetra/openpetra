@@ -206,7 +206,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// get the details of the current journal
         /// </summary>
         /// <returns></returns>
-        private RecurringGLBatchTDSARecurringJournalRow GetJournalRow()
+        private GLBatchTDSARecurringJournalRow GetJournalRow()
         {
             return ((TFrmRecurringGLBatch)ParentForm).GetJournalsControl().GetSelectedDetailRow();
         }
@@ -259,7 +259,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// make sure the correct transaction number is assigned and the journal.lastTransactionNumber is updated;
         /// will use the currently selected journal
         /// </summary>
-        public void NewRowManual(ref RecurringGLBatchTDSARecurringTransactionRow ANewRow)
+        public void NewRowManual(ref GLBatchTDSARecurringTransactionRow ANewRow)
         {
             NewRowManual(ref ANewRow, null);
         }
@@ -269,7 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="ANewRow">returns the modified new transaction row</param>
         /// <param name="ARefJournalRow">this can be null; otherwise this is the journal that the transaction should belong to</param>
-        public void NewRowManual(ref RecurringGLBatchTDSARecurringTransactionRow ANewRow, ARecurringJournalRow ARefJournalRow)
+        public void NewRowManual(ref GLBatchTDSARecurringTransactionRow ANewRow, ARecurringJournalRow ARefJournalRow)
         {
             //GLBatchTDSATransactionRow prevRow = GetSelectedDetailRow();
 
@@ -450,7 +450,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if ((FJournalNumber != -1))         // && !pnlDetailsProtected)
             {
-                RecurringGLBatchTDSARecurringJournalRow journal = GetJournalRow();
+                GLBatchTDSARecurringJournalRow journal = GetJournalRow();
 
                 GLRoutines.UpdateTotalsOfRecurringJournal(ref FMainDS, journal);
 

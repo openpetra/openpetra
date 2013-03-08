@@ -93,8 +93,8 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
-        public static void UpdateTotalsOfRecurringJournal(ref RecurringGLBatchTDS AMainDS,
-            RecurringGLBatchTDSARecurringJournalRow ACurrentJournal)
+        public static void UpdateTotalsOfRecurringJournal(ref GLBatchTDS AMainDS,
+            GLBatchTDSARecurringJournalRow ACurrentJournal)
         {
             if (ACurrentJournal == null)
             {
