@@ -94,12 +94,10 @@
 		
 		<calculations>
                 
-			<!-- Select transactions or gifts -->
-			<calculation id="Select Transactions of Account Or Gifts"
+			<calculation id="Select Summary of incoming gifts"
 					returns="automatic"
 					returnsFormat="row">
 				<query>
-					<!-- TODO select the transactions if this is not an INCOME account -->
 					<queryDetail><value>Ict.Petra.Server.MFinance.queries.QueryHOSAReport.CalculateGifts</value></queryDetail>
 				</query>
 			</calculation> <!-- Select Transactions -->
@@ -278,7 +276,14 @@
 					<value text=", "/><value variable="cost_centre_name"/></field>
 			</header>
 			<detail>
-				<lowerLevelReport level="TransactionDetail" calculation ="Select Transactions of Account Or Gifts"/>
+				<switch>
+					<case condition="eq({account_type},Income)">
+						<lowerLevelReport level="TransactionDetail" calculation ="Select Summary of incoming gifts"/>
+					</case>
+					<case condition="ne({account_type},Income)">
+						<lowerLevelReport level="TransactionDetail" calculation ="Select Transactions of AccountCostCentre"/>
+					</case>
+				</switch>                
 			</detail>
 			<footer>
 				<field whichfield="left 0" pos = "2cm" width="2cm" align="right"><value text="Sub Total:"/></field>
