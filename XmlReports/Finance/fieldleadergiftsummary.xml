@@ -65,15 +65,15 @@
 					<queryDetail>
 						<value>
 						SELECT DISTINCT
-							PUB_p_partner.p_partner_key_n AS FieldKey,
-							PUB_p_partner.p_partner_short_name_c AS FieldName
+							partner.p_partner_key_n AS FieldKey,
+							partner.p_partner_short_name_c AS FieldName
 						FROM
-							PUB_p_partner
+							PUB_p_partner as partner
 						WHERE
 						</value>
 					</queryDetail>
 					<queryDetail>
-						<value function="csv" text="PUB_p_partner.p_partner_key_n" 
+						<value function="csv" text="partner.p_partner_key_n" 
 								variable="param_clbFields" calculation="OR" format="Number">
 						</value>
 					</queryDetail>
