@@ -48,9 +48,9 @@ public class TGenerateErrorCodeDoc
         Dictionary <string, ErrCodeInfo>ErrorCodes = new Dictionary <string, ErrCodeInfo>();
         CSParser parsedFile = new CSParser(ACSharpPath + "/ICT/Common/ErrorCodes.cs");
         string ErrCodeCategoryNice = String.Empty;
-     
-        TLogging.Log("Creating HTML documentation of OpenPetra Error Codes...");        
-        
+
+        TLogging.Log("Creating HTML documentation of OpenPetra Error Codes...");
+
         ProcessFile(parsedFile, ref ErrorCodes);
         parsedFile = new CSParser(ACSharpPath + "/ICT/Petra/Shared/ErrorCodes.cs");
         ProcessFile(parsedFile, ref ErrorCodes);
@@ -94,23 +94,23 @@ public class TGenerateErrorCodeDoc
                     row.SetCodelet("CODE", code);
 
                     ErrCodeInfo ErrCode = ErrorCodes[code];
-                    
-                    switch (ErrCode.Category) 
+
+                    switch (ErrCode.Category)
                     {
                         case ErrCodeCategory.NonCriticalError:
                             ErrCodeCategoryNice = "Non-critical Error";
                             break;
-                            
+
                         default:
                             ErrCodeCategoryNice = ErrCode.Category.ToString("G");
                             break;
                     }
-                    
+
                     row.AddToCodelet("SHORTDESCRIPTION", (ErrCode.ShortDescription));
                     row.AddToCodelet("FULLDESCRIPTION", (ErrCode.FullDescription));
                     row.AddToCodelet("ERRORCODECATEGORY", (ErrCodeCategoryNice));
                     row.AddToCodelet("DECLARINGCLASS", (ErrCode.ErrorCodeConstantClass));
-                        
+
                     snippets[snippetkey].InsertSnippet("ROWS", row);
                 }
             }
@@ -121,7 +121,6 @@ public class TGenerateErrorCodeDoc
             t.InsertSnippet("TABLES", snippets[snippetkey]);
         }
 
-        
         return t.FinishWriting(AOutFilePath, ".html", true);
     }
 
@@ -145,7 +144,7 @@ public class TGenerateErrorCodeDoc
         string ShortDescription = String.Empty;
         string LongDescription = String.Empty;
         ErrCodeCategory ErrCodeCat;
-        
+
         foreach (TypeDeclaration t in AParsedFile.GetClasses())
         {
             foreach (object child in t.Children)
@@ -158,7 +157,7 @@ public class TGenerateErrorCodeDoc
                     if (type.Name == "FieldDeclaration")
                     {
                         FieldDeclaration fd = (FieldDeclaration)node;
-                        
+
                         foreach (VariableDeclaration vd in fd.Fields)
                         {
                             foreach (AttributeSection attrSection in fd.Attributes)
@@ -166,11 +165,11 @@ public class TGenerateErrorCodeDoc
                                 foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
                                 {
                                     LongDescription = String.Empty;
-                                    
+
                                     if (attr.Name == "ErrCodeAttribute")
-                                    {                                       
+                                    {
                                         ErrCodeValue = ((PrimitiveExpression)vd.Initializer).Value.ToString();
-                                        
+
                                         if (ErrCodeValue.EndsWith("V"))
                                         {
                                             ErrCodeCat = ErrCodeCategory.Validation;
@@ -199,16 +198,16 @@ public class TGenerateErrorCodeDoc
                                         {
                                             if (((NamedArgumentExpression)e).Name == "FullDescription")
                                             {
-                                                LongDescription = ExpressionToString(((NamedArgumentExpression)e).Expression);                                               
+                                                LongDescription = ExpressionToString(((NamedArgumentExpression)e).Expression);
                                             }
-                                            
+
 //                                            TLogging.Log("NamedArgumentExpression Name: " + LongDescription);
                                         }
-                                        
+
                                         ErrCodeDetails = new ErrCodeInfo(ErrCodeValue, t.Name, vd.Name,
                                             ShortDescription, LongDescription,
                                             String.Empty, String.Empty, ErrCodeCat, String.Empty, false);
- 
+
                                         AErrorCodes.Add(ErrCodeValue, ErrCodeDetails);
                                     }
                                 }

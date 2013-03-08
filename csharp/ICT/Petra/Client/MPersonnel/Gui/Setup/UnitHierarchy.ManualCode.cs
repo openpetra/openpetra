@@ -377,7 +377,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 // ex.Message is: DragDrop registration did not succeed.
                 // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
             }
-            
+
             trvUnits.Click += new EventHandler(UnitsClick);
             trvUnits.ShowNodeToolTips = true;
             trvUnits.MouseWheel += new MouseEventHandler(treeView_MouseWheel);

@@ -130,7 +130,6 @@ namespace Tests.MainNavigationScreens
             }
         }
 
-
         /// <summary>
         /// verify that user DEMO cannot open the System Manager module
         /// </summary>
@@ -179,10 +178,10 @@ namespace Tests.MainNavigationScreens
             int BadFailures = 0;
             int TotalWindowsOpened = 0;
 
-            List<String> notOpened = new List<String>();
-            List<String> sysManPermissions = new List<String>();
-            List<String> otherPermissions = new List<String>();
-            List<String> workingWindows = new List<String>();
+            List <String>notOpened = new List <String>();
+            List <String>sysManPermissions = new List <String>();
+            List <String>otherPermissions = new List <String>();
+            List <String>workingWindows = new List <String>();
 
             while (iterator.MoveNext())
             {
@@ -191,6 +190,7 @@ namespace Tests.MainNavigationScreens
                     XmlNode ActionNode = ((IHasXmlNode)iterator.Current).GetNode();
 
                     string className = ActionNode.Attributes["ActionOpenScreen"].Value;
+
                     if (className == "TFrmBankStatementImport")
                     {
                         // skip this one because it pops up an additional dialog that requires user input
@@ -207,10 +207,12 @@ namespace Tests.MainNavigationScreens
                     {
                         Assert.AreEqual(String.Empty,
                             TLstTasks.ExecuteAction(ActionNode, null));
+
                         if (TLstTasks.LastOpenedScreen != null)
                         {
                             TLstTasks.LastOpenedScreen.Close();
                         }
+
                         TotalWindowsOpened++;
                         string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
                                                  Module;
@@ -245,6 +247,7 @@ namespace Tests.MainNavigationScreens
                             {
                                 string permissions = TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
                                 string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " + permissions;
+
                                 if (permissions.Contains("SYSMAN"))
                                 {
                                     NoSysManPermissionCount++;
@@ -277,7 +280,7 @@ namespace Tests.MainNavigationScreens
                         string ledgerNumber = TXMLParser.GetAttributeRecursive(ActionNode, "LedgerNumber", true);
                         string ledger = "LEDGER00" + ledgerNumber;
 
-                        if (ledgerNumber != String.Empty && !UserInfo.GUserInfo.IsInModule(ledger))
+                        if ((ledgerNumber != String.Empty) && !UserInfo.GUserInfo.IsInModule(ledger))
                         {
                             NoOtherPermissionCount++;
                             string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
@@ -296,7 +299,7 @@ namespace Tests.MainNavigationScreens
                             if (ledgerNumber != String.Empty)
                             {
                                 WindowAndModule += (Environment.NewLine +
-                                                     "                                 " + ledger);
+                                                    "                                 " + ledger);
                             }
 
                             notOpened.Add(WindowAndModule);
@@ -329,7 +332,9 @@ namespace Tests.MainNavigationScreens
             Assert.GreaterOrEqual(TotalWindowsOpened, 200, "Expected to open at least 200 windows");
             Assert.GreaterOrEqual(sysManPermissions.Count, 3, "Expected to fail to open at least 3 windows requiring SYSMAN permissions");
             Assert.AreEqual(notOpened.Count, 0, "Failed to open at least one window for unexplained reasons");
-            Assert.AreEqual(otherPermissions.Count, 0, "Unexpected failure to open some windows due to a permissions error, when we should have had sufficient permission");
+            Assert.AreEqual(otherPermissions.Count,
+                0,
+                "Unexpected failure to open some windows due to a permissions error, when we should have had sufficient permission");
 
             if (BadFailures > 0)
             {

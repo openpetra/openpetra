@@ -265,8 +265,8 @@ namespace Ict.Common.Controls
             }
             catch (InvalidOperationException)
             {
-            // ex.Message is: DragDrop registration did not succeed.
-            // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
+                // ex.Message is: DragDrop registration did not succeed.
+                // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
             }
         }
 
