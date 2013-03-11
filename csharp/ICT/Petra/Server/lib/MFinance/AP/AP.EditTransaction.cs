@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -280,7 +280,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            AVerificationResult = null;
+            AVerificationResult = new TVerificationResultCollection();
 
             if (AInspectDS == null)
             {
@@ -289,7 +289,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             if ((AInspectDS.AApDocument != null) && (AInspectDS.AApDocument.Rows.Count > 0))
             {
-                AVerificationResult = new TVerificationResultCollection();
 
                 // I want to check that the Invoice numbers are not blank,
                 // and that none of the documents already exist in the database.
@@ -815,14 +814,16 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         transaction.AccountCode = documentDetail.AccountCode;
                         transaction.CostCentreCode = documentDetail.CostCentreCode;
-                        transaction.Narrative = "AP" + document.ApNumber.ToString() + " - " + documentDetail.Narrative + " - " + SupplierShortName;
+                        transaction.Narrative = "AP " + document.ApNumber.ToString() + " - " + documentDetail.Narrative + " - " + SupplierShortName;
 
                         if (Reversal)
                         {
                             transaction.Narrative = "Reversal: " + transaction.Narrative;
                         }
 
-                        transaction.Reference = documentDetail.ItemRef;
+//                      transaction.Reference = documentDetail.ItemRef;
+                        transaction.Reference = "AP " + document.ApNumber.ToString() + " - " + document.DocumentCode;
+
                         transaction.DetailNumber = documentDetail.DetailNumber;
 
                         GLDataset.ATransaction.Rows.Add(transaction);
@@ -862,16 +863,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
                     transaction.AccountCode = document.ApAccount;
-                    transaction.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(
-                        ALedgerNumber);
-                    transaction.Narrative = "AP" + document.ApNumber.ToString() + " - " + document.DocumentCode + " - " + SupplierShortName;
+                    transaction.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
+                    transaction.Narrative = "AP " + document.ApNumber.ToString() + " - " + document.DocumentCode + " - " + SupplierShortName;
 
                     if (Reversal)
                     {
                         transaction.Narrative = "Reversal: " + transaction.Narrative;
                     }
 
-                    transaction.Reference = "AP" + document.ApNumber.ToString();
+                    transaction.Reference = "AP " + document.ApNumber.ToString() + " - " + document.DocumentCode;
                     transaction.DetailNumber = 0;
 
                     GLDataset.ATransaction.Rows.Add(transaction);
@@ -1225,7 +1225,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transaction.AccountCode = payment.BankAccount;
                         transaction.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(
                             payment.LedgerNumber);
-                        transaction.Narrative = "AP Payment:" + payment.PaymentNumber.ToString() + " - " +
+                        transaction.Narrative = "AP Payment: " + payment.PaymentNumber.ToString() + " - " +
                                                 Ict.Petra.Shared.MPartner.Calculations.FormatShortName(payment.SupplierName,
                             eShortNameFormat.eReverseWithoutTitle);
                         transaction.Reference = payment.Reference;

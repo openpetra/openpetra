@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 && (txtExtract.Text == ""))
             {
                 TVerificationResult VerificationMessage = new TVerificationResult(
-                    Catalog.GetString("Enter a extract name."),
+                    Catalog.GetString("Enter an extract name"),
                     Catalog.GetString("No extract name entered!"), TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
@@ -122,10 +122,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             DateTime ToDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 12, 31);
             DateTime FromDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 1, 1);
 
-            ACalc.AddParameter("param_to_date_this_year", DateTime.Today);
-            ACalc.AddParameter("param_from_date_this_year", FromDateThisYear);
-            ACalc.AddParameter("param_to_date_previous_year", ToDatePreviousYear);
-            ACalc.AddParameter("param_from_date_previous_year", FromDatePreviousYear);
+            ACalc.AddParameter("param_end_date_this_year", DateTime.Today);
+            ACalc.AddParameter("param_start_date_this_year", FromDateThisYear);
+            ACalc.AddParameter("param_end_date_previous_year", ToDatePreviousYear);
+            ACalc.AddParameter("param_start_date_previous_year", FromDatePreviousYear);
 
             if (cmbReportType.SelectedItem.ToString() == "Total")
             {

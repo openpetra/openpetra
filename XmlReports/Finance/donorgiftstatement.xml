@@ -8,14 +8,15 @@
 		<reportparameters>
 			<reportparameter name="param_ledger_number_i"/>
 			<reportparameter name="param_currency"/>
-			<reportparameter name="param_start_date"/>
-			<reportparameter name="param_end_date"/> 
-			<reportparameter name="param_from_date_previous_year"/>
-			<reportparameter name="param_to_date_previous_year"/>
-			<reportparameter name="param_from_date_this_year"/>
-			<reportparameter name="param_to_date_this_year"/>
+			<reportparameter name="param_from_date"/>
+			<reportparameter name="param_to_date"/> 
+			<reportparameter name="param_start_date_this_year"/>
+			<reportparameter name="param_end_date_this_year"/>
+			<reportparameter name="param_start_date_previous_year"/>
+			<reportparameter name="param_end_date_previous_year"/>
 			<reportparameter name="param_min_amount"/>
 			<reportparameter name="param_max_amount"/>
+			<reportparameter name="param_report_type"/>
 		</reportparameters>
 		
 		<reportheader/>
@@ -321,7 +322,7 @@
 							AND ( batch.a_batch_status_c = 'Posted' OR batch.a_batch_status_c = 'posted' )
 							AND batch.a_batch_number_i = gift.a_batch_number_i
 							AND batch.a_ledger_number_i = {{param_ledger_number_i}}
-							AND gift.a_date_entered_d BETWEEN {#param_from_date_previous_year#} AND {#param_to_date_previous_year#}
+							AND gift.a_date_entered_d BETWEEN {#param_start_date_previous_year#} AND {#param_end_date_previous_year#}
 							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
@@ -353,7 +354,7 @@
 							AND ( batch.a_batch_status_c = 'Posted' OR batch.a_batch_status_c = 'posted' )
 							AND batch.a_batch_number_i = gift.a_batch_number_i
 							AND batch.a_ledger_number_i = {{param_ledger_number_i}}
-							AND gift.a_date_entered_d BETWEEN {#param_from_date_this_year#} AND {#param_to_date_this_year#}
+							AND gift.a_date_entered_d BETWEEN {#param_start_date_this_year#} AND {#param_end_date_this_year#}
 							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
@@ -948,9 +949,9 @@
 				<footer space="below" line="below">
 					<field whichfield="column 2" width="9cm" pos="5cm">
 						<value text="Total for current year ("/>
-						<value variable="param_from_date_this_year"/>
+						<value variable="param_start_date_this_year"/>
 						<value text=" To "/>
-						<value variable="param_to_date_this_year"/>
+						<value variable="param_end_date_this_year"/>
 						<value text="):"/>
 					</field>
 					<field whichfield="column {param_gift_amount_column}">
@@ -966,9 +967,9 @@
 				<footer space="above">
 					<field whichfield="column 2" width="9cm" pos="5cm">
 						<value text="Total for previous year ("/>
-						<value variable="param_from_date_previous_year"/>
+						<value variable="param_start_date_previous_year"/>
 						<value text=" To "/>
-						<value variable="param_to_date_previous_year"/>
+						<value variable="param_end_date_previous_year"/>
 						<value text="):"/>
 					</field>
 					<field whichfield="column {param_gift_amount_column}">
@@ -1094,7 +1095,7 @@
 						<value function="GetMonthName(sub({Month0}, 1))"/>
 					</field>
 					<field whichfield="column 1" calculation="SelectMonthSum_0">
-						<value variable="MonthSum_1" />
+						<value variable="MonthSum_0" />
 					</field>
 					<field whichfield="column 2" align="right">
 						<value variable="Count_0" />
