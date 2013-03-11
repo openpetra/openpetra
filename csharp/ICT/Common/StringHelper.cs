@@ -181,7 +181,7 @@ namespace Ict.Common
         {
             StringBuilder ReturnValue = new StringBuilder();
 
-            for (int i = 0; i <= l.Length - 1; i += 1)
+            for (int i = 0; i < l.Length; i++)
             {
                 if (i != 0)
                 {
