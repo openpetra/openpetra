@@ -88,6 +88,58 @@ namespace Ict.Petra.Shared.MFinance
         }
 
         /// <summary>
+        /// Calculate the base amount for the transactions, and update the totals for the current journal
+        /// NOTE this no longer calculates AmountInBaseCurrency
+        /// </summary>
+        /// <param name="AMainDS">ATransactions are filtered on current journal</param>
+        /// <param name="ACurrentJournal"></param>
+        public static void UpdateTotalsOfRecurringJournal(ref GLBatchTDS AMainDS,
+            GLBatchTDSARecurringJournalRow ACurrentJournal)
+        {
+            if (ACurrentJournal == null)
+            {
+                return;
+            }
+
+            if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
+                && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
+            {
+                throw new Exception(String.Format("Batch {0} Journal {1} has invalid exchange rate to base",
+                        ACurrentJournal.BatchNumber,
+                        ACurrentJournal.JournalNumber));
+            }
+
+            ACurrentJournal.JournalDebitTotal = 0.0M;
+            ACurrentJournal.JournalDebitTotalBase = 0.0M;
+            ACurrentJournal.JournalCreditTotal = 0.0M;
+            ACurrentJournal.JournalCreditTotalBase = 0.0M;
+
+            // transactions are filtered for this journal; add up the total amounts
+            foreach (DataRowView v in AMainDS.ARecurringTransaction.DefaultView)
+            {
+                ARecurringTransactionRow r = (ARecurringTransactionRow)v.Row;
+
+                // recalculate the amount in base currency
+
+                if (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
+                {
+                    r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
+                }
+
+                if (r.DebitCreditIndicator)
+                {
+                    ACurrentJournal.JournalDebitTotal += r.TransactionAmount;
+                    ACurrentJournal.JournalDebitTotalBase += r.AmountInBaseCurrency;
+                }
+                else
+                {
+                    ACurrentJournal.JournalCreditTotal += r.TransactionAmount;
+                    ACurrentJournal.JournalCreditTotalBase += r.AmountInBaseCurrency;
+                }
+            }
+        }
+
+        /// <summary>
         /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
         /// </summary>
         /// <param name="AMainDS"></param>
