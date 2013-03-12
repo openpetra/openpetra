@@ -40,6 +40,8 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
+            ActionDoubleClick: ShowAttributesTab
+            ActionEnterKeyPressed: ShowAttributesTab
             SortOrder: ATransaction.TransactionNumber ASC
             RowFilter: ATransaction.BatchNumber, ATransaction.JournalNumber
         pnlDetails:

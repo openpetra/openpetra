@@ -261,6 +261,55 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// loads a list of attributes for the given Batch Journal (identified by ledger,batch, journal)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadATransAnalAttribForJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ATransAnalAttribAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DataView myView = new DataView(MainDS.ATransAnalAttrib);
+
+            myView.RowFilter = String.Format("{0} <> {1}",
+                ATransAnalAttribTable.GetJournalNumberDBName(),
+                AJournalNumber);
+
+            foreach (DataRowView dv in myView)
+            {
+                ATransAnalAttribRow tr = (ATransAnalAttribRow)dv.Row;
+
+                tr.Delete();
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of attributes for the given Batch (identified by ledger,batch)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadATransAnalAttribForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ATransAnalAttribAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads some necessary analysis attributes tables for the given ledger number
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -486,7 +535,220 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
+            //Process transactions and their analysis attributes
+
+            bool tranTableInDataSet = (AInspectDS.ATransaction != null);
+            bool attrTableInDataSet = (AInspectDS.ATransAnalAttrib != null);
+
+            if (tranTableInDataSet)
+            {
+                AInspectDS.ATransaction.AcceptChanges();
+            }
+
+            if (attrTableInDataSet)
+            {
+                AInspectDS.ATransAnalAttrib.AcceptChanges();
+            }
+
+            if ((SubmissionResult == TSubmitChangesResult.scrOK)
+                && (AInspectDS.ATransaction != null) && (AInspectDS.ATransaction.Rows.Count > 0))
+            {
+                ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
+
+                Int32 currentLedger = tranR.LedgerNumber;
+                Int32 currentBatch = tranR.BatchNumber;
+                Int32 currentJournal = tranR.JournalNumber;
+                Int32 transToDelete = 0;
+
+                try
+                {
+                    //A transaction has been deleted
+                    //Accept the deletion of the single details row
+                    AInspectDS.ATransaction.AcceptChanges();
+
+                    if (attrTableInDataSet)
+                    {
+                        AInspectDS.ATransAnalAttrib.AcceptChanges();
+                    }
+                    else
+                    {
+                        AInspectDS.Tables.Add(new ATransAnalAttribTable("ATransAnalAttrib"));
+                        AInspectDS.Merge(LoadATransAnalAttribForJournal(currentLedger, currentBatch, currentJournal));
+                        attrTableInDataSet = true;
+                    }
+
+                    //Assuming only transactions present for a single Ledger-Batch-Journal at any point in time
+                    ATransactionRow tr = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
+                    currentLedger = tr.LedgerNumber;
+                    currentBatch = tr.BatchNumber;
+                    currentJournal = tr.JournalNumber;
+
+                    //Check if any records have been marked for deletion
+                    DataRow[] foundTransactionForDeletion = AInspectDS.ATransaction.Select(String.Format("{0} = '{1}'",
+                            ATransactionTable.GetSubTypeDBName(),
+                            MFinanceConstants.MARKED_FOR_DELETION));
+
+                    if (foundTransactionForDeletion.Length > 0)
+                    {
+                        ATransactionRow transRowClient = null;
+
+                        for (int i = 0; i < foundTransactionForDeletion.Length; i++)
+                        {
+                            transRowClient = (ATransactionRow)foundTransactionForDeletion[i];
+
+                            transToDelete = transRowClient.TransactionNumber;
+                            TLogging.Log(String.Format("Transaction to Delete: {0} from Journal: {1} in Batch: {2}",
+                                    transToDelete,
+                                    currentJournal,
+                                    currentBatch));
+
+                            transRowClient.Delete();
+                        }
+
+                        //save changes
+                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+
+                        //Accept the deletion of the single detail row
+                        AInspectDS.ATransAnalAttrib.AcceptChanges();
+                        AInspectDS.ATransaction.AcceptChanges();
+                    }
+
+                    //Check that all analysis attributes exist
+                    CheckTransAnalysisAttributes(ref AInspectDS,
+                        currentLedger,
+                        currentBatch,
+                        currentJournal,
+                        ref SubmissionResult,
+                        ref AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    TLogging.Log(String.Format("Error trying to delete transaction: {0} in Journal: {1}, Batch: {2}",
+                            transToDelete,
+                            currentJournal,
+                            currentBatch
+                            ));
+                }
+
+
+                // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
+                // TODO: calculate hash of saved batch or batch of saved gift
+            }
+
             return SubmissionResult;
+        }
+
+        private static void CheckTransAnalysisAttributes(ref GLBatchTDS AInspectDS,
+            int ALedgerNumber,
+            int ABatchNumber,
+            int AJournalNumber,
+            ref TSubmitChangesResult ASubmissionResult,
+            ref TVerificationResultCollection AVerificationResult)
+        {
+            //check if the necessary rows for the given account are there, automatically add/update account
+            GLSetupTDS glSetupCacheDS = LoadAAnalysisAttributes(ALedgerNumber);
+
+            //Account Number for AnalysisTable lookup
+            int currentTransactionNumber = 0;
+            string currentTransAccountCode = String.Empty;
+
+            if (glSetupCacheDS == null)
+            {
+                return;
+            }
+
+            //Reference all transactions in dataset
+            DataView allTransView = AInspectDS.ATransaction.DefaultView;
+            DataView transAnalAttrView = AInspectDS.ATransAnalAttrib.DefaultView;
+
+            transAnalAttrView.RowFilter = string.Empty;
+
+            allTransView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                ATransactionTable.GetBatchNumberDBName(),
+                ABatchNumber,
+                ATransactionTable.GetJournalNumberDBName(),
+                AJournalNumber);
+
+            foreach (DataRowView transRowView in allTransView)
+            {
+                ATransactionRow currentTransactionRow = (ATransactionRow)transRowView.Row;
+
+                currentTransactionNumber = currentTransactionRow.TransactionNumber;
+                currentTransAccountCode = currentTransactionRow.AccountCode;
+
+                //If this account code is used need to delete it from TransAnal table.
+                //Delete any existing rows with old code
+                transAnalAttrView.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5} AND {6} <> '{7}'",
+                    ATransAnalAttribTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    ATransAnalAttribTable.GetJournalNumberDBName(),
+                    AJournalNumber,
+                    ATransAnalAttribTable.GetTransactionNumberDBName(),
+                    currentTransactionNumber,
+                    ATransAnalAttribTable.GetAccountCodeDBName(),
+                    currentTransAccountCode);
+
+                foreach (DataRowView dv in transAnalAttrView)
+                {
+                    ATransAnalAttribRow tr = (ATransAnalAttribRow)dv.Row;
+
+                    tr.Delete();
+                }
+
+                transAnalAttrView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                    ATransAnalAttribTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    ATransAnalAttribTable.GetJournalNumberDBName(),
+                    AJournalNumber,
+                    ATransAnalAttribTable.GetTransactionNumberDBName(),
+                    currentTransactionNumber);
+
+                //Retrieve the analysis attributes for the supplied account
+                DataView analAttrView = glSetupCacheDS.AAnalysisAttribute.DefaultView;
+                analAttrView.RowFilter = String.Format("{0} = '{1}'",
+                    AAnalysisAttributeTable.GetAccountCodeDBName(),
+                    currentTransAccountCode);
+
+                if (analAttrView.Count > 0)
+                {
+                    for (int i = 0; i < analAttrView.Count; i++)
+                    {
+                        //Read the Type Code for each attribute row
+                        AAnalysisAttributeRow analAttrRow = (AAnalysisAttributeRow)analAttrView[i].Row;
+                        string analysisTypeCode = analAttrRow.AnalysisTypeCode;
+
+                        //Check if the attribute type code exists in the Transaction Analysis Attributes table
+                        ATransAnalAttribRow transAnalAttrRow =
+                            (ATransAnalAttribRow)AInspectDS.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber,
+                                                                                                      currentTransactionNumber,
+                                                                                                      analysisTypeCode });
+
+                        if (transAnalAttrRow == null)
+                        {
+                            //Create a new TypeCode for this account
+                            ATransAnalAttribRow newRow = AInspectDS.ATransAnalAttrib.NewRowTyped(true);
+                            newRow.LedgerNumber = ALedgerNumber;
+                            newRow.BatchNumber = ABatchNumber;
+                            newRow.JournalNumber = AJournalNumber;
+                            newRow.TransactionNumber = currentTransactionNumber;
+                            newRow.AnalysisTypeCode = analysisTypeCode;
+                            newRow.AccountCode = currentTransAccountCode;
+
+                            AInspectDS.ATransAnalAttrib.Rows.Add(newRow);
+                        }
+                        else if (transAnalAttrRow.AccountCode != currentTransAccountCode)
+                        {
+                            //Check account code is correct
+                            transAnalAttrRow.AccountCode = currentTransAccountCode;
+                        }
+                    }
+                }
+
+                ASubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                AInspectDS.ATransAnalAttrib.AcceptChanges();
+            }
+
+            transAnalAttrView.RowFilter = string.Empty;
         }
 
         /// <summary>
