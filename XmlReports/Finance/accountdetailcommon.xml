@@ -278,14 +278,6 @@
 					<queryDetail>
 						<parameter name="transaction" value="PUB_a_transaction"/>
 					</queryDetail>
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInThisYearOld({param_start_period_i}, {param_year_i}), true)">
-						<value text="UNION "/>
-						<parameter name="transaction" value="PUB_a_this_year_old_transaction"/>
-					</queryDetail>					
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInLastYear({param_start_period_i}, {param_year_i}), true)">
-						<value text="UNION "/>
-						<parameter name="transaction" value="PUB_a_previous_year_transaction"/>
-					</queryDetail>					
 					<queryDetail><value>
 						ORDER BY 1
 					</value>
@@ -343,16 +335,6 @@
 						<parameter name="transaction" value="PUB_a_transaction"/>
 						<parameter name="transanalattrib" value="PUB_a_trans_anal_attrib"/>
 					</queryDetail>
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInThisYearOld({param_start_period_i}, {param_year_i}), true)">
-						<value>UNION </value>
-						<parameter name="transaction" value="PUB_a_this_year_old_transaction"/>
-						<parameter name="transanalattrib" value="PUB_a_thisyearold_trans_anal_attrib"/>
-					</queryDetail>					
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInLastYear({param_start_period_i}, {param_year_i}), true)">
-						<value>UNION </value>
-						<parameter name="transaction" value="PUB_a_previous_year_transaction"/>
-						<parameter name="transanalattrib" value="PUB_a_prev_year_trans_anal_attrib"/>
-					</queryDetail>					
 					<queryDetail><value>
 						ORDER BY 1
 					</value>
@@ -394,16 +376,6 @@
 						<parameter name="transaction" value="PUB_a_transaction"/>
 						<parameter name="journal" value="PUB_a_journal"/>
 					</queryDetail>
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInThisYearOld({param_start_period_i}, {param_year_i}), true)">
-						<value>UNION </value>
-						<parameter name="transaction" value="PUB_a_this_year_old_transaction"/>
-						<parameter name="journal" value="PUB_a_this_year_old_journal"/>
-					</queryDetail>					
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInLastYear({param_start_period_i}, {param_year_i}), true)">
-						<value>UNION </value>
-						<parameter name="transaction" value="PUB_a_previous_year_transaction"/>
-						<parameter name="journal" value="PUB_a_previous_year_journal"/>
-					</queryDetail>					
 					<queryDetail><value>
 						ORDER BY 1, 2, 3, 4
 					</value>
@@ -461,14 +433,6 @@
 					<queryDetail>
 						<parameter name="transaction" value="PUB_a_transaction"/>
 					</queryDetail>
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInThisYearOld({param_start_period_i}, {param_year_i}), true)">
-						<value>UNION </value>
-						<parameter name="transaction" value="PUB_a_this_year_old_transaction"/>
-					</queryDetail>					
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInLastYear({param_start_period_i}, {param_year_i}), true)">
-						<value>UNION </value>
-						<parameter name="transaction" value="PUB_a_previous_year_transaction"/>
-					</queryDetail>					
 					<queryDetail><value>
 						ORDER BY 1, 2, 3, 4
 					</value>
@@ -534,16 +498,6 @@
 						<parameter name="transaction" value="PUB_a_transaction"/>
 						<parameter name="transanalattrib" value="PUB_a_trans_anal_attrib"/>
 					</queryDetail>
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInThisYearOld({param_start_period_i}, {param_year_i}), true)">
-						<value>UNION </value>
-						<parameter name="transaction" value="PUB_a_this_year_old_transaction"/>
-						<parameter name="transanalattrib" value="PUB_a_thisyearold_trans_anal_attrib"/>
-					</queryDetail>					
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInLastYear({param_start_period_i}, {param_year_i}), true)">
-						<value>UNION </value>
-						<parameter name="transaction" value="PUB_a_previous_year_transaction"/>
-						<parameter name="transanalattrib" value="PUB_a_prev_year_trans_anal_attrib"/>
-					</queryDetail>					
 					<queryDetail><value>
 						ORDER BY 1, 2, 3, 4
 					</value>
@@ -577,16 +531,6 @@
 						<parameter name="transaction" value="PUB_a_transaction"/>
 						<parameter name="transanalattrib" value="PUB_a_trans_anal_attrib"/>
 					</queryDetail>
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInThisYearOld({param_start_period_i}, {param_year_i}), true)">
-						<value>UNION </value>
-						<parameter name="transaction" value="PUB_a_this_year_old_transaction"/>
-						<parameter name="transanalattrib" value="PUB_a_thisyearold_trans_anal_attrib"/>
-					</queryDetail>					
-					<queryDetail condition="iif(not(isNull(param_start_period_i)),periodInLastYear({param_start_period_i}, {param_year_i}), true)">
-						<value>UNION </value>
-						<parameter name="transaction" value="PUB_a_previous_year_transaction"/>
-						<parameter name="transanalattrib" value="PUB_a_prev_year_trans_anal_attrib"/>
-					</queryDetail>					
 					<queryDetail><value>
 						ORDER BY 1, 2
 					</value>
