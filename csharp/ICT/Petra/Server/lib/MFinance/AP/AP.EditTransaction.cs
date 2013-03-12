@@ -289,7 +289,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             if ((AInspectDS.AApDocument != null) && (AInspectDS.AApDocument.Rows.Count > 0))
             {
-
                 // I want to check that the Invoice numbers are not blank,
                 // and that none of the documents already exist in the database.
 

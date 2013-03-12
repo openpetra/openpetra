@@ -1158,10 +1158,12 @@ namespace Ict.Common
         public static decimal TryStrToDecimal(string s, decimal ADefault)
         {
             decimal ReturnValue;
+
             if (!decimal.TryParse(s, out ReturnValue))
             {
                 ReturnValue = ADefault;
             }
+
             return ReturnValue;
         }
 
@@ -1174,10 +1176,12 @@ namespace Ict.Common
         public static Int64 TryStrToInt(string s, Int64 ADefault)
         {
             Int64 ReturnValue;
+
             if (!Int64.TryParse(s, out ReturnValue))
             {
                 ReturnValue = ADefault;
             }
+
             return ReturnValue;
         }
 
@@ -1190,10 +1194,12 @@ namespace Ict.Common
         public static Int32 TryStrToInt32(string s, Int32 ADefault)
         {
             Int32 ReturnValue;
+
             if (!Int32.TryParse(s, out ReturnValue))
             {
                 ReturnValue = ADefault;
             }
+
             return ReturnValue;
         }
 

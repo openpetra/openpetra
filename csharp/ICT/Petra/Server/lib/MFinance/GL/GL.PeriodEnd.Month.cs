@@ -172,7 +172,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
             RunPeriodEndCheck(new RunMonthEndChecks(FledgerInfo), verificationResults);
 
-
             if (!AInfoMode)
             {
                 TVerificationResultCollection IchVerificationReults;

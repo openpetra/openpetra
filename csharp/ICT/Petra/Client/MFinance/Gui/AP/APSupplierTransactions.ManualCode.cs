@@ -429,8 +429,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     FStatusFilter += " AND ";
                 }
+
                 FStatusFilter += ("(Date >'" + FAgedOlderThan + "')");
             }
+
             UpdateRowFilter();
         }
 

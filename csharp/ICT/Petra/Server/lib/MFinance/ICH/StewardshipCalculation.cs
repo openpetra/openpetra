@@ -141,7 +141,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// If we're working in an open period, make sure the summary data is up to date.
         ///  Check that there are amounts to be transferred to the clearing house.
         ///  I.e., there are debits or credits to foreign cost centres.
-        ///  Create the journal to create the transfer transactions in, 
+        ///  Create the journal to create the transfer transactions in,
         ///  if there are amounts to transfer.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -583,9 +583,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     TVerificationResultCollection BatchCancelResult = new TVerificationResultCollection();
 
                     TGLPosting.DeleteGLBatch(
-                         ALedgerNumber,
-                         GLBatchNumber,
-                         out BatchCancelResult);
+                        ALedgerNumber,
+                        GLBatchNumber,
+                        out BatchCancelResult);
                     AVerificationResult.AddCollection(BatchCancelResult);
 
                     IsSuccessful = true;
@@ -635,9 +635,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         TVerificationResultCollection BatchCancelResult = new TVerificationResultCollection();
 
                         TGLPosting.DeleteGLBatch(
-                             ALedgerNumber,
-                             GLBatchNumber,
-                             out BatchCancelResult);
+                            ALedgerNumber,
+                            GLBatchNumber,
+                            out BatchCancelResult);
                         AVerificationResult.AddCollection(BatchCancelResult);
                     }
                 }
@@ -883,7 +883,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
 
                     // Create a Batch. If no fees are to be charged, I'll delete this batch later.
-                    GLBatchTDS AdminFeeDS = TGLPosting.CreateABatch(ALedgerNumber, Catalog.GetString("Admin Fees & Grants"), 0, AccountingPeriodRow.PeriodEndDate);
+                    GLBatchTDS AdminFeeDS = TGLPosting.CreateABatch(ALedgerNumber, Catalog.GetString(
+                            "Admin Fees & Grants"), 0, AccountingPeriodRow.PeriodEndDate);
                     ABatchRow BatchRow = AdminFeeDS.ABatch[0];
 
                     AJournalRow JournalRow = AdminFeeDS.AJournal.NewRowTyped();
@@ -1125,9 +1126,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         TVerificationResultCollection BatchCancelResult = new TVerificationResultCollection();
 
                         TGLPosting.DeleteGLBatch(
-                             ALedgerNumber,
-                             BatchRow.BatchNumber,
-                             out BatchCancelResult);
+                            ALedgerNumber,
+                            BatchRow.BatchNumber,
+                            out BatchCancelResult);
                         AVerificationResult.AddCollection(BatchCancelResult);
                     }
                     else

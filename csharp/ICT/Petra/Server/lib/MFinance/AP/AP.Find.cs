@@ -446,16 +446,18 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 ACriteriaTable.Rows[0]["PartnerKey"] = 0;
 
                 // try if this is a partner key
-                
+
                 if (ACriteriaTable.Columns.Contains("SupplierId"))
                 {
-                   Int64 SupplierPartnerKey;
-                   if (Int64.TryParse(ACriteriaTable.Rows[0]["SupplierId"].ToString(), out SupplierPartnerKey))
+                    Int64 SupplierPartnerKey;
+
+                    if (Int64.TryParse(ACriteriaTable.Rows[0]["SupplierId"].ToString(), out SupplierPartnerKey))
                     {
                         ACriteriaTable.Rows[0]["PartnerKey"] = SupplierPartnerKey;
                     }
                 }
             }
+
             return ACriteriaTable.Rows[0];
         }
 

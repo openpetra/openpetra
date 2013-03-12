@@ -75,11 +75,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             Int32 FilterByPaymentNum = 0;
+
             if ((txtPaymentNumFrom.Text != "") && (txtPaymentNumTo.Text != ""))
             {
                 FilterByPaymentNum = 1;
             }
+
             Int32 FilterByDate = 0;
+
             if ((dtpPaymentDateFrom.Text != "") && (dtpPaymentDateTo.Text != ""))
             {
                 FilterByDate = 1;

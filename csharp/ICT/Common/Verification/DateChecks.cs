@@ -162,6 +162,7 @@ namespace Ict.Common.Verification
             String Description = THelper.NiceValueDescription(ADescription);
 
             DateTime temp;
+
             if (!DateTime.TryParse(AString, out temp))
             {
                 ReturnValue = GetInvalidDateVerificationResult(Description, AResultContext);

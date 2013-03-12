@@ -1294,8 +1294,9 @@ namespace Ict.Petra.Server.MFinance.Common
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
-    {
+        {
             GLBatchTDS TempTDS;
+
             if (!GLBatchCanBeCancelled(out TempTDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
@@ -1303,6 +1304,7 @@ namespace Ict.Petra.Server.MFinance.Common
             else
             {
                 ABatchRow BatchRow = TempTDS.ABatch[0];
+
                 //
                 // If I'm deleting the most recent entry (which is almost certainly the case)
                 // I can wind back the Ledger's LastBatchNumber so as not to leave a gap.
@@ -1313,9 +1315,9 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
 
                 BatchRow.Delete();
-                return (GLBatchTDSAccess.SubmitChanges(TempTDS, out AVerifications) == TSubmitChangesResult.scrOK);
+                return GLBatchTDSAccess.SubmitChanges(TempTDS, out AVerifications) == TSubmitChangesResult.scrOK;
             }
-    }
+        }
 
         /// <summary>
         /// create a new batch.
@@ -1419,6 +1421,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
 
                 int FinancialYear, FinancialPeriod;
+
                 if (ADateEffective != null)
                 {
                     TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out FinancialYear, out FinancialPeriod, null, false);
@@ -1426,6 +1429,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     NewRow.BatchPeriod = FinancialPeriod;
                     NewRow.BatchYear = FinancialYear;
                 }
+
                 NewRow.BatchDescription = ABatchDescription;
                 NewRow.BatchControlTotal = ABatchControlTotal;
                 MainDS.ABatch.Rows.Add(NewRow);

@@ -104,11 +104,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
 
-            if ((AReportAction == TReportActionEnum.raGenerate) &&(rbtAllFields.Checked))
+            if ((AReportAction == TReportActionEnum.raGenerate) && (rbtAllFields.Checked))
             {
                 ACalc.AddParameter("param_clbFields", this.clbFields.GetAllStringList());
             }
-
 
             if ((AReportAction == TReportActionEnum.raGenerate)
                 && (dtpFromDate.Date > dtpToDate.Date))

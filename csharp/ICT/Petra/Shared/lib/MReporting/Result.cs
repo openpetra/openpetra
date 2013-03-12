@@ -567,7 +567,6 @@ namespace Ict.Petra.Shared.MReporting
         /// <param name="masterRow"></param>
         public void CreateSortedListByMaster(ArrayList sortedList, int masterRow)
         {
-
             for (int counter = 0; counter < results.Count; counter++)
             {
                 TResult element = (TResult)results[counter];
@@ -591,6 +590,7 @@ namespace Ict.Petra.Shared.MReporting
             DataTable dt = ToDataTable(AParameters);
             FileStream fs = new FileStream(AFilename, FileMode.Create);
             BinaryFormatter bf = new BinaryFormatter();
+
             bf.Serialize(fs, dt);
 
             dt = AParameters.ToDataTable();

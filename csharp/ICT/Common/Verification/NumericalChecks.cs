@@ -130,6 +130,7 @@ namespace Ict.Common.Verification
 
             // Check
             Double temp;
+
             if (!Double.TryParse(AValue, out temp))
             {
                 ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
@@ -167,6 +168,7 @@ namespace Ict.Common.Verification
 
             // Check
             Decimal temp;
+
             if (!Decimal.TryParse(AValue, out temp))
             {
                 ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(

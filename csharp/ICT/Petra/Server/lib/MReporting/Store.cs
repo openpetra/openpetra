@@ -449,7 +449,6 @@ namespace Ict.Petra.Server.MReporting
         /// <returns></returns>
         public TRptLevel GetLevel(string name)
         {
-            
             if (rptGrpLevel == null)
             {
                 return null;
@@ -476,7 +475,6 @@ namespace Ict.Petra.Server.MReporting
         /// <returns></returns>
         public TRptCalculation GetCalculation(string name)
         {
-
             if (rptGrpCalculation == null)
             {
                 return null;
@@ -484,7 +482,7 @@ namespace Ict.Petra.Server.MReporting
 
             name = name.ToLower();
 
-            for (int counter = 0; counter < rptGrpCalculation.Count;  counter++)
+            for (int counter = 0; counter < rptGrpCalculation.Count; counter++)
             {
                 TRptCalculation element = (TRptCalculation)rptGrpCalculation[counter];
 
@@ -621,7 +619,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="reportId"></param>
         public void Clear(string reportId)
         {
-            for (int counter = 0;counter < reports.Count; counter++)
+            for (int counter = 0; counter < reports.Count; counter++)
             {
                 TReportDefinition element = (TReportDefinition)reports[counter];
 
@@ -654,7 +652,7 @@ namespace Ict.Petra.Server.MReporting
         /// <returns></returns>
         public TRptReport Get(string reportId)
         {
-            for (int counter=0; counter < reports.Count; counter++)
+            for (int counter = 0; counter < reports.Count; counter++)
             {
                 TReportDefinition element = (TReportDefinition)reports[counter];
 
@@ -663,6 +661,7 @@ namespace Ict.Petra.Server.MReporting
                     return element.GetReport();
                 }
             }
+
             return null;
         }
 
@@ -685,7 +684,7 @@ namespace Ict.Petra.Server.MReporting
 
             if (ReturnValue == null)
             {
-                for (int counter = 0; counter < reports.Count;  counter++)
+                for (int counter = 0; counter < reports.Count; counter++)
                 {
                     element = (TReportDefinition)reports[counter];
                     ReturnValue = element.rptReport.GetCalculation(name);
