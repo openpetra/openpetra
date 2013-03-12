@@ -1184,7 +1184,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Clear result table
                 try
                 {
-                    FPagedDataTable.Clear();
+                    if (FPagedDataTable != null)
+                    {
+                        FPagedDataTable.Clear();
+                    }
                 }
                 catch (Exception)
                 {
