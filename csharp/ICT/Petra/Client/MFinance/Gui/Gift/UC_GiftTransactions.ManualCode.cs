@@ -815,7 +815,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         if (currentGiftTransNo == giftView.Count)
                         {
                             //Mark last record for deletion
-                            giftRowCurrent.GiftStatus = MFinanceConstants.GIFT_BATCH_GIFT_TO_DELETE_STATUS;
+                            giftRowCurrent.GiftStatus = MFinanceConstants.MARKED_FOR_DELETION;
                         }
 
                         //Will always be previous row
