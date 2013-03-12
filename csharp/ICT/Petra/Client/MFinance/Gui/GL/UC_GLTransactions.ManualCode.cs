@@ -202,41 +202,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return activeTrans;
         }
 
-//            Int32 ledgerNumber;
-//            Int32 batchNumber;
-//            Int32 journalNumber;
-//            DateTime batchEffectiveDate;
-//
-//            ledgerNumber = AGLBatchRow.LedgerNumber;
-//            batchNumber = AGLBatchRow.BatchNumber;
-//            journalNumber = AGLJournalRow.JournalNumber;
-//            batchEffectiveDate = AGLBatchRow.DateEffective;
-//
-//            if (FMainDS.ATransaction.Rows.Count == 0)
-//            {
-//                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(ledgerNumber, batchNumber, journalNumber));
-//            }
-//            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber && FJournalNumber == journalNumber))
-//            {
-//                FGLEffectivePeriodChanged = true;
-//                //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
-//                GetSelectedDetailRow().TransactionDate = batchEffectiveDate;
-//            }
-//
-//            //Update all transactions
-//            foreach (ATransactionRow transRow in FMainDS.ATransaction.Rows)
-//            {
-//              if (transRow.BatchNumber.Equals(batchNumber) && transRow.JournalNumber.Equals(journalNumber) && transRow.LedgerNumber.Equals(ledgerNumber))
-//                {
-//                    transRow.TransactionDate = batchEffectiveDate;
-//                }
-//            }
-//
-//            if (FGLEffectivePeriodChanged)
-//            {
-//                ShowDetails();
-//            }
-
         /// <summary>
         /// get the details of the current journal
         /// </summary>
@@ -601,21 +566,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             dtpDetailTransactionDate.Validated += new EventHandler(ControlHasChanged);
         }
 
-        private void EnableAttributes()
-        {
-//              if(((TFrmGLBatch) this.ParentForm).GetAttributesControl().MainDS.ATransAnalAttrib.DefaultView.Find(new object[] { FLedgerNumber,
-//                                                                                                                      GetBatchRow().BatchNumber,
-//                                                                                                                      GetJournalRow().JournalNumber,
-//                                                                                                                      FPreviouslySelectedDetailRow.TransactionNumber}) == -1)
-//            {
-//              ((TFrmGLBatch)ParentForm).DisableAttributes();
-//            }
-//            else
-//            {
-//              ((TFrmGLBatch)ParentForm).EnableAttributes();
-//            }
-        }
-
         private void ControlHasChanged(System.Object sender, EventArgs e)
         {
             //TODO: Find out why these were put here as they stop the field updates from working
@@ -657,25 +607,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-//			else if (FPreviouslySelectedDetailRow.RowState != DataRowState.Added)
-//			{
-//				currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
-//	                currentJournalNo = FPreviouslySelectedDetailRow.JournalNumber;
-//	                transactionNumberToDelete = FPreviouslySelectedDetailRow.TransactionNumber;
-//
-//				//Check if added row has yet been saved
-//				foreach (DataRowView tv in FMainDS.ATransaction.DefaultView)
-//				{
-//					ATransactionRow tr  = (ATransactionRow)tv.Row;
-//
-//					if (tr.TransactionNumber != transactionNumberToDelete && tr.RowState == DataRowState.Added)
-//					{
-//						MessageBox.Show("Please save changes to new record(s) before deleting current transaction.");
-//						return;
-//					}
-//				}
-//			}
-//
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
                                 "You have chosen to delete this transaction ({0}).\n\nDo you really want to delete it?"),
@@ -923,19 +854,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int currentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             string currentAccountCode = cmbDetailAccountCode.GetSelectedString();
 
-            //Reference all transactions in dataset
-//            DataView allTransView = FMainDS.ATransaction.DefaultView;
-//
-//            allTransView.RowFilter = String.Format("{0}={1} and {2}={3}",
-//                ATransactionTable.GetBatchNumberDBName(),
-//                FBatchNumber,
-//                ATransactionTable.GetJournalNumberDBName(),
-//                FJournalNumber);
-
             ATransactionRow currentTransactionRow = FPreviouslySelectedDetailRow;
-
-            //currentTransactionNumber = currentTransactionRow.TransactionNumber;
-            //currentAccountCode = currentTransactionRow.AccountCode;
 
             //Retrieve the analysis attributes for the supplied account
             DataView analAttrView = glSetupCacheDS.AAnalysisAttribute.DefaultView;

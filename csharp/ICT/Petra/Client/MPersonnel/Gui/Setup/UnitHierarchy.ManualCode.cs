@@ -363,11 +363,22 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
         private void RunOnceOnActivationManual()
         {
-            trvUnits.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
-            trvUnits.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
-            trvUnits.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
+            // AlanP March 2013:  Use a try/catch block because nUnit testing on this screen does not support Drag/Drop in multi-threaded model
+            // It is easier to do this than to configure all the different test execution methods to use STA
+            try
+            {
+                trvUnits.AllowDrop = true;
+                trvUnits.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
+                trvUnits.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
+                trvUnits.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
+            }
+            catch (InvalidOperationException)
+            {
+                // ex.Message is: DragDrop registration did not succeed.
+                // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
+            }
+
             trvUnits.Click += new EventHandler(UnitsClick);
-            trvUnits.AllowDrop = true;
             trvUnits.ShowNodeToolTips = true;
             trvUnits.MouseWheel += new MouseEventHandler(treeView_MouseWheel);
             trvUnits.Focus();

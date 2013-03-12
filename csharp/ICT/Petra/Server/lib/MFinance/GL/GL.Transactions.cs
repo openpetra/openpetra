@@ -539,32 +539,32 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             bool tranTableInDataSet = (AInspectDS.ATransaction != null);
             bool attrTableInDataSet = (AInspectDS.ATransAnalAttrib != null);
-            
+
             if (tranTableInDataSet)
             {
-            	AInspectDS.ATransaction.AcceptChanges();
+                AInspectDS.ATransaction.AcceptChanges();
             }
 
             if (attrTableInDataSet)
             {
-            	AInspectDS.ATransAnalAttrib.AcceptChanges();
+                AInspectDS.ATransAnalAttrib.AcceptChanges();
             }
 
             if ((SubmissionResult == TSubmitChangesResult.scrOK)
-                && AInspectDS.ATransaction != null && AInspectDS.ATransaction.Rows.Count > 0)
+                && (AInspectDS.ATransaction != null) && (AInspectDS.ATransaction.Rows.Count > 0))
             {
-            	ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
+                ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
 
-           		Int32 currentLedger = tranR.LedgerNumber;
-	            Int32 currentBatch = tranR.BatchNumber;
-	            Int32 currentJournal = tranR.JournalNumber;
-	            Int32 transToDelete = 0;
+                Int32 currentLedger = tranR.LedgerNumber;
+                Int32 currentBatch = tranR.BatchNumber;
+                Int32 currentJournal = tranR.JournalNumber;
+                Int32 transToDelete = 0;
 
-	            try
+                try
                 {
                     //A transaction has been deleted
                     //Accept the deletion of the single details row
-	            	AInspectDS.ATransaction.AcceptChanges();
+                    AInspectDS.ATransaction.AcceptChanges();
 
                     if (attrTableInDataSet)
                     {

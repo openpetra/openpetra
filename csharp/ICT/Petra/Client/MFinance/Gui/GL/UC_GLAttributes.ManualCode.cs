@@ -113,15 +113,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMainDS.ATransAnalAttrib.Clear();
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber));
-
-//              if (FMainDS.ATransAnalAttrib.DefaultView.Count == 0)
-//              {
-//                      CheckAnalysisAttributes(FLedgerNumber,
-//                    FBatchNumber,
-//                    FJournalNumber,
-//                    FTransactionNumber,
-//                    GetTransactionRow().AccountCode);
-//              }
             }
 
             CheckFCacheInitialised();

@@ -1,0 +1,83 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    DetailTable: PBankingDetails
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Partner.Validation]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+        actSetMainAccount: {ActionClick=SetMainAccount}
+    Controls:
+        pnlContent:
+            Controls: [grpBankAccounts, grpDonorGiftReceipting, grpRecipientGiftReceipting, grpOther]
+            Dock: Fill
+        grpDonorGiftReceipting:
+            Label: Gift Receipting (for donors)
+            Dock: Top
+            Controls:
+                Row0: [cmbReceiptLetterFrequency]
+                Row1: [chkReceiptEachGift]
+                Row2: [chkAnonymousDonor]
+        cmbReceiptLetterFrequency: {List=FrequencyList, Width=105}
+        chkReceiptEachGift:
+            Label: Printed Receipt for Each Gift
+        chkAnonymousDonor:
+        grpRecipientGiftReceipting:
+            Dock: Top
+            Controls:
+                Row0: [chkEmailGiftStatement]
+        chkEmailGiftStatement:
+            Label: Email Recipient Gift Statement
+        grpOther:
+            Dock: Top
+            Controls: [txtFinanceComment]
+        txtFinanceComment:
+            Multiline: true
+            Height: 60
+            Width: 300
+        grpBankAccounts:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Top
+            Height: 270
+        pnlGrid:
+            Dock: Fill
+            Height: 120
+            Controls: [grdDetails,pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete, btnSetMainAccount]
+        btnNew: {Stretch=horizontally}
+            Action: actNew
+        btnDelete: {Stretch=horizontally}
+            Action: actDelete
+        btnSetMainAccount: {Stretch=horizontally}
+            Action: actSetMainAccount
+        grdDetails:
+            Dock: Fill
+            Height: 120
+            TableName: PBankingDetails
+            Columns: [MainAccount, AccountName, BankAccountNumber, Iban]
+            CustomColumns:
+                MainAccount: {Label=Main Account, Type=Boolean}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails: 
+            Dock: Bottom
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_FinanceDetails
+            Height: 150
+            Controls: 
+                Row0: [grpAccountDetail]
+            
+        grpAccountDetail: {Label=AccountDetail, Strech=horizontally}
+            Controls: [txtAccountName, txtBankAccountNumber, txtIban, txtBankKey]
+    
+        txtAccountName:
+            Label: Account Name       
+        txtBankAccountNumber:
+            Label: Bank Account Number
+        txtIban:
+            Label: IBAN
+        txtBankKey: {Label=Bank, Type=PartnerKey, PartnerClass=BANK}

@@ -70,11 +70,6 @@ namespace Ict.Petra.Client.App.PetraClient
     /// </summary>
     public class TPetraClientMain
     {
-//        /// <summary>Email Address is invalid.</summary>
-//        [ErrCodeAttribute("Email Address is invalid.",
-//                          FullDescription = "The email address entered is not a valid date.")]
-//        public const String ERR_EMAILADDRESSINVALID = "GENC.00007V";
-
         private static TSplashScreenManager FSplashScreen;
 
         /// <summary>tells whether the Login was successful, or not</summary>

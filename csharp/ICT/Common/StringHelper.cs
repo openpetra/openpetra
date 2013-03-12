@@ -460,8 +460,12 @@ namespace Ict.Common
         /// <param name="list">the comma separated list that will get the first value removed</param>
         /// <param name="separator">the delimiter/separator of the list</param>
         /// <param name="ATryAllSeparators">if this is true, a number of default separators (slash, comma, etc) will be used</param>
+        /// <param name="ARemoveLeadingAndTrailingSpaces">if this is true, leading and trailing spaces will be discarded (useful for file imports)</param>
         /// <returns>the first value of the list</returns>
-        public static string GetNextCSV(ref string list, string separator, Boolean ATryAllSeparators = false)
+        public static string GetNextCSV(ref string list,
+            string separator,
+            Boolean ATryAllSeparators = false,
+            Boolean ARemoveLeadingAndTrailingSpaces = false)
         {
             if (list.Length == 0)
             {
@@ -484,6 +488,7 @@ namespace Ict.Common
 
             int position = 0;
             bool escape = false;
+            bool isFinalisedQuotedText = false;
             StringBuilder value = new StringBuilder();
 
             if (!list.StartsWith(separator))
@@ -503,7 +508,12 @@ namespace Ict.Common
                         }
                     }
 
-                    if (list[position] == '"')
+                    if ((list[position] == ' ') && (value.Length == 0) && ARemoveLeadingAndTrailingSpaces)
+                    {
+                        // leading spaces are ignored
+                        position++;
+                    }
+                    else if (list[position] == '"')
                     {
                         // TODO: no substring???
                         string quotedstring = list.Substring(position + 1, FindMatchingQuote(list, position) - position);
@@ -518,10 +528,21 @@ namespace Ict.Common
                         }
 
                         position += quotedstring.Length + 2;
+
+                        // If we are not to add trailing spaces we set isFinalisedQuotedText = true
+                        if (ARemoveLeadingAndTrailingSpaces)
+                        {
+                            isFinalisedQuotedText = true;
+                        }
                     }
                     else
                     {
-                        value.Append(list[position]);
+                        if (!isFinalisedQuotedText)
+                        {
+                            // Do not append anything (eg trailing spaces) to already finalised quoted text
+                            value.Append(list[position]);
+                        }
+
                         position++;
                     }
 
@@ -550,7 +571,14 @@ namespace Ict.Common
                 }
             }
 
-            return value.ToString();
+            if (isFinalisedQuotedText || !ARemoveLeadingAndTrailingSpaces)
+            {
+                return value.ToString();
+            }
+            else
+            {
+                return value.ToString().TrimEnd(new char[] { ' ' });
+            }
         }
 
         /// <summary>
@@ -560,8 +588,9 @@ namespace Ict.Common
         /// </summary>
         /// <param name="list">the comma separated list that will get the first value removed</param>
         /// <param name="separator">the delimiter/separator of the list</param>
+        /// <param name="ARemoveLeadingAndTrailingSpaces">if this is true, leading and trailing spaces will be discarded (useful for file imports)</param>
         /// <returns>the first value of the list</returns>
-        public static string GetNextCSV(ref StringBuilder list, char separator)
+        public static string GetNextCSV(ref StringBuilder list, char separator, Boolean ARemoveLeadingAndTrailingSpaces = false)
         {
             if (list.Length == 0)
             {
@@ -570,6 +599,7 @@ namespace Ict.Common
 
             int position = 0;
             bool escape = false;
+            bool isFinalisedQuotedText = false;
             StringBuilder value = new StringBuilder();
 
             if (list[0] != separator)
@@ -589,7 +619,12 @@ namespace Ict.Common
                         }
                     }
 
-                    if (list[position] == '"')
+                    if ((list[position] == ' ') && (separator != ' ') && (value.Length == 0) && ARemoveLeadingAndTrailingSpaces)
+                    {
+                        // leading spaces are ignored
+                        position++;
+                    }
+                    else if (list[position] == '"')
                     {
                         // TODO: no substring???
                         char[] quotedstring = new char[FindMatchingQuote(list, position) - position];
@@ -605,10 +640,21 @@ namespace Ict.Common
                         }
 
                         position += quotedstring.Length + 2;
+
+                        // If we are not to add trailing spaces we set isFinalisedQuotedText = true
+                        if (ARemoveLeadingAndTrailingSpaces)
+                        {
+                            isFinalisedQuotedText = true;
+                        }
                     }
                     else
                     {
-                        value.Append(list[position]);
+                        if (!isFinalisedQuotedText)
+                        {
+                            // Do not append anything (eg trailing spaces) to already finalised quoted text
+                            value.Append(list[position]);
+                        }
+
                         position++;
                     }
 
@@ -637,7 +683,14 @@ namespace Ict.Common
                 }
             }
 
-            return value.ToString();
+            if (isFinalisedQuotedText || !ARemoveLeadingAndTrailingSpaces)
+            {
+                return value.ToString();
+            }
+            else
+            {
+                return value.ToString().TrimEnd(new char[] { ' ' });
+            }
         }
 
         /// <summary>
@@ -650,7 +703,7 @@ namespace Ict.Common
         /// <returns>the first value of the string</returns>
         public static string GetNextCSV(ref string list, string separator, string ADefaultValue)
         {
-            string result = GetNextCSV(ref list, separator, false);
+            string result = GetNextCSV(ref list, separator, false, false);
 
             if (result.Length == 0)
             {
@@ -673,7 +726,7 @@ namespace Ict.Common
 
             foreach (string separator in separators)
             {
-                result = GetNextCSV(ref list, separator, false);
+                result = GetNextCSV(ref list, separator, false, false);
 
                 if (result != origList)
                 {
@@ -694,7 +747,7 @@ namespace Ict.Common
         /// <returns>the first value of the string</returns>
         public static string GetNextCSV(ref string list)
         {
-            return GetNextCSV(ref list, ",", false);
+            return GetNextCSV(ref list, ",", false, false);
         }
 
         /// <summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -77,6 +77,7 @@ namespace Ict.Petra.Client.MPartner.Logic
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                 case TPartnerEditTabPageEnum.petpInterests:
+                case TPartnerEditTabPageEnum.petpFinanceDetails:
                     return TModuleTabGroupEnum.mtgPartner;
 
                 case TPartnerEditTabPageEnum.petpPersonnelIndividualData:

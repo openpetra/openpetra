@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,6 +61,9 @@ namespace Ict.Common.Data
 
             // foreign key constraint
             ReturnValue = Regex.Replace(ReturnValue, "<xs:keyref.*keyref>", "");
+
+            // msdata:Expression, avoid problems with relationships (see bug 1825)
+            ReturnValue = Regex.Replace(ReturnValue, "msdata:Expression=\".*?\"", "");
 
             return ReturnValue;
         }
