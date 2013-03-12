@@ -1286,7 +1286,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// create a new batch.
         /// it is already stored to the database, to avoid problems with LastBatchNumber
         /// </summary>
-        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
+        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean ACommitTransaction = true)
         {
             bool NewTransactionStarted = false;
 
@@ -1332,7 +1332,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             finally
             {
-                if (NewTransactionStarted)
+                if (NewTransactionStarted && ACommitTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
@@ -1366,6 +1366,63 @@ namespace Ict.Petra.Server.MFinance.Common
             return MainDS;
         }
 
+        /// <summary>
+        /// create a new recurring batch.
+        /// it is already stored to the database, to avoid problems with LastBatchNumber
+        /// </summary>
+        public static GLBatchTDS CreateARecurringBatch(Int32 ALedgerNumber)
+        {
+            bool NewTransactionStarted = false;
+
+            GLBatchTDS MainDS = null;
+
+            //Error handling
+            string ErrorContext = "Create a recurring Batch";
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            TVerificationResultCollection VerificationResult = null;
+
+            try
+            {
+                MainDS = new GLBatchTDS();
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                                 (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
+
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                ARecurringBatchRow NewRow = MainDS.ARecurringBatch.NewRowTyped(true);
+                NewRow.LedgerNumber = ALedgerNumber;
+                MainDS.ALedger[0].LastRecurringBatchNumber++;
+                NewRow.BatchNumber = MainDS.ALedger[0].LastRecurringBatchNumber;
+                MainDS.ARecurringBatch.Rows.Add(NewRow);
+
+                if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+                {
+                    MainDS.AcceptChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    String.Format(Catalog.GetString("Unknown error while creating a recurring batch for Ledger: {0}." +
+                            Environment.NewLine + Environment.NewLine + ex.ToString()),
+                        ALedgerNumber);
+                ErrorType = TResultSeverity.Resv_Critical;
+                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+            }
+            finally
+            {
+                if (NewTransactionStarted)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+
+            return MainDS;
+        }
+        
         /// <summary>
         /// Create a new journal as per gl1120.i
         /// </summary>

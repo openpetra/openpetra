@@ -3,15 +3,13 @@ RootNode:
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
-    DetailTable: ATransaction
+    DetailTable: ARecurringTransaction
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Account.Validation, Ict.Petra.Shared.MFinance.GL.Data]
     FormType: edit
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
-        actRemove:
-            Label: &Remove
-            ActionClick: RemoveRow
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
@@ -28,16 +26,15 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnNew, btnRemove]
+            Controls: [btnNew, btnDelete]
         btnNew: {Action=actNew, Stretch=horizontally}
-        btnRemove: {Action=actRemove, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
         grdDetails:
             Dock: Fill
-            TableName: ATransaction
-            Columns: [TransactionNumber, TransactionDate, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AmountInBaseCurrency, AnalysisAttributes]
+            TableName: ARecurringTransaction
+            Columns: [TransactionNumber, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AnalysisAttributes]
             CustomColumns:
                 TransactionNumber: {Label=Transaction, Type=Integer}
-                TransactionDate: {Label=Transaction Date, Type=DateTime}
                 CostCentreCode: {Label=Cost Centre}
                 AccountCode: {Label=Account}
                 TransactionAmount: {Label=Amount, Type=Currency}
@@ -45,33 +42,24 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowAttributesTab
-            ActionEnterKeyPressed: ShowAttributesTab
-            SortOrder: ATransaction.TransactionNumber ASC
-            RowFilter: ATransaction.BatchNumber, ATransaction.JournalNumber
+            SortOrder: ARecurringTransaction.TransactionNumber ASC
+            RowFilter: ARecurringTransaction.BatchNumber, ATransaction.JournalNumber
         pnlDetails:
             Dock: Bottom
-            Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate, cmbDetailKeyMinistryKey, pnlDetailAmounts]
+            Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, pnlDetailAmounts]
         cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList}
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
         txtDetailNarrative: {Label=Narrative, Width=537}
         txtDetailReference: {Label=Reference}
-        dtpDetailTransactionDate: {Label=Transaction Date, OnChange=TransDateChanged, Validation=true}
-        cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=363, TODOSELECTPARTNERKEYMIN}
         pnlDetailAmounts:
             Controls:
-                Row0: [lblTransactionCurrency, lblBaseCurrency]
-                Row1: [txtDebitAmount, txtDebitAmountBase]
-                Row2: [txtCreditAmount, txtCreditAmountBase]
-                Row3: [txtDebitTotalAmount, txtDebitTotalAmountBase]
-                Row4: [txtCreditTotalAmount, txtCreditTotalAmountBase]
+                Row0: [lblTransactionCurrency]
+                Row1: [txtDebitAmount]
+                Row2: [txtCreditAmount]
+                Row3: [txtDebitTotalAmount]
+                Row4: [txtCreditTotalAmount]
         lblTransactionCurrency: {Label=TODOTransactionCurrency}
-        lblBaseCurrency: {Label=TODOBase Currency}
         txtDebitAmount: {Label=Dr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
         txtCreditAmount: {Label=Cr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
-        txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true, Format=Currency}
-        txtCreditAmountBase: {Label=Cr Amount, ReadOnly=true, Format=Currency}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}
         txtCreditTotalAmount: {Label=Credit Total, ReadOnly=true, Format=Currency}
-        txtDebitTotalAmountBase: {Label=Debit Total, ReadOnly=true, Format=Currency}
-        txtCreditTotalAmountBase: {Label=Credit Total, ReadOnly=true, Format=Currency} 
