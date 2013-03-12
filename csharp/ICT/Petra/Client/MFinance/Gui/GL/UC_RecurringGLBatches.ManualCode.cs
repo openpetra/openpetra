@@ -558,35 +558,169 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
         }
 
-        private bool SaveBatchForSubmitting()
+        private void SubmitBatch(System.Object sender, EventArgs e)
         {
+            Boolean SubmitCancelled = false;
+            Int32 NumberOfNonBaseCurrencyJournals = 0;
+            DateTime DateEffective = DateTime.Today;
+            Decimal ExchangeRateToBase;
+
             if (FPetraUtilsObject.HasChanges)
             {
-                // save first, then post
+                // ask user if he wants to save as otherwise process cannot continue
+                if (MessageBox.Show(Catalog.GetString("Changes need to be saved in order to submit a batch!") + Environment.NewLine +
+                    Catalog.GetString("Do you want to save and continue submitting?"),
+                    Catalog.GetString("Changes not saved"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    return;
+                }
+                
+                // save first, then submit
                 if (!((TFrmRecurringGLBatch)ParentForm).SaveChanges())
                 {
                     // saving failed, therefore do not try to post
                     MessageBox.Show(Catalog.GetString("The recurring batch was not submitted due to problems during saving; ") + Environment.NewLine +
                         Catalog.GetString("Please first save the batch, and then submit it!"),
                         Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
+                    return;
                 }
             }
 
-            return true;
-        }
-
-        private void SubmitBatch(System.Object sender, EventArgs e)
-        {
-            // TODO: display progress of posting
-            //TVerificationResultCollection Verifications;
-
-            if (!SaveBatchForSubmitting())
+            if (FPreviouslySelectedDetailRow == null)
             {
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("Please select a Batch before submitting."));
                 return;
             }
+
+            //TODO if ((FPreviouslySelectedDetailRow.HashTotal != 0) && (FPreviouslySelectedDetailRow.BatchTotal != FPreviouslySelectedDetailRow.HashTotal))
+            //TODO {
+            //TODO     MessageBox.Show(String.Format(Catalog.GetString(
+            //TODO                 "The recurring gift batch total ({0}) for batch {1} does not equal the hash total ({2})."),
+            //TODO             FPreviouslySelectedDetailRow.BatchTotal.ToString("C"),
+            //TODO             FPreviouslySelectedDetailRow.BatchNumber,
+            //TODO             FPreviouslySelectedDetailRow.HashTotal.ToString("C")), "Submit Recurring Gift Batch");
+            //TODO 
+            //TODO     txtDetailHashTotal.Focus();
+            //TODO     txtDetailHashTotal.SelectAll();
+            //TODO     return;
+            //TODO }
+
+            // now load journals for this batch so we know if exchange rate needs to be set in case of different currency
+            GLBatchTDS TempDS = TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, FSelectedBatchNumber);
+            FMainDS.Merge(TempDS);
+
+            // check how many journals have currency different from base currency
+            foreach (ARecurringJournalRow JournalRow in FMainDS.ARecurringJournal.Rows)
+            {
+                if (JournalRow.BatchNumber == FSelectedBatchNumber
+                    && JournalRow.TransactionCurrency != ((ALedgerRow)FMainDS.ALedger.Rows[0]).BaseCurrency)
+                {
+                    NumberOfNonBaseCurrencyJournals++;
+                }
+            }
+
+            Hashtable requestParams = new Hashtable();
+            requestParams.Add("ALedgerNumber", FLedgerNumber);
+            requestParams.Add("ABatchNumber", FSelectedBatchNumber);
             
-            //TODO
+            TFrmRecurringGLBatchSubmit submitForm = new TFrmRecurringGLBatchSubmit(FPetraUtilsObject.GetForm());
+            try
+            {
+                ParentForm.ShowInTaskbar = false;
+                submitForm.MainDS = FMainDS;
+                submitForm.BatchRow = FPreviouslySelectedDetailRow;
+                
+                if (NumberOfNonBaseCurrencyJournals == 0)
+                {
+                    submitForm.ShowDialog();
+                    if (submitForm.GetResult(out DateEffective))
+                    {
+                        requestParams.Add("AEffectiveDate", DateEffective);
+                    }
+                    else
+                    {
+                        SubmitCancelled = true;
+                    }
+
+                    // set exchange rate to base to 1 as default if no journals with other currencies exist
+                    foreach (ARecurringJournalRow JournalRow in FMainDS.ARecurringJournal.Rows)
+                    {
+                        requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), 1);
+                    }
+                }
+                else
+                {
+                    // make sure dialogs for journal rows are displayed in sequential order -> new to use view
+                    DataView JournalView = new DataView(FMainDS.ARecurringJournal);
+                    JournalView.Sort =  ARecurringJournalTable.GetJournalNumberDBName();
+                    Boolean FirstJournal = true;
+                    foreach (DataRowView rowView in JournalView)
+                    {
+                        ARecurringJournalRow JournalRow = (ARecurringJournalRow)rowView.Row;
+                        if (JournalRow.TransactionCurrency != ((ALedgerRow)FMainDS.ALedger.Rows[0]).BaseCurrency)
+                        {
+                            submitForm.JournalRow = JournalRow;
+                            if (!FirstJournal)
+                            {
+                                submitForm.SetDateEffectiveReadOnly();
+                            }
+                            submitForm.ShowDialog();
+                            if (submitForm.GetResult(out DateEffective, out ExchangeRateToBase))
+                            {
+                                requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), ExchangeRateToBase);
+                            }
+                            else
+                            {
+                                SubmitCancelled = true;
+                                break;
+                            }
+                            
+                            FirstJournal = false;
+                        }
+                        else
+                        {
+                            requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), 1);
+                        }
+                    }
+                    requestParams.Add("AEffectiveDate", DateEffective);
+                }
+            }
+            finally
+            {
+                submitForm.Dispose();
+                ParentForm.ShowInTaskbar = true;
+            }
+
+
+            if (SubmitCancelled)
+            {
+                MessageBox.Show(Catalog.GetString("Submission of recurring batch was cancelled"),
+                    Catalog.GetString("Cancelled"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            else
+            {
+                TVerificationResultCollection AMessages;
+    
+                Boolean submitOK = TRemote.MFinance.GL.WebConnectors.SubmitRecurringGLBatch(requestParams, out AMessages);
+    
+                if (submitOK)
+                {
+                    MessageBox.Show(Catalog.GetString("Your recurring batch was submitted successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Submitting the batch failed!") +
+                            Environment.NewLine +
+                            Catalog.GetString("Reasons:"), AMessages));
+                }
+            }
+            
             
         }
 

@@ -158,7 +158,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// load the specified batch and its journals and transactions.
+        /// load the specified batch and its journals and transactions and attributes.
         /// this method is called after a batch has been posted.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -173,6 +173,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
             AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
             ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            ATransAnalAttribAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
@@ -313,8 +314,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadARecurringBatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus)
         {
+            Boolean NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
@@ -341,10 +347,56 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByBatchStatus,
                 MainDS.ARecurringBatch.TableName, Transaction);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            
             return MainDS;
         }
 
+        /// <summary>
+        /// load the specified recurring batch and its journals and transactions and attributes.
+        /// this method is called after a batch has been posted.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadARecurringBatchAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            Boolean NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+                
+                
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            ARecurringBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            
+            ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
+            ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
+            TemplateTransactionRow.LedgerNumber = ALedgerNumber;
+            TemplateTransactionRow.BatchNumber = ABatchNumber;
+            ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
+
+            ARecurringTransAnalAttribTable TransAnalAttribTable = new ARecurringTransAnalAttribTable();
+            ARecurringTransAnalAttribRow TemplateTransAnalAttribRow = TransAnalAttribTable.NewRowTyped(false);
+            TemplateTransAnalAttribRow.LedgerNumber = ALedgerNumber;
+            TemplateTransAnalAttribRow.BatchNumber = ABatchNumber;
+            ARecurringTransAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateTransAnalAttribRow, Transaction);
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            
+            return MainDS;
+        }
+        
         /// <summary>
         /// loads a list of recurring journals for the given ledger and batch
         /// </summary>
@@ -354,11 +406,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadARecurringJournal(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
+            Boolean NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
             return MainDS;
         }
         
@@ -373,9 +435,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadARecurringTransactionWithAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             string strAnalAttr = string.Empty;
+            Boolean NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ARecurringTransactionAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
 
@@ -411,7 +477,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
             }
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            
             return MainDS;
         }
         
@@ -426,11 +496,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadARecurringTransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
         {
+            Boolean NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, Transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            
             return MainDS;
         }
         
@@ -938,7 +1018,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
             Int32 ABatchNumber = (Int32)requestParams["ABatchNumber"];
             DateTime AEffectiveDate = (DateTime)requestParams["AEffectiveDate"];
-            Decimal AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBase"];
+            Decimal AExchangeRateToBase;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
@@ -948,20 +1028,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
-                //TODO: make sure that recurring GL batch is fully loaded, including journals, transactions and attributes
-                GLBatchTDS RGLMainDS = new GLBatchTDS(); //TODO = LoadRecurringGLBatchData(ALedgerNumber, ABatchNumber);
-                ARecurringBatchAccess.LoadByPrimaryKey(RGLMainDS, ALedgerNumber, ABatchNumber, Transaction);
-
+                // make sure that recurring GL batch is fully loaded, including journals, transactions and attributes
+                GLBatchTDS RGLMainDS = LoadARecurringBatchAndContent(ALedgerNumber, ABatchNumber);
                 
                 // Assuming all relevant data is loaded in FMainDS
                 foreach (ARecurringBatchRow recBatch  in RGLMainDS.ARecurringBatch.Rows)
                 {
                     if ((recBatch.BatchNumber == ABatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
                     {
-                        Decimal batchTotal = 0;
-                        GLMainDS = CreateARecurringBatch(ALedgerNumber);
+                        //TODO? Decimal batchTotal = 0;
+                        GLMainDS = CreateABatch(ALedgerNumber);
 
-                        BatchRow = GLMainDS.ABatch.NewRowTyped();
+                        BatchRow = (ABatchRow)GLMainDS.ABatch.Rows[0];
                         BatchRow.DateEffective = AEffectiveDate;
                         BatchRow.BatchDescription = recBatch.BatchDescription;
                         BatchRow.BatchControlTotal = recBatch.BatchControlTotal;
@@ -974,17 +1052,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 AJournalRow JournalRow = GLMainDS.AJournal.NewRowTyped();
                                 JournalRow.LedgerNumber = BatchRow.LedgerNumber;
                                 JournalRow.BatchNumber = BatchRow.BatchNumber;
-                                JournalRow.JournalNumber = BatchRow.LastJournal + 1;
+                                JournalRow.JournalNumber = recJournal.JournalNumber;
                                 JournalRow.JournalDescription = recJournal.JournalDescription;
                                 JournalRow.SubSystemCode = recJournal.SubSystemCode;
                                 JournalRow.TransactionTypeCode = recJournal.TransactionTypeCode;
                                 JournalRow.TransactionCurrency = recJournal.TransactionCurrency;
+
+                                AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()];
                                 JournalRow.ExchangeRateToBase = AExchangeRateToBase;
+                                
                                 JournalRow.DateEffective = AEffectiveDate;
                                 JournalRow.JournalPeriod = recJournal.JournalPeriod;
                                 
                                 GLMainDS.AJournal.Rows.Add(JournalRow);
-                                BatchRow.LastJournal++;
+                                if (JournalRow.JournalNumber > BatchRow.LastJournal)
+                                {
+                                    BatchRow.LastJournal = JournalRow.JournalNumber;
+                                }
 
                                 //TODO (not here, but in the client or while posting) Check for expired key ministry (while Posting)
 
@@ -998,8 +1082,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                         TransactionRow.LedgerNumber = JournalRow.LedgerNumber;
                                         TransactionRow.BatchNumber = JournalRow.BatchNumber;
                                         TransactionRow.JournalNumber = JournalRow.JournalNumber;
-                                        TransactionRow.TransactionNumber = JournalRow.LastTransactionNumber + 1;
-                                        JournalRow.LastTransactionNumber++;
+                                        TransactionRow.TransactionNumber = recTransaction.TransactionNumber;
+                                        if (TransactionRow.TransactionNumber > JournalRow.LastTransactionNumber)
+                                        {
+                                            JournalRow.LastTransactionNumber = TransactionRow.TransactionNumber;
+                                        }
                                         
                                         TransactionRow.Narrative = recTransaction.Narrative;
                                         TransactionRow.AccountCode = recTransaction.AccountCode;
@@ -1019,7 +1106,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                     }
                                 }
 
-                                //batch.BatchTotal = batchTotal;
+                                //TODO? batch.BatchTotal = batchTotal;
                             }
                         }
                     }
