@@ -1422,7 +1422,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             return MainDS;
         }
-        
+
         /// <summary>
         /// Create a new journal as per gl1120.i
         /// </summary>

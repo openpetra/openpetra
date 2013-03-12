@@ -283,7 +283,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     this.tpgAttributes.Enabled = ((ucoRecurringTransactions.GetSelectedDetailRow() != null)
                                                   && TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber,
-                                                     ucoRecurringTransactions.GetSelectedDetailRow().AccountCode));
+                                                      ucoRecurringTransactions.GetSelectedDetailRow().AccountCode));
                 }
             }
             else if (ATab == eGLTabs.RecurringAttributes)
@@ -311,7 +311,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //TODO if (!SaveChanges())
             //TODO {
             //TODO     e.Cancel = true;
-            //TODO 
+            //TODO
             //TODO     FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
             //TODO }
         }
@@ -341,7 +341,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public TUC_RecurringGLBatches GetBatchControl()
         {
-             return ucoRecurringBatches;
+            return ucoRecurringBatches;
         }
 
         /// <summary>

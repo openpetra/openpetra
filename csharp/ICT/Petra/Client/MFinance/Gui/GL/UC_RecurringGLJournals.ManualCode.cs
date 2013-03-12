@@ -63,8 +63,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                 {
-                    if (grdDetails.SelectedRowIndex() > 0
-                        && GetSelectedDetailRow().RowState != DataRowState.Deleted)
+                    if ((grdDetails.SelectedRowIndex() > 0)
+                        && (GetSelectedDetailRow().RowState != DataRowState.Deleted))
                     {
                         GetDetailsFromControls(GetSelectedDetailRow());
                     }
@@ -137,7 +137,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GetSelectedDetailRow().DateEffective = AEffectiveDate;
             }
         }
-        
+
         /// <summary>
         /// Return the active journal number
         /// </summary>
@@ -390,7 +390,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             try
             {
-                // Delete on client side data through views that is already loaded. Data that is not 
+                // Delete on client side data through views that is already loaded. Data that is not
                 // loaded yet will be deleted with cascading delete on server side so we don't have
                 // to worry about this here.
 
@@ -498,7 +498,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((TFrmRecurringGLBatch)ParentForm).DisableTransactions();
             }
         }
-        
+
         private void ClearControls()
         {
             FPetraUtilsObject.DisableDataChangedEvent();

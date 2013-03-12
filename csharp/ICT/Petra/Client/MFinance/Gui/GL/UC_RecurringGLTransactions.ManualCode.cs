@@ -74,9 +74,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 && (FMainDS.ARecurringTransaction.DefaultView.Count > 0))
             {
                 //Same as previously selected
-                if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) 
+                if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                     && (grdDetails.SelectedRowIndex() > 0)
-                    && GetSelectedDetailRow().RowState != DataRowState.Deleted)
+                    && (GetSelectedDetailRow().RowState != DataRowState.Deleted))
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
                 }
@@ -114,7 +114,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (FMainDS.ARecurringTransaction.DefaultView.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber }) == -1)
                 {
                     FMainDS.ARecurringTransaction.Clear();
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(ALedgerNumber, ABatchNumber, AJournalNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(ALedgerNumber, ABatchNumber,
+                            AJournalNumber));
                 }
             }
 
@@ -240,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //TODO }
 
             FPetraUtilsObject.VerificationResultCollection.Clear();
-            
+
             this.CreateNewARecurringTransaction();
             ProcessAnalysisAttributes();
 
@@ -581,7 +582,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             try
             {
-                // Delete on client side data through views that is already loaded. Data that is not 
+                // Delete on client side data through views that is already loaded. Data that is not
                 // loaded yet will be deleted with cascading delete on server side so we don't have
                 // to worry about this here.
 
@@ -740,9 +741,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-            
+
             //Local validation
             if ((txtDebitAmount.NumberValueDecimal == 0) && (txtCreditAmount.NumberValueDecimal == 0))
             {

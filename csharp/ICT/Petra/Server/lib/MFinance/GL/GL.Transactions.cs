@@ -43,7 +43,7 @@ using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MCommon.Data.Cascading;
-    
+
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
     ///<summary>
@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             return TGLPosting.CreateABatch(ALedgerNumber, ACommitTransaction);
         }
-        
+
         /// <summary>
         /// create a new recurring batch with a consecutive batch number in the ledger,
         /// and immediately store the batch and the new number in the database
@@ -87,7 +87,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             return TGLPosting.CreateARecurringBatch(ALedgerNumber);
         }
-        
+
         /// <summary>
         /// loads a list of batches for the given ledger;
         /// also get the ledger for the base currency etc
@@ -400,7 +400,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-            
+
             return MainDS;
         }
 
@@ -419,13 +419,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-                
-                
+
+
             GLBatchTDS MainDS = new GLBatchTDS();
 
             ARecurringBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
             ARecurringJournalAccess.LoadViaARecurringBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            
+
             ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
             ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
             TemplateTransactionRow.LedgerNumber = ALedgerNumber;
@@ -442,10 +442,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-            
+
             return MainDS;
         }
-        
+
         /// <summary>
         /// loads a list of recurring journals for the given ledger and batch
         /// </summary>
@@ -472,7 +472,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             return MainDS;
         }
-        
+
         /// <summary>
         /// loads a list of transactions for the given ledger and batch and journal with analysis attributes
         /// </summary>
@@ -530,10 +530,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-            
+
             return MainDS;
         }
-        
+
         /// <summary>
         /// loads a list of Recurring attributes for the given transaction (identified by ledger,batch,journal and transaction number)
         /// </summary>
@@ -543,7 +543,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ATransactionNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadARecurringTransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
+        public static GLBatchTDS LoadARecurringTransAnalAttrib(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            Int32 ATransactionNumber)
         {
             Boolean NewTransaction = false;
 
@@ -553,16 +556,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber, Transaction);
-            
+            ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(MainDS,
+                ALedgerNumber,
+                ABatchNumber,
+                AJournalNumber,
+                ATransactionNumber,
+                Transaction);
+
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-            
+
             return MainDS;
         }
-        
+
         /// <summary>
         /// this will store all new and modified batches, journals, transactions
         /// </summary>
@@ -1003,18 +1011,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 JournalNumber;
             Int32 TransactionNumber;
             Int32 Counter;
-            
+
             TSubmitChangesResult SubmissionResult = new TSubmitChangesResult();
-    
+
             //Error handling
             string ErrorContext = "Save a recurring batch";
             string ErrorMessage = String.Empty;
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-            
+
             AVerificationResult = new TVerificationResultCollection();
 
-    
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -1027,13 +1035,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
             ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
-            
+
             ARecurringTransAnalAttribTable TransAnalAttribTable = new ARecurringTransAnalAttribTable();
             ARecurringTransAnalAttribRow TemplateTransAnalAttribRow = TransAnalAttribTable.NewRowTyped(false);
-            
-            GLBatchTDS DeletedDS =  new GLBatchTDS();
+
+            GLBatchTDS DeletedDS = new GLBatchTDS();
             ARecurringTransAnalAttribTable DeletedTransAnalAttribTable;
-            
+
             // in this method we also think about deleted batches, journals, transactions where subsequent information
             // had not been loaded yet: a type of cascading delete is being used (real cascading delete currently does
             // not go down the number of levels needed).
@@ -1054,33 +1062,39 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
                             TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
                             DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
-                            for (Counter = DeletedTransAnalAttribTable.Count-1; Counter >= 0; Counter--)
+
+                            for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
                             {
                                 DeletedTransAnalAttribTable.Rows[Counter].Delete();
                             }
+
                             AInspectDS.Merge(DeletedTransAnalAttribTable);
 
                             TemplateTransactionRow.LedgerNumber = LedgerNumber;
                             TemplateTransactionRow.BatchNumber = BatchNumber;
                             ARecurringTransactionAccess.LoadUsingTemplate(DeletedDS, TemplateTransactionRow, Transaction);
-                            for (Counter = DeletedDS.ARecurringTransaction.Count-1; Counter >= 0; Counter--)
+
+                            for (Counter = DeletedDS.ARecurringTransaction.Count - 1; Counter >= 0; Counter--)
                             {
                                 DeletedDS.ARecurringTransaction.Rows[Counter].Delete();
                             }
+
                             AInspectDS.Merge(DeletedDS.ARecurringTransaction);
 
                             TemplateJournalRow.LedgerNumber = LedgerNumber;
                             TemplateJournalRow.BatchNumber = BatchNumber;
                             ARecurringJournalAccess.LoadUsingTemplate(DeletedDS, TemplateJournalRow, Transaction);
-                            for (Counter = DeletedDS.ARecurringJournal.Count-1; Counter >= 0; Counter--)
+
+                            for (Counter = DeletedDS.ARecurringJournal.Count - 1; Counter >= 0; Counter--)
                             {
                                 DeletedDS.ARecurringJournal.Rows[Counter].Delete();
                             }
+
                             AInspectDS.Merge(DeletedDS.ARecurringJournal);
                         }
                     }
                 }
-                
+
                 if (AInspectDS.ARecurringJournal != null)
                 {
                     foreach (ARecurringJournalRow journal in AInspectDS.ARecurringJournal.Rows)
@@ -1097,25 +1111,29 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
                             TemplateTransAnalAttribRow.JournalNumber = JournalNumber;
                             DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
-                            for (Counter = DeletedTransAnalAttribTable.Count-1; Counter >= 0; Counter--)
+
+                            for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
                             {
                                 DeletedTransAnalAttribTable.Rows[Counter].Delete();
                             }
+
                             AInspectDS.Merge(DeletedTransAnalAttribTable);
 
                             TemplateTransactionRow.LedgerNumber = LedgerNumber;
                             TemplateTransactionRow.BatchNumber = BatchNumber;
                             TemplateTransactionRow.JournalNumber = JournalNumber;
                             ARecurringTransactionAccess.LoadUsingTemplate(DeletedDS, TemplateTransactionRow, Transaction);
-                            for (Counter = DeletedDS.ARecurringTransaction.Count-1; Counter >= 0; Counter--)
+
+                            for (Counter = DeletedDS.ARecurringTransaction.Count - 1; Counter >= 0; Counter--)
                             {
                                 DeletedDS.ARecurringTransaction.Rows[Counter].Delete();
                             }
+
                             AInspectDS.Merge(DeletedDS.ARecurringTransaction);
                         }
                     }
                 }
-                
+
                 if (AInspectDS.ARecurringTransaction != null)
                 {
                     foreach (ARecurringTransactionRow transaction in AInspectDS.ARecurringTransaction.Rows)
@@ -1134,16 +1152,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             TemplateTransAnalAttribRow.JournalNumber = JournalNumber;
                             TemplateTransAnalAttribRow.TransactionNumber = TransactionNumber;
                             DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
-                            for (Counter = DeletedTransAnalAttribTable.Count-1; Counter >= 0; Counter--)
+
+                            for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
                             {
                                 DeletedTransAnalAttribTable.Rows[Counter].Delete();
                             }
+
                             AInspectDS.Merge(DeletedTransAnalAttribTable);
                         }
                     }
                 }
-                
-                // now submit the actual dataset                
+
+                // now submit the actual dataset
                 SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
                 if (NewTransaction)
@@ -1151,20 +1171,19 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
             }
-            
             catch (Exception ex)
             {
                 ErrorMessage = Catalog.GetString("Unknown error while saving a recurring batch." +
-                            Environment.NewLine + Environment.NewLine + ex.ToString());
+                    Environment.NewLine + Environment.NewLine + ex.ToString());
                 ErrorType = TResultSeverity.Resv_Critical;
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 SubmissionResult = TSubmitChangesResult.scrError;
             }
-            
+
             return SubmissionResult;
         }
-        
+
         /// <summary>
         /// post a GL Batch
         /// </summary>
@@ -1292,7 +1311,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 // make sure that recurring GL batch is fully loaded, including journals, transactions and attributes
                 GLBatchTDS RGLMainDS = LoadARecurringBatchAndContent(ALedgerNumber, ABatchNumber);
-                
+
                 // Assuming all relevant data is loaded in FMainDS
                 foreach (ARecurringBatchRow recBatch  in RGLMainDS.ARecurringBatch.Rows)
                 {
@@ -1322,11 +1341,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                                 AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()];
                                 JournalRow.ExchangeRateToBase = AExchangeRateToBase;
-                                
+
                                 JournalRow.DateEffective = AEffectiveDate;
                                 JournalRow.JournalPeriod = recJournal.JournalPeriod;
-                                
+
                                 GLMainDS.AJournal.Rows.Add(JournalRow);
+
                                 if (JournalRow.JournalNumber > BatchRow.LastJournal)
                                 {
                                     BatchRow.LastJournal = JournalRow.JournalNumber;
@@ -1336,8 +1356,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                                 foreach (ARecurringTransactionRow recTransaction in RGLMainDS.ARecurringTransaction.Rows)
                                 {
-                                    if (   (recTransaction.JournalNumber == recJournal.JournalNumber)
-                                        && (recTransaction.BatchNumber == ABatchNumber) 
+                                    if ((recTransaction.JournalNumber == recJournal.JournalNumber)
+                                        && (recTransaction.BatchNumber == ABatchNumber)
                                         && (recTransaction.LedgerNumber == ALedgerNumber))
                                     {
                                         ATransactionRow TransactionRow = GLMainDS.ATransaction.NewRowTyped();
@@ -1345,11 +1365,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                         TransactionRow.BatchNumber = JournalRow.BatchNumber;
                                         TransactionRow.JournalNumber = JournalRow.JournalNumber;
                                         TransactionRow.TransactionNumber = recTransaction.TransactionNumber;
+
                                         if (TransactionRow.TransactionNumber > JournalRow.LastTransactionNumber)
                                         {
                                             JournalRow.LastTransactionNumber = TransactionRow.TransactionNumber;
                                         }
-                                        
+
                                         TransactionRow.Narrative = recTransaction.Narrative;
                                         TransactionRow.AccountCode = recTransaction.AccountCode;
                                         TransactionRow.CostCentreCode = recTransaction.CostCentreCode;
@@ -1409,7 +1430,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
             return success;
         }
-        
+
         /// <summary>
         /// return the name of the standard costcentre for the given ledger;
         /// this supports up to 4 digit ledgers
@@ -1466,7 +1487,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             return TGLPosting.CancelGLBatch(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
-        
         /// <summary>
         /// export all the Data of the batches array list to a String
         /// </summary>

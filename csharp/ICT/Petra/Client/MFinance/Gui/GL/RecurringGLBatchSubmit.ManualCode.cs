@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             set
             {
                 journalRow = value;
-                
+
                 lblExchangeRateToBase.Show();
                 txtExchangeRateToBase.Show();
                 lblCurrencyCodeFrom.Show();
@@ -100,8 +100,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 lblCurrencyCodeTo.Show();
                 txtCurrencyCodeTo.Show();
                 btnGetSetExchangeRate.Show();
-                
-                this.Text = String.Format(Catalog.GetString("Submit recurring Batch {0} - Journal {1}"), journalRow.BatchNumber, journalRow.JournalNumber);
+
+                this.Text = String.Format(Catalog.GetString(
+                        "Submit recurring Batch {0} - Journal {1}"), journalRow.BatchNumber, journalRow.JournalNumber);
                 lblExchangeRateToBase.Text = String.Format(Catalog.GetString("Exchange Rate for Journal {0}:"), journalRow.JournalNumber);
 
                 FBatchNumber = journalRow.BatchNumber;
@@ -124,7 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
         }
-        
+
         DateTime FStartDateCurrentPeriod;
         DateTime FEndDateLastForwardingPeriod;
         /// dataset for the whole screen
@@ -166,7 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             AEffectiveDate = dtpEffectiveDate.Date.Value;
             Decimal.TryParse(txtExchangeRateToBase.Text, out AExchangeRateToBase);
-            
+
             return FResult;
         }
 
@@ -177,7 +178,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public Boolean GetResult(out DateTime AEffectiveDate)
         {
             AEffectiveDate = dtpEffectiveDate.Date.Value;
-            
+
             return FResult;
         }
 

@@ -113,10 +113,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
             int VerifResultCollAddedCount = 0;
 
             //TODO
-            
+
             return VerifResultCollAddedCount == 0;
         }
-        
+
         /// <summary>
         /// Validates the GL Journal data.
         /// </summary>
@@ -178,7 +178,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             int VerifResultCollAddedCount = 0;
 
             //TODO
-            
+
             return VerifResultCollAddedCount == 0;
         }
 
@@ -261,7 +261,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             return VerifResultCollAddedCount == 0;
         }
-        
+
         /// <summary>
         /// Validates the recurring GL Detail data.
         /// </summary>
@@ -274,8 +274,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
-        public static bool ValidateRecurringGLDetailManual(object AContext, ARecurringBatchRow ABatchRow, ARecurringTransactionRow ARow, Control AControl,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        public static bool ValidateRecurringGLDetailManual(object AContext,
+            ARecurringBatchRow ABatchRow,
+            ARecurringTransactionRow ARow,
+            Control AControl,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
             TVerificationResult VerificationResult = null;
@@ -311,6 +315,5 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             return VerifResultCollAddedCount == 0;
         }
-        
     }
 }

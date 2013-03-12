@@ -138,7 +138,7 @@ namespace Ict.Petra.Shared.MFinance
                 }
             }
         }
-        
+
         /// <summary>
         /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
         /// </summary>

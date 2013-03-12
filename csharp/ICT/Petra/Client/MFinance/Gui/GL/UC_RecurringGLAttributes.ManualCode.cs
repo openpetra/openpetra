@@ -80,9 +80,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATransactionNumber"></param>
         public void LoadAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
         {
-            if (FBatchNumber != -1
-                && FPreviouslySelectedDetailRow != null
-                && FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted)
+            if ((FBatchNumber != -1)
+                && (FPreviouslySelectedDetailRow != null)
+                && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
             {
                 GetDataFromControls();
             }
@@ -102,7 +102,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (view.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber, FTransactionNumber }) == -1)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber,
+                        ATransactionNumber));
             }
 
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
@@ -159,7 +160,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private ARecurringTransactionRow GetTransactionRow()
         {
-            return (ARecurringTransactionRow)FMainDS.ARecurringTransaction.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber, FTransactionNumber });
+            return (ARecurringTransactionRow)FMainDS.ARecurringTransaction.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber,
+                                                                                                    FTransactionNumber });
         }
 
         /// <summary>
@@ -306,9 +308,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 String TypeCode = myRow.AnalysisTypeCode;
 
                 ARecurringTransAnalAttribRow myTableRow =
-                    (ARecurringTransAnalAttribRow)FMainDS.ARecurringTransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber,
-                                                                                           ATransactionNumber,
-                                                                                           TypeCode });
+                    (ARecurringTransAnalAttribRow)FMainDS.ARecurringTransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber,
+                                                                                                             AJournalNumber,
+                                                                                                             ATransactionNumber,
+                                                                                                             TypeCode });
 
                 if (myTableRow == null)
                 {

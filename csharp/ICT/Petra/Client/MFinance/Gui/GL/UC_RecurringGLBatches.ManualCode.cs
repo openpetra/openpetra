@@ -91,7 +91,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.Focus();
         }
 
-
         /// reset the control
         public void ClearCurrentSelection()
         {
@@ -120,7 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void UpdateChangeableStatus()
         {
             Boolean allowSubmit = (FPreviouslySelectedDetailRow != null)
-                                   && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
+                                  && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
 
             FPetraUtilsObject.EnableAction("actSubmitBatch", allowSubmit);
             FPetraUtilsObject.EnableAction("actDelete", allowSubmit);
@@ -256,7 +255,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //FPreviouslySelectedDetailRow = null;
 
             FPetraUtilsObject.VerificationResultCollection.Clear();
-            
+
             pnlDetails.Enabled = true;
 
             //ClearDetailControls();
@@ -417,7 +416,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             try
             {
-                // Delete on client side data through views that is already loaded. Data that is not 
+                // Delete on client side data through views that is already loaded. Data that is not
                 // loaded yet will be deleted with cascading delete on server side so we don't have
                 // to worry about this here.
 
@@ -462,7 +461,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     row.Delete();
                 }
-                
+
                 // Delete the recurring batch row.
                 ARowToDelete.Delete();
 
@@ -534,7 +533,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((TFrmRecurringGLBatch)ParentForm).DisableJournals();
             }
         }
-        
+
         private void ClearControls()
         {
             try
@@ -548,7 +547,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FPetraUtilsObject.EnableDataChangedEvent();
             }
         }
-        
+
         /// <summary>
         /// UpdateTotals
         /// </summary>
@@ -569,17 +568,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 // ask user if he wants to save as otherwise process cannot continue
                 if (MessageBox.Show(Catalog.GetString("Changes need to be saved in order to submit a batch!") + Environment.NewLine +
-                    Catalog.GetString("Do you want to save and continue submitting?"),
-                    Catalog.GetString("Changes not saved"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        Catalog.GetString("Do you want to save and continue submitting?"),
+                        Catalog.GetString("Changes not saved"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                 {
                     return;
                 }
-                
+
                 // save first, then submit
                 if (!((TFrmRecurringGLBatch)ParentForm).SaveChanges())
                 {
                     // saving failed, therefore do not try to post
-                    MessageBox.Show(Catalog.GetString("The recurring batch was not submitted due to problems during saving; ") + Environment.NewLine +
+                    MessageBox.Show(Catalog.GetString(
+                            "The recurring batch was not submitted due to problems during saving; ") + Environment.NewLine +
                         Catalog.GetString("Please first save the batch, and then submit it!"),
                         Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -600,7 +600,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //TODO             FPreviouslySelectedDetailRow.BatchTotal.ToString("C"),
             //TODO             FPreviouslySelectedDetailRow.BatchNumber,
             //TODO             FPreviouslySelectedDetailRow.HashTotal.ToString("C")), "Submit Recurring Gift Batch");
-            //TODO 
+            //TODO
             //TODO     txtDetailHashTotal.Focus();
             //TODO     txtDetailHashTotal.SelectAll();
             //TODO     return;
@@ -613,8 +613,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // check how many journals have currency different from base currency
             foreach (ARecurringJournalRow JournalRow in FMainDS.ARecurringJournal.Rows)
             {
-                if (JournalRow.BatchNumber == FSelectedBatchNumber
-                    && JournalRow.TransactionCurrency != ((ALedgerRow)FMainDS.ALedger.Rows[0]).BaseCurrency)
+                if ((JournalRow.BatchNumber == FSelectedBatchNumber)
+                    && (JournalRow.TransactionCurrency != ((ALedgerRow)FMainDS.ALedger.Rows[0]).BaseCurrency))
                 {
                     NumberOfNonBaseCurrencyJournals++;
                 }
@@ -623,17 +623,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Hashtable requestParams = new Hashtable();
             requestParams.Add("ALedgerNumber", FLedgerNumber);
             requestParams.Add("ABatchNumber", FSelectedBatchNumber);
-            
+
             TFrmRecurringGLBatchSubmit submitForm = new TFrmRecurringGLBatchSubmit(FPetraUtilsObject.GetForm());
             try
             {
                 ParentForm.ShowInTaskbar = false;
                 submitForm.MainDS = FMainDS;
                 submitForm.BatchRow = FPreviouslySelectedDetailRow;
-                
+
                 if (NumberOfNonBaseCurrencyJournals == 0)
                 {
                     submitForm.ShowDialog();
+
                     if (submitForm.GetResult(out DateEffective))
                     {
                         requestParams.Add("AEffectiveDate", DateEffective);
@@ -653,19 +654,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     // make sure dialogs for journal rows are displayed in sequential order -> new to use view
                     DataView JournalView = new DataView(FMainDS.ARecurringJournal);
-                    JournalView.Sort =  ARecurringJournalTable.GetJournalNumberDBName();
+                    JournalView.Sort = ARecurringJournalTable.GetJournalNumberDBName();
                     Boolean FirstJournal = true;
+
                     foreach (DataRowView rowView in JournalView)
                     {
                         ARecurringJournalRow JournalRow = (ARecurringJournalRow)rowView.Row;
+
                         if (JournalRow.TransactionCurrency != ((ALedgerRow)FMainDS.ALedger.Rows[0]).BaseCurrency)
                         {
                             submitForm.JournalRow = JournalRow;
+
                             if (!FirstJournal)
                             {
                                 submitForm.SetDateEffectiveReadOnly();
                             }
+
                             submitForm.ShowDialog();
+
                             if (submitForm.GetResult(out DateEffective, out ExchangeRateToBase))
                             {
                                 requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), ExchangeRateToBase);
@@ -675,7 +681,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 SubmitCancelled = true;
                                 break;
                             }
-                            
+
                             FirstJournal = false;
                         }
                         else
@@ -683,6 +689,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), 1);
                         }
                     }
+
                     requestParams.Add("AEffectiveDate", DateEffective);
                 }
             }
@@ -691,7 +698,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 submitForm.Dispose();
                 ParentForm.ShowInTaskbar = true;
             }
-
 
             if (SubmitCancelled)
             {
@@ -703,9 +709,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 TVerificationResultCollection AMessages;
-    
+
                 Boolean submitOK = TRemote.MFinance.GL.WebConnectors.SubmitRecurringGLBatch(requestParams, out AMessages);
-    
+
                 if (submitOK)
                 {
                     MessageBox.Show(Catalog.GetString("Your recurring batch was submitted successfully!"),
@@ -720,8 +726,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             Catalog.GetString("Reasons:"), AMessages));
                 }
             }
-            
-            
         }
 
         private int CurrentRowIndex()
@@ -749,7 +753,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
             btnNew.Enabled = true;
-                
+
             FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringBatch.DefaultView);
