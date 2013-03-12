@@ -100,6 +100,12 @@ namespace Ict.Tools.GenerateI18N
                     // remove all strings from po file that are listed in the "Do Not Translate" file
                     TDropUnwantedStrings.RemoveUnwantedStringsFromTranslation(doNotTranslatePath, poFilePath);
                 }
+                else if (TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "errorcodedoc"))
+                {
+                    TGenerateErrorCodeDoc.Execute(TAppSettingsManager.GetValue("csharppath"),
+                        TAppSettingsManager.GetValue("templatefilepath"),
+                        TAppSettingsManager.GetValue("outfilepath"));
+                }
                 else if (TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "yamlfiles"))
                 {
                     GenerateYamlFiles.WriteYamlFiles(

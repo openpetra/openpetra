@@ -82,7 +82,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         }
 
         /// <summary>
-        /// Loads ApDocument row, and also Supplier, DocumentDetail, and AnalAttrib.
+        /// Loads Supplier and Partner.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey"></param>
@@ -298,22 +298,22 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 {
                     if (NewDocRow.DocumentCode.Length == 0)
                     {
-                        AVerificationResult.Add(new TVerificationResult("Save AP Document", "The Document has empty Document number.",
+                        AVerificationResult.Add(new TVerificationResult("Check Document", "The Document has no Document number.",
                                 TResultSeverity.Resv_Noncritical));
                         return TSubmitChangesResult.scrInfoNeeded;
                     }
 
-                    if (NewDocRow.RowState == DataRowState.Added) // Load via Template
-                    {
-                        AApDocumentRow DocTemplateRow = AInspectDS.AApDocument.NewRowTyped(false);
-                        DocTemplateRow.LedgerNumber = NewDocRow.LedgerNumber;
-                        DocTemplateRow.PartnerKey = NewDocRow.PartnerKey;
-                        DocTemplateRow.DocumentCode = NewDocRow.DocumentCode;
-                        AApDocumentTable MatchingRecords = AApDocumentAccess.LoadUsingTemplate(DocTemplateRow, null);
+                    AApDocumentRow DocTemplateRow = AInspectDS.AApDocument.NewRowTyped(false);
+                    DocTemplateRow.LedgerNumber = NewDocRow.LedgerNumber;
+                    DocTemplateRow.PartnerKey = NewDocRow.PartnerKey;
+                    DocTemplateRow.DocumentCode = NewDocRow.DocumentCode;
+                    AApDocumentTable MatchingRecords = AApDocumentAccess.LoadUsingTemplate(DocTemplateRow, null);
 
-                        if (MatchingRecords.Rows.Count > 0)
+                    foreach (AApDocumentRow MatchingRow in MatchingRecords.Rows) // Generally I expect this table is empty..
+                    {
+                        if (MatchingRow.ApDocumentId != NewDocRow.ApDocumentId) // This Document Code is in use, and not by me!
                         {
-                            AVerificationResult.Add(new TVerificationResult("Save AP Document", "A Document with this number already exists.",
+                            AVerificationResult.Add(new TVerificationResult("Check Document", "A Document with this number already exists.",
                                     TResultSeverity.Resv_Noncritical));
                             return TSubmitChangesResult.scrInfoNeeded;
                         }

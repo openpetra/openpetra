@@ -708,16 +708,49 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                if ((SubmissionResult == TSubmitChangesResult.scrOK) && AInspectDS.Tables.Contains("AGiftBatch")
+                    && AInspectDS.Tables.Contains("AGift"))
                 {
-                    // TODO: check that gifts are in consecutive numbers?
-                    // TODO: check that gift details are in consecutive numbers, no gift without gift details?
+                    DataRow[] foundGiftForDeletion = AInspectDS.AGift.Select(String.Format("{0} = '{1}'",
+                            AGiftTable.GetGiftStatusDBName(),
+                            MFinanceConstants.MARKED_FOR_DELETION));
+
+                    if (foundGiftForDeletion.Length == 1)
+                    {
+                        //A gift has been deleted
+                        //Accept the deletion of the single details row
+                        AInspectDS.AGiftDetail.AcceptChanges();
+                        AInspectDS.AGift.AcceptChanges();
+
+                        AGiftBatchTable clientBatchTable = (AGiftBatchTable)AInspectDS.AGiftBatch;
+                        AGiftBatchRow clientBatchRow = (AGiftBatchRow)clientBatchTable.Rows[0];
+
+                        AGiftRow giftRowClient = (AGiftRow)foundGiftForDeletion[0];
+
+                        giftRowClient.Delete();
+
+                        clientBatchRow.LastGiftNumber--;
+
+                        SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+
+                        //Accept the deletion of the single details row
+                        AInspectDS.AGiftDetail.AcceptChanges();
+                        AInspectDS.AGift.AcceptChanges();
+                        AInspectDS.AGiftBatch.AcceptChanges();
+                    }
+
                     // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
                     // TODO: calculate hash of saved batch or batch of saved gift
                 }
             }
 
             return SubmissionResult;
+        }
+
+        private bool CheckGiftNumbersAreConsecutive()
+        {
+            //TODO
+            return true;
         }
 
         /// <summary>

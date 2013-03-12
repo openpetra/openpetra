@@ -336,6 +336,41 @@ namespace Ict.Common.Testing
             Assert.AreEqual("shortdesc=\"Equipment, General\"", StringHelper.GetNextCSV(ref s), "get string with quotes that are not at the start");
             Assert.AreEqual("longdesc=Equipment", StringHelper.GetNextCSV(ref s), "after string with quotes that are not at the start");
 
+            // Tests on what might be CSV Import files
+            // Simple headers (keep spaces)
+            s = "Col 1, Col 2, Col 3";
+            Assert.AreEqual("Col 1", StringHelper.GetNextCSV(ref s, ",", false), "Typical CSV File import column 1 (keep spaces)");
+            Assert.AreEqual(" Col 2", StringHelper.GetNextCSV(ref s, ",", false), "Typical CSV File import column 2 (keep spaces)");
+            Assert.AreEqual(" Col 3", StringHelper.GetNextCSV(ref s, ",", false), "Typical CSV File import column 3 (keep spaces)");
+
+            // Same simple headers (remove spaces)
+            s = "Col 1, Col 2, Col 3";
+            Assert.AreEqual("Col 1", StringHelper.GetNextCSV(ref s, ",", false, true), "Typical CSV File import column 1 (remove spaces)");
+            Assert.AreEqual("Col 2", StringHelper.GetNextCSV(ref s, ",", false, true), "Typical CSV File import column 2 (remove spaces)");
+            Assert.AreEqual("Col 3", StringHelper.GetNextCSV(ref s, ",", false, true), "Typical CSV File import column 3 (remove spaces)");
+
+            // Quoted headers (keep spaces)
+            s = "Col 1, \"Col 2\" xx , \"Col \"\"3\"\" \" ";
+            Assert.AreEqual("Col 1", StringHelper.GetNextCSV(ref s, ",", false), "Typical CSV File import with quotes column 1 (keep spaces)");
+            Assert.AreEqual(" \"Col 2\" xx ", StringHelper.GetNextCSV(ref s,
+                    ",",
+                    false), "Typical CSV File with quotes import column 2 (keep spaces)");
+            Assert.AreEqual(" \"Col \"3\" \" ", StringHelper.GetNextCSV(ref s,
+                    ",",
+                    false), "Typical CSV File with quotes import column 3 (keep spaces)");
+
+            // Same quoted headers (remove spaces)
+            s = "Col 1, \" Col 2 \" , \"Col \"\"3\"\" \" ";
+            Assert.AreEqual("Col 1", StringHelper.GetNextCSV(ref s, ",", false, true), "Typical CSV File import with quotes column 1 (remove spaces)");
+            Assert.AreEqual(" Col 2 ", StringHelper.GetNextCSV(ref s,
+                    ",",
+                    false,
+                    true), "Typical CSV File import with quotes column 2 (remove spaces)");
+            Assert.AreEqual("Col \"3\" ", StringHelper.GetNextCSV(ref s,
+                    ",",
+                    false,
+                    true), "Typical CSV File import with quotes column 3 (remove spaces)");
+
             /* ,B�cker,"test"",","test""",test,"test, hallo","test""tst","24/03/1999","0400" */
             myTest = new String[] {
                 EMPTY, UMLAUT, QUOTEKOMMA, QUOTE, SIMPLE, KOMMA, QUOTES, DATE, ACCOUNTCODE

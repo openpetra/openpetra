@@ -151,10 +151,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 //nudNumberFwdPostingPeriods.Maximum = MFinanceConstants.MAX_PERIODS - ((ALedgerRow)ADataSet.ALedger.Rows[0]).NumberOfAccountingPeriods;
                 nudActualsDataRetention.Maximum = ParameterRow.ActualsDataRetention;
                 nudActualsDataRetention.Minimum = 1;
-                nudBudgetDataRetention.Maximum = ParameterRow.BudgetDataRetention;
-                nudBudgetDataRetention.Minimum = 1;
                 nudGiftDataRetention.Maximum = ParameterRow.GiftDataRetention;
                 nudGiftDataRetention.Minimum = 1;
+
+                // comment out budget data retention settings for now until they are properly used in OpenPetra
+                //nudBudgetDataRetention.Maximum = ParameterRow.BudgetDataRetention;
+                //nudBudgetDataRetention.Minimum = 1;
             }
 
             LedgerRow = (ALedgerRow)ADataSet.ALedger.Rows[0];
@@ -265,21 +267,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
                 }
 
-                if (LedgerRow.IsBudgetDataRetentionNull())
-                {
-                    nudBudgetDataRetention.Value = 1;
-                }
-                else
-                {
-                    if (LedgerRow.BudgetDataRetention > nudBudgetDataRetention.Maximum)
-                    {
-                        nudBudgetDataRetention.Value = nudBudgetDataRetention.Maximum;
-                    }
-                    else
-                    {
-                        nudBudgetDataRetention.Value = LedgerRow.BudgetDataRetention;
-                    }
-                }
+                // comment out budget data retention settings for now until they are properly used in OpenPetra
+                //if (LedgerRow.IsBudgetDataRetentionNull())
+                //{
+                //    nudBudgetDataRetention.Value = 1;
+                //}
+                //else
+                //{
+                //    if (LedgerRow.BudgetDataRetention > nudBudgetDataRetention.Maximum)
+                //    {
+                //        nudBudgetDataRetention.Value = nudBudgetDataRetention.Maximum;
+                //    }
+                //    else
+                //    {
+                //        nudBudgetDataRetention.Value = LedgerRow.BudgetDataRetention;
+                //    }
+                //}
 
                 if (LedgerRow.IsGiftDataRetentionNull())
                 {

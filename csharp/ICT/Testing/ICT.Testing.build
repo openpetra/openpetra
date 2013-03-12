@@ -7,6 +7,7 @@
     <nant inheritall="false" target="startPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Controls.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" testcase="Tests.MFinance.GLBatches.TGLBatchesTest.TestCreateBatchAndPost"/>
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.ExchangeRates.dll" />
 
 <!-- TODO
         <test assemblyname="${dir.bin}/Ict.Testing.lib.Reporting.dll" />
@@ -28,6 +29,7 @@
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.ICH.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.AP.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.BankImport.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.CrossLedger.dll" />
 
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerExports.dll" />
     

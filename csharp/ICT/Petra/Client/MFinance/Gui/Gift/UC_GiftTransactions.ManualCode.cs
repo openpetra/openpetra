@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FActiveOnly = true;
         private AGiftBatchRow FBatchRow = null;
         private bool FGLEffectivePeriodChanged = false;
+        private bool FGiftSelectedForDeletion = false;
 
         private void InitialiseControls()
         {
@@ -610,7 +611,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private AGiftBatchRow GetBatchRow()
         {
             return ((TFrmGiftBatch)ParentForm).GetBatchControl().GetCurrentBatchRow();
-            //return (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FBatchNumber });
         }
 
         /// <summary>
@@ -639,7 +639,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void DeleteDetail(System.Object sender, EventArgs e)
         {
+            int nSelectedRow = grdDetails.SelectedRowIndex();
+
+            FDeletionPerformed = false;
             DeleteAGiftDetail();
+
+            if (grdDetails.Rows.Count > 1)
+            {
+                SelectRowInGrid(nSelectedRow);
+            }
+            else
+            {
+                FPreviouslySelectedDetailRow = null;
+            }
         }
 
         AGiftRow FGift = null;
@@ -662,7 +674,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FGiftDetailView.Count == 1)
             {
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete transaction {1} from Gift Batch no. {2}?" +
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete gift no. {1} from Gift Batch no. {2}?" +
                         "\n\r\n\r" + "     From:  {3}" +
                         "\n\r" + "         To:  {4}" +
                         "\n\r" + "Amount:  {5}"),
@@ -676,7 +688,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (FGiftDetailView.Count > 1)
             {
                 ADeletionQuestion =
-                    String.Format(Catalog.GetString("Are you sure you want to delete detail {0} from transaction {1} in Gift Batch no. {2}?" +
+                    String.Format(Catalog.GetString("Are you sure you want to delete detail line: {0} from gift no. {1} in Gift Batch no. {2}?" +
                             "\n\r\n\r" + "     From:  {3}" +
                             "\n\r" + "         To:  {4}" +
                             "\n\r" + "Amount:  {5}"),
@@ -690,7 +702,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else //this should never happen
             {
                 ADeletionQuestion =
-                    String.Format(Catalog.GetString("Gift transaction {1} in Gift Batch no. {2} has no detail rows in the Gift Detail table!"),
+                    String.Format(Catalog.GetString("Gift gift no. {1} in Gift Batch no. {2} has no detail rows in the Gift Detail table!"),
                         ARowToDelete.DetailNumber,
                         ARowToDelete.GiftTransactionNumber,
                         ARowToDelete.BatchNumber);
@@ -705,6 +717,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool deleteSuccessful = false;
             string originatingDetailRef = string.Empty;
 
+            AGiftRow giftRowToUpdate = FGift;
+
             ACompletionMessage = string.Empty;
 
             int selectedDetailNumber = ARowToDelete.DetailNumber;
@@ -716,38 +730,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     originatingDetailRef = ARowToDelete.ModifiedDetailKey;
                 }
 
-                ARowToDelete.Delete();
-                ARowToDelete = null;
-
-                if (FGiftDetailView.Count == 0)
+                if (FGiftDetailView.Count > 1)
                 {
-                    // TODO int oldGiftNumber = gift.GiftTransactionNumber;
-                    // TODO int oldBatchNumber = gift.BatchNumber;
+                    ARowToDelete.Delete();
+                    ARowToDelete = null;
 
-                    FGift.Delete();
+                    FGiftSelectedForDeletion = false;
 
-                    // TODO we cannot update primary keys easily, therefore we have to do it later on the server side
-//#if DISABLED
-//	                string filterAllDetailsOfBatch = String.Format("{0}={1}",
-//	                    AGiftDetailTable.GetBatchNumberDBName(),
-//	                    oldBatchNumber);
-//
-//	                giftDetailView.RowFilter = filterAllDetailsOfBatch;
-//
-//	                foreach (DataRowView rv in giftDetailView)
-//	                {
-//	                    GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
-//
-//	                    if (row.GiftTransactionNumber > oldGiftNumber)
-//	                    {
-//	                        row.GiftTransactionNumber--;
-//	                    }
-//	                }
-//	                GetBatchRow().LastGiftNumber--;
-//#endif
-                }
-                else
-                {
                     foreach (DataRowView rv in FGiftDetailView)
                     {
                         GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
@@ -759,6 +748,83 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     FGift.LastDetailNumber--;
+                }
+                else
+                {
+                    ARowToDelete.Delete();
+                    ARowToDelete = null;
+
+                    int giftToDeleteTransNo = FGift.GiftTransactionNumber;
+                    int currentBatchNumber = FGift.BatchNumber;
+
+                    string filterAllGiftDetailsOfBatch = String.Format("{0}={1}",
+                        AGiftDetailTable.GetBatchNumberDBName(),
+                        currentBatchNumber);
+
+                    DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
+                    giftDetailView.RowFilter = filterAllGiftDetailsOfBatch;
+
+                    foreach (DataRowView rv in giftDetailView)
+                    {
+                        GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
+
+                        if (row.GiftTransactionNumber > giftToDeleteTransNo)
+                        {
+                            row.GiftTransactionNumber--;
+                        }
+                    }
+
+                    string filterAllGiftsOfBatch = String.Format("{0}={1}",
+                        AGiftTable.GetBatchNumberDBName(),
+                        currentBatchNumber);
+
+                    DataView giftView = new DataView(FMainDS.AGift);
+                    giftView.RowFilter = filterAllGiftsOfBatch;
+                    giftView.Sort = AGiftTable.GetGiftTransactionNumberDBName();
+
+                    AGiftRow giftRowToDelete = null;
+                    AGiftRow giftRowToReceive = null;
+                    AGiftRow giftRowToCopyDown = null;
+
+                    AGiftRow giftRowCurrent = null;
+
+                    int currentGiftTransNo = 0;
+
+                    foreach (DataRowView gv in giftView)
+                    {
+                        giftRowCurrent = (AGiftRow)gv.Row;
+
+                        currentGiftTransNo = giftRowCurrent.GiftTransactionNumber;
+
+                        if ((currentGiftTransNo == giftToDeleteTransNo) && (currentGiftTransNo < giftView.Count))
+                        {
+                            giftRowToDelete = giftRowCurrent;
+                        }
+                        else if (currentGiftTransNo > giftToDeleteTransNo)
+                        {
+                            giftRowToCopyDown = giftRowCurrent;
+
+                            //Copy column values down
+                            for (int j = 3; j < giftRowToCopyDown.Table.Columns.Count; j++)
+                            {
+                                //Update all columns except the pk fields that remain the same
+                                giftRowToReceive[j] = giftRowToCopyDown[j];
+                            }
+                        }
+
+                        if (currentGiftTransNo == giftView.Count)
+                        {
+                            //Mark last record for deletion
+                            giftRowCurrent.GiftStatus = MFinanceConstants.MARKED_FOR_DELETION;
+                        }
+
+                        //Will always be previous row
+                        giftRowToReceive = giftRowCurrent;
+                    }
+
+                    FGift = null;
+
+                    FGiftSelectedForDeletion = true;
                 }
 
                 //Check if deleting a reversed gift detail
@@ -785,12 +851,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return deleteSuccessful;
         }
 
+        bool FDeletionPerformed;
+
         private void PostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,
             bool AAllowDeletion,
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            MessageBox.Show(ACompletionMessage);
+            FDeletionPerformed = ADeletionPerformed;
+
+            if (ACompletionMessage.Length > 0)
+            {
+                MessageBox.Show(ACompletionMessage);
+            }
+
+            if (FDeletionPerformed && FGiftSelectedForDeletion)
+            {
+                FGiftSelectedForDeletion = false;
+
+                if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+                {
+                    MessageBox.Show("Error in renumbering gifts!");
+                }
+
+                //Load data from server if Gift removed and others renumbered
+                FMainDS.AGift.Clear();
+                FMainDS.AGiftDetail.Clear();
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, GetBatchRow().BatchNumber));
+            }
 
             if (!pnlDetails.Enabled)
             {

@@ -477,6 +477,7 @@ namespace {#NAMESPACE}
 {#ENDIF DELETEROWMANUAL}
 {#IFNDEF DELETEROWMANUAL}               
                 FPreviouslySelectedDetailRow.Delete();
+                FPreviouslySelectedDetailRow = null;
                 deletionPerformed = true;
 {#ENDIFN DELETEROWMANUAL}   
             
@@ -642,7 +643,10 @@ namespace {#NAMESPACE}
 {#ENDIF MASTERTABLE}        
 {#ENDIFN SHOWDETAILS}
 {#IFDEF SHOWDETAILS}
-        if (FPreviouslySelectedDetailRow != null)
+        if ((FPreviouslySelectedDetailRow != null) 
+            && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted)
+            && (FPreviouslySelectedDetailRow.RowState != DataRowState.Detached)
+            )
         {
 // :CMT:ControlToValidate
             if (AValidateSpecificControl != null) 

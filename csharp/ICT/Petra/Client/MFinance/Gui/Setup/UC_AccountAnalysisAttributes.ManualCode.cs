@@ -233,6 +233,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     ARow.AnalysisTypeCode = TempEdit;
                     //                TLogging.Log("Keep name: " + ARow.AnalysisTypeCode);
                 }
+
+                ARow.EndEdit(); // Apply these changes now!
+                ARow.BeginEdit();
             }
         }
 
