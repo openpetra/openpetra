@@ -91,11 +91,9 @@ namespace Ict.Common.Verification
             String Description = THelper.NiceValueDescription(ADescription);
 
             // Check
-            try
-            {
-                System.Convert.ToInt64(AValue);
-            }
-            catch (System.Exception)
+            Int64 temp;
+
+            if (!Int64.TryParse(AValue, out temp))
             {
                 ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
                         CommonErrorCodes.ERR_INVALIDNUMBER,
@@ -131,11 +129,8 @@ namespace Ict.Common.Verification
             String Description = THelper.NiceValueDescription(ADescription);
 
             // Check
-            try
-            {
-                System.Convert.ToDouble(AValue);
-            }
-            catch (System.Exception)
+            Double temp;
+            if (!Double.TryParse(AValue, out temp))
             {
                 ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
                         CommonErrorCodes.ERR_INVALIDNUMBER,
@@ -171,11 +166,8 @@ namespace Ict.Common.Verification
             String Description = THelper.NiceValueDescription(ADescription);
 
             // Check
-            try
-            {
-                System.Convert.ToDecimal(AValue);
-            }
-            catch (System.Exception)
+            Decimal temp;
+            if (!Decimal.TryParse(AValue, out temp))
             {
                 ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
                         CommonErrorCodes.ERR_INVALIDNUMBER,

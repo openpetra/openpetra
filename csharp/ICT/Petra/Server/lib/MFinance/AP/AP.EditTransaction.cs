@@ -821,8 +821,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transaction.Narrative = "Reversal: " + transaction.Narrative;
                         }
 
-//                      transaction.Reference = documentDetail.ItemRef;
-                        transaction.Reference = "AP " + document.ApNumber.ToString() + " - " + document.DocumentCode;
+                        transaction.Reference = documentDetail.ItemRef;
+//                      transaction.Reference = "AP " + document.ApNumber.ToString() + " - " + document.DocumentCode;
 
                         transaction.DetailNumber = documentDetail.DetailNumber;
 
@@ -864,14 +864,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                     transaction.AccountCode = document.ApAccount;
                     transaction.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
-                    transaction.Narrative = "AP " + document.ApNumber.ToString() + " - " + document.DocumentCode + " - " + SupplierShortName;
+                    transaction.Reference = "AP " + document.ApNumber.ToString() + " - " + document.DocumentCode;
+                    transaction.Narrative = transaction.Reference + " - " + SupplierShortName;
 
                     if (Reversal)
                     {
                         transaction.Narrative = "Reversal: " + transaction.Narrative;
                     }
 
-                    transaction.Reference = "AP " + document.ApNumber.ToString() + " - " + document.DocumentCode;
                     transaction.DetailNumber = 0;
 
                     GLDataset.ATransaction.Rows.Add(transaction);
