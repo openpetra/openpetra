@@ -1152,9 +1152,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             AVerificationResult = new TVerificationResultCollection();
 
-            ARecurringBatchTable BatchTable = new ARecurringBatchTable();
-            //ARecurringBatchRow TemplateBatchRow = BatchTable.NewRowTyped(false);
-
             ARecurringJournalTable JournalTable = new ARecurringJournalTable();
             ARecurringJournalRow TemplateJournalRow = JournalTable.NewRowTyped(false);
 
@@ -1535,6 +1532,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 ABatchNumber = (Int32)requestParams["ABatchNumber"];
             DateTime AEffectiveDate = (DateTime)requestParams["AEffectiveDate"];
             Decimal AExchangeRateToBase;
+            int PeriodNumber, YearNr;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
@@ -1559,6 +1557,19 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         BatchRow.DateEffective = AEffectiveDate;
                         BatchRow.BatchDescription = recBatch.BatchDescription;
                         BatchRow.BatchControlTotal = recBatch.BatchControlTotal;
+                        BatchRow.BatchRunningTotal = recBatch.BatchRunningTotal;
+                        BatchRow.BatchCreditTotal = recBatch.BatchCreditTotal;
+                        BatchRow.BatchDebitTotal = recBatch.BatchDebitTotal;
+    
+                        if (TFinancialYear.IsValidPostingPeriod(ALedgerNumber,
+                                AEffectiveDate,
+                                out PeriodNumber,
+                                out YearNr,
+                                Transaction))
+                        {
+                            BatchRow.BatchYear = YearNr;
+                            BatchRow.BatchPeriod = PeriodNumber;
+                        }
 
                         foreach (ARecurringJournalRow recJournal in RGLMainDS.ARecurringJournal.Rows)
                         {
@@ -1573,6 +1584,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 JournalRow.SubSystemCode = recJournal.SubSystemCode;
                                 JournalRow.TransactionTypeCode = recJournal.TransactionTypeCode;
                                 JournalRow.TransactionCurrency = recJournal.TransactionCurrency;
+                                JournalRow.JournalCreditTotal = recJournal.JournalCreditTotal;
+                                JournalRow.JournalDebitTotal = recJournal.JournalDebitTotal;
 
                                 AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()];
                                 JournalRow.ExchangeRateToBase = AExchangeRateToBase;
@@ -1610,9 +1623,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                         TransactionRow.AccountCode = recTransaction.AccountCode;
                                         TransactionRow.CostCentreCode = recTransaction.CostCentreCode;
                                         TransactionRow.TransactionAmount = recTransaction.TransactionAmount;
-                                        // TODO convert with exchange rate to get the amount in base currency
-                                        // TransactionRow.AmountInBaseCurrency =
-                                        TransactionRow.AmountInBaseCurrency = recTransaction.AmountInBaseCurrency;
+                                        TransactionRow.AmountInBaseCurrency = recTransaction.TransactionAmount * AExchangeRateToBase;
                                         TransactionRow.TransactionDate = AEffectiveDate;
                                         TransactionRow.DebitCreditIndicator = recTransaction.DebitCreditIndicator;
                                         TransactionRow.HeaderNumber = recTransaction.HeaderNumber;
