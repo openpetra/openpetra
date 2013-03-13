@@ -717,8 +717,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool deleteSuccessful = false;
             string originatingDetailRef = string.Empty;
 
-            AGiftRow giftRowToUpdate = FGift;
-
             ACompletionMessage = string.Empty;
 
             int selectedDetailNumber = ARowToDelete.DetailNumber;
@@ -782,7 +780,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     giftView.RowFilter = filterAllGiftsOfBatch;
                     giftView.Sort = AGiftTable.GetGiftTransactionNumberDBName();
 
-                    AGiftRow giftRowToDelete = null;
                     AGiftRow giftRowToReceive = null;
                     AGiftRow giftRowToCopyDown = null;
 
@@ -796,11 +793,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                         currentGiftTransNo = giftRowCurrent.GiftTransactionNumber;
 
-                        if ((currentGiftTransNo == giftToDeleteTransNo) && (currentGiftTransNo < giftView.Count))
-                        {
-                            giftRowToDelete = giftRowCurrent;
-                        }
-                        else if (currentGiftTransNo > giftToDeleteTransNo)
+                        if (currentGiftTransNo > giftToDeleteTransNo)
                         {
                             giftRowToCopyDown = giftRowCurrent;
 

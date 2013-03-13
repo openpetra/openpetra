@@ -115,6 +115,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Unload attributes from the form
+        /// </summary>
+        public void UnloadAttributes()
+        {
+            this.ucoRecurringAttributes.UnloadAttributes();
+        }
+
+        /// <summary>
         /// activate the attributes tab and load the attributes of the transaction
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -233,6 +241,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
+            if (this.ucoRecurringAttributes.Enabled && (ATab != eGLTabs.RecurringAttributes))
+            {
+                //Unload any attributes
+                this.ucoRecurringAttributes.UnloadAttributes();
+            }
+
             if (ATab == eGLTabs.RecurringBatches)
             {
                 this.tabRecurringGLBatch.SelectedTab = this.tpgBatches;
@@ -242,7 +256,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     this.ucoRecurringTransactions.CancelChangesToFixedBatches();
                     this.ucoRecurringJournals.CancelChangesToFixedBatches();
-                    //TODO SaveChanges();
+                    SaveChanges();
                     this.tpgTransactions.Enabled = false;
                 }
 
@@ -306,14 +320,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
         {
-            //TODO FPetraUtilsObject.VerificationResultCollection.Clear();
+            FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            //TODO if (!SaveChanges())
-            //TODO {
-            //TODO     e.Cancel = true;
-            //TODO
-            //TODO     FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
-            //TODO }
+            if (!SaveChanges())
+            {
+                e.Cancel = true;
+
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            }
         }
 
         private void SelectTabManual(int ASelectedTabIndex)

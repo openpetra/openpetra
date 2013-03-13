@@ -42,8 +42,10 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
+            ActionDoubleClick: ShowAttributesTab
+            ActionEnterKeyPressed: ShowAttributesTab
             SortOrder: ARecurringTransaction.TransactionNumber ASC
-            RowFilter: ARecurringTransaction.BatchNumber, ATransaction.JournalNumber
+            RowFilter: ARecurringTransaction.BatchNumber, ARecurringTransaction.JournalNumber
         pnlDetails:
             Dock: Bottom
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, pnlDetailAmounts]

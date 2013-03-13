@@ -66,6 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return FCacheDS;
             }
         }
+
         private void InitializeManualCode()
         {
             this.cmbDetailAnalysisAttributeValue.DropDown += new System.EventHandler(this.DropDown);
@@ -392,41 +393,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// remove all attributes if the transaction is deleted (needed?))
-        /// </summary>
-        /// <param name="trans">Row of the transaction where the attributes are deleted</param>
-
-        public void DeleteTransactionAttributes(GLBatchTDSATransactionRow trans)
-        {
-            if (trans == null)
-            {
-                return;
-            }
-
-            int NumRows = FMainDS.ATransAnalAttrib.Rows.Count;
-
-            for (int RowIndex = NumRows - 1; RowIndex >= 0; RowIndex -= 1)
-            {
-                ATransAnalAttribRow row = (ATransAnalAttribRow)FMainDS.ATransAnalAttrib.Rows[RowIndex];
-
-                if (
-                    row.TransactionNumber.Equals(trans.TransactionNumber)
-                    && row.JournalNumber.Equals(trans.JournalNumber)
-                    && row.BatchNumber.Equals(trans.BatchNumber)
-                    && row.LedgerNumber.Equals(trans.LedgerNumber)
-
-                    )
-                {
-                    row.Delete();
-                }
-            }
-
-            FPreviouslySelectedDetailRow = null;
-
-            FPetraUtilsObject.SetChangedFlag();
         }
 
         /// <summary>
