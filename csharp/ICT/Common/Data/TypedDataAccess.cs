@@ -2277,13 +2277,22 @@ namespace Ict.Common.Data
 
         /// <summary>
         /// Builds a <see cref="TVerificationResultCollection" /> from DB Table references created by a cascading count Method.
+        /// It will contain only a single <see cref="TVerificationResult "/>.
         /// </summary>
-        /// <param name="AReferences">References as created by the cascading count Method.</param>
-        /// <param name="AResultSeverity">Severity that the individual <see cref="TVerificationResult" /> objects should get
-        /// (Default=TResultSeverity.Resv_Critical).</param>
         /// <returns><see cref="TVerificationResultCollection" /> from DB Table references created by a cascading count Method.
         /// In case <paramref name="AReferences" /> does not contain elements a <see cref="TVerificationResultCollection" /> 
         /// containing no elements will be returned.</returns>
+        /// <param name="AThisTable">Name of the DB Table (as in the DB) that the references point to.</param>
+        /// <param name="AThisTableLabel">Label (='friendly name' for the user) of the DB Table that the references point to.</param>
+        /// <param name="APKInfo"><see cref="Dictionary{T, T}" /> consisting of a string-object pair for each Primary Key Column. 
+        /// The string (Key) is the Label ('friendly name' for the user) of the PK Column and the object (Value) holds the actual data 
+        /// of the PK Column.</param>
+        /// <param name="AReferences">A <see cref="List{T}" /> of <see cref="TRowReferenceInfo" /> objects that contain information about
+        /// the DB Table references created by a cascading count Method.</param>
+        /// <param name="AResultSeverity">Allows the specification of a <see cref="TResultSeverity" /> for the <see cref="TVerificationResult "/>
+        /// that gets added to the return value. (Default=<see cref="TResultSeverity.Resv_Critical" />.)</param>
+        /// <returns>A <see cref="TVerificationResultCollection" /> containing a single <see cref="TVerificationResult "/> that contains information
+        /// about DB Table references created by a cascading count Method.</returns>
         public static TVerificationResultCollection BuildVerificationResultCollectionFromRefTables(string AThisTable, string AThisTableLabel, Dictionary<string, object> APKInfo, List<TRowReferenceInfo>AReferences,
             TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
         {
@@ -2391,7 +2400,10 @@ namespace Ict.Common.Data
         /// Constructor.
         /// </summary>
         /// <param name="AThisTable">Name of the DB Table (as in the DB) that holds the DB Row in question.</param>
-        /// <param name="AThisTableLabel">Label (='friendly name') of the DB Table that holds the DB Row in question.</param>
+        /// <param name="AThisTableLabel">Label (='friendly name' for the user) of the DB Table that holds the DB Row in question.</param>
+        /// <param name="APKInfo"><see cref="Dictionary{T,T}" /> consisting of a string-object pair for each Primary Key Column. 
+        /// The string (Key) is the Label ('friendly name' for the user) of the PK Column and the object (Value) holds the actual data 
+        /// of the PK Column.</param>
         /// <param name="AOtherTableRefs">References to the DB Row in question.</param>
         public TRowReferenceInfo(string AThisTable, string AThisTableLabel, Dictionary<string, object> APKInfo, List<TRowReferenceInfo> AOtherTableRefs)
         {
@@ -2418,6 +2430,9 @@ namespace Ict.Common.Data
             FDataRowContents = DataUtilities.GetPKValuesFromDataRow(FDataRow);
         }
                 
+        /// <summary>
+        /// Name of the DB Table (as in the DB) that holds the DB Row in question.
+        /// </summary>
         public string ThisTable 
         {
             get 
@@ -2426,6 +2441,9 @@ namespace Ict.Common.Data
             }
         }
 
+        /// <summary>
+        /// Label (='friendly name' for the user) of the DB Table that holds the DB Row in question.
+        /// </summary>
         public string ThisTableLabel 
         {
             get 
@@ -2434,6 +2452,11 @@ namespace Ict.Common.Data
             }
         }
 
+        /// <summary>
+        /// <see cref="Dictionary{T,T}" /> consisting of a string-object pair for each Primary Key Column. 
+        /// The string (Key) is the Label ('friendly name' for the user) of the PK Column and the object (Value) holds the actual data 
+        /// of the PK Column.
+        /// </summary>
         public Dictionary<string, object> PKInfo
         {
             get
@@ -2442,6 +2465,9 @@ namespace Ict.Common.Data
             }
         }
         
+        /// <summary>
+        /// Number of references that point to the DB Row in question.
+        /// </summary>
         public long ReferenceCount 
         {
             get 
@@ -2450,6 +2476,9 @@ namespace Ict.Common.Data
             }
         }
 
+        /// <summary>
+        /// References to the DB Row in question.
+        /// </summary>
         public List<TRowReferenceInfo> OtherTableRefs
         {
             get
@@ -2458,6 +2487,11 @@ namespace Ict.Common.Data
             }
         }
         
+        /// <summary>
+        /// Referencing DataRow.
+        /// </summary>
+        /// <remarks>Does not get serialised because the <see cref="DataRow" /> Class is not Serializable.
+        /// Use <see cref="DataRowContents" /> for accesing the data of the referencing DataRow instead in this case!</remarks>
         public DataRow DataRow 
         {
             get 
@@ -2466,6 +2500,10 @@ namespace Ict.Common.Data
             }
         }
         
+        /// <summary>
+        /// Data of the referencing DataRow represented as an Array of object. Use this for accesing the data of 
+        /// the referencing DataRow when the instance of this class got remoted using .NET Remoting.
+        /// </summary>
         public object[] DataRowContents
         {
             get
