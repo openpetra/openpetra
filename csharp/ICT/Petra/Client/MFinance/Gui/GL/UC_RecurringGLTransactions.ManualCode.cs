@@ -112,7 +112,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (FMainDS.ARecurringTransaction.DefaultView.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber }) == -1)
                 {
                     FMainDS.ARecurringTransaction.Clear();
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(ALedgerNumber, ABatchNumber, AJournalNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(ALedgerNumber, ABatchNumber,
+                            AJournalNumber));
                 }
             }
 
@@ -240,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
             {
-            	return;
+                return;
             }
 
             FPetraUtilsObject.VerificationResultCollection.Clear();
@@ -405,7 +406,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ((TFrmRecurringGLBatch)ParentForm).DisableAttributes();
             }
-            
         }
 
         private void GetDetailDataFromControlsManual(ARecurringTransactionRow ARow)
@@ -583,13 +583,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>true if row deletion is successful</returns>
         private bool DeleteRowManual(ARecurringTransactionRow ARowToDelete, out string ACompletionMessage)
         {
-        	bool deletionSuccessful = false;
-        	
-        	if (ARowToDelete == null)
-        	{
-    			ACompletionMessage = string.Empty;
-        		return deletionSuccessful;
-        	}
+            bool deletionSuccessful = false;
+
+            if (ARowToDelete == null)
+            {
+                ACompletionMessage = string.Empty;
+                return deletionSuccessful;
+            }
 
             int currentBatchNo = ARowToDelete.BatchNumber;
             int currentJournalNo = ARowToDelete.JournalNumber;
@@ -727,7 +727,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.ARecurringTransAnalAttrib.Clear();
                 FMainDS.ARecurringTransaction.Clear();
 
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(FLedgerNumber, currentBatchNo, currentJournalNo));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(FLedgerNumber, currentBatchNo,
+                        currentJournalNo));
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransaction.DefaultView);
 
                 ResetJournalLastTransNumber();
@@ -742,7 +743,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ClearControls();
                 pnlDetails.Enabled = false;
             }
-            
+
             return deletionSuccessful;
         }
 

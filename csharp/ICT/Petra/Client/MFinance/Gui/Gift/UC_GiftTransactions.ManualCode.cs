@@ -793,7 +793,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                         currentGiftTransNo = giftRowCurrent.GiftTransactionNumber;
 
-						if (currentGiftTransNo > giftToDeleteTransNo)
+                        if (currentGiftTransNo > giftToDeleteTransNo)
                         {
                             giftRowToCopyDown = giftRowCurrent;
 

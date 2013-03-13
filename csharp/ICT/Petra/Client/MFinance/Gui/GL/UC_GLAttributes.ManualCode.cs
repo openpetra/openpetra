@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return FCacheDS;
             }
         }
-        
+
         private void InitializeManualCode()
         {
             this.cmbDetailAnalysisAttributeValue.DropDown += new System.EventHandler(this.DropDown);

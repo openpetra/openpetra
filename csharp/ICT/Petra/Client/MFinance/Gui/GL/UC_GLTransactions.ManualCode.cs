@@ -588,11 +588,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             pnlDetails.Enabled = changeable;
         }
 
-		/// <summary>
-		/// Called from the button press on the sub-form
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+        /// <summary>
+        /// Called from the button press on the sub-form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeleteRecord(System.Object sender, EventArgs e)
         {
             this.DeleteATransaction();
@@ -665,7 +665,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((TFrmGLBatch)ParentForm).DisableAttributes();
             }
         }
-        
+
         /// <summary>
         /// Deletes the current row and optionally populates a completion message
         /// </summary>
@@ -674,13 +674,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>true if row deletion is successful</returns>
         private bool DeleteRowManual(ATransactionRow ARowToDelete, out string ACompletionMessage)
         {
-        	bool deletionSuccessful = false;
-        	
-        	if (ARowToDelete == null)
-        	{
-    			ACompletionMessage = string.Empty;
-        		return deletionSuccessful;
-        	}
+            bool deletionSuccessful = false;
+
+            if (ARowToDelete == null)
+            {
+                ACompletionMessage = string.Empty;
+                return deletionSuccessful;
+            }
 
             int currentBatchNo = ARowToDelete.BatchNumber;
             int currentJournalNo = ARowToDelete.JournalNumber;
@@ -833,10 +833,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ClearControls();
                 pnlDetails.Enabled = false;
             }
-            
+
             return deletionSuccessful;
         }
-
 
         private void ResetJournalLastTransNumber()
         {
