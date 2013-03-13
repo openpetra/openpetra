@@ -6,6 +6,7 @@
 namespace {#NAMESPACE}
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Data;
     using System.Data.Odbc;
@@ -13,6 +14,7 @@ namespace {#NAMESPACE}
     using Ict.Common.DB;
     using Ict.Common.Verification;
     using Ict.Common.Data;
+    using Ict.Tools.DBXML;
     {#USINGNAMESPACES}
 
     {#TABLECASCADINGLOOP}
@@ -28,10 +30,12 @@ public class {#TABLENAME}Cascading : TTypedDataAccess
     {
 {#IFDEF DELETEBYPRIMARYKEYCASCADING}
         int countRow;
+
         if ((AWithCascDelete == true))
         {
             {#DELETEBYPRIMARYKEYCASCADING}
         }
+
 {#ENDIF DELETEBYPRIMARYKEYCASCADING}
         {#TABLENAME}Access.DeleteByPrimaryKey({#ACTUALPARAMETERSPRIMARYKEY}, ATransaction);
     }
@@ -41,42 +45,93 @@ public class {#TABLENAME}Cascading : TTypedDataAccess
     {
 {#IFDEF DELETEBYTEMPLATECASCADING}
         int countRow;
+
         if ((AWithCascDelete == true))
         {
             {#DELETEBYTEMPLATECASCADING}
         }
+
 {#ENDIF DELETEBYTEMPLATECASCADING}
         {#TABLENAME}Access.DeleteUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
     }
 
     /// cascading count
-    public static int CountByPrimaryKey({#FORMALPARAMETERSPRIMARYKEY}, TDBTransaction ATransaction, bool AWithCascCount)
+    public static int CountByPrimaryKey({#FORMALPARAMETERSPRIMARYKEY}, TDBTransaction ATransaction, bool AWithCascCount, out List<TRowReferenceInfo>AReferences)
     {
         int OverallReferences = 0;
+        AReferences = new List<TRowReferenceInfo>();
 
 {#IFDEF COUNTBYPRIMARYKEYCASCADING}
         int countRow;
+
         if ((AWithCascCount == true))
         {
             {#COUNTBYPRIMARYKEYCASCADING}
         }
+
 {#ENDIF COUNTBYPRIMARYKEYCASCADING}
         return OverallReferences;
     }
 
     /// cascading count
-    public static int CountUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascCount)
+    public static int CountByPrimaryKey({#FORMALPARAMETERSPRIMARYKEY}, TDBTransaction ATransaction, bool AWithCascCount, out TVerificationResultCollection AVerificationResults,
+        TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
+    {   
+        int ReturnValue;
+        List<TRowReferenceInfo> References;
+        Dictionary<string, object> PKInfo = null;
+        
+        ReturnValue = {#TABLENAME}Cascading.CountByPrimaryKey({#ACTUALPARAMETERSPRIMARYKEY}, ATransaction, AWithCascCount, out References);
+
+        if(ReturnValue > 0)
+        {
+            PKInfo = new Dictionary<string, object>({#PRIMARYKEYCOLUMNCOUNT});
+            {#PRIMARYKEYINFODICTBUILDING}
+        
+            AVerificationResults = TTypedDataAccess.BuildVerificationResultCollectionFromRefTables("{#TABLENAME}", "{#THISTABLELABEL}", PKInfo, References, AResultSeverity);
+        }
+        else
+        {
+            AVerificationResults = null;
+        }
+        
+        return ReturnValue;
+    }
+    
+    /// cascading count
+    public static int CountByPrimaryKey(object[] APrimaryKeyValues, TDBTransaction ATransaction, bool AWithCascCount, out TVerificationResultCollection AVerificationResults,
+        TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
+    {   
+        if((APrimaryKeyValues == null)
+          || (APrimaryKeyValues.Length == 0))
+        {
+            throw new ArgumentException("APrimaryKeyValues must not be null and must contain at least one element");
+        }
+        
+        return {#TABLENAME}Cascading.CountByPrimaryKey({#ACTUALPARAMETERSPRIMARYKEYFROMPKARRAY}, ATransaction, AWithCascCount, out AVerificationResults);
+    }
+
+    /// cascading count
+    public static int CountUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction, bool AWithCascCount, ref List<TRowReferenceInfo>AReferences)
     {
         int OverallReferences = 0;
+        int SingleTableReferences = 0;
 
 {#IFDEF COUNTBYTEMPLATECASCADING}
         int countRow;
+
         if ((AWithCascCount == true))
         {
             {#COUNTBYTEMPLATECASCADING}
         }
+
 {#ENDIF COUNTBYTEMPLATECASCADING}
-        return OverallReferences + {#TABLENAME}Access.CountUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
+
+        SingleTableReferences = {#TABLENAME}Access.CountUsingTemplate(ATemplateRow, ATemplateOperators, ATransaction);
+        AReferences.Add(new TRowReferenceInfo("{#TABLENAME}", "{#THISTABLELABEL}", SingleTableReferences, ATemplateRow));
+        OverallReferences += SingleTableReferences;
+
+        return OverallReferences;
     }
 }
 
@@ -109,7 +164,7 @@ for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow =
 for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow = (countRow + 1))
 {
 {#IFDEF OTHERTABLEALSOCASCADING}
-    OverallReferences += {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount);
+    OverallReferences += {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount, ref AReferences);
 {#ENDIF OTHERTABLEALSOCASCADING}
 {#IFNDEF OTHERTABLEALSOCASCADING}
     OverallReferences += {#OTHERTABLENAME}Access.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction);
@@ -121,9 +176,14 @@ for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow =
 for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow = (countRow + 1))
 {
 {#IFDEF OTHERTABLEALSOCASCADING}
-    OverallReferences += {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount);
+    SingleTableReferences = {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount, ref AReferences);
+    AReferences.Add(new TRowReferenceInfo("#OTHERTABLENAME", "{#OTHERTABLELABEL}", SingleTableReferences, {#MYOTHERTABLENAME}Table[countRow]));
+    OverallReferences += SingleTableReferences;
 {#ENDIF OTHERTABLEALSOCASCADING}
 {#IFNDEF OTHERTABLEALSOCASCADING}
     OverallReferences += {#OTHERTABLENAME}Access.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction);
 {#ENDIFN OTHERTABLEALSOCASCADING}
 }
+
+{##PRIMARYKEYINFODICTBUILDING}
+PKInfo.Add("{#PKCOLUMNLABEL}", {#PKCOLUMNCONTENT});

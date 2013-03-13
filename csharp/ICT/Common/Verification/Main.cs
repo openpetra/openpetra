@@ -677,6 +677,14 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
+        /// constructor
+        /// </summary>
+        public TVerificationResultCollection(System.Guid ACurrentDataValidationRunID)
+        {
+            FCurrentDataValidationRunID = ACurrentDataValidationRunID;
+        }
+        
+        /// <summary>
         /// access the elements of the verification collection
         /// </summary>
         public IResultInterface this[int index]

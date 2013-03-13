@@ -2275,6 +2275,203 @@ namespace Ict.Common.Data
             return SubmitChanges(ATable, ATransaction, ASelectedOperations, out AVerificationResult, AUserId, "", "");
         }
 
+        /// <summary>
+        /// Builds a <see cref="TVerificationResultCollection" /> from DB Table references created by a cascading count Method.
+        /// </summary>
+        /// <param name="AReferences">References as created by the cascading count Method.</param>
+        /// <param name="AResultSeverity">Severity that the individual <see cref="TVerificationResult" /> objects should get
+        /// (Default=TResultSeverity.Resv_Critical).</param>
+        /// <returns><see cref="TVerificationResultCollection" /> from DB Table references created by a cascading count Method.
+        /// In case <paramref name="AReferences" /> does not contain elements a <see cref="TVerificationResultCollection" /> 
+        /// containing no elements will be returned.</returns>
+        public static TVerificationResultCollection BuildVerificationResultCollectionFromRefTables(string AThisTable, string AThisTableLabel, Dictionary<string, object> APKInfo, List<TRowReferenceInfo>AReferences,
+            TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
+        {
+            const string STR_INDENTATION = "    ";
+            const string STR_BULLET = "*";
+            Guid VerificationRunGuid = Guid.NewGuid();
+            TVerificationResultCollection ReturnValue = new TVerificationResultCollection(VerificationRunGuid);
+            string MessageHeader = Catalog.GetString(String.Format("The '{0}' record cannot be deleted because\r\n", AThisTableLabel));
+            List<string>MessageDetails = new List<string>();
+            string CompleteMessageDetails = String.Empty;
+            string MessageContinuation = Catalog.GetString("  and\r\n");
+            string KeysAndValueInformation = String.Empty;
+            
+            string LastReferencingDBTable = String.Empty;
+            bool NewReferencingDBTable = false;
+            int RefCount = 0;
+            List<TRowReferenceInfo> OtherTableRefs = new List<TRowReferenceInfo>();
+            
+            foreach (var Reference in AReferences) 
+            {      
+                OtherTableRefs.Add(Reference);
+
+                if ((LastReferencingDBTable != String.Empty)
+                    && (Reference.ThisTable != LastReferencingDBTable))
+                {
+                    RefCount = 0;
+                    NewReferencingDBTable = true;
+                }
+                else
+                {
+                    RefCount++;
+                }
+                
+                if ((NewReferencingDBTable) 
+                    || (RefCount == AReferences.Count))
+                {
+                    
+                    MessageDetails.Add(Catalog.GetPluralString(
+                            String.Format(STR_INDENTATION + "a '{0}' record is still referencing it", Reference.ThisTableLabel),
+                            String.Format(STR_INDENTATION + "{0} '{1}' records are still referencing it", RefCount, Reference.ThisTableLabel), RefCount));
+                    
+                    NewReferencingDBTable = false;
+                }                
+            }
+            
+            if (MessageDetails.Count > 1) 
+            {
+                for (int Counter = 0; Counter < MessageDetails.Count; Counter++) 
+                {
+                    MessageDetails[Counter] = STR_INDENTATION + STR_BULLET + MessageDetails[Counter].Substring(STR_INDENTATION.Length);
+                    
+                    if (Counter != MessageDetails.Count) 
+                    {
+                        MessageDetails[Counter] += MessageContinuation;
+                    }
+                    
+                    CompleteMessageDetails += MessageDetails[Counter];
+                }    
+            }
+            else
+            {
+                CompleteMessageDetails = MessageDetails[0];
+            }
+            
+            
+            CompleteMessageDetails += ".";
+            
+            foreach (var element in APKInfo) 
+            {
+                KeysAndValueInformation += "        " + element.Key + ": " + element.Value.ToString() + Environment.NewLine;
+            }
+            
+            // Strip off trailing Environment.NewLine
+            KeysAndValueInformation = KeysAndValueInformation.Substring(0, KeysAndValueInformation.Length - Environment.NewLine.Length);
+            
+            CompleteMessageDetails += "\r\n\r\n    " + AThisTableLabel + " code:\r\n" +
+                KeysAndValueInformation;
+            
+            ReturnValue.Add(new TVerificationResult(new TRowReferenceInfo(AThisTable, AThisTableLabel, APKInfo, OtherTableRefs),
+                MessageHeader + CompleteMessageDetails, CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED,  
+                AResultSeverity, VerificationRunGuid));
+
+            return ReturnValue;
+        }
+        
         #endregion CalledByORMGenerateCode
+    }
+    
+    /// <summary>
+    /// Data Class that holds information about DB Rows referencing another DB Row.
+    /// </summary>
+    [Serializable()]
+    public class TRowReferenceInfo
+    {
+        private string FThisTable = String.Empty;
+        private string FThisTableLabel = String.Empty;
+        private Dictionary<string, object> FPKInfo;
+        private List<TRowReferenceInfo> FOtherTableRefs = null;
+        private long FReferenceCount = 0;
+        [NonSerialized]
+        private DataRow FDataRow = null;
+        private object[] FDataRowContents;
+        
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="AThisTable">Name of the DB Table (as in the DB) that holds the DB Row in question.</param>
+        /// <param name="AThisTableLabel">Label (='friendly name') of the DB Table that holds the DB Row in question.</param>
+        /// <param name="AOtherTableRefs">References to the DB Row in question.</param>
+        public TRowReferenceInfo(string AThisTable, string AThisTableLabel, Dictionary<string, object> APKInfo, List<TRowReferenceInfo> AOtherTableRefs)
+        {
+            FThisTable = AThisTable;
+            FThisTableLabel = AThisTableLabel;
+            FOtherTableRefs = AOtherTableRefs;
+            FPKInfo = APKInfo;
+            FReferenceCount = 1;
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="AThisTable">Name of the DB Table (as in the DB) that holds the DB Row in question.</param>
+        /// <param name="AThisTableLabel">Label (='friendly name') of the DB Table that holds the DB Row in question.</param>
+        /// <param name="AReferenceCount">References count.</param>
+        /// <param name="ADataRow">Referencing DataRow.</param>
+        public TRowReferenceInfo(string AThisTable, string AThisTableLabel, long AReferenceCount, DataRow ADataRow)
+        {
+            FThisTable = AThisTable;
+            FThisTableLabel = AThisTableLabel;
+            FReferenceCount = AReferenceCount;
+            FDataRow = ADataRow;
+            FDataRowContents = DataUtilities.GetPKValuesFromDataRow(FDataRow);
+        }
+                
+        public string ThisTable 
+        {
+            get 
+            {
+                return FThisTable; 
+            }
+        }
+
+        public string ThisTableLabel 
+        {
+            get 
+            { 
+                return FThisTableLabel; 
+            }
+        }
+
+        public Dictionary<string, object> PKInfo
+        {
+            get
+            {
+                return FPKInfo;
+            }
+        }
+        
+        public long ReferenceCount 
+        {
+            get 
+            { 
+                return FReferenceCount; 
+            }
+        }
+
+        public List<TRowReferenceInfo> OtherTableRefs
+        {
+            get
+            {
+                return FOtherTableRefs;
+            }
+        }
+        
+        public DataRow DataRow 
+        {
+            get 
+            { 
+                return FDataRow; 
+            }
+        }
+        
+        public object[] DataRowContents
+        {
+            get
+            {
+                return FDataRowContents;
+            }
+        }
     }
 }

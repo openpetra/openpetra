@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 
 namespace Ict.Petra.Shared
@@ -71,7 +72,10 @@ namespace Ict.Petra.Shared
 
                 if (VerificationResultEntry.ResultContext != null)
                 {
-                    ReturnValue += "[" + VerificationResultEntry.ResultContext.ToString() + "] ";
+                    if (!(VerificationResultEntry.ResultContext is TRowReferenceInfo)) 
+                    {
+                        ReturnValue += "[" + VerificationResultEntry.ResultContext.ToString() + "] ";    
+                    }                    
                 }
 
                 ReturnValue += VerificationResultEntry.ResultText;
