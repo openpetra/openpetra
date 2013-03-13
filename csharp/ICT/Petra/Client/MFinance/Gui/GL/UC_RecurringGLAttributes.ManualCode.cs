@@ -145,6 +145,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Unload the currently loaded attributes
+        /// </summary>
+        public void UnloadAttributes()
+        {
+            if (FMainDS.ARecurringTransAnalAttrib.DefaultView.Count > 0)
+            {
+                FMainDS.ARecurringTransAnalAttrib.Clear();
+                grdDetails.DataSource = null;
+            }
+
+            FPreviouslySelectedDetailRow = null;
+            FLedgerNumber = -1;
+            FBatchNumber = -1;
+            FJournalNumber = -1;
+            FTransactionNumber = -1;
+            FPetraUtilsObject.HasChanges = false;
+        }
+
+        /// <summary>
         /// get the details of the current journal
         /// </summary>
         /// <returns></returns>

@@ -74,11 +74,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
             ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
 
-        private string JournalRowFilter = "(" + AJournalTable.GetTransactionCurrencyDBName() + " = '{0}' OR " +
-                                          AJournalTable.GetTransactionCurrencyDBName() + " = '{1}') AND " +
-                                          AJournalTable.GetDateEffectiveDBName() + " >= #{2}# AND " +
-                                          AJournalTable.GetExchangeRateToBaseDBName() + " = {3} AND " +
-                                          AJournalTable.GetJournalStatusDBName() + " = '{4}'";
         private string JournalRowFilterRange = "(" + AJournalTable.GetTransactionCurrencyDBName() + " = '{0}' OR " +
                                                AJournalTable.GetTransactionCurrencyDBName() + " = '{1}') AND " +
                                                AJournalTable.GetDateEffectiveDBName() + " >= #{2}# AND " +

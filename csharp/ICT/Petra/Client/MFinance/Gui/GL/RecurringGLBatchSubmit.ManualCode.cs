@@ -57,8 +57,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Boolean FResult;
         private GLBatchTDS FMainDS;
         private Int32 FLedgerNumber;
-        private Int32 FBatchNumber;
-        private Int32 FJournalNumber;
+        //private Int32 FBatchNumber;
+        //private Int32 FJournalNumber;
         private ARecurringBatchRow batchRow;
         private ARecurringJournalRow journalRow;
 
@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             set
             {
                 batchRow = value;
-                FBatchNumber = batchRow.BatchNumber;
+                //FBatchNumber = batchRow.BatchNumber;
 
                 txtExchangeRateToBase.BackColor = Color.Empty;
 
@@ -105,8 +105,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         "Submit recurring Batch {0} - Journal {1}"), journalRow.BatchNumber, journalRow.JournalNumber);
                 lblExchangeRateToBase.Text = String.Format(Catalog.GetString("Exchange Rate for Journal {0}:"), journalRow.JournalNumber);
 
-                FBatchNumber = journalRow.BatchNumber;
-                FJournalNumber = journalRow.JournalNumber;
+//                FBatchNumber = journalRow.BatchNumber;
+//                FJournalNumber = journalRow.JournalNumber;
                 txtExchangeRateToBase.Text = TExchangeRateCache.GetDailyExchangeRate(
                     FMainDS.ALedger[0].BaseCurrency,
                     journalRow.TransactionCurrency,
