@@ -29,8 +29,10 @@ using System.Xml;
 using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Shared.MCommon.Validation;
@@ -88,6 +90,30 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
             TSharedValidation_CacheableDataTables.ValidatePositions(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+        }
+        
+        private void DeleteRecord(Object sender, EventArgs e)
+        {
+            TVerificationResultCollection VerificationResults;
+
+            int Count = TRemote.MPersonnel.Unit.Cacheable.WebConnectors.GetCacheableRecordReferenceCount(
+                TCacheableUnitTablesEnum.PositionList, DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow), 
+                out VerificationResults);
+            
+            MessageBox.Show("Delete: reference count = " + Count.ToString());
+            
+            if ((VerificationResults != null)
+                && (VerificationResults.Count > 0))
+            {
+                MessageBox.Show(Messages.BuildMessageFromVerificationResult(
+                        Catalog.GetString("Record cannot be deleted!\r\n") +
+                        Catalog.GetPluralString("Reason:", "Reasons:", VerificationResults.Count),
+                        VerificationResults), Catalog.GetString("Record Deletion"));
+            }
+            else
+            {
+                MessageBox.Show("No references pointing to Row, delete can go ahead!");
+            }
         }
     }
 }

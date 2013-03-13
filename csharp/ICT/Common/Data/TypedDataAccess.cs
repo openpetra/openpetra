@@ -2293,7 +2293,7 @@ namespace Ict.Common.Data
         /// that gets added to the return value. (Default=<see cref="TResultSeverity.Resv_Critical" />.)</param>
         /// <returns>A <see cref="TVerificationResultCollection" /> containing a single <see cref="TVerificationResult "/> that contains information
         /// about DB Table references created by a cascading count Method.</returns>
-        public static TVerificationResultCollection BuildVerificationResultCollectionFromRefTables(string AThisTable, string AThisTableLabel, Dictionary<string, object> APKInfo, List<TRowReferenceInfo>AReferences,
+        public static TVerificationResultCollection BuildVerificationResultCollectionFromRefTables(string AThisTable, string AThisTableLabel, Dictionary<string, object> APKInfo, List<TRowReferenceInfo> AReferences,
             TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
         {
             const string STR_INDENTATION = "    ";
@@ -2305,30 +2305,43 @@ namespace Ict.Common.Data
             string CompleteMessageDetails = String.Empty;
             string MessageContinuation = Catalog.GetString("  and\r\n");
             string KeysAndValueInformation = String.Empty;
-            
+            TRowReferenceInfo CurrentReference;
+            List<TRowReferenceInfo> ConsolidatedReferences = new List<TRowReferenceInfo>();
             string LastReferencingDBTable = String.Empty;
             bool NewReferencingDBTable = false;
             int RefCount = 0;
-            List<TRowReferenceInfo> OtherTableRefs = new List<TRowReferenceInfo>();
+
+            
+            if (AReferences.Count == 0) 
+            {
+                return null;    
+            }
+            
+            CurrentReference = AReferences[0];
             
             foreach (var Reference in AReferences) 
             {      
-                OtherTableRefs.Add(Reference);
-
                 if ((LastReferencingDBTable != String.Empty)
                     && (Reference.ThisTable != LastReferencingDBTable))
-                {
+                {                       
                     RefCount = 0;
-                    NewReferencingDBTable = true;
+                    NewReferencingDBTable = true;                    
                 }
                 else
                 {
-                    RefCount++;
+                    RefCount++;                   
                 }
                 
                 if ((NewReferencingDBTable) 
                     || (RefCount == AReferences.Count))
                 {
+                    CurrentReference.SetReferenceCount(RefCount);
+                    // The last instance of AReferences for a DB Table will hold the PKInfo, set it on CurrentReference accordingly
+                    CurrentReference.SetPKInfo(Reference.PKInfo);
+                    CurrentReference.PopulatePKInfoDataFromDataRow();
+                    ConsolidatedReferences.Add(CurrentReference);
+                    
+                    CurrentReference = Reference;
                     
                     MessageDetails.Add(Catalog.GetPluralString(
                             String.Format(STR_INDENTATION + "a '{0}' record is still referencing it", Reference.ThisTableLabel),
@@ -2371,7 +2384,7 @@ namespace Ict.Common.Data
             CompleteMessageDetails += "\r\n\r\n    " + AThisTableLabel + " code:\r\n" +
                 KeysAndValueInformation;
             
-            ReturnValue.Add(new TVerificationResult(new TRowReferenceInfo(AThisTable, AThisTableLabel, APKInfo, OtherTableRefs),
+            ReturnValue.Add(new TVerificationResult(new TRowReferenceInfo(AThisTable, AThisTableLabel, APKInfo, ConsolidatedReferences),
                 MessageHeader + CompleteMessageDetails, CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED,  
                 AResultSeverity, VerificationRunGuid));
 
@@ -2510,6 +2523,45 @@ namespace Ict.Common.Data
             {
                 return FDataRowContents;
             }
+        }
+        
+        /// <summary>
+        /// Allows the setting of the <see cref="ReferenceCount" /> Property. Introduced so that the 
+        /// <see cref="ReferenceCount" /> Property can stay read-only, which it should be.
+        /// </summary>
+        /// <param name="AReferenceCount">Reference Count.</param>
+        public void SetReferenceCount(long AReferenceCount)
+        {
+            FReferenceCount = AReferenceCount;
+        }
+        
+        /// <summary>
+        /// Allows the setting of the <see cref="PKInfo" /> Property. Introduced so that the 
+        /// <see cref="PKInfo" /> Property can stay read-only, which it should be.
+        /// </summary>
+        /// <param name="APKInfo">See <see cref="PKInfo" /> Property.</param>
+        public void SetPKInfo(Dictionary<string, object> APKInfo)
+        {
+            FPKInfo = APKInfo;
+        }
+        
+        /// <summary>
+        /// Populates missing data in the Value part of the <see cref="PKInfo" /> Property from
+        /// the data in the <see cref="DataRow" /> (which must contain only Primary Key data for this
+        /// to work).
+        /// </summary>
+        public void PopulatePKInfoDataFromDataRow()
+        {
+            Dictionary<string, object> PKInfoNew = new Dictionary<string, object>(FPKInfo.Count);
+            int Counter = 0;
+            
+            foreach (var SinglePKInfo in FPKInfo) 
+            {
+                PKInfoNew.Add(SinglePKInfo.Key, FDataRow[Counter]);
+                Counter++;
+            }
+            
+            FPKInfo = PKInfoNew;
         }
     }
 }

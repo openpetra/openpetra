@@ -63,6 +63,8 @@ public class {#TABLENAME}Cascading : TTypedDataAccess
 
 {#IFDEF COUNTBYPRIMARYKEYCASCADING}
         int countRow;
+        int SingleTableReferences = 0;
+        Dictionary<string, object> PKInfo = null;
 
         if ((AWithCascCount == true))
         {
@@ -160,29 +162,30 @@ for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow =
 }
 
 {##COUNTBYPRIMARYKEYCASCADING}
+SingleTableReferences = 0;
 {#OTHERTABLENAME}Table {#MYOTHERTABLENAME}Table = {#OTHERTABLENAME}Access.Load{#VIAPROCEDURENAME}({#ACTUALPARAMETERSPRIMARYKEY}, StringHelper.StrSplit("{#CSVLISTOTHERPRIMARYKEYFIELDS}", ","), ATransaction);
 for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow = (countRow + 1))
 {
-{#IFDEF OTHERTABLEALSOCASCADING}
-    OverallReferences += {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount, ref AReferences);
-{#ENDIF OTHERTABLEALSOCASCADING}
-{#IFNDEF OTHERTABLEALSOCASCADING}
-    OverallReferences += {#OTHERTABLENAME}Access.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction);
-{#ENDIFN OTHERTABLEALSOCASCADING}
+    SingleTableReferences += {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount, ref AReferences);
+}
+if(SingleTableReferences > 0)
+{
+    OverallReferences += SingleTableReferences;
+
+    // Create Primary Key information for that referencing DB Table once and add it to last instance of AReferences - that will have been added in the for loop
+    PKInfo = new Dictionary<string, object>({#PRIMARYKEYCOLUMNCOUNT2});
+    {#PRIMARYKEYINFODICTBUILDING2}
+    
+    AReferences[AReferences.Count - 1].SetPKInfo(PKInfo);
 }
 
 {##COUNTBYTEMPLATECASCADING}
 {#OTHERTABLENAME}Table {#MYOTHERTABLENAME}Table = {#OTHERTABLENAME}Access.Load{#VIAPROCEDURENAME}Template(ATemplateRow, StringHelper.StrSplit("{#CSVLISTOTHERPRIMARYKEYFIELDS}", ","), ATransaction);
 for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow = (countRow + 1))
 {
-{#IFDEF OTHERTABLEALSOCASCADING}
     SingleTableReferences = {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount, ref AReferences);
     AReferences.Add(new TRowReferenceInfo("#OTHERTABLENAME", "{#OTHERTABLELABEL}", SingleTableReferences, {#MYOTHERTABLENAME}Table[countRow]));
     OverallReferences += SingleTableReferences;
-{#ENDIF OTHERTABLEALSOCASCADING}
-{#IFNDEF OTHERTABLEALSOCASCADING}
-    OverallReferences += {#OTHERTABLENAME}Access.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction);
-{#ENDIFN OTHERTABLEALSOCASCADING}
 }
 
 {##PRIMARYKEYINFODICTBUILDING}
