@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public GLSetupTDS CacheDS {
             get
             {
-                checkFCacheInitialised(); return FCacheDS;
+                CheckFCacheInitialised(); return FCacheDS;
             }
         }
         private void InitializeManualCode()
@@ -80,11 +80,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATransactionNumber"></param>
         public void LoadAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
         {
-            if ((FBatchNumber != -1)
-                && (FPreviouslySelectedDetailRow != null)
-                && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
+            //Check if the same batch and journal is selected, so no need to apply filter
+        	if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
+                && (FTransactionNumber == ATransactionNumber) && (FMainDS.ATransAnalAttrib.DefaultView.Count > 0))
             {
                 GetDataFromControls();
+                return;
             }
 
             FLedgerNumber = ALedgerNumber;
@@ -93,55 +94,53 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FTransactionNumber = ATransactionNumber;
             FPreviouslySelectedDetailRow = null;
 
-            DataView view = new DataView(FMainDS.ARecurringTransAnalAttrib);
-            view.RowStateFilter = DataViewRowState.CurrentRows | DataViewRowState.Deleted;
+            if (!cmbDetailAnalysisAttributeValue.Enabled)
+            {
+                cmbDetailAnalysisAttributeValue.Enabled = true;
+            }
 
             // only load from server if there are no attributes loaded yet for this journal
             // otherwise we would overwrite attributes that have already been modified
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ARecurringTransactionTable.TableId), ',');
 
-            if (view.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber, FTransactionNumber }) == -1)
+            FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
+            FMainDS.ARecurringTransAnalAttrib.DefaultView.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(
+                    ARecurringTransactionTable.TableId), ',');
+
+            if (FMainDS.ARecurringTransAnalAttrib.DefaultView.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber, FTransactionNumber }) == -1)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber,
-                        ATransactionNumber));
+                FMainDS.ARecurringTransAnalAttrib.Clear();
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber));
             }
 
-            // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
-            // bool ActiveOnly = this.Enabled;
-            // TFinanceControls.InitialiseValuesList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
+            CheckFCacheInitialised();
 
-            // do no longer call ShowData but instead use the code below
-            //ShowData();
+            FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                FBatchNumber,
+                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                FJournalNumber,
+                ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                FTransactionNumber);
 
-            // the following code represents what usually happens inside ShowData. Need manual code here since
-            // the view does not show all records but only filtered one (filter by transaction)
-            FPetraUtilsObject.DisableDataChangedEvent();
-            pnlDetails.Enabled = false;
-            ShowDataManual();
+            FMainDS.ARecurringTransAnalAttrib.DefaultView.Sort = String.Format("{0} ASC",
+                ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName()
+                );
 
-            if (FMainDS.ARecurringTransAnalAttrib != null)
+            grdDetails.DataSource = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransAnalAttrib.DefaultView);
+
+            FMainDS.ARecurringTransAnalAttrib.DefaultView.AllowNew = false;
+
+            if (FMainDS.ARecurringTransAnalAttrib.DefaultView.Count > 0)
             {
-                // set a row filter to make sure only records belonging to this transaction are shown
-                view.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
-                    ARecurringTransAnalAttribTable.GetLedgerNumberDBName(), FLedgerNumber,
-                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(), FBatchNumber,
-                    ARecurringTransAnalAttribTable.GetJournalNumberDBName(), FJournalNumber,
-                    ARecurringTransAnalAttribTable.GetTransactionNumberDBName(), FTransactionNumber);
-                view.AllowNew = false;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(view);
-
-                if (view.Count > 0)
-                {
-                    SelectRowInGrid(1);
-                    pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
-                }
-                else
-                {
-//                    show
-                }
+                SelectRowInGrid(1);
+                pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
+                UpdateLabels();
             }
-
-            FPetraUtilsObject.EnableDataChangedEvent();
+            else
+            {
+                ClearControls();
+            }
         }
 
         /// <summary>
@@ -163,6 +162,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject.HasChanges = false;
         }
 
+        private void UpdateLabels()
+        {
+            txtLedgerNumber.Text = FLedgerNumber.ToString();
+            txtBatchNumber.Text = FBatchNumber.ToString();
+            txtJournalNumber.Text = FJournalNumber.ToString();
+            txtTransactionNumber.Text = FTransactionNumber.ToString();
+        }
+
+        private void ClearControls()
+        {
+            FPetraUtilsObject.DisableDataChangedEvent();
+            txtLedgerNumber.Clear();
+            txtBatchNumber.Clear();
+            txtJournalNumber.Clear();
+            txtTransactionNumber.Clear();
+            txtReadonlyAnalysisTypeCode.Clear();
+            txtReadonlyDescription.Clear();
+            cmbDetailAnalysisAttributeValue.Enabled = false;
+            FPetraUtilsObject.EnableDataChangedEvent();
+        }
+
         /// <summary>
         /// get the details of the current journal
         /// </summary>
@@ -181,6 +201,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             return (ARecurringTransactionRow)FMainDS.ARecurringTransaction.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber,
                                                                                                     FTransactionNumber });
+        }
+
+        /// <summary>
+        /// Return the FMainDS dataset
+        /// </summary>
+        public Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS GetRecurringAttributesDataSet()
+        {
+            return FMainDS;
         }
 
         /// <summary>
@@ -232,10 +260,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtReadonlyDescription.Text = "";
             cmbDetailAnalysisAttributeValue.SetSelectedString("");
 
-            checkFCacheInitialised();
+            CheckFCacheInitialised();
         }
 
-        void checkFCacheInitialised()
+        void CheckFCacheInitialised()
         {
             if ((FCacheDS == null) && (FLedgerNumber >= 0))
             {
@@ -267,8 +295,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             txtReadonlyAnalysisTypeCode.Text = ARow.AnalysisTypeCode;
-            AAnalysisTypeRow ATRow = (AAnalysisTypeRow)FCacheDS.AAnalysisType.Rows.Find(new Object[] { ARow.AnalysisTypeCode });
-            txtReadonlyDescription.Text = ATRow.AnalysisTypeDescription;
+            AAnalysisTypeRow analysisTypeRow = (AAnalysisTypeRow)FCacheDS.AAnalysisType.Rows.Find(new Object[] { ARow.AnalysisTypeCode });
+            txtReadonlyDescription.Text = analysisTypeRow.AnalysisTypeDescription;
 
             if ((ARow.AnalysisAttributeValue != null) && (ARow.AnalysisAttributeValue.Length > 0))
             {
@@ -292,127 +320,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// check if the necessary rows for the given account are there, automatically add/delete rows, update account in my table
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        /// <param name="ATransactionNumber"></param>
-        /// <param name="AAccount">Account Number for AnalysisTable lookup</param>
-        public void CheckAnalysisAttributes(int ALedgerNumber, int ABatchNumber, int AJournalNumber,
-            int ATransactionNumber, String AAccount)
-        {
-            //grdDetails
-            checkFCacheInitialised();
-
-            if (FCacheDS == null)
-            {
-                return;
-            }
-
-            if (FPetraUtilsObject.SuppressChangeDetection)
-            {
-                return;
-            }
-
-            DataView ANView = FCacheDS.AAnalysisAttribute.DefaultView;
-            ANView.RowFilter = String.Format("{0} = '{1}'",
-                AAnalysisAttributeTable.GetAccountCodeDBName(),
-                AAccount);
-            int i = 0;
-
-            while (i < ANView.Count)
-            {
-                AAnalysisAttributeRow myRow = (AAnalysisAttributeRow)ANView[i].Row;
-                String TypeCode = myRow.AnalysisTypeCode;
-
-                ARecurringTransAnalAttribRow myTableRow =
-                    (ARecurringTransAnalAttribRow)FMainDS.ARecurringTransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber,
-                                                                                                             AJournalNumber,
-                                                                                                             ATransactionNumber,
-                                                                                                             TypeCode });
-
-                if (myTableRow == null)
-                {
-                    //Create a new TypeCode for this account
-                    ARecurringTransAnalAttribRow newRow = FMainDS.ARecurringTransAnalAttrib.NewRowTyped(true);
-                    newRow.LedgerNumber = ALedgerNumber;
-                    newRow.BatchNumber = ABatchNumber;
-                    newRow.JournalNumber = AJournalNumber;
-                    newRow.TransactionNumber = ATransactionNumber;
-                    newRow.AnalysisTypeCode = TypeCode;
-                    newRow.AccountCode = AAccount;
-
-                    FMainDS.ARecurringTransAnalAttrib.Rows.InsertAt(newRow, FMainDS.ARecurringTransAnalAttrib.Rows.Count);
-                    //Debug.WriteLine("Produced TransAnalAttrib with tn:"+FTransactionNumber+" and Ac:"+ AAccount);
-                    FPetraUtilsObject.SetChangedFlag();
-                    //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
-                    grdDetails.Refresh();
-
-                    SelectDetailRowByDataTableIndex(FMainDS.ARecurringTransAnalAttrib.Rows.Count - 1);
-                }
-                else
-                {
-                    myTableRow.AccountCode = AAccount;
-                }
-
-                i++;
-            }
-
-            // search for unnecessary elements
-            i = FMainDS.ARecurringTransAnalAttrib.Rows.Count - 1;
-
-            while (i >= 0)
-            {
-                ARecurringTransAnalAttribRow checkRow = (ARecurringTransAnalAttribRow)FMainDS.ARecurringTransAnalAttrib.Rows[i];
-
-                if ((checkRow.RowState != DataRowState.Deleted)
-                    && (checkRow.TransactionNumber == FTransactionNumber)
-                    && (checkRow.BatchNumber == FBatchNumber)
-                    && (checkRow.LedgerNumber == FLedgerNumber))
-                {
-                    AAnalysisAttributeRow attRow =
-                        (AAnalysisAttributeRow)FCacheDS.AAnalysisAttribute.Rows.Find(new Object[] { checkRow.LedgerNumber, checkRow.AnalysisTypeCode,
-                                                                                                    AAccount });
-
-                    if (!checkRow.AccountCode.Equals(AAccount) || (attRow == null))
-                    {
-                        int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
-
-                        if (checkRow.RowState == DataRowState.Added)
-                        {
-                            //Debug.WriteLine("Removed row at#"+i+" with tn:"+FTransactionNumber+" and Ac:"+ AAccount);
-                            FMainDS.ARecurringTransAnalAttrib.Rows.RemoveAt(i);
-                        }
-                        else
-                        {
-                            //Debug.WriteLine("Deleted row at#"+i+" with tn:"+FTransactionNumber+" and Ac:"+ AAccount);
-                            checkRow.Delete();
-                        }
-
-                        if (rowIndex == grdDetails.Rows.Count)
-                        {
-                            rowIndex--;
-                        }
-
-                        if (grdDetails.Rows.Count > 1)
-                        {
-                            grdDetails.Selection.SelectRow(rowIndex, true);
-                            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                            ShowDetails(FPreviouslySelectedDetailRow);
-                        }
-                        else
-                        {
-                            FPreviouslySelectedDetailRow = null;
-                        }
-                    }
-                }
-
-                i--;
-            }
-        }
-
-        /// <summary>
         /// clear the current selection
         /// </summary>
         public void ClearCurrentSelection()
@@ -425,23 +332,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void ValueChanged(object sender, EventArgs e)
         {
-            Object sio = cmbDetailAnalysisAttributeValue.SelectedItem;
-            int si = cmbDetailAnalysisAttributeValue.SelectedIndex;
+            Object selectedItem = cmbDetailAnalysisAttributeValue.SelectedItem;
+            int selectedIndex = cmbDetailAnalysisAttributeValue.SelectedIndex;
 
-            if ((si < 0) || (sio == null))
+            if ((selectedIndex < 0) || (selectedItem == null))
             {
                 return;
             }
 
-            AFreeformAnalysisRow afaRow = null;
-            String v = sio.ToString();
+            AFreeformAnalysisRow freeFormAnalRow = null;
+            String selectedItemString = selectedItem.ToString();
             bool AccessOk = false;
             try
             {
                 Object[] PrimaryKey = new Object[] {
-                    FLedgerNumber, txtReadonlyAnalysisTypeCode.Text, v
+                    FLedgerNumber, txtReadonlyAnalysisTypeCode.Text, selectedItemString
                 };
-                afaRow = (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(PrimaryKey);
+                freeFormAnalRow = (AFreeformAnalysisRow)FCacheDS.AFreeformAnalysis.Rows.Find(PrimaryKey);
                 AccessOk = true;
             }
             catch (Exception)
@@ -451,7 +358,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (AccessOk)
             {
-                if (afaRow.Active)
+                if (freeFormAnalRow.Active)
                 {
                     cmbDetailAnalysisAttributeValue.ForeColor = System.Drawing.Color.Black;
                     cmbDetailAnalysisAttributeValue.Font = System.Windows.Forms.Control.DefaultFont;

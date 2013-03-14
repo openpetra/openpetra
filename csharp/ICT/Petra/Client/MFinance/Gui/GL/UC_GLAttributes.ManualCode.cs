@@ -101,9 +101,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 cmbDetailAnalysisAttributeValue.Enabled = true;
             }
 
-            //DataView view = new DataView(FMainDS.ATransAnalAttrib);
-            //view.RowStateFilter = DataViewRowState.CurrentRows | DataViewRowState.Deleted;
-
             // only load from server if there are no attributes loaded yet for this journal
             // otherwise we would overwrite attributes that have already been modified
             FMainDS.ATransAnalAttrib.DefaultView.RowFilter = string.Empty;
@@ -147,6 +144,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        /// <summary>
+        /// Unload the currently loaded attributes
+        /// </summary>
+        public void UnloadAttributes()
+        {
+            if (FMainDS.ATransAnalAttrib.DefaultView.Count > 0)
+            {
+                FMainDS.ATransAnalAttrib.Clear();
+                grdDetails.DataSource = null;
+            }
+
+            FPreviouslySelectedDetailRow = null;
+            FLedgerNumber = -1;
+            FBatchNumber = -1;
+            FJournalNumber = -1;
+            FTransactionNumber = -1;
+            FPetraUtilsObject.HasChanges = false;
+        }
+
         private void UpdateLabels()
         {
             txtLedgerNumber.Text = FLedgerNumber.ToString();
@@ -166,25 +182,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtReadonlyDescription.Clear();
             cmbDetailAnalysisAttributeValue.Enabled = false;
             FPetraUtilsObject.EnableDataChangedEvent();
-        }
-
-        /// <summary>
-        /// Unload the currently loaded attributes
-        /// </summary>
-        public void UnloadAttributes()
-        {
-            if (FMainDS.ATransAnalAttrib.DefaultView.Count > 0)
-            {
-                FMainDS.ATransAnalAttrib.Clear();
-                grdDetails.DataSource = null;
-            }
-
-            FPreviouslySelectedDetailRow = null;
-            FLedgerNumber = -1;
-            FBatchNumber = -1;
-            FJournalNumber = -1;
-            FTransactionNumber = -1;
-            FPetraUtilsObject.HasChanges = false;
         }
 
         /// <summary>
@@ -320,79 +317,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void GetDetailDataFromControlsManual(ATransAnalAttribRow ARow)
         {
             //needed?
-        }
-
-        /// <summary>
-        /// check if the necessary rows for the given account are there, automatically add/delete rows, update account
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        public void CheckAnalysisAttributes(int ALedgerNumber, int ABatchNumber, int AJournalNumber)
-        {
-            GLSetupTDS glSetupCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(ALedgerNumber);
-
-            //Account Number for AnalysisTable lookup
-            int currentTransactionNumber = 0;
-            string currentAccountCode = String.Empty;
-
-            if (glSetupCacheDS == null)
-            {
-                return;
-            }
-
-            //Load all
-            DataView allTransView = FMainDS.ATransaction.DefaultView;
-
-            allTransView.RowFilter = String.Format("{0}={1} and {2}={3}",
-                ATransactionTable.GetBatchNumberDBName(),
-                ABatchNumber,
-                ATransactionTable.GetJournalNumberDBName(),
-                AJournalNumber);
-
-            foreach (DataRowView transRowView in allTransView)
-            {
-                ATransactionRow tr = (ATransactionRow)transRowView.Row;
-
-                currentAccountCode = tr.AccountCode;
-
-                //Retrieve the analysis attributes for the supplied account
-                DataView analAttrView = glSetupCacheDS.AAnalysisAttribute.DefaultView;
-                analAttrView.RowFilter = String.Format("{0} = '{1}'",
-                    AAnalysisAttributeTable.GetAccountCodeDBName(),
-                    currentAccountCode);
-
-                for (int i = 0; i < analAttrView.Count; i++)
-                {
-                    //Read the Type Code for each attribute row
-                    AAnalysisAttributeRow analAttrRow = (AAnalysisAttributeRow)analAttrView[i].Row;
-                    string analysisTypeCode = analAttrRow.AnalysisTypeCode;
-
-                    //Check if the attribute type code exists in the Transaction Analysis Attributes table
-                    ATransAnalAttribRow transAnalAttrRow =
-                        (ATransAnalAttribRow)FMainDS.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber,
-                                                                                               currentTransactionNumber,
-                                                                                               analysisTypeCode });
-
-                    if (transAnalAttrRow == null)
-                    {
-                        //Create a new TypeCode for this account
-                        ATransAnalAttribRow newRow = FMainDS.ATransAnalAttrib.NewRowTyped(true);
-                        newRow.LedgerNumber = ALedgerNumber;
-                        newRow.BatchNumber = ABatchNumber;
-                        newRow.JournalNumber = AJournalNumber;
-                        newRow.TransactionNumber = currentTransactionNumber;
-                        newRow.AnalysisTypeCode = analysisTypeCode;
-                        newRow.AccountCode = currentAccountCode;
-
-                        FMainDS.ATransAnalAttrib.Rows.InsertAt(newRow, FMainDS.ATransAnalAttrib.Rows.Count);
-                    }
-                    else if (transAnalAttrRow.AccountCode != currentAccountCode)
-                    {
-                        transAnalAttrRow.AccountCode = currentAccountCode;
-                    }
-                }
-            }
         }
 
         /// <summary>
