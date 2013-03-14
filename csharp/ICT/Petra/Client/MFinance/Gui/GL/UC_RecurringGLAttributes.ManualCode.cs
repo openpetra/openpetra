@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void LoadAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
         {
             //Check if the same batch and journal is selected, so no need to apply filter
-        	if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
+            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
                 && (FTransactionNumber == ATransactionNumber) && (FMainDS.ATransAnalAttrib.DefaultView.Count > 0))
             {
                 GetDataFromControls();
@@ -106,10 +106,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ARecurringTransAnalAttrib.DefaultView.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(
                     ARecurringTransactionTable.TableId), ',');
 
-            if (FMainDS.ARecurringTransAnalAttrib.DefaultView.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber, FTransactionNumber }) == -1)
+            if (FMainDS.ARecurringTransAnalAttrib.DefaultView.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber,
+                                                                                  FTransactionNumber }) == -1)
             {
                 FMainDS.ARecurringTransAnalAttrib.Clear();
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber,
+                        ATransactionNumber));
             }
 
             CheckFCacheInitialised();

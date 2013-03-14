@@ -172,17 +172,19 @@ namespace Ict.Petra.Server.MFinance.GL
 
             RunPeriodEndCheck(new RunMonthEndChecks(FledgerInfo), verificationResults);
 
-
-            TVerificationResultCollection IchVerificationReults;
-
-            if (!StewardshipCalculationDelegate(ALedgerNumber, FledgerInfo.CurrentPeriod,
-                    out IchVerificationReults))
+            if (!AInfoMode)
             {
-                FHasCriticalErrors = true;
-            }
+                TVerificationResultCollection IchVerificationReults;
 
-            // Merge VerificationResults:
-            verificationResults.AddCollection(IchVerificationReults);
+                if (!StewardshipCalculationDelegate(ALedgerNumber, FledgerInfo.CurrentPeriod,
+                        out IchVerificationReults))
+                {
+                    FHasCriticalErrors = true;
+                }
+
+                // Merge VerificationResults:
+                verificationResults.AddCollection(IchVerificationReults);
+            }
 
             // RunPeriodEndSequence(new RunMonthlyAdminFees(), "Example");
 

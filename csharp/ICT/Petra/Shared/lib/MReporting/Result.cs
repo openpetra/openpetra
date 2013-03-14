@@ -443,13 +443,11 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public Boolean UpdateRow(int masterRow, int childRow, TVariant[] column)
         {
-            int i;
-
             foreach (TResult element in results)
             {
                 if ((element.masterRow == masterRow) && (element.childRow == childRow))
                 {
-                    for (i = 0; i <= column.Length - 1; i += 1)
+                    for (int i = 0; i <= column.Length - 1; i++)
                     {
                         element.column[i] = new TVariant(column[i]);
                     }
@@ -468,39 +466,30 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns></returns>
         public int GetDeepestVisibleLevel(int AMasterRow)
         {
-            TResult element;
-            int deepest;
-            int depth;
-            ArrayList children;
-
-            deepest = 0;
+            int deepest = 0;
 
             // need to go recursive, because the display variable on a higher level can hide all the leafs, even if they have display value true
             // solves bug http:bugs.om.org/petra/show_bug.cgi?id=678
             if ((!HasChildRows(AMasterRow)))
             {
-                element = GetRow(AMasterRow);
+                TResult element = GetRow(AMasterRow);
 
                 if (element != null)
                 {
                     deepest = element.depth;
                 }
-                else
-                {
-                    deepest = 0;
-                }
             }
             else
             {
                 // recursively search the branch that starts with the given element
-                children = new ArrayList();
+                ArrayList children = new ArrayList();
                 GetChildRows(AMasterRow, ref children);
 
                 foreach (TResult element2 in children)
                 {
                     if (element2.display)
                     {
-                        depth = GetDeepestVisibleLevel(element2.childRow);
+                        int depth = GetDeepestVisibleLevel(element2.childRow);
 
                         if (depth > deepest)
                         {
@@ -529,24 +518,15 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public Boolean SortChildren()
         {
-            Boolean ReturnValue;
-            int i;
-            int j;
-            int left;
-            int right;
-            TResult tempRow;
-            TResult previous;
-            TResult current;
+            int left = 0;
+            int right = results.Count - 1;
 
-            ReturnValue = true;
-            left = 0;
-            right = results.Count - 1;
-
-            for (i = left + 1; i <= right; i += 1)
+            for (int i = left + 1; i <= right; i += 1)
             {
-                j = i;
-                current = (TResult)results[j];
-                tempRow = new TResult(current);
+                int j = i;
+                TResult current = (TResult)results[j];
+                TResult tempRow = new TResult(current);
+                TResult previous;
 
                 if (j > left)
                 {
@@ -577,7 +557,7 @@ namespace Ict.Petra.Shared.MReporting
                 current.Assign(tempRow);
             }
 
-            return ReturnValue;
+            return true;
         }
 
         /// <summary>
@@ -587,12 +567,9 @@ namespace Ict.Petra.Shared.MReporting
         /// <param name="masterRow"></param>
         public void CreateSortedListByMaster(ArrayList sortedList, int masterRow)
         {
-            TResult element;
-            int counter;
-
-            for (counter = 0; counter <= results.Count - 1; counter += 1)
+            for (int counter = 0; counter < results.Count; counter++)
             {
-                element = (TResult)results[counter];
+                TResult element = (TResult)results[counter];
 
                 if (element.masterRow == masterRow)
                 {
@@ -610,13 +587,10 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public void WriteBinaryFile(TParameterList AParameters, String AFilename)
         {
-            FileStream fs;
-            BinaryFormatter bf;
-            DataTable dt;
+            DataTable dt = ToDataTable(AParameters);
+            FileStream fs = new FileStream(AFilename, FileMode.Create);
+            BinaryFormatter bf = new BinaryFormatter();
 
-            dt = ToDataTable(AParameters);
-            fs = new FileStream(AFilename, FileMode.Create);
-            bf = new BinaryFormatter();
             bf.Serialize(fs, dt);
 
             dt = AParameters.ToDataTable();
@@ -633,13 +607,9 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public void ReadBinaryFile(String AFilename, out TParameterList AParameters)
         {
-            FileStream fs;
-            BinaryFormatter bf;
-            DataTable dt;
-
-            fs = new FileStream(AFilename, FileMode.Open);
-            bf = new BinaryFormatter();
-            dt = (DataTable)bf.Deserialize(fs);
+            FileStream fs = new FileStream(AFilename, FileMode.Open);
+            BinaryFormatter bf = new BinaryFormatter();
+            DataTable dt = (DataTable)bf.Deserialize(fs);
 
             results = new ArrayList();
             LoadFromDataTable(dt);
@@ -703,13 +673,9 @@ namespace Ict.Petra.Shared.MReporting
         /// </returns>
         public System.Data.DataTable ToDataTable(TParameterList parameters)
         {
-            System.Data.DataTable ReturnValue;
-            System.Data.DataRow row;
-            System.Int32 i;
-            System.Int32 maxColumn;
-            maxColumn = -1; // This causes a crash if it is not overwritten. below.
+            int maxColumn = 0;
 
-            for (i = 0; i <= MaxDisplayColumns - 1; i += 1)
+            for (int i = 0; i < MaxDisplayColumns; i++)
             {
                 if ((!parameters.Get("ColumnWidth", i, -1, eParameterFit.eBestFit).IsNil()))
                 {
@@ -717,7 +683,7 @@ namespace Ict.Petra.Shared.MReporting
                 }
             }
 
-            ReturnValue = new System.Data.DataTable();
+            DataTable ReturnValue = new System.Data.DataTable();
             ReturnValue.Columns.Add(new System.Data.DataColumn("masterRow", typeof(System.Int32)));
             ReturnValue.Columns.Add(new System.Data.DataColumn("childRow", typeof(System.Int32)));
             ReturnValue.Columns.Add(new System.Data.DataColumn("display", typeof(bool)));
@@ -731,14 +697,14 @@ namespace Ict.Petra.Shared.MReporting
             ReturnValue.Columns.Add(new System.Data.DataColumn("descr2", typeof(String)));
             ReturnValue.Columns.Add(new System.Data.DataColumn("maxcolumn", typeof(System.Int32)));
 
-            for (i = 0; i <= maxColumn - 1; i += 1)
+            for (int i = 0; i < maxColumn; i++)
             {
                 ReturnValue.Columns.Add(new System.Data.DataColumn("column" + i.ToString(), typeof(String)));
             }
 
             foreach (TResult element in results)
             {
-                row = ReturnValue.NewRow();
+                DataRow row = ReturnValue.NewRow();
                 row["maxcolumn"] = (System.Object)maxColumn;
                 row["masterRow"] = (System.Object)element.masterRow;
                 row["childRow"] = (System.Object)element.childRow;
@@ -752,7 +718,7 @@ namespace Ict.Petra.Shared.MReporting
                 row["descr1"] = element.descr[0].EncodeToString();
                 row["descr2"] = element.descr[1].EncodeToString();
 
-                for (i = 0; i <= maxColumn - 1; i += 1)
+                for (int i = 0; i < maxColumn; i++)
                 {
                     row["column" + i.ToString()] = element.column[i].EncodeToString();
                 }
@@ -772,24 +738,22 @@ namespace Ict.Petra.Shared.MReporting
         /// </returns>
         public TResultList ConvertToFormattedStrings(TParameterList AParameters, String AOutputType)
         {
-            TResultList ReturnValue;
+            TResultList ReturnValue = new TResultList(this);
             Int32 i;
-
-            ReturnValue = new TResultList(this);
 
             foreach (TResult r in ReturnValue.results)
             {
-                for (i = 0; i <= 1; i += 1)
+                for (i = 0; i <= 1; i++)
                 {
                     r.header[i] = new TVariant(r.header[i].ToFormattedString("", AOutputType));
                 }
 
-                for (i = 0; i <= 1; i += 1)
+                for (i = 0; i <= 1; i++)
                 {
                     r.descr[i] = new TVariant(r.descr[i].ToFormattedString("", AOutputType));
                 }
 
-                for (i = 0; i < r.column.Length; i += 1)
+                for (i = 0; i < r.column.Length; i++)
                 {
                     if (r.column[i].TypeVariant == eVariantTypes.eString)
                     {
@@ -838,7 +802,6 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>true for success</returns>
         public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator, Boolean ADebugging, Boolean AExportOnlyLowestLevel)
         {
-            bool ReturnValue;
             int i;
             string strLine;
             StreamWriter csvStream;
@@ -871,7 +834,6 @@ namespace Ict.Petra.Shared.MReporting
                 }
             }
 
-            ReturnValue = true;
             try
             {
                 // don't append; use the local encoding, e.g. to support Umlauts
@@ -928,7 +890,7 @@ namespace Ict.Petra.Shared.MReporting
 
             useIndented = false;
 
-            for (i = 0; i <= FormattedParameters.Get("lowestLevel").ToInt(); i += 1)
+            for (i = 0; i <= FormattedParameters.Get("lowestLevel").ToInt(); i++)
             {
                 if (FormattedParameters.Exists("indented", ReportingConsts.ALLCOLUMNS, i, eParameterFit.eBestFit))
                 {
@@ -936,7 +898,7 @@ namespace Ict.Petra.Shared.MReporting
                 }
             }
 
-            for (i = 0; i <= MaxDisplayColumns - 1; i += 1)
+            for (i = 0; i < MaxDisplayColumns; i++)
             {
                 if ((!FormattedParameters.Get("ColumnCaption", i, -1, eParameterFit.eBestFit).IsNil()))
                 {
@@ -998,7 +960,7 @@ namespace Ict.Petra.Shared.MReporting
 
                     if (FormattedParameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT1, -1, eParameterFit.eBestFit))
                     {
-                        if (ADebugging == true)
+                        if (ADebugging)
                         {
                             strLine = StringHelper.AddCSV(strLine, element.descr[0].EncodeToString(), separator);
                         }
@@ -1010,7 +972,7 @@ namespace Ict.Petra.Shared.MReporting
 
                     if (FormattedParameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT2, -1, eParameterFit.eBestFit))
                     {
-                        if (ADebugging == true)
+                        if (ADebugging)
                         {
                             strLine = StringHelper.AddCSV(strLine, element.descr[1].EncodeToString(), separator);
                         }
@@ -1022,7 +984,7 @@ namespace Ict.Petra.Shared.MReporting
 
                     if (FormattedParameters.Exists("ControlSource", ReportingConsts.HEADERCOLUMN, -1, eParameterFit.eBestFit))
                     {
-                        if (ADebugging == true)
+                        if (ADebugging)
                         {
                             strLine = StringHelper.AddCSV(strLine, element.header[1].EncodeToString(), separator);
                             strLine = StringHelper.AddCSV(strLine, element.header[0].EncodeToString(), separator);
@@ -1055,11 +1017,11 @@ namespace Ict.Petra.Shared.MReporting
                             strLine = StringHelper.AddCSV(strLine, "", separator);
                         }
 
-                        if (((element.column[i] != null) && (!element.column[i].IsNil())) || (ADebugging == true))
+                        if (((element.column[i] != null) && (!element.column[i].IsNil())) || (ADebugging))
                         {
                             display = true;
 
-                            if (ADebugging == true)
+                            if (ADebugging)
                             {
                                 strLine = StringHelper.AddCSV(strLine, element.column[i].EncodeToString(), separator);
                             }
@@ -1088,7 +1050,7 @@ namespace Ict.Petra.Shared.MReporting
 
             csvStream.Close();
             sortedList = null;
-            return ReturnValue;
+            return true;
         }
 
         /// <summary>
@@ -1159,16 +1121,14 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public Boolean HasColumns(int row)
         {
-            System.Int32 column;
-            TResult element;
-            element = GetRow(row);
+            TResult element = GetRow(row);
 
             if (element == null)
             {
                 return false;
             }
 
-            for (column = 0; column <= MaxDisplayColumns - 1; column += 1)
+            for (int column = 0; column < MaxDisplayColumns; column++)
             {
                 if ((element.column[column] != null) && (!element.column[column].IsZeroOrNull()))
                 {
@@ -1179,8 +1139,6 @@ namespace Ict.Petra.Shared.MReporting
             return false;
         }
 
-        // This function checks if the master has children
-
         /// <summary>
         /// This function checks if the master has children
         ///
@@ -1188,14 +1146,11 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public Boolean HasChildRows(int master)
         {
-            TResult element;
-            int counter;
-
-            counter = 0;
+            int counter = 0;
 
             while (counter < results.Count)
             {
-                element = (TResult)results[counter];
+                TResult element = (TResult)results[counter];
                 counter++;
 
                 if (element.display && (element.masterRow == master))
@@ -1207,8 +1162,6 @@ namespace Ict.Petra.Shared.MReporting
             return false;
         }
 
-        // This function returns the row
-
         /// <summary>
         /// This function returns the row
         ///
@@ -1216,10 +1169,6 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public TResult GetRow(int lineId)
         {
-            TResult ReturnValue;
-
-            ReturnValue = null;
-
             foreach (TResult element in results)
             {
                 if (element.display && (element.childRow == lineId))
@@ -1228,10 +1177,8 @@ namespace Ict.Petra.Shared.MReporting
                 }
             }
 
-            return ReturnValue;
+            return null;
         }
-
-        // This function returns the row
 
         /// <summary>
         /// This function returns the row
@@ -1240,10 +1187,6 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public TResult GetRow(String codeLine)
         {
-            TResult ReturnValue;
-
-            ReturnValue = null;
-
             foreach (TResult element in results)
             {
                 if (element.display && (element.code == codeLine))
@@ -1252,10 +1195,8 @@ namespace Ict.Petra.Shared.MReporting
                 }
             }
 
-            return ReturnValue;
+            return null;
         }
-
-        // This function returns the first child row of the master
 
         /// <summary>
         /// This function returns the first child row of the master
@@ -1264,10 +1205,6 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public TResult GetFirstChildRow(int master)
         {
-            TResult ReturnValue;
-
-            ReturnValue = null;
-
             foreach (TResult element in results)
             {
                 if (element.masterRow == master)
@@ -1276,7 +1213,7 @@ namespace Ict.Petra.Shared.MReporting
                 }
             }
 
-            return ReturnValue;
+            return null;
         }
 
         /// <summary>
@@ -1333,20 +1270,16 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public Boolean HasChildColumns(int master)
         {
-            TResult element;
-            int counter;
-            int i;
-
-            counter = 0;
+            int counter = 0;
 
             while (counter < results.Count)
             {
-                element = (TResult)results[counter];
+                TResult element = (TResult)results[counter];
                 counter++;
 
                 if (element.masterRow == master)
                 {
-                    for (i = 0; i <= MaxDisplayColumns - 1; i += 1)
+                    for (int i = 0; i < MaxDisplayColumns; i++)
                     {
                         if ((element.column[i] != null) && (!element.column[i].IsZeroOrNull()))
                         {
@@ -1363,7 +1296,7 @@ namespace Ict.Petra.Shared.MReporting
         /// the maximum number of displayed columns
         /// </summary>
         /// <returns></returns>
-        public System.Int32 GetMaxDisplayColumns()
+        public int GetMaxDisplayColumns()
         {
             return MaxDisplayColumns;
         }
@@ -1372,7 +1305,7 @@ namespace Ict.Petra.Shared.MReporting
         /// set the maximum number of displayed columns
         /// </summary>
         /// <param name="col"></param>
-        public void SetMaxDisplayColumns(System.Int32 col)
+        public void SetMaxDisplayColumns(int col)
         {
             MaxDisplayColumns = col;
         }

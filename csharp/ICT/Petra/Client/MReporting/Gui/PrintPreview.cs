@@ -73,7 +73,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="duration"></param>
         /// <param name="results"></param>
         /// <param name="parameters"></param>
-        /// <param name="AWrapColumn">true: Wrap the text in the column. False: Cut the text that is to long for the column</param>
+        /// <param name="AWrapColumn">True: Wrap the text in the column. False: Cut the text that is too long for the column</param>
         public TFrmPrintPreview(Form ACallerForm, String caption, TimeSpan duration, TResultList results,
             TParameterList parameters, bool AWrapColumn)
             : base()

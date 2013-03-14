@@ -83,6 +83,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
+        private void ShowDataManual(AApSupplierRow ARow)
+        {
+            //
+            // Correct these bad assignments made by the auto-generated code:
+            //
+            if (ARow.SupplierType == "")
+            {
+                cmbSupplierType.SetSelectedString("NORMAL");
+            }
+
+            if (ARow.PaymentType == "")
+            {
+                cmbDefaultPaymentType.SetSelectedString("Cheque");
+            }
+        }
 
         /// <summary>
         /// called from APMain when adding new supplier;

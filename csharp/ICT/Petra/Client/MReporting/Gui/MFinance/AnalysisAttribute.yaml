@@ -20,11 +20,15 @@
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [uco_GeneralSettings, rgrSorting]
+            Controls: [uco_GeneralSettings, pnlSorting]
         uco_GeneralSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
-            Dock: Top
-        
+            Height:230
+
+        pnlSorting:
+            Controls: [rgrSorting]
+            Height:156
+            Width:616
         rgrSorting:
             ParameterName: param_sortby
             Dock: Top

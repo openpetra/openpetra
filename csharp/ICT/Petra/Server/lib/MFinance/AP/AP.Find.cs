@@ -440,18 +440,24 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <returns></returns>
         private DataRow PrepareDataRow(DataTable ACriteriaTable)
         {
-            try
+            if (!ACriteriaTable.Columns.Contains("PartnerKey"))
             {
                 ACriteriaTable.Columns.Add("PartnerKey", typeof(Int64));
                 ACriteriaTable.Rows[0]["PartnerKey"] = 0;
 
                 // try if this is a partner key
-                Int64 SupplierPartnerKey = Convert.ToInt64(ACriteriaTable.Rows[0]["SupplierId"]);
-                ACriteriaTable.Rows[0]["PartnerKey"] = SupplierPartnerKey;
+
+                if (ACriteriaTable.Columns.Contains("SupplierId"))
+                {
+                    Int64 SupplierPartnerKey;
+
+                    if (Int64.TryParse(ACriteriaTable.Rows[0]["SupplierId"].ToString(), out SupplierPartnerKey))
+                    {
+                        ACriteriaTable.Rows[0]["PartnerKey"] = SupplierPartnerKey;
+                    }
+                }
             }
-            catch (Exception)
-            {
-            }
+
             return ACriteriaTable.Rows[0];
         }
 

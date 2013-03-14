@@ -24,7 +24,8 @@
         uco_GeneralSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
             Dock: Top
-        
+            Height:230
+
         tpgCCAccount:
             Label: Account / CostCentre Settings
             Controls: [uco_AccountCostCentreSettings]

@@ -494,7 +494,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //save the position of the actual row
                 //int rowIndex = CurrentRowIndex();
 
-                if (!TRemote.MFinance.GL.WebConnectors.CancelGLBatch(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
+                if (!TRemote.MFinance.GL.WebConnectors.GLBatchCanBeCancelled(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
                 {
                     string ErrorMessages = String.Empty;
 

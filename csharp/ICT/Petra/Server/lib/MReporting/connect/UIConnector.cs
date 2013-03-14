@@ -31,6 +31,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Server.MReporting.Calculator;
+using Ict.Petra.Server.MReporting.MFinance;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
@@ -78,22 +79,19 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// <returns>void</returns>
         public void Start(System.Data.DataTable AParameters)
         {
-            Thread TheThread;
-            String PathStandardReports;
-            String PathCustomReports;
-
+            TRptUserFunctionsFinance.FlushSqlCache();
             this.FAsyncExecProgress = new TAsynchronousExecutionProgress();
             this.FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Executing;
             FParameterList = new TParameterList();
             FParameterList.LoadFromDataTable(AParameters);
             FSuccess = false;
-            PathStandardReports = TAppSettingsManager.GetValue("Reporting.PathStandardReports");
-            PathCustomReports = TAppSettingsManager.GetValue("Reporting.PathCustomReports");
+            String PathStandardReports = TAppSettingsManager.GetValue("Reporting.PathStandardReports");
+            String PathCustomReports = TAppSettingsManager.GetValue("Reporting.PathCustomReports");
             FDatacalculator = new TRptDataCalculator(DBAccess.GDBAccessObj, PathStandardReports, PathCustomReports);
 
             // setup the logging to go to the FAsyncExecProgress.ProgressInformation
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
-            TheThread = new Thread(new ThreadStart(Run));
+            Thread TheThread = new Thread(new ThreadStart(Run));
             TheThread.Start();
         }
 

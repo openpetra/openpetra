@@ -30,11 +30,11 @@
             ParameterName: param_payment_date_from_i
         dtpPaymentDateTo:
             Label: To date
-            ParameterName: param_payment_dte_to_i
+            ParameterName: param_payment_date_to_i
         txtPaymentNumFrom:
-            Label: From Pymnt#
+            Label: From Payment Num
             ParameterName: param_payment_num_from_i
         txtPaymentNumTo:
-            Label: To Pymnt#
+            Label: To Payment Num
             ParameterName: param_payment_num_to_i
             

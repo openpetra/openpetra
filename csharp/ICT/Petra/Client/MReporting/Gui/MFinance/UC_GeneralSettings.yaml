@@ -5,15 +5,17 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
     FormType: edit
     Template: usercontrolUnbound
-    
+
     Controls:
         pnlContent:
             Controls: [grpLedger, grpCurrency, grpPeriodRange]
         grpLedger:
+            Width: 600
             Label: Ledger Details
             Controls: [txtLedger, cmbAccountHierarchy]
             ControlsOrientation: horizontal
         grpCurrency:
+            Width: 600
             Controls: [cmbCurrency]
         txtLedger: 
             ReadOnly: true
@@ -21,12 +23,15 @@ RootNode:
         cmbAccountHierarchy:
             List: UserDefinedList
             ParameterName: param_account_hierarchy_c
+            Width:100
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [Base, International, Transaction]
         grpPeriodRange:
+            Width: 600
             Controls: [rbtPeriod, rbtQuarter, rbtDate]
         rbtPeriod:
+            Width:50
             ControlsOrientation: horizontal
             Controls: [txtStartPeriod, txtEndPeriod, cmbPeriodYear]
         txtStartPeriod:
@@ -41,7 +46,9 @@ RootNode:
             Label: Year
             List: UserDefinedList
             ParameterName: param_year_i
-        
+            Width:100
+            LabelWidth:20
+
         rbtQuarter:
             ControlsOrientation: horizontal
             Controls: [txtQuarter, cmbQuarterYear]
@@ -54,7 +61,9 @@ RootNode:
             Label: Year
             List: UserDefinedList
             ParameterName: param_year_i
-    
+            Width:100
+            LabelWidth:50
+
         rbtDate:
             ControlsOrientation: horizontal
             Controls: [dtpStartDate, dtpEndDate]
