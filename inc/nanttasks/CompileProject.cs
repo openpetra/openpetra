@@ -137,7 +137,7 @@ namespace Ict.Tools.NAntTasks
             if (this.Project.PlatformName == "unix")
             {
                 // on Windows this is csc, but on Mono on Linux or Mac we need mcs
-                cd.ExeName = "mcs";
+                csc.ExeName = "mcs";
             }
 
             XmlDocument doc = new XmlDocument();
