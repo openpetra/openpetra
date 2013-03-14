@@ -24,7 +24,8 @@
         uco_GeneralSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
             Dock: Top
-        
+            Height:230
+
         rgrSorting:
             ParameterName: param_sortby
             Dock: Top
