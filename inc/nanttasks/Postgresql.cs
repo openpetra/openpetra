@@ -225,9 +225,10 @@ namespace Ict.Tools.NAntTasks
 
             process.StartInfo.Arguments += " --username=" + FUsername;
 
-            if (!(((FDatabaseHost == "127.0.0.1") || (FDatabaseHost == "localhost")) && (FDatabasePort == "5432")))
+            if (!(((FDatabaseHost == "127.0.0.1") || (FDatabaseHost == "localhost")) && (FDatabasePort == "5432") && (FUsername == "postgres")))
             {
-                // better to use local sockets communication for localhost, not specifying host and port which would lead to tcp communication
+                // better to use local Unix sockets communication for localhost, not specifying host and port which would lead to tcp communication;
+                // for all other users than postgres, use tcp connection anyway
                 process.StartInfo.Arguments += " -p " + FDatabasePort;
                 process.StartInfo.Arguments += " -h " + FDatabaseHost;
             }
