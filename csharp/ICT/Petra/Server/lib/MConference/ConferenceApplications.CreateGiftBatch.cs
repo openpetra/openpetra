@@ -213,14 +213,19 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
                     Int64 RegistrationKey = Convert.ToInt64(StringHelper.GetNextCSV(ref line, InputSeparator, ""));
 
+                    if (RegistrationKey < 1000000)
+                    {
+                        RegistrationKey += ADefaultPartnerLedger;
+                    }
+
                     if (MatchingPartnerKeys.ContainsKey(RegistrationKey))
                     {
                         RegistrationKey = MatchingPartnerKeys[RegistrationKey];
                     }
-
-                    if (RegistrationKey < 1000000)
+                    else if (MatchingPartnerKeys.Count > 0)
                     {
-                        RegistrationKey += ADefaultPartnerLedger;
+                        Console.WriteLine("Cannot find partner key " + RegistrationKey.ToString() + " in row " + RowCount.ToString());
+                        RegistrationKey = AUnknownPartner;
                     }
 
                     decimal ConferenceFee = Convert.ToDecimal(StringHelper.GetNextCSV(ref line, InputSeparator, PreviousConferenceFee.ToString()));
