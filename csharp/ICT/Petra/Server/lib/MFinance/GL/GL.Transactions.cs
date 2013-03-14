@@ -1560,7 +1560,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         BatchRow.BatchRunningTotal = recBatch.BatchRunningTotal;
                         BatchRow.BatchCreditTotal = recBatch.BatchCreditTotal;
                         BatchRow.BatchDebitTotal = recBatch.BatchDebitTotal;
-    
+
                         if (TFinancialYear.IsValidPostingPeriod(ALedgerNumber,
                                 AEffectiveDate,
                                 out PeriodNumber,
