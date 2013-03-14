@@ -1422,7 +1422,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 int FinancialYear, FinancialPeriod;
 
-                if (ADateEffective != null)
+                if (ADateEffective != default(DateTime))
                 {
                     TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out FinancialYear, out FinancialPeriod, null, false);
                     NewRow.DateEffective = ADateEffective;
