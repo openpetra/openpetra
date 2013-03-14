@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -85,7 +85,7 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
-        private string FDatabaseHost = "localhost";
+        private string FDatabaseHost = "127.0.0.1";
 
         /// <summary>
         /// hostname where the database is running
@@ -224,8 +224,14 @@ namespace Ict.Tools.NAntTasks
             }
 
             process.StartInfo.Arguments += " --username=" + FUsername;
-            process.StartInfo.Arguments += " -p " + FDatabasePort;
-            process.StartInfo.Arguments += " -h " + FDatabaseHost;
+
+            if (!(((FDatabaseHost == "127.0.0.1") || (FDatabaseHost == "localhost")) && (FDatabasePort == "5432")))
+            {
+                // better to use local sockets communication for localhost, not specifying host and port which would lead to tcp communication
+                process.StartInfo.Arguments += " -p " + FDatabasePort;
+                process.StartInfo.Arguments += " -h " + FDatabaseHost;
+            }
+
             process.StartInfo.Arguments += " " + FDatabase;
 
             string SuperUser = string.Empty;
