@@ -1718,19 +1718,19 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// cancel a GL Batch
+        /// Tell me whether this Batch can be cancelled
         /// </summary>
         /// <param name="AMainDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
         [RequireModulePermission("FINANCE-3")]
-        public static bool CancelGLBatch(out GLBatchTDS AMainDS,
+        public static bool GLBatchCanBeCancelled(out GLBatchTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
         {
-            return TGLPosting.CancelGLBatch(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications);
+            return TGLPosting.GLBatchCanBeCancelled(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
         /// <summary>

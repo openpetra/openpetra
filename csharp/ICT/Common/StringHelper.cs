@@ -1159,14 +1159,11 @@ namespace Ict.Common
         {
             decimal ReturnValue;
 
-            try
-            {
-                ReturnValue = Convert.ToDecimal(s);
-            }
-            catch (Exception)
+            if (!decimal.TryParse(s, out ReturnValue))
             {
                 ReturnValue = ADefault;
             }
+
             return ReturnValue;
         }
 
@@ -1180,14 +1177,11 @@ namespace Ict.Common
         {
             Int64 ReturnValue;
 
-            try
-            {
-                ReturnValue = Convert.ToInt64(s);
-            }
-            catch (Exception)
+            if (!Int64.TryParse(s, out ReturnValue))
             {
                 ReturnValue = ADefault;
             }
+
             return ReturnValue;
         }
 
@@ -1201,14 +1195,11 @@ namespace Ict.Common
         {
             Int32 ReturnValue;
 
-            try
-            {
-                ReturnValue = Convert.ToInt32(s);
-            }
-            catch (Exception)
+            if (!Int32.TryParse(s, out ReturnValue))
             {
                 ReturnValue = ADefault;
             }
+
             return ReturnValue;
         }
 
