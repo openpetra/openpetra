@@ -47,13 +47,3 @@ RootNode:
         Para59:
             Name: Partner Name
             Parameter: 4.0
-        Para60:
-            Name: Translate
-            Parameter: 2.0
-        Para61:
-            Name: Into
-            Parameter: 1.5
-        Para62:
-            Name: Out Of
-            Parameter: 1.5
-        

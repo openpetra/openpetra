@@ -190,9 +190,6 @@
 					PUB_pm_person_language.pm_years_of_experience_i,
 					PUB_pm_person_language.pm_years_of_experience_as_of_d,
 					PUB_pm_person_language.pt_language_level_i,
-					PUB_pm_person_language.pm_willing_to_translate_l,
-					PUB_pm_person_language.pm_translate_into_l,
-					PUB_pm_person_language.pm_translate_out_of_l,
 					PUB_pt_language_level.pt_language_level_descr_c,
 					PUB_p_language.p_language_description_c
 				FROM
