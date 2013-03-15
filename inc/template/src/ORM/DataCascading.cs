@@ -118,7 +118,8 @@ public class {#TABLENAME}Cascading : TTypedDataAccess
     {
         int OverallReferences = 0;
         int SingleTableReferences = 0;
-
+        Dictionary<string, object> PKInfo = null;
+        
 {#IFDEF COUNTBYTEMPLATECASCADING}
         int countRow;
 
@@ -180,12 +181,23 @@ if(SingleTableReferences > 0)
 }
 
 {##COUNTBYTEMPLATECASCADING}
+SingleTableReferences = 0;
 {#OTHERTABLENAME}Table {#MYOTHERTABLENAME}Table = {#OTHERTABLENAME}Access.Load{#VIAPROCEDURENAME}Template(ATemplateRow, StringHelper.StrSplit("{#CSVLISTOTHERPRIMARYKEYFIELDS}", ","), ATransaction);
 for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow = (countRow + 1))
 {
     SingleTableReferences = {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount, ref AReferences);
-    OverallReferences += SingleTableReferences;
 }
+if(SingleTableReferences > 0)
+{
+    OverallReferences += SingleTableReferences;
+
+    // Create Primary Key information for that referencing DB Table once and add it to last instance of AReferences - that will have been added in the for loop
+    PKInfo = new Dictionary<string, object>({#PRIMARYKEYCOLUMNCOUNT2});
+    {#PRIMARYKEYINFODICTBUILDING2}
+    
+    AReferences[AReferences.Count - 1].SetPKInfo(PKInfo);
+}
+
 
 {##PRIMARYKEYINFODICTBUILDING}
 PKInfo.Add("{#PKCOLUMNLABEL}", {#PKCOLUMNCONTENT});

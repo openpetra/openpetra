@@ -219,7 +219,17 @@ namespace Ict.Tools.CodeGeneration.DataStore
                         snippetCount.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
                         snippetCount.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
                         snippetCount.SetCodelet("OTHERTABLEALSOCASCADING", "true");
-                            
+                         
+                        for (int Counter = 0; Counter < OtherTable.GetPrimaryKey().strThisFields.Count; Counter++) 
+                        {
+                            ProcessTemplate PKInfoDictBuilding2 = ASnippet.GetSnippet("PRIMARYKEYINFODICTBUILDING");                          
+                            PKInfoDictBuilding2.SetCodelet("PKCOLUMNLABEL", formalParametersPrimaryKeySeparate2[Counter].Item3);
+                            PKInfoDictBuilding2.SetCodelet("PKCOLUMNCONTENT", "\"\"");
+                            snippetCount.InsertSnippet("PRIMARYKEYINFODICTBUILDING2", PKInfoDictBuilding2);
+                        }
+                        
+                        snippetCount.SetCodelet("PRIMARYKEYCOLUMNCOUNT2", OtherTable.GetPrimaryKey().strThisFields.Count.ToString());                        
+                        
                         ASnippet.InsertSnippet("COUNTBYTEMPLATECASCADING", snippetCount);                        
                     }
                 }
