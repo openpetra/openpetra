@@ -47,8 +47,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private string FTransactionCurrency = string.Empty;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
+        private ATransAnalAttribTable FAnalAttribDT = null;
+
+        private SourceGrid.Cells.Editors.ComboBox FAnalAttribTypeVal;
+        private Int32[] FAttributeDropDownValues;
 
         private ABatchRow FBatchRow = null;
+
+        private void CreateGirdColumns()
+        {
+        	//FAnalAttribDT.Columns[ATransAnalAttribTable.GetAnalysisTypeCodeDBName()];
+        	
+//        	grdAnalysisAttributes.AddPartnerKeyColumn("Partner Key",
+//                    FAnalAttribDT.Columns[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()]);
+//                FamilyIDDropDownValues = new Int32[] {
+//                    1, 2, 3, 4, 5, 6, 7, 8, 9, 0
+//                };
+//                FFamilyIDEditor = new SourceGrid.Cells.Editors.ComboBox(typeof(Int32), FamilyIDDropDownValues, false);
+//                grdFamilyMembers.AddTextColumn("Family ID",
+//                    FFamilyMembersDT.Columns[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()], 80, FFamilyIDEditor);
+//                DisableEditing();
+//                FFamilyIDEditor.EnableEdit = false;
+//                FFamilyIDEditor.Control.Validating += new CancelEventHandler(this.FamilyID_Validating);
+
+        }
 
         /// <summary>
         /// load the transactions into the grid
