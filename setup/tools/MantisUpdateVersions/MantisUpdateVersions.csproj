@@ -48,9 +48,13 @@
     <Reference Include="WebDriver">
       <HintPath>..\..\..\csharp\ThirdParty\Selenium\WebDriver.dll</HintPath>
     </Reference>
+    <Reference Include="WebDriver.Support">
+      <HintPath>..\..\..\csharp\ThirdParty\Selenium\WebDriver.Support.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="updateMantisVersion.cs" />
+    <Compile Include="WebDriverExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

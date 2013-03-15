@@ -37,16 +37,16 @@ namespace Ict.Tools.Mantis.UpdateVersion
         {
             ADriver.Navigate().GoToUrl(ALoginURL);
 
-            IWebElement txtLoginName = ADriver.FindElement(By.Name("form_loginname"));
+            IWebElement txtLoginName = ADriver.FindElement(By.Name("username"), 15, displayed: true);
             txtLoginName.SendKeys(AUsername);
 
-            IWebElement txtPassword = ADriver.FindElement(By.Name("form_pw"));
+            IWebElement txtPassword = ADriver.FindElement(By.Name("password"), 15, displayed: true);
             txtPassword.SendKeys(APassword);
             
-            IWebElement chkRememberMe = ADriver.FindElement(By.Name("form_rememberme"));
+            IWebElement chkRememberMe = ADriver.FindElement(By.Name("perm_login"), 15, displayed: true);
             chkRememberMe.SendKeys(" ");
             
-            IWebElement btnLogin = ADriver.FindElement(By.Name("login"));
+            IWebElement btnLogin = ADriver.FindElement(By.ClassName("button"), 15, displayed: true);
             btnLogin.Click();
         }
         
@@ -75,19 +75,19 @@ namespace Ict.Tools.Mantis.UpdateVersion
         static private void EditVersion(IWebDriver ADriver, string AVersionName, string ADateReleased, 
                                         string ADescription, bool AHasBeenReleased)
         {
-            IWebElement txtVersionName = ADriver.FindElement(By.Name("new_version"));
+            IWebElement txtVersionName = ADriver.FindElement(By.Name("new_version"), 15, displayed: true);
             txtVersionName.Clear();
             txtVersionName.SendKeys(AVersionName);
 
-            IWebElement txtDescription = ADriver.FindElement(By.Name("description"));
+            IWebElement txtDescription = ADriver.FindElement(By.Name("description"), 15, displayed: true);
             txtDescription.Clear();
             txtDescription.SendKeys(ADescription);
             
-            IWebElement txtDate = ADriver.FindElement(By.Name("date_order"));
+            IWebElement txtDate = ADriver.FindElement(By.Name("date_order"), 15, displayed: true);
             txtDate.Clear();
             txtDate.SendKeys(ADateReleased);
 
-            IWebElement chkReleased = ADriver.FindElement(By.Name("released"));
+            IWebElement chkReleased = ADriver.FindElement(By.Name("released"), 15, displayed: true);
             if (chkReleased.Selected != AHasBeenReleased)
             {
                 chkReleased.SendKeys(" ");
@@ -151,16 +151,16 @@ namespace Ict.Tools.Mantis.UpdateVersion
             // go back
             ADriver.Navigate().GoToUrl(AEditProjectURL);
             // add a new development version
-            ADriver.FindElement(By.Name("version")).SendKeys(AVersionDev);
-            ADriver.FindElement(By.Name("add_version")).Click();
+            ADriver.FindElement(By.Name("version"), 15, displayed: true).SendKeys(AVersionDev);
+            ADriver.FindElement(By.Name("add_version"), 15, displayed: true).Click();
             OpenVersionEdit(ADriver, AEditProjectURL, AVersionDev);
             EditVersion(ADriver, AVersionDev, DateReleased.ToString("yyyy-MM-dd") + " 00:01:00", "for fixing development bugs", false);
             
             // go back
             ADriver.Navigate().GoToUrl(AEditProjectURL);
             // add a new future release version
-            ADriver.FindElement(By.Name("version")).SendKeys(AVersionNext);
-            ADriver.FindElement(By.Name("add_version")).Click();
+            ADriver.FindElement(By.Name("version"), 15, displayed: true).SendKeys(AVersionNext);
+            ADriver.FindElement(By.Name("add_version"), 15, displayed: true).Click();
             OpenVersionEdit(ADriver, AEditProjectURL, AVersionNext);
             EditVersion(ADriver, AVersionNext, DateReleased.AddMonths(1).ToString("yyyy-MM-dd"), "next planned release", false);
         }
@@ -169,8 +169,8 @@ namespace Ict.Tools.Mantis.UpdateVersion
         {
             TLogging.Log(AEditBugAdvancedURL);
             ADriver.Navigate().GoToUrl(AEditBugAdvancedURL);
-
-            IWebElement cmbResolution = ADriver.FindElement(By.Name("resolution"));
+            
+            IWebElement cmbResolution = ADriver.FindElement(By.Name("resolution"), 15, displayed: true);
             ReadOnlyCollection<IWebElement> options = cmbResolution.FindElements(By.TagName("option"));
             foreach (IWebElement option in options) 
             {
@@ -181,7 +181,7 @@ namespace Ict.Tools.Mantis.UpdateVersion
                 }
             } 
 
-            IWebElement cmbFixedInVersion = ADriver.FindElement(By.Name("fixed_in_version"));
+            IWebElement cmbFixedInVersion = ADriver.FindElement(By.Name("fixed_in_version"), 15, displayed: true);
             options = cmbFixedInVersion.FindElements(By.TagName("option"));
 
             foreach (IWebElement option in options) 
@@ -212,8 +212,8 @@ namespace Ict.Tools.Mantis.UpdateVersion
                 return;
             }
 
-            string loginURL = TAppSettingsManager.GetValue("login-url", "http://sourceforge.net/account/login.php");
-            string mantisURL = TAppSettingsManager.GetValue("mantis-url", "https://sourceforge.net/apps/mantisbt/openpetraorg/");
+            string loginURL = TAppSettingsManager.GetValue("login-url", "https://tracker.openpetra.org/login_page.php");
+            string mantisURL = TAppSettingsManager.GetValue("mantis-url", "https://tracker.openpetra.org/");
             
             IWebDriver driver = new FirefoxDriver();
             
