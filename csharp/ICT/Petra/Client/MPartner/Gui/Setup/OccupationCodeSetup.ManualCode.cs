@@ -77,9 +77,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 && (VerificationResults.Count > 0))
             {
                 MessageBox.Show(Messages.BuildMessageFromVerificationResult(
-                        Catalog.GetString("Deletion of record failed!\r\n") +
-                        Catalog.GetPluralString("Cause:", "Causes:", VerificationResults.Count),
-                        VerificationResults));
+                        Catalog.GetString("Record cannot be deleted!\r\n") +
+                        Catalog.GetPluralString("Reason:", "Reasons:", VerificationResults.Count),
+                        VerificationResults), Catalog.GetString("Record Deletion"));
             }
             else
             {

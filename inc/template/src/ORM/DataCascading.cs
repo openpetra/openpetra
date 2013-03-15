@@ -184,7 +184,6 @@ if(SingleTableReferences > 0)
 for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow = (countRow + 1))
 {
     SingleTableReferences = {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount, ref AReferences);
-    AReferences.Add(new TRowReferenceInfo("#OTHERTABLENAME", "{#OTHERTABLELABEL}", SingleTableReferences, {#MYOTHERTABLENAME}Table[countRow]));
     OverallReferences += SingleTableReferences;
 }
 

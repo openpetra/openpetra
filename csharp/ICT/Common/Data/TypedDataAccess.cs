@@ -40,6 +40,8 @@ namespace Ict.Common.Data
     /// </summary>
     public class TTypedDataAccess
     {
+        private const string STR_INDENTATION = "    ";
+        
         /// name of the column used for tracking changes, one ID per change
         public const string MODIFICATION_ID = "s_modification_id_t";
 
@@ -457,7 +459,7 @@ namespace Ict.Common.Data
         public static String GenerateSelectClause(StringCollection AFieldList, short ATableID)
         {
             String ReturnValue = "";
-
+            
             ReturnValue = "SELECT ";
 
             if ((AFieldList == null) || (AFieldList.Count == 0))
@@ -2296,20 +2298,25 @@ namespace Ict.Common.Data
         public static TVerificationResultCollection BuildVerificationResultCollectionFromRefTables(string AThisTable, string AThisTableLabel, Dictionary<string, object> APKInfo, List<TRowReferenceInfo> AReferences,
             TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
         {
-            const string STR_INDENTATION = "    ";
+            
             const string STR_BULLET = "*";
             Guid VerificationRunGuid = Guid.NewGuid();
             TVerificationResultCollection ReturnValue = new TVerificationResultCollection(VerificationRunGuid);
-            string MessageHeader = Catalog.GetString(String.Format("The '{0}' record cannot be deleted because\r\n", AThisTableLabel));
+            string MessageHeaderPart1 = Catalog.GetString(String.Format("The '{0}' record", AThisTableLabel));
+            string MessageHeaderPart2 = Catalog.GetString("{0}\r\ncannot be deleted because\r\n");
+            
             List<string>MessageDetails = new List<string>();
             string CompleteMessageDetails = String.Empty;
-            string MessageContinuation = Catalog.GetString("  and\r\n");
+            string MessageContinuation = Catalog.GetString(" and\r\n");
             string KeysAndValueInformation = String.Empty;
+            TRowReferenceInfo SingleReference;
             TRowReferenceInfo CurrentReference;
             List<TRowReferenceInfo> ConsolidatedReferences = new List<TRowReferenceInfo>();
-            string LastReferencingDBTable = String.Empty;
+            TRowReferenceInfo PreviousReference = null;
+            string SingleReferenceThisTable = String.Empty;
             bool NewReferencingDBTable = false;
-            int RefCount = 0;
+            long RefCount = 0;
+            long LastRefCount = 0;
 
             
             if (AReferences.Count == 0) 
@@ -2319,37 +2326,57 @@ namespace Ict.Common.Data
             
             CurrentReference = AReferences[0];
             
-            foreach (var Reference in AReferences) 
+            // Iterate through References backwards because the insertion order in AReference is backwards
+            for(int Counter = AReferences.Count - 1; Counter >= 0; Counter--) 
             {      
-                if ((LastReferencingDBTable != String.Empty)
-                    && (Reference.ThisTable != LastReferencingDBTable))
+                SingleReference = AReferences[Counter];
+                
+                if(SingleReference.ThisTable != SingleReferenceThisTable)
                 {                       
-                    RefCount = 0;
+                    LastRefCount = RefCount;
+
+                     
+                    RefCount = SingleReference.ReferenceCount;
+                    
                     NewReferencingDBTable = true;                    
+                    
+                    CurrentReference = SingleReference;
+                    SingleReferenceThisTable = SingleReference.ThisTable;
+                    
+                    if (PreviousReference == null)
+                    {
+                        PreviousReference = SingleReference;
+                            
+                        // The last instance of AReferences for a DB Table will hold the PKInfo *which is our first one here since we iterate backwards over AReferences* 
+                        // -> set it on PreviousReference accordingly so it captured
+                        PreviousReference.SetPKInfo(SingleReference.PKInfo);                                                                   
+                    }                    
                 }
                 else
                 {
-                    RefCount++;                   
+//                    if (SingleReference.PKInfo != null) 
+//                    {
+//                        // The last instance of AReferences for a DB Table will hold the PKInfo *which is our first one here since we iterate backwards over AReferences* 
+//                        // -> set it on PreviousReference accordingly so it captured
+//                        PreviousReference.SetPKInfo(SingleReference.PKInfo);                       
+//                    }
+                    
+                    RefCount += SingleReference.ReferenceCount;   
+                    NewReferencingDBTable = false;
                 }
                 
-                if ((NewReferencingDBTable) 
-                    || (RefCount == AReferences.Count))
-                {
-                    CurrentReference.SetReferenceCount(RefCount);
-                    // The last instance of AReferences for a DB Table will hold the PKInfo, set it on CurrentReference accordingly
-                    CurrentReference.SetPKInfo(Reference.PKInfo);
-                    CurrentReference.PopulatePKInfoDataFromDataRow();
-                    ConsolidatedReferences.Add(CurrentReference);
-                    
-                    CurrentReference = Reference;
-                    
-                    MessageDetails.Add(Catalog.GetPluralString(
-                            String.Format(STR_INDENTATION + "a '{0}' record is still referencing it", Reference.ThisTableLabel),
-                            String.Format(STR_INDENTATION + "{0} '{1}' records are still referencing it", RefCount, Reference.ThisTableLabel), RefCount));
-                    
+                if (((NewReferencingDBTable)
+                     && (Counter != AReferences.Count - 1))
+                    || (RefCount == 0))
+                {  
+                    AddReferenceToConsolidatedReferences(PreviousReference, ConsolidatedReferences, MessageDetails, LastRefCount);
+                        
                     NewReferencingDBTable = false;
+                    PreviousReference = SingleReference;
                 }                
             }
+            
+            AddReferenceToConsolidatedReferences(PreviousReference, ConsolidatedReferences, MessageDetails, RefCount);
             
             if (MessageDetails.Count > 1) 
             {
@@ -2364,6 +2391,9 @@ namespace Ict.Common.Data
                     
                     CompleteMessageDetails += MessageDetails[Counter];
                 }    
+                
+                // strip off trailing 'MessageContinuation'
+                CompleteMessageDetails = CompleteMessageDetails.Substring(0, CompleteMessageDetails.Length - MessageContinuation.Length);
             }
             else
             {
@@ -2375,20 +2405,30 @@ namespace Ict.Common.Data
             
             foreach (var element in APKInfo) 
             {
-                KeysAndValueInformation += "        " + element.Key + ": " + element.Value.ToString() + Environment.NewLine;
+                KeysAndValueInformation += STR_INDENTATION + STR_INDENTATION + element.Key + ": " + element.Value.ToString() + Environment.NewLine;
             }
             
             // Strip off trailing Environment.NewLine
             KeysAndValueInformation = KeysAndValueInformation.Substring(0, KeysAndValueInformation.Length - Environment.NewLine.Length);
             
-            CompleteMessageDetails += "\r\n\r\n    " + AThisTableLabel + " code:\r\n" +
-                KeysAndValueInformation;
-            
+            MessageHeaderPart2 = String.Format(MessageHeaderPart2, "\r\n" + STR_INDENTATION + "  " + AThisTableLabel + " code:\r\n" + KeysAndValueInformation);
+                        
             ReturnValue.Add(new TVerificationResult(new TRowReferenceInfo(AThisTable, AThisTableLabel, APKInfo, ConsolidatedReferences),
-                MessageHeader + CompleteMessageDetails, CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED,  
+                MessageHeaderPart1 + MessageHeaderPart2 + CompleteMessageDetails, CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED,  
                 AResultSeverity, VerificationRunGuid));
 
             return ReturnValue;
+        }
+        
+        private static void AddReferenceToConsolidatedReferences(TRowReferenceInfo APreviousReference, List<TRowReferenceInfo> AConsolidatedReferences, List<string> AMessageDetails, long ALastRefCount)
+        {
+            APreviousReference.SetReferenceCount(ALastRefCount);
+            APreviousReference.PopulatePKInfoDataFromDataRow();
+            AConsolidatedReferences.Add(APreviousReference);
+            
+            AMessageDetails.Add(Catalog.GetPluralString(
+                    String.Format(STR_INDENTATION + "a '{0}' record is still referencing it", APreviousReference.ThisTableLabel),
+                    String.Format(STR_INDENTATION + "{0} '{1}' records are still referencing it", ALastRefCount, APreviousReference.ThisTableLabel), ALastRefCount));
         }
         
         #endregion CalledByORMGenerateCode
@@ -2552,16 +2592,19 @@ namespace Ict.Common.Data
         /// </summary>
         public void PopulatePKInfoDataFromDataRow()
         {
-            Dictionary<string, object> PKInfoNew = new Dictionary<string, object>(FPKInfo.Count);
-            int Counter = 0;
-            
-            foreach (var SinglePKInfo in FPKInfo) 
+            if (FPKInfo != null) 
             {
-                PKInfoNew.Add(SinglePKInfo.Key, FDataRow[Counter]);
-                Counter++;
+                Dictionary<string, object> PKInfoNew = new Dictionary<string, object>(FPKInfo.Count);
+                int Counter = 0;
+                
+                foreach (var SinglePKInfo in FPKInfo) 
+                {
+                    PKInfoNew.Add(SinglePKInfo.Key, FDataRow[Counter]);
+                    Counter++;
+                }
+                
+                FPKInfo = PKInfoNew;                
             }
-            
-            FPKInfo = PKInfoNew;
         }
     }
 }
