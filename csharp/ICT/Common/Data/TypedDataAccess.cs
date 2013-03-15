@@ -456,19 +456,36 @@ namespace Ict.Common.Data
         /// </summary>
         /// <returns>the Select Clause
         /// </returns>
-        public static String GenerateSelectClause(StringCollection AFieldList, short ATableID)
+        public static String GenerateSelectClause(StringCollection AFieldList, short ATableID, bool AIncludeTableNames = false)
         {
-            String ReturnValue = "";
+            String ReturnValue = String.Empty;
+            string Tablename = String.Empty;
             
             ReturnValue = "SELECT ";
 
             if ((AFieldList == null) || (AFieldList.Count == 0))
             {
-                ReturnValue = ReturnValue + '*';
+                ReturnValue += '*';
             }
             else
             {
-                ReturnValue = ReturnValue + StringHelper.StrMerge(AFieldList, ',');
+                if (AIncludeTableNames) 
+                {
+                    Tablename = TTypedDataTable.GetTableNameSQL(ATableID);
+                    
+                    foreach (var Field in AFieldList) 
+                    {
+                        ReturnValue += Tablename + "." + Field + ",";
+                    }
+                    
+                    // strip off trailing ','
+                    ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - 1);                    
+                }
+                else
+                {
+                    ReturnValue += StringHelper.StrMerge(AFieldList, ',');  
+                }
+               
 
                 string[] PrimKeyColumnStringList = TTypedDataTable.GetPrimaryKeyColumnStringList(ATableID);
 
@@ -476,13 +493,27 @@ namespace Ict.Common.Data
                 {
                     if ((!AFieldList.Contains(primKeyColumn)))
                     {
-                        ReturnValue = ReturnValue + ',' + primKeyColumn;
+                        ReturnValue += ',';
+                        
+                        if (AIncludeTableNames) 
+                        {
+                            ReturnValue += Tablename + ".";
+                        }
+
+                        ReturnValue += primKeyColumn;
                     }
                 }
 
                 if ((!AFieldList.Contains(MODIFICATION_ID)))
                 {
-                    ReturnValue = ReturnValue + ',' + MODIFICATION_ID;
+                        ReturnValue += ',';
+                        
+                        if (AIncludeTableNames) 
+                        {
+                            ReturnValue += Tablename + ".";
+                        }
+
+                        ReturnValue += MODIFICATION_ID;
                 }
             }
 
@@ -697,6 +728,43 @@ namespace Ict.Common.Data
             return ReturnValue;
         }
 
+        /// <summary>
+        /// This function generates a where clause for a JOIN SQL Query
+        /// </summary>
+        /// <returns></returns>
+        private static String GenerateWhereClauseForJoin(string ATableName, string AOtherTableName, string[] APKFieldNames, string[] AOtherPKFieldNames)
+        {
+            String ReturnValue = "";
+
+            for (int Counter = 0; Counter < APKFieldNames.Length; Counter++) 
+            {
+                if (ReturnValue.Length == 0)                     //first time around
+                {
+                    ReturnValue = " WHERE ";
+                }
+                else
+                {
+                    ReturnValue += " AND ";
+                }
+
+                if (!APKFieldNames[Counter].StartsWith(AOtherTableName + ".")) 
+                {
+                    ReturnValue += AOtherTableName + ".";
+                }
+                
+                ReturnValue += APKFieldNames[Counter] + " = ";    
+                
+                if (!AOtherPKFieldNames[Counter].StartsWith(ATableName + ".")) 
+                {
+                    ReturnValue += ATableName + ".";
+                }
+                
+                ReturnValue += AOtherPKFieldNames[Counter];
+            }
+
+            return ReturnValue;
+        }
+        
         /// <summary>
         /// this function generates a where clause for the primary key of the given table
         /// </summary>
@@ -1774,9 +1842,9 @@ namespace Ict.Common.Data
             int AMaxRecords)
         {
             DBAccess.GDBAccessObj.SelectDT(ADataTable,
-                GenerateSelectClause(AFieldList, ATableId) +
+                GenerateSelectClause(AFieldList, ATableId, true) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
-                GenerateWhereClause(AThisFieldNames) +
+                GenerateWhereClauseForJoin(TTypedDataTable.GetTableNameSQL(AOtherTableId), TTypedDataTable.GetTableNameSQL(ATableId), AThisFieldNames, TTypedDataTable.GetPrimaryKeyColumnStringList(AOtherTableId)) +
                 GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
                     AOtherTableId, ATemplateRow, ATemplateOperators) +
                 GenerateOrderByClause(AOrderBy),
