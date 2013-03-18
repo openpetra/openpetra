@@ -14,7 +14,6 @@ namespace {#NAMESPACE}
     using Ict.Common.DB;
     using Ict.Common.Verification;
     using Ict.Common.Data;
-    using Ict.Tools.DBXML;
     {#USINGNAMESPACES}
 
     {#TABLECASCADINGLOOP}
@@ -118,10 +117,10 @@ public class {#TABLENAME}Cascading : TTypedDataAccess
     {
         int OverallReferences = 0;
         int SingleTableReferences = 0;
-        Dictionary<string, object> PKInfo = null;
-        
+
 {#IFDEF COUNTBYTEMPLATECASCADING}
         int countRow;
+        Dictionary<string, object> PKInfo = null;
 
         if ((AWithCascCount == true))
         {
