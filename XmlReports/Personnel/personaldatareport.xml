@@ -3,1451 +3,1143 @@
 <reports>
 
   <report id="Personal Data Report">
-	<description>
-		Personal Data Report
-	</description>
-	<reportparameters>
-		<reportparameter name="param_source"></reportparameter>
-		<reportparameter name="param_extract_name"></reportparameter>
-	</reportparameters>
-	
-	<reportheader></reportheader>
-	<pageheader>
-		<field whichfield="title1"><value text ="Personal Data Report" /></field>
-		<field whichfield="title2"><value function = "getSiteName()"/></field>
-		<field whichfield="descr1">
-			<fielddetail>
-				<value text = "Selection: "/>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},one partner)">
-				<value text = "Partner "/><value variable = "param_partnerkey"/>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},an extract)">
-				<value text = "Extract "/><value variable = "param_extract"/>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},all current staff)">
-				<value text = "All current Staff at date "/>
-					<value variable = "param_currentstaffdate" format="formatteddate"/>
-			</fielddetail>
-		</field>
-		<field whichfield="descr2">
-			<fielddetail condition="ne({param_selection}, one partner)">
-				<value text="Sorted by: "/>
-				<value variable="param_sortby_readable"/>
-			</fielddetail>
-		</field>
-	</pageheader>
+    <description>
+      Personal Data Report
+    </description>
+    <reportparameters>
+      <reportparameter name="param_source"></reportparameter>
+      <reportparameter name="param_extract_name"></reportparameter>
+    </reportparameters>
+
+    <reportheader></reportheader>
+    <pageheader>
+      <field whichfield="title1">
+        <value text ="Personal Data Report" />
+      </field>
+      <field whichfield="title2">
+        <value function = "getSiteName()"/>
+      </field>
+      <field whichfield="descr1">
+        <fielddetail>
+          <value text = "Selection: "/>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},one partner)">
+          <value text = "Partner "/>
+          <value variable = "param_partnerkey"/>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},an extract)">
+          <value text = "Extract "/>
+          <value variable = "param_extract"/>
+        </fielddetail>
+        <fielddetail condition="eq({param_selection},all current staff)">
+          <value text = "All current Staff at date "/>
+          <value variable = "param_currentstaffdate" format="formatteddate"/>
+        </fielddetail>
+      </field>
+      <field whichfield="descr2">
+        <fielddetail condition="ne({param_selection}, one partner)">
+          <value text="Sorted by: "/>
+          <value variable="param_sortby_readable"/>
+        </fielddetail>
+      </field>
+    </pageheader>
 
     <calculations>
-	
-	<calculation id="SelectPersonalInfo" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT
-					PUB_pm_personal_data.pm_personal_fld1_c,
-					PUB_pm_personal_data.pm_personal_fld2_c,
-					PUB_pm_personal_data.pm_personal_fld3_c,
-					PUB_pm_personal_data.pm_personal_fld4_c,
-					PUB_pm_personal_data.pm_personal_fld5_c,
-					PUB_pm_personal_data.pm_personal_fld6_c,
-					PUB_pm_personal_data.pm_driving_license_number_c,
-					PUB_pm_personal_data.pm_internal_driver_license_l,
-					PUB_pm_personal_data.p_partner_key_n,
-					PUB_pt_personal_data_labels.pt_pers_data_label1_c,
-					PUB_pt_personal_data_labels.pt_pers_data_label2_c,
-					PUB_pt_personal_data_labels.pt_pers_data_label3_c,
-					PUB_pt_personal_data_labels.pt_pers_data_label4_c,
-					PUB_pt_personal_data_labels.pt_pers_data_label5_c,
-					PUB_pt_personal_data_labels.pt_pers_data_label6_c,
-					PUB_pt_personal_data_labels.pt_pers_data_label7_c
-				FROM
-					PUB_pm_personal_data, PUB_pt_personal_data_labels
-				WHERE
-					PUB_pm_personal_data.p_partner_key_n = {StaffPartnerKey}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectLocalPartnerData" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT
-					PUB_p_data_label.p_text_c,
-					PUB_p_data_label.p_data_type_c,
-					PUB_p_data_label_value_partner.p_value_char_c,
-					PUB_p_data_label_value_partner.p_value_num_n,
-					PUB_p_data_label_value_partner.p_value_currency_n,
-					PUB_p_data_label_value_partner.p_value_int_i,
-					PUB_p_data_label_value_partner.p_value_bool_l,
-					PUB_p_data_label_value_partner.p_value_date_d,
-					PUB_p_data_label_value_partner.p_value_time_i,
-					PUB_p_data_label_value_partner.p_value_partner_key_n,
-					PUB_p_data_label_value_partner.p_value_lookup_c
-				FROM
-					PUB_p_data_label_use, PUB_p_data_label, PUB_p_data_label_value_partner
-				WHERE
-						PUB_p_data_label_value_partner.p_partner_key_n = {StaffPartnerKey}
-					AND PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i
-					AND PUB_p_data_label_use.p_use_c &lt;&gt; "Personnel"
-					AND PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label.p_key_i
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectLocalPersonnelData" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT
-					PUB_p_data_label.p_text_c,
-					PUB_p_data_label.p_data_type_c,
-					PUB_p_data_label_value_partner.p_value_char_c,
-					PUB_p_data_label_value_partner.p_value_num_n,
-					PUB_p_data_label_value_partner.p_value_currency_n,
-					PUB_p_data_label_value_partner.p_value_int_i,
-					PUB_p_data_label_value_partner.p_value_bool_l,
-					PUB_p_data_label_value_partner.p_value_date_d,
-					PUB_p_data_label_value_partner.p_value_time_i,
-					PUB_p_data_label_value_partner.p_value_partner_key_n,
-					PUB_p_data_label_value_partner.p_value_lookup_c
-				FROM
-					PUB_p_data_label_use, PUB_p_data_label, PUB_p_data_label_value_partner
-				WHERE
-						PUB_p_data_label_value_partner.p_partner_key_n = {StaffPartnerKey}
-					AND PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i
-					AND PUB_p_data_label_use.p_use_c = "Personnel"
-					AND PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label.p_key_i
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectJobAssignments" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT
-					PUB_pm_job_assignment.pt_position_name_c,
-					PUB_pm_job_assignment.pm_from_date_d,
-					PUB_pm_job_assignment.pm_to_date_d,
-					PUB_pt_assignment_type.pt_assignment_code_descr_c,
-					PUB_p_partner.p_partner_short_name_c
-				FROM
-					PUB_pm_job_assignment, PUB_pt_assignment_type, PUB_p_partner
-				WHERE
-					PUB_pm_job_assignment.p_partner_key_n = {StaffPartnerKey}
-					AND PUB_pt_assignment_type.pt_assignment_type_code_c = PUB_pm_job_assignment.pt_assignment_type_code_c
-					AND PUB_p_partner.p_partner_key_n = PUB_pm_job_assignment.pm_unit_key_n
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectCommitmentPeriod" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT
-					PUB_pm_staff_data.pm_start_of_commitment_d,
-					PUB_pm_staff_data.pm_end_of_commitment_d,
-					PUB_pm_staff_data.pm_status_code_c,
-					PUB_pm_staff_data.pm_receiving_field_n,
-					PUB_pm_staff_data.pm_office_recruited_by_n,
-					PUB_pm_staff_data.pm_home_office_n,
-					PUB_pm_staff_data.pm_staff_data_comments_c
-				FROM
-					PUB_pm_staff_data
-				WHERE
-					PUB_pm_staff_data.p_partner_key_n = {StaffPartnerKey}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectRecruitingFieldName" returns="RecrutingFieldName" returnsFormat="row">
-		<query>
-			<queryDetail condition="gt(length({pm_office_recruited_by_n}), 0)"><value>
-				SELECT DISTINCT
-					PUB_p_partner.p_partner_short_name_c AS RecrutingFieldName
-				FROM
-					PUB_p_partner
-				WHERE
-					PUB_p_partner.p_partner_key_n = {pm_office_recruited_by_n}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	<calculation id="SelectHomeOfficeName" returns="HomeOfficeName" returnsFormat="row">
-		<query>
-			<queryDetail condition="gt(length({pm_home_office_n}), 0)"><value>
-				SELECT DISTINCT
-					PUB_p_partner.p_partner_short_name_c AS HomeOfficeName
-				FROM
-					PUB_p_partner
-				WHERE
-					PUB_p_partner.p_partner_key_n = {pm_home_office_n}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	<calculation id="SelectTargetFieldName" returns="TargetFieldName" returnsFormat="row">
-		<query>
-			<queryDetail condition="gt(length({pm_receiving_field_n}), 0)"><value>
-				SELECT DISTINCT
-					PUB_p_partner.p_partner_short_name_c AS TargetFieldName
-				FROM
-					PUB_p_partner
-				WHERE
-					PUB_p_partner.p_partner_key_n = {pm_receiving_field_n}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectPreviousExperiences" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT 
-					PUB_pm_past_experience.pm_start_date_d,
-					PUB_pm_past_experience.pm_end_date_d,
-					PUB_pm_past_experience.pm_prev_location_c,
-					PUB_pm_past_experience.pm_prev_role_c,
-					PUB_pm_past_experience.pm_other_organisation_c,
-					PUB_pm_past_experience.pm_prev_work_here_l,
-					PUB_pm_past_experience.pm_past_exp_comments_c
-				FROM 
-					PUB_pm_past_experience
-				WHERE
-					PUB_pm_past_experience.p_partner_key_n = {StaffPartnerKey}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectPersonalBudget" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT 
-					PUB_pm_long_term_support_figures.pm_agreement_date_d,
-					PUB_pm_long_term_support_figures.pm_review_date_d,
-					PUB_pm_long_term_support_figures.pm_housing_n,
-					PUB_pm_long_term_support_figures.pm_personal_n,
-					PUB_pm_long_term_support_figures.pm_vehicle_n,
-					PUB_pm_long_term_support_figures.pm_food_n,
-					PUB_pm_long_term_support_figures.pm_medical_dental_care_n,
-					PUB_pm_long_term_support_figures.pm_postage_telephone_n,
-					PUB_pm_long_term_support_figures.pm_insurance_n,
-					PUB_pm_long_term_support_figures.pm_childrens_education_n,
-					PUB_pm_long_term_support_figures.pm_ministry_costs_n,
-					PUB_pm_long_term_support_figures.pm_study_training_n,
-					PUB_pm_long_term_support_figures.pm_travel_conferences_n,
-					PUB_pm_long_term_support_figures.pm_pension_n,
-					PUB_pm_long_term_support_figures.pm_home_assignment_holiday_n,
-					PUB_pm_long_term_support_figures.pm_other_n,
-					PUB_pm_long_term_support_figures.a_currency_code_c,
-					PUB_pm_long_term_support_figures.pm_actual_support_figure_n,
-					PUB_pm_long_term_support_figures.pm_admin_grant_n,
-					PUB_pm_long_term_support_figures.pm_agreed_support_figure_n,
-					PUB_pm_long_term_support_figures.pm_period_c
-				FROM 
-					PUB_pm_long_term_support_figures
-				WHERE
-					PUB_pm_long_term_support_figures.p_partner_key_n = {StaffPartnerKey}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectVisions" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT 
-					PUB_pm_person_vision.pt_vision_area_name_c,
-					PUB_pm_person_vision.pt_vision_level_i,
-					PUB_pm_person_vision.pm_vision_comment_c,
-					PUB_pt_vision_level.pt_vision_level_descr_c
-				FROM 
-					PUB_pm_person_vision, PUB_pt_vision_area, PUB_pt_vision_level
-				WHERE
-						PUB_pm_person_vision.p_partner_key_n = {StaffPartnerKey}
-					AND PUB_pt_vision_level.pt_vision_level_i = PUB_pm_person_vision.pt_vision_level_i
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectQualifications" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT 
-					PUB_pm_person_qualification.pm_informal_flag_l,
-					PUB_pm_person_qualification.pt_qualification_area_name_c,
-					PUB_pm_person_qualification.pm_years_of_experience_i,
-					PUB_pm_person_qualification.pm_years_of_experience_as_of_d,
-					PUB_pm_person_qualification.pm_comment_c,
-					PUB_pm_person_qualification.pt_qualification_level_i,
-					PUB_pt_qualification_level.pt_qualification_level_descr_c
-				FROM 
-					PUB_pm_person_qualification, PUB_pt_qualification_level
-				WHERE
-						PUB_pm_person_qualification.p_partner_key_n = {StaffPartnerKey}
-					AND PUB_pt_qualification_level.pt_qualification_level_i = PUB_pm_person_qualification.pt_qualification_level_i
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectValuableItems" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT 
-					PUB_pm_ownership.pt_valuable_item_name_c,
-					PUB_pm_ownership.pm_make_c,
-					PUB_pm_ownership.pm_model_c,
-					PUB_pm_ownership.pm_identifier_c,
-					PUB_pt_valuable_item.pt_valuable_item_descr_c
-				FROM 
-					PUB_pm_ownership, PUB_pt_valuable_item
-				WHERE
-						PUB_pm_ownership.p_partner_key_n = {StaffPartnerKey}
-					AND PUB_pt_valuable_item.pt_valuable_item_name_c = PUB_pm_ownership.pt_valuable_item_name_c
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="CalculateTotalSupport" returns="TotalSupport" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value function="assign(TotalSupport, add({pm_actual_support_figure_n}, {pm_admin_grant_n}))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="CalculateSurplusDeficit" returns="SurplusDeficit" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value function="assign(SurplusDeficit, sub({TotalSupport}, {pm_agreed_support_figure_n}))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="CalculateIndividualBudgetItems" returns="IndividualBudgetItems" returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value function="assign(IndividualBudgetItems, add (
-					additems(7, {pm_housing_n}, {pm_personal_n}, {pm_vehicle_n},
-					{pm_food_n}, {pm_medical_dental_care_n}, {pm_postage_telephone_n}, {pm_insurance_n}),
-					additems(7, {pm_childrens_education_n}, {pm_ministry_costs_n}, {pm_study_training_n}, 
-					{pm_travel_conferences_n}, {pm_pension_n}, {pm_home_assignment_holiday_n}, {pm_other_n})))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Personal Data" returns="text" returnsFormat="text">
-		<caption><value text=""></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PersonalData"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Partner Key"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="StaffPartnerKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-    </calculations>
-   
-    <levels> 
-	<level name="main">
-		<detail>
-			<lowerLevelReport calculation="Select Partners" level="Partner Level"></lowerLevelReport>
-		</detail>
-	</level> 
-	
-	<level name="Partner Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm" width="19cm">
-				<value text=" "/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="General Info Level"></lowerLevelReport>
-			<lowerLevelReport level="Personal Info Level" condition="eq({param_chkPersonalInfo}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Local Partner Data Level" condition="eq({param_chkLocalPartnerData}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Local Personnel Data Level" condition="eq({param_chkLocalPersonnelData}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Job Assignments Level" condition="eq({param_chkJobAssignments}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Commitment Period Level" condition="eq({param_chkCommitments}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Passport Level" condition="eq({param_chkPassport}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Documents Level" condition="eq({param_chkPersonalDocuments}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Special Need Level" condition="eq({param_chkSpecialNeeds}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Budget Level" condition="eq({param_chkPersonalBudget}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Vision Areas Level" condition="eq({param_chkVisions}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Professional Areas Level" condition="eq({param_chkQualifications}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Ability Level" condition="eq({param_chkAbilities}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Language Level" condition="eq({param_chkLanguages}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Previous Experience Level" condition="eq({param_chkPreviousExperiences}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Valuable Items Level" condition="eq({param_chkValuableItems}, true)"></lowerLevelReport>
-		</detail>
-		<footer line="below" space="below">
-			<field whichfield="left 0" pos="0cm" width="1cm" >
-				<value text=" "/>
-			</field>
-			<field whichfield="column 0">
-				<value text=" "/>
-			</field>				
-		</footer>
-	</level>
-	
-	<level name="General Info Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="Personal Data Report for: "/>
-				<value variable="StaffPartnerKey" format="partnerkey"/>
-				<value text="  "/>
-				<value variable="PartnerName"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="General Info lower Level"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text=" "/>
-			</field>
-		</footer>
-	</level>
-	<level name="General Info lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="General Info Lowest Level"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="General Info Lowest Level">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Personal Info Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="***************** Personal Info *****************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Personal Info lower Level" calculation="SelectPersonalInfo"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Personal Info lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Personal Info Lowest Level1" condition="and(gt({pm_personal_fld1_c}, 0), gt({pt_pers_data_label1_c}, 0)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Info Lowest Level2" condition="and(gt({pm_personal_fld2_c}, 0), gt({pt_pers_data_label2_c}, 0)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Info Lowest Level3" condition="and(gt({pm_personal_fld3_c}, 0), gt({pt_pers_data_label3_c}, 0)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Info Lowest Level4" condition="and(gt({pm_personal_fld4_c}, 0), gt({pt_pers_data_label4_c}, 0)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Info Lowest Level5" condition="and(gt({pm_personal_fld5_c}, 0), gt({pt_pers_data_label5_c}, 0)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Info Lowest Level6" condition="and(gt({pm_personal_fld6_c}, 0), gt({pt_pers_data_label6_c}, 0)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Info Lowest Level7-1" condition="gt({pt_pers_data_label7_c}, 0)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Info Lowest Level7-2" condition="lt({pt_pers_data_label7_c}, 1)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Info Lowest Level8"></lowerLevelReport>
-			<lowerLevelReport level="Personal Info Lowest Level9"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Personal Info Lowest Level1">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value variable="pt_pers_data_label1_c"/>
-				<value text=": "/>
-				<value variable="pm_personal_fld1_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Info Lowest Level2">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value variable="pt_pers_data_label2_c"/>
-				<value text=": "/>
-				<value variable="pm_personal_fld2_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Info Lowest Level3">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value variable="pt_pers_data_label3_c"/>
-				<value text=": "/>
-				<value variable="pm_personal_fld3_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Info Lowest Level4">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value variable="pt_pers_data_label4_c"/>
-				<value text=": "/>
-				<value variable="pm_personal_fld4_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Info Lowest Level5">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value variable="pt_pers_data_label5_c"/>
-				<value text=": "/>
-				<value variable="pm_personal_fld5_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Info Lowest Level6">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value variable="pt_pers_data_label6_c"/>
-				<value text=": "/>
-				<value variable="pm_personal_fld6_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Info Lowest Level7-1">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value variable="pt_pers_data_label7_c"/>
-				<value text=": "/>
-				<value variable="pm_driving_license_number_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Info Lowest Level7-2">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Driving License Number: "/>
-				<value variable="pm_driving_license_number_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Info Lowest Level8">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Internal Drivers License?: yes" condition="{pm_internal_driver_license_l}"/>
-				<value text="Internal Drivers License?: no" condition="not({pm_internal_driver_license_l})"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Info Lowest Level9">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Partner Key: "/>
-				<value variable="p_partner_key_n"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Local Partner Data Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="************** Local Partner Data *************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Local Partner Data lower Level" calculation="SelectLocalPartnerData"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Local Personnel Data Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="************ Local Personnel Data ************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Local Partner Data lower Level" calculation="SelectLocalPersonnelData"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Local Partner Data lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Local Partner Data Lowest Level1"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Local Partner Data Lowest Level1">
-		<detail>
-			<switch>
-				<case condition="eq({p_data_type_c}, char)">
-					<field whichfield="column 0" pos="1cm">
-						<value variable="p_text_c"/>
-						<value text=": "/>
-						<value variable="p_value_char_c"/>
-					</field>
-				</case>
-				<case condition="eq({p_data_type_c}, integer)">
-					<field whichfield="column 0" pos="1cm">
-						<value variable="p_text_c"/>
-						<value text=": "/>
-						<value variable="p_value_int_i"/>
-					</field>
-				</case>
-				<case condition="eq({p_data_type_c}, float)">
-					<field whichfield="column 0" pos="1cm">
-						<value variable="p_text_c"/>
-						<value text=": "/>
-						<value variable="p_value_num_n"/>
-					</field>
-				</case>
-				<case condition="eq({p_data_type_c}, currency)">
-					<field whichfield="column 0" pos="1cm">
-						<value variable="p_text_c"/>
-						<value text=": "/>
-						<value variable="p_value_currency_n"/>
-					</field>
-				</case>
-				<case condition="eq({p_data_type_c}, boolean)">
-					<field whichfield="column 0" pos="1cm">
-						<value variable="p_text_c"/>
-						<value text=": "/>
-						<value variable="p_value_bool_l"/>
-					</field>
-				</case>
-				<case condition="eq({p_data_type_c}, date)">
-					<field whichfield="column 0" pos="1cm">
-						<value variable="p_text_c"/>
-						<value text=": "/>
-						<value variable="p_value_date_d"/>
-					</field>
-				</case>
-				<case condition="eq({p_data_type_c}, time)">
-					<field whichfield="column 0" pos="1cm">
-						<value variable="p_text_c"/>
-						<value text=": "/>
-						<value variable="p_value_time_i"/>
-					</field>
-				</case>
-				<case condition="eq({p_data_type_c}, partnerkey)">
-					<field whichfield="column 0" pos="1cm">
-						<value variable="p_text_c"/>
-						<value text=": "/>
-						<value variable="p_value_partner_key_n"/>
-					</field>
-				</case>
-				<case condition="eq({p_data_type_c}, lookup)">
-					<field whichfield="column 0" pos="1cm">
-						<value variable="p_text_c"/>
-						<value text=": "/>
-						<value variable="p_value_lookup_c"/>
-					</field>
-				</case>
-			</switch>
-		</detail>
-	</level>
-	
-	<level name="Job Assignments Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="************** Job Assignments ***************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Job Assignments lower Level" calculation="SelectJobAssignments"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Job Assignments lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Job Assignments Lowest Level1"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Job Assignments Lowest Level1">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Position: "/>
-				<value variable="pt_position_name_c"/>
-				<value text="  Job Type: "/>
-				<value variable="pt_assignment_code_descr_c"/>
-				<value text="  Unit: "/>
-				<value variable="p_partner_short_name_c"/>
-				<value text="  From: "/>
-				<value variable="pm_from_date_d"/>
-				<value text="  To: "/>
-				<value variable="pm_to_date_d"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Commitment Period Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="************* Commitment Period *************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Commitment Period lower Level" calculation="SelectCommitmentPeriod"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Commitment Period lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Commitment Period Lowest Level1"/>
-			<lowerLevelReport level="Commitment Period Lowest Level2" calculation="SelectTargetFieldName"/>
-			<lowerLevelReport level="Commitment Period Lowest Level3" calculation="SelectHomeOfficeName"/>
-			<lowerLevelReport level="Commitment Period Lowest Level4" calculation="SelectRecruitingFieldName"/>
-			<lowerLevelReport level="Commitment Period Lowest Level5"/>
-		</detail>
-		<footer space="below"/>
-	</level>
-	<level name="Commitment Period Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Status: "/>
-				<value variable="pm_status_code_c"/>
-				<value text="    Start Date: "/>
-				<value variable="pm_start_of_commitment_d"/>
-				<value text="    End Date: "/>
-				<value variable="pm_end_of_commitment_d"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Commitment Period Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="    Receiving Field: "/>
-				<value variable="TargetFieldName" />
-			</field>
-		</detail>
-	</level>
-	<level name="Commitment Period Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="    Sending Field: "/>
-				<value variable="HomeOfficeName"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Commitment Period Lowest Level4" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="    Recruiting Field: "/>
-				<value variable="RecrutingFieldName"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Commitment Period Lowest Level5" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Comments: "  />
-				<value variable="pm_staff_data_comments_c" condition="gt({pm_staff_data_comments_c},0)"/>
-				<value text=" --" condition="lt({pm_staff_data_comments_c},1)" />
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Passport Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="******************* Passport *******************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Passport Lowest Level" calculation="SelectPassports"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Passport Lowest Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Passport Lowest Level1"></lowerLevelReport>
-			<lowerLevelReport level="Passport Lowest Level2"></lowerLevelReport>
-			<lowerLevelReport level="Passport Lowest Level3"></lowerLevelReport>
-			<lowerLevelReport level="Passport Lowest Level4"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Passport Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Passport Number: "/>
-				<value variable="pm_passport_number_c"/>
-				<value text="  Passport Name: "/>
-				<value variable="pm_full_passport_name_c"/>
-				<value text="  Passport Type: "/>
-				<value variable="pm_passport_details_type_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Passport Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Expiry Date: "/>
-				<value variable="pm_date_of_expiration_d"/>
-				<value text="Nationality: "/>
-				<value variable="p_passport_nationality_code_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Passport Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Date and Place of Birth: "/>
-				<value variable="p_date_of_birth_d"/>
-				<value text="   "/>
-				<value variable="pm_place_of_birth_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Passport Lowest Level4" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Date and Place of Issue: "/>
-				<value variable="pm_date_of_issue_d"/>
-				<value text="   "/>
-				<value variable="pm_place_of_issue_c"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Personal Documents Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="************ Personal Documents ************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Personal Documents lower Level" calculation="SelectPersonalDocuments"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Personal Documents lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Personal Documents Lowest Level1"/>
-			<lowerLevelReport level="Personal Documents Lowest Level2"/>
-			<lowerLevelReport level="Personal Documents Lowest Level3"/>
-			<lowerLevelReport level="Personal Documents Contact Level1" condition="not(eq({pm_contact_partner_key_n}, 0))" calculation="GetContactPartnerName"/>
-			<lowerLevelReport level="Personal Documents Contact Level2" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
-			<lowerLevelReport level="Personal Documents Contact Level3" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
-			<lowerLevelReport level="Personal Documents Contact Level4" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
-		</detail>
-		<footer space="below"/>
-	</level>
-	<level name="Personal Documents Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Document Type: "/>
-				<value variable="pm_doc_code_c"/>
-				<value text="    Document ID: "/>
-				<value variable="pm_document_id_c"/>
-				<value text="    Expiry Date: " condition="gt({pm_date_of_expiration_d},0)"/>
-				<value variable="pm_date_of_expiration_d"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Date and Place of Issue: " condition="gt({pm_date_of_issue_d},0)" />
-				<value variable="pm_date_of_issue_d"/>
-				<value text="  "/>
-				<value variable="pm_place_of_issue_c"/>
-				<value text="    Date of Start: " condition="gt({pm_date_of_start_d},0)"/>
-				<value variable="pm_date_of_start_d"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Comment: " condition="gt({pm_doc_comment_c},0)"/>
-				<value variable="pm_doc_comment_c"/>
-				<value text="    Associated Document ID: " condition="gt({pm_assoc_doc_id_c},0)"/>
-				<value variable="pm_assoc_doc_id_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Contact Level1" identification="pm_contact_partner_key_n">
-		<detail>
-			<field whichfield="column 0" pos="1cm" calculation="Get Contact Partner Address">
-				<value text="     Contact: "/>
-				<value variable="pm_contact_partner_key_n"/>
-				<value text="   "/>
-				<value variable="ContactPartnerName"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Contact Level2" identification="pm_contact_partner_key_n">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="     Phone: "/>
-				<value variable="TelephoneNumber"/>
-				<value text="   Alt.Phone: "/>
-				<value variable="AlternateTelephone"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Contact Level3" identification="pm_contact_partner_key_n">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="     Mobile: "/>
-				<value variable="MobileNumber"/>
-				<value text="   Fax: "/>
-				<value variable="FaxNumber"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Contact Level4" identification="pm_contact_partner_key_n">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="     Email: "/>
-				<value variable="EmailAddress"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Special Need Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="**************** Special Needs ****************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Special Need lower Level" calculation="SelectSpecialNeeds"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Special Need lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Special Need Lowest Level1"/>
-			<lowerLevelReport level="Special Need Lowest Level2" condition="not(and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l}))"/>
-			<lowerLevelReport level="Special Need Lowest Level2 tow lines 1" condition="and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})"/>
-			<lowerLevelReport level="Special Need Lowest Level2 tow lines 2" condition="and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})"/>
-			<lowerLevelReport level="Special Need Lowest Level3"/>
-		</detail>
-		<footer space="below"/>
-	</level>
-	<level name="Special Need Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Medical Needs: " condition="gt({pm_medical_comment_c}, 0)"/>
-				<value text="Medical Needs: (none recorded)" condition="lt({pm_medical_comment_c}, 1)"/>
-				<value variable="pm_medical_comment_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Special Need Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Dietary Needs: "/>
-				<value text="Vegetarian " condition="{pm_vegetarian_flag_l}"/>
-				<value text="(none recorded)" condition="and(lt({pm_dietary_comment_c}, 1), not({pm_vegetarian_flag_l}))"/>
-				<value variable="pm_dietary_comment_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Special Need Lowest Level2 tow lines 1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Dietary Needs: "/>
-				<value text="Vegetarian"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Special Need Lowest Level2 tow lines 2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="                         "/>
-				<value variable="pm_dietary_comment_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Special Need Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Other Needs: " condition="gt({pm_other_special_need_c}, 0)"/>
-				<value text="Other Needs: (none recorded)" condition="lt({pm_other_special_need_c}, 1)"/>
-				<value variable="pm_other_special_need_c"/>
-			</field>
-		</detail>
-	</level>
 
-	<level name="Personal Budget Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="*************** Personal Budget ***************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Personal Budget lower Level" calculation="SelectPersonalBudget"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Personal Budget lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Personal Budget Lowest Level1"/>
-			<lowerLevelReport level="Personal Budget Lowest Level2"/>
-			<lowerLevelReport level="Personal Budget Lowest Level3"/>
-			<lowerLevelReport level="Personal Budget Lowest Level4"/>
-			<lowerLevelReport level="Personal Budget Lowest Level5"/>
-			<lowerLevelReport level="Personal Budget Lowest Level6"/>
-			<lowerLevelReport level="Personal Budget Lowest Level7"/>
-			<lowerLevelReport level="emptyLine"/>
-			<lowerLevelReport level="Personal Budget Lowest Level8"/>
-			<lowerLevelReport level="Personal Budget Lowest Level9"/>
-			<lowerLevelReport level="Personal Budget Lowest Level10"/>
-			<lowerLevelReport level="Personal Budget Lowest Level11"/>
-			<lowerLevelReport level="Personal Budget Lowest Level12"/>
-			<lowerLevelReport level="Personal Budget Lowest Level13"/>
-			<lowerLevelReport level="Personal Budget Lowest Level14"/>
-		</detail>
-		<footer space="below"/>
-	</level>
-	<level name="Personal Budget Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Agreement Date: "/>
-				<value variable="pm_agreement_date_d"/>
-				<value text="     Review Date:"/>
-				<value variable="pm_review_date_d"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Currency Code: "/>
-				<value variable="a_currency_code_c"/>
-				<value text="     Period: "/>
-				<value variable="pm_period_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Actual Support:     " />
-				<value variable="pm_actual_support_figure_n"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level4" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Admin Grant:      +" />
-				<value variable="pm_admin_grant_n"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level5" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Total Support:       " />
-				<value variable="TotalSupport" calculation="CalculateTotalSupport" />
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level6" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Agreed Support:   "/>
-				<value variable="pm_agreed_support_figure_n"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level7" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Surplus/Deficit:    " />
-				<value variable="SurplusDeficit" calculation="CalculateSurplusDeficit"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level8" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Individual Budget Items: " />
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level9" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Housing: " />
-				<value variable="pm_housing_n"/>
-				<value text="           Personal: " />
-				<value variable="pm_personal_n"/>
-				<value text="                            Vehicle: " />
-				<value variable="pm_verhicle_n"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level10" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Food: " />
-				<value variable="pm_food_n"/>
-				<value text="               Medical Dental Care: " />
-				<value variable="pm_medical_dental_care_n"/>
-				<value text="                     Postal/Phone: " />
-				<value variable="pm_postage_telephone_n"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level11" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Insurance: " />
-				<value variable="pm_insurance_n"/>
-				<value text="         Childs Education: " />
-				<value variable="pm_childrens_education_n"/>
-				<value text="                           Ministry Costs: " />
-				<value variable="pm_ministry_costs_n"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level12" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Training: " />
-				<value variable="pm_study_training_n"/>
-				<value text="                   Travel and Conferences: " />
-				<value variable="pm_travel_conferences_n"/>
-				<value text="        Pension: " />
-				<value variable="pm_pension_n"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level13" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Furlough: " />
-				<value variable="pm_home_assignment_holiday_n"/>
-				<value text="                  Other: " />
-				<value variable="pm_other_n"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Budget Lowest Level14" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Total of individual budget items: " />
-				<value variable="IndividualBudgetItems" calculation="CalculateIndividualBudgetItems"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Vision Areas Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="***************** Vision Areas *****************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Vision Areas lower Level" calculation="SelectVisions"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Vision Areas lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Vision Areas Lowest Level1"/>
-			<lowerLevelReport level="Vision Areas Lowest Level2"/>
-		</detail>
-	</level>
-	<level name="Vision Areas Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Area: " />
-				<value variable="pt_vision_area_name_c"/>
-				<value text="    Level: " />
-				<value variable="pt_vision_level_i"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Vision Areas Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Description: " />
-				<value variable="pt_vision_level_descr_c"/>
-				<value text="    Comment: " condition="gt({pm_vision_comment_c}, 0)"/>
-				<value text="    Comment: --" condition="lt({pm_vision_comment_c}, 1)"/>
-				<value variable="pm_vision_comment_c"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Professional Areas Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="************** Professional Areas *************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Professional Areas lower Level" calculation="SelectQualifications"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Professional Areas lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Professional Areas Lowest Level1"/>
-			<lowerLevelReport level="Professional Areas Lowest Level2"/>
-			<lowerLevelReport level="Professional Areas Lowest Level3"/>
-		</detail>
-	</level>
-	<level name="Professional Areas Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Qualification Area: " />
-				<value variable="pt_qualification_area_name_c"/>
-				<value text="  Level: " />
-				<value variable="pt_qualification_level_i"/>
-				<value text="  Description: " />
-				<value variable="pt_qualification_level_descr_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Professional Areas Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Years of experience: " />
-				<value variable="pm_years_of_experience_i"/>
-				<value text="     As of: "/>
-				<value variable="pm_years_of_experience_as_of_d"/>
-				<value text="    Informal Training?: YES" condition="{pm_informal_flag_l}"/>
-				<value text="    Informal Training?: NO" condition="not({pm_informal_flag_l})"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Professional Areas Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Comment: " />
-				<value variable="pm_comment_c"/>
-				<value text="--" condition="lt(length({pm_comment_c}), 1)"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Ability Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="***************** Ability Areas *****************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Ability lower Level" calculation="SelectAbilities"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Ability lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Ability Lowest Level1"/>
-		</detail>
-	</level>
-	<level name="Ability Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Ability Area: " />
-				<value variable="pt_ability_area_name_c"/>
-				<value text="  Level: " />
-				<value variable="pt_ability_level_i"/>
-				<value text="  Description: " />
-				<value variable="pt_ability_level_descr_c"/>
-				<value text="  Years of Experience: " />
-				<value variable="pm_years_of_experience_i"/>
-				<value text=" As of: " />
-				<value variable="pm_years_of_experience_as_of_d"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Language Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="*************** Language Areas ***************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Language lower Level" calculation="SelectLanguages"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Language lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Language Lowest Level1"/>
-			<lowerLevelReport level="Language Lowest Level2"/>
-		</detail>	</level>
-	<level name="Language Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Language: " />
-				<value variable="p_language_description_c"/>
-				<value text="  Level: " />
-				<value variable="pt_language_level_i"/>
-				<value text="  Description: " />
-				<value variable="pt_language_level_descr_c"/>
-				<value text="  Years of Experience: " />
-				<value variable="pm_years_of_experience_i"/>
-				<value text=" As of: " />
-				<value variable="pm_years_of_experience_as_of_d"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Language Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Translate?: YES" condition="{pm_willing_to_translate_l}"/>
-				<value text="Translate?: NO" condition="not({pm_willing_to_translate_l})"/>
-				<value text="   Into? YES" condition="{pm_translate_into_l}"/>
-				<value text="   Into? NO" condition="not({pm_translate_into_l})"/>
-				<value text="   Out Of?: YES" condition="{pm_translate_out_of_l}"/>
-				<value text="   Out Of? NO" condition="not({pm_translate_out_of_l})"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Previous Experience Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="************* Previous Experience ************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Previous Experience lower Level" calculation="SelectPreviousExperiences"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Previous Experience lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Previous Experience Lowest Level1"/>
-			<lowerLevelReport level="Previous Experience Lowest Level2"/>
-			<lowerLevelReport level="Previous Experience Lowest Level3"/>
-		</detail>
-	</level>
-	<level name="Previous Experience Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Organisation: " />
-				<value variable="pm_other_organisation_c" condition="not({pm_prev_work_here_l})"/>
-				<value text="Operation Mobilisation" condition="{pm_prev_work_here_l}"/>
-				<value text="  Location: " />
-				<value variable="pm_prev_location_c"/>
-				<value text="  Role: " />
-				<value variable="pm_prev_role_c"/>
-				<value text="--" condition="lt(length({pm_prev_role_c}), 1)"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Previous Experience Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Start Date: " />
-				<value variable="pm_start_date_d"/>
-				<value text="  End Date: " />
-				<value variable="pm_end_date_d"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Previous Experience Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Comments: " />
-				<value variable="pm_past_exp_comments_c"/>
-				<value text="--" condition="lt(length({pm_past_exp_comments_c}), 1)"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Personal Valuable Items Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="********** Personal Valuable Items **********"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Personal Valuable Items lower Level" calculation="SelectValuableItems"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="column 0" pos="0cm">
-				<value text="************************************************** "/>
-			</field>
-		</footer>
-	</level>
-	<level name="Personal Valuable Items lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Personal Valuable Items Lowest Level1"/>
-			<lowerLevelReport level="Personal Valuable Items Lowest Level2"/>
-			<lowerLevelReport level="Personal Valuable Items Lowest Level3"/>
-		</detail>
-	</level>
-	<level name="Personal Valuable Items Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Item Name: " />
-				<value variable="pt_valuable_item_descr_c"/>
-				<value text="    Make: " />
-				<value variable="pm_make_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Valuable Items Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Model: " />
-				<value variable="pm_model_c"/>
-				<value text="    Identifier: " />
-				<value variable="pm_identifier_c"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="emptyLine">
-		<detail>
-			<field whichfield="column 0">
-				<value text=" " />
-			</field>
-		</detail>
-	</level>
-	
+      <calculation id="SelectPersonalInfo" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT
+                PUB_pm_personal_data.pm_personal_fld1_c,
+                PUB_pm_personal_data.pm_personal_fld2_c,
+                PUB_pm_personal_data.pm_personal_fld3_c,
+                PUB_pm_personal_data.pm_personal_fld4_c,
+                PUB_pm_personal_data.pm_personal_fld5_c,
+                PUB_pm_personal_data.pm_personal_fld6_c,
+                PUB_pm_personal_data.pm_driving_license_number_c,
+                PUB_pm_personal_data.pm_internal_driver_license_l,
+                PUB_pm_personal_data.p_partner_key_n,
+                PUB_pt_personal_data_labels.pt_pers_data_label1_c,
+                PUB_pt_personal_data_labels.pt_pers_data_label2_c,
+                PUB_pt_personal_data_labels.pt_pers_data_label3_c,
+                PUB_pt_personal_data_labels.pt_pers_data_label4_c,
+                PUB_pt_personal_data_labels.pt_pers_data_label5_c,
+                PUB_pt_personal_data_labels.pt_pers_data_label6_c,
+                PUB_pt_personal_data_labels.pt_pers_data_label7_c
+              FROM
+                PUB_pm_personal_data, PUB_pt_personal_data_labels
+              WHERE
+                PUB_pm_personal_data.p_partner_key_n = {StaffPartnerKey}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectLocalPartnerData" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT
+                PUB_p_data_label.p_text_c,
+                PUB_p_data_label.p_data_type_c,
+                PUB_p_data_label_value_partner.p_value_char_c,
+                PUB_p_data_label_value_partner.p_value_num_n,
+                PUB_p_data_label_value_partner.p_value_currency_n,
+                PUB_p_data_label_value_partner.p_value_int_i,
+                PUB_p_data_label_value_partner.p_value_bool_l,
+                PUB_p_data_label_value_partner.p_value_date_d,
+                PUB_p_data_label_value_partner.p_value_time_i,
+                PUB_p_data_label_value_partner.p_value_partner_key_n,
+                PUB_p_data_label_value_partner.p_value_lookup_c
+              FROM
+                PUB_p_data_label_use, PUB_p_data_label, PUB_p_data_label_value_partner
+              WHERE
+                  PUB_p_data_label_value_partner.p_partner_key_n = {StaffPartnerKey}
+                AND PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i
+                AND PUB_p_data_label_use.p_use_c &lt;&gt; "Personnel"
+                AND PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label.p_key_i
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectLocalPersonnelData" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT
+                PUB_p_data_label.p_text_c,
+                PUB_p_data_label.p_data_type_c,
+                PUB_p_data_label_value_partner.p_value_char_c,
+                PUB_p_data_label_value_partner.p_value_num_n,
+                PUB_p_data_label_value_partner.p_value_currency_n,
+                PUB_p_data_label_value_partner.p_value_int_i,
+                PUB_p_data_label_value_partner.p_value_bool_l,
+                PUB_p_data_label_value_partner.p_value_date_d,
+                PUB_p_data_label_value_partner.p_value_time_i,
+                PUB_p_data_label_value_partner.p_value_partner_key_n,
+                PUB_p_data_label_value_partner.p_value_lookup_c
+              FROM
+                PUB_p_data_label_use, PUB_p_data_label, PUB_p_data_label_value_partner
+              WHERE
+                  PUB_p_data_label_value_partner.p_partner_key_n = {StaffPartnerKey}
+                AND PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i
+                AND PUB_p_data_label_use.p_use_c = "Personnel"
+                AND PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label.p_key_i
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectJobAssignments" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT
+                PUB_pm_job_assignment.pt_position_name_c,
+                PUB_pm_job_assignment.pm_from_date_d,
+                PUB_pm_job_assignment.pm_to_date_d,
+                PUB_pt_assignment_type.pt_assignment_code_descr_c,
+                PUB_p_partner.p_partner_short_name_c
+              FROM
+                PUB_pm_job_assignment, PUB_pt_assignment_type, PUB_p_partner
+              WHERE
+                PUB_pm_job_assignment.p_partner_key_n = {StaffPartnerKey}
+                AND PUB_pt_assignment_type.pt_assignment_type_code_c = PUB_pm_job_assignment.pt_assignment_type_code_c
+                AND PUB_p_partner.p_partner_key_n = PUB_pm_job_assignment.pm_unit_key_n
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectCommitmentPeriod" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT
+                PUB_pm_staff_data.pm_start_of_commitment_d,
+                PUB_pm_staff_data.pm_end_of_commitment_d,
+                PUB_pm_staff_data.pm_status_code_c,
+                PUB_pm_staff_data.pm_receiving_field_n,
+                PUB_pm_staff_data.pm_office_recruited_by_n,
+                PUB_pm_staff_data.pm_home_office_n,
+                PUB_pm_staff_data.pm_staff_data_comments_c
+              FROM
+                PUB_pm_staff_data
+              WHERE
+                PUB_pm_staff_data.p_partner_key_n = {StaffPartnerKey}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectRecruitingFieldName" returns="RecrutingFieldName" returnsFormat="row">
+        <query>
+          <queryDetail condition="gt(length({pm_office_recruited_by_n}), 0)">
+            <value>
+              SELECT DISTINCT
+                PUB_p_partner.p_partner_short_name_c AS RecrutingFieldName
+              FROM
+                PUB_p_partner
+              WHERE
+                PUB_p_partner.p_partner_key_n = {pm_office_recruited_by_n}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+      <calculation id="SelectHomeOfficeName" returns="HomeOfficeName" returnsFormat="row">
+        <query>
+          <queryDetail condition="gt(length({pm_home_office_n}), 0)">
+            <value>
+              SELECT DISTINCT
+                PUB_p_partner.p_partner_short_name_c AS HomeOfficeName
+              FROM
+                PUB_p_partner
+              WHERE
+                PUB_p_partner.p_partner_key_n = {pm_home_office_n}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+      <calculation id="SelectTargetFieldName" returns="TargetFieldName" returnsFormat="row">
+        <query>
+          <queryDetail condition="gt(length({pm_receiving_field_n}), 0)">
+            <value>
+              SELECT DISTINCT
+                PUB_p_partner.p_partner_short_name_c AS TargetFieldName
+              FROM
+                PUB_p_partner
+              WHERE
+                PUB_p_partner.p_partner_key_n = {pm_receiving_field_n}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectPreviousExperiences" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT 
+                PUB_pm_past_experience.pm_start_date_d,
+                PUB_pm_past_experience.pm_end_date_d,
+                PUB_pm_past_experience.pm_prev_location_c,
+                PUB_pm_past_experience.pm_prev_role_c,
+                PUB_pm_past_experience.pm_other_organisation_c,
+                PUB_pm_past_experience.pm_prev_work_here_l,
+                PUB_pm_past_experience.pm_past_exp_comments_c
+              FROM 
+                PUB_pm_past_experience
+              WHERE
+                PUB_pm_past_experience.p_partner_key_n = {StaffPartnerKey}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectQualifications" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT 
+                PUB_pm_person_qualification.pm_informal_flag_l,
+                PUB_pm_person_qualification.pt_qualification_area_name_c,
+                PUB_pm_person_qualification.pm_years_of_experience_i,
+                PUB_pm_person_qualification.pm_years_of_experience_as_of_d,
+                PUB_pm_person_qualification.pm_comment_c,
+                PUB_pm_person_qualification.pt_qualification_level_i,
+                PUB_pt_qualification_level.pt_qualification_level_descr_c
+              FROM 
+                PUB_pm_person_qualification, PUB_pt_qualification_level
+              WHERE
+                  PUB_pm_person_qualification.p_partner_key_n = {StaffPartnerKey}
+                AND PUB_pt_qualification_level.pt_qualification_level_i = PUB_pm_person_qualification.pt_qualification_level_i
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="CalculateTotalSupport" returns="TotalSupport" returnsFormat="text">
+        <query>
+          <queryDetail>
+            <value function="assign(TotalSupport, add({pm_actual_support_figure_n}, {pm_admin_grant_n}))"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="CalculateSurplusDeficit" returns="SurplusDeficit" returnsFormat="text">
+        <query>
+          <queryDetail>
+            <value function="assign(SurplusDeficit, sub({TotalSupport}, {pm_agreed_support_figure_n}))"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="CalculateIndividualBudgetItems" returns="IndividualBudgetItems" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value function="assign(IndividualBudgetItems, add (
+          additems(7, {pm_housing_n}, {pm_personal_n}, {pm_vehicle_n},
+          {pm_food_n}, {pm_medical_dental_care_n}, {pm_postage_telephone_n}, {pm_insurance_n}),
+          additems(7, {pm_childrens_education_n}, {pm_ministry_costs_n}, {pm_study_training_n}, 
+          {pm_travel_conferences_n}, {pm_pension_n}, {pm_home_assignment_holiday_n}, {pm_other_n})))"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Personal Data" returns="text" returnsFormat="text">
+        <caption>
+          <value text=""></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PersonalData"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+        <caption>
+          <value text="Partner Key"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="StaffPartnerKey"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+    </calculations>
+
+    <levels>
+      <level name="main">
+        <detail>
+          <lowerLevelReport calculation="Select Partners" level="Partner Level"></lowerLevelReport>
+        </detail>
+      </level>
+
+      <level name="Partner Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm" width="19cm">
+            <value text=" "/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="General Info Level"></lowerLevelReport>
+          <lowerLevelReport level="Personal Info Level" condition="eq({param_chkPersonalInfo}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Local Partner Data Level" condition="eq({param_chkLocalPartnerData}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Local Personnel Data Level" condition="eq({param_chkLocalPersonnelData}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Job Assignments Level" condition="eq({param_chkJobAssignments}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Commitment Period Level" condition="eq({param_chkCommitments}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Passport Level" condition="eq({param_chkPassport}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Personal Documents Level" condition="eq({param_chkPersonalDocuments}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Special Need Level" condition="eq({param_chkSpecialNeeds}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Professional Areas Level" condition="eq({param_chkQualifications}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Ability Level" condition="eq({param_chkAbilities}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Language Level" condition="eq({param_chkLanguages}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Previous Experience Level" condition="eq({param_chkPreviousExperiences}, true)"></lowerLevelReport>
+        </detail>
+        <footer line="below" space="below">
+          <field whichfield="left 0" pos="0cm" width="1cm" >
+            <value text=" "/>
+          </field>
+          <field whichfield="column 0">
+            <value text=" "/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="General Info Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="Personal Data Report for: "/>
+            <value variable="StaffPartnerKey" format="partnerkey"/>
+            <value text="  "/>
+            <value variable="PartnerName"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="General Info lower Level"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text=" "/>
+          </field>
+        </footer>
+      </level>
+      <level name="General Info lower Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="General Info Lowest Level"></lowerLevelReport>
+        </detail>
+      </level>
+      <level name="General Info Lowest Level">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+          </field>
+        </detail>
+      </level>
+
+      <level name="Personal Info Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="***************** Personal Info *****************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Personal Info lower Level" calculation="SelectPersonalInfo"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Personal Info lower Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="Personal Info Lowest Level1" condition="and(gt({pm_personal_fld1_c}, 0), gt({pt_pers_data_label1_c}, 0)"></lowerLevelReport>
+          <lowerLevelReport level="Personal Info Lowest Level2" condition="and(gt({pm_personal_fld2_c}, 0), gt({pt_pers_data_label2_c}, 0)"></lowerLevelReport>
+          <lowerLevelReport level="Personal Info Lowest Level3" condition="and(gt({pm_personal_fld3_c}, 0), gt({pt_pers_data_label3_c}, 0)"></lowerLevelReport>
+          <lowerLevelReport level="Personal Info Lowest Level4" condition="and(gt({pm_personal_fld4_c}, 0), gt({pt_pers_data_label4_c}, 0)"></lowerLevelReport>
+          <lowerLevelReport level="Personal Info Lowest Level5" condition="and(gt({pm_personal_fld5_c}, 0), gt({pt_pers_data_label5_c}, 0)"></lowerLevelReport>
+          <lowerLevelReport level="Personal Info Lowest Level6" condition="and(gt({pm_personal_fld6_c}, 0), gt({pt_pers_data_label6_c}, 0)"></lowerLevelReport>
+          <lowerLevelReport level="Personal Info Lowest Level7-1" condition="gt({pt_pers_data_label7_c}, 0)"></lowerLevelReport>
+          <lowerLevelReport level="Personal Info Lowest Level7-2" condition="lt({pt_pers_data_label7_c}, 1)"></lowerLevelReport>
+          <lowerLevelReport level="Personal Info Lowest Level8"></lowerLevelReport>
+          <lowerLevelReport level="Personal Info Lowest Level9"></lowerLevelReport>
+        </detail>
+      </level>
+      <level name="Personal Info Lowest Level1">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value variable="pt_pers_data_label1_c"/>
+            <value text=": "/>
+            <value variable="pm_personal_fld1_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Info Lowest Level2">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value variable="pt_pers_data_label2_c"/>
+            <value text=": "/>
+            <value variable="pm_personal_fld2_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Info Lowest Level3">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value variable="pt_pers_data_label3_c"/>
+            <value text=": "/>
+            <value variable="pm_personal_fld3_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Info Lowest Level4">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value variable="pt_pers_data_label4_c"/>
+            <value text=": "/>
+            <value variable="pm_personal_fld4_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Info Lowest Level5">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value variable="pt_pers_data_label5_c"/>
+            <value text=": "/>
+            <value variable="pm_personal_fld5_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Info Lowest Level6">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value variable="pt_pers_data_label6_c"/>
+            <value text=": "/>
+            <value variable="pm_personal_fld6_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Info Lowest Level7-1">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value variable="pt_pers_data_label7_c"/>
+            <value text=": "/>
+            <value variable="pm_driving_license_number_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Info Lowest Level7-2">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Driving License Number: "/>
+            <value variable="pm_driving_license_number_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Info Lowest Level8">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Internal Drivers License?: yes" condition="{pm_internal_driver_license_l}"/>
+            <value text="Internal Drivers License?: no" condition="not({pm_internal_driver_license_l})"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Info Lowest Level9">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Partner Key: "/>
+            <value variable="p_partner_key_n"/>
+          </field>
+        </detail>
+      </level>
+
+      <level name="Local Partner Data Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="************** Local Partner Data *************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Local Partner Data lower Level" calculation="SelectLocalPartnerData"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Local Personnel Data Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="************ Local Personnel Data ************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Local Partner Data lower Level" calculation="SelectLocalPersonnelData"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Local Partner Data lower Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="Local Partner Data Lowest Level1"></lowerLevelReport>
+        </detail>
+      </level>
+      <level name="Local Partner Data Lowest Level1">
+        <detail>
+          <switch>
+            <case condition="eq({p_data_type_c}, char)">
+              <field whichfield="column 0" pos="1cm">
+                <value variable="p_text_c"/>
+                <value text=": "/>
+                <value variable="p_value_char_c"/>
+              </field>
+            </case>
+            <case condition="eq({p_data_type_c}, integer)">
+              <field whichfield="column 0" pos="1cm">
+                <value variable="p_text_c"/>
+                <value text=": "/>
+                <value variable="p_value_int_i"/>
+              </field>
+            </case>
+            <case condition="eq({p_data_type_c}, float)">
+              <field whichfield="column 0" pos="1cm">
+                <value variable="p_text_c"/>
+                <value text=": "/>
+                <value variable="p_value_num_n"/>
+              </field>
+            </case>
+            <case condition="eq({p_data_type_c}, currency)">
+              <field whichfield="column 0" pos="1cm">
+                <value variable="p_text_c"/>
+                <value text=": "/>
+                <value variable="p_value_currency_n"/>
+              </field>
+            </case>
+            <case condition="eq({p_data_type_c}, boolean)">
+              <field whichfield="column 0" pos="1cm">
+                <value variable="p_text_c"/>
+                <value text=": "/>
+                <value variable="p_value_bool_l"/>
+              </field>
+            </case>
+            <case condition="eq({p_data_type_c}, date)">
+              <field whichfield="column 0" pos="1cm">
+                <value variable="p_text_c"/>
+                <value text=": "/>
+                <value variable="p_value_date_d"/>
+              </field>
+            </case>
+            <case condition="eq({p_data_type_c}, time)">
+              <field whichfield="column 0" pos="1cm">
+                <value variable="p_text_c"/>
+                <value text=": "/>
+                <value variable="p_value_time_i"/>
+              </field>
+            </case>
+            <case condition="eq({p_data_type_c}, partnerkey)">
+              <field whichfield="column 0" pos="1cm">
+                <value variable="p_text_c"/>
+                <value text=": "/>
+                <value variable="p_value_partner_key_n"/>
+              </field>
+            </case>
+            <case condition="eq({p_data_type_c}, lookup)">
+              <field whichfield="column 0" pos="1cm">
+                <value variable="p_text_c"/>
+                <value text=": "/>
+                <value variable="p_value_lookup_c"/>
+              </field>
+            </case>
+          </switch>
+        </detail>
+      </level>
+
+      <level name="Job Assignments Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="************** Job Assignments ***************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Job Assignments lower Level" calculation="SelectJobAssignments"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Job Assignments lower Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="Job Assignments Lowest Level1"></lowerLevelReport>
+        </detail>
+      </level>
+      <level name="Job Assignments Lowest Level1">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Position: "/>
+            <value variable="pt_position_name_c"/>
+            <value text="  Job Type: "/>
+            <value variable="pt_assignment_code_descr_c"/>
+            <value text="  Unit: "/>
+            <value variable="p_partner_short_name_c"/>
+            <value text="  From: "/>
+            <value variable="pm_from_date_d"/>
+            <value text="  To: "/>
+            <value variable="pm_to_date_d"/>
+          </field>
+        </detail>
+      </level>
+
+      <level name="Commitment Period Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="************* Commitment Period *************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Commitment Period lower Level" calculation="SelectCommitmentPeriod"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Commitment Period lower Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="Commitment Period Lowest Level1"/>
+          <lowerLevelReport level="Commitment Period Lowest Level2" calculation="SelectTargetFieldName"/>
+          <lowerLevelReport level="Commitment Period Lowest Level3" calculation="SelectHomeOfficeName"/>
+          <lowerLevelReport level="Commitment Period Lowest Level4" calculation="SelectRecruitingFieldName"/>
+          <lowerLevelReport level="Commitment Period Lowest Level5"/>
+        </detail>
+        <footer space="below"/>
+      </level>
+      <level name="Commitment Period Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Status: "/>
+            <value variable="pm_status_code_c"/>
+            <value text="    Start Date: "/>
+            <value variable="pm_start_of_commitment_d"/>
+            <value text="    End Date: "/>
+            <value variable="pm_end_of_commitment_d"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Commitment Period Lowest Level2" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="    Receiving Field: "/>
+            <value variable="TargetFieldName" />
+          </field>
+        </detail>
+      </level>
+      <level name="Commitment Period Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="    Sending Field: "/>
+            <value variable="HomeOfficeName"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Commitment Period Lowest Level4" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="    Recruiting Field: "/>
+            <value variable="RecrutingFieldName"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Commitment Period Lowest Level5" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Comments: "  />
+            <value variable="pm_staff_data_comments_c" condition="gt({pm_staff_data_comments_c},0)"/>
+            <value text=" --" condition="lt({pm_staff_data_comments_c},1)" />
+          </field>
+        </detail>
+      </level>
+
+      <level name="Passport Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="******************* Passport *******************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Passport Lowest Level" calculation="SelectPassports"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Passport Lowest Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="Passport Lowest Level1"></lowerLevelReport>
+          <lowerLevelReport level="Passport Lowest Level2"></lowerLevelReport>
+          <lowerLevelReport level="Passport Lowest Level3"></lowerLevelReport>
+          <lowerLevelReport level="Passport Lowest Level4"></lowerLevelReport>
+        </detail>
+      </level>
+      <level name="Passport Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Passport Number: "/>
+            <value variable="pm_passport_number_c"/>
+            <value text="  Passport Name: "/>
+            <value variable="pm_full_passport_name_c"/>
+            <value text="  Passport Type: "/>
+            <value variable="pm_passport_details_type_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Passport Lowest Level2" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Expiry Date: "/>
+            <value variable="pm_date_of_expiration_d"/>
+            <value text="Nationality: "/>
+            <value variable="p_passport_nationality_code_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Passport Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Date and Place of Birth: "/>
+            <value variable="p_date_of_birth_d"/>
+            <value text="   "/>
+            <value variable="pm_place_of_birth_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Passport Lowest Level4" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Date and Place of Issue: "/>
+            <value variable="pm_date_of_issue_d"/>
+            <value text="   "/>
+            <value variable="pm_place_of_issue_c"/>
+          </field>
+        </detail>
+      </level>
+
+      <level name="Personal Documents Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="************ Personal Documents ************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Personal Documents lower Level" calculation="SelectPersonalDocuments"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Personal Documents lower Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="Personal Documents Lowest Level1"/>
+          <lowerLevelReport level="Personal Documents Lowest Level2"/>
+          <lowerLevelReport level="Personal Documents Lowest Level3"/>
+          <lowerLevelReport level="Personal Documents Contact Level1" condition="not(eq({pm_contact_partner_key_n}, 0))" calculation="GetContactPartnerName"/>
+          <lowerLevelReport level="Personal Documents Contact Level2" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
+          <lowerLevelReport level="Personal Documents Contact Level3" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
+          <lowerLevelReport level="Personal Documents Contact Level4" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
+        </detail>
+        <footer space="below"/>
+      </level>
+      <level name="Personal Documents Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Document Type: "/>
+            <value variable="pm_doc_code_c"/>
+            <value text="    Document ID: "/>
+            <value variable="pm_document_id_c"/>
+            <value text="    Expiry Date: " condition="gt({pm_date_of_expiration_d},0)"/>
+            <value variable="pm_date_of_expiration_d"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Documents Lowest Level2" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Date and Place of Issue: " condition="gt({pm_date_of_issue_d},0)" />
+            <value variable="pm_date_of_issue_d"/>
+            <value text="  "/>
+            <value variable="pm_place_of_issue_c"/>
+            <value text="    Date of Start: " condition="gt({pm_date_of_start_d},0)"/>
+            <value variable="pm_date_of_start_d"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Documents Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Comment: " condition="gt({pm_doc_comment_c},0)"/>
+            <value variable="pm_doc_comment_c"/>
+            <value text="    Associated Document ID: " condition="gt({pm_assoc_doc_id_c},0)"/>
+            <value variable="pm_assoc_doc_id_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Documents Contact Level1" identification="pm_contact_partner_key_n">
+        <detail>
+          <field whichfield="column 0" pos="1cm" calculation="Get Contact Partner Address">
+            <value text="     Contact: "/>
+            <value variable="pm_contact_partner_key_n"/>
+            <value text="   "/>
+            <value variable="ContactPartnerName"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Documents Contact Level2" identification="pm_contact_partner_key_n">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="     Phone: "/>
+            <value variable="TelephoneNumber"/>
+            <value text="   Alt.Phone: "/>
+            <value variable="AlternateTelephone"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Documents Contact Level3" identification="pm_contact_partner_key_n">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="     Mobile: "/>
+            <value variable="MobileNumber"/>
+            <value text="   Fax: "/>
+            <value variable="FaxNumber"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Personal Documents Contact Level4" identification="pm_contact_partner_key_n">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="     Email: "/>
+            <value variable="EmailAddress"/>
+          </field>
+        </detail>
+      </level>
+
+      <level name="Special Need Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="**************** Special Needs ****************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Special Need lower Level" calculation="SelectSpecialNeeds"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Special Need lower Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="Special Need Lowest Level1"/>
+          <lowerLevelReport level="Special Need Lowest Level2" condition="not(and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l}))"/>
+          <lowerLevelReport level="Special Need Lowest Level2 tow lines 1" condition="and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})"/>
+          <lowerLevelReport level="Special Need Lowest Level2 tow lines 2" condition="and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})"/>
+          <lowerLevelReport level="Special Need Lowest Level3"/>
+        </detail>
+        <footer space="below"/>
+      </level>
+      <level name="Special Need Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Medical Needs: " condition="gt({pm_medical_comment_c}, 0)"/>
+            <value text="Medical Needs: (none recorded)" condition="lt({pm_medical_comment_c}, 1)"/>
+            <value variable="pm_medical_comment_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Special Need Lowest Level2" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Dietary Needs: "/>
+            <value text="Vegetarian " condition="{pm_vegetarian_flag_l}"/>
+            <value text="(none recorded)" condition="and(lt({pm_dietary_comment_c}, 1), not({pm_vegetarian_flag_l}))"/>
+            <value variable="pm_dietary_comment_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Special Need Lowest Level2 tow lines 1" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Dietary Needs: "/>
+            <value text="Vegetarian"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Special Need Lowest Level2 tow lines 2" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="                         "/>
+            <value variable="pm_dietary_comment_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Special Need Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Other Needs: " condition="gt({pm_other_special_need_c}, 0)"/>
+            <value text="Other Needs: (none recorded)" condition="lt({pm_other_special_need_c}, 1)"/>
+            <value variable="pm_other_special_need_c"/>
+          </field>
+        </detail>
+      </level>
+
+      <level name="Professional Areas Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="************** Professional Areas *************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Professional Areas lower Level" calculation="SelectQualifications"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Professional Areas lower Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="Professional Areas Lowest Level1"/>
+          <lowerLevelReport level="Professional Areas Lowest Level2"/>
+          <lowerLevelReport level="Professional Areas Lowest Level3"/>
+        </detail>
+      </level>
+      <level name="Professional Areas Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Qualification Area: " />
+            <value variable="pt_qualification_area_name_c"/>
+            <value text="  Level: " />
+            <value variable="pt_qualification_level_i"/>
+            <value text="  Description: " />
+            <value variable="pt_qualification_level_descr_c"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Professional Areas Lowest Level2" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Years of experience: " />
+            <value variable="pm_years_of_experience_i"/>
+            <value text="     As of: "/>
+            <value variable="pm_years_of_experience_as_of_d"/>
+            <value text="    Informal Training?: YES" condition="{pm_informal_flag_l}"/>
+            <value text="    Informal Training?: NO" condition="not({pm_informal_flag_l})"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Professional Areas Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Comment: " />
+            <value variable="pm_comment_c"/>
+            <value text="--" condition="lt(length({pm_comment_c}), 1)"/>
+          </field>
+        </detail>
+      </level>
+
+      <level name="Ability Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="***************** Ability Areas *****************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Ability lower Level" calculation="SelectAbilities"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Ability lower Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="Ability Lowest Level1"/>
+        </detail>
+      </level>
+      <level name="Ability Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Ability Area: " />
+            <value variable="pt_ability_area_name_c"/>
+            <value text="  Level: " />
+            <value variable="pt_ability_level_i"/>
+            <value text="  Description: " />
+            <value variable="pt_ability_level_descr_c"/>
+            <value text="  Years of Experience: " />
+            <value variable="pm_years_of_experience_i"/>
+            <value text=" As of: " />
+            <value variable="pm_years_of_experience_as_of_d"/>
+          </field>
+        </detail>
+      </level>
+
+      <level name="Language Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="*************** Language Areas ***************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Language lower Level" calculation="SelectLanguages"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Language lower Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="Language Lowest Level1"/>
+        </detail>
+      </level>
+      <level name="Language Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Language: " />
+            <value variable="p_language_description_c"/>
+            <value text="  Level: " />
+            <value variable="pt_language_level_i"/>
+            <value text="  Description: " />
+            <value variable="pt_language_level_descr_c"/>
+            <value text="  Years of Experience: " />
+            <value variable="pm_years_of_experience_i"/>
+            <value text=" As of: " />
+            <value variable="pm_years_of_experience_as_of_d"/>
+          </field>
+        </detail>
+      </level>
+
+      <level name="Previous Experience Level" identification="StaffPartnerKey">
+        <header>
+          <field whichfield="header 0" pos="0cm">
+            <value text="************* Previous Experience ************"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="Previous Experience lower Level" calculation="SelectPreviousExperiences"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column 0" pos="0cm">
+            <value text="************************************************** "/>
+          </field>
+        </footer>
+      </level>
+      <level name="Previous Experience lower Level" identification="StaffPartnerKey">
+        <detail>
+          <lowerLevelReport level="Previous Experience Lowest Level1"/>
+          <lowerLevelReport level="Previous Experience Lowest Level2"/>
+          <lowerLevelReport level="Previous Experience Lowest Level3"/>
+        </detail>
+      </level>
+      <level name="Previous Experience Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Organisation: " />
+            <value variable="pm_other_organisation_c" condition="not({pm_prev_work_here_l})"/>
+            <value text="Operation Mobilisation" condition="{pm_prev_work_here_l}"/>
+            <value text="  Location: " />
+            <value variable="pm_prev_location_c"/>
+            <value text="  Role: " />
+            <value variable="pm_prev_role_c"/>
+            <value text="--" condition="lt(length({pm_prev_role_c}), 1)"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Previous Experience Lowest Level2" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Start Date: " />
+            <value variable="pm_start_date_d"/>
+            <value text="  End Date: " />
+            <value variable="pm_end_date_d"/>
+          </field>
+        </detail>
+      </level>
+      <level name="Previous Experience Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+          <field whichfield="column 0" pos="1cm">
+            <value text="Comments: " />
+            <value variable="pm_past_exp_comments_c"/>
+            <value text="--" condition="lt(length({pm_past_exp_comments_c}), 1)"/>
+          </field>
+        </detail>
+      </level>
+
+      <level name="emptyLine">
+        <detail>
+          <field whichfield="column 0">
+            <value text=" " />
+          </field>
+        </detail>
+      </level>
+
     </levels>
   </report>
 </reports>

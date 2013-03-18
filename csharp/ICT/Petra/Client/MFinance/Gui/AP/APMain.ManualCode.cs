@@ -377,6 +377,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 myDataView.AllowNew = false;
                 grdSupplierResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
                 grdSupplierResult.Visible = true;
+                SetSupplierFilters(null, null);
 
                 if (grdSupplierResult.TotalPages > 0)
                 {

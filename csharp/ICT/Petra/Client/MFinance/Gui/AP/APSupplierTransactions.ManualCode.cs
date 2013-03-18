@@ -291,6 +291,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdResult.Visible = true;
+            UpdateRowFilter();
 
             if (grdResult.TotalPages > 0)
             {

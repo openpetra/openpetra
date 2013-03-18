@@ -3,256 +3,281 @@
 <reports>
 
   <report id="Common Personnel Calculations">
-	<description>
-		Common calculations for personnel reports
-	</description>
-	<reportparameters/>
-	<reportheader/>
-	<pageheader/>
+    <description>
+      Common calculations for personnel reports
+    </description>
+    <reportparameters/>
+    <reportheader/>
+    <pageheader/>
 
     <calculations>
-	
-	<calculation id="Select Partners" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT 
-					PUB_p_partner.p_partner_key_n AS StaffPartnerKey,
-					PUB_p_partner.p_partner_short_name_c AS PartnerName,
-					PUB_p_partner.p_language_code_c AS FirstLanguage,
-					PUB_p_person.p_gender_c AS Gender,
-					PUB_p_person.p_marital_status_c AS MaritalStatus,
-					PUB_p_person.p_date_of_birth_d AS DateOfBirth,
-					PUB_p_person.p_field_key_n AS p_field_key_n,
-					PUB_p_person.p_family_key_n AS FamilyKey,
-					PUB_p_person.p_title_c AS p_title,
-					PUB_p_person.p_first_name_c AS p_first_name,
-					PUB_p_person.p_middle_name_1_c AS p_middle_name_1,
-					PUB_p_person.p_family_name_c AS p_family_name,
-					PUB_p_person.p_prefered_name_c AS p_prefered_name
-				FROM
-					PUB_p_partner, PUB_p_person
-			</value></queryDetail>
-			<queryDetail condition="eq({param_selection},one partner)"><value>
-				WHERE 
-					PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
-			</value></queryDetail>
-			<queryDetail condition="eq({param_selection},an extract)"><value>
-					, PUB_m_extract,
-					PUB_m_extract_master
-				WHERE 
-					PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-					AND PUB_m_extract_master.m_extract_name_c = {param_extract}
-			</value></queryDetail>
-			<queryDetail condition="eq({param_selection},all current staff)"><value>
-					, PUB_pm_staff_data
-				WHERE  PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
-					AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
-					AND ( PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
-						OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )
-			</value></queryDetail>
-			<queryDetail><value>
-					AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="GetFamilyMembers" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT
-					PUB_p_person.p_date_of_birth_d AS FamilyDOB,
-					PUB_p_partner.p_partner_key_n AS FamilyPartnerKey,
-					PUB_p_partner.p_partner_short_name_c AS FamilyName
-				FROM
-					PUB_p_partner, PUB_p_person
-				WHERE
-					PUB_p_person.p_family_key_n = {FamilyKey}
-					AND PUB_p_partner.p_partner_key_n = PUB_p_person.p_partner_key_n
-					AND PUB_p_partner.p_partner_key_n &lt;&gt; {StaffPartnerKey}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectPassports" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT
-					PUB_pm_passport_details.pm_passport_number_c,
-					PUB_pm_passport_details.pm_full_passport_name_c,
-					PUB_pm_passport_details.pm_passport_details_type_c,
-					PUB_pm_passport_details.pm_date_of_expiration_d,
-					PUB_pm_passport_details.p_passport_nationality_code_c,
-					PUB_pm_passport_details.pm_passport_dob_d,
-					PUB_pm_passport_details.pm_place_of_birth_c,
-					PUB_pm_passport_details.pm_date_of_issue_d,
-					PUB_pm_passport_details.pm_place_of_issue_c,
-					PUB_p_person.p_date_of_birth_d
-				FROM
-					PUB_pm_passport_details, PUB_p_person
-				WHERE
-						PUB_pm_passport_details.p_partner_key_n = {StaffPartnerKey}
-					AND PUB_p_person.p_partner_key_n = {StaffPartnerKey}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectPersonalDocuments" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT
-					PUB_pm_document.pm_doc_code_c,
-					PUB_pm_document.pm_document_id_c,
-					PUB_pm_document.pm_date_of_start_d,
-					PUB_pm_document.pm_date_of_issue_d,
-					PUB_pm_document.pm_date_of_expiration_d,
-					PUB_pm_document.pm_place_of_issue_c,
-					PUB_pm_document.pm_assoc_doc_id_c,
-					PUB_pm_document.pm_doc_comment_c,
-					PUB_pm_document.pm_contact_partner_key_n
-				FROM
-					PUB_pm_document
-				WHERE
-					PUB_pm_document.p_partner_key_n = {StaffPartnerKey}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="GetContactPartnerName" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT
-					PUB_p_partner.p_partner_short_name_c AS ContactPartnerName
-				FROM
-					PUB_p_partner
-				WHERE
-					PUB_p_partner.p_partner_key_n = {pm_contact_partner_key_n}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="GetDrivingLicense" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT
-					PUB_pm_personal_data.pm_driving_license_number_c
-				FROM
-					PUB_pm_personal_data
-				WHERE
-					PUB_pm_personal_data.p_partner_key_n = {StaffPartnerKey}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectSpecialNeeds" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT
-					PUB_pm_special_need.pm_medical_comment_c,
-					PUB_pm_special_need.pm_dietary_comment_c,
-					PUB_pm_special_need.pm_other_special_need_c,
-					PUB_pm_special_need.pm_vegetarian_flag_l,
-					PUB_p_partner.p_partner_key_n
-				FROM
-					PUB_p_partner
-				LEFT JOIN
-					PUB_pm_special_need
-				ON 
-					PUB_pm_special_need.p_partner_key_n = {StaffPartnerKey}
-				WHERE
-					PUB_p_partner.p_partner_key_n = {StaffPartnerKey}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectAbilities" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT
-					PUB_pm_person_ability.pt_ability_area_name_c,
-					PUB_pm_person_ability.pt_ability_level_i,
-					PUB_pm_person_ability.pm_years_of_experience_i,
-					PUB_pm_person_ability.pm_years_of_experience_as_of_d,
-					PUB_pt_ability_level.pt_ability_level_descr_c
-				FROM
-					PUB_pm_person_ability, PUB_pt_ability_level
-				WHERE
-					PUB_pm_person_ability.p_partner_key_n = {StaffPartnerKey}
-					AND PUB_pt_ability_level.pt_ability_level_i = PUB_pm_person_ability.pt_ability_level_i
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectLanguages" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT
-					PUB_pm_person_language.pm_years_of_experience_i,
-					PUB_pm_person_language.pm_years_of_experience_as_of_d,
-					PUB_pm_person_language.pt_language_level_i,
-					PUB_pt_language_level.pt_language_level_descr_c,
-					PUB_p_language.p_language_description_c
-				FROM
-					PUB_pm_person_language, PUB_p_language, PUB_pt_language_level
-				WHERE
-					PUB_pm_person_language.p_partner_key_n = {StaffPartnerKey}
-					AND PUB_pm_person_language.pt_language_level_i = PUB_pt_language_level.pt_language_level_i
-					AND PUB_pm_person_language.p_language_code_c = PUB_p_language.p_language_code_c
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="Get Partner Address" returns="Automatic" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="GetPartnerBestAddress({StaffPartnerKey})"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="Get Contact Partner Address" returns="Automatic" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="GetPartnerBestAddress({pm_contact_partner_key_n})"/>
-				<value function="assign(TelephoneNumber, concatenate({TelephoneNumber}, {Extension}))"/>
-				<value function="assign(TelephoneNumber, not known)" condition="lt(length({TelephoneNumber}), 1)"/>
-				<value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
-				<value function="assign(FaxNumber, not known)" condition="lt(length({FaxNumber}), 2)"/>
-				<value function="assign(AlternateTelephone, not known)" condition="lt(length({AlternateTelephone}), 1)"/>
-				<value function="assign(EmailAddress, not known)" condition="lt({EmailAddress}, 1)"/>
-				<value function="assign(MobileNumber, not known)" condition="lt(length({MobileNumber}), 1)"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Partner Key"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="StaffPartnerKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Address" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Partner Address"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerAddress"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
+
+      <calculation id="Select Partners" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT 
+                PUB_p_partner.p_partner_key_n AS StaffPartnerKey,
+                PUB_p_partner.p_partner_short_name_c AS PartnerName,
+                PUB_p_partner.p_language_code_c AS FirstLanguage,
+                PUB_p_person.p_gender_c AS Gender,
+                PUB_p_person.p_marital_status_c AS MaritalStatus,
+                PUB_p_person.p_date_of_birth_d AS DateOfBirth,
+                PUB_p_person.p_field_key_n AS p_field_key_n,
+                PUB_p_person.p_family_key_n AS FamilyKey,
+                PUB_p_person.p_title_c AS p_title,
+                PUB_p_person.p_first_name_c AS p_first_name,
+                PUB_p_person.p_middle_name_1_c AS p_middle_name_1,
+                PUB_p_person.p_family_name_c AS p_family_name,
+                PUB_p_person.p_prefered_name_c AS p_prefered_name
+              FROM
+                PUB_p_partner, PUB_p_person
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_selection},one partner)">
+            <value>
+        WHERE 
+          PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
+      </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_selection},an extract)">
+            <value>
+                , PUB_m_extract,
+                PUB_m_extract_master
+              WHERE 
+                PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_selection},all current staff)">
+            <value>
+                , PUB_pm_staff_data
+              WHERE  PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
+                AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
+                AND ( PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
+                  OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+          AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
+      </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="GetFamilyMembers" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT
+                PUB_p_person.p_date_of_birth_d AS FamilyDOB,
+                PUB_p_partner.p_partner_key_n AS FamilyPartnerKey,
+                PUB_p_partner.p_partner_short_name_c AS FamilyName
+              FROM
+                PUB_p_partner, PUB_p_person
+              WHERE
+                PUB_p_person.p_family_key_n = {FamilyKey}
+                AND PUB_p_partner.p_partner_key_n = PUB_p_person.p_partner_key_n
+                AND PUB_p_partner.p_partner_key_n &lt;&gt; {StaffPartnerKey}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectPassports" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT
+                PUB_pm_passport_details.pm_passport_number_c,
+                PUB_pm_passport_details.pm_full_passport_name_c,
+                PUB_pm_passport_details.pm_passport_details_type_c,
+                PUB_pm_passport_details.pm_date_of_expiration_d,
+                PUB_pm_passport_details.p_passport_nationality_code_c,
+                PUB_pm_passport_details.pm_passport_dob_d,
+                PUB_pm_passport_details.pm_place_of_birth_c,
+                PUB_pm_passport_details.pm_date_of_issue_d,
+                PUB_pm_passport_details.pm_place_of_issue_c,
+                PUB_p_person.p_date_of_birth_d
+              FROM
+                PUB_pm_passport_details, PUB_p_person
+              WHERE
+                  PUB_pm_passport_details.p_partner_key_n = {StaffPartnerKey}
+                AND PUB_p_person.p_partner_key_n = {StaffPartnerKey}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectPersonalDocuments" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT
+                PUB_pm_document.pm_doc_code_c,
+                PUB_pm_document.pm_document_id_c,
+                PUB_pm_document.pm_date_of_start_d,
+                PUB_pm_document.pm_date_of_issue_d,
+                PUB_pm_document.pm_date_of_expiration_d,
+                PUB_pm_document.pm_place_of_issue_c,
+                PUB_pm_document.pm_assoc_doc_id_c,
+                PUB_pm_document.pm_doc_comment_c,
+                PUB_pm_document.pm_contact_partner_key_n
+              FROM
+                PUB_pm_document
+              WHERE
+                PUB_pm_document.p_partner_key_n = {StaffPartnerKey}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="GetContactPartnerName" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+        SELECT
+          PUB_p_partner.p_partner_short_name_c AS ContactPartnerName
+        FROM
+          PUB_p_partner
+        WHERE
+          PUB_p_partner.p_partner_key_n = {pm_contact_partner_key_n}
+      </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="GetDrivingLicense" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT
+                PUB_pm_personal_data.pm_driving_license_number_c
+              FROM
+                PUB_pm_personal_data
+              WHERE
+                PUB_pm_personal_data.p_partner_key_n = {StaffPartnerKey}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectSpecialNeeds" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT
+                PUB_pm_special_need.pm_medical_comment_c,
+                PUB_pm_special_need.pm_dietary_comment_c,
+                PUB_pm_special_need.pm_other_special_need_c,
+                PUB_pm_special_need.pm_vegetarian_flag_l,
+                PUB_p_partner.p_partner_key_n
+              FROM
+                PUB_p_partner
+              LEFT JOIN
+                PUB_pm_special_need
+              ON 
+                PUB_pm_special_need.p_partner_key_n = {StaffPartnerKey}
+              WHERE
+                PUB_p_partner.p_partner_key_n = {StaffPartnerKey}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectAbilities" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT
+                PUB_pm_person_ability.pt_ability_area_name_c,
+                PUB_pm_person_ability.pt_ability_level_i,
+                PUB_pm_person_ability.pm_years_of_experience_i,
+                PUB_pm_person_ability.pm_years_of_experience_as_of_d,
+                PUB_pt_ability_level.pt_ability_level_descr_c
+              FROM
+                PUB_pm_person_ability, PUB_pt_ability_level
+              WHERE
+                PUB_pm_person_ability.p_partner_key_n = {StaffPartnerKey}
+                AND PUB_pt_ability_level.pt_ability_level_i = PUB_pm_person_ability.pt_ability_level_i
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectLanguages" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT
+                PUB_pm_person_language.pm_years_of_experience_i,
+                PUB_pm_person_language.pm_years_of_experience_as_of_d,
+                PUB_pm_person_language.pt_language_level_i,
+                PUB_pt_language_level.pt_language_level_descr_c,
+                PUB_p_language.p_language_description_c
+              FROM
+                PUB_pm_person_language, PUB_p_language, PUB_pt_language_level
+              WHERE
+                PUB_pm_person_language.p_partner_key_n = {StaffPartnerKey}
+                AND PUB_pm_person_language.pt_language_level_i = PUB_pt_language_level.pt_language_level_i
+                AND PUB_pm_person_language.p_language_code_c = PUB_p_language.p_language_code_c
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Get Partner Address" returns="Automatic" returnsFormat="text">
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value function="GetPartnerBestAddress({StaffPartnerKey})"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Get Contact Partner Address" returns="Automatic" returnsFormat="text">
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value function="GetPartnerBestAddress({pm_contact_partner_key_n})"/>
+            <value function="assign(TelephoneNumber, concatenate({TelephoneNumber}, {Extension}))"/>
+            <value function="assign(TelephoneNumber, not known)" condition="lt(length({TelephoneNumber}), 1)"/>
+            <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
+            <value function="assign(FaxNumber, not known)" condition="lt(length({FaxNumber}), 2)"/>
+            <value function="assign(AlternateTelephone, not known)" condition="lt(length({AlternateTelephone}), 1)"/>
+            <value function="assign(EmailAddress, not known)" condition="lt({EmailAddress}, 1)"/>
+            <value function="assign(MobileNumber, not known)" condition="lt(length({MobileNumber}), 1)"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+        <caption>
+          <value text="Partner Key"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="StaffPartnerKey"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Partner Address" returns="text" returnsFormat="partnerkey">
+        <caption>
+          <value text="Partner Address"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PartnerAddress"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
     </calculations>
-   
-    <levels> 
-	
-	
-	
-	
-	
+
+    <levels>
     </levels>
   </report>
 </reports>
