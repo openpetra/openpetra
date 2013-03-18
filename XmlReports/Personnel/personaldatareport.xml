@@ -46,36 +46,6 @@
 
     <calculations>
 
-      <calculation id="SelectPersonalInfo" returns="Automatic" returnsFormat="row">
-        <query>
-          <queryDetail>
-            <value>
-              SELECT DISTINCT
-                PUB_pm_personal_data.pm_personal_fld1_c,
-                PUB_pm_personal_data.pm_personal_fld2_c,
-                PUB_pm_personal_data.pm_personal_fld3_c,
-                PUB_pm_personal_data.pm_personal_fld4_c,
-                PUB_pm_personal_data.pm_personal_fld5_c,
-                PUB_pm_personal_data.pm_personal_fld6_c,
-                PUB_pm_personal_data.pm_driving_license_number_c,
-                PUB_pm_personal_data.pm_internal_driver_license_l,
-                PUB_pm_personal_data.p_partner_key_n,
-                PUB_pt_personal_data_labels.pt_pers_data_label1_c,
-                PUB_pt_personal_data_labels.pt_pers_data_label2_c,
-                PUB_pt_personal_data_labels.pt_pers_data_label3_c,
-                PUB_pt_personal_data_labels.pt_pers_data_label4_c,
-                PUB_pt_personal_data_labels.pt_pers_data_label5_c,
-                PUB_pt_personal_data_labels.pt_pers_data_label6_c,
-                PUB_pt_personal_data_labels.pt_pers_data_label7_c
-              FROM
-                PUB_pm_personal_data, PUB_pt_personal_data_labels
-              WHERE
-                PUB_pm_personal_data.p_partner_key_n = {StaffPartnerKey}
-            </value>
-          </queryDetail>
-        </query>
-      </calculation>
-
       <calculation id="SelectLocalPartnerData" returns="Automatic" returnsFormat="row">
         <query>
           <queryDetail>
@@ -327,7 +297,8 @@
         </header>
         <detail>
           <lowerLevelReport level="General Info Level"></lowerLevelReport>
-          <lowerLevelReport level="Personal Info Level" condition="eq({param_chkPersonalInfo}, true)"></lowerLevelReport>
+  <!-- Something should replace the removed "Personal Info Level" - Add local personnel data field contents here. -->
+  <!-- We should also add something about skills. -->
           <lowerLevelReport level="Local Partner Data Level" condition="eq({param_chkLocalPartnerData}, true)"></lowerLevelReport>
           <lowerLevelReport level="Local Personnel Data Level" condition="eq({param_chkLocalPersonnelData}, true)"></lowerLevelReport>
           <lowerLevelReport level="Job Assignments Level" condition="eq({param_chkJobAssignments}, true)"></lowerLevelReport>
@@ -376,123 +347,6 @@
       <level name="General Info Lowest Level">
         <detail>
           <field whichfield="column 0" pos="1cm">
-          </field>
-        </detail>
-      </level>
-
-      <level name="Personal Info Level" identification="StaffPartnerKey">
-        <header>
-          <field whichfield="header 0" pos="0cm">
-            <value text="***************** Personal Info *****************"/>
-          </field>
-        </header>
-        <detail>
-          <lowerLevelReport level="Personal Info lower Level" calculation="SelectPersonalInfo"></lowerLevelReport>
-        </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
-      </level>
-      <level name="Personal Info lower Level" identification="StaffPartnerKey">
-        <detail>
-          <lowerLevelReport level="Personal Info Lowest Level1" condition="and(gt({pm_personal_fld1_c}, 0), gt({pt_pers_data_label1_c}, 0)"></lowerLevelReport>
-          <lowerLevelReport level="Personal Info Lowest Level2" condition="and(gt({pm_personal_fld2_c}, 0), gt({pt_pers_data_label2_c}, 0)"></lowerLevelReport>
-          <lowerLevelReport level="Personal Info Lowest Level3" condition="and(gt({pm_personal_fld3_c}, 0), gt({pt_pers_data_label3_c}, 0)"></lowerLevelReport>
-          <lowerLevelReport level="Personal Info Lowest Level4" condition="and(gt({pm_personal_fld4_c}, 0), gt({pt_pers_data_label4_c}, 0)"></lowerLevelReport>
-          <lowerLevelReport level="Personal Info Lowest Level5" condition="and(gt({pm_personal_fld5_c}, 0), gt({pt_pers_data_label5_c}, 0)"></lowerLevelReport>
-          <lowerLevelReport level="Personal Info Lowest Level6" condition="and(gt({pm_personal_fld6_c}, 0), gt({pt_pers_data_label6_c}, 0)"></lowerLevelReport>
-          <lowerLevelReport level="Personal Info Lowest Level7-1" condition="gt({pt_pers_data_label7_c}, 0)"></lowerLevelReport>
-          <lowerLevelReport level="Personal Info Lowest Level7-2" condition="lt({pt_pers_data_label7_c}, 1)"></lowerLevelReport>
-          <lowerLevelReport level="Personal Info Lowest Level8"></lowerLevelReport>
-          <lowerLevelReport level="Personal Info Lowest Level9"></lowerLevelReport>
-        </detail>
-      </level>
-      <level name="Personal Info Lowest Level1">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value variable="pt_pers_data_label1_c"/>
-            <value text=": "/>
-            <value variable="pm_personal_fld1_c"/>
-          </field>
-        </detail>
-      </level>
-      <level name="Personal Info Lowest Level2">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value variable="pt_pers_data_label2_c"/>
-            <value text=": "/>
-            <value variable="pm_personal_fld2_c"/>
-          </field>
-        </detail>
-      </level>
-      <level name="Personal Info Lowest Level3">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value variable="pt_pers_data_label3_c"/>
-            <value text=": "/>
-            <value variable="pm_personal_fld3_c"/>
-          </field>
-        </detail>
-      </level>
-      <level name="Personal Info Lowest Level4">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value variable="pt_pers_data_label4_c"/>
-            <value text=": "/>
-            <value variable="pm_personal_fld4_c"/>
-          </field>
-        </detail>
-      </level>
-      <level name="Personal Info Lowest Level5">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value variable="pt_pers_data_label5_c"/>
-            <value text=": "/>
-            <value variable="pm_personal_fld5_c"/>
-          </field>
-        </detail>
-      </level>
-      <level name="Personal Info Lowest Level6">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value variable="pt_pers_data_label6_c"/>
-            <value text=": "/>
-            <value variable="pm_personal_fld6_c"/>
-          </field>
-        </detail>
-      </level>
-      <level name="Personal Info Lowest Level7-1">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value variable="pt_pers_data_label7_c"/>
-            <value text=": "/>
-            <value variable="pm_driving_license_number_c"/>
-          </field>
-        </detail>
-      </level>
-      <level name="Personal Info Lowest Level7-2">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value text="Driving License Number: "/>
-            <value variable="pm_driving_license_number_c"/>
-          </field>
-        </detail>
-      </level>
-      <level name="Personal Info Lowest Level8">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value text="Internal Drivers License?: yes" condition="{pm_internal_driver_license_l}"/>
-            <value text="Internal Drivers License?: no" condition="not({pm_internal_driver_license_l})"/>
-          </field>
-        </detail>
-      </level>
-      <level name="Personal Info Lowest Level9">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value text="Partner Key: "/>
-            <value variable="p_partner_key_n"/>
           </field>
         </detail>
       </level>
