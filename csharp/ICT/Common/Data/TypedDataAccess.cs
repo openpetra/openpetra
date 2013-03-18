@@ -2367,11 +2367,11 @@ namespace Ict.Common.Data
             TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
         {
             
-            const string STR_BULLET = "*";
+            const string STR_BULLET = "* ";
             Guid VerificationRunGuid = Guid.NewGuid();
             TVerificationResultCollection ReturnValue = new TVerificationResultCollection(VerificationRunGuid);
             string MessageHeaderPart1 = Catalog.GetString(String.Format("The '{0}' record", AThisTableLabel));
-            string MessageHeaderPart2 = Catalog.GetString("{0}\r\ncannot be deleted because\r\n");
+            string MessageHeaderPart2 = Catalog.GetString("{0}\r\n    cannot be deleted because\r\n");
             
             List<string>MessageDetails = new List<string>();
             string CompleteMessageDetails = String.Empty;
@@ -2385,7 +2385,6 @@ namespace Ict.Common.Data
             bool NewReferencingDBTable = false;
             long RefCount = 0;
             long LastRefCount = 0;
-
             
             if (AReferences.Count == 0) 
             {
@@ -2405,7 +2404,6 @@ namespace Ict.Common.Data
 
                      
                     RefCount = SingleReference.ReferenceCount;
-                    
                     NewReferencingDBTable = true;                    
                     
                     CurrentReference = SingleReference;
@@ -2422,13 +2420,6 @@ namespace Ict.Common.Data
                 }
                 else
                 {
-//                    if (SingleReference.PKInfo != null) 
-//                    {
-//                        // The last instance of AReferences for a DB Table will hold the PKInfo *which is our first one here since we iterate backwards over AReferences* 
-//                        // -> set it on PreviousReference accordingly so it captured
-//                        PreviousReference.SetPKInfo(SingleReference.PKInfo);                       
-//                    }
-                    
                     RefCount += SingleReference.ReferenceCount;   
                     NewReferencingDBTable = false;
                 }
@@ -2450,7 +2441,7 @@ namespace Ict.Common.Data
             {
                 for (int Counter = 0; Counter < MessageDetails.Count; Counter++) 
                 {
-                    MessageDetails[Counter] = STR_INDENTATION + STR_BULLET + MessageDetails[Counter].Substring(STR_INDENTATION.Length);
+                    MessageDetails[Counter] = STR_INDENTATION + new string(' ', Counter) + STR_BULLET + MessageDetails[Counter].Substring(STR_INDENTATION.Length);                    
                     
                     if (Counter != MessageDetails.Count) 
                     {
@@ -2495,8 +2486,8 @@ namespace Ict.Common.Data
             AConsolidatedReferences.Add(APreviousReference);
             
             AMessageDetails.Add(Catalog.GetPluralString(
-                    String.Format(STR_INDENTATION + "a '{0}' record is still referencing it", APreviousReference.ThisTableLabel),
-                    String.Format(STR_INDENTATION + "{0} '{1}' records are still referencing it", ALastRefCount, APreviousReference.ThisTableLabel), ALastRefCount));
+                String.Format(STR_INDENTATION + "a '{0}' record is {1} referencing it", APreviousReference.ThisTableLabel, AMessageDetails.Count != 0 ? Catalog.GetString("indirectly") : Catalog.GetString("still")),
+                    String.Format(STR_INDENTATION + "{0} '{1}' records are {2} referencing it", ALastRefCount, APreviousReference.ThisTableLabel, AMessageDetails.Count != 0 ? Catalog.GetString("indirectly") : Catalog.GetString("still")), ALastRefCount));
         }
         
         #endregion CalledByORMGenerateCode
