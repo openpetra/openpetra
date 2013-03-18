@@ -888,9 +888,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     int DocId = (int)Row["DocumentId"];
 
                     int RowIdx = TempDS.AApDocument.DefaultView.Find(DocId);
+
                     if (RowIdx >= 0)
                     {
                         AApDocumentRow DocumentRow = (AApDocumentRow)TempDS.AApDocument.DefaultView[RowIdx].Row;
+
                         if (TFrmAPEditDocument.ApDocumentCanPost(TempDS, DocumentRow)) // This will produce an message box if there's a problem.
                         {
                             PostTheseDocs.Add(DocId);
