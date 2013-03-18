@@ -2262,15 +2262,24 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ledgerRow.PartnerKey = PartnerKey;
             MainDS.ALedger.Rows.Add(ledgerRow);
 
+            PPartnerRow partnerRow;
+
             if (!PPartnerAccess.Exists(PartnerKey, null))
             {
-                PPartnerRow partnerRow = MainDS.PPartner.NewRowTyped();
+                partnerRow = MainDS.PPartner.NewRowTyped();
                 ledgerRow.PartnerKey = PartnerKey;
                 partnerRow.PartnerKey = PartnerKey;
                 partnerRow.PartnerShortName = ALedgerName;
                 partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
                 partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
                 MainDS.PPartner.Rows.Add(partnerRow);
+            }
+            else
+            {
+                // partner record already exists in database -> update ledger name
+                PPartnerAccess.LoadByPrimaryKey(MainDS, PartnerKey, null);
+                partnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
+                partnerRow.PartnerShortName = ALedgerName;
             }
 
             PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, null);
