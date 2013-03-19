@@ -1,0 +1,2 @@
+Download the source for MantisConnect from http://mantisconnect.svn.sourceforge.net/viewvc/mantisconnect/mantisconnect/trunk/clients/dotnet/
+http://mantisconnect.svn.sourceforge.net/viewvc/mantisconnect/mantisconnect/trunk/clients/dotnet/?view=tar
