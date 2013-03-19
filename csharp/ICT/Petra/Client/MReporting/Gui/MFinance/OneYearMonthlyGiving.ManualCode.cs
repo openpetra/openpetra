@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 && (txtExtract.Text == ""))
             {
                 TVerificationResult VerificationMessage = new TVerificationResult(
-                    Catalog.GetString("Enter a extract name."),
+                    Catalog.GetString("Enter an extract name."),
                     Catalog.GetString("No extract name entered!"), TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
