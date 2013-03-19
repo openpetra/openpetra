@@ -377,6 +377,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 myDataView.AllowNew = false;
                 grdSupplierResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
                 grdSupplierResult.Visible = true;
+                SetSupplierFilters(null, null);
 
                 if (grdSupplierResult.TotalPages > 0)
                 {
@@ -878,12 +879,25 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             AccountsPayableTDS TempDS = LoadTaggedDocuments();
 
             List <int>PostTheseDocs = new List <int>();
+            TempDS.AApDocument.DefaultView.Sort = AApDocumentDetailTable.GetApDocumentIdDBName();
 
             foreach (DataRow Row in grdInvoiceResult.PagedDataTable.Rows)
             {
                 if ((Row["Selected"].Equals(true) && ("|POSTED|PARTPAID|PAID|".IndexOf(Row["DocumentStatus"].ToString()) < 0)))
                 {
-                    PostTheseDocs.Add((int)Row["DocumentId"]);
+                    int DocId = (int)Row["DocumentId"];
+
+                    int RowIdx = TempDS.AApDocument.DefaultView.Find(DocId);
+
+                    if (RowIdx >= 0)
+                    {
+                        AApDocumentRow DocumentRow = (AApDocumentRow)TempDS.AApDocument.DefaultView[RowIdx].Row;
+
+                        if (TFrmAPEditDocument.ApDocumentCanPost(TempDS, DocumentRow)) // This will produce an message box if there's a problem.
+                        {
+                            PostTheseDocs.Add(DocId);
+                        }
+                    }
                 }
             }
 

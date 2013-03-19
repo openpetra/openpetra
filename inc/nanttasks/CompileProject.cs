@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -136,8 +136,8 @@ namespace Ict.Tools.NAntTasks
 
             if (this.Project.PlatformName == "unix")
             {
-                // on Windows this is csc, but on Mono on Linux or Mac we need dmcs
-                csc.ExeName = "dmcs";
+                // on Windows this is csc, but on Mono on Linux or Mac we need mcs
+                csc.ExeName = "mcs";
             }
 
             XmlDocument doc = new XmlDocument();
