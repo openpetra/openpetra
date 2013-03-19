@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: openpetraorg\n"
 "Report-Msgid-Bugs-To: joejoe2010 <joejoe2010@users.sourceforge.net>\n"
-"POT-Creation-Date: 2012-12-05 17:06+0100\n"
-"PO-Revision-Date: 2012-12-05 16:46+0000\n"
-"Last-Translator: Timotheus Pokorra <Unknown>\n"
+"POT-Creation-Date: 2012-12-08 11:52+0100\n"
+"PO-Revision-Date: 2013-01-02 16:59+0000\n"
+"Last-Translator: Eduardo Alberto Calvo <Unknown>\n"
 "Language-Team: Spanish <joejoe2010@users.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2012-12-06 04:52+0000\n"
-"X-Generator: Launchpad (build 16341)\n"
+"X-Launchpad-Export-Date: 2013-01-03 04:57+0000\n"
+"X-Generator: Launchpad (build 16393)\n"
 "X-Poedit-Bookmarks: 1509,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "X-Poedit-Language: Spanish\n"
 
@@ -125,8 +125,8 @@ msgid "Tabulator"
 msgstr "Tabulador"
 
 #: csharp\ICT\Common\IO\SelectCSVSeparator.cs:129 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Other Separator:"
-msgstr "Otro separador:"
+msgid "Other Separator"
+msgstr "Otro separador"
 
 #: csharp\ICT\Common\IO\SelectCSVSeparator.cs:130 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Semicolon"
@@ -141,12 +141,12 @@ msgid "OK"
 msgstr "Aceptar"
 
 #: csharp\ICT\Common\IO\SelectCSVSeparator.cs:133 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Date format:"
-msgstr "Formato de fecha:"
+msgid "Date format"
+msgstr "Formato de fecha"
 
 #: csharp\ICT\Common\IO\SelectCSVSeparator.cs:134 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Number format:"
-msgstr ""
+msgid "Number format"
+msgstr "Formato numérico"
 
 #: csharp\ICT\Common\IO\SelectCSVSeparator.cs:135 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Select CSV Separator"
@@ -611,7 +611,7 @@ msgid ""
 msgstr ""
 
 #. / This resourcestring needs to be public as it is referenced from outside this Class as well.
-#: csharp\ICT\Petra\Client\app\Gui\LocalisedStrings.cs:41 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\app\Gui\LocalisedStrings.cs:41
 msgid "County/St&ate:"
 msgstr "Ciudad/Est&ado:"
 
@@ -1027,12 +1027,12 @@ msgid "Create Extract"
 msgstr "Crear extracto"
 
 #: csharp\ICT\Petra\Client\CommonDialogs\CreateExtract.cs:57 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Extract Name:"
-msgstr "Extraer nombre:"
+msgid "Extract Name"
+msgstr "Extraer nombre"
 
 #: csharp\ICT\Petra\Client\CommonDialogs\CreateExtract.cs:58 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Description:"
-msgstr "Descripción:"
+msgid "Description"
+msgstr "Descripción"
 
 #: csharp\ICT\Petra\Client\CommonDialogs\CreateExtract.cs:106
 msgid ""
@@ -1057,12 +1057,12 @@ msgid "For details see the log file"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\CommonDialogs\LoginDialog.cs:100 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&User ID:"
-msgstr "ID de &usuario:"
+msgid "&User ID"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\CommonDialogs\LoginDialog.cs:101 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Password:"
-msgstr "&Contraseña:"
+msgid "&Password"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\CommonDialogs\LoginDialog.cs:102 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid " &Login"
@@ -1073,8 +1073,8 @@ msgid " &Cancel"
 msgstr " &Cancelar"
 
 #: csharp\ICT\Petra\Client\CommonDialogs\LoginDialog.cs:104 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Database:"
-msgstr "Base de datos:"
+msgid "Database"
+msgstr "Base de datos"
 
 #: csharp\ICT\Petra\Client\CommonDialogs\LoginDialog.cs:105 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Remember the username"
@@ -1446,10 +1446,6 @@ msgstr "&Borrar"
 msgid "Int. Postal Type Code"
 msgstr "Código de Tipo Postal Internacional"
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:142 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Description"
-msgstr "Descripción"
-
 #: csharp\ICT\Petra\Client\MCommon\Gui\Setup\InternationalPostalTypeSetup-generated.cs:146
 msgid "New International Postal Type Code"
 msgstr "Nuevo Código de Tipo Postal Internacional"
@@ -1780,14 +1776,6 @@ msgstr ""
 msgid "Partner Name"
 msgstr "Nombre de socio"
 
-#: csharp\ICT\Petra\Client\MCommon\Gui\FieldOfService.cs:84 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Partner Name:"
-msgstr "Nombre de socio:"
-
-#: csharp\ICT\Petra\Client\MCommon\Gui\FieldOfService.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "PartnerKey:"
-msgstr "Clave de socio:"
-
 #: csharp\ICT\Petra\Client\MCommon\Gui\FieldOfService.cs:86 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Field Of Service"
 msgstr "Campo de trabajo"
@@ -1846,44 +1834,48 @@ msgid "Filter by Event Name"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:139 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Valid To:"
-msgstr "Valido hasta:"
+msgid "Valid To"
+msgstr "Valido hasta"
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:140 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Vali&d From:"
-msgstr "Válido desde:"
+msgid "Vali&d From"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:141 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Phone:"
-msgstr "&Teléfono:"
+msgid "&Phone"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:142 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Location Type:"
-msgstr "&Típo de unidad:"
+msgid "&Location Type"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:143 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "County/St&ate"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:144 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Co&untry:"
-msgstr "P&aís:"
+msgid "Co&untry"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:145 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Po&st Code:"
-msgstr "Código po&stal:"
+msgid "Po&st Code"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:146 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Cit&y/Town:"
-msgstr "Ciu&dad:"
+msgid "Cit&y/Town"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:147 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Addr&3:"
-msgstr "Dirr.&3:"
+msgid "Addr&3"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:148 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Street-&2:"
-msgstr "Calle-&2:"
+msgid "Street-&2"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:149 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Addr&1:"
-msgstr "Dirr.&1:"
+msgid "Addr&1"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:150 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "TelExt"
@@ -1918,8 +1910,8 @@ msgid "Locality"
 msgstr "Unidad"
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:158 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Fa&x:"
-msgstr "Fa&x:"
+msgid "Fa&x"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:159 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Fax No"
@@ -1930,24 +1922,24 @@ msgid "FaxExt"
 msgstr "Extensión de Fax"
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:161 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "E&mail:"
-msgstr "C&orreo electrónico:"
+msgid "E&mail"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:162 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Email"
 msgstr "Correo electrónico"
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:163 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Websi&te:"
-msgstr "Sitio w&eb:"
+msgid "Websi&te"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:164 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Web URL"
 msgstr "Sitio w&eb URL"
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:165 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Alte&rnate:"
-msgstr "Alte&rnativo:"
+msgid "Alte&rnate"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:166 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Alternate Phone No"
@@ -1958,8 +1950,8 @@ msgid "Mobile Phone No"
 msgstr "No. celular/móvil"
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:168 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Mo&bile:"
-msgstr "Celular / móvil:"
+msgid "Mo&bile"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:169 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Address"
@@ -1974,12 +1966,8 @@ msgid "Valid From"
 msgstr "Válido desde"
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:172 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Mailin&g Address:"
-msgstr "Dirección postal"
-
-#: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:173 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Valid To"
-msgstr "Valido hasta"
+msgid "Mailin&g Address"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddresses.cs:63
 msgid "A similar address already exists in the database:"
@@ -4663,7 +4651,7 @@ msgid "Done"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MFinance\Gui\GL\GLRevaluation.cs:48 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Select cost center:"
+msgid "Select cost center"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MFinance\Gui\GL\GLRevaluation.cs:49 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -4774,82 +4762,82 @@ msgstr ""
 msgid "GL Batches files (*.csv)|*.csv"
 msgstr "Archivos de Lotes del Libro General (*.csv)|*.csv"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:411
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:488
 msgid ""
 "You have chosen to cancel this batch ({0}).\n"
 "\n"
 "Do you really want to cancel it?"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:413 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:490 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Confirm Cancel"
 msgstr "Confirmar cancelación"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:433
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:510
 msgid "Cancel batch failed"
 msgstr "Falló la cancelación del lote"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:485
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:562
 msgid "The batch has been cancelled successfully!"
 msgstr "¡El lote fue cancelado satisfactoriamente!"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:494
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:571
 msgid "The batch has been cancelled but there were problems during saving; "
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:495
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:572
 msgid "Please try and save the cancellation immediately."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:553
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:630
 msgid ""
 "The Date Effective is outside the periods available for posting. Enter a "
 "date between {0:d} and {1:d}."
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:560
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:637
 msgid "Are you sure you want to post batch {0}?"
 msgstr "¿Está seguro de querer registrar el lote {0}?"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:562
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:639
 msgid "Question"
 msgstr "Pregunta"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:661
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:738
 msgid "{1}/{0} ({3}/{2}) is: {4} and would be: {5}"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:671 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:748 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Result of Test Posting"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:701
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:778
 msgid "Please see file {0} for the result of the test posting"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:955
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1032
 msgid "Import transactions from spreadsheet file"
 msgstr "Importar transacciones desde un archivo de hoja de cálculo"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:956 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1033 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Spreadsheet files (*.csv)|*.csv"
 msgstr "Archivos de hoja de cálculo (*.csv)|*.csv"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:972
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1049
 msgid ""
 "Please select a yml file that describes the content of the spreadsheet"
 msgstr ""
 "Seleccionar un archivo yml que describa el contenido de la hoja de cálculo"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:973
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1050
 msgid "Data description files (*.yml)|*.yml"
 msgstr "Archivos de descripción de datos (*.yml)|*.yml"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1072
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1149
 msgid "Problem with date in row "
 msgstr "Hay un problema con la fecha en la fila "
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1174
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLBatches.ManualCode.cs:1251
 msgid "Automatically generated balancing transaction"
 msgstr "Transacción de balance generada automáticamente"
 
@@ -4901,7 +4889,7 @@ msgstr "Seleccionar el tipo de diario."
 msgid "Enter the date for the journal to come into effect."
 msgstr "Ingresar la fecha desde la cual el diario tiene efecto."
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals.ManualCode.cs:410
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLJournals.ManualCode.cs:465
 msgid ""
 "You have chosen to cancel this journal ({0}).\n"
 "\n"
@@ -4975,15 +4963,15 @@ msgstr ""
 "Ministerio clave al cual se aplica esta transacción (solo para "
 "transferencias de fondos)"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:274
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:372
 msgid "{0} (Base Currency)"
 msgstr "{0} (Moneda base)"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:275
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:373
 msgid "{0} (Transaction Currency)"
 msgstr "{0} (Moneda de transacción)"
 
-#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:524
+#: csharp\ICT\Petra\Client\MFinance\Gui\GL\UC_GLTransactions.ManualCode.cs:627
 msgid ""
 "You have chosen to delete this transaction ({0}).\n"
 "\n"
@@ -5950,10 +5938,6 @@ msgstr ""
 #: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\ExtractFind-generated.cs:70 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Modified between"
 msgstr ""
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\ExtractFind-generated.cs:72 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Extract Name"
-msgstr "Extraer nombre"
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\Extracts\ExtractFind-generated.cs:74 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Created by"
@@ -7923,16 +7907,16 @@ msgid "Displayed Find Criteria"
 msgstr "M&ostrar criterio de búsqueda"
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind_Options.cs:96 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Partner Find Criteria:"
-msgstr "C&riterio de búsqueda para socio"
+msgid "&Partner Find Criteria"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind_Options.cs:97 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Address Find Criteria:"
-msgstr "C&riterio de búsqueda para dirección"
+msgid "&Address Find Criteria"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind_Options.cs:98 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "O&ther Find Criteria:"
-msgstr "&Otros Criterios de búsqueda"
+msgid "O&ther Find Criteria"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind_Options.cs:99 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Sho&w 'Matching Pattern' buttons"
@@ -8116,24 +8100,24 @@ msgid "Partner Key already in use"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\PartnerNewDialog.cs:173 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "S&ites Available:"
-msgstr "S&itios disponibles:"
+msgid "S&ites Available"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\PartnerNewDialog.cs:174 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Partner &Key:"
-msgstr "Clave de s&ocio:"
+msgid "Partner &Key"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\PartnerNewDialog.cs:175 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Partner C&lass:"
-msgstr "C&lase de socio:"
+msgid "Partner C&lass"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\PartnerNewDialog.cs:176 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Acquisition Code:"
-msgstr "Código de obtención:"
+msgid "&Acquisition Code"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\PartnerNewDialog.cs:177 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Private Partner:"
-msgstr "Socio &privado:"
+msgid "&Private Partner"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\PartnerNewDialog.cs:179 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "&Family..."
@@ -9853,7 +9837,7 @@ msgstr "Datos locales"
 msgid "Addresses"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_PartnerTabSet.ManualCode.cs:66
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_PartnerTabSet.ManualCode.cs:66 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Subscriptions"
 msgstr ""
 
@@ -9929,7 +9913,7 @@ msgstr "E&stado de socio"
 msgid "Status Updated"
 msgstr "Estado actualizado"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:96
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart-generated.cs:96 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Last Contact"
 msgstr "Último contacto"
 
@@ -10134,73 +10118,65 @@ msgstr "Privado"
 msgid "Acti&ve"
 msgstr "Acti&vo"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:334 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Status:"
-msgstr "Estado:"
-
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:335 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Phone Number:"
-msgstr "Número de teléfono:"
+msgid "Phone Number"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:336 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Address &3:"
-msgstr "Dirección &3:"
+msgid "Address &3"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:337 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Address &2:"
-msgstr "Dirección &2:"
+msgid "Address &2"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:338 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "&Email:"
-msgstr "&Correo electrónico:"
+msgid "&Email"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:339 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Partner &Name:"
-msgstr "&Nombre del socio:"
+msgid "Partner &Name"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:340 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Personal &(First) Name:"
-msgstr "Primer nombre:"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:341 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Previous Name:"
-msgstr "Nombre anterior:"
+msgid "Personal &(First) Name"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:342 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Address &1:"
-msgstr "Dirección &1:"
+msgid "Address &1"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:343 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "P&ost Code:"
-msgstr "Código postal:"
+msgid "P&ost Code"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:345 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Co&unty:"
-msgstr "C&ondado/distrito/provincia:"
+msgid "Co&unty"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:347 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Mailin&g Addresses Only:"
-msgstr "Solo direcciones postale&s:"
+msgid "Mailin&g Addresses Only"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_PersonnelCriteria_CollapsiblePart.cs:59 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Commitm. Field &Office:"
-msgstr "&Oficina del campo de destino:"
+msgid "Commitm. Field &Office"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_PersonnelCriteria_CollapsiblePart.cs:60 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "From/To:"
-msgstr "Desde/hasta:"
+msgid "From/To"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_PersonnelCriteria_CollapsiblePart.cs:62 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Only Current"
 msgstr "Solo actuales"
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_PersonnelCriteria_CollapsiblePart.cs:65 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Eve&nt/Confer./Camp.:"
-msgstr "Even&to/Confer./Camp.:"
+msgid "Eve&nt/Confer./Camp."
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_PersonnelCriteria_CollapsiblePart.cs:66 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Lang&uage:"
-msgstr "Idio&ma:"
+msgid "Lang&uage"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:65
 msgid ""
@@ -10218,57 +10194,41 @@ msgstr ""
 msgid "Partner Information Cannot be Shown for Partner {0}"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:343 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Partner Key:"
-msgstr "Clave de socio:"
-
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:344 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Acquired:"
-msgstr "Adquirido:"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:346 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Name:"
-msgstr "Nombre:"
+msgid "Acquired"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:348 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Details of the selected Address"
 msgstr "Detalles de la dirección seleccionada"
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:349 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Fax:"
-msgstr "Fax:"
+msgid "Fax"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:350 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Telephone:"
-msgstr "Teléfono:"
+msgid "Telephone"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:351 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Alternate:"
-msgstr "Alternativo:"
+msgid "Alternate"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:352 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Mobile:"
-msgstr "Celular/Móvil:"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:353 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Email:"
-msgstr "Correo electrónico:"
+msgid "Mobile"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:354 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Location Type:"
-msgstr "Tipo de lugar:"
+msgid "Location Type"
+msgstr "Tipo de lugar"
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:355 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Mailing Addr.:"
-msgstr "Dirección Postal:"
+msgid "Mailing Addr."
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:356 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "URL:"
-msgstr "URL:"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:357 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Valid From:"
-msgstr "Valido desde:"
+msgid "URL"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:359 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Types && Subscriptions"
@@ -10278,57 +10238,29 @@ msgstr "Tipos && Suscripciones"
 msgid "Subscriptions and Special Types of the Partner"
 msgstr "Suscripciones y tipos especiales del socio"
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:361 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Special Types:"
-msgstr "Tipos especiales"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:362 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Subscriptions:"
-msgstr "Suscripciones:"
-
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:364 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Other details of the Partner"
 msgstr "Otros detalles del socio"
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:365 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Other Information:"
-msgstr "Otra información:"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:367 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Parent Unit:"
-msgstr "Unidad matriz:"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:368 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Field:"
-msgstr "Campo:"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:369 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Partner Updated:"
-msgstr "Socio actualizado:"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:370 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Speaks (Languages):"
+msgid "Other Information"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:371 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Last Contact:"
-msgstr "Último contacto:"
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:367 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Parent Unit"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:369 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Partner Updated"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:370 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Speaks (Languages)"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:372 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Person / Family"
 msgstr "Persona / Familia"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:373 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Family:"
-msgstr "Familia:"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:374 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Date of Birth:"
-msgstr "Fecha de nacimiento:"
-
-#: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:375 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Family Members:"
-msgstr "Miembros de la familia:"
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:376 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "No Partner to display."
@@ -12801,10 +12733,6 @@ msgstr ""
 msgid "Modified By"
 msgstr ""
 
-#: csharp\ICT\Petra\Client\MReporting\Gui\MPartner\PartnerByGeneralCriteria-generated.cs:86
-msgid "Location Type"
-msgstr "Tipo de lugar"
-
 #: csharp\ICT\Petra\Client\MReporting\Gui\MPartner\PartnerByGeneralCriteria-generated.cs:117
 msgid "Partner By General Criteria"
 msgstr ""
@@ -13430,8 +13358,8 @@ msgid "Settings cannot be saved"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\SettingsLoad.cs:67 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Existing stored Settings:"
-msgstr "Configuraciones existentes guardadas:"
+msgid "Existing stored Settings"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\SettingsLoad.cs:70 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Load Report Settings"
@@ -13446,16 +13374,12 @@ msgid "Maintain Report Settings"
 msgstr "Mantener las configuraciones del informe"
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\SettingsRename.cs:85 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "New Name:"
-msgstr "Nombre nuevo:"
-
-#: csharp\ICT\Petra\Client\MReporting\Gui\SettingsRename.cs:86 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Old Name:"
-msgstr "Nombre antiguo:"
-
-#: csharp\ICT\Petra\Client\MReporting\Gui\SettingsRename.cs:87 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "New Name"
 msgstr "Nombre nuevo"
+
+#: csharp\ICT\Petra\Client\MReporting\Gui\SettingsRename.cs:86 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+msgid "Old Name"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\SettingsRename.cs:88 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "OldName"
@@ -13474,8 +13398,8 @@ msgid "Save"
 msgstr "Guardar"
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\SettingsSave.cs:63 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Please enter a name:"
-msgstr "Ingresar un nombre:"
+msgid "Please enter a name"
+msgstr ""
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\SettingsSave.cs:64 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Save Report Settings"
@@ -13530,10 +13454,6 @@ msgstr "Si no desea valores entre comillas, por favor escoger un delimitador"
 #: csharp\ICT\Petra\Client\MReporting\Gui\UC_Output.cs:56 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "(e.g. , or ; or : or Space; or type TAB for tabulator)"
 msgstr ""
-
-#: csharp\ICT\Petra\Client\MReporting\Gui\UC_Output.cs:57 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Delimiter:"
-msgstr "Delimitador:"
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\UC_Output.cs:58 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Only save as CSV, don't print Report"
@@ -15455,23 +15375,23 @@ msgid ""
 "one digit and one letter."
 msgstr ""
 
-#: csharp\ICT\Petra\Server\lib\MSysMan\UserManager.cs:329 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
+#: csharp\ICT\Petra\Server\lib\MSysMan\UserManager.cs:338 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
 msgid "Invalid User ID/Password."
 msgstr "ID de usuario/contraseña no válida"
 
-#: csharp\ICT\Petra\Server\lib\MSysMan\UserManager.cs:388
+#: csharp\ICT\Petra\Server\lib\MSysMan\UserManager.cs:397
 msgid "OpenPetra is currently disabled due to {0}."
 msgstr ""
 
-#: csharp\ICT\Petra\Server\lib\MSysMan\UserManager.cs:390
+#: csharp\ICT\Petra\Server\lib\MSysMan\UserManager.cs:399
 msgid "It will be available on {0} at {1}."
 msgstr ""
 
-#: csharp\ICT\Petra\Server\lib\MSysMan\UserManager.cs:392
+#: csharp\ICT\Petra\Server\lib\MSysMan\UserManager.cs:401
 msgid "Proceed with caution."
 msgstr ""
 
-#: csharp\ICT\Petra\Server\lib\MSysMan\UserManager.cs:394
+#: csharp\ICT\Petra\Server\lib\MSysMan\UserManager.cs:403
 msgid "User is retired."
 msgstr ""
 
@@ -15685,7 +15605,7 @@ msgid "Search Boxes"
 msgstr "Cajas de búsqueda"
 
 #: - This item was created automatically from a designer file
-msgid "Xml Element"
+msgid "Xml List"
 msgstr ""
 
 #: - This item was created automatically from a designer file
@@ -16598,10 +16518,6 @@ msgid "Maintain Security-related Groups"
 msgstr ""
 
 #: - This item was created automatically from a designer file
-msgid "Database"
-msgstr "Base de datos"
-
-#: - This item was created automatically from a designer file
 msgid "Import Export"
 msgstr "Importar Exportar"
 
@@ -16632,1083 +16548,3 @@ msgstr ""
 #: - This item was created automatically from a designer file
 msgid "Maintain Month Names for Different Languages"
 msgstr ""
-
-#~ msgid "Filename:"
-#~ msgstr "Nombre del archivo:"
-
-#~ msgid "Local Name:"
-#~ msgstr "Nombre local:"
-
-#~ msgid "Acquisition Code:"
-#~ msgstr "Código de adquisición:"
-
-#~ msgid "Contact Partner:"
-#~ msgstr "Contactar socio:"
-
-#~ msgid "Approximate Size:"
-#~ msgstr "Tamaño aproximado:"
-
-#~ msgid "Accomodation Type:"
-#~ msgstr "Tipo del alojamiento:"
-
-#~ msgid "Accomodation Size:"
-#~ msgstr "Tamaño del alojamiento:"
-
-#~ msgid "Accomodation:"
-#~ msgstr "Alojamiento:"
-
-#~ msgid "Marital Status:"
-#~ msgstr "Estado civil:"
-
-#~ msgid "Marital Status Since:"
-#~ msgstr "Estado civil desde:"
-
-#~ msgid "Marital Status Comment:"
-#~ msgstr "Comentario sobre estado civil:"
-
-#~ msgid "Preferred Name:"
-#~ msgstr "Nombre preferido:"
-
-#~ msgid "Date Of Birth:"
-#~ msgstr "Fecha de nacimiento:"
-
-#~ msgid "Occupation:"
-#~ msgstr "Ocupación:"
-
-#~ msgid "Na&me:"
-#~ msgstr "No&mbre:"
-
-#~ msgid "Class:"
-#~ msgstr "Clase:"
-
-#~ msgid "&Gender:"
-#~ msgstr "&Género:"
-
-#~ msgid "Last Gift:"
-#~ msgstr "Última ofrenda:"
-
-#~ msgid "Acquisition Description:"
-#~ msgstr "Descripción de adquisición:"
-
-#~ msgid "Bank Account:"
-#~ msgstr "Cuenta de banco:"
-
-#~ msgid "Denomination Code:"
-#~ msgstr "Código de denominación"
-
-#~ msgid "Title/Na&me:"
-#~ msgstr "Título/N&ombre:"
-
-#~ msgid "Module:"
-#~ msgstr "Módulo:"
-
-#~ msgid "Language Code:"
-#~ msgstr "Código de idiomas:"
-
-#~ msgid "Business Code:"
-#~ msgstr "Código de negocio:"
-
-#~ msgid "Academic Title:"
-#~ msgstr "Titulo académico:"
-
-#~ msgid "Country Code:"
-#~ msgstr "Código de país:"
-
-#~ msgid "Status Updated:"
-#~ msgstr "Estado actualizado:"
-
-#~ msgid "Partner &Status:"
-#~ msgstr "E&stado de socio:"
-
-#~ msgid "Key:"
-#~ msgstr "Clave:"
-
-#~ msgid "Left:"
-#~ msgstr "Izquierda:"
-
-#~ msgid "Contact:"
-#~ msgstr "Contacto:"
-
-#~ msgid "Currency:"
-#~ msgstr "Moneda:"
-
-#~ msgid "from:"
-#~ msgstr "desde:"
-
-#~ msgid "to:"
-#~ msgstr "hasta:"
-
-#~ msgid "To:"
-#~ msgstr "Hasta:"
-
-#~ msgid "User Id:"
-#~ msgstr "ID de &usuario"
-
-#~ msgid "Contact Type:"
-#~ msgstr "Tipo de contacto:"
-
-#~ msgid "Base:"
-#~ msgstr "Base:"
-
-#~ msgid "&Currency:"
-#~ msgstr "&Moneda:"
-
-#~ msgid "Default &Bank Account:"
-#~ msgstr "Cuenta de &banco por omisión:"
-
-#~ msgid "&Type:"
-#~ msgstr "&Tipo:"
-
-#~ msgid "&Status:"
-#~ msgstr "&Estado:"
-
-#~ msgid "Setup Location Types"
-#~ msgstr "Mantener tipos de unidades"
-
-#~ msgid "Venue Code:"
-#~ msgstr "Código del lugar de encuentro:"
-
-#~ msgid "Year:"
-#~ msgstr "Año:"
-
-#~ msgid "Motivation Codes:"
-#~ msgstr "Códigos de motivación"
-
-#~ msgid "Start of Payments:"
-#~ msgstr "Principio de pagos:"
-
-#~ msgid "First Name:"
-#~ msgstr "Nombre:"
-
-#~ msgid "Last Name:"
-#~ msgstr "Apellido:"
-
-#~ msgid "and:"
-#~ msgstr "y:"
-
-#~ msgid "Event Name:"
-#~ msgstr "Nombre del evento:"
-
-#~ msgid "Cancelled:"
-#~ msgstr "Cancelado:"
-
-#~ msgid "Addressee Type Code:"
-#~ msgstr "Código del tipo de destinatario:"
-
-#~ msgid "Business Description:"
-#~ msgstr "Descripción de negocio:"
-
-#~ msgid "Denomination Name:"
-#~ msgstr "Nombre de denominación"
-
-#~ msgid "Category:"
-#~ msgstr "Categoría:"
-
-#~ msgid "Location Code:"
-#~ msgstr "Código de ubicación"
-
-#~ msgid "Occupation Description:"
-#~ msgstr "Descripción de ocupación:"
-
-#~ msgid "Active Partner:"
-#~ msgstr "Socio activo:"
-
-#~ msgid "Type Code:"
-#~ msgstr "Tipo de código:"
-
-#~ msgid "Publication Code:"
-#~ msgstr "Código de publicación:"
-
-#~ msgid "Publication Description:"
-#~ msgstr "Descripción de publicación:"
-
-#~ msgid "Valid Publication:"
-#~ msgstr "Publicación valida:"
-
-#~ msgid "Group:"
-#~ msgstr "Grupo:"
-
-#~ msgid "Cost Centre:"
-#~ msgstr "Centro de costos:"
-
-#~ msgid "Active:"
-#~ msgstr "Activo:"
-
-#~ msgid "Account Code:"
-#~ msgstr "Código de cuenta:"
-
-#~ msgid "Account Type:"
-#~ msgstr "Tipo de cuenta:"
-
-#~ msgid "Ledger Number:"
-#~ msgstr "Número de extracto:"
-
-#~ msgid "Ledger Name:"
-#~ msgstr "Nombre de extracto:"
-
-#~ msgid "Number Of Periods:"
-#~ msgstr "Número de periodos:"
-
-#~ msgid "Current Period:"
-#~ msgstr "Periodo actual:"
-
-#~ msgid "Country Name:"
-#~ msgstr "Nombre de país:"
-
-#~ msgid "Number Of Years:"
-#~ msgstr "Número de años:"
-
-#~ msgid "Number Of Months:"
-#~ msgstr "Número de meses:"
-
-#~ msgid "Number Of Days:"
-#~ msgstr "Número de días:"
-
-#~ msgid "Number Of Hours:"
-#~ msgstr "Número de horas:"
-
-#~ msgid "Number Of Minutes:"
-#~ msgstr "Número de minutos:"
-
-#~ msgid "Language Description:"
-#~ msgstr "Descripción de idioma:"
-
-#~ msgid "Congress Language:"
-#~ msgstr "Idioma del congreso:"
-
-#~ msgid "Prefix:"
-#~ msgstr "Prefijo:"
-
-#~ msgid "Method of Payment:"
-#~ msgstr "Manera de pago:"
-
-#~ msgid "Recipient:"
-#~ msgstr "Destinatario:"
-
-#~ msgid "Motivation Group:"
-#~ msgstr "Grupo de motivación:"
-
-#~ msgid "Motivation Detail:"
-#~ msgstr "Detalle de motivación:"
-
-#~ msgid "Transaction Type:"
-#~ msgstr "Tipo de transacción:"
-
-#~ msgid "Transaction Date:"
-#~ msgstr "Fecha de transacción:"
-
-#~ msgid "Key Ministry:"
-#~ msgstr "Ministerio clave:"
-
-#~ msgid "Current Supplier:"
-#~ msgstr "Proveedor actual:"
-
-#~ msgid "T&ype:"
-#~ msgstr "T&ipo:"
-
-#~ msgid "&Reference:"
-#~ msgstr "&Referencia:"
-
-#~ msgid "&Amount:"
-#~ msgstr "&Cantidad:"
-
-#~ msgid "A&mount:"
-#~ msgstr "&Cantidad:"
-
-#~ msgid "C&ost Centre:"
-#~ msgstr "&Centro de costos:"
-
-#~ msgid "Accou&nt:"
-#~ msgstr "Cue&nta:"
-
-#~ msgid "Supplier &Type:"
-#~ msgstr "&Tipo de proveedor:"
-
-#~ msgid "S&earch Supplier:"
-#~ msgstr "&Buscar proveedor:"
-
-#~ msgid "Select Bank Account:"
-#~ msgstr "Seleccionar cuenta de banco:"
-
-#~ msgid "Contact Date:"
-#~ msgstr "Fecha de contacto:"
-
-#~ msgid "Donor:"
-#~ msgstr "Donante:"
-
-#~ msgid "Date from:"
-#~ msgstr "Fecha desde:"
-
-#~ msgid "Date Format:"
-#~ msgstr "Formato de la fecha:"
-
-#~ msgid "Effective Date:"
-#~ msgstr "Fecha efectiva:"
-
-#~ msgid "Sub System:"
-#~ msgstr "Subsistema:"
-
-#~ msgid "Batch:"
-#~ msgstr "Lote:"
-
-#~ msgid "Invoice &Number:"
-#~ msgstr "&Número de factura:"
-
-#~ msgid "Discount &Value (%):"
-#~ msgstr "&Valor de descuento (%):"
-
-#~ msgid "Discount &Days:"
-#~ msgstr "&Días de descuento:"
-
-#~ msgid "Narrati&ve:"
-#~ msgstr "Narrati&vo:"
-
-#~ msgid "Default &Payment Type:"
-#~ msgstr "Tipo de &pago predeterminado:"
-
-#~ msgid "Default C&ost Centre:"
-#~ msgstr "Centr&o de coste predeterminado:"
-
-#~ msgid "Payment T&ype:"
-#~ msgstr "T&ipo de pago:"
-
-#~ msgid "Amount To Pay:"
-#~ msgstr "Cantidad a pagar:"
-
-#~ msgid "Setup Frequencies"
-#~ msgstr "Configurar frecuencias"
-
-#~ msgid "%:"
-#~ msgstr "%:"
-
-#~ msgid "Accepted:"
-#~ msgstr "Aceptado:"
-
-#~ msgid "Rejected:"
-#~ msgstr "Rechazado:"
-
-#~ msgid "Valid Method:"
-#~ msgstr "Método válido:"
-
-#~ msgid "Level Descriptions:"
-#~ msgstr "Descripciones de nivel:"
-
-#~ msgid "Publication Label Code:"
-#~ msgstr "Código de etiqueta de publicación:"
-
-#~ msgid "Number Of Issues:"
-#~ msgstr "Número de problemas:"
-
-#~ msgid "Frequency Code:"
-#~ msgstr "Código de frecuencia:"
-
-#~ msgid "Number Of Reminders:"
-#~ msgstr "Número de recordatorios:"
-
-#~ msgid "Reason Cancelled Code:"
-#~ msgstr "Codigo de razón de cancelación:"
-
-#~ msgid "&Addressee Type:"
-#~ msgstr "Tipo del destin&atario:"
-
-#~ msgid "First Day of the Financial Year:"
-#~ msgstr "Primer día del año financiero:"
-
-#~ msgid "&Analysis Type Code:"
-#~ msgstr "Código de tipo de &análisis:"
-
-#~ msgid "Value:"
-#~ msgstr "Valor:"
-
-#~ msgid "Report Type:"
-#~ msgstr "Tipo de informe:"
-
-#~ msgid "Maximum Amount:"
-#~ msgstr "Cantidad máxima:"
-
-#~ msgid "Minimum Amount:"
-#~ msgstr "Cantidad mínima:"
-
-#~ msgid "Depth:"
-#~ msgstr "Profundidad:"
-
-#~ msgid "Frequency:"
-#~ msgstr "Frecuencia:"
-
-#~ msgid "+/- Days:"
-#~ msgstr "+/- Días:"
-
-#~ msgid "End date:"
-#~ msgstr "Fecha de finalización:"
-
-#~ msgid "Current / Future Events Only:"
-#~ msgstr "Solo eventos actuales/futuros:"
-
-#~ msgid "D&ate:"
-#~ msgstr "Fe&cha:"
-
-#~ msgid "Time Zone From:"
-#~ msgstr "Zona horaria desde:"
-
-#~ msgid "Frequency Description:"
-#~ msgstr "Descripción de frecuencia:"
-
-#~ msgid "Hide persons with no comments:"
-#~ msgstr "Ocultar personas sin comentarios:"
-
-#~ msgid "Date Effective:"
-#~ msgstr "Fecha efectiva:"
-
-#~ msgid "cm:"
-#~ msgstr "cm:"
-
-#~ msgid "Name of City:"
-#~ msgstr "Nombre de la ciudad:"
-
-#~ msgid "Country Name Local:"
-#~ msgstr "Nombre local del país:"
-
-#~ msgid "Undercover:"
-#~ msgstr "Secreto:"
-
-#~ msgid "Int'l Access Code:"
-#~ msgstr "Código de Acceso Internacional"
-
-#~ msgid "Int'l Dialling Code:"
-#~ msgstr "Código de Telediscado Internacional:"
-
-#~ msgid "Address Display Order:"
-#~ msgstr "Orden de muestra de Dirección:"
-
-#~ msgid "Int'l Postal Type:"
-#~ msgstr "Código Postal Internacional:"
-
-#~ msgid "Deletable:"
-#~ msgstr "Se puede borrar:"
-
-#~ msgid "Int. Postal Type Code:"
-#~ msgstr "Código de Tipo Postal Internacional:"
-
-#~ msgid "Currency Code:"
-#~ msgstr "Código de moneda:"
-
-#~ msgid "Currency Name:"
-#~ msgstr "Nombre de Moneda:"
-
-#~ msgid "Currency Symbol:"
-#~ msgstr "Símbolo de moneda:"
-
-#~ msgid "Number of Decimals:"
-#~ msgstr "Número de decimales:"
-
-#~ msgid "Conference:"
-#~ msgstr "Conferencia:"
-
-#~ msgid "&Date Issued:"
-#~ msgstr "&Fecha de Emisión:"
-
-#~ msgid "Date D&ue:"
-#~ msgstr "&Fecha de vencimiento:"
-
-#~ msgid "Credit &Terms:"
-#~ msgstr "&Términos del Crédito:"
-
-#~ msgid "E&xchange Rate:"
-#~ msgstr "Tipo de C&ambio:"
-
-#~ msgid "Detail &Ref:"
-#~ msgstr "&Referencia de Detalle:"
-
-#~ msgid "Invoice A&ging (in months):"
-#~ msgstr "A&ntiguedad de la Factura (en meses):"
-
-#~ msgid "C&redit Terms (in days):"
-#~ msgstr "Términos de C&rédito (en días):"
-
-#~ msgid "Number of Days for &Discount (0 for none):"
-#~ msgstr "Número de Días de &Descuento (0 para ninguno)"
-
-#~ msgid "&AP Account:"
-#~ msgstr "&Cuentas a Pagar:"
-
-#~ msgid "Default &Expense Account:"
-#~ msgstr "Cuenta de &Gastos por Defecto:"
-
-#~ msgid "C&urrency:"
-#~ msgstr "M&oneda:"
-
-#~ msgid "Sum of Tagged:"
-#~ msgstr "Sumar lo marcado:"
-
-#~ msgid "Exchange Rate:"
-#~ msgstr "Tipo de cambio:"
-
-#~ msgid "Cheque Number:"
-#~ msgstr "Número de cheque:"
-
-#~ msgid "Displayed Balance:"
-#~ msgstr "Balance Mostrado:"
-
-#~ msgid "Narrative:"
-#~ msgstr "Descripción:"
-
-#~ msgid "Reference:"
-#~ msgstr "Referencia:"
-
-#~ msgid "Batch Number from:"
-#~ msgstr "Número de Lote desde:"
-
-#~ msgid "Include Unposted Batches:"
-#~ msgstr "Incluir Lotes sin Registrar:"
-
-#~ msgid "Transactions Only:"
-#~ msgstr "Solo Transacciones:"
-
-#~ msgid "Number Format:"
-#~ msgstr "Formato de Número:"
-
-#~ msgid "End Date:"
-#~ msgstr "Fecha final:"
-
-#~ msgid "Recipient Key:"
-#~ msgstr "Clave de destinatario:"
-
-#~ msgid "Old Field Key:"
-#~ msgstr "Clave del Campo Anterior:"
-
-#~ msgid "Valid Date Range:"
-#~ msgstr "Rango de Fechas Válido:"
-
-#~ msgid "From:"
-#~ msgstr "Desde:"
-
-#~ msgid "Ledger:"
-#~ msgstr "Libro:"
-
-#~ msgid "Batch Description:"
-#~ msgstr "Descripción del lote:"
-
-#~ msgid "GL Effective Date:"
-#~ msgstr "Fecha Efectiva del Libro General:"
-
-#~ msgid "Hash Total:"
-#~ msgstr "Total Predefinido:"
-
-#~ msgid "Exchange Rate To Base:"
-#~ msgstr "Tipo de Cambio a la Moneda base:"
-
-#~ msgid "Do you really want to post this gift batch?"
-#~ msgstr "¿Realmente quiere registrar este lote de ofrendas?"
-
-#~ msgid "Gift Batch:"
-#~ msgstr "Lote de Ofrendas:"
-
-#~ msgid "Date for summary:"
-#~ msgstr "Fecha del Resumen:"
-
-#~ msgid "Don't summarize with:"
-#~ msgstr "No sumar con:"
-
-#~ msgid "Journal:"
-#~ msgstr "Fichero de transacciones:"
-
-#~ msgid "Batch Hash Total:"
-#~ msgstr "Total Predeterminado del Lote:"
-
-#~ msgid "Debit:"
-#~ msgstr "Débito:"
-
-#~ msgid "Credit:"
-#~ msgstr "Crédito:"
-
-#~ msgid "Hash:"
-#~ msgstr "Total predeterminado:"
-
-#~ msgid "Journal Description:"
-#~ msgstr "Descripción del Diario:"
-
-#~ msgid "Exchange Rate to Base:"
-#~ msgstr "Tipo de Cambio a la Base:"
-
-#~ msgid "Cost Centre Code:"
-#~ msgstr "Código de Centro de costos:"
-
-#~ msgid "TODOTransactionCurrency:"
-#~ msgstr "PendientesMonedaDeTransacción:"
-
-#~ msgid "TODOBase Currency:"
-#~ msgstr "PendientesMonedaBase:"
-
-#~ msgid "Dr Amount:"
-#~ msgstr "Monto Débito:"
-
-#~ msgid "Cr Amount:"
-#~ msgstr "Monto Crédito:"
-
-#~ msgid "Debit Total:"
-#~ msgstr "Total Débito:"
-
-#~ msgid "Credit Total:"
-#~ msgstr "Total Crédito:"
-
-#~ msgid "Detail:"
-#~ msgstr "Detalle:"
-
-#~ msgid "Print Receipt:"
-#~ msgstr "Imprimir recibo:"
-
-#~ msgid "Description Long English:"
-#~ msgstr "Descripción larga en inglés:"
-
-#~ msgid "Description Short English:"
-#~ msgstr "Descripción corta en inglés:"
-
-#~ msgid "Description Long Local:"
-#~ msgstr "Descripción larga en idioma local:"
-
-#~ msgid "Description Short Local:"
-#~ msgstr "Descripción corta en idioma local:"
-
-#~ msgid "Valid Cost Centres:"
-#~ msgstr "Centros de costos válidos:"
-
-#~ msgid "Cost Centre Type:"
-#~ msgstr "Tipo de Centro de Costos:"
-
-#~ msgid "Cost Centre Name:"
-#~ msgstr "Nombre de Centro de Costos:"
-
-#~ msgid "Base Currency:"
-#~ msgstr "Moneda base:"
-
-#~ msgid "Intl Currency:"
-#~ msgstr "Moneda Internacional:"
-
-#~ msgid "Number Of Fwd Posting Periods:"
-#~ msgstr "Cantidad de Períodos que pueden estar abiertos"
-
-#~ msgid "System Analysis Type:"
-#~ msgstr "Tipo de Análisis del Sistema:"
-
-#~ msgid "&From Currency Code:"
-#~ msgstr "&Desde Código de Moneda:"
-
-#~ msgid "&To Currency Code:"
-#~ msgstr "&A Código de Moneda:"
-
-#~ msgid "&Rate of exchange:"
-#~ msgstr "&Tipo de cambio:"
-
-#~ msgid "Value One Direction:"
-#~ msgstr "Conversión en un sentido:"
-
-#~ msgid "Value Other Direction:"
-#~ msgstr "Conversión en el otro sentido:"
-
-#~ msgid "Values for this Type and Ledger Number:"
-#~ msgstr "Valores para este Tipo y Número de Libro:"
-
-#~ msgid "Assignable:"
-#~ msgstr "Asignable:"
-
-#~ msgid "Recruiting Mission:"
-#~ msgstr "Misión de Reclutamiento:"
-
-#~ msgid "Method Of Contact:"
-#~ msgstr "Método de contacto:"
-
-#~ msgid "Level Range Lower:"
-#~ msgstr "Nivel más bajo del rango:"
-
-#~ msgid "Level Range Upper:"
-#~ msgstr "Nivel más alto del rango:"
-
-#~ msgid "Interest:"
-#~ msgstr "Interés:"
-
-#~ msgid "Marital Status Code:"
-#~ msgstr "Código de estado civil:"
-
-#~ msgid "Unassignable Date:"
-#~ msgstr "Fecha no asignable"
-
-#~ msgid "Occupation Code:"
-#~ msgstr "Código de ocupación:"
-
-#~ msgid "Status Code:"
-#~ msgstr "Código de estado:"
-
-#~ msgid "Include Partners on Reports:"
-#~ msgstr "Incluir socios en Informes:"
-
-#~ msgid "Reason Given Code:"
-#~ msgstr "Código de Motivo dado:"
-
-#~ msgid "Relationship Category Code:"
-#~ msgstr "Código de Categoría relacional"
-
-#~ msgid "Unassignable:"
-#~ msgstr "No Asignable"
-
-#~ msgid "Contactor:"
-#~ msgstr "Quien hizo el contacto:"
-
-#~ msgid "Comment Contains:"
-#~ msgstr "El comentario contiene:"
-
-#~ msgid "Mailing Code:"
-#~ msgstr "Código de mailing:"
-
-#~ msgid "Take Action:"
-#~ msgstr "Realizar acción:"
-
-#~ msgid "Bank/Branch Code:"
-#~ msgstr "Código de banco/sucursal:"
-
-#~ msgid "BIC/SWIFT Code:"
-#~ msgstr "Código BIFT/SWIFT:"
-
-#~ msgid "EP Format File:"
-#~ msgstr "Archivo con formato EP:"
-
-#~ msgid "Decorations:"
-#~ msgstr "Condecoraciones:"
-
-#~ msgid "Ability Area:"
-#~ msgstr "Área de capacidad:"
-
-#~ msgid "Earliest Arrival:"
-#~ msgstr "Arribo más temprano:"
-
-#~ msgid "Latest Departure:"
-#~ msgstr "Partida más tardía:"
-
-#~ msgid "Report Date:"
-#~ msgstr "Fecha del informe:"
-
-#~ msgid "Financial Report:"
-#~ msgstr "Informe financiero:"
-
-#~ msgid "Accepted Applications Only:"
-#~ msgstr "Solo solicitudes aceptadas:"
-
-#~ msgid "List Extra Costs:"
-#~ msgstr "Listar costos extras:"
-
-#~ msgid "Sign Off Lines:"
-#~ msgstr "Líneas para Firma:"
-
-#~ msgid "If charged field is not set:"
-#~ msgstr "Si no está definido el campo a cobrar:"
-
-#~ msgid "Format currency numbers:"
-#~ msgstr "Formato de números de moneda:"
-
-#~ msgid "Partner Key of Conference:"
-#~ msgstr "Clave de socio de conferencia:"
-
-#~ msgid "For last years (1-4):"
-#~ msgstr "En los últimos años (1-4):"
-
-#~ msgid "Get from GL:"
-#~ msgstr "Obtener desde el Libro General:"
-
-#~ msgid "Account Hierarchy:"
-#~ msgstr "Jerarquía de cuenta:"
-
-#~ msgid "Quarter:"
-#~ msgstr "Trimestre:"
-
-#~ msgid "Ignore if other gifts between:"
-#~ msgstr "Ignorar si existen otras donaciones entre:"
-
-#~ msgid "Gifts given in year:"
-#~ msgstr "Ofrendas durante el año:"
-
-#~ msgid "No gifts in year:"
-#~ msgstr "Sin ofrendas durante el año:"
-
-#~ msgid "MotivationDetail:"
-#~ msgstr "Detalle de Motivación:"
-
-#~ msgid "Report on all partners that have one of these special types:"
-#~ msgstr ""
-#~ "Informe de todos los socios que tienen uno de estos tipos especiales:"
-
-#~ msgid ""
-#~ "Select the country for which the statistical report should be generated:"
-#~ msgstr "Seleccionar el país por el que se generará el informe estadístico:"
-
-#~ msgid "Hold:"
-#~ msgstr "En Espera:"
-
-#~ msgid "Enquiry:"
-#~ msgstr "En Investigación:"
-
-#~ msgid "Filter List by Relation Category:"
-#~ msgstr "Filtrar Lista por Categoría Relacional:"
-
-#~ msgid "(Select from list below):"
-#~ msgstr "(Seleccionar de la lista de abajo):"
-
-#~ msgid "Sort First By:"
-#~ msgstr "Primero ordenar por:"
-
-#~ msgid "Sort Then By:"
-#~ msgstr "Luego ordenar por:"
-
-#~ msgid "Sort Last By:"
-#~ msgstr "Finalmente ordenar por:"
-
-#~ msgid "This User can access:"
-#~ msgstr "Este usuario tiene acceso a:"
-
-#~ msgid "Missing setting in config file: BankImportCSV.FileStructure.Config"
-#~ msgstr ""
-#~ "Falta de configuración en el archivo: BankImportCSV.FileStructure.Config"
-
-#~ msgid "Setup Countries"
-#~ msgstr "Configurar países"
-
-#~ msgid "Setup Language Codes"
-#~ msgstr "Configurar códigos de idioma"
-
-#~ msgid "Setup Partner Statuses"
-#~ msgstr "Configurar estados de socios"
-
-#~ msgid "Setup Acquisition Codes"
-#~ msgstr "Configurar códigos de obtención"
-
-#~ msgid "Setup Special Types"
-#~ msgstr "Configurar tipos especiales"
-
-#~ msgid "Setup Denomination Codes"
-#~ msgstr "Configurar códigos de denominación"
-
-#~ msgid "Setup Business Codes"
-#~ msgstr "Configurar códigos de negocio"
-
-#~ msgid "Setup Occupation Codes"
-#~ msgstr "Configurar códigos de ocupación"
-
-#~ msgid "Setup Marital Statuses"
-#~ msgstr "Configurar estados civiles"
-
-#~ msgid "Setup Relationship Categories"
-#~ msgstr "Configurar categorías de relación"
-
-#~ msgid "Setup Contact Methods"
-#~ msgstr "Configurar métodos de contacto"
-
-#~ msgid "Setup Interest Categories"
-#~ msgstr "Configurar categorías de interés"
-
-#~ msgid "Setup Partner Interests"
-#~ msgstr "Configurar intereses de socio"
-
-#~ msgid "Setup Publications"
-#~ msgstr "Configurar publicaciones"
-
-#~ msgid "Setup Reason Subscription Given List"
-#~ msgstr "Configurar Lista de Razones dadas para la Suscripción"
-
-#~ msgid "Setup Reason Subscription Cancelled List"
-#~ msgstr "Configurar Lista de Razones dadas para Cancelar Suscripción"
-
-#~ msgid "Setup Addressee Types"
-#~ msgstr "Configurar tipos de destinatario"
-
-#~ msgid "Setup International Postal Types"
-#~ msgstr "Configurar Tipos Postales Internacionales"
-
-#~ msgid "Setup Ability Areas"
-#~ msgstr "Configurar áreas de capacidad"
-
-#~ msgid "for:"
-#~ msgstr "para:"
-
-#~ msgid "With extra columns:"
-#~ msgstr "on columnas adicionales:"
-
-#~ msgid "Other Separator"
-#~ msgstr "Otro separador"
-
-#~ msgid "Date format"
-#~ msgstr "Formato de fecha"
-
-#~ msgid "County/St&ate"
-#~ msgstr "Ciudad/Est&ado"
-
-#~ msgid "&User ID"
-#~ msgstr "ID de &usuario"
-
-#~ msgid "&Password"
-#~ msgstr "&Contraseña"
-
-#~ msgid "Vali&d From"
-#~ msgstr "Válido desde"
-
-#~ msgid "&Phone"
-#~ msgstr "&Teléfono"
-
-#~ msgid "&Location Type"
-#~ msgstr "&Típo de unidad"
-
-#~ msgid "Co&untry"
-#~ msgstr "P&aís"
-
-#~ msgid "Po&st Code"
-#~ msgstr "Código po&stal"
-
-#~ msgid "Cit&y/Town"
-#~ msgstr "Ciu&dad"
-
-#~ msgid "Addr&3"
-#~ msgstr "Dirr.&3"
-
-#~ msgid "Street-&2"
-#~ msgstr "Calle-&2"
-
-#~ msgid "Addr&1"
-#~ msgstr "Dirr.&1"
-
-#~ msgid "Fa&x"
-#~ msgstr "Fa&x"
-
-#~ msgid "E&mail"
-#~ msgstr "C&orreo electrónico"
-
-#~ msgid "Websi&te"
-#~ msgstr "Sitio w&eb"
-
-#~ msgid "Alte&rnate"
-#~ msgstr "Alte&rnativo"
-
-#~ msgid "Mo&bile"
-#~ msgstr "Celular / móvil"
-
-#~ msgid "Mailin&g Address"
-#~ msgstr "Dirección postal"
-
-#~ msgid "&Partner Find Criteria"
-#~ msgstr "C&riterio de búsqueda para socio"
-
-#~ msgid "&Address Find Criteria"
-#~ msgstr "C&riterio de búsqueda para dirección"
-
-#~ msgid "O&ther Find Criteria"
-#~ msgstr "&Otros Criterios de búsqueda"
-
-#~ msgid "S&ites Available"
-#~ msgstr "S&itios disponibles"
-
-#~ msgid "Partner &Key"
-#~ msgstr "Clave de s&ocio"
-
-#~ msgid "Partner C&lass"
-#~ msgstr "C&lase de socio"
-
-#~ msgid "&Acquisition Code"
-#~ msgstr "Código de obtención"
-
-#~ msgid "&Private Partner"
-#~ msgstr "Socio &privado"
-
-#~ msgid "Phone Number"
-#~ msgstr "Número de teléfono"
-
-#~ msgid "Address &3"
-#~ msgstr "Dirección &3"
-
-#~ msgid "Address &2"
-#~ msgstr "Dirección &2"
-
-#~ msgid "&Email"
-#~ msgstr "&Correo electrónico"
-
-#~ msgid "Partner &Name"
-#~ msgstr "&Nombre del socio"
-
-#~ msgid "Personal &(First) Name"
-#~ msgstr "Primer nombre"
-
-#~ msgid "Address &1"
-#~ msgstr "Dirección &1"
-
-#~ msgid "P&ost Code"
-#~ msgstr "Código postal"
-
-#~ msgid "Co&unty"
-#~ msgstr "C&ondado/distrito/provincia"
-
-#~ msgid "Mailin&g Addresses Only"
-#~ msgstr "Solo direcciones postale&s"
-
-#~ msgid "Commitm. Field &Office"
-#~ msgstr "&Oficina del campo de destino"
-
-#~ msgid "From/To"
-#~ msgstr "Desde/hasta"
-
-#~ msgid "Eve&nt/Confer./Camp."
-#~ msgstr "Even&to/Confer./Camp."
-
-#~ msgid "Lang&uage"
-#~ msgstr "Idio&ma"
-
-#~ msgid "Acquired"
-#~ msgstr "Adquirido"
-
-#~ msgid "Fax"
-#~ msgstr "Fax"
-
-#~ msgid "Telephone"
-#~ msgstr "Teléfono"
-
-#~ msgid "Alternate"
-#~ msgstr "Alternativo"
-
-#~ msgid "Mobile"
-#~ msgstr "Celular/Móvil"
-
-#~ msgid "Mailing Addr."
-#~ msgstr "Dirección Postal"
-
-#~ msgid "URL"
-#~ msgstr "URL"
-
-#~ msgid "Other Information"
-#~ msgstr "Otra información"
-
-#~ msgid "Parent Unit"
-#~ msgstr "Unidad matriz"
-
-#~ msgid "Partner Updated"
-#~ msgstr "Socio actualizado"
-
-#~ msgid "%"
-#~ msgstr "%"
-
-#~ msgid "Existing stored Settings"
-#~ msgstr "Configuraciones existentes guardadas"
-
-#~ msgid "Old Name"
-#~ msgstr "Nombre antiguo"
-
-#~ msgid "Please enter a name"
-#~ msgstr "Ingresar un nombre"
-
-#~ msgid "Please enter the user name"
-#~ msgstr "Introducir el nombre de usuario"
-
-#~ msgid "Please enter the new password"
-#~ msgstr "Ingresar la nueva contraseña"
-
-#~ msgid "Please enter the new password for user {0}"
-#~ msgstr "Ingresar la nueva contraseña para el usuario {0}"
-
-#~ msgid "Please enter the old password"
-#~ msgstr "Ingresar la antigua contraseña"
-
-#~ msgid "Please enter the new password once more"
-#~ msgstr "Ingresar la nueva contraseña otra vez"

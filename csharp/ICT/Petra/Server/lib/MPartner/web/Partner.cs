@@ -211,7 +211,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 && (SUserAccess.CountViaPPartner(APartnerKey, Transaction) > 0))
             {
                 ResultValue = false;
-                ADisplayMessage = Catalog.GetString("Unable to delete a Petra user.");
+                ADisplayMessage = Catalog.GetString("Unable to delete an OpenPetra user.");
             }
 
             // make sure we don't delete an active ledger
@@ -873,7 +873,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if ((PFoundationAccess.CountViaPPartnerOwner1Key(APartnerKey, ATransaction) > 0)
                 || (PFoundationAccess.CountViaPPartnerOwner2Key(APartnerKey, ATransaction) > 0))
             {
-                ADisplayMessage = Catalog.GetString("Unable to delete this person because he/she is owner of a following.");
+                ADisplayMessage = Catalog.GetString("Unable to delete this person because he/she is owner of a foundation.");
                 return false;
             }
 
