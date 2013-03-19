@@ -1550,7 +1550,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     if ((recBatch.BatchNumber == ABatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
                     {
-                        //TODO? Decimal batchTotal = 0;
                         GLMainDS = CreateABatch(ALedgerNumber);
 
                         BatchRow = (ABatchRow)GLMainDS.ABatch.Rows[0];
@@ -1634,8 +1633,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                         GLMainDS.ATransaction.Rows.Add(TransactionRow);
                                     }
                                 }
-
-                                //TODO? batch.BatchTotal = batchTotal;
                             }
                         }
                     }
