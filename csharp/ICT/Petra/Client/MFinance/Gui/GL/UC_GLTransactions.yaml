@@ -45,6 +45,14 @@ RootNode:
             TableName: ATransAnalAttrib
             Width: 220
             Height: 100
+            Columns: [AnalysisTypeCode]
+            CustomColumns:
+                AnalysisTypeCode: {Label=Type, Type=String}
+            ActionFocusRow: AddAttribCodeValueCombo
+            ActionClick: AddAttribCodeValueComboClick
+            #SortOrder: ATransAnalAttrib.AnalysisTypeCode ASC
+            #RowFilter: ATransAnalAttrib.BatchNumber, ATransAnalAttrib.JournalNumber, ATransAnalAttrib.TransactionNumber
+
         lblAnalAttributes:
             Label: Analysis Attributes
 
