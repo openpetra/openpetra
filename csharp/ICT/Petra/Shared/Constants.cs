@@ -167,7 +167,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_PURGEEXTRACTS = "PurgeExtracts";
-        
+
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_GLREFMANDATORY = "GLRefMandatory";
 

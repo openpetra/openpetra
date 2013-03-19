@@ -873,7 +873,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            
             // if "Reference" is mandatory then make sure it is set
             if (TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GLREFMANDATORY, "no") == "yes")
             {
@@ -886,15 +885,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ARow.TransactionNumber,
                     ARow.BatchNumber,
                     ARow.JournalNumber);
-        
+
                 VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Reference,
                     "Reference of " + ValidationContext,
                     this, ValidationColumn, null);
-        
+
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
             }
-            
+
             //Local validation
             if ((txtDebitAmount.NumberValueDecimal == 0) && (txtCreditAmount.NumberValueDecimal == 0))
             {
