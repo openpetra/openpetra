@@ -33,8 +33,10 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Client.App.Core;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
@@ -835,6 +837,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Clear combos
             cmbDetailAccountCode.SelectedIndex = -1;
             cmbDetailCostCentreCode.SelectedIndex = -1;
+            cmbMinistry.SelectedIndex = -1;
             //Clear Textboxes
             txtDetailNarrative.Clear();
             txtDetailReference.Clear();
@@ -870,6 +873,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
+            
+            // if "Reference" is mandatory then make sure it is set
+            if (TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GLREFMANDATORY, "no") == "yes")
+            {
+                DataColumn ValidationColumn;
+                TVerificationResult VerificationResult = null;
+                object ValidationContext;
+
+                ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnReferenceId];
+                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                    ARow.TransactionNumber,
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
+        
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Reference,
+                    "Reference of " + ValidationContext,
+                    this, ValidationColumn, null);
+        
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
+            }
+            
             //Local validation
             if ((txtDebitAmount.NumberValueDecimal == 0) && (txtCreditAmount.NumberValueDecimal == 0))
             {
