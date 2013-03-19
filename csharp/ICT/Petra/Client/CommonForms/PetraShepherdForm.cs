@@ -24,6 +24,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms.Logic;
 
