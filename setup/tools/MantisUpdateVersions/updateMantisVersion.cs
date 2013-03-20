@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Net;
 using Ict.Common;
 using Futureware.MantisConnect;
+using Futureware.MantisConnect.MantisConnectWebservice;
 
 namespace Ict.Tools.Mantis.UpdateVersion
 {
@@ -34,75 +35,97 @@ namespace Ict.Tools.Mantis.UpdateVersion
     {
         static private Session LoginToMantis(string ALoginURL, string AUsername, string APassword)
         {
-            NetworkCredential nc = null;
-
-            if (!String.IsNullOrEmpty(AUsername) && APassword != null)
-            {
-                nc = new NetworkCredential(AUsername, APassword);
-            }
-
-            Session session = new Session(ALoginURL, AUsername, APassword, nc);
+            Session session = new Session(ALoginURL, AUsername, APassword, null);
 
             session.Connect();
-            
+
             return session;
         }
-        
-        static private SortedList<int, string> GetAllProjects(Session ASession)
+
+        static private SortedList <int, string>GetAllProjects(Session ASession)
         {
-            SortedList<int, string> result = new SortedList<int, string>();
-            Project[] projects = ASession.Request.UserGetAccessibleProjects();
-            foreach (Project p in projects)
+            SortedList <int, string>result = new SortedList <int, string>();
+            ProjectData[] projects = ASession.Request.UserGetDetailedAccessibleProjects();
+
+            foreach (ProjectData p in projects)
             {
-                result.Add(p.Id, p.Name);
+                result.Add(Convert.ToInt32(p.id), p.name);
+
+                foreach (ProjectData sp in p.subprojects)
+                {
+                    result.Add(Convert.ToInt32(sp.id), sp.name);
+                }
             }
-            
+
             return result;
         }
-        
-        static private void UpdateVersionsOfProject(Session ASession, int AProjectID, 
-                                                    string AVersionReleased, string AVersionDev, string AVersionNext)
+
+        static private void UpdateVersionsOfProject(Session ASession, int AProjectID,
+            string AVersionReleased, string AVersionDev, string AVersionNext)
         {
             DateTime DateReleased = DateTime.Today;
-            
-            // update the version that should be released now
-            // set released flag, set released date
-            ProjectVersion v = new ProjectVersion();
-            v.ProjectId = AProjectID;
-            v.IsReleased = true;
-            v.Name = AVersionReleased;
-            v.DateOrder = DateReleased;
-            v.Description = "";
-            ASession.Request.ProjectVersionUpdate(v);
+
+            Console.WriteLine(AProjectID.ToString() + " " + AVersionReleased);
+
+            ProjectVersion[] ProjectVersions = ASession.Request.ProjectGetVersions(AProjectID);
+
+            foreach (var element in ProjectVersions)
+            {
+                if (element.Name == AVersionReleased)
+                {
+                    element.IsReleased = true;
+                    element.DateOrder = DateReleased;
+                    element.Description = "";
+
+                    ASession.Request.ProjectVersionUpdate(element);
+                }
+                else if (element.Name == AVersionDev)
+                {
+                    AVersionDev = string.Empty;
+                }
+                else if (element.Name == AVersionNext)
+                {
+                    AVersionNext = string.Empty;
+                }
+            }
 
             // add a new development version
-            v = new ProjectVersion();
-            v.ProjectId = AProjectID;
-            v.IsReleased = false;
-            v.Name = AVersionDev;
-            v.DateOrder = new DateTime(DateReleased.Year, DateReleased.Month, DateReleased.Day, 0, 1, 0);
-            v.Description = "for fixing development bugs";
-            ASession.Request.ProjectVersionUpdate(v);            
-            
+            if (AVersionDev != string.Empty)
+            {
+                Console.WriteLine("adding version " + AVersionDev);
+                ProjectVersion v = new ProjectVersion();
+                v.ProjectId = AProjectID;
+                v.IsReleased = false;
+                v.Name = AVersionDev;
+                v.DateOrder = new DateTime(DateReleased.Year, DateReleased.Month, DateReleased.Day, 0, 1, 0);
+                v.Description = "for fixing development bugs";
+                ASession.Request.ProjectVersionAdd(v);
+            }
+
             // add a new future release version
-            v = new ProjectVersion();
-            v.ProjectId = AProjectID;
-            v.IsReleased = false;
-            v.Name = AVersionNext;
-            v.DateOrder = DateReleased.AddMonths(1);
-            v.Description = "next planned release";
-            ASession.Request.ProjectVersionUpdate(v);            
+            if (AVersionNext != string.Empty)
+            {
+                Console.WriteLine("adding version " + AVersionNext);
+                ProjectVersion v = new ProjectVersion();
+                v.ProjectId = AProjectID;
+                v.IsReleased = false;
+                v.Name = AVersionNext;
+                v.DateOrder = DateReleased.AddMonths(1);
+                v.Description = "next planned release";
+                ASession.Request.ProjectVersionAdd(v);
+            }
         }
 
         static private void SetVersionFixedInForResolvedBug(Session ASession, int bugid, string AVersionFixedIn)
         {
             Issue issue = ASession.Request.IssueGet(bugid);
+
             if (issue.Resolution.Id != 20) // 20 means fixed
             {
                 TLogging.Log("*resolution* is not a fix, so we are not setting *version fixed in* for bug " + bugid.ToString());
                 return;
             }
-            
+
             issue.FixedInVersion = AVersionFixedIn;
             ASession.Request.IssueUpdate(issue);
         }
@@ -111,23 +134,28 @@ namespace Ict.Tools.Mantis.UpdateVersion
         {
             new TAppSettingsManager(false);
 
+            ServicePointManager.ServerCertificateValidationCallback = delegate {
+                return true;
+            };
+
             if (!TAppSettingsManager.HasValue("sf-username"))
             {
                 Console.WriteLine("call: MantisUpdateVersions.exe -sf-username:pokorra -sf-pwd:xyz -release-version:0.2.16.0");
-                Console.WriteLine("or: MantisUpdateVersions.exe -sf-username:pokorra -sf-pwd:xyz -bug-id:abc,def,ghi -version-fixed-in:\"Alpha 0.2.20\"");
+                Console.WriteLine(
+                    "or: MantisUpdateVersions.exe -sf-username:pokorra -sf-pwd:xyz -bug-id:abc,def,ghi -version-fixed-in:\"Alpha 0.2.20\"");
                 return;
             }
 
             string mantisURL = TAppSettingsManager.GetValue("mantis-url", "https://tracker.openpetra.org/api/soap/mantisconnect.php");
-            
+
             try
             {
                 Session session = LoginToMantis(mantisURL, TAppSettingsManager.GetValue("sf-username"), TAppSettingsManager.GetValue("sf-pwd"));
 
                 if (TAppSettingsManager.HasValue("version-fixed-in"))
                 {
-                    string[] bugids = TAppSettingsManager.GetValue("bug-id").Split(new char[]{','});
-                    
+                    string[] bugids = TAppSettingsManager.GetValue("bug-id").Split(new char[] { ',' });
+
                     foreach (string bugid in bugids)
                     {
                         SetVersionFixedInForResolvedBug(
@@ -139,19 +167,19 @@ namespace Ict.Tools.Mantis.UpdateVersion
                 else
                 {
                     Version releaseVersion = new Version(TAppSettingsManager.GetValue("release-version"));
-                    Version devVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build+1, releaseVersion.Revision);
-                    Version nextVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build+2, releaseVersion.Revision);
-                    
-                    SortedList<int, string> projectIDs = GetAllProjects(session);
-                    
-                    foreach(int id in projectIDs.Keys)
+                    Version devVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build + 1, releaseVersion.Revision);
+                    Version nextVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build + 2, releaseVersion.Revision);
+
+                    SortedList <int, string>projectIDs = GetAllProjects(session);
+
+                    foreach (int id in projectIDs.Keys)
                     {
                         Console.WriteLine("project " + projectIDs[id]);
                         UpdateVersionsOfProject(session,
-                                                id,
-                                                "Alpha " + releaseVersion.ToString(3),
-                                                "Alpha " + devVersion.ToString(3) + " Dev",
-                                                "Alpha " + nextVersion.ToString(3));
+                            id,
+                            "Alpha " + releaseVersion.ToString(3),
+                            "Alpha " + devVersion.ToString(3) + " Dev",
+                            "Alpha " + nextVersion.ToString(3));
                     }
                 }
             }
