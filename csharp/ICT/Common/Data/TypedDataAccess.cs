@@ -2372,13 +2372,15 @@ namespace Ict.Common.Data
             TVerificationResultCollection ReturnValue = new TVerificationResultCollection(VerificationRunGuid);
             string MessageHeaderPart1 = Catalog.GetString(String.Format("The '{0}' record", AThisTableLabel));
             string MessageHeaderPart2 = Catalog.GetString("{0}\r\n    cannot be deleted because\r\n");
+            string MessageFooter = Catalog.GetString("\r\n    {0} from the '{1}' Table:\r\n{2}");
             string[] MessageDetails = null;
             string CompleteMessageDetails = String.Empty;
             string MessageContinuation = Catalog.GetString(" and\r\n");
             string KeysAndValueInformation = String.Empty;
             List<KeyValuePair<string, TRowReferenceInfo>> ConsolidatedReferences = new List<KeyValuePair<string, TRowReferenceInfo>>();
             string SingleReferenceThisTable = String.Empty;
-            
+            TRowReferenceInfo FirstReferenceInCascade;
+                
             if (AReferences.Count == 0) 
             {
                 return null;    
@@ -2421,6 +2423,7 @@ namespace Ict.Common.Data
             
             CompleteMessageDetails += ".";
             
+            // Build Keys and values for 'this table'
             foreach (var element in APKInfo) 
             {
                 KeysAndValueInformation += STR_INDENTATION + STR_INDENTATION + element.Key + ": " + element.Value.ToString() + Environment.NewLine;
@@ -2428,11 +2431,28 @@ namespace Ict.Common.Data
             
             // Strip off trailing Environment.NewLine
             KeysAndValueInformation = KeysAndValueInformation.Substring(0, KeysAndValueInformation.Length - Environment.NewLine.Length);
-            
+
             MessageHeaderPart2 = String.Format(MessageHeaderPart2, "\r\n" + STR_INDENTATION + "  " + AThisTableLabel + " code:\r\n" + KeysAndValueInformation);
-                        
+
+                       
+            // Build Keys and values for 'first referencing table in the cascade'
+            KeysAndValueInformation = String.Empty;
+            FirstReferenceInCascade = ConsolidatedReferences[0].Value;
+            
+            foreach (var element in FirstReferenceInCascade.PKInfo) 
+            {
+                KeysAndValueInformation += STR_INDENTATION + STR_INDENTATION + element.Key + ": " + element.Value.ToString() + Environment.NewLine;
+            }
+            
+            // Strip off trailing Environment.NewLine
+            KeysAndValueInformation = KeysAndValueInformation.Substring(0, KeysAndValueInformation.Length - Environment.NewLine.Length);
+            
+            MessageFooter = String.Format(MessageFooter, FirstReferenceInCascade.ReferenceCount == 1 ? "Referencing record" : "One of the referencing records",
+                  FirstReferenceInCascade.ThisTableLabel, STR_INDENTATION + "  " + FirstReferenceInCascade.ThisTableLabel + " code:\r\n" + KeysAndValueInformation);
+                                          
+            
             ReturnValue.Add(new TVerificationResult(new TRowReferenceInfo(AThisTable, AThisTableLabel, APKInfo, ConsolidatedReferences),
-                MessageHeaderPart1 + MessageHeaderPart2 + CompleteMessageDetails, CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED,  
+                MessageHeaderPart1 + MessageHeaderPart2 + CompleteMessageDetails + MessageFooter, CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED,  
                 AResultSeverity, VerificationRunGuid));
 
             return ReturnValue;
