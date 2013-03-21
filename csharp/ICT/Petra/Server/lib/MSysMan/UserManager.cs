@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -70,7 +70,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 // namespace of the class TUserAuthentication, eg. Plugin.AuthenticationPhpBB
                 // the dll has to be in the normal application directory
                 string Namespace = AUserAuthenticationMethod;
-                string NameOfDll = Namespace + ".dll";
+                string NameOfDll = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + Namespace + ".dll";
                 string NameOfClass = Namespace + ".TUserAuthentication";
 
                 // dynamic loading of dll
