@@ -184,7 +184,7 @@ SingleTableReferences = 0;
 {#OTHERTABLENAME}Table {#MYOTHERTABLENAME}Table = {#OTHERTABLENAME}Access.Load{#VIAPROCEDURENAME}Template(ATemplateRow, StringHelper.StrSplit("{#CSVLISTOTHERPRIMARYKEYFIELDS}", ","), ATransaction);
 for (countRow = 0; (countRow != {#MYOTHERTABLENAME}Table.Rows.Count); countRow = (countRow + 1))
 {
-    SingleTableReferences = {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount, ref AReferences);
+    SingleTableReferences += {#OTHERTABLENAME}Cascading.CountUsingTemplate({#MYOTHERTABLENAME}Table[countRow], null, ATransaction, AWithCascCount, ref AReferences);
 }
 if(SingleTableReferences > 0)
 {

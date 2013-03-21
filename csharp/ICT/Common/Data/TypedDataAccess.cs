@@ -2366,93 +2366,52 @@ namespace Ict.Common.Data
         public static TVerificationResultCollection BuildVerificationResultCollectionFromRefTables(string AThisTable, string AThisTableLabel, Dictionary<string, object> APKInfo, List<TRowReferenceInfo> AReferences,
             TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
         {
-            
             const string STR_BULLET = "* ";
+            
             Guid VerificationRunGuid = Guid.NewGuid();
             TVerificationResultCollection ReturnValue = new TVerificationResultCollection(VerificationRunGuid);
             string MessageHeaderPart1 = Catalog.GetString(String.Format("The '{0}' record", AThisTableLabel));
             string MessageHeaderPart2 = Catalog.GetString("{0}\r\n    cannot be deleted because\r\n");
-            
-            List<string>MessageDetails = new List<string>();
+            string[] MessageDetails = null;
             string CompleteMessageDetails = String.Empty;
             string MessageContinuation = Catalog.GetString(" and\r\n");
             string KeysAndValueInformation = String.Empty;
-            TRowReferenceInfo SingleReference;
-            TRowReferenceInfo CurrentReference;
-            List<TRowReferenceInfo> ConsolidatedReferences = new List<TRowReferenceInfo>();
-            TRowReferenceInfo PreviousReference = null;
+            List<KeyValuePair<string, TRowReferenceInfo>> ConsolidatedReferences = new List<KeyValuePair<string, TRowReferenceInfo>>();
             string SingleReferenceThisTable = String.Empty;
-            bool NewReferencingDBTable = false;
-            long RefCount = 0;
-            long LastRefCount = 0;
             
             if (AReferences.Count == 0) 
             {
                 return null;    
             }
-            
-            CurrentReference = AReferences[0];
-            
+                        
             // Iterate through References backwards because the insertion order in AReference is backwards
             for(int Counter = AReferences.Count - 1; Counter >= 0; Counter--) 
             {      
-                SingleReference = AReferences[Counter];
-                
-                if(SingleReference.ThisTable != SingleReferenceThisTable)
-                {                       
-                    LastRefCount = RefCount;
-
-                     
-                    RefCount = SingleReference.ReferenceCount;
-                    NewReferencingDBTable = true;                    
-                    
-                    CurrentReference = SingleReference;
-                    SingleReferenceThisTable = SingleReference.ThisTable;
-                    
-                    if (PreviousReference == null)
-                    {
-                        PreviousReference = SingleReference;
-                            
-                        // The last instance of AReferences for a DB Table will hold the PKInfo *which is our first one here since we iterate backwards over AReferences* 
-                        // -> set it on PreviousReference accordingly so it captured
-                        PreviousReference.SetPKInfo(SingleReference.PKInfo);                                                                   
-                    }                    
-                }
-                else
-                {
-                    RefCount += SingleReference.ReferenceCount;   
-                    NewReferencingDBTable = false;
-                }
-                
-                if (((NewReferencingDBTable)
-                     && (Counter != AReferences.Count - 1))
-                    || (RefCount == 0))
-                {  
-                    AddReferenceToConsolidatedReferences(PreviousReference, ConsolidatedReferences, MessageDetails, LastRefCount);
-                        
-                    NewReferencingDBTable = false;
-                    PreviousReference = SingleReference;
-                }                
+                AddOrUpdateConsolidatedReferences(AReferences[Counter], ConsolidatedReferences);
             }
             
-            AddReferenceToConsolidatedReferences(PreviousReference, ConsolidatedReferences, MessageDetails, RefCount);
+            MessageDetails = new string[ConsolidatedReferences.Count];
             
-            if (MessageDetails.Count > 1) 
+            for (int Counter = 0; Counter < ConsolidatedReferences.Count; Counter++) 
             {
-                for (int Counter = 0; Counter < MessageDetails.Count; Counter++) 
+                MessageDetails[Counter] = Catalog.GetPluralString(
+                    String.Format(STR_INDENTATION + "a '{0}' record is {1} referencing it", ConsolidatedReferences[Counter].Value.ThisTableLabel, Counter != 0 ? Catalog.GetString("indirectly") : Catalog.GetString("still")),
+                    String.Format(STR_INDENTATION + "{0} '{1}' records are {2} referencing it", ConsolidatedReferences[Counter].Value.ReferenceCount, ConsolidatedReferences[Counter].Value.ThisTableLabel, Counter != 0 ?  Catalog.GetString("indirectly") : Catalog.GetString("still")), ConsolidatedReferences[Counter].Value.ReferenceCount);
+            }
+                                
+            if (MessageDetails.Length > 1) 
+            {
+                for (int Counter = 0; Counter < MessageDetails.Length; Counter++) 
                 {
                     MessageDetails[Counter] = STR_INDENTATION + new string(' ', Counter) + STR_BULLET + MessageDetails[Counter].Substring(STR_INDENTATION.Length);                    
                     
-                    if (Counter != MessageDetails.Count) 
+                    if (Counter != MessageDetails.Length - 1) 
                     {
                         MessageDetails[Counter] += MessageContinuation;
                     }
                     
                     CompleteMessageDetails += MessageDetails[Counter];
                 }    
-                
-                // strip off trailing 'MessageContinuation'
-                CompleteMessageDetails = CompleteMessageDetails.Substring(0, CompleteMessageDetails.Length - MessageContinuation.Length);
             }
             else
             {
@@ -2479,15 +2438,29 @@ namespace Ict.Common.Data
             return ReturnValue;
         }
         
-        private static void AddReferenceToConsolidatedReferences(TRowReferenceInfo APreviousReference, List<TRowReferenceInfo> AConsolidatedReferences, List<string> AMessageDetails, long ALastRefCount)
+        private static void AddOrUpdateConsolidatedReferences(TRowReferenceInfo AFurtherReference, List<KeyValuePair<string, TRowReferenceInfo>> AConsolidatedReferences)
         {
-            APreviousReference.SetReferenceCount(ALastRefCount);
-            APreviousReference.PopulatePKInfoDataFromDataRow();
-            AConsolidatedReferences.Add(APreviousReference);
+            TRowReferenceInfo ExistingReference = null;
             
-            AMessageDetails.Add(Catalog.GetPluralString(
-                String.Format(STR_INDENTATION + "a '{0}' record is {1} referencing it", APreviousReference.ThisTableLabel, AMessageDetails.Count != 0 ? Catalog.GetString("indirectly") : Catalog.GetString("still")),
-                    String.Format(STR_INDENTATION + "{0} '{1}' records are {2} referencing it", ALastRefCount, APreviousReference.ThisTableLabel, AMessageDetails.Count != 0 ? Catalog.GetString("indirectly") : Catalog.GetString("still")), ALastRefCount));
+            for (int Counter = 0; Counter < AConsolidatedReferences.Count; Counter++) 
+            {
+                if (AConsolidatedReferences[Counter].Key == AFurtherReference.ThisTable) 
+                {
+                    ExistingReference = AConsolidatedReferences[Counter].Value;
+                    break;
+                }    
+            }
+            
+            if (ExistingReference != null) 
+            {
+                ExistingReference.SetReferenceCount(ExistingReference.ReferenceCount + AFurtherReference.ReferenceCount);
+                ExistingReference.PopulatePKInfoDataFromDataRow();
+            }
+            else
+            {
+                AFurtherReference.PopulatePKInfoDataFromDataRow();
+                AConsolidatedReferences.Add(new KeyValuePair<string, TRowReferenceInfo>(AFurtherReference.ThisTable, AFurtherReference));
+            }
         }
         
         #endregion CalledByORMGenerateCode
@@ -2501,8 +2474,9 @@ namespace Ict.Common.Data
     {
         private string FThisTable = String.Empty;
         private string FThisTableLabel = String.Empty;
+        private bool FRootTable = false;
         private Dictionary<string, object> FPKInfo;
-        private List<TRowReferenceInfo> FOtherTableRefs = null;
+        private List<KeyValuePair<string, TRowReferenceInfo>> FOtherTableRefs = null;
         private long FReferenceCount = 0;
         [NonSerialized]
         private DataRow FDataRow = null;
@@ -2517,13 +2491,14 @@ namespace Ict.Common.Data
         /// The string (Key) is the Label ('friendly name' for the user) of the PK Column and the object (Value) holds the actual data 
         /// of the PK Column.</param>
         /// <param name="AOtherTableRefs">References to the DB Row in question.</param>
-        public TRowReferenceInfo(string AThisTable, string AThisTableLabel, Dictionary<string, object> APKInfo, List<TRowReferenceInfo> AOtherTableRefs)
+        public TRowReferenceInfo(string AThisTable, string AThisTableLabel, Dictionary<string, object> APKInfo, List<KeyValuePair<string, TRowReferenceInfo>> AOtherTableRefs)
         {
             FThisTable = AThisTable;
+            FRootTable = true;
             FThisTableLabel = AThisTableLabel;
             FOtherTableRefs = AOtherTableRefs;
             FPKInfo = APKInfo;
-            FReferenceCount = 1;
+            FReferenceCount = 1;           
         }
 
         /// <summary>
@@ -2565,6 +2540,17 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// True if this instance is for the 'root' table in a cascading table hierarachy.
+        /// </summary>
+        public bool RootTable
+        {
+            get
+            {
+                return FRootTable;
+            }
+        }
+        
+        /// <summary>
         /// <see cref="Dictionary{T,T}" /> consisting of a string-object pair for each Primary Key Column. 
         /// The string (Key) is the Label ('friendly name' for the user) of the PK Column and the object (Value) holds the actual data 
         /// of the PK Column.
@@ -2591,7 +2577,7 @@ namespace Ict.Common.Data
         /// <summary>
         /// References to the DB Row in question.
         /// </summary>
-        public List<TRowReferenceInfo> OtherTableRefs
+        public List<KeyValuePair<string, TRowReferenceInfo>> OtherTableRefs
         {
             get
             {
