@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 using System.Text;
+using System.IO;
 using System.Security.Principal;
 using System.Security.Cryptography;
 using Ict.Common;

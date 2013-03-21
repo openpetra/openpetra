@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using System.Resources;
 using System.Threading;
 using System.Reflection;
+using System.IO;
 
 using Ict.Common;
 using Ict.Common.Controls;
