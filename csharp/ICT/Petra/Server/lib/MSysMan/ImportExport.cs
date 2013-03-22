@@ -62,7 +62,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             XmlNode rootNode = OpenPetraData.FirstChild.NextSibling;
 
-            Assembly TypedTablesAssembly = Assembly.LoadFrom("Ict.Petra.Shared.lib.data.dll");
+            Assembly TypedTablesAssembly = Assembly.LoadFrom(
+                TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + "Ict.Petra.Shared.lib.data.dll");
 
             ExportTables(rootNode, "MSysMan", "", TypedTablesAssembly);
             ExportTables(rootNode, "MCommon", "", TypedTablesAssembly);

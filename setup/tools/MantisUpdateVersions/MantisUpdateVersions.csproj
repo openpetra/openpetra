@@ -39,22 +39,18 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Futureware.MantisConnect">
+      <HintPath>Futureware.MantisConnect.dll</HintPath>
+    </Reference>
     <Reference Include="Ict.Common">
       <HintPath>..\..\..\delivery\bin\Ict.Common.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebDriver">
-      <HintPath>..\..\..\csharp\ThirdParty\Selenium\WebDriver.dll</HintPath>
-    </Reference>
-    <Reference Include="WebDriver.Support">
-      <HintPath>..\..\..\csharp\ThirdParty\Selenium\WebDriver.Support.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="updateMantisVersion.cs" />
-    <Compile Include="WebDriverExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

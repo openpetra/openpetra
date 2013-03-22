@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,246 +24,168 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium;
+using System.Net;
 using Ict.Common;
+using Futureware.MantisConnect;
+using Futureware.MantisConnect.MantisConnectWebservice;
 
 namespace Ict.Tools.Mantis.UpdateVersion
 {
     class UpdateMantisVersion
     {
-        static private void LoginToSourceforge(IWebDriver ADriver, string ALoginURL, string AUsername, string APassword)
+        static private Session LoginToMantis(string ALoginURL, string AUsername, string APassword)
         {
-            ADriver.Navigate().GoToUrl(ALoginURL);
+            Session session = new Session(ALoginURL, AUsername, APassword, null);
 
-            IWebElement txtLoginName = ADriver.FindElement(By.Name("username"), 15, displayed: true);
-            txtLoginName.SendKeys(AUsername);
+            session.Connect();
 
-            IWebElement txtPassword = ADriver.FindElement(By.Name("password"), 15, displayed: true);
-            txtPassword.SendKeys(APassword);
-            
-            IWebElement chkRememberMe = ADriver.FindElement(By.Name("perm_login"), 15, displayed: true);
-            chkRememberMe.SendKeys(" ");
-            
-            IWebElement btnLogin = ADriver.FindElement(By.ClassName("button"), 15, displayed: true);
-            btnLogin.Click();
+            return session;
         }
-        
-        static private SortedList<int, string> GetAllProjects(IWebDriver ADriver, string AProjectPageURL)
+
+        static private SortedList <int, string>GetAllProjects(Session ASession)
         {
-            ADriver.Navigate().GoToUrl(AProjectPageURL);
-            ReadOnlyCollection<IWebElement> links = ADriver.FindElements(By.TagName("a"));
-            
-            SortedList<int, string> result = new SortedList<int, string>();
-            
-            foreach (IWebElement link in links)
+            SortedList <int, string>result = new SortedList <int, string>();
+            ProjectData[] projects = ASession.Request.UserGetDetailedAccessibleProjects();
+
+            foreach (ProjectData p in projects)
             {
-                // Console.WriteLine(link.Text + " " + link.GetAttribute("href"));
-                string href = link.GetAttribute("href");
-                if (href.Contains("manage_proj_edit_page.php?project_id="))
+                result.Add(Convert.ToInt32(p.id), p.name);
+
+                foreach (ProjectData sp in p.subprojects)
                 {
-                    result.Add(Convert.ToInt32(
-                        href.Substring(href.IndexOf("project_id=") + "project_id=".Length)),
-                        link.Text);
+                    result.Add(Convert.ToInt32(sp.id), sp.name);
                 }
             }
-            
+
             return result;
         }
 
-        static private void EditVersion(IWebDriver ADriver, string AVersionName, string ADateReleased, 
-                                        string ADescription, bool AHasBeenReleased)
-        {
-            IWebElement txtVersionName = ADriver.FindElement(By.Name("new_version"), 15, displayed: true);
-            txtVersionName.Clear();
-            txtVersionName.SendKeys(AVersionName);
-
-            IWebElement txtDescription = ADriver.FindElement(By.Name("description"), 15, displayed: true);
-            txtDescription.Clear();
-            txtDescription.SendKeys(ADescription);
-            
-            IWebElement txtDate = ADriver.FindElement(By.Name("date_order"), 15, displayed: true);
-            txtDate.Clear();
-            txtDate.SendKeys(ADateReleased);
-
-            IWebElement chkReleased = ADriver.FindElement(By.Name("released"), 15, displayed: true);
-            if (chkReleased.Selected != AHasBeenReleased)
-            {
-                chkReleased.SendKeys(" ");
-            }
-            
-            IWebElement form = txtDate.FindElement(By.XPath("../../../../.."));
-
-            if (form.TagName == "form")
-            {
-                form.Submit();
-            }
-        }
-        
-        /// find the version that should be edited
-        static private void OpenVersionEdit(IWebDriver ADriver, string AEditProjectURL, string AVersionID)
-        {
-            ADriver.Navigate().GoToUrl(AEditProjectURL);
-            
-            ReadOnlyCollection<IWebElement> elements = ADriver.FindElements(By.XPath("//form"));
-            foreach (IWebElement form in elements)
-            {
-                if (form.GetAttribute("action").Contains("manage_proj_ver_edit_page.php?version_id="))
-                {
-                    if (form.FindElement(By.XPath("../../td[1]")).Text.Trim() == AVersionID)
-                    {
-                        Console.WriteLine("edit version " + AVersionID);
-                        form.Submit();
-                        break;
-                    }
-                }
-            }
-        }
-    
-        static private void UpdateVersionsOfProject(IWebDriver ADriver, string AEditProjectURL, 
-                                                    string AVersionReleased, string AVersionDev, string AVersionNext)
+        static private void UpdateVersionsOfProject(Session ASession, int AProjectID,
+            string AVersionReleased, string AVersionDev, string AVersionNext)
         {
             DateTime DateReleased = DateTime.Today;
-            
-            // if the next version already exists, then do not continue on this project
-            ADriver.Navigate().GoToUrl(AEditProjectURL);
-            
-            ReadOnlyCollection<IWebElement> elements = ADriver.FindElements(By.XPath("//form"));
-            foreach (IWebElement form in elements)
+
+            Console.WriteLine(AProjectID.ToString() + " " + AVersionReleased);
+
+            ProjectVersion[] ProjectVersions = ASession.Request.ProjectGetVersions(AProjectID);
+
+            foreach (var element in ProjectVersions)
             {
-                if (form.GetAttribute("action").Contains("manage_proj_ver_edit_page.php?version_id="))
+                if (element.Name == AVersionReleased)
                 {
-                    if (form.FindElement(By.XPath("../../td[1]")).Text.Trim() == AVersionNext)
-                    {
-                        return;
-                    }
+                    element.IsReleased = true;
+                    element.DateOrder = DateReleased;
+                    element.Description = "";
+
+                    ASession.Request.ProjectVersionUpdate(element);
+                }
+                else if (element.Name == AVersionDev)
+                {
+                    AVersionDev = string.Empty;
+                }
+                else if (element.Name == AVersionNext)
+                {
+                    AVersionNext = string.Empty;
                 }
             }
-            
-            // find the version that should be released now
-            // edit that version
-            // set released flag, set released date
-            // save
-            OpenVersionEdit(ADriver, AEditProjectURL, AVersionReleased);
-            EditVersion(ADriver, AVersionReleased, DateReleased.ToString("yyyy-MM-dd"), "", true);
 
-            // go back
-            ADriver.Navigate().GoToUrl(AEditProjectURL);
             // add a new development version
-            ADriver.FindElement(By.Name("version"), 15, displayed: true).SendKeys(AVersionDev);
-            ADriver.FindElement(By.Name("add_version"), 15, displayed: true).Click();
-            OpenVersionEdit(ADriver, AEditProjectURL, AVersionDev);
-            EditVersion(ADriver, AVersionDev, DateReleased.ToString("yyyy-MM-dd") + " 00:01:00", "for fixing development bugs", false);
-            
-            // go back
-            ADriver.Navigate().GoToUrl(AEditProjectURL);
+            if (AVersionDev != string.Empty)
+            {
+                Console.WriteLine("adding version " + AVersionDev);
+                ProjectVersion v = new ProjectVersion();
+                v.ProjectId = AProjectID;
+                v.IsReleased = false;
+                v.Name = AVersionDev;
+                v.DateOrder = new DateTime(DateReleased.Year, DateReleased.Month, DateReleased.Day, 0, 1, 0);
+                v.Description = "for fixing development bugs";
+                ASession.Request.ProjectVersionAdd(v);
+            }
+
             // add a new future release version
-            ADriver.FindElement(By.Name("version"), 15, displayed: true).SendKeys(AVersionNext);
-            ADriver.FindElement(By.Name("add_version"), 15, displayed: true).Click();
-            OpenVersionEdit(ADriver, AEditProjectURL, AVersionNext);
-            EditVersion(ADriver, AVersionNext, DateReleased.AddMonths(1).ToString("yyyy-MM-dd"), "next planned release", false);
+            if (AVersionNext != string.Empty)
+            {
+                Console.WriteLine("adding version " + AVersionNext);
+                ProjectVersion v = new ProjectVersion();
+                v.ProjectId = AProjectID;
+                v.IsReleased = false;
+                v.Name = AVersionNext;
+                v.DateOrder = DateReleased.AddMonths(1);
+                v.Description = "next planned release";
+                ASession.Request.ProjectVersionAdd(v);
+            }
         }
 
-        static private void SetVersionFixedInForResolvedBug(IWebDriver ADriver, string AEditBugAdvancedURL, string AVersionFixedIn)
+        static private void SetVersionFixedInForResolvedBug(Session ASession, int bugid, string AVersionFixedIn)
         {
-            TLogging.Log(AEditBugAdvancedURL);
-            ADriver.Navigate().GoToUrl(AEditBugAdvancedURL);
-            
-            IWebElement cmbResolution = ADriver.FindElement(By.Name("resolution"), 15, displayed: true);
-            ReadOnlyCollection<IWebElement> options = cmbResolution.FindElements(By.TagName("option"));
-            foreach (IWebElement option in options) 
+            Issue issue = ASession.Request.IssueGet(bugid);
+
+            if (issue.Resolution.Id != 20) // 20 means fixed
             {
-                if (option.Text == "fixed" && option.Selected == false)
-                {
-                    TLogging.Log("*resolution* is not a fix, so we are not setting *version fixed in* for " + AEditBugAdvancedURL);
-                    return;
-                }
-            } 
-
-            IWebElement cmbFixedInVersion = ADriver.FindElement(By.Name("fixed_in_version"), 15, displayed: true);
-            options = cmbFixedInVersion.FindElements(By.TagName("option"));
-
-            foreach (IWebElement option in options) 
-            {
-                if (AVersionFixedIn == option.Text)
-                {
-                    option.Click();
-                    break; 
-                }
-            } 
-
-            IWebElement form = ((IWebElement)cmbFixedInVersion).FindElement(By.XPath("../../../../.."));
-
-            if (form.TagName == "form")
-            {
-                form.Submit();
+                TLogging.Log("*resolution* is not a fix, so we are not setting *version fixed in* for bug " + bugid.ToString());
+                return;
             }
+
+            issue.FixedInVersion = AVersionFixedIn;
+            ASession.Request.IssueUpdate(issue);
         }
 
         static void Main(string[] args)
         {
             new TAppSettingsManager(false);
 
+            ServicePointManager.ServerCertificateValidationCallback = delegate {
+                return true;
+            };
+
             if (!TAppSettingsManager.HasValue("sf-username"))
             {
                 Console.WriteLine("call: MantisUpdateVersions.exe -sf-username:pokorra -sf-pwd:xyz -release-version:0.2.16.0");
-                Console.WriteLine("or: MantisUpdateVersions.exe -sf-username:pokorra -sf-pwd:xyz -bug-id:abc,def,ghi -version-fixed-in:\"Alpha 0.2.20\"");
+                Console.WriteLine(
+                    "or: MantisUpdateVersions.exe -sf-username:pokorra -sf-pwd:xyz -bug-id:abc,def,ghi -version-fixed-in:\"Alpha 0.2.20\"");
                 return;
             }
 
-            string loginURL = TAppSettingsManager.GetValue("login-url", "https://tracker.openpetra.org/login_page.php");
-            string mantisURL = TAppSettingsManager.GetValue("mantis-url", "https://tracker.openpetra.org/");
-            
-            IWebDriver driver = new FirefoxDriver();
-            
+            string mantisURL = TAppSettingsManager.GetValue("mantis-url", "https://tracker.openpetra.org/api/soap/mantisconnect.php");
+
             try
             {
-                LoginToSourceforge(driver, loginURL, TAppSettingsManager.GetValue("sf-username"), TAppSettingsManager.GetValue("sf-pwd"));
+                Session session = LoginToMantis(mantisURL, TAppSettingsManager.GetValue("sf-username"), TAppSettingsManager.GetValue("sf-pwd"));
 
                 if (TAppSettingsManager.HasValue("version-fixed-in"))
                 {
-                    string[] bugids = TAppSettingsManager.GetValue("bug-id").Split(new char[]{','});
-                    
+                    string[] bugids = TAppSettingsManager.GetValue("bug-id").Split(new char[] { ',' });
+
                     foreach (string bugid in bugids)
                     {
                         SetVersionFixedInForResolvedBug(
-                            driver,
-                            mantisURL + "bug_update_advanced_page.php?bug_id=" + bugid,
+                            session,
+                            Convert.ToInt32(bugid),
                             TAppSettingsManager.GetValue("version-fixed-in"));
                     }
                 }
                 else
                 {
                     Version releaseVersion = new Version(TAppSettingsManager.GetValue("release-version"));
-                    Version devVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build+1, releaseVersion.Revision);
-                    Version nextVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build+2, releaseVersion.Revision);
-                    
-                    SortedList<int, string> projectIDs = GetAllProjects(driver, mantisURL + "manage_proj_page.php");
-                    
-                    foreach(int id in projectIDs.Keys)
+                    Version devVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build + 1, releaseVersion.Revision);
+                    Version nextVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build + 2, releaseVersion.Revision);
+
+                    SortedList <int, string>projectIDs = GetAllProjects(session);
+
+                    foreach (int id in projectIDs.Keys)
                     {
                         Console.WriteLine("project " + projectIDs[id]);
-                        UpdateVersionsOfProject(driver,
-                                                mantisURL + "manage_proj_edit_page.php?project_id=" + id.ToString(),
-                                                "Alpha " + releaseVersion.ToString(3),
-                                                "Alpha " + devVersion.ToString(3) + " Dev",
-                                                "Alpha " + nextVersion.ToString(3));
+                        UpdateVersionsOfProject(session,
+                            id,
+                            "Alpha " + releaseVersion.ToString(3),
+                            "Alpha " + devVersion.ToString(3) + " Dev",
+                            "Alpha " + nextVersion.ToString(3));
                     }
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                
-                StreamWriter sw = new StreamWriter("error.html");
-                sw.WriteLine(driver.PageSource.Replace("a0:","").Replace(":a0",""));
-                sw.Close();
-                Console.WriteLine("please check " + Path.GetFullPath("error.html"));
-            }
-            finally
-            {
-                driver.Quit();
             }
         }
     }

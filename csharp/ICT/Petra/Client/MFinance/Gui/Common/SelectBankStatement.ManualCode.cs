@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -145,17 +145,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 string BankStatementImportPlugin = TFrmImportNewBankStatement.PluginNamespace + "." + TUserDefaults.GetStringDefault(
                     TUserDefaults.FINANCE_BANKIMPORT_PLUGIN);
 
-                if (!File.Exists(TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + BankStatementImportPlugin + ".dll"))
+                // namespace of the class TBankStatementImport, eg. Plugin.BankImportFromCSV
+                // the dll has to be in the normal application directory
+                string Namespace = BankStatementImportPlugin;
+                string NameOfDll = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + BankStatementImportPlugin + ".dll";
+                string NameOfClass = Namespace + ".TBankStatementImport";
+
+                if (!File.Exists(NameOfDll))
                 {
                     MessageBox.Show(Catalog.GetString("Please select a valid plugin for the import of bank statements!"));
                     return;
                 }
-
-                // namespace of the class TBankStatementImport, eg. Plugin.BankImportFromCSV
-                // the dll has to be in the normal application directory
-                string Namespace = BankStatementImportPlugin;
-                string NameOfDll = Namespace + ".dll";
-                string NameOfClass = Namespace + ".TBankStatementImport";
 
                 // dynamic loading of dll
                 System.Reflection.Assembly assemblyToUse = System.Reflection.Assembly.LoadFrom(NameOfDll);

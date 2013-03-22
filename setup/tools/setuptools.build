@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<project name="inc-nanttasks-Build">
+
+<include buildfile="../../inc/nant/OpenPetra.csharp.xml"/> 
+
+
+</project>
