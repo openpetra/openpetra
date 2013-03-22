@@ -2397,16 +2397,20 @@ namespace Ict.Common.Data
             for (int Counter = 0; Counter < ConsolidatedReferences.Count; Counter++) 
             {
                 MessageDetails[Counter] = Catalog.GetPluralString(
-                    String.Format(STR_INDENTATION + "a '{0}' record is {1} referencing it", ConsolidatedReferences[Counter].Value.ThisTableLabel, Counter != 0 ? Catalog.GetString("indirectly") : Catalog.GetString("still")),
-                    String.Format(STR_INDENTATION + "{0} '{1}' records are {2} referencing it", ConsolidatedReferences[Counter].Value.ReferenceCount, ConsolidatedReferences[Counter].Value.ThisTableLabel, Counter != 0 ?  Catalog.GetString("indirectly") : Catalog.GetString("still")), ConsolidatedReferences[Counter].Value.ReferenceCount);
+                    String.Format(STR_INDENTATION + new string(' ', ConsolidatedReferences[Counter].Value.NestingDepth - 1) + 
+                                  STR_BULLET + "a '{0}' record is {1} referencing it", ConsolidatedReferences[Counter].Value.ThisTableLabel, 
+                                  ConsolidatedReferences[Counter].Value.NestingDepth > 1 ? Catalog.GetString("indirectly") : Catalog.GetString("still")),
+                    String.Format(STR_INDENTATION + new string(' ', ConsolidatedReferences[Counter].Value.NestingDepth - 1) + 
+                                  STR_BULLET + "{0} '{1}' records are {2} referencing it", ConsolidatedReferences[Counter].Value.ReferenceCount, 
+                                  ConsolidatedReferences[Counter].Value.ThisTableLabel, 
+                                  ConsolidatedReferences[Counter].Value.NestingDepth > 1 ?  Catalog.GetString("indirectly") : Catalog.GetString("still")), 
+                    ConsolidatedReferences[Counter].Value.ReferenceCount);
             }
                                 
             if (MessageDetails.Length > 1) 
             {
                 for (int Counter = 0; Counter < MessageDetails.Length; Counter++) 
                 {
-                    MessageDetails[Counter] = STR_INDENTATION + new string(' ', Counter) + STR_BULLET + MessageDetails[Counter].Substring(STR_INDENTATION.Length);                    
-                    
                     if (Counter != MessageDetails.Length - 1) 
                     {
                         MessageDetails[Counter] += MessageContinuation;
@@ -2417,7 +2421,8 @@ namespace Ict.Common.Data
             }
             else
             {
-                CompleteMessageDetails = MessageDetails[0];
+                // Strip off leading STR_BULLET as we don't need one if there is only one MessageDetail
+                CompleteMessageDetails = STR_INDENTATION + MessageDetails[0].Substring(MessageDetails[0].IndexOf(STR_BULLET) + 2);
             }
             
             
@@ -2501,6 +2506,7 @@ namespace Ict.Common.Data
         [NonSerialized]
         private DataRow FDataRow = null;
         private object[] FDataRowContents;
+        private int FNestingDepth;
         
         /// <summary>
         /// Constructor.
@@ -2515,6 +2521,7 @@ namespace Ict.Common.Data
         {
             FThisTable = AThisTable;
             FRootTable = true;
+            FNestingDepth = 0; // = for root table only
             FThisTableLabel = AThisTableLabel;
             FOtherTableRefs = AOtherTableRefs;
             FPKInfo = APKInfo;
@@ -2528,13 +2535,15 @@ namespace Ict.Common.Data
         /// <param name="AThisTableLabel">Label (='friendly name') of the DB Table that holds the DB Row in question.</param>
         /// <param name="AReferenceCount">References count.</param>
         /// <param name="ADataRow">Referencing DataRow.</param>
-        public TRowReferenceInfo(string AThisTable, string AThisTableLabel, long AReferenceCount, DataRow ADataRow)
+        /// <param name="ANestingDepth">The depth of how deep this instance of <see cref="TRowReferenceInfo" /> is nested.</param>
+        public TRowReferenceInfo(string AThisTable, string AThisTableLabel, long AReferenceCount, DataRow ADataRow, int ANestingDepth)
         {
             FThisTable = AThisTable;
             FThisTableLabel = AThisTableLabel;
             FReferenceCount = AReferenceCount;
             FDataRow = ADataRow;
             FDataRowContents = DataUtilities.GetPKValuesFromDataRow(FDataRow);
+            FNestingDepth = ANestingDepth;
         }
                 
         /// <summary>
@@ -2567,6 +2576,17 @@ namespace Ict.Common.Data
             get
             {
                 return FRootTable;
+            }
+        }
+        
+        /// <summary>
+        /// The depth of how deep this instance of <see cref="TRowReferenceInfo" /> is nested
+        /// </summary>
+        public int NestingDepth
+        {
+            get
+            {
+                return FNestingDepth;
             }
         }
         
