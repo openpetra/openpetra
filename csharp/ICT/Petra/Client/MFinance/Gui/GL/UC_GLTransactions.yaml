@@ -28,7 +28,7 @@ RootNode:
             Width: 600
         pnlDetailsSection:
             Dock: Bottom
-            Controls: [pnlDetails, pnlRightButtons]
+            Controls: [pnlDetails, pnlTransAnalysisAttributes]
             Height: 320
         pnlDetailButtons:
             Dock: Right
@@ -36,7 +36,7 @@ RootNode:
         btnNew: {Action=actNew, Stretch=horizontally}
         btnRemove: {Action=actRemove, Stretch=horizontally}
 
-        pnlRightButtons:
+        pnlTransAnalysisAttributes:
             Dock: Right
             Controls: [lblAnalAttributes, grdAnalAttributes]
             Width: 300
@@ -48,10 +48,8 @@ RootNode:
             Columns: [AnalysisTypeCode]
             CustomColumns:
                 AnalysisTypeCode: {Label=Type, Type=String}
-            ActionFocusRow: AddAttribCodeValueCombo
-            ActionClick: AddAttribCodeValueComboClick
-            #SortOrder: ATransAnalAttrib.AnalysisTypeCode ASC
-            #RowFilter: ATransAnalAttrib.BatchNumber, ATransAnalAttrib.JournalNumber, ATransAnalAttrib.TransactionNumber
+            ActionFocusRow: AnalysisAttributesGridFocusRow
+            ActionClick: AnalysisAttributesGridClick
 
         lblAnalAttributes:
             Label: Analysis Attributes
@@ -70,8 +68,6 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowAttributesTab
-            ActionEnterKeyPressed: ShowAttributesTab
             SortOrder: ATransaction.TransactionNumber ASC
             RowFilter: ATransaction.BatchNumber, ATransaction.JournalNumber
         pnlDetails:

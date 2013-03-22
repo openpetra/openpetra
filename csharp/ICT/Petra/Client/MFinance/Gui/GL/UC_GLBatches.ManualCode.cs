@@ -87,7 +87,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ((TFrmGLBatch) this.ParentForm).DisableTransactions();
-            ((TFrmGLBatch) this.ParentForm).DisableAttributes();
 
             ShowData();
 
@@ -548,7 +547,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                         ((TFrmGLBatch)ParentForm).DisableJournals();
                         ((TFrmGLBatch)ParentForm).DisableTransactions();
-                        ((TFrmGLBatch)ParentForm).DisableAttributes();
                     }
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
@@ -979,7 +977,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 pnlDetails.Enabled = false;
                 ((TFrmGLBatch) this.ParentForm).DisableJournals();
                 ((TFrmGLBatch) this.ParentForm).DisableTransactions();
-                ((TFrmGLBatch) this.ParentForm).DisableAttributes();
             }
             else
             {

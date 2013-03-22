@@ -823,24 +823,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     //A transaction has been deleted
                     //Accept the deletion of the single details row
-                    AInspectDS.ATransaction.AcceptChanges();
+                    //AInspectDS.ATransaction.AcceptChanges();
 
-                    if (attrTableInDataSet)
-                    {
-                        AInspectDS.ATransAnalAttrib.AcceptChanges();
-                    }
-                    else
+                    if (!attrTableInDataSet)
                     {
                         AInspectDS.Tables.Add(new ATransAnalAttribTable("ATransAnalAttrib"));
                         AInspectDS.Merge(LoadATransAnalAttribForJournal(currentLedger, currentBatch, currentJournal));
                         attrTableInDataSet = true;
                     }
-
-                    //Assuming only transactions present for a single Ledger-Batch-Journal at any point in time
-                    ATransactionRow tr = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
-                    currentLedger = tr.LedgerNumber;
-                    currentBatch = tr.BatchNumber;
-                    currentJournal = tr.JournalNumber;
 
                     //Check if any records have been marked for deletion
                     DataRow[] foundTransactionForDeletion = AInspectDS.ATransaction.Select(String.Format("{0} = '{1}'",

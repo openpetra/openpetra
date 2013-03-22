@@ -51,7 +51,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
                 ucoBatches.LoadBatches(FLedgerNumber);
-                ucoAttributes.LedgerNumber = value;
 
                 ucoJournals.WorkAroundInitialization();
                 ucoTransactions.WorkAroundInitialization();
@@ -78,7 +77,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             tabGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgJournals.Enabled = false;
             this.tpgTransactions.Enabled = false;
-            this.tpgAttributes.Enabled = false;
             
             this.Width = 815;
         }
@@ -92,7 +90,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tpgJournals.Enabled = true;
             DisableTransactions();
-            DisableAttributes();
             this.ucoJournals.LoadJournals(ALedgerNumber, ABatchNumber);
         }
 
@@ -116,27 +113,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void UnloadTransactions()
         {
             this.ucoTransactions.UnloadTransactions();
-        }
-
-        /// <summary>
-        /// Unload attributes from the form
-        /// </summary>
-        public void UnloadAttributes()
-        {
-            this.ucoAttributes.UnloadAttributes();
-        }
-
-        /// <summary>
-        /// activate the attributes tab and load the attributes of the transaction
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        /// <param name="ATransactionNumber"></param>
-        public void LoadAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
-        {
-            this.tpgAttributes.Enabled = true;
-            this.ucoAttributes.LoadAttributes(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber);
         }
 
         /// <summary>
@@ -185,24 +161,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Enable the attributes tab if we have active transactions
-        /// </summary>
-        public void EnableAttributes()
-        {
-            this.tpgAttributes.Enabled = true;
-            this.Refresh();
-        }
-
-        /// <summary>
-        /// disable the attributes tab if we have no active transactions
-        /// </summary>
-        public void DisableAttributes()
-        {
-            this.tpgAttributes.Enabled = false;
-            this.Refresh();
-        }
-
-        /// <summary>
         /// disable the journal tab if we have no active batch
         /// </summary>
         public void DisableJournals()
@@ -233,10 +191,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Journals,
 
             /// list of transactions
-            Transactions,
-
-            /// list of attributes
-            Attributes
+            Transactions
         };
 
         /// <summary>
@@ -245,12 +200,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
-            if (this.ucoAttributes.Enabled && (ATab != eGLTabs.Attributes))
-            {
-                //Unload any attributes
-                this.ucoAttributes.UnloadAttributes();
-            }
-
             if (ATab == eGLTabs.Batches)
             {
                 this.tabGLBatch.SelectedTab = this.tpgBatches;
@@ -263,8 +212,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     SaveChanges();
                     this.tpgTransactions.Enabled = false;
                 }
-
-                this.tpgAttributes.Enabled = false;
 
                 this.ucoBatches.FocusGrid();
             }
@@ -279,7 +226,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoBatches.GetSelectedDetailRow().BatchStatus);
 
                     this.tpgTransactions.Enabled = (ucoJournals.GetSelectedDetailRow() != null);
-                    this.tpgAttributes.Enabled = false;
 
                     this.ucoJournals.FocusGrid();
                 }
@@ -289,7 +235,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (this.tpgTransactions.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgTransactions;
-                    this.tpgAttributes.Enabled = true;
 
                     this.ucoTransactions.LoadTransactions(
                         FLedgerNumber,
@@ -298,24 +243,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoJournals.GetSelectedDetailRow().TransactionCurrency,
                         ucoBatches.GetSelectedDetailRow().BatchStatus,
                         ucoJournals.GetSelectedDetailRow().JournalStatus);
-
-                    this.tpgAttributes.Enabled = ((ucoTransactions.GetSelectedDetailRow() != null)
-                                                  && TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber,
-                                                      ucoTransactions.GetSelectedDetailRow().AccountCode));
-                }
-            }
-            else if (ATab == eGLTabs.Attributes)
-            {
-                if (this.tpgAttributes.Enabled)
-                {
-                    this.tabGLBatch.SelectedTab = this.tpgAttributes;
-
-                    this.ucoAttributes.LoadAttributes(
-                        FLedgerNumber,
-                        ucoTransactions.GetSelectedDetailRow().BatchNumber,
-                        ucoTransactions.GetSelectedDetailRow().JournalNumber,
-                        ucoTransactions.GetSelectedDetailRow().TransactionNumber
-                        );
                 }
             }
 
@@ -344,13 +271,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 SelectTab(eGLTabs.Journals);
             }
-            else if (ASelectedTabIndex == (int)eGLTabs.Transactions)
+            else //(ASelectedTabIndex == (int)eGLTabs.Transactions)
             {
                 SelectTab(eGLTabs.Transactions);
-            }
-            else  //eGLTabs.Attributes
-            {
-                SelectTab(eGLTabs.Attributes);
             }
         }
 
@@ -378,12 +301,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return ucoTransactions;
         }
 
-        /// <summary>
-        /// directly access the attributes control
-        /// </summary>
-        public TUC_GLAttributes GetAttributesControl()
-        {
-            return ucoAttributes;
-        }
     }
 }
