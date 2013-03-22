@@ -168,6 +168,10 @@ namespace Ict.Common.Controls
             TabPage TabPage1;
             TabPage TabPage2;
 
+            if (ATabPageIndex1 < 0)
+            {
+                return;
+            }
             TabPage1 = ATabControl.TabPages[ATabPageIndex1];
             TabPage2 = ATabControl.TabPages[ATabPageIndex2];
             ATabControl.TabPages[ATabPageIndex1] = TabPage2;

@@ -228,16 +228,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 grdSupplierResult.Columns.Clear();
                 grdSupplierResult.AddTextColumn("Supplier Key", FSupplierTable.Columns[0], 90);
-                grdSupplierResult.AddTextColumn("Supplier Name", FSupplierTable.Columns[1], 250);
+                grdSupplierResult.AddTextColumn("Supplier Name", FSupplierTable.Columns[1], 150);
                 grdSupplierResult.AddTextColumn("Currency", FSupplierTable.Columns[2], 85);
             }
             else
             {
                 grdInvoiceResult.Columns.Clear();
-                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 25, false);
+                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 20, false);
                 grdInvoiceResult.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"], 55);
-//              grdInvoiceResult.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
-                grdInvoiceResult.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 240);
+                grdInvoiceResult.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
+                grdInvoiceResult.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 150);
                 grdInvoiceResult.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"], 2);
                 grdInvoiceResult.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"], 2);
                 grdInvoiceResult.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"], 70);
@@ -246,10 +246,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdInvoiceResult.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
 //              grdInvoiceResult.AddTextColumn("Discount", FInvoiceTable.Columns["DiscountMsg"], 150);
 
-                grdInvoiceResult.Columns[3].Width = 90;  // Only the text columns can have their widths set while
-                grdInvoiceResult.Columns[4].Width = 90;  // they're being added.
-                grdInvoiceResult.Columns[6].Width = 110; // For these currency and date columns,
-                grdInvoiceResult.Columns[8].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
+                grdInvoiceResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while
+                grdInvoiceResult.Columns[5].Width = 90;  // they're being added.
+                grdInvoiceResult.Columns[7].Width = 110; // For these currency and date columns,
+                grdInvoiceResult.Columns[9].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
 
                 grdInvoiceResult.MouseClick += new MouseEventHandler(grdInvoiceResult_Click);
             }
@@ -300,7 +300,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             }
                         }
 
-                        String BarStatus = "|" + Row["DocumentStatus"].ToString();
+                        String BarStatus = "|" + Row["DocumentStatus"].ToString() + "|";
 
                         //
                         // While I'm in this loop, I'll also check whether to enable the "Pay", "Post", "Reverse" and "Delete" buttons.
@@ -861,7 +861,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             foreach (DataRow Row in grdInvoiceResult.PagedDataTable.Rows)
             {
                 if ((Row["Selected"].Equals(true)
-                     && ("|POSTED|PARTPAID".IndexOf("|" + Row["DocumentStatus"].ToString()) >= 0)))
+                     && ("|POSTED|PARTPAID|".IndexOf("|" + Row["DocumentStatus"].ToString() + "|") >= 0)))
                 {
                     PayTheseDocs.Add((int)Row["DocumentId"]);
                 }
@@ -869,8 +869,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (PayTheseDocs.Count > 0)
             {
-                PaymentScreen.AddDocumentsToPayment(TempDS, FLedgerNumber, PayTheseDocs);
-                PaymentScreen.Show();
+                if (PaymentScreen.AddDocumentsToPayment(TempDS, FLedgerNumber, PayTheseDocs))
+                {
+                    PaymentScreen.Show();
+                }
             }
         }
 
