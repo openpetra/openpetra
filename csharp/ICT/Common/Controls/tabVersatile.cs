@@ -256,7 +256,18 @@ namespace Ict.Common.Controls
             InitializeComponent();
 
             FCustomDisabledPages = new ArrayList();
-            this.AllowDrop = true;
+
+            // AlanP March 2013:  Use a try/catch block because nUnit testing on this screen does not support Drag/Drop in multi-threaded model
+            // It is easier to do this than to configure all the different test execution methods to use STA
+            try
+            {
+                this.AllowDrop = true;
+            }
+            catch (InvalidOperationException)
+            {
+                // ex.Message is: DragDrop registration did not succeed.
+                // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
+            }
         }
 
         /// <summary>
@@ -1106,7 +1117,17 @@ namespace Ict.Common.Controls
             }
             else
             {
-                base.WndProc(ref AMessage);
+                // AlanP March 2013:  Use a try/catch block because nUnit testing on this screen does not support Drag/Drop in multi-threaded model
+                // It is easier to do this than to configure all the different test execution methods to use STA
+                try
+                {
+                    base.WndProc(ref AMessage);
+                }
+                catch (InvalidOperationException)
+                {
+                    // ex.Message is: DragDrop registration did not succeed.
+                    // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
+                }
             }
         }
 

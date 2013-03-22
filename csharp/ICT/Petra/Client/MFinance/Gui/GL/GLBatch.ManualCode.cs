@@ -31,6 +31,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -113,6 +114,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void UnloadTransactions()
         {
             this.ucoTransactions.UnloadTransactions();
+        }
+
+        /// <summary>
+        /// Unload attributes from the form
+        /// </summary>
+        public void UnloadAttributes()
+        {
+            this.ucoAttributes.UnloadAttributes();
         }
 
         /// <summary>
@@ -234,6 +243,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
+            if (this.ucoAttributes.Enabled && (ATab != eGLTabs.Attributes))
+            {
+                //Unload any attributes
+                this.ucoAttributes.UnloadAttributes();
+            }
+
             if (ATab == eGLTabs.Batches)
             {
                 this.tabGLBatch.SelectedTab = this.tpgBatches;

@@ -66,45 +66,6 @@
 								AND PUB_a_transaction.a_narrative_c LIKE "Year end re-allocation%")
 							AND PUB_a_transaction.a_account_code_c &gt;= {param_account_from}
 							AND PUB_a_transaction.a_account_code_c &lt;= {param_account_to}
-						
-						UNION
-						
-						SELECT DISTINCT
-							PUB_a_previous_year_transaction.a_account_code_c AS AccountCode
-						FROM
-							PUB_a_previous_year_transaction,
-							PUB_a_cost_centre
-						WHERE
-								PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_previous_year_transaction.a_cost_centre_code_c
-							AND PUB_a_previous_year_transaction.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_previous_year_transaction.a_cost_centre_code_c = "{{param_ledger_number_i}}00"
-							AND PUB_a_cost_centre.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_previous_year_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							AND PUB_a_previous_year_transaction.a_transaction_status_l = true
-							AND NOT (PUB_a_previous_year_transaction.a_system_generated_l  = true
-								AND PUB_a_previous_year_transaction.a_narrative_c LIKE "Year end re-allocation%")
-							AND PUB_a_previous_year_transaction.a_account_code_c &gt;= {param_account_from}
-							AND PUB_a_previous_year_transaction.a_account_code_c &lt;= {param_account_to}
-							
-						UNION
-						
-						SELECT DISTINCT
-							PUB_a_this_year_old_transaction.a_account_code_c AS AccountCode
-						FROM
-							PUB_a_this_year_old_transaction,
-							PUB_a_cost_centre
-						WHERE
-								PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_this_year_old_transaction.a_cost_centre_code_c
-							AND PUB_a_this_year_old_transaction.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_this_year_old_transaction.a_cost_centre_code_c = "{{param_ledger_number_i}}00"
-							AND PUB_a_cost_centre.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_this_year_old_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							AND PUB_a_this_year_old_transaction.a_transaction_status_l = true
-							AND NOT (PUB_a_this_year_old_transaction.a_system_generated_l  = true
-								AND PUB_a_this_year_old_transaction.a_narrative_c LIKE "Year end re-allocation%")
-							AND PUB_a_this_year_old_transaction.a_account_code_c &gt;= {param_account_from}
-							AND PUB_a_this_year_old_transaction.a_account_code_c &lt;= {param_account_to}
-							
 						ORDER BY
 							1
 						</value>
@@ -167,50 +128,7 @@
 							AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
 							AND PUB_a_transaction.a_transaction_status_l = true
 							AND NOT (PUB_a_transaction.a_system_generated_l  = true
-								AND PUB_a_transaction.a_narrative_c LIKE "Year end re-allocation%")
-						
-						UNION ALL
-						
-						SELECT
-							PUB_a_previous_year_transaction.a_transaction_date_d AS Date,
-							PUB_a_previous_year_transaction.a_amount_in_base_currency_n AS Amount,
-							PUB_a_previous_year_transaction.a_debit_credit_indicator_l,
-							PUB_a_previous_year_transaction.a_narrative_c AS Detail,
-							PUB_a_previous_year_transaction.a_reference_c AS ReferenceNumber,
-							
-							PUB_a_previous_year_transaction.a_batch_number_i
-						FROM
-							PUB_a_previous_year_transaction
-						WHERE
-								PUB_a_previous_year_transaction.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_previous_year_transaction.a_account_code_c = {AccountCode}
-							AND PUB_a_previous_year_transaction.a_cost_centre_code_c = {CostCentreCode}
-							AND PUB_a_previous_year_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							AND PUB_a_previous_year_transaction.a_transaction_status_l = true
-							AND NOT (PUB_a_previous_year_transaction.a_system_generated_l  = true
-								AND PUB_a_previous_year_transaction.a_narrative_c LIKE "Year end re-allocation%")
-								
-						UNION ALL
-						
-						SELECT
-							PUB_a_this_year_old_transaction.a_transaction_date_d AS Date,
-							PUB_a_this_year_old_transaction.a_amount_in_base_currency_n AS Amount,
-							PUB_a_this_year_old_transaction.a_debit_credit_indicator_l,
-							PUB_a_this_year_old_transaction.a_narrative_c AS Detail,
-							PUB_a_this_year_old_transaction.a_reference_c AS ReferenceNumber,
-							
-							PUB_a_this_year_old_transaction.a_batch_number_i
-						FROM
-							PUB_a_this_year_old_transaction
-						WHERE
-								PUB_a_this_year_old_transaction.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_this_year_old_transaction.a_account_code_c = {AccountCode}
-							AND PUB_a_this_year_old_transaction.a_cost_centre_code_c = {CostCentreCode}
-							AND PUB_a_this_year_old_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							AND PUB_a_this_year_old_transaction.a_transaction_status_l = true
-							AND NOT (PUB_a_this_year_old_transaction.a_system_generated_l  = true
-								AND PUB_a_this_year_old_transaction.a_narrative_c LIKE "Year end re-allocation%")
-								
+						  AND PUB_a_transaction.a_narrative_c LIKE "Year end re-allocation%")
 						ORDER BY
 							1
 						</value>
@@ -335,7 +253,7 @@
 					</case>
 				</switch>
 			</footer>
-		</level>
+		</level> <!-- main1 -->
 		
 		<level name="main2">
 			<detail>

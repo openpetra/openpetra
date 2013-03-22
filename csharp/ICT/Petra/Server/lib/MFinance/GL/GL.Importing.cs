@@ -81,7 +81,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 100);
 
             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Initializing"),
+                Catalog.GetString("Initialising"),
                 5);
 
             AMessages = new TVerificationResultCollection();
@@ -216,7 +216,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             ProgressTrackerCounter = 0;   // counts transactions per journal
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                string.Format(Catalog.GetString("Batch{0}, Journal {1}"),
+                                string.Format(Catalog.GetString("Batch {0}, Journal {1}"),
                                     NewBatch.BatchNumber,
                                     NewJournal.JournalNumber),
                                 15);

@@ -1341,6 +1341,7 @@ namespace Ict.Petra.Server.MReporting
 
                 if (strSql.Length > 0)
                 {
+//                  TLogging.Log("Evaluate(" + rptCalculation.strId + "): " + strSql + "\r\n");
                     DataTable tab = DatabaseConnection.SelectDT(strSql, "", DatabaseConnection.Transaction);
                     string strReturns = rptCalculation.strReturns;
 

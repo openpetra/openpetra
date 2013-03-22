@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using System.Resources;
 using System.Threading;
 using System.Reflection;
+using System.IO;
 
 using Ict.Common;
 using Ict.Common.Controls;
@@ -500,7 +501,8 @@ namespace Ict.Petra.Client.CommonForms
         {
             if (CommonDialogsAssembly == null)
             {
-                CommonDialogsAssembly = Assembly.LoadFrom("Ict.Petra.Client.CommonDialogs.dll");
+                CommonDialogsAssembly = Assembly.LoadFrom(
+                    TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + "Ict.Petra.Client.CommonDialogs.dll");
             }
 
             switch (id)

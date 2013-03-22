@@ -2,155 +2,179 @@
 <!DOCTYPE reports SYSTEM "../reports.dtd">
 <reports>
 
-	<report id="Common Calculations for Personnel">
-		<description>
-			some calculations that are needed by several reports in the Personnel module
-		</description>
+  <report id="Common Calculations for Personnel">
+    <description>
+      some calculations that are needed by several reports in the Personnel module
+    </description>
 
-		<reportparameters>
-			<reportparameter name="param_extract_name"></reportparameter>
-			<reportparameter name="param_partner_key"></reportparameter>
-			<reportparameter name="param_unit_key"></reportparameter>
-			<reportparameter name="param_selection">
-				<option name="one partner"/>
-				<option name="an extract"/>
-				<option name="all current staff"/>
-			</reportparameter>
-			<reportparameter name="param_extract"
-				condition="param_selection=an extract"/>
-			<reportparameter name="param_partnerkey"
-				condition="param_selection=one partner"/>
+    <reportparameters>
+      <reportparameter name="param_extract_name"></reportparameter>
+      <reportparameter name="param_partner_key"></reportparameter>
+      <reportparameter name="param_unit_key"></reportparameter>
+      <reportparameter name="param_selection">
+        <option name="one partner"/>
+        <option name="an extract"/>
+        <option name="all current staff"/>
+      </reportparameter>
+      <reportparameter name="param_extract"
+        condition="param_selection=an extract"/>
+      <reportparameter name="param_partnerkey"
+        condition="param_selection=one partner"/>
 
-			<!-- Below comma separated list of the column numbers. Not done! -->
-			<reportparameter name="param_sortby"/>
-			<!-- Below comma separated list of the column names. Not done! -->
-			<reportparameter name="param_sortby_readable"/>
-		</reportparameters>
-		
-		<reportheader/>
-		<pageheader/>
-		<calculations>
-			
-			<calculation id="MakePartnerName" returns="PartnerNameAndKey" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="assign(PartnerNameAndKey, {PartnerKey})"/>
-						<value function="assign(PartnerNameAndKey, concatenateww({PartnerNameAndKey},{PartnerName}, 2))"/>
-					</queryDetail>
-				</query>
-			</calculation>
-	
-			<calculation id="GetCurrentCommitmentPeriod"
-					returns="dates"
-					returnsFormat="internal">
-				<query>
-					<queryDetail><value function="GetCurrentCommitmentPeriod({PartnerKey}, {param_currentstaffdate})"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Address Line 1" returns="text" returnsFormat="text">
-				<caption><value text="Address Line 1"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="Locality"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Address Street" returns="text" returnsFormat="text">
-				<caption><value text="Street"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="StreetName"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Address Line 3" returns="text" returnsFormat="text">
-				<caption><value text="Address Line 3"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="Address3"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Address Post Code" returns="text" returnsFormat="text">
-				<caption><value text="Post Code"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="PostalCode"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Address City" returns="text" returnsFormat="text">
-				<caption><value text="City"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="City"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Address State / County / Province" returns="text" returnsFormat="text">
-				<caption><value text="State / County"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="County"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Address Country" returns="text" returnsFormat="text">
-				<caption><value text="Country"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="CountryCode"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Address Email" returns="text" returnsFormat="text">
-				<caption><value text="Email"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="EmailAddress"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Address Telephone" returns="text" returnsFormat="text">
-				<caption><value text="Telephone"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="Telephone"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
-				<caption><value text="Partner Key"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="PartnerKey"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
-				<caption><value text="Partner Name"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="PartnerName"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-		</calculations>
-		
-		<levels/>
-	</report><!-- Common Calculations for Personnel -->
+      <!-- Below comma separated list of the column numbers. Not done! -->
+      <reportparameter name="param_sortby"/>
+      <!-- Below comma separated list of the column names. Not done! -->
+      <reportparameter name="param_sortby_readable"/>
+    </reportparameters>
+
+    <reportheader/>
+    <pageheader/>
+    <calculations>
+
+      <calculation id="MakePartnerName" returns="PartnerNameAndKey" returnsFormat="text">
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value function="assign(PartnerNameAndKey, {PartnerKey})"/>
+            <value function="assign(PartnerNameAndKey, concatenateww({PartnerNameAndKey},{PartnerName}, 2))"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="GetCurrentCommitmentPeriod"
+          returns="dates"
+          returnsFormat="internal">
+        <query>
+          <queryDetail>
+            <value function="GetCurrentCommitmentPeriod({PartnerKey}, {param_currentstaffdate})"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Address Line 1" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Address Line 1"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="Locality"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Address Street" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Street"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="StreetName"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Address Line 3" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Address Line 3"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="Address3"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Address Post Code" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Post Code"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PostalCode"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Address City" returns="text" returnsFormat="text">
+        <caption>
+          <value text="City"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="City"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Address State / County / Province" returns="text" returnsFormat="text">
+        <caption>
+          <value text="State / County"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="County"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Address Country" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Country"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="CountryCode"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Address Email" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Email"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="EmailAddress"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Address Telephone" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Telephone"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="Telephone"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+        <caption>
+          <value text="Partner Key"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PartnerKey"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Partner Name"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PartnerName"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+    </calculations>
+
+    <levels/>
+  </report>
+  <!-- Common Calculations for Personnel -->
 </reports>

@@ -15,7 +15,8 @@
             Controls: [uco_GeneralSettings]
         uco_GeneralSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
-        
+            Height:230
+
         tpgCostCentres:
             Label: CostCentre Settings
             Controls: [uco_CostCentreSettings]

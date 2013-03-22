@@ -173,26 +173,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void grdLinkedCCs_Click(object sender, EventArgs e)
         {
-            btnUnlink.Enabled = true;
-            btnLink.Enabled = false;
-            DataRow Row = ((DataRowView)grdLinkedCCs.SelectedDataRows[0]).Row;
-            txtPartner.Text = Convert.ToString(Row["PartnerKey"]);
-            txtCostCentre.ReadOnly = true;
-            cmbReportsTo.Enabled = false;
-            txtCostCentre.Text = Convert.ToString(Row["IsLinked"]);
-            cmbReportsTo.Text = Convert.ToString(Row["ReportsTo"]);
-            grdUnlinkedCCs.SelectRowInGrid(-1, false);
+            if (grdLinkedCCs.SelectedDataRows.Length > 0)
+            {
+                btnUnlink.Enabled = true;
+                btnLink.Enabled = false;
+                DataRow Row = ((DataRowView)grdLinkedCCs.SelectedDataRows[0]).Row;
+                txtPartner.Text = Convert.ToString(Row["PartnerKey"]);
+                txtCostCentre.ReadOnly = true;
+                cmbReportsTo.Enabled = false;
+                txtCostCentre.Text = Convert.ToString(Row["IsLinked"]);
+                cmbReportsTo.Text = Convert.ToString(Row["ReportsTo"]);
+                grdUnlinkedCCs.SelectRowInGrid(-1, false);
+            }
         }
 
         private void grdUnlinkedCCs_Click(object sender, EventArgs e)
         {
-            btnUnlink.Enabled = false;
-            DataRow Row = ((DataRowView)grdUnlinkedCCs.SelectedDataRows[0]).Row;
-            txtPartner.Text = Convert.ToString(Row["PartnerKey"]);
-            txtCostCentre.ReadOnly = false;
-            cmbReportsTo.Enabled = true;
-            txtCostCentre.Text = "";
-            grdLinkedCCs.SelectRowInGrid(-1, false);
+            if (grdUnlinkedCCs.SelectedDataRows.Length > 0)
+            {
+                btnUnlink.Enabled = false;
+                DataRow Row = ((DataRowView)grdUnlinkedCCs.SelectedDataRows[0]).Row;
+                txtPartner.Text = Convert.ToString(Row["PartnerKey"]);
+                txtCostCentre.ReadOnly = false;
+                cmbReportsTo.Enabled = true;
+                txtCostCentre.Text = "";
+                grdLinkedCCs.SelectRowInGrid(-1, false);
+            }
         }
 
         /// <summary>

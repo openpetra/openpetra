@@ -9,9 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
-        actRemove:
-            Label: &Remove
-            ActionClick: RemoveRow
+        actRemove: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
@@ -36,10 +34,17 @@ RootNode:
             TableName: ATransaction
             Columns: [TransactionNumber, TransactionDate, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AmountInBaseCurrency, AnalysisAttributes]
             CustomColumns:
+                TransactionNumber: {Label=Transaction, Type=Integer}
+                TransactionDate: {Label=Transaction Date, Type=DateTime}
+                CostCentreCode: {Label=Cost Centre}
+                AccountCode: {Label=Account}
+                TransactionAmount: {Label=Amount, Type=Currency}
                 DebitCreditIndicator: {Label=Credit/Debit, Type="Boolean(Debit,Credit)"}
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
+            ActionDoubleClick: ShowAttributesTab
+            ActionEnterKeyPressed: ShowAttributesTab
             SortOrder: ATransaction.TransactionNumber ASC
             RowFilter: ATransaction.BatchNumber, ATransaction.JournalNumber
         pnlDetails:

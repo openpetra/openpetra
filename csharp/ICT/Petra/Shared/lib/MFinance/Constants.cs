@@ -85,7 +85,7 @@ namespace Ict.Petra.Shared.MFinance
         public const String GIFT_BATCH_VIEW_ALL = "All";
 
         /// <summary>Gift Batch View Options</summary>
-        public const String GIFT_BATCH_GIFT_TO_DELETE_STATUS = "<-|GIFT TO DELETE|->";
+        public const String MARKED_FOR_DELETION = "<<<DELETE>>>";
 
         /// <summary>Subsystem and Transaction Types</summary>
         public const String GENERAL_LEDGER = "GL";

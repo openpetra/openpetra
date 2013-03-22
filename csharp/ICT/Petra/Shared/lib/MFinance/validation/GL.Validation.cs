@@ -98,7 +98,27 @@ namespace Ict.Petra.Shared.MFinance.Validation
         }
 
         /// <summary>
-        /// Validates the GL Batch data.
+        /// Validates the Recurring GL Batch data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
+        public static bool ValidateRecurringGLBatchManual(object AContext, ARecurringBatchRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            int VerifResultCollAddedCount = 0;
+
+            //TODO
+
+            return VerifResultCollAddedCount == 0;
+        }
+
+        /// <summary>
+        /// Validates the GL Journal data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
@@ -138,6 +158,26 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     VerifResultCollAddedCount++;
                 }
             }
+
+            return VerifResultCollAddedCount == 0;
+        }
+
+        /// <summary>
+        /// Validates the recurring GL Journal data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
+        public static bool ValidateRecurringGLJournalManual(object AContext, ARecurringJournalRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            int VerifResultCollAddedCount = 0;
+
+            //TODO
 
             return VerifResultCollAddedCount == 0;
         }
@@ -217,6 +257,77 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
             {
                 VerifResultCollAddedCount++;
+            }
+
+            return VerifResultCollAddedCount == 0;
+        }
+
+        /// <summary>
+        /// Validates the recurring GL Detail data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ABatchRow">Manually added to bring over some GL Batch fields</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AControl"></param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
+        public static bool ValidateRecurringGLDetailManual(object AContext,
+            ARecurringBatchRow ABatchRow,
+            ARecurringTransactionRow ARow,
+            Control AControl,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TVerificationResult VerificationResult = null;
+            object ValidationContext;
+            int VerifResultCollAddedCount = 0;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return true;
+            }
+
+            // Narrative must not be empty
+            ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnNarrativeId];
+            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                ARow.TransactionNumber,
+                ARow.BatchNumber,
+                ARow.JournalNumber);
+
+            VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Narrative,
+                "Narrative of " + ValidationContext,
+                AContext, ValidationColumn, AControl);
+
+            // Handle addition/removal to/from TVerificationResultCollection
+            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+            {
+                VerifResultCollAddedCount++;
+            }
+
+            // 'GL amount must be non-zero
+            ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnTransactionAmountId];
+            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                ARow.TransactionNumber,
+                ARow.BatchNumber,
+                ARow.JournalNumber);
+
+            //TransactionAmount is not in the dictionary so had to pass the control directly
+            if (AControl != null)
+            {
+                VerificationResult = TNumericalChecks.IsNonZeroDecimal(ARow.TransactionAmount,
+                    "Amount of " + ValidationContext,
+                    AContext, ValidationColumn, AControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
             }
 
             return VerifResultCollAddedCount == 0;
