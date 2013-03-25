@@ -694,8 +694,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void PaymentReport(object sender, EventArgs e)
         {
-            TFrmAP_PaymentReport reporter = new TFrmAP_PaymentReport(this);
+            Int32 PaymentNumStart = -1;
+            Int32 PaymentNumEnd = -1;
+            DataRowView[] SelectedGridRows = grdResult.SelectedDataRowsAsDataRowView;
+            foreach (DataRowView RowView in SelectedGridRows)
+            {
+                DataRow Row = RowView.Row;
+                Int32 PaymentNum = Convert.ToInt32(Row["ApNum"]);
+                if ((PaymentNumStart == -1) || (PaymentNum < PaymentNumStart))
+                {
+                    PaymentNumStart = PaymentNum;
+                }
+                if (PaymentNum > PaymentNumEnd)
+                {
+                    PaymentNumEnd = PaymentNum;
+                }
+            }
 
+            TFrmAP_PaymentReport reporter = new TFrmAP_PaymentReport(this);
+            reporter.LedgerNumber = FLedgerNumber;
+            reporter.SetPaymentNumber(PaymentNumStart, PaymentNumEnd);
             reporter.Show();
         }
     }

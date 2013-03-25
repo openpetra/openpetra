@@ -124,5 +124,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             TFrmPetraReportingUtils.GenerateReport(Calculator, Owner, "APPaymentReport", true);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="PaymentNumStart"></param>
+        /// <param name="PaymentNumEnd"></param>
+        public void SetPaymentNumber(Int32 PaymentNumStart, Int32 PaymentNumEnd)
+        {
+            txtPaymentNumFrom.Text = PaymentNumStart.ToString();
+            txtPaymentNumTo.Text = PaymentNumEnd.ToString();
+        }
     }
 }
