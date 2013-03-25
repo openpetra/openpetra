@@ -392,5 +392,28 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                         TResultSeverity.Resv_Critical));
             }
         }
+
+        public void DisableToPeriod()
+        {
+            txtEndPeriod.Enabled = false;
+            txtStartPeriod.TextChanged += new EventHandler(txtStartPeriod_TextChanged);
+            rbtPeriod.CheckedChanged += new EventHandler(rbtPeriod_CheckedChanged);
+        }
+
+        //
+        // This handler disables the "to" period txt box,
+        // iff DisableToPeriod, above, has been called.
+        void rbtPeriod_CheckedChanged(object sender, EventArgs e)
+        {
+            txtEndPeriod.Enabled = false;
+        }
+
+        //
+        // This handler copies the "from" period to the "to" period,
+        // iff DisableToPeriod, above, has been called.
+        void txtStartPeriod_TextChanged(object sender, EventArgs e)
+        {
+            txtEndPeriod.Text = txtStartPeriod.Text;
+        }
     }
 }
