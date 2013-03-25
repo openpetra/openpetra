@@ -128,7 +128,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
             ACalculator.AddParameter("param_currency", this.cmbCurrency.GetSelectedString());
 
-            ACalculator.AddParameter("param_quarter", rbtQuarter.Checked);
             ACalculator.AddParameter("param_period", rbtPeriod.Checked);
             ACalculator.AddParameter("param_date_checked", rbtDate.Checked);
 
@@ -137,6 +136,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 Year = cmbQuarterYear.GetSelectedInt32();
 
                 int Quarter = (Int32)StringHelper.TryStrToInt(txtQuarter.Text, 1);
+                ACalculator.AddParameter("param_quarter", (System.Object)(Quarter));
                 ACalculator.AddParameter("param_start_period_i", (System.Object)(Quarter * 3 - 2));
                 ACalculator.AddParameter("param_end_period_i", (System.Object)(Quarter * 3));
 
@@ -393,6 +393,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void DisableToPeriod()
         {
             txtEndPeriod.Enabled = false;
