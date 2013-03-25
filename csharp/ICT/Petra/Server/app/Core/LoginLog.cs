@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.App.Core.Security
             NewLoginRow.LoginProcessId = -1;
             NewLoginRow.UserId = AUserID.ToUpper();
             NewLoginRow.LoginStatus = ALoginStatus;
-            NewLoginRow.LoginDate = LoginDateTime;
+            NewLoginRow.LoginDate = LoginDateTime.Date;
             NewLoginRow.LoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
 
             if (AImmediateLogout)
