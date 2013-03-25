@@ -196,6 +196,9 @@ msgstr "do not translate"
 msgid "NEWCODE"
 msgstr "do not translate"
 
+msgid "NEWUSER"
+msgstr "do not translate"
+
 msgid "Text Output"
 msgstr "do not translate"
 
@@ -209,4 +212,40 @@ msgid "%"
 msgstr "do not translate"
 
 msgid "OpenPetra"
+msgstr "do not translate"
+
+msgid "1,234.00"
+msgstr "do not translate"
+
+msgid "WWW"
+msgstr "do not translate"
+
+msgid "Heading #1"
+msgstr "do not translate"
+
+msgid "Heading #2"
+msgstr "do not translate"
+
+msgid "Page n/m"
+msgstr "do not translate"
+
+msgid "tExtStatusBarHelp1"
+msgstr "do not translate"
+
+msgid "TPetraShepherdForm"
+msgstr "do not translate"
+
+msgid "TShepherdChurchForm"
+msgstr "do not translate"
+
+msgid "TShepherdFamilyForm"
+msgstr "do not translate"
+
+msgid "Summary Text1"
+msgstr "do not translate"
+
+msgid "Summary Text2"
+msgstr "do not translate"
+
+msgid "Further action on finish"
 msgstr "do not translate"

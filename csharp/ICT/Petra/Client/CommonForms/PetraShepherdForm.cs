@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -24,6 +24,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms.Logic;
 
@@ -172,6 +173,20 @@ namespace Ict.Petra.Client.CommonForms
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.btnHelp.Text = Catalog.GetString("&Help");
+            this.btnCancel.Text = Catalog.GetString("&Cancel");
+            this.btnBack.Text = Catalog.GetString("<< &Back");
+            this.btnNext.Text = Catalog.GetString("&Next >>");
+            this.btnFinish.Text = Catalog.GetString("&Finish");
+            this.lblHeading2.Text = Catalog.GetString("Heading #2");
+            this.lblHeading1.Text = Catalog.GetString("Heading #1");
+            this.lblPageProgress.Text = Catalog.GetString("Page n/m");
+            this.stbMain.Text = Catalog.GetString("tExtStatusBarHelp1");
+            this.Text = Catalog.GetString("TPetraShepherdForm");
+            #endregion
         }
 
         #endregion

@@ -141,8 +141,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// If we're working in an open period, make sure the summary data is up to date.
         ///  Check that there are amounts to be transferred to the clearing house.
         ///  I.e., there are debits or credits to foreign cost centres.
-        ///  Create the journal to create the transfer transactions in, if there are
-        ///  amounts to transfer.
+        ///  Create the journal to create the transfer transactions in,
+        ///  if there are amounts to transfer.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APeriodNumber"></param>
@@ -164,31 +164,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             string IncomeAccounts = string.Empty;
             string ExpenseAccounts = string.Empty;
 
-            int ICHProcessing;
-            decimal ICHTotal = 0;
-
-            decimal SettlementAmount;
-            decimal IncomeAmount;
-            decimal ExpenseAmount;
-            decimal XferAmount;
-            decimal IncomeAmount2;
-            decimal ExpenseAmount2;
-            decimal XferAmount2;
-
-            bool TransferFound = false;
-            bool PostICHBatch = false;
-
             string CurrentAccountCode;
             decimal AmountInBaseCurrency;
             decimal AmountInIntlCurrency;
 
             DateTime PeriodStartDate;
             DateTime PeriodEndDate;
-
-            int GLBatchNumber = 0;
-            int GLJournalNumber = 0;
-            int GLTransactionNumber = 0;
-            string BatchDescription = string.Empty; //"ICH Clearing";
 
             //Error handling
             string ErrorContext = String.Empty;
@@ -204,16 +185,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             {
                 TFinancialYear.GetStartAndEndDateOfPeriod(ALedgerNumber, APeriodNumber, out PeriodStartDate, out PeriodEndDate, DBTransaction);
 
-                //Create a new batch
-                GLBatchTDS MainDS = TGLPosting.CreateABatch(ALedgerNumber);
+                //Create a new batch. If it turns out I don't need one, I can delete it later.
+                GLBatchTDS MainDS = TGLPosting.CreateABatch(ALedgerNumber, Catalog.GetString("ICH Stewardship"), 0, PeriodEndDate);
 
                 ABatchRow NewBatchRow = MainDS.ABatch[0];
-                GLBatchNumber = NewBatchRow.BatchNumber;
-
-                //Run RUN gl1110o.p to create a batch
-                BatchDescription = Catalog.GetString("ICH Stewardship");
-                NewBatchRow.BatchDescription = BatchDescription;
-                NewBatchRow.DateEffective = PeriodEndDate;
+                int GLBatchNumber = NewBatchRow.BatchNumber;
 
                 //Load tables needed: AccountingPeriod, Ledger, Account, Cost Centre, Transaction, Gift Batch, ICHStewardship
                 GLPostingTDS PostingDS = new GLPostingTDS();
@@ -234,7 +210,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 NewJournalRow.LedgerNumber = ALedgerNumber;
                 NewJournalRow.BatchNumber = GLBatchNumber;
                 NewJournalRow.JournalNumber = ++NewBatchRow.LastJournal;
-                NewJournalRow.JournalDescription = BatchDescription;
+                NewJournalRow.JournalDescription = NewBatchRow.BatchDescription;
                 NewJournalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
                 NewJournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
                 NewJournalRow.TransactionCurrency = LedgerRow.BaseCurrency;
@@ -243,13 +219,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 NewJournalRow.JournalPeriod = APeriodNumber;
                 MainDS.AJournal.Rows.Add(NewJournalRow);
 
-                GLJournalNumber = NewJournalRow.JournalNumber;
-                GLTransactionNumber = NewJournalRow.LastTransactionNumber + 1;
+                int GLJournalNumber = NewJournalRow.JournalNumber;
+                int GLTransactionNumber = NewJournalRow.LastTransactionNumber + 1;
 
                 // ***************************
                 //  Generate the transactions
                 // ***************************
-                // Ln: 242
 
                 AAccountRow AccountRow = (AAccountRow)PostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.INCOME_HEADING });
 
@@ -321,8 +296,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 // find out the stewardship number - Ln 275
                 // Increment the Last ICH No.
-                ICHProcessing = ++LedgerRow.LastIchNumber;
-
+                int ICHProcessing = ++LedgerRow.LastIchNumber;
+                decimal ICHTotal = 0;
+                bool TransferFound = false;
+                bool PostICHBatch = false;
 
                 //Iterate through the cost centres
                 string WhereClause = ACostCentreTable.GetPostingCostCentreFlagDBName() + " = True" +
@@ -341,13 +318,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     string CostCentre = CostCentreRow.CostCentreCode;
 
                     //Initialise values for each Cost Centre
-                    SettlementAmount = 0;
-                    IncomeAmount = 0;
-                    ExpenseAmount = 0;
-                    XferAmount = 0;
-                    IncomeAmount2 = 0;
-                    ExpenseAmount2 = 0;
-                    XferAmount2 = 0;
+                    decimal SettlementAmount = 0;
+                    decimal IncomeAmount = 0;
+                    decimal ExpenseAmount = 0;
+                    decimal XferAmount = 0;
+                    decimal IncomeAmount2 = 0;
+                    decimal ExpenseAmount2 = 0;
+                    decimal XferAmount2 = 0;
 
                     TransferFound = false;
 
@@ -599,7 +576,18 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 if (ICHTotal == 0)
                 {
                     AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Generating the ICH batch"),
-                            Catalog.GetString("No ICH batch was generated."), TResultSeverity.Resv_Status));
+                            Catalog.GetString("No ICH batch was required."), TResultSeverity.Resv_Status));
+
+                    // An empty GL Batch now exists, which I need to delete.
+                    //
+                    TVerificationResultCollection BatchCancelResult = new TVerificationResultCollection();
+
+                    TGLPosting.DeleteGLBatch(
+                        ALedgerNumber,
+                        GLBatchNumber,
+                        out BatchCancelResult);
+                    AVerificationResult.AddCollection(BatchCancelResult);
+
                     IsSuccessful = true;
                 }
                 else
@@ -639,8 +627,18 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     else
                     {
                         AVerificationResult.Add(new TVerificationResult(ErrorContext,
-                                Catalog.GetString("There have not been any transactions for the stewardship run"),
+                                Catalog.GetString("No Stewardship batch is required."),
                                 TResultSeverity.Resv_Status));
+
+                        // An empty GL Batch now exists, which I need to delete.
+                        //
+                        TVerificationResultCollection BatchCancelResult = new TVerificationResultCollection();
+
+                        TGLPosting.DeleteGLBatch(
+                            ALedgerNumber,
+                            GLBatchNumber,
+                            out BatchCancelResult);
+                        AVerificationResult.AddCollection(BatchCancelResult);
                     }
                 }
             }
@@ -789,8 +787,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             ref TVerificationResultCollection AVerificationResult
             )
         {
-            /*-----gl2150.p - begin-----*/
-            //Return value
             bool IsSuccessful = false;
 
             bool CreatedSuccessfully = false;
@@ -880,27 +876,23 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 {
                     //Post to Ledger - Ln 132
                     //****************4GL Transaction Starts Here********************
-                    string BatchDescription = "Admin Fees & Grants";
 
                     AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
                         APeriodNumber,
                         ADBTransaction);
                     AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
 
-                    GLBatchTDS AdminFeeDS = TGLPosting.CreateABatch(ALedgerNumber);
-                    ABatchRow AdminFeeBatch = AdminFeeDS.ABatch[0];
-
-                    AdminFeeBatch.BatchDescription = BatchDescription;
-                    AdminFeeBatch.DateEffective = AccountingPeriodRow.PeriodEndDate;
-                    AdminFeeBatch.BatchPeriod = APeriodNumber;
-                    AdminFeeBatch.BatchYear = LedgerRow.CurrentFinancialYear;
+                    // Create a Batch. If no fees are to be charged, I'll delete this batch later.
+                    GLBatchTDS AdminFeeDS = TGLPosting.CreateABatch(ALedgerNumber, Catalog.GetString(
+                            "Admin Fees & Grants"), 0, AccountingPeriodRow.PeriodEndDate);
+                    ABatchRow BatchRow = AdminFeeDS.ABatch[0];
 
                     AJournalRow JournalRow = AdminFeeDS.AJournal.NewRowTyped();
                     JournalRow.LedgerNumber = ALedgerNumber;
-                    JournalRow.BatchNumber = AdminFeeBatch.BatchNumber;
-                    JournalRow.JournalNumber = ++AdminFeeBatch.LastJournal;
+                    JournalRow.BatchNumber = BatchRow.BatchNumber;
+                    JournalRow.JournalNumber = ++BatchRow.LastJournal;
 
-                    JournalRow.JournalDescription = BatchDescription;
+                    JournalRow.JournalDescription = BatchRow.BatchDescription;
                     JournalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
                     JournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
                     JournalRow.TransactionCurrency = LedgerRow.BaseCurrency;
@@ -1022,7 +1014,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                             //Create a transaction
                                             if (!TGLPosting.CreateATransaction(AdminFeeDS,
                                                     ALedgerNumber,
-                                                    AdminFeeBatch.BatchNumber,
+                                                    BatchRow.BatchNumber,
                                                     GLJournalNumber,
                                                     "Fee: " + FeeDescription + " (" + CurrentFeeCode + ")",
                                                     DrAccountCode,
@@ -1040,7 +1032,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                                     String.Format(Catalog.GetString(
                                                             "Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
                                                         ALedgerNumber,
-                                                        AdminFeeBatch.BatchNumber,
+                                                        BatchRow.BatchNumber,
                                                         GLJournalNumber);
                                                 ErrorType = TResultSeverity.Resv_Noncritical;
                                                 throw new System.InvalidOperationException(ErrorMessage);
@@ -1072,12 +1064,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             CreditFeeTotalDR = CreditFeeTotalDT.NewRowTyped();
                             CreditFeeTotalDR.CostCentreCode = DestCostCentreCode;
                             CreditFeeTotalDR.AccountCode = DestAccountCode;
-                            CreditFeeTotalDR.TransactionAmount = pFR.PeriodicAmount;
+                            CreditFeeTotalDR.TransactionAmount = Math.Round(pFR.PeriodicAmount, NumDecPlaces);
                             CreditFeeTotalDT.Rows.Add(CreditFeeTotalDR);
                         }
                     }
 
-                    /* Generate the transction to credit the fee amounts to
+                    /* Generate the transaction to credit the fee amounts to
                      * the destination accounts. (Income leg) */
                     for (int k = 0; k < CreditFeeTotalDT.Count; k++)
                     {
@@ -1104,7 +1096,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             GLTransactionNumber = 0;
                             CreatedSuccessfully = TGLPosting.CreateATransaction(AdminFeeDS,
                                 ALedgerNumber,
-                                AdminFeeBatch.BatchNumber,
+                                BatchRow.BatchNumber,
                                 JournalRow.JournalNumber,
                                 "Collected admin charges",
                                 cFT.AccountCode,
@@ -1124,13 +1116,20 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     /* check that something has been posted - we know this if the IsSuccessful flag is still false */
                     if (!CreatedSuccessfully)
                     {
-                        // MESSAGE "No fees to charge were found.(2)" VIEW-AS ALERT-BOX MESSAGE.
                         IsSuccessful = true;
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Admin Fee Batch"),
                                 String.Format(Catalog.GetString("No admin fees charged in period ({0})."), APeriodNumber),
                                 TResultSeverity.Resv_Status));
 
-                        //UNDO Post_To_Ledger, LEAVE Post_To_Ledger.
+                        // An empty GL Batch now exists, which I need to delete.
+                        //
+                        TVerificationResultCollection BatchCancelResult = new TVerificationResultCollection();
+
+                        TGLPosting.DeleteGLBatch(
+                            ALedgerNumber,
+                            BatchRow.BatchNumber,
+                            out BatchCancelResult);
+                        AVerificationResult.AddCollection(BatchCancelResult);
                     }
                     else
                     {
@@ -1140,7 +1139,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         if (IsSuccessful)
                         {
-                            IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, AdminFeeBatch.BatchNumber, out Verification);
+                            IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchRow.BatchNumber, out Verification);
                         }
 
                         if (IsSuccessful)

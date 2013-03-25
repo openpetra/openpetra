@@ -70,13 +70,16 @@ namespace Ict.Petra.Server.MPartner.Processing
             TVerificationResultCollection ReminderUpdateVerificationResults;
             int ReminderFreqency;
             bool ProcessResult = false;
+            TDataBase DBAccessObj;
 
             if (TLogging.DebugLevel >= 6)
             {
                 TLogging.Log("Entering TProcessPartnerReminders.Process...");
             }
 
-            // TODO: it is quite impossible at the moment to use ADBAccessObj instead of DBAccess.GDBAccessObj due to SubmitChanges etc
+            // TODO: it is quite ipossible at the moment to use ADBAccessObj instead of DBAccess.GDBAccessObj due to SubmitChanges etc
+            //DBAccessObj = ADBAccessObj;
+            DBAccessObj = DBAccess.GDBAccessObj;
 
             // SubmitChanges references a user
             TPetraIdentity PetraIdentity = new TPetraIdentity(
@@ -87,7 +90,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
             // Open database transaction
-            TDBTransaction ReadWriteTransaction = ADBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction ReadWriteTransaction = DBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             /*
              * This whole process must either succeed or fail, therefore the whole thing is in a try-catch.
@@ -106,14 +109,14 @@ namespace Ict.Petra.Server.MPartner.Processing
                         TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing +
                         ": Could not send Partner Reminders because Petra couldn't create the required SystemDefault setting for the Last Reminder Date!");
 
-                    ADBAccessObj.RollbackTransaction();
+                    DBAccessObj.RollbackTransaction();
 
                     return;
                 }
 
                 // Retrieve all PartnerReminders we need to process.
                 ReminderResultsDS = GetRemindersToProcess(LastReminderDate, out PartnerReminderDT,
-                    ADBAccessObj, ReadWriteTransaction);
+                    DBAccessObj, ReadWriteTransaction);
 
                 /*
                  * We now have a Typed DataTable with the PartnerReminders that we need to process.
@@ -227,7 +230,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             {
                 if (ProcessResult)
                 {
-                    ADBAccessObj.CommitTransaction();
+                    DBAccessObj.CommitTransaction();
 
                     TLogging.LogAtLevel(1, TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " ran succesfully.");
                 }
@@ -236,7 +239,7 @@ namespace Ict.Petra.Server.MPartner.Processing
                     // Attempt to Rollback the Database Transaction
                     try
                     {
-                        ADBAccessObj.RollbackTransaction();
+                        DBAccessObj.RollbackTransaction();
                     }
                     catch (Exception Exp)
                     {

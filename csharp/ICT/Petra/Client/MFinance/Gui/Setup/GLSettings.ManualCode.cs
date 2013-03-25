@@ -444,7 +444,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 if (!ARow.SuspenseAccountFlag)
                 {
-                    if (!TRemote.MFinance.Common.ServerLookups.WebConnectors.HasSuspenseAccounts(FLedgerNumber))
+                    if (TRemote.MFinance.Common.ServerLookups.WebConnectors.HasSuspenseAccounts(FLedgerNumber))
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_NO_SUSPENSE_ACCOUNTS_ALLOWED)),

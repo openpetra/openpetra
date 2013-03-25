@@ -1,0 +1,68 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MFinance.Gui.GL
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
+    DetailTable: ARecurringTransaction
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Account.Validation, Ict.Petra.Shared.MFinance.GL.Data]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&Add, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Dock: Fill
+        pnlInfo:
+            Controls:
+                Row0: [txtLedgerNumber, txtBatchNumber, txtJournalNumber]
+            Dock: Top
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
+        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlDetailButtons]
+        pnlDetailButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
+        grdDetails:
+            Dock: Fill
+            TableName: ARecurringTransaction
+            Columns: [TransactionNumber, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AnalysisAttributes]
+            CustomColumns:
+                TransactionNumber: {Label=Transaction, Type=Integer}
+                CostCentreCode: {Label=Cost Centre}
+                AccountCode: {Label=Account}
+                TransactionAmount: {Label=Amount, Type=Currency}
+                DebitCreditIndicator: {Label=Credit/Debit, Type="Boolean(Debit,Credit)"}
+                DateEntered: {Label=Date Entered, Type=DateTime}
+                AnalysisAttributes: {Label=Analysis Attributes, Type=String}
+            ActionFocusRow: FocusedRowChanged
+            ActionDoubleClick: ShowAttributesTab
+            ActionEnterKeyPressed: ShowAttributesTab
+            SortOrder: ARecurringTransaction.TransactionNumber ASC
+            RowFilter: ARecurringTransaction.BatchNumber, ARecurringTransaction.JournalNumber
+        pnlDetails:
+            Dock: Bottom
+            Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, cmbMinistry, pnlDetailAmounts]
+        cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList}
+        cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
+        txtDetailNarrative: {Label=Narrative, Width=537}
+        txtDetailReference: {Label=Reference}
+        cmbMinistry: {Label=Key Ministry, Width=363, TODOSELECTPARTNERKEYMIN}
+        pnlDetailAmounts:
+            Controls:
+                Row0: [lblTransactionCurrency]
+                Row1: [txtDebitAmount]
+                Row2: [txtCreditAmount]
+                Row3: [txtDebitTotalAmount]
+                Row4: [txtCreditTotalAmount]
+        lblTransactionCurrency: {Label=TODOTransactionCurrency}
+        txtDebitAmount: {Label=Dr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
+        txtCreditAmount: {Label=Cr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
+        txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}
+        txtCreditTotalAmount: {Label=Credit Total, ReadOnly=true, Format=Currency}

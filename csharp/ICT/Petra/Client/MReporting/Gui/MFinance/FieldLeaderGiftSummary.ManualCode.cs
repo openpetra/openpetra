@@ -55,28 +55,28 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 FLedgerNumber = value;
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
-
-                string CheckedMember = "CHECKED";
-                string DisplayMember = "Field Name";
-                string ValueMember = "Field Key";
-
-                FFieldTable = TRemote.MFinance.Reporting.WebConnectors.GetReceivingFields(FLedgerNumber, out DisplayMember, out ValueMember);
-
-                DataColumn FirstColumn = new DataColumn(CheckedMember, typeof(bool));
-
-                FirstColumn.DefaultValue = false;
-                FFieldTable.Columns.Add(FirstColumn);
-
-                clbFields.Columns.Clear();
-                clbFields.AddCheckBoxColumn("", FFieldTable.Columns[CheckedMember], 17, false);
-                clbFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns[ValueMember], 80);
-                clbFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns[DisplayMember], 200);
-                clbFields.DataBindGrid(FFieldTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
             }
         }
 
-        private void InitFieldList()
+        private void RunOnceOnActivationManual() // Formerly InitFieldList
         {
+            string CheckedMember = "CHECKED";
+            string DisplayMember = "Field Name";
+            string ValueMember = "Field Key";
+
+            FFieldTable = TRemote.MFinance.Reporting.WebConnectors.GetReceivingFields(FLedgerNumber, out DisplayMember, out ValueMember);
+
+            DataColumn FirstColumn = new DataColumn(CheckedMember, typeof(bool));
+
+            FirstColumn.DefaultValue = false;
+            FFieldTable.Columns.Add(FirstColumn);
+            rbtAllFields.Select();
+            cmbCurrency.SelectedIndex = 0;
+            clbFields.Columns.Clear();
+            clbFields.AddCheckBoxColumn("", FFieldTable.Columns[CheckedMember], 17, false);
+            clbFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns[ValueMember], 80);
+            clbFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns[DisplayMember], 200);
+            clbFields.DataBindGrid(FFieldTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
 
         private void SelectAllFields(object sender, EventArgs e)
@@ -102,6 +102,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     Catalog.GetString("Please select at least one field."),
                     Catalog.GetString("No fields selected!"), TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
+            }
+
+            if ((AReportAction == TReportActionEnum.raGenerate) && (rbtAllFields.Checked))
+            {
+                ACalc.AddParameter("param_clbFields", this.clbFields.GetAllStringList());
             }
 
             if ((AReportAction == TReportActionEnum.raGenerate)

@@ -68,6 +68,9 @@ namespace Ict.Common.DB
         /// <summary>DebugLevel for logging the SQL code from DB queries</summary>
         public const Int32 DB_DEBUGLEVEL_QUERY = 3;
 
+        /// <summary>DebugLevel for logging the SQL code from DB queries</summary>
+        public const Int32 DB_DEBUGLEVEL_TRANSACTION = 10;
+
         /// <summary>DebugLevel for logging results from DB queries: is 10 (was 4 before)</summary>
         public const Int32 DB_DEBUGLEVEL_RESULT = 10;
 
@@ -946,9 +949,8 @@ namespace Ict.Common.DB
                 throw new ArgumentException("ADataTableName", "A name for the DataTable must be submitted!");
             }
 
-            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
-                TLogging.Log("Entering " + this.GetType().FullName + ".Select()...");
                 LogSqlStatement(this.GetType().FullName + ".Select()", ASqlStatement, AParametersArray);
             }
 
@@ -1023,9 +1025,8 @@ namespace Ict.Common.DB
                 throw new ArgumentNullException("AFillDataSet", "AFillDataSet must not be null!");
             }
 
-            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
-                TLogging.Log("Entering " + this.GetType().FullName + ".SelectToTempTable()...");
                 LogSqlStatement(this.GetType().FullName + ".Select()", ASqlStatement, AParametersArray);
             }
 
@@ -1244,9 +1245,8 @@ namespace Ict.Common.DB
             TDBTransaction AReadTransaction,
             DbParameter[] AParametersArray)
         {
-            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
-                TLogging.Log("Entering " + this.GetType().FullName + ".SelectDTInternal()...");
                 LogSqlStatement(this.GetType().FullName + ".SelectDTInternal()", ASqlStatement, AParametersArray);
             }
 
@@ -1306,9 +1306,8 @@ namespace Ict.Common.DB
                 throw new Exception("Security Violation: Access Permission failed");
             }
 
-            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
-                TLogging.Log("Entering " + this.GetType().FullName + ".SelectDT()...");
                 LogSqlStatement(this.GetType().FullName + ".SelectDT()", ASqlStatement, AParametersArray);
             }
 
@@ -1373,7 +1372,7 @@ namespace Ict.Common.DB
 
                 FTransaction = FSqlConnection.BeginTransaction();
 
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                 {
                     TLogging.Log("DB Transaction started (in Appdomain " + AppDomain.CurrentDomain.ToString() + " ).");
                 }
@@ -1465,7 +1464,7 @@ namespace Ict.Common.DB
 
                 FTransaction = FSqlConnection.BeginTransaction(AIsolationLevel);
 
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                 {
                     TLogging.Log(
                         "DB Transaction with IsolationLevel '" + AIsolationLevel.ToString() + "' started (in Appdomain " +
@@ -1560,7 +1559,7 @@ namespace Ict.Common.DB
             {
                 String msg = "";
 
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                 {
                     msg = "DB Transaction with IsolationLevel '" + FTransaction.IsolationLevel.ToString() + "' committed (in Appdomain " +
                           AppDomain.CurrentDomain.ToString() + " ).";
@@ -1568,7 +1567,7 @@ namespace Ict.Common.DB
 
                 FTransaction.Commit();
 
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                 {
                     TLogging.Log(msg);
                 }
@@ -1590,7 +1589,7 @@ namespace Ict.Common.DB
                 return;
             }
 
-            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
             {
                 msg = "DB Transaction with IsolationLevel '" + FTransaction.IsolationLevel.ToString() + "' rolled back (in Appdomain " +
                       AppDomain.CurrentDomain.ToString() + " ).";
@@ -1598,7 +1597,7 @@ namespace Ict.Common.DB
 
             FTransaction.Rollback();
 
-            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
             {
                 TLogging.Log(msg);
             }
@@ -1843,7 +1842,7 @@ namespace Ict.Common.DB
                 throw new ArgumentNullException("ACommitTransaction", "ACommitTransaction cannot be set to true when ATransaction is null!");
             }
 
-            if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
                 LogSqlStatement(this.GetType().FullName + ".ExecuteNonQuery()", ASqlStatement, AParametersArray);
             }
@@ -2185,7 +2184,7 @@ namespace Ict.Common.DB
                 throw new ArgumentNullException("ACommitTransaction", "ACommitTransaction cannot be set to true when ATransaction is null!");
             }
 
-            if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
                 LogSqlStatement(this.GetType().FullName + ".ExecuteScalar()", ASqlStatement, AParametersArray);
             }

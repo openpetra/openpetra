@@ -71,7 +71,7 @@ RootNode:
             Controls: 
                 Row0: [grpAccountDetail]
             
-        grpAccountDetail: {Label=AccountDetail, Strech=horizontally}
+        grpAccountDetail: {Label=Account Detail, Strech=horizontally}
             Controls: [txtAccountName, txtBankAccountNumber, txtIban, txtBankKey]
     
         txtAccountName:

@@ -52,7 +52,7 @@ RootNode:
         cmbStatus: {Label=&Status}
             OptionalValues: [=All, OPEN,APPROVED,POSTED,PARTPAID,PAID]
             OnChange: StatusFilterChange
-        chkHideAgedTransactions: {Label=Hide &Aged Transactions, CheckBoxAttachedLabel=right}
+        chkHideAgedTransactions: {Label=Hide &Aged Transactions, CheckBoxAttachedLabel=right, OnChange=StatusFilterChange}
         pnlButtons:
             Controls: [btnTagPostable, btnTagPayable, btnUntagAll, txtSumOfTagged, btnReloadList]
             ControlsOrientation: horizontal

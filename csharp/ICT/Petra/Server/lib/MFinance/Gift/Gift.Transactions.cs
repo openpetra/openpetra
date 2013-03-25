@@ -713,7 +713,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     DataRow[] foundGiftForDeletion = AInspectDS.AGift.Select(String.Format("{0} = '{1}'",
                             AGiftTable.GetGiftStatusDBName(),
-                            MFinanceConstants.GIFT_BATCH_GIFT_TO_DELETE_STATUS));
+                            MFinanceConstants.MARKED_FOR_DELETION));
 
                     if (foundGiftForDeletion.Length == 1)
                     {

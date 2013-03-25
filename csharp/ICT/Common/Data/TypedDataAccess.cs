@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1345,7 +1345,7 @@ namespace Ict.Common.Data
             ADataRow[CREATED_BY] = param.Value;
             ReturnValue.Add(param);
             param = new OdbcParameter("", OdbcType.Date);
-            param.Value = DateTime.Now;
+            param.Value = DateTime.Today;
             ADataRow[CREATED_DATE] = param.Value;
             ReturnValue.Add(param);
 
@@ -1397,7 +1397,7 @@ namespace Ict.Common.Data
             ADataRow[MODIFIED_BY] = parameter.Value;
             ReturnValue.Add(parameter);
             parameter = new OdbcParameter("s_date_modified_d", OdbcType.Date);
-            parameter.Value = DateTime.Now;
+            parameter.Value = DateTime.Today;
             ADataRow[MODIFIED_DATE] = parameter.Value;
             ReturnValue.Add(parameter);
 

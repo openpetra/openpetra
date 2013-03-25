@@ -442,7 +442,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             btnNew.Click();
 
             DateTime dt1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            DateTime dt2 = dt1.AddMonths(1);
+            //DateTime dt2 = dt1.AddMonths(1);
             DateTime dt3 = dt1.AddMonths(2);
 
             // Check the data first

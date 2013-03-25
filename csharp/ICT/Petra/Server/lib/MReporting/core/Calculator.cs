@@ -143,10 +143,9 @@ namespace Ict.Petra.Server.MReporting.Calculator
 
                     if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
                     {
-                        Parameters.Save(Path.GetDirectoryName(
-                                TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "LogParamAfterCalculation.xml", true);
-                        Results.WriteCSV(Parameters, Path.GetDirectoryName(
-                                TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "ReportResults.xml", ",", true, false);
+                        string FilePath = Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar;
+                        Parameters.Save(FilePath + "LogParamAfterCalculation.xml", true);
+                        Results.WriteCSV(Parameters, FilePath + Path.DirectorySeparatorChar + "ReportResults.csv", ",", true, false);
                     }
 
                     ReturnValue = true;
@@ -776,20 +775,20 @@ namespace Ict.Petra.Server.MReporting.Calculator
             // the current column calculation settings must be saved somewhere
             TempParameters = new TParameterList();
 
-            for (Counter = 0; Counter <= NumberColumns - 1; Counter += 1)
+            for (Counter = 0; Counter <= NumberColumns - 1; Counter++)
             {
                 TempParameters.Copy(Parameters, Counter, -1, eParameterFit.eBestFit, -1);
             }
 
             // clear the current column settings
-            for (Counter = 0; Counter <= NumberColumns - 1; Counter += 1)
+            for (Counter = 0; Counter <= NumberColumns - 1; Counter++)
             {
                 Parameters.RemoveColumn(Counter);
             }
 
-            for (Counter = 0; Counter <= NumberColumns - 1; Counter += 1)
+            for (Counter = 0; Counter <= NumberColumns - 1; Counter++)
             {
-                for (Month = 1; Month <= 12; Month += 1)
+                for (Month = 1; Month <= 12; Month++)
                 {
                     NewColumn = Counter * 13 + Month - 1;
                     Parameters.Copy(TempParameters, Counter, -1, eParameterFit.eExact, NewColumn);
@@ -849,17 +848,15 @@ namespace Ict.Petra.Server.MReporting.Calculator
         /// <returns>void</returns>
         protected void InitDetailReports()
         {
-            int ColCounter;
-            int Counter;
+            int Counter = 0;
             String detailReportCSV;
 
             // remove all param_detail_report_ parameters first
-            Counter = 0;
 
             while (Parameters.Exists("param_detail_report_" + Counter.ToString()) == true)
             {
                 Parameters.RemoveVariable("param_detail_report_" + Counter.ToString());
-                Counter = Counter + 1;
+                Counter++;
             }
 
             Counter = 0;
@@ -883,13 +880,13 @@ namespace Ict.Petra.Server.MReporting.Calculator
                     }
 
                     Parameters.Add("param_detail_report_" + Counter.ToString(), detailReportCSV);
-                    Counter = Counter + 1;
+                    Counter++;
                 }
             }
 
             // add a detail report for each partnerkey column
             // use columnFormat, because looking at the format "eInteger:partnerkey:" of the values of a row is not so easy
-            for (ColCounter = 0; ColCounter <= Parameters.Get("MaxDisplayColumns").ToInt() - 1; ColCounter += 1)
+            for (int ColCounter = 0; ColCounter <= Parameters.Get("MaxDisplayColumns").ToInt() - 1; ColCounter++)
             {
                 if (Parameters.Get("ColumnFormat", ColCounter).ToString().ToLower() == "partnerkey")
                 {
@@ -899,7 +896,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
                     detailReportCSV = StringHelper.AddCSV(detailReportCSV, "PartnerEditScreen", ",");
                     detailReportCSV = StringHelper.AddCSV(detailReportCSV, ColCounter.ToString(), ",");
                     Parameters.Add("param_detail_report_" + Counter.ToString(), detailReportCSV);
-                    Counter = Counter + 1;
+                    Counter++;
                 }
             }
         }

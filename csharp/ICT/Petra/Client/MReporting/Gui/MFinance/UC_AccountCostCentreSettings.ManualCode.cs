@@ -190,11 +190,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddColumnLayout(0, 6, 0, 2);
             ACalculator.AddColumnLayout(1, 8, 0, 3);
             ACalculator.AddColumnLayout(2, 11, 0, 1);
-            ACalculator.AddColumnLayout(3, 12, 0, 5);
+            ACalculator.AddColumnLayout(3, 12, 0, 7);
 //            ACalculator.AddColumnLayout(4, 13, 0, 3);
 //            ACalculator.AddColumnLayout(5, 16, 0, 3);
-            ACalculator.AddColumnLayout(4, 17, 0, 3);
-            ACalculator.AddColumnLayout(5, 20, 0, 3);
+            ACalculator.AddColumnLayout(4, 19, 0, 3);
+            ACalculator.AddColumnLayout(5, 22, 0, 3);
 
             if (FReportWithBalance == true)
             {
@@ -207,7 +207,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ACalculator.AddColumnCalculation(0, "Debit");
             ACalculator.AddColumnCalculation(1, "Credit");
-            ACalculator.AddColumnCalculation(2, "Transaction Currency");
+//          ACalculator.AddColumnCalculation(2, "Transaction Currency");
             ACalculator.AddColumnCalculation(3, "Transaction Narrative");
 
             if (FReportWithBalance == true)
