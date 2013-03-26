@@ -61,6 +61,24 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             rbtDate.Enabled = false;
             txtQuarter.Enabled = false;
             cmbQuarterYear.Enabled = false;
+
+            /* This is not required because of a fix in cmbAutoComplete:
+             * 
+            cmbAccountHierarchy.Leave += new EventHandler(RequireCmbValue);
+            cmbCurrency.Leave += new EventHandler(RequireCmbValue);
+            cmbPeriodYear.Leave += new EventHandler(RequireCmbValue);
+            cmbQuarterYear.Leave += new EventHandler(RequireCmbValue);
+             */
+        }
+
+        void RequireCmbValue(object sender, EventArgs e)
+        {
+            ComboBox cmb = (sender is TCmbLabelled) ? ((TCmbLabelled)sender).cmbCombobox : (ComboBox)sender;
+
+            if (cmb.SelectedIndex < 0)
+            {
+                cmb.SelectedIndex = 0;
+            }
         }
 
         /// <summary>
@@ -75,17 +93,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
-            int SelectedIndex = cmbPeriodYear.SelectedIndex;
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
-            cmbPeriodYear.SelectedIndex = SelectedIndex;
+            cmbPeriodYear.SelectedIndex = 0;
 
-            SelectedIndex = cmbQuarterYear.SelectedIndex;
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbQuarterYear, FLedgerNumber);
-            cmbQuarterYear.SelectedIndex = SelectedIndex;
+            cmbQuarterYear.SelectedIndex = 0;
 
-            SelectedIndex = cmbAccountHierarchy.SelectedIndex;
             TFinanceControls.InitialiseAccountHierarchyList(ref cmbAccountHierarchy, FLedgerNumber);
-            cmbAccountHierarchy.SelectedIndex = SelectedIndex;
+            cmbAccountHierarchy.SelectedIndex = 0;
 
             // if there is only one hierarchy, disable the control
 //			cmbAccountHierarchy.Enabled = (cmbAccountHierarchy.Count > 1);

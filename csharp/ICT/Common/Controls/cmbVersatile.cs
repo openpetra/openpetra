@@ -50,7 +50,7 @@ namespace Ict.Common.Controls
     ///     cmbVersatile.ValueMember := COLUMN NAME;
     ///     cmbVersatile.EndUpdate();
     /// - DisplayInColumn1 ... DisplayIn Column4:
-    ///   Here the colomn of the underlying DataSource table / view has to be set. If
+    ///   Here the column of the underlying DataSource table / view has to be set. If
     ///   no table column name for the 1st column of the drop down is given
     ///   DisplayMember respectively ValueMember is used.
     /// - ColumnWidthCol1 ... ColumnWidthCol4:
@@ -63,7 +63,7 @@ namespace Ict.Common.Controls
     /// - Images:
     ///   Here an ImageList is needed. All images in that list have indices. If you note
     ///   these indices in one column of the DataSource the cmbVersatile ComboBox will
-    ///   automatically grab these images and display them in the colomn you assign.
+    ///   automatically grab these images and display them in the column you assign.
     /// - ImageColumn:
     ///   The column number of the drop down's column which holds the image indices.
     ///   Please note: 0 refers to no column!, 1 to column 1 ... 4 to column 4.
