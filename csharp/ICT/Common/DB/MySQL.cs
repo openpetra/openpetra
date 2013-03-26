@@ -205,22 +205,31 @@ namespace Ict.Common.DB
                             break;
 
                         case OdbcType.Date:
-                            DateTime TmpDate = (DateTime)AParameterArrayOdbc[Counter].Value;
-                            
-                            if ((TmpDate.Hour == 0) 
-                                && (TmpDate.Minute == 0)
-                                && (TmpDate.Second == 0)
-                                && (TmpDate.Millisecond == 0))
-                            {                            
-                                ReturnValue[Counter] = new MySqlParameter(
-                                ParamName,
-                                MySqlDbType.Date);
+                            if (AParameterArrayOdbc[Counter].Value != DBNull.Value) 
+                            {                           
+                                DateTime TmpDate = (DateTime)AParameterArrayOdbc[Counter].Value;
+                                
+                                if ((TmpDate.Hour == 0) 
+                                    && (TmpDate.Minute == 0)
+                                    && (TmpDate.Second == 0)
+                                    && (TmpDate.Millisecond == 0))
+                                {                            
+                                    ReturnValue[Counter] = new MySqlParameter(
+                                    ParamName,
+                                    MySqlDbType.Date);
+                                }
+                                else
+                                {
+                                    ReturnValue[Counter] = new MySqlParameter(
+                                    ParamName,
+                                    MySqlDbType.Timestamp);                                
+                                }
                             }
                             else
                             {
                                 ReturnValue[Counter] = new MySqlParameter(
                                 ParamName,
-                                MySqlDbType.Timestamp);                                
+                                MySqlDbType.Date);
                             }
                             
                             break;
