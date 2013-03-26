@@ -726,7 +726,14 @@ namespace Ict.Common.Data
             
             for (int Counter = 0; Counter < PrimaryKeyArr.Length; Counter++) 
             {
-                ReturnValue[Counter] = ADataRow[PrimaryKeyArr[Counter]];
+                if (ADataRow.RowState != DataRowState.Deleted) 
+                {
+                    ReturnValue[Counter] = ADataRow[PrimaryKeyArr[Counter]];    
+                }
+                else
+                {
+                    ReturnValue[Counter] = ADataRow[PrimaryKeyArr[Counter], DataRowVersion.Original];
+                }               
             }
             
             return ReturnValue;
