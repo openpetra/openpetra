@@ -49,11 +49,11 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, cmbMinistry, pnlDetailAmounts]
-        cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList}
+        cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, OnChange=CostCentreCodeDetailChanged}
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
         txtDetailNarrative: {Label=Narrative, Width=537}
         txtDetailReference: {Label=Reference}
-        cmbMinistry: {Label=Key Ministry, Width=363, TODOSELECTPARTNERKEYMIN}
+        cmbMinistry: {Label=Key Ministry, Width=363, List=UserDefinedList}
         pnlDetailAmounts:
             Controls:
                 Row0: [lblTransactionCurrency]
