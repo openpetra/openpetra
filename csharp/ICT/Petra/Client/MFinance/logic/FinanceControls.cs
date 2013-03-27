@@ -227,8 +227,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                 if (APersonalOnly)
                 {
-                    // personal costcentres are linked to a partner of type FAMILY or PERSON
-                    if ((LinkedCC == null) || (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() == MPartnerConstants.PARTNERCLASS_UNIT))
+                    // personal costcentres are linked to a partner of type PERSON
+                    if ((LinkedCC == null) || (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() != MPartnerConstants.PARTNERCLASS_PERSON))
                     {
                         r[ACostCentreTable.GetCostCentreNameDBName()] = "DONOTSHOW";
                     }

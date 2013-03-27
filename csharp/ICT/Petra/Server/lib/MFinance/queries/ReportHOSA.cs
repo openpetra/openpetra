@@ -50,6 +50,11 @@ namespace Ict.Petra.Server.MFinance.queries
 
             try
             {
+                if (AParameters.Get("param_filter_cost_centres").ToString() == "PersonalCostcentres")
+                {
+                    Defines.Add("PERSONALHOSA", "true");
+                }
+
                 SqlParameterList.Add(new OdbcParameter("ledgernumber", OdbcType.Decimal)
                     {
                         Value = AParameters.Get("param_ledger_number_i").ToDecimal()
