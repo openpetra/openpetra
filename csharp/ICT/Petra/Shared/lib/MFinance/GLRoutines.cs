@@ -173,5 +173,6 @@ namespace Ict.Petra.Shared.MFinance
             AMainDS.ATransaction.DefaultView.RowFilter = origTransactionFilter;
             AMainDS.AJournal.DefaultView.RowFilter = origJournalFilter;
         }
+        
     }
 }

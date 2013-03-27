@@ -694,7 +694,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 GLBatchTDSAJournalRow journal = GetJournalRow();
 
-                GLRoutines.UpdateTotalsOfJournal(ref FMainDS, journal);
+                //GLRoutines.UpdateTotalsOfJournal(ref FMainDS, journal);
 
                 alreadyChanged = FPetraUtilsObject.HasChanges;
 
@@ -736,8 +736,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                 {
-                    ((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(GetBatchRow());
-                    ((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
+                    //((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(GetBatchRow());
+                    //((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
                 }
 
                 if (!alreadyChanged && FPetraUtilsObject.HasChanges)

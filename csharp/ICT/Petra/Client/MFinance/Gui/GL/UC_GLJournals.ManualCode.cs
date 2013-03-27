@@ -124,7 +124,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtBatchNumber.Text = FBatchNumber.ToString();
 
             //This will update Batch totals
-            UpdateTotals(GetBatchRow());
+            //UpdateTotals(GetBatchRow());
 
             grdDetails.Focus();
         }
