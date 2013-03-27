@@ -174,6 +174,16 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ALogFileMsg"></param>
+        /// <returns></returns>
+        public bool CanWriteLogFile(out String ALogFileMsg)
+        {
+            return ULogWriter.CanWriteLogFile(out ALogFileMsg);
+        }
+
+        /// <summary>
         /// returns the name of the current log file
         /// </summary>
         /// <returns>the path of the current log file</returns>
