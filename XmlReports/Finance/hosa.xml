@@ -152,22 +152,7 @@
                   FROM PUB_a_account AS acc 
                   WHERE acc.a_ledger_number_i = {{param_ledger_number_i}}
                     AND acc.a_posting_status_l = 1
-                    </value>
-                  </queryDetail>
-                  <!--value function="replace(template(AccountFilter), filter, acc.a_account_code_c)"/-->
-                  <queryDetail condition="eq({param_rgrAccounts},AccountRange)">
-                    <value>
-                        AND acc.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
-                    </value>
-                  </queryDetail>
-                  <queryDetail condition="eq({param_rgrAccounts},AccountList)">
-                    <value>AND (</value>
-                    <value function = "csv" text="acc.a_account_code_c" variable="param_account_codes" format="Text"/>
-                    <value>)</value>
-                  </queryDetail>
-                  <queryDetail>
-                    <value>
-                      AND NOT EXISTS(
+                    AND NOT EXISTS(
                         SELECT prop.a_property_value_c FROM PUB_a_account_property AS prop 
                         WHERE prop.a_ledger_number_i = acc.a_ledger_number_i
                         AND prop.a_property_code_c = {param_account_hierarchy_c}
@@ -185,22 +170,7 @@
                   WHERE acc.a_ledger_number_i = {{param_ledger_number_i}}
                     AND prop.a_property_code_c = {param_account_hierarchy_c}
                     AND acc.a_posting_status_l = 1
-                  </value>
-                  </queryDetail>
-                  <!--value function="replace(template(AccountFilter), filter, prop.a_property_value_c)"/-->
-                  <queryDetail condition="eq({param_rgrAccounts},AccountRange)">
-                    <value>
-                      AND prop.a_property_value_c BETWEEN {param_account_code_start} AND {param_account_code_end}
-                  </value>
-                  </queryDetail>
-                  <queryDetail condition="eq({param_rgrAccounts},AccountList)">
-                    <value>AND (</value>
-                    <value function = "csv" text="prop.a_property_value_c" variable="param_account_codes" format="Text"/>
-                    <value>)</value>
-                  </queryDetail>
-                  <queryDetail>
-                    <value>
-                    ORDER BY 1
+                  ORDER BY 1
                   </value>
                   </queryDetail>
                 </query>

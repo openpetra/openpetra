@@ -223,33 +223,47 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             foreach (DataRow r in Table.Rows)
             {
-                DataRow LinkedCC = LinkedCostCentres.Rows.Find(r[ACostCentreTable.GetCostCentreCodeDBName()].ToString());
+                // there can be several partners linked to a cost centre
+                DataRowView[] LinkedCCs = LinkedCostCentres.DefaultView.FindRows(r[ACostCentreTable.GetCostCentreCodeDBName()].ToString());
 
-                if (APersonalOnly)
+                bool DoNotShow = true;
+
+                foreach (DataRowView rv in LinkedCCs)
                 {
-                    // personal costcentres are linked to a partner of type PERSON
-                    if ((LinkedCC == null) || (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() != MPartnerConstants.PARTNERCLASS_PERSON))
+                    DataRow LinkedCC = rv.Row;
+
+                    if (APersonalOnly)
                     {
-                        r[ACostCentreTable.GetCostCentreNameDBName()] = "DONOTSHOW";
+                        // personal costcentres are linked to a partner of type FAMILY
+                        if ((LinkedCC != null)
+                            && (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() == MPartnerConstants.PARTNERCLASS_FAMILY))
+                        {
+                            DoNotShow = false;
+                        }
+                    }
+                    else if (ADepartmentOnly)
+                    {
+                        // department costcentres are a local costcentre, linked to no partner, or are not a unit, or UnitType != F
+                        if ((LinkedCC == null)
+                            || ((LinkedCC[PUnitTable.GetUnitTypeCodeDBName()].ToString() != MPartnerConstants.UNIT_TYPE_FIELD)
+                                && (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() != MPartnerConstants.PARTNERCLASS_FAMILY)))
+                        {
+                            DoNotShow = false;
+                        }
+                    }
+                    else if (AFieldOnly)
+                    {
+                        // field costcentres are linked to a partner, UnitType is F
+                        if ((LinkedCC != null) && (LinkedCC[PUnitTable.GetUnitTypeCodeDBName()].ToString() == MPartnerConstants.UNIT_TYPE_FIELD))
+                        {
+                            DoNotShow = false;
+                        }
                     }
                 }
-                else if (ADepartmentOnly)
+
+                if (DoNotShow)
                 {
-                    // department costcentres are a local costcentre, linked to no partner, or are not a unit, or UnitType != F
-                    if ((LinkedCC != null)
-                        && ((LinkedCC[PUnitTable.GetUnitTypeCodeDBName()].ToString() == MPartnerConstants.UNIT_TYPE_FIELD)
-                            || (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() != MPartnerConstants.PARTNERCLASS_UNIT)))
-                    {
-                        r[ACostCentreTable.GetCostCentreNameDBName()] = "DONOTSHOW";
-                    }
-                }
-                else if (AFieldOnly)
-                {
-                    // field costcentres are linked to a partner, UnitType is F
-                    if ((LinkedCC == null) || (LinkedCC[PUnitTable.GetUnitTypeCodeDBName()].ToString() != MPartnerConstants.UNIT_TYPE_FIELD))
-                    {
-                        r[ACostCentreTable.GetCostCentreNameDBName()] = "DONOTSHOW";
-                    }
+                    r[ACostCentreTable.GetCostCentreNameDBName()] = "DONOTSHOW";
                 }
             }
 
@@ -608,7 +622,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="APartnerKey"></param>
         public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, ref TtxtAutoPopulatedButtonLabel txtField, System.Int64 APartnerKey)
         {
-            GetRecipientData (ref cmbMinistry, APartnerKey, out FFieldNumber);
+            GetRecipientData(ref cmbMinistry, APartnerKey, out FFieldNumber);
 
             txtField.Text = FFieldNumber.ToString();
         }
@@ -620,9 +634,9 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="APartnerKey"></param>
         public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, System.Int64 APartnerKey)
         {
-            GetRecipientData (ref cmbMinistry, APartnerKey, out FFieldNumber);
+            GetRecipientData(ref cmbMinistry, APartnerKey, out FFieldNumber);
         }
-        
+
         /// <summary>
         /// This function fills the combobox for the key ministry depending on the partnerkey
         /// </summary>
@@ -632,7 +646,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         private static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, System.Int64 APartnerKey, out Int64 AFieldNumber)
         {
             AFieldNumber = 0;
-            
+
             if (FKeyMinTable != null)
             {
                 if (FindAndSelect(ref cmbMinistry, APartnerKey))
@@ -660,7 +674,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 cmbMinistry.SelectedIndex = -1;
             }
         }
-        
+
         static bool FindAndSelect(ref TCmbAutoPopulated AControl, System.Int64 APartnerKey)
         {
             foreach (PUnitRow pr in FKeyMinTable.Rows)

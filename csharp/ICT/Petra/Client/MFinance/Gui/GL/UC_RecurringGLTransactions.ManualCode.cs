@@ -862,10 +862,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ((TFrmRecurringGLBatch)ParentForm).DisableAttributes();
             }
-            
+
             // update key ministry combobox depending on account code and cost centre
             UpdateCmbMinistry();
-
         }
 
         /// <summary>
@@ -883,14 +882,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void UpdateCmbMinistry()
         {
             Int64 RecipientKey;
-            
+
             // update key ministry combobox depending on account code and cost centre
-            if (   cmbDetailAccountCode.GetSelectedString() == MFinanceConstants.FUND_TRANSFER_INCOME_ACC
-                && cmbDetailCostCentreCode.GetSelectedString() != "")
+            if ((cmbDetailAccountCode.GetSelectedString() == MFinanceConstants.FUND_TRANSFER_INCOME_ACC)
+                && (cmbDetailCostCentreCode.GetSelectedString() != ""))
             {
                 cmbMinistry.Enabled = true;
-                TRemote.MFinance.Common.ServerLookups.WebConnectors.GetPartnerKeyForForeignCostCentreCode(FLedgerNumber, cmbDetailCostCentreCode.GetSelectedString(), out RecipientKey);
-                TFinanceControls.GetRecipientData(ref cmbMinistry, RecipientKey);                
+                TRemote.MFinance.Common.ServerLookups.WebConnectors.GetPartnerKeyForForeignCostCentreCode(FLedgerNumber,
+                    cmbDetailCostCentreCode.GetSelectedString(),
+                    out RecipientKey);
+                TFinanceControls.GetRecipientData(ref cmbMinistry, RecipientKey);
             }
             else
             {
@@ -898,7 +899,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 cmbMinistry.Enabled = false;
             }
         }
-        
+
         private void ValidateDataDetailsManual(ARecurringTransactionRow ARow)
         {
             if ((ARow == null) || (GetBatchRow() == null) || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))

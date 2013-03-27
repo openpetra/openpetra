@@ -129,7 +129,9 @@ namespace Ict.Petra.Server.MFinance.Cacheable
 
             CostCentreTable = TCostCentresLinkedToPartner.GetData(ATableName, ALedgerNumber, AReadTransaction);
             CostCentreTable.PrimaryKey = new DataColumn[] {
-                CostCentreTable.Columns[0]
+                CostCentreTable.Columns[AValidLedgerNumberTable.GetLedgerNumberDBName()],
+                CostCentreTable.Columns[AValidLedgerNumberTable.GetCostCentreCodeDBName()],
+                CostCentreTable.Columns[AValidLedgerNumberTable.GetPartnerKeyDBName()]
             };
             return CostCentreTable;
         }
