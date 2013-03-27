@@ -735,7 +735,22 @@ namespace Ict.Common.Data
         private static String GenerateWhereClauseForJoin(string ATableName, string AOtherTableName, string[] APKFieldNames, string[] AOtherPKFieldNames)
         {
             String ReturnValue = "";
+            
+            if (APKFieldNames == null) 
+            {
+                throw new ArgumentException("Argument 'APKFieldNames' must not be null");
+            }
 
+            if (AOtherPKFieldNames == null) 
+            {
+                throw new ArgumentException("Argument 'AOtherPKFieldNames' must not be null");
+            }
+
+            if (APKFieldNames.Length != AOtherPKFieldNames.Length) 
+            {
+                throw new ArgumentException("Argument 'APKFieldNames' and 'AOtherPKFieldNames' must contain the same number of items");
+            }
+            
             for (int Counter = 0; Counter < APKFieldNames.Length; Counter++) 
             {
                 if (ReturnValue.Length == 0)                     //first time around
@@ -1815,9 +1830,9 @@ namespace Ict.Common.Data
             int AMaxRecords)
         {
             DBAccess.GDBAccessObj.Select(ADataSet,
-                GenerateSelectClause(AFieldList, ATableId) +
+                GenerateSelectClause(AFieldList, ATableId, true) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
-                GenerateWhereClause(AThisFieldNames) +
+                GenerateWhereClauseForJoin(TTypedDataTable.GetTableNameSQL(AOtherTableId), TTypedDataTable.GetTableNameSQL(ATableId), AThisFieldNames, TTypedDataTable.GetPrimaryKeyColumnStringList(AOtherTableId)) +
                 GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
                     AOtherTableId, ATemplateRow, ATemplateOperators) +
                 GenerateOrderByClause(AOrderBy),
