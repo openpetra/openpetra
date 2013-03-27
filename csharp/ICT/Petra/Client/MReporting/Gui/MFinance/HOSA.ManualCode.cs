@@ -22,6 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using System.Collections.Generic;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -43,11 +51,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 FLedgerNumber = value;
 
-                TFinanceControls.InitialiseCostCentreList(ref cmbCostCentreCode, FLedgerNumber, false, false, true, false);
+                InitialiseCostCentreList();
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
             }
+        }
+
+        private string FCostCenterCodesDuringLoad = string.Empty;
+
+        /// <summary>
+        /// Sets the selected values in the controls, using the parameters loaded from a file
+        /// </summary>
+        /// <param name="AParameters"></param>
+        public void SetControlsManual(TParameterList AParameters)
+        {
+            FCostCenterCodesDuringLoad = AParameters.Get("param_cost_centre_codes").ToString();
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
@@ -65,6 +84,42 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_rgrCostCentres", "CostCentreList");
             // TODO need to allow to specify an ICH run number
             ACalc.AddParameter("param_ich_number", 0);
+
+            ACalc.AddParameter("param_cost_centre_codes", clbCostCentres.GetCheckedStringList());
+        }
+
+        private void chkExcludeCostCentresChanged(System.Object sender, System.EventArgs e)
+        {
+            if (FLedgerNumber > 0)
+            {
+                InitialiseCostCentreList();
+            }
+        }
+
+        /// <summary>
+        /// Init the grid
+        /// </summary>
+        private void InitialiseCostCentreList()
+        {
+            TFinanceControls.InitialiseCostCentreList(
+                ref clbCostCentres,
+                FLedgerNumber,
+                true,  // postingonly
+                false,  // excludeposting
+                chkExcludeInactiveCostCentres.Checked,
+                rbtFields.Checked,
+                rbtDepartments.Checked,
+                rbtPersonalCostcentres.Checked);
+
+            if (FCostCenterCodesDuringLoad.Length > 0)
+            {
+                clbCostCentres.SetCheckedStringList(FCostCenterCodesDuringLoad);
+                FCostCenterCodesDuringLoad = "";
+            }
+            else
+            {
+                clbCostCentres.SetCheckedStringList("");
+            }
         }
     }
 }

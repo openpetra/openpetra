@@ -117,6 +117,7 @@ CachedTables:
                 LedgerNameList: {Comment=names of available ledgers, DependsOnLedger=false}
                 LedgerDetails: {Comment="ledger details (number of accounting periods, current period, etc)"}
                 CostCentreList:
+                CostCentresLinkedToPartnerList:
                 AccountList:
                 AccountHierarchyList:
                 ICHStewardshipList:

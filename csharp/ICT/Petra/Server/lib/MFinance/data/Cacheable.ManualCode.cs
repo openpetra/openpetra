@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -121,6 +121,17 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             FieldList.Add(ACostCentreTable.GetCostCentreActiveFlagDBName());
             FieldList.Add(ACostCentreTable.GetCostCentreTypeDBName());
             return ACostCentreAccess.LoadViaALedger(ALedgerNumber, FieldList, AReadTransaction);
+        }
+
+        private DataTable GetCostCentresLinkedToPartnerListTable(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
+        {
+            DataTable CostCentreTable;
+
+            CostCentreTable = TCostCentresLinkedToPartner.GetData(ATableName, ALedgerNumber, AReadTransaction);
+            CostCentreTable.PrimaryKey = new DataColumn[] {
+                CostCentreTable.Columns[0]
+            };
+            return CostCentreTable;
         }
 
         private DataTable GetICHStewardshipListTable(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
