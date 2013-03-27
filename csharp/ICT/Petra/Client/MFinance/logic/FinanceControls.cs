@@ -608,6 +608,31 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="APartnerKey"></param>
         public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, ref TtxtAutoPopulatedButtonLabel txtField, System.Int64 APartnerKey)
         {
+            GetRecipientData (ref cmbMinistry, APartnerKey, out FFieldNumber);
+
+            txtField.Text = FFieldNumber.ToString();
+        }
+
+        /// <summary>
+        /// This function fills the combobox for the key ministry depending on the partnerkey
+        /// </summary>
+        /// <param name="cmbMinistry"></param>
+        /// <param name="APartnerKey"></param>
+        public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, System.Int64 APartnerKey)
+        {
+            GetRecipientData (ref cmbMinistry, APartnerKey, out FFieldNumber);
+        }
+        
+        /// <summary>
+        /// This function fills the combobox for the key ministry depending on the partnerkey
+        /// </summary>
+        /// <param name="cmbMinistry"></param>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AFieldNumber"></param>
+        private static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, System.Int64 APartnerKey, out Int64 AFieldNumber)
+        {
+            AFieldNumber = 0;
+            
             if (FKeyMinTable != null)
             {
                 if (FindAndSelect(ref cmbMinistry, APartnerKey))
@@ -619,7 +644,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             string DisplayMember = PUnitTable.GetUnitNameDBName();
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
             FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out FFieldNumber);
-            txtField.Text = FFieldNumber.ToString();
+            AFieldNumber = FFieldNumber;
             FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
 
             cmbMinistry.InitialiseUserControl(FKeyMinTable,
@@ -635,7 +660,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 cmbMinistry.SelectedIndex = -1;
             }
         }
-
+        
         static bool FindAndSelect(ref TCmbAutoPopulated AControl, System.Int64 APartnerKey)
         {
             foreach (PUnitRow pr in FKeyMinTable.Rows)
