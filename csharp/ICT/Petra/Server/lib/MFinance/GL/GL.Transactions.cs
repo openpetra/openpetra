@@ -2045,8 +2045,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string origTransactionFilter = AMainDS.ATransaction.DefaultView.RowFilter;
             string origJournalFilter = AMainDS.AJournal.DefaultView.RowFilter;
 
-            ACurrentBatch.BatchDebitTotal = 0.0m;
-            ACurrentBatch.BatchCreditTotal = 0.0m;
+            decimal sumDebits = 0.0M;
+            decimal sumCredits = 0.0M;
 
             AMainDS.AJournal.DefaultView.RowFilter =
                 AJournalTable.GetBatchNumberDBName() + " = " + ACurrentBatch.BatchNumber.ToString();
@@ -2063,10 +2063,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 UpdateTotalsOfJournal(ref AMainDS, journalrow);
 
-                ACurrentBatch.BatchDebitTotal += journalrow.JournalDebitTotal;
-                ACurrentBatch.BatchCreditTotal += journalrow.JournalCreditTotal;
+                sumDebits += journalrow.JournalDebitTotal;
+                sumCredits += journalrow.JournalCreditTotal;
             }
 
+            ACurrentBatch.BatchDebitTotal = sumDebits;
+            ACurrentBatch.BatchCreditTotal = sumCredits;
+            ACurrentBatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
+            
             AMainDS.ATransaction.DefaultView.RowFilter = origTransactionFilter;
             AMainDS.AJournal.DefaultView.RowFilter = origJournalFilter;
         }
@@ -2081,7 +2085,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 			TVerificationResultCollection AVerificationResult = new TVerificationResultCollection();
 			GLBatchTDS glDS = new GLBatchTDS();
 			
-			//Load Batch, Journal and Transaction records
+            decimal sumDebits = 0.0M;
+            decimal sumCredits = 0.0M;
+
+            //Load Batch, Journal and Transaction records
 			glDS.Merge(LoadABatchWithTransactions(ALedgerNumber, ABatchNumber));
             
             ABatchRow currentBatch = (ABatchRow)glDS.ABatch.Rows[0];
@@ -2100,9 +2107,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 UpdateTotalsOfJournal(ref glDS, journalrow);
 
-                currentBatch.BatchDebitTotal += journalrow.JournalDebitTotal;
-                currentBatch.BatchCreditTotal += journalrow.JournalCreditTotal;
+                sumDebits += journalrow.JournalDebitTotal;
+                sumCredits += journalrow.JournalCreditTotal;
             }
+
+            currentBatch.BatchDebitTotal = sumDebits;
+            currentBatch.BatchCreditTotal = sumCredits;
+            currentBatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
 	            
 			return glDS;
 

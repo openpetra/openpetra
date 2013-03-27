@@ -212,7 +212,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     SaveChanges();
                     this.tpgTransactions.Enabled = false;
                 }
-
+                this.ucoBatches.UpdateTotals();
                 this.ucoBatches.FocusGrid();
             }
             else if (ATab == eGLTabs.Journals)
@@ -227,6 +227,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     this.tpgTransactions.Enabled = (ucoJournals.GetSelectedDetailRow() != null);
 
+                    if (this.tpgTransactions.Enabled)
+                    {
+                    	this.ucoJournals.UpdateTotals(ucoBatches.GetSelectedDetailRow());
+                    }
+                    
                     this.ucoJournals.FocusGrid();
                 }
             }

@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ABatchTable.GetLedgerNumberDBName(),
                 ABatchTable.GetBatchNumberDBName()
                 );
-
+            
             grdDetails.Focus();
         }
 
@@ -578,7 +578,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void UpdateTotals()
         {
             //Below not needed as yet
-            //txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
+			if (FPreviouslySelectedDetailRow != null)
+			{
+	            FPetraUtilsObject.DisableDataChangedEvent();
+	            txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
+	            FPetraUtilsObject.EnableDataChangedEvent();
+			}
         }
 
         private bool SaveBatchForPosting()

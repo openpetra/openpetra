@@ -705,8 +705,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 txtCreditTotalAmount.NumberValueDecimal = journal.JournalCreditTotal;
                 txtDebitTotalAmount.NumberValueDecimal = journal.JournalDebitTotal;
-                txtCreditTotalAmountBase.NumberValueDecimal = journal.JournalCreditTotalBase;
-                txtDebitTotalAmountBase.NumberValueDecimal = journal.JournalDebitTotalBase;
+                
+//                if (journal.JournalCreditTotalBase.GetType() != typeof(DBNull))
+//                {
+//                	txtCreditTotalAmountBase.NumberValueDecimal = journal.JournalCreditTotalBase;
+//                }
+//                
+//                if (journal.JournalDebitTotalBase.GetType() != typeof(DBNull))
+//                {
+//	                txtDebitTotalAmountBase.NumberValueDecimal = journal.JournalDebitTotalBase;
+//                }
 
                 if (FPreviouslySelectedDetailRow != null)
                 {
@@ -736,8 +744,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                 {
-                    //((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(GetBatchRow());
-                    //((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
+                    ((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(GetBatchRow());
+                    ((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
                 }
 
                 if (!alreadyChanged && FPetraUtilsObject.HasChanges)
