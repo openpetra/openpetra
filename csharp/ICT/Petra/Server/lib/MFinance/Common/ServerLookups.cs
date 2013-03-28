@@ -111,21 +111,24 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         public static Boolean GetPartnerKeyForForeignCostCentreCode(Int32 ALedgerNumber, String ACostCentreCode, out Int64 APartnerKey)
         {
             Boolean ReturnValue = false;
-            
+
             APartnerKey = 0;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ACostCentreTable CostCentreTable;
             CostCentreTable = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
+
             if (CostCentreTable.Count > 0)
             {
                 ACostCentreRow CostCentreRow = (ACostCentreRow)CostCentreTable.Rows[0];
+
                 if (CostCentreRow.CostCentreType == MFinanceConstants.FOREIGN_CC_TYPE)
                 {
                     AValidLedgerNumberTable ValidLedgerNumberTable;
                     AValidLedgerNumberRow ValidLedgerNumberRow;
                     ValidLedgerNumberTable = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
+
                     if (ValidLedgerNumberTable.Count > 0)
                     {
                         ValidLedgerNumberRow = (AValidLedgerNumberRow)ValidLedgerNumberTable.Rows[0];
@@ -134,7 +137,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     }
                 }
             }
-            
+
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             return ReturnValue;

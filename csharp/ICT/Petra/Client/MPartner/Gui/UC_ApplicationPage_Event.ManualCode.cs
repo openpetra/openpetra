@@ -132,13 +132,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             // need to make sure that partner key fields that are not referring to p_partner table
             // but to other tables like p_unit or p_person are set to NULL when they are empty (and
             // not to 0 as then foreign key constraints will fail)
-            if (   (txtFieldCharged.Text.Length != 0)
+            if ((txtFieldCharged.Text.Length != 0)
                 && (Convert.ToInt64(txtFieldCharged.Text) == 0))
             {
                 FMainDS.PmShortTermApplication[0].SetStFieldChargedNull();
             }
 
-            if (   (txtPlacementPerson.Text.Length != 0)
+            if ((txtPlacementPerson.Text.Length != 0)
                 && (Convert.ToInt64(txtPlacementPerson.Text) == 0))
             {
                 ARow.SetPlacementPartnerKeyNull();

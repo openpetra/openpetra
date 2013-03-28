@@ -677,6 +677,14 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
+        /// constructor
+        /// </summary>
+        public TVerificationResultCollection(System.Guid ACurrentDataValidationRunID)
+        {
+            FCurrentDataValidationRunID = ACurrentDataValidationRunID;
+        }
+
+        /// <summary>
         /// access the elements of the verification collection
         /// </summary>
         public IResultInterface this[int index]
@@ -1565,13 +1573,18 @@ namespace Ict.Common.Verification
         public static void DowngradeScreenVerificationResults(TVerificationResultCollection AScreenVerificationResults)
         {
             int NumberOfVerificationResults = AScreenVerificationResults.Count;
+            int NumberOfDowngradedVerificationResults = 0;
 
             for (int Counter1 = 0; Counter1 < NumberOfVerificationResults; Counter1++)
             {
-                AScreenVerificationResults.Add(new TVerificationResult((TScreenVerificationResult)AScreenVerificationResults[Counter1]));
+                if (AScreenVerificationResults[Counter1] is TScreenVerificationResult)
+                {
+                    AScreenVerificationResults.Add(new TVerificationResult((TScreenVerificationResult)AScreenVerificationResults[Counter1]));
+                    NumberOfDowngradedVerificationResults++;
+                }
             }
 
-            for (int Counter2 = 0; Counter2 < NumberOfVerificationResults; Counter2++)
+            for (int Counter2 = 0; Counter2 < NumberOfDowngradedVerificationResults; Counter2++)
             {
                 AScreenVerificationResults.RemoveAt(0);
             }
