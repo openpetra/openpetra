@@ -749,6 +749,94 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 if (SubmissionResult != TSubmitChangesResult.scrError)
                 {
                     SubmissionResult = IndividualDataTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+
+                    // Need to merge tables back into APartnerEditInspectDS so the updated s_modification_id_t is returned
+                    // correctly to the Partner Edit.
+                    // Unfortunately this can't be done simply by using merge method of the dataset since they are two different
+                    // types but has to be done per table.
+                    if (AInspectDS.Tables.Contains(PmSpecialNeedTable.GetTableName())
+                        && (AInspectDS.PmSpecialNeed.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmSpecialNeedTable.GetTableName()].Merge(AInspectDS.PmSpecialNeed);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmPersonAbilityTable.GetTableName())
+                        && (AInspectDS.PmPersonAbility.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmPersonAbilityTable.GetTableName()].Merge(AInspectDS.PmPersonAbility);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmPassportDetailsTable.GetTableName())
+                        && (AInspectDS.PmPassportDetails.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmPassportDetailsTable.GetTableName()].Merge(AInspectDS.PmPassportDetails);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmPersonalDataTable.GetTableName())
+                        && (AInspectDS.PmPersonalData.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmPersonalDataTable.GetTableName()].Merge(AInspectDS.PmPersonalData);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmPersonLanguageTable.GetTableName())
+                        && (AInspectDS.PmPersonLanguage.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmPersonLanguageTable.GetTableName()].Merge(AInspectDS.PmPersonLanguage);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmPersonEvaluationTable.GetTableName())
+                        && (AInspectDS.PmPersonEvaluation.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmPersonEvaluationTable.GetTableName()].Merge(AInspectDS.PmPersonEvaluation);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmStaffDataTable.GetTableName())
+                        && (AInspectDS.PmStaffData.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmStaffDataTable.GetTableName()].Merge(AInspectDS.PmStaffData);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmPersonSkillTable.GetTableName())
+                        && (AInspectDS.PmPersonSkill.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmPersonSkillTable.GetTableName()].Merge(AInspectDS.PmPersonSkill);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmPastExperienceTable.GetTableName())
+                        && (AInspectDS.PmPastExperience.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmPastExperienceTable.GetTableName()].Merge(AInspectDS.PmPastExperience);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmDocumentTable.GetTableName())
+                        && (AInspectDS.PmDocument.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmDocumentTable.GetTableName()].Merge(AInspectDS.PmDocument);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmJobAssignmentTable.GetTableName())
+                        && (AInspectDS.PmJobAssignment.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmJobAssignmentTable.GetTableName()].Merge(AInspectDS.PmJobAssignment);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmGeneralApplicationTable.GetTableName())
+                        && (AInspectDS.PmGeneralApplication.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmGeneralApplicationTable.GetTableName()].Merge(AInspectDS.PmGeneralApplication);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmShortTermApplicationTable.GetTableName())
+                        && (AInspectDS.PmShortTermApplication.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmShortTermApplicationTable.GetTableName()].Merge(AInspectDS.PmShortTermApplication);
+                    }
+
+                    if (AInspectDS.Tables.Contains(PmYearProgramApplicationTable.GetTableName())
+                        && (AInspectDS.PmYearProgramApplication.Rows.Count > 0))
+                    {
+                        APartnerEditInspectDS.Tables[PmYearProgramApplicationTable.GetTableName()].Merge(AInspectDS.PmYearProgramApplication);
+                    }
                 }
             }
             else
