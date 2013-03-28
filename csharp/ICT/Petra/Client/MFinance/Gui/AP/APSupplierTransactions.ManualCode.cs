@@ -495,8 +495,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["DocumentId"]);
                     TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
-                    frm.LoadAApDocument(FLedgerNumber, DocumentId);
-                    frm.Show();
+
+                    if (frm.LoadAApDocument(FLedgerNumber, DocumentId))
+                    {
+                        frm.Show();
+                    }
                 }
                 else
                 {

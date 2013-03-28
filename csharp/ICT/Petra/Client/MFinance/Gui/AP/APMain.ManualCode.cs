@@ -448,12 +448,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         FSupplierTable = NewPage;
                     }
 
-/*
- *                  else
- *                  {
- *                      FSupplierTable.Merge(NewPage);
- *                  }
- */
                     return NewPage;
                 }
             }
@@ -468,12 +462,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         FInvoiceTable = NewPage;
                     }
 
-/*
- *                  else
- *                  {
- *                      FInvoiceTable.Merge(NewPage);
- *                  }
- */
                     return NewPage;
                 }
             }
@@ -567,8 +555,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (SelectedInvoice > 0)
             {
                 TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
-                frm.LoadAApDocument(FLedgerNumber, SelectedInvoice);
-                frm.Show();
+
+                if (frm.LoadAApDocument(FLedgerNumber, SelectedInvoice))
+                {
+                    frm.Show();
+                }
             }
         }
 
@@ -727,7 +718,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (Row["Selected"].Equals(true))
                 {
-                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, (int)Row["ApNumber"]));
+                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, (int)Row["DocumentId"]));
                 }
             }
 
@@ -780,20 +771,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         out Verifications))
                 {
                     System.Windows.Forms.MessageBox.Show("Invoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                    DoSearch(null, null);
                     return;
                 }
                 else
                 {
-                    string ErrorMessages = String.Empty;
-
-                    foreach (TVerificationResult verif in Verifications)
-                    {
-                        ErrorMessages += "[" + verif.ResultContext + "] " +
-                                         verif.ResultTextCaption + ": " +
-                                         verif.ResultText + Environment.NewLine;
-                    }
-
-                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reversal"));
+                    string ErrorMessages = Verifications.BuildVerificationResultString();
+                    MessageBox.Show(ErrorMessages, Catalog.GetString("Reverse Invoice"));
                 }
             }
         }
@@ -831,24 +815,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FLedgerNumber, DeleteTheseDocs, out Verifications))
             {
                 MessageBox.Show(Catalog.GetString("Document(s) deleted successfully!"));
+                DoSearch(null, null);
             }
             else
             {
-                string ErrorMessages = String.Empty;
-
-                foreach (TVerificationResult verif in Verifications)
-                {
-                    ErrorMessages += "[" + verif.ResultContext + "] " +
-                                     verif.ResultTextCaption + ": " +
-                                     verif.ResultText + Environment.NewLine;
-                }
-
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Document Deletion failed"));
+                string ErrorMessages = Verifications.BuildVerificationResultString();
+                MessageBox.Show(ErrorMessages, Catalog.GetString("Document Deletion"));
             }
         }
 
         private void OpenAllTagged(object sender, EventArgs e)
         {
+            foreach (DataRow Row in grdInvoiceResult.PagedDataTable.Rows)
+            {
+                if (Row["Selected"].Equals(true))
+                {
+                    TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
+
+                    if (frm.LoadAApDocument(FLedgerNumber, (int)Row["DocumentId"]))
+                    {
+                        frm.Show();
+                    }
+                }
+            }
         }
 
         private void PayAllTagged(object sender, EventArgs e)
@@ -909,6 +898,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     // TODO: print reports on successfully posted batch
                     MessageBox.Show(Catalog.GetString("The tagged documents have been posted successfully!"));
+                    DoSearch(null, null);
 
                     // TODO: show posting register of GL Batch?
                 }

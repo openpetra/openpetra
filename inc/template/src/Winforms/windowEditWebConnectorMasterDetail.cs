@@ -343,14 +343,18 @@ namespace {#NAMESPACE}
 
 {#IFDEF CANFINDWEBCONNECTOR_LOADMASTER}
 
-    /// automatically generated function from webconnector
     public bool Load{#MASTERTABLE}({#LOADMASTER_FORMALPARAMETERS})
     {
         FMainDS.Merge({#WEBCONNECTORMASTER}.Load{#MASTERTABLE}({#LOADMASTER_ACTUALPARAMETERS}));
-
-        ShowData(FMainDS.{#MASTERTABLE}[0]);
-        
-        return true;
+        if (FMainDS.{#MASTERTABLE}.Rows.Count > 0)
+        {
+            ShowData(FMainDS.{#MASTERTABLE}[0]);
+            return true;
+        }
+        else
+        {        
+            return false;
+        }
     }
 {#ENDIF CANFINDWEBCONNECTOR_LOADMASTER}
 
