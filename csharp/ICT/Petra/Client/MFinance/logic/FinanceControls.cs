@@ -526,7 +526,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="APartnerKey"></param>
         public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, ref TtxtAutoPopulatedButtonLabel txtField, System.Int64 APartnerKey)
         {
-            GetRecipientData (ref cmbMinistry, APartnerKey, out FFieldNumber);
+            GetRecipientData(ref cmbMinistry, APartnerKey, out FFieldNumber);
 
             txtField.Text = FFieldNumber.ToString();
         }
@@ -538,9 +538,9 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="APartnerKey"></param>
         public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, System.Int64 APartnerKey)
         {
-            GetRecipientData (ref cmbMinistry, APartnerKey, out FFieldNumber);
+            GetRecipientData(ref cmbMinistry, APartnerKey, out FFieldNumber);
         }
-        
+
         /// <summary>
         /// This function fills the combobox for the key ministry depending on the partnerkey
         /// </summary>
@@ -550,7 +550,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         private static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, System.Int64 APartnerKey, out Int64 AFieldNumber)
         {
             AFieldNumber = 0;
-            
+
             if (FKeyMinTable != null)
             {
                 if (FindAndSelect(ref cmbMinistry, APartnerKey))
@@ -578,7 +578,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 cmbMinistry.SelectedIndex = -1;
             }
         }
-        
+
         static bool FindAndSelect(ref TCmbAutoPopulated AControl, System.Int64 APartnerKey)
         {
             foreach (PUnitRow pr in FKeyMinTable.Rows)
