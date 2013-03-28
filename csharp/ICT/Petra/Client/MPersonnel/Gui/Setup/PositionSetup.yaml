@@ -11,7 +11,6 @@ RootNode:
     WindowHeight: 600
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
-        actDelete: {Label=Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -21,9 +20,8 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete]
+            Controls: [btnNew]
         btnNew:
-        btnDelete:
         grdDetails:
             Dock: Fill
             Columns: [DetailPositionName, DetailPositionDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]

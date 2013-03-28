@@ -29,10 +29,8 @@ using System.Xml;
 using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
@@ -62,29 +60,5 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             CreateNewPOccupation();
         }
-        
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            TVerificationResultCollection VerificationResults;
-
-            int Count = TRemote.MPartner.Partner.Cacheable.WebConnectors.GetCacheableRecordReferenceCount(
-                TCacheablePartnerTablesEnum.OccupationList, DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow), 
-                out VerificationResults);
-            
-            MessageBox.Show("Delete: reference count = " + Count.ToString());
-            
-            if ((VerificationResults != null)
-                && (VerificationResults.Count > 0))
-            {
-                MessageBox.Show(Messages.BuildMessageFromVerificationResult(
-                        Catalog.GetString("Record cannot be deleted!\r\n") +
-                        Catalog.GetPluralString("Reason:", "Reasons:", VerificationResults.Count),
-                        VerificationResults), Catalog.GetString("Record Deletion"));
-            }
-            else
-            {
-                MessageBox.Show("No references pointing to Row, delete can go ahead!");
-            }
-        }        
     }
 }
