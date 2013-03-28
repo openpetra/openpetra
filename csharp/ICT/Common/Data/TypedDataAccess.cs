@@ -2460,7 +2460,7 @@ namespace Ict.Common.Data
             KeysAndValueInformation = KeysAndValueInformation.Substring(0, KeysAndValueInformation.Length - Environment.NewLine.Length);
 
             MessageHeaderPart2 = String.Format(MessageHeaderPart2,
-                                               "\r\n" + STR_INDENTATION + "  " + AThisTableLabel + Catalog.GetString(" code:\r\n") + KeysAndValueInformation);
+                "\r\n" + STR_INDENTATION + "  " + AThisTableLabel + Catalog.GetString(" code:\r\n") + KeysAndValueInformation);
 
 
             // Build Keys and values for 'first referencing table in the cascade'
@@ -2476,7 +2476,7 @@ namespace Ict.Common.Data
             KeysAndValueInformation = KeysAndValueInformation.Substring(0, KeysAndValueInformation.Length - Environment.NewLine.Length);
 
             MessageFooter = String.Format(MessageFooter,
-                                          FirstReferenceInCascade.ReferenceCount == 1 ? Catalog.GetString("Referencing record") : Catalog.GetString("One of the referencing records"),
+                FirstReferenceInCascade.ReferenceCount == 1 ? Catalog.GetString("Referencing record") : Catalog.GetString("One of the referencing records"),
                 FirstReferenceInCascade.ThisTableLabel,
                 STR_INDENTATION + "  " + FirstReferenceInCascade.ThisTableLabel + Catalog.GetString(" code:\r\n") + KeysAndValueInformation);
 
