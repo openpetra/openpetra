@@ -152,6 +152,12 @@ namespace Ict.Common
 
         // Note: GENC.0017V is already defined in Ict.Common.Verification.TStringChecks...
 
+        /// <summary>User tried to delete a record that is referenced from another DB Table.</summary>
+        [ErrCodeAttribute("Record cannot be deleted because it is referenced from elsewhere",
+             ErrorMessageText = "The record cannot be deleted because it is referenced from elsewhere.",
+             FullDescription = "The user tried to delete a record that is referenced from another DB Table.")]
+        public const String ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED = "GENC.00018V";
+
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";
 
