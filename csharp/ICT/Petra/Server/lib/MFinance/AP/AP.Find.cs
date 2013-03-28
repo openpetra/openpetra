@@ -208,11 +208,14 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             {
                 Int64 PartnerKey = Convert.ToInt64(CriteriaRow["PartnerKey"]);
                 String SqlQuery = "SELECT DISTINCT " +
+                                  "0 as ApDocumentId, " +
                                   "PUB_a_ap_payment.a_payment_number_i as ApNum, " +
                                   "'' as InvNum, " +
                                   "true as CreditNote, " +
+                                  "'Payment' as Type, " +
                                   "PUB_a_ap_payment.a_currency_code_c as Currency, " +
                                   "PUB_a_ap_payment.a_amount_n as Amount, " +
+                                  "0 AS OutstandingAmount, " +
                                   "'' as Status, " +
                                   "0 as DiscountPercent, " +
                                   "0 as DiscountDays, " +
@@ -226,11 +229,14 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                                   " AND p_partner_key_n=" + PartnerKey +
                                   "\n UNION\n" +
                                   " SELECT " +
+                                  "a_ap_document_id_i as ApDocumentId, " +
                                   "a_ap_number_i as ApNum, " +
                                   "a_document_code_c as InvNum, " +
                                   "a_credit_note_flag_l as CreditNote, " +
+                                  "'Invoice' as Type, " +
                                   "a_currency_code_c AS Currency, " +
                                   "a_total_amount_n as Amount, " +
+                                  "a_total_amount_n AS OutstandingAmount, " +
                                   "a_document_status_c as Status, " +
                                   "a_discount_percentage_n as DiscountPercent, " +
                                   "a_discount_days_i as DiscountDays, " +
@@ -349,6 +355,42 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             return PaidAmount;
         }
 
+        private void SetOutstandingAmount(DataRow Row)
+        {
+            if (FSearchTransactions)
+            {
+                if (Row["Type"].ToString() == "Invoice")
+                {
+                    Row["OutstandingAmount"] = Row["Amount"];
+
+                    if (Convert.ToString(Row["Status"]) == MFinanceConstants.AP_DOCUMENT_PAID)
+                    {
+                        Row["OutstandingAmount"] = 0.0m;
+                    }
+
+                    if (Convert.ToString(Row["Status"]) == MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID)
+                    {
+                        Row["OutstandingAmount"] = Convert.ToDecimal(Row["Amount"]) - GetPartPaidAmount(Convert.ToInt32(Row["ApDocumentId"]));
+                    }
+                }
+            }
+            else
+            {
+                // If any of the invoices are part-paid, I want to retrieve the outstanding amount.
+                Row["OutstandingAmount"] = Row["TotalAmount"];
+
+                if (Convert.ToString(Row["DocumentStatus"]) == MFinanceConstants.AP_DOCUMENT_PAID)
+                {
+                    Row["OutstandingAmount"] = 0.0m;
+                }
+
+                if (Convert.ToString(Row["DocumentStatus"]) == MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID)
+                {
+                    Row["OutstandingAmount"] = Convert.ToDecimal(Row["TotalAmount"]) - GetPartPaidAmount(Convert.ToInt32(Row["ApDocumentId"]));
+                }
+            }
+        }
+
         /// <summary>
         /// Returns the specified find results page.
         ///
@@ -371,55 +413,54 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
             DataTable ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
 
-            // searching for outstanding invoices on the main screen
-            if (!FSearchTransactions && !FSearchSupplierOrInvoice)
+            if (FSearchTransactions)
             {
                 foreach (DataRow Row in ReturnValue.Rows)
                 {
-                    // calculate DateDue and DateDiscountUntil
-                    // add creditTerms to dateIssued to get DateDue
-
-                    if (Row["CreditTerms"].GetType() != typeof(DBNull))
+                    SetOutstandingAmount(Row);
+                }
+            }
+            else
+            {
+                // searching for outstanding invoices on the main screen
+                if (!FSearchSupplierOrInvoice)
+                {
+                    foreach (DataRow Row in ReturnValue.Rows)
                     {
-                        Row["DateDue"] = Convert.ToDateTime(Row["DateIssued"]).AddDays(Convert.ToDouble(Row["CreditTerms"]));
-                    }
+                        // calculate DateDue and DateDiscountUntil
+                        // add creditTerms to dateIssued to get DateDue
 
-                    if (Row["DiscountDays"].GetType() != typeof(DBNull))
-                    {
-                        Row["DateDiscountUntil"] = Convert.ToDateTime(Row["DateIssued"]).AddDays(Convert.ToDouble(Row["DiscountDays"]));
-                    }
+                        if (Row["CreditTerms"].GetType() != typeof(DBNull))
+                        {
+                            Row["DateDue"] = Convert.ToDateTime(Row["DateIssued"]).AddDays(Convert.ToDouble(Row["CreditTerms"]));
+                        }
 
-                    // If any of the invoices are part-paid, I want to retrieve the outstanding amount.
-                    Row["OutstandingAmount"] = Row["TotalAmount"];
+                        if (Row["DiscountDays"].GetType() != typeof(DBNull))
+                        {
+                            Row["DateDiscountUntil"] = Convert.ToDateTime(Row["DateIssued"]).AddDays(Convert.ToDouble(Row["DiscountDays"]));
+                        }
 
-                    if (Convert.ToString(Row["DocumentStatus"]) == MFinanceConstants.AP_DOCUMENT_PAID)
-                    {
-                        Row["OutstandingAmount"] = 0.0m;
-                    }
+                        SetOutstandingAmount(Row);
 
-                    if (Convert.ToString(Row["DocumentStatus"]) == MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID)
-                    {
-                        Row["OutstandingAmount"] = Convert.ToInt32(Row["TotalAmount"]) - GetPartPaidAmount(Convert.ToInt32(Row["ApDocumentId"]));
-                    }
+                        Row["DiscountMsg"] = "None";
+                        Row["Selected"] = false;
 
-                    Row["DiscountMsg"] = "None";
-                    Row["Selected"] = false;
+                        if (Row["DiscountPercentage"].GetType() == typeof(DBNull))
+                        {
+                            Row["DiscountPercentage"] = 0;
+                        }
 
-                    if (Row["DiscountPercentage"].GetType() == typeof(DBNull))
-                    {
-                        Row["DiscountPercentage"] = 0;
-                    }
-
-                    if (Convert.ToDateTime(Row["DateDiscountUntil"]) > DateTime.Now)
-                    {
-                        Row["DiscountMsg"] =
-                            String.Format("{0:n0}% until {1}",
-                                Row["DiscountPercentage"],
-                                TDate.DateTimeToLongDateString2(Convert.ToDateTime(Row["DateDiscountUntil"])));
-                    }
-                    else
-                    {
-                        Row["DiscountMsg"] = "Expired";
+                        if (Convert.ToDateTime(Row["DateDiscountUntil"]) > DateTime.Now)
+                        {
+                            Row["DiscountMsg"] =
+                                String.Format("{0:n0}% until {1}",
+                                    Row["DiscountPercentage"],
+                                    TDate.DateTimeToLongDateString2(Convert.ToDateTime(Row["DateDiscountUntil"])));
+                        }
+                        else
+                        {
+                            Row["DiscountMsg"] = "Expired";
+                        }
                     }
                 }
             }
@@ -536,9 +577,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 return DocTbl + AApDocumentTable.GetApNumberDBName() + " AS ApNumber, " +
                        DocTbl + AApDocumentTable.GetDocumentCodeDBName() + " AS DocumentCode, " +
                        "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + " AS PartnerShortName, " +
-                       "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + " AS CurrencyCode, " +
+                       DocTbl + AApDocumentTable.GetCurrencyCodeDBName() + " AS CurrencyCode, " +
                        DocTbl + AApDocumentTable.GetTotalAmountDBName() + " AS TotalAmount, " +
-                       DocTbl + AApDocumentTable.GetCurrencyCodeDBName() + " AS Currency, " +
                        DocTbl + AApDocumentTable.GetTotalAmountDBName() + " AS OutstandingAmount, " +
                        DocTbl + AApDocumentTable.GetDocumentStatusDBName() + " AS DocumentStatus, " +
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + " AS DateIssued, " +

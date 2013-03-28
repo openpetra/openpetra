@@ -647,6 +647,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //Can do this if needed: MainDS.DisableConstraints();
                 DBAccess.GDBAccessObj.SelectToTempTable(MainDS, sqlStmt, tempTableName, Transaction, parameters.ToArray(), 0, 0);
 
+                MainDS.Tables[tempTableName].Columns.Add("DonorDescription");
+
+                foreach (DataRow Row in MainDS.Tables[tempTableName].Rows)
+                {
+                    PPartnerTable Tbl = PPartnerAccess.LoadByPrimaryKey(Convert.ToInt64(Row["DonorKey"]), Transaction);
+                    Row["DonorDescription"] = Tbl[0].PartnerShortName;
+                }
+
                 MainDS.AcceptChanges();
             }
             finally

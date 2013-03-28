@@ -13,8 +13,8 @@ RootNode:
     Actions:
         actMakePayment: {Label=&Make Payment, ActionClick=MakePayment}
         actPrintReport: {Label=Reprint report, ActionClick=PrintPaymentReport}
-        actPayPartial:
-            ActionClick: EnablePartialPayment
+        actPayPartial: {ActionClick=EnablePartialPayment}
+        actLookupExchangeRate: {ActionClick=LookupExchangeRate}
     Controls:
         pnlContent:
             Dock: Fill
@@ -33,7 +33,7 @@ RootNode:
         pnlSupplierDetails:
             Controls: 
                 Row0: [txtCurrency, cmbPaymentType]
-                Row1: [txtTotalAmount, txtExchangeRate]
+                Row1: [txtTotalAmount, pnlExchangeRate]
                 Row2: [txtBaseAmount, cmbBankAccount]
                 Row3: [txtReference]
                 Row4: [chkPrintRemittance, chkPrintLabel]
@@ -43,6 +43,8 @@ RootNode:
             # todo: pay by transfer (select another supplier; payment will create another invoice with the other supplier, at a given exchange rate, with the given invoice number)
             Height: 170
             Dock:Top
+        pnlExchangeRate: {ControlsOrientation = horizontal}
+            Controls: [txtExchangeRate, btnLookupExchangeRate]
         chkPrintRemittance:
             CheckBoxAttachedLabel: right
         chkPrintLabel:
@@ -51,6 +53,7 @@ RootNode:
             CheckBoxAttachedLabel: right
         txtChequeNumber:
             Width: 80
+            Enabled: false
         grpDetails:
             Controls: [grdDetails, pnlDetails]
             Label: Invoices in this payment
@@ -63,8 +66,10 @@ RootNode:
             Controls: [rgrAmountToPay, chkClaimDiscount, txtAmountToPay]
             Dock: Bottom
         rgrAmountToPay:
-            OptionalValues: [PayFullOutstandingAmount, PayAPartialAmount]
+            Controls: [rbtPayFullOutstandingAmount, rbtPayPartialAmount]
             Action: actPayPartial
+        rbtPayFullOutstandingAmount:
+        rbtPayPartialAmount:
         chkClaimDiscount:
             # TODO: allow discounts
             CheckBoxAttachedLabel: right
@@ -80,12 +85,16 @@ RootNode:
             # TODO: Transfer, Electronic
             Label: Payment T&ype
             Width: 120
+            OnChange: OnChangePaymentType
         txtReference: {Label=&Reference, ColSpan=2, DataField=AApPayment.Reference}
         cmbBankAccount:
             List: UserDefinedList
             Width: 200
         txtExchangeRate:
-            Format: Decimal(5)
+            Format: Decimal(10)
+            ReadOnly: true
+            Width: 120
+        btnLookupExchangeRate: {Label=Lookup}
         txtTotalAmount:
             Label: Amount
             ReadOnly: true
