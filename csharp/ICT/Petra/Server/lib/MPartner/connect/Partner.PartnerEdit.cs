@@ -2444,6 +2444,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 // can remove table PPerson here as this is part of both PartnerEditTDS and IndividualDataTDS and
                 // so the relevant data was already saved when PartnerEditTDS was saved
                 TempDS.RemoveTable("PPerson");
+                TempDS.InitVars();
 
                 IndividualDataResult = TIndividualDataWebConnector.SubmitChangesServerSide(ref TempDS, ref AInspectDS, ASubmitChangesTransaction,
                     out SingleVerificationResultCollection);
