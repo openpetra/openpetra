@@ -696,15 +696,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             Int32 PaymentNumStart = -1;
             Int32 PaymentNumEnd = -1;
+
             DataRowView[] SelectedGridRows = grdResult.SelectedDataRowsAsDataRowView;
+
             foreach (DataRowView RowView in SelectedGridRows)
             {
                 DataRow Row = RowView.Row;
                 Int32 PaymentNum = Convert.ToInt32(Row["ApNum"]);
+
                 if ((PaymentNumStart == -1) || (PaymentNum < PaymentNumStart))
                 {
                     PaymentNumStart = PaymentNum;
                 }
+
                 if (PaymentNum > PaymentNumEnd)
                 {
                     PaymentNumEnd = PaymentNum;

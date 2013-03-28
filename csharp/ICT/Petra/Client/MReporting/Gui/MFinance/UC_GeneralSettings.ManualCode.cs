@@ -63,11 +63,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             cmbQuarterYear.Enabled = false;
 
             /* This is not required because of a fix in cmbAutoComplete:
-             * 
-            cmbAccountHierarchy.Leave += new EventHandler(RequireCmbValue);
-            cmbCurrency.Leave += new EventHandler(RequireCmbValue);
-            cmbPeriodYear.Leave += new EventHandler(RequireCmbValue);
-            cmbQuarterYear.Leave += new EventHandler(RequireCmbValue);
+             *
+             * cmbAccountHierarchy.Leave += new EventHandler(RequireCmbValue);
+             * cmbCurrency.Leave += new EventHandler(RequireCmbValue);
+             * cmbPeriodYear.Leave += new EventHandler(RequireCmbValue);
+             * cmbQuarterYear.Leave += new EventHandler(RequireCmbValue);
              */
         }
 
@@ -409,7 +409,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void DisableToPeriod()
         {

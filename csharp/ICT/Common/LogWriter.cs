@@ -106,7 +106,6 @@ namespace Ict.Common
                     temp.Close();
                 }
             }
-
         }
 
         /// <summary>
@@ -119,7 +118,7 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ALogFileMsg"></param>
         /// <returns></returns>

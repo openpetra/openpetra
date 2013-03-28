@@ -126,7 +126,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="PaymentNumStart"></param>
         /// <param name="PaymentNumEnd"></param>

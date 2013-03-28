@@ -2476,7 +2476,8 @@ namespace Ict.Common.Data
             KeysAndValueInformation = KeysAndValueInformation.Substring(0, KeysAndValueInformation.Length - Environment.NewLine.Length);
 
             MessageFooter = String.Format(MessageFooter,
-                FirstReferenceInCascade.ReferenceCount == 1 ? Catalog.GetString("Referencing record") : Catalog.GetString("One of the referencing records"),
+                FirstReferenceInCascade.ReferenceCount ==
+                1 ? Catalog.GetString("Referencing record") : Catalog.GetString("One of the referencing records"),
                 FirstReferenceInCascade.ThisTableLabel,
                 STR_INDENTATION + "  " + FirstReferenceInCascade.ThisTableLabel + Catalog.GetString(" code:\r\n") + KeysAndValueInformation);
 

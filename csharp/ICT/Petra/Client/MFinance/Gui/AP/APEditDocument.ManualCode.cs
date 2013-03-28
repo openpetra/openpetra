@@ -625,7 +625,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         if (!AllPresent)
                         {
                             System.Windows.Forms.MessageBox.Show(
-                                String.Format(Catalog.GetString("Analysis Attributes are required for account {0} in Document {1}."), 
+                                String.Format(Catalog.GetString("Analysis Attributes are required for account {0} in Document {1}."),
                                     Row.AccountCode, AApDocument.DocumentCode),
                                 Catalog.GetString("Analysis Attributes"));
                             return false;
@@ -820,6 +820,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             List <int>PayTheseDocs = new List <int>();
 
             PayTheseDocs.Add(FMainDS.AApDocument[0].ApDocumentId);
+
             if (PaymentScreen.AddDocumentsToPayment(FMainDS, FDocumentLedgerNumber, PayTheseDocs))
             {
                 PaymentScreen.Show();

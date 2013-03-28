@@ -1364,7 +1364,7 @@ namespace Ict.Common.Controls
         {
             string mTestString = this.UInitialString;
 
-            // if mTestString is NULL, set to '' (empty string) 
+            // if mTestString is NULL, set to '' (empty string)
             // otherwise trim would yield an exception.
             if (mTestString == null)
             {

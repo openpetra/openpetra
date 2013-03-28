@@ -172,6 +172,7 @@ namespace Ict.Common.Controls
             {
                 return;
             }
+
             TabPage1 = ATabControl.TabPages[ATabPageIndex1];
             TabPage2 = ATabControl.TabPages[ATabPageIndex2];
             ATabControl.TabPages[ATabPageIndex1] = TabPage2;

@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="Atds"></param>
         /// <param name="Adocument"></param>
@@ -204,6 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 Int32 DocId = ADocumentsToPay[Idx];
                 AccountsPayableTDS tempDs = TRemote.MFinance.AP.WebConnectors.LoadAApDocument(ALedgerNumber, DocId);
+
                 if (!ApDocumentCanPay(tempDs, tempDs.AApDocument[0]))
                 {
                     ADocumentsToPay.Remove(DocId);
@@ -291,6 +292,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(supplier.CurrencyCode, FLedgerRow.BaseCurrency, DateTime.Now);
                     txtExchangeRate.NumberValueDecimal = CurrentRate;
                     cmbPaymentType.SetSelectedString(supplier.PaymentType);
+
                     if (txtCurrency.Text == FLedgerRow.BaseCurrency)
                     {
                         txtExchangeRate.Enabled = false;

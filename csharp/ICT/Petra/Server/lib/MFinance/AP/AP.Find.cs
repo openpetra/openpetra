@@ -208,7 +208,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             {
                 Int64 PartnerKey = Convert.ToInt64(CriteriaRow["PartnerKey"]);
                 String SqlQuery = "SELECT DISTINCT " +
-                                  "0 as ApDocumentId, " + 
+                                  "0 as ApDocumentId, " +
                                   "PUB_a_ap_payment.a_payment_number_i as ApNum, " +
                                   "'' as InvNum, " +
                                   "true as CreditNote, " +
@@ -229,14 +229,14 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                                   " AND p_partner_key_n=" + PartnerKey +
                                   "\n UNION\n" +
                                   " SELECT " +
-                                  "a_ap_document_id_i as ApDocumentId, " + 
+                                  "a_ap_document_id_i as ApDocumentId, " +
                                   "a_ap_number_i as ApNum, " +
                                   "a_document_code_c as InvNum, " +
                                   "a_credit_note_flag_l as CreditNote, " +
                                   "'Invoice' as Type, " +
                                   "a_currency_code_c AS Currency, " +
                                   "a_total_amount_n as Amount, " +
-                                  "a_total_amount_n AS OutstandingAmount, " + 
+                                  "a_total_amount_n AS OutstandingAmount, " +
                                   "a_document_status_c as Status, " +
                                   "a_discount_percentage_n as DiscountPercent, " +
                                   "a_discount_days_i as DiscountDays, " +
@@ -362,6 +362,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 if (Row["Type"].ToString() == "Invoice")
                 {
                     Row["OutstandingAmount"] = Row["Amount"];
+
                     if (Convert.ToString(Row["Status"]) == MFinanceConstants.AP_DOCUMENT_PAID)
                     {
                         Row["OutstandingAmount"] = 0.0m;
@@ -389,7 +390,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 }
             }
         }
-        
 
         /// <summary>
         /// Returns the specified find results page.
