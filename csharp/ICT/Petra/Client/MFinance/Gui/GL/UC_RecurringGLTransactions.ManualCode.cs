@@ -862,6 +862,42 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ((TFrmRecurringGLBatch)ParentForm).DisableAttributes();
             }
+
+            // update key ministry combobox depending on account code and cost centre
+            UpdateCmbMinistry();
+        }
+
+        /// <summary>
+        /// if the cost centre code changes
+        /// </summary>
+        private void CostCentreCodeDetailChanged(object sender, EventArgs e)
+        {
+            // update key ministry combobox depending on account code and cost centre
+            UpdateCmbMinistry();
+        }
+
+        /// <summary>
+        /// if the cost centre code changes
+        /// </summary>
+        private void UpdateCmbMinistry()
+        {
+            Int64 RecipientKey;
+
+            // update key ministry combobox depending on account code and cost centre
+            if ((cmbDetailAccountCode.GetSelectedString() == MFinanceConstants.FUND_TRANSFER_INCOME_ACC)
+                && (cmbDetailCostCentreCode.GetSelectedString() != ""))
+            {
+                cmbMinistry.Enabled = true;
+                TRemote.MFinance.Common.ServerLookups.WebConnectors.GetPartnerKeyForForeignCostCentreCode(FLedgerNumber,
+                    cmbDetailCostCentreCode.GetSelectedString(),
+                    out RecipientKey);
+                TFinanceControls.GetRecipientData(ref cmbMinistry, RecipientKey);
+            }
+            else
+            {
+                cmbMinistry.SetSelectedString("", -1);
+                cmbMinistry.Enabled = false;
+            }
         }
 
         private void ValidateDataDetailsManual(ARecurringTransactionRow ARow)
