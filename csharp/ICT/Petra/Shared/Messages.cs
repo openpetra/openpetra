@@ -72,10 +72,10 @@ namespace Ict.Petra.Shared
 
                 if (VerificationResultEntry.ResultContext != null)
                 {
-                    if (!(VerificationResultEntry.ResultContext is TRowReferenceInfo)) 
+                    if (!(VerificationResultEntry.ResultContext is TRowReferenceInfo))
                     {
-                        ReturnValue += "[" + VerificationResultEntry.ResultContext.ToString() + "] ";    
-                    }                    
+                        ReturnValue += "[" + VerificationResultEntry.ResultContext.ToString() + "] ";
+                    }
                 }
 
                 ReturnValue += VerificationResultEntry.ResultText;

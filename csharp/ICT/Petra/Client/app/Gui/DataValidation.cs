@@ -80,25 +80,25 @@ namespace Ict.Petra.Client.App.Gui
                     }
                     else
                     {
-                        for (int Counter = 0; Counter < AVerificationResultCollection.Count; Counter++) 
+                        for (int Counter = 0; Counter < AVerificationResultCollection.Count; Counter++)
                         {
-                            if (AVerificationResultCollection[Counter].ResultCode == CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED) 
+                            if (AVerificationResultCollection[Counter].ResultCode == CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED)
                             {
                                 RecordDeletionErrorsBecauseOfReference = true;
                                 break;
                             }
                         }
 
-                        if (!RecordDeletionErrorsBecauseOfReference) 
+                        if (!RecordDeletionErrorsBecauseOfReference)
                         {
                             TMessages.MsgFormSaveVerificationError(ErrorMessages, ReturnValue, ATypeWhichRaisesError);
-                        }                        
+                        }
                         else
                         {
-                            TMessages.MsgFormSaveVerificationError(ErrorMessages, 
-                                 CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED,
-                                 ReturnValue, ATypeWhichRaisesError,
-                                 true);
+                            TMessages.MsgFormSaveVerificationError(ErrorMessages,
+                                CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED,
+                                ReturnValue, ATypeWhichRaisesError,
+                                true);
                         }
                     }
 

@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>Shown when the Form contains deleted records and at least one of them is referenced in the DB (hence it cannot be deleted).</summary>
         private static readonly string StrDeletionNotPossibleBecauseOfReferencesTitle = Catalog.GetString("Deletion of Record Not Possible!");
-        
+
         /// <summary>Shown when the Form contains invalid data at a certain point when Data Validation runs (e.g. saving of data, change of context [e.g. switching of Tab]).</summary>
         private static readonly string StrInvalidDataNeedsCorrecting = Catalog.GetString(
             "The operation cannot be performed because the form contains invalid data:");
@@ -81,9 +81,9 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>Shown when the Form contains deleted records and at least one of them is referenced in the DB (hence it cannot be deleted).</summary>
         private static readonly string StrDeletionNotPossibleBecauseOfReferences = Catalog.GetString(
-            "You tried to delete a record that is referenced from somewhere else; that record can therefore not be deleted.\r\n" + 
+            "You tried to delete a record that is referenced from somewhere else; that record can therefore not be deleted.\r\n" +
             "Saving of data is not possible anymore from this screen - please close it to continue your work.");
-            
+
         /// <summary>Shown when the Form contains invalid data at the point of saving data.</summary>
         private static readonly string StrRecordChangeInvalidDataNeedsCorrectingTitle = Catalog.GetString("Record Contains Invalid Data!");
 
@@ -390,17 +390,17 @@ namespace Ict.Petra.Client.App.Gui
             }
             else
             {
-                if (!AOnlyRecordDeletionErrorsBecauseOfReference) 
+                if (!AOnlyRecordDeletionErrorsBecauseOfReference)
                 {
                     Title = StrInvalidDataNeedsCorrectingTitle;
-                    Heading = StrInvalidDataNeedsCorrecting;                    
-                }    
+                    Heading = StrInvalidDataNeedsCorrecting;
+                }
                 else
                 {
                     Title = StrDeletionNotPossibleBecauseOfReferencesTitle;
-                    Heading = StrDeletionNotPossibleBecauseOfReferences;                                        
+                    Heading = StrDeletionNotPossibleBecauseOfReferences;
                 }
-                
+
                 Icon = MessageBoxIcon.Error;
             }
 

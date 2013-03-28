@@ -206,23 +206,23 @@ namespace Ict.Common.DB
 
                         case OdbcType.Date:
                             DateTime TmpDate = (DateTime)AParameterArrayOdbc[Counter].Value;
-                            
-                            if ((TmpDate.Hour == 0) 
+
+                            if ((TmpDate.Hour == 0)
                                 && (TmpDate.Minute == 0)
                                 && (TmpDate.Second == 0)
                                 && (TmpDate.Millisecond == 0))
-                            {                            
+                            {
                                 ReturnValue[Counter] = new MySqlParameter(
-                                ParamName,
-                                MySqlDbType.Date);
+                                    ParamName,
+                                    MySqlDbType.Date);
                             }
                             else
                             {
                                 ReturnValue[Counter] = new MySqlParameter(
-                                ParamName,
-                                MySqlDbType.Timestamp);                                
+                                    ParamName,
+                                    MySqlDbType.Timestamp);
                             }
-                            
+
                             break;
 
                         case OdbcType.DateTime:

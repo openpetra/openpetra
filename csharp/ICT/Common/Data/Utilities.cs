@@ -123,10 +123,10 @@ namespace Ict.Common.Data
 
             // Create an Object of the Type that was passed in with Argument ATypedDataTableType
             TmpObj = Activator.CreateInstance(ATypedDataTableType,
-                                              (BindingFlags.Public | BindingFlags.Instance | BindingFlags.CreateInstance),
-                                              null,
-                                              null,
-                                              null);
+                (BindingFlags.Public | BindingFlags.Instance | BindingFlags.CreateInstance),
+                null,
+                null,
+                null);
 
             // Check if that Object derives from TTypedDataTable
             if (!(TmpObj.GetType().IsSubclassOf(typeof(TTypedDataTable))))
@@ -197,7 +197,7 @@ namespace Ict.Common.Data
                     else
                     {
                         HashStringBuilder.Append(RowCounter.ToString() + '/' + ColumnCounter.ToString() + ':' +
-                                                 TSaveConvert.DateColumnToDate(AHashDV.Table.Columns[ColumnCounter], AHashDV[RowCounter].Row).ToString("dd-MM-yy HH:MM"));
+                            TSaveConvert.DateColumnToDate(AHashDV.Table.Columns[ColumnCounter], AHashDV[RowCounter].Row).ToString("dd-MM-yy HH:MM"));
                     }
 
                     // Increment the size
@@ -333,8 +333,8 @@ namespace Ict.Common.Data
                         if (TLogging.DebugLevel >= DEBUGLEVEL_REALLYCHANGED)
                         {
                             TLogging.Log("***  " + dc.ColumnName + ": from " +
-                                         ADataRow[dc.Ordinal, DataRowVersion.Original].ToString() + " to " +
-                                         ADataRow[dc.Ordinal, DataRowVersion.Current].ToString());
+                                ADataRow[dc.Ordinal, DataRowVersion.Original].ToString() + " to " +
+                                ADataRow[dc.Ordinal, DataRowVersion.Current].ToString());
                         }
                     }
                     else
@@ -705,12 +705,11 @@ namespace Ict.Common.Data
             }
         }
 
-        
         /// <summary>
         /// Returns the values of the DataColumns that make up the Primary Key of the DataTable
         /// that the passed in DataRow is part of.
         /// </summary>
-        /// <param name="ADataRow">DataRow from which to return the values of the DataColumns that 
+        /// <param name="ADataRow">DataRow from which to return the values of the DataColumns that
         /// make up the Primary Key of the DataTable that this DataRow is part of.</param>
         /// <returns>The values of the DataColumns that make up the Primary Key of the DataTable
         /// that the passed in DataRow is part of.</returns>
@@ -718,24 +717,24 @@ namespace Ict.Common.Data
         {
             DataColumn[] PrimaryKeyArr = ADataRow.Table.PrimaryKey;
             object[] ReturnValue = new object[PrimaryKeyArr.Length];
-            
+
             if (PrimaryKeyArr.Length == 0)
             {
                 throw new ArgumentException("DataTable that holds the DataRow that is passed in Argument ADataRow must have a Primary Key specified");
             }
-            
-            for (int Counter = 0; Counter < PrimaryKeyArr.Length; Counter++) 
+
+            for (int Counter = 0; Counter < PrimaryKeyArr.Length; Counter++)
             {
-                if (ADataRow.RowState != DataRowState.Deleted) 
+                if (ADataRow.RowState != DataRowState.Deleted)
                 {
-                    ReturnValue[Counter] = ADataRow[PrimaryKeyArr[Counter]];    
+                    ReturnValue[Counter] = ADataRow[PrimaryKeyArr[Counter]];
                 }
                 else
                 {
                     ReturnValue[Counter] = ADataRow[PrimaryKeyArr[Counter], DataRowVersion.Original];
-                }               
+                }
             }
-            
+
             return ReturnValue;
         }
     }
@@ -747,7 +746,7 @@ namespace Ict.Common.Data
     /// A DataTable of type T will be returned from the DataSet.
     /// </typeparam>
     public static class DataSetAdapter <T>
-        where T : DataTable, new ()
+    where T : DataTable, new ()
     {
         //To call this class's methods:
         //      DataSet employeesDataSet = OracleHelper.ExecuteDataset( connectionString, storedProcedure, parameters);
