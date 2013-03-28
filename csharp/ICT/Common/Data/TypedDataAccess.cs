@@ -2366,7 +2366,7 @@ namespace Ict.Common.Data
 
         /// <summary>
         /// Builds a <see cref="TVerificationResultCollection" /> from DB Table references created by a cascading count Method.
-        /// It will contain only a single <see cref="TVerificationResult "/>.
+        /// It will contain only a single <see cref="TVerificationResult" />.
         /// </summary>
         /// <returns><see cref="TVerificationResultCollection" /> from DB Table references created by a cascading count Method.
         /// In case <paramref name="AReferences" /> does not contain elements a <see cref="TVerificationResultCollection" />
@@ -2378,9 +2378,9 @@ namespace Ict.Common.Data
         /// of the PK Column.</param>
         /// <param name="AReferences">A <see cref="List{T}" /> of <see cref="TRowReferenceInfo" /> objects that contain information about
         /// the DB Table references created by a cascading count Method.</param>
-        /// <param name="AResultSeverity">Allows the specification of a <see cref="TResultSeverity" /> for the <see cref="TVerificationResult "/>
+        /// <param name="AResultSeverity">Allows the specification of a <see cref="TResultSeverity" /> for the <see cref="TVerificationResult" />
         /// that gets added to the return value. (Default=<see cref="TResultSeverity.Resv_Critical" />.)</param>
-        /// <returns>A <see cref="TVerificationResultCollection" /> containing a single <see cref="TVerificationResult "/> that contains information
+        /// <returns>A <see cref="TVerificationResultCollection" /> containing a single <see cref="TVerificationResult" /> that contains information
         /// about DB Table references created by a cascading count Method.</returns>
         public static TVerificationResultCollection BuildVerificationResultCollectionFromRefTables(string AThisTable,
             string AThisTableLabel,
@@ -2401,7 +2401,6 @@ namespace Ict.Common.Data
             string MessageContinuation = Catalog.GetString(" and\r\n");
             string KeysAndValueInformation = String.Empty;
             List <KeyValuePair <string, TRowReferenceInfo>>ConsolidatedReferences = new List <KeyValuePair <string, TRowReferenceInfo>>();
-            string SingleReferenceThisTable = String.Empty;
             TRowReferenceInfo FirstReferenceInCascade;
 
             if (AReferences.Count == 0)
