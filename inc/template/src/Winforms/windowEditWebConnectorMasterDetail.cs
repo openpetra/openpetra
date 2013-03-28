@@ -343,6 +343,7 @@ namespace {#NAMESPACE}
 
 {#IFDEF CANFINDWEBCONNECTOR_LOADMASTER}
 
+    /// automatically generated function from webconnector
     public bool Load{#MASTERTABLE}({#LOADMASTER_FORMALPARAMETERS})
     {
         FMainDS.Merge({#WEBCONNECTORMASTER}.Load{#MASTERTABLE}({#LOADMASTER_ACTUALPARAMETERS}));
