@@ -158,6 +158,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// load the specified batch.
+        /// this method is called after a batch has been posted.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
         /// load the specified batch and its journals and transactions and attributes.
         /// this method is called after a batch has been posted.
         /// </summary>
@@ -180,6 +199,65 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// load the specified batch and its journals and transactions.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadABatchAJournalATransaction(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// load the specified batch and its journals.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadABatchAJournal(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// load the specified batch and its journals.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadABatchAJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            AJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of journals for the given ledger and batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -192,6 +270,65 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// Loads a list of journals for the given ledger, batch and journal
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadAJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            AJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of journals for the given ledger and batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadAJournalATransaction(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// load the specified journal with its transactions.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadAJournalATransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            AJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+            ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
@@ -216,6 +353,24 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// Loads a list of transactions for the given ledger and batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadATransactionForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of transactions for the given ledger and batch and journal with analysis attributes
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -223,7 +378,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AJournalNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadATransactionWithAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        public static GLBatchTDS LoadATransactionATransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             string strAnalAttr = string.Empty;
 
@@ -232,14 +387,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
 
+            ATransAnalAttribAccess.LoadViaAJournal(MainDS,
+                ALedgerNumber,
+                ABatchNumber,
+                AJournalNumber,
+                Transaction);
+
             foreach (GLBatchTDSATransactionRow transRow in MainDS.ATransaction.Rows)
             {
-                ATransAnalAttribAccess.LoadViaATransaction(MainDS,
-                    ALedgerNumber,
-                    ABatchNumber,
-                    AJournalNumber,
-                    transRow.TransactionNumber,
-                    Transaction);
+                MainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0} = {1}",
+                    ATransAnalAttribTable.GetTransactionNumberDBName(),
+                    transRow.TransactionNumber);
 
                 foreach (DataRowView rv in MainDS.ATransAnalAttrib.DefaultView)
                 {
@@ -255,14 +413,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 transRow.AnalysisAttributes = strAnalAttr;
 
-                //clear the attributes string and table
+                //reset the attributes string
                 strAnalAttr = string.Empty;
-
-                if (MainDS.ATransAnalAttrib.Count > 0)
-                {
-                    MainDS.ATransAnalAttrib.Clear();
-                }
             }
+
+            MainDS.ATransAnalAttrib.DefaultView.RowFilter = string.Empty;
 
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
@@ -590,6 +745,15 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             AVerificationResult = new TVerificationResultCollection();
 
+            bool batchTableInDataSet = (AInspectDS.ABatch != null);
+            bool journalTableInDataSet = (AInspectDS.AJournal != null);
+            bool transTableInDataSet = (AInspectDS.ATransaction != null);
+            bool attrTableInDataSet = (AInspectDS.ATransAnalAttrib != null);
+            bool recurrBatchTableInDataSet = (AInspectDS.ARecurringBatch != null);
+            bool recurrJournalTableInDataSet = (AInspectDS.ARecurringJournal != null);
+            bool recurrTransTableInDataSet = (AInspectDS.ARecurringTransaction != null);
+            bool recurrAttrTableInDataSet = (AInspectDS.ARecurringTransAnalAttrib != null);
+
             // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
             // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
 
@@ -598,15 +762,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 LedgerNumber = -1;
 
             //Check if saving recurring tables
-            if (((AInspectDS.ARecurringBatch != null)
-                 || (AInspectDS.ARecurringJournal != null)
-                 || (AInspectDS.ARecurringTransaction != null)))
+            if (recurrBatchTableInDataSet
+                || recurrJournalTableInDataSet
+                || recurrTransTableInDataSet)
             {
                 return SaveRecurringGLBatchTDS(ref AInspectDS, out AVerificationResult);
             }
 
-            if (AInspectDS.ABatch != null)
+            if (batchTableInDataSet)
             {
+                LedgerNumber = ((ABatchRow)AInspectDS.ABatch.Rows[0]).LedgerNumber;
+
                 bool NewTransaction = false;
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -622,13 +788,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         try
                         {
                             BatchNumber = batch.BatchNumber;
-                            LedgerNumber = batch.LedgerNumber;
                         }
                         catch (Exception)
                         {
                             // for deleted batches
                             BatchNumber = (Int32)batch[ABatchTable.ColumnBatchNumberId, DataRowVersion.Original];
-                            LedgerNumber = (Int32)batch[ABatchTable.ColumnLedgerNumberId, DataRowVersion.Original];
                         }
 
                         if (!BatchNumbersInvolved.Contains(BatchNumber))
@@ -656,8 +820,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
             }
 
-            if (AInspectDS.AJournal != null)
+            if (journalTableInDataSet)
             {
+                if (LedgerNumber == -1)
+                {
+                    LedgerNumber = ((AJournalRow)AInspectDS.AJournal.Rows[0]).LedgerNumber;
+                }
+
                 foreach (GLBatchTDSAJournalRow journal in AInspectDS.AJournal.Rows)
                 {
                     Int32 BatchNumber;
@@ -681,8 +850,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
             }
 
-            if (AInspectDS.ATransaction != null)
+            if (transTableInDataSet)
             {
+                if (LedgerNumber == -1)
+                {
+                    LedgerNumber = ((ATransactionRow)AInspectDS.ATransaction.Rows[0]).LedgerNumber;
+                }
+
                 GLPostingTDS TestAccountsAndCostCentres = new GLPostingTDS();
 
                 foreach (ATransactionRow transaction in AInspectDS.ATransaction.Rows)
@@ -742,7 +916,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             // load previously stored batches and check for posted status
-            if (BatchNumbersInvolved.Count > 0)
+            if (BatchNumbersInvolved.Count == 0)
+            {
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Saving Batch"),
+                        Catalog.GetString("Cannot save an empty Batch!"),
+                        TResultSeverity.Resv_Critical));
+            }
+            else
             {
                 string ListOfBatchNumbers = string.Empty;
 
@@ -758,9 +938,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 GLBatchTDS BatchDS = new GLBatchTDS();
 
-                bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
+                bool tempTransaction; // If I create a transaction here, then I need to rollback when I'm done.
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+                                                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out tempTransaction);
 
                 try
                 {
@@ -768,7 +948,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
                 finally
                 {
-                    if (IsMyOwnTransaction)
+                    if (tempTransaction)
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
@@ -785,21 +965,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 TResultSeverity.Resv_Critical));
                     }
                 }
+            }
 
-                if (AVerificationResult.HasCriticalErrors)
-                {
-                    return TSubmitChangesResult.scrError;
-                }
+            if (AVerificationResult.HasCriticalErrors)
+            {
+                return TSubmitChangesResult.scrError;
             }
 
             TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
             //Process transactions and their analysis attributes
-
-            bool tranTableInDataSet = (AInspectDS.ATransaction != null);
-            bool attrTableInDataSet = (AInspectDS.ATransAnalAttrib != null);
-
-            if (tranTableInDataSet)
+            if (transTableInDataSet)
             {
                 AInspectDS.ATransaction.AcceptChanges();
             }
@@ -810,7 +986,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             if ((SubmissionResult == TSubmitChangesResult.scrOK)
-                && (AInspectDS.ATransaction != null) && (AInspectDS.ATransaction.Rows.Count > 0))
+                && (transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
             {
                 ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
 
@@ -821,26 +997,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 try
                 {
-                    //A transaction has been deleted
+                    //Check if a transaction has been deleted
                     //Accept the deletion of the single details row
-                    AInspectDS.ATransaction.AcceptChanges();
+                    //AInspectDS.ATransaction.AcceptChanges();
 
-                    if (attrTableInDataSet)
-                    {
-                        AInspectDS.ATransAnalAttrib.AcceptChanges();
-                    }
-                    else
+                    if (!attrTableInDataSet)
                     {
                         AInspectDS.Tables.Add(new ATransAnalAttribTable("ATransAnalAttrib"));
                         AInspectDS.Merge(LoadATransAnalAttribForJournal(currentLedger, currentBatch, currentJournal));
                         attrTableInDataSet = true;
                     }
-
-                    //Assuming only transactions present for a single Ledger-Batch-Journal at any point in time
-                    ATransactionRow tr = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
-                    currentLedger = tr.LedgerNumber;
-                    currentBatch = tr.BatchNumber;
-                    currentJournal = tr.JournalNumber;
 
                     //Check if any records have been marked for deletion
                     DataRow[] foundTransactionForDeletion = AInspectDS.ATransaction.Select(String.Format("{0} = '{1}'",
@@ -895,6 +1061,135 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             return SubmissionResult;
+        }
+
+        private static void UpdateTotalsOfBatchesAndJournals(ref GLBatchTDS AInspectDS,
+            Int32 ALedgerNumber,
+            int[] ABatchNumbers,
+            bool ABatchTableInDataSet,
+            bool AJournalTableInDataSet)
+        {
+            Int32 currJournalNumber = -1;
+
+            ABatchRow currentBatchRow = null;
+
+            foreach (int currBatchNumber in ABatchNumbers)
+            {
+                if (!ABatchTableInDataSet && !AJournalTableInDataSet)
+                {
+                    if (AInspectDS.ATransaction.Count > 0)
+                    {
+                        AInspectDS.ATransaction.DefaultView.RowFilter = String.Format("{0} = {1}",
+                            ATransactionTable.GetBatchNumberDBName(),
+                            currBatchNumber);
+
+                        List <int>journalNums = new List <int>();
+
+                        foreach (DataRowView dr in AInspectDS.ATransaction.DefaultView)
+                        {
+                            ATransactionRow tr = (ATransactionRow)dr.Row;
+
+                            currJournalNumber = tr.JournalNumber;
+
+                            if (!journalNums.Contains(currJournalNumber))
+                            {
+                                journalNums.Add(currJournalNumber);
+                            }
+                        }
+
+                        if (journalNums.Count == 1)
+                        {
+                            AInspectDS.Merge(LoadABatch(ALedgerNumber, currBatchNumber), true);
+                            AInspectDS.Merge(LoadAJournalATransaction(ALedgerNumber, currBatchNumber, currJournalNumber), true);
+                        }
+                        else
+                        {
+                            //Multiple journals
+                            AInspectDS.Merge(LoadABatchAJournalATransaction(ALedgerNumber, currBatchNumber), true);
+                        }
+                    }
+                    else
+                    {
+                        AInspectDS.Merge(LoadABatchAJournalATransaction(ALedgerNumber, currBatchNumber), true);
+                    }
+                }
+                else if (!ABatchTableInDataSet)
+                {
+                    AInspectDS.AJournal.DefaultView.RowFilter = String.Format("{0} = {1}",
+                        AJournalTable.GetBatchNumberDBName(),
+                        currBatchNumber);
+
+                    if (AInspectDS.AJournal.DefaultView.Count == 1)
+                    {
+                        currJournalNumber = ((AJournalRow)AInspectDS.AJournal.DefaultView[0].Row).JournalNumber;
+                        AInspectDS.Merge(LoadABatch(ALedgerNumber, currBatchNumber), true);
+                        AInspectDS.Merge(LoadAJournalATransaction(ALedgerNumber, currBatchNumber, currJournalNumber), true);
+                    }
+                    else
+                    {
+                        AInspectDS.Merge(LoadABatchAJournalATransaction(ALedgerNumber, currBatchNumber), true);
+                    }
+                }
+                else if (!AJournalTableInDataSet)
+                {
+                    if (AInspectDS.ATransaction.Count > 0)
+                    {
+                        AInspectDS.ATransaction.DefaultView.RowFilter = String.Format("{0} = {1}",
+                            ATransactionTable.GetBatchNumberDBName(),
+                            currBatchNumber);
+
+                        List <int>journalNums = new List <int>();
+
+                        foreach (DataRowView dr in AInspectDS.ATransaction.DefaultView)
+                        {
+                            ATransactionRow tr = (ATransactionRow)dr.Row;
+
+                            currJournalNumber = tr.JournalNumber;
+
+                            if (!journalNums.Contains(currJournalNumber))
+                            {
+                                journalNums.Add(currJournalNumber);
+                            }
+                        }
+
+                        if (journalNums.Count == 1)
+                        {
+                            AInspectDS.Merge(LoadAJournalATransaction(ALedgerNumber, currBatchNumber, currJournalNumber), true);
+                        }
+                        else
+                        {
+                            //Multiple journals
+                            AInspectDS.Merge(LoadAJournalATransaction(ALedgerNumber, currBatchNumber), true);
+                        }
+                    }
+                    else
+                    {
+                        AInspectDS.Merge(LoadAJournalATransaction(ALedgerNumber, currBatchNumber), true);
+                    }
+                }
+                else
+                {
+                    AInspectDS.AJournal.DefaultView.RowFilter = String.Format("{0} = {1}",
+                        AJournalTable.GetBatchNumberDBName(),
+                        currBatchNumber);
+
+                    if (AInspectDS.AJournal.DefaultView.Count == 1)
+                    {
+                        currJournalNumber = ((AJournalRow)AInspectDS.AJournal.DefaultView[0].Row).JournalNumber;
+                        AInspectDS.Merge(LoadATransaction(ALedgerNumber, currBatchNumber, currJournalNumber), true);
+                    }
+                    else
+                    {
+                        //Multiple journals
+                        AInspectDS.Merge(LoadATransactionForBatch(ALedgerNumber, currBatchNumber), true);
+                    }
+                }
+
+                //Read current batch and update totals
+                currentBatchRow = (ABatchRow)AInspectDS.ABatch.Rows.Find(new object[] { ALedgerNumber, currBatchNumber });
+
+                UpdateTotalsOfBatch(ref AInspectDS, currentBatchRow);
+            }
         }
 
         private static void CheckTransAnalysisAttributes(ref GLBatchTDS AInspectDS,
@@ -1764,6 +2059,148 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TGLImporting importing = new TGLImporting();
 
             return importing.ImportGLBatches(requestParams, importString, out AMessages);
+        }
+
+        /// <summary>
+        /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="ACurrentBatch"></param>
+        private static void UpdateTotalsOfBatch(ref GLBatchTDS AMainDS,
+            ABatchRow ACurrentBatch)
+        {
+            string origTransactionFilter = AMainDS.ATransaction.DefaultView.RowFilter;
+            string origJournalFilter = AMainDS.AJournal.DefaultView.RowFilter;
+
+            decimal sumDebits = 0.0M;
+            decimal sumCredits = 0.0M;
+
+            AMainDS.AJournal.DefaultView.RowFilter =
+                AJournalTable.GetBatchNumberDBName() + " = " + ACurrentBatch.BatchNumber.ToString();
+
+            foreach (DataRowView journalview in AMainDS.AJournal.DefaultView)
+            {
+                GLBatchTDSAJournalRow journalrow = (GLBatchTDSAJournalRow)journalview.Row;
+
+                AMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0} = {1} And {2} = {3}",
+                    ATransactionTable.GetBatchNumberDBName(),
+                    journalrow.BatchNumber.ToString(),
+                    ATransactionTable.GetJournalNumberDBName(),
+                    journalrow.JournalNumber.ToString());
+
+                UpdateTotalsOfJournal(ref AMainDS, journalrow);
+
+                sumDebits += journalrow.JournalDebitTotal;
+                sumCredits += journalrow.JournalCreditTotal;
+            }
+
+            ACurrentBatch.BatchDebitTotal = sumDebits;
+            ACurrentBatch.BatchCreditTotal = sumCredits;
+            ACurrentBatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
+
+            AMainDS.ATransaction.DefaultView.RowFilter = origTransactionFilter;
+            AMainDS.AJournal.DefaultView.RowFilter = origJournalFilter;
+        }
+
+        /// <summary>
+        /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        private static GLBatchTDS UpdateTotalsOfBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            TVerificationResultCollection AVerificationResult = new TVerificationResultCollection();
+            GLBatchTDS glDS = new GLBatchTDS();
+
+            decimal sumDebits = 0.0M;
+            decimal sumCredits = 0.0M;
+
+            //Load Batch, Journal and Transaction records
+            glDS.Merge(LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber));
+
+            ABatchRow currentBatch = (ABatchRow)glDS.ABatch.Rows[0];
+
+            glDS.AJournal.DefaultView.RowFilter = string.Empty;
+
+            foreach (DataRowView journalview in glDS.AJournal.DefaultView)
+            {
+                GLBatchTDSAJournalRow journalrow = (GLBatchTDSAJournalRow)journalview.Row;
+
+                glDS.ATransaction.DefaultView.RowFilter = String.Format("{0} = {1} And {2} = {3}",
+                    ATransactionTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    ATransactionTable.GetJournalNumberDBName(),
+                    journalrow.JournalNumber);
+
+                UpdateTotalsOfJournal(ref glDS, journalrow);
+
+                sumDebits += journalrow.JournalDebitTotal;
+                sumCredits += journalrow.JournalCreditTotal;
+            }
+
+            currentBatch.BatchDebitTotal = sumDebits;
+            currentBatch.BatchCreditTotal = sumCredits;
+            currentBatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
+
+            return glDS;
+        }
+
+        /// <summary>
+        /// Calculate the base amount for the transactions, and update the totals for the current journal
+        /// NOTE this no longer calculates AmountInBaseCurrency
+        /// </summary>
+        /// <param name="AMainDS">ATransactions are filtered on current journal</param>
+        /// <param name="ACurrentJournal"></param>
+        private static void UpdateTotalsOfJournal(ref GLBatchTDS AMainDS,
+            GLBatchTDSAJournalRow ACurrentJournal)
+        {
+            if (ACurrentJournal == null)
+            {
+                return;
+            }
+
+            if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
+                && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
+            {
+                throw new Exception(String.Format("Batch {0} Journal {1} has invalid exchange rate to base",
+                        ACurrentJournal.BatchNumber,
+                        ACurrentJournal.JournalNumber));
+            }
+
+            ACurrentJournal.JournalDebitTotal = 0.0M;
+            ACurrentJournal.JournalDebitTotalBase = 0.0M;
+            ACurrentJournal.JournalCreditTotal = 0.0M;
+            ACurrentJournal.JournalCreditTotalBase = 0.0M;
+
+            AMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0} = {1} And {2} = {3}",
+                ATransactionTable.GetBatchNumberDBName(),
+                ACurrentJournal.BatchNumber,
+                ATransactionTable.GetJournalNumberDBName(),
+                ACurrentJournal.JournalNumber);
+
+            // transactions are filtered for this journal; add up the total amounts
+            foreach (DataRowView v in AMainDS.ATransaction.DefaultView)
+            {
+                ATransactionRow r = (ATransactionRow)v.Row;
+
+                // recalculate the amount in base currency
+
+                if (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
+                {
+                    r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
+                }
+
+                if (r.DebitCreditIndicator)
+                {
+                    ACurrentJournal.JournalDebitTotal += r.TransactionAmount;
+                    ACurrentJournal.JournalDebitTotalBase += r.AmountInBaseCurrency;
+                }
+                else
+                {
+                    ACurrentJournal.JournalCreditTotal += r.TransactionAmount;
+                    ACurrentJournal.JournalCreditTotalBase += r.AmountInBaseCurrency;
+                }
+            }
         }
     }
 }

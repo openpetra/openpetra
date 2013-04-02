@@ -2211,7 +2211,7 @@ namespace Ict.Common.Data
             List <OdbcParameter>InsertParameters = new List <OdbcParameter>();
             StringBuilder InsertStatement = new StringBuilder();
 
-            for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount = (RowCount + 1))
+            for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount++)
             {
                 TheRow = ATable.Rows[RowCount];
                 try
