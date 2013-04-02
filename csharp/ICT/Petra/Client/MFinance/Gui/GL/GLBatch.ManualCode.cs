@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             tabGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgJournals.Enabled = false;
             this.tpgTransactions.Enabled = false;
-            
+
             this.Width = 815;
         }
 
@@ -194,7 +194,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Transactions
         };
 
-        
+
         private eGLTabs FPreviousTab = eGLTabs.Batches;
         /// <summary>
         /// Switch to the given tab
@@ -204,7 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (ATab == eGLTabs.Batches)
             {
-            	this.tabGLBatch.SelectedTab = this.tpgBatches;
+                this.tabGLBatch.SelectedTab = this.tpgBatches;
                 this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
 
                 if (this.tpgTransactions.Enabled)
@@ -214,6 +214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     SaveChanges();
                     this.tpgTransactions.Enabled = false;
                 }
+
                 //this.ucoBatches.UpdateTotals();
                 this.ucoBatches.FocusGrid();
                 FPreviousTab = eGLTabs.Batches;
@@ -222,7 +223,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (this.tpgJournals.Enabled)
                 {
-                	this.tabGLBatch.SelectedTab = this.tpgJournals;
+                    this.tabGLBatch.SelectedTab = this.tpgJournals;
 
                     this.ucoJournals.LoadJournals(FLedgerNumber,
                         ucoBatches.GetSelectedDetailRow().BatchNumber,
@@ -230,12 +231,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     this.tpgTransactions.Enabled = (ucoJournals.GetSelectedDetailRow() != null);
 
-                    if (this.tpgTransactions.Enabled && FPreviousTab == eGLTabs.Transactions)
+                    if (this.tpgTransactions.Enabled && (FPreviousTab == eGLTabs.Transactions))
                     {
-                    	//Reconcile dataset tables
-                    	this.ucoJournals.UpdateTotals(ucoBatches.GetSelectedDetailRow());
+                        //Reconcile dataset tables
+                        this.ucoJournals.UpdateTotals(ucoBatches.GetSelectedDetailRow());
                     }
-                    
+
                     this.ucoJournals.FocusGrid();
 
                     FPreviousTab = eGLTabs.Journals;
@@ -245,7 +246,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (this.tpgTransactions.Enabled)
                 {
-                	this.tabGLBatch.SelectedTab = this.tpgTransactions;
+                    this.tabGLBatch.SelectedTab = this.tpgTransactions;
 
                     this.ucoTransactions.LoadTransactions(
                         FLedgerNumber,
@@ -255,7 +256,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoBatches.GetSelectedDetailRow().BatchStatus,
                         ucoJournals.GetSelectedDetailRow().JournalStatus);
 
-                	FPreviousTab = eGLTabs.Transactions;
+                    FPreviousTab = eGLTabs.Transactions;
                 }
             }
 
@@ -313,6 +314,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             return ucoTransactions;
         }
-
     }
 }

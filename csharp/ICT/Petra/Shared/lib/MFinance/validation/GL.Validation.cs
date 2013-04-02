@@ -292,6 +292,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
+            // Narrative must not be empty
+            ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnNarrativeId];
+            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                ARow.TransactionNumber,
+                ARow.BatchNumber,
+                ARow.JournalNumber);
+
+            VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Narrative,
+                "Narrative of " + ValidationContext,
+                AContext, ValidationColumn, AControl);
+
+            // Handle addition/removal to/from TVerificationResultCollection
+            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+            {
+                VerifResultCollAddedCount++;
+            }
+
             // 'GL amount must be non-zero
             ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnTransactionAmountId];
             ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",

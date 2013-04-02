@@ -85,6 +85,10 @@ namespace Ict.Common.Controls
             TVisualStyles VisualStyle = new TVisualStyles(TVisualStylesEnum.vsHorizontalCollapse);
 
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            #endregion
 
             sptNavigation.BackColor = VisualStyle.TitleGradientEnd;
 

@@ -3,66 +3,73 @@
 <reports>
 
   <report id="Languages Report">
-	<description>
-		Report for the Languages
-	</description>
-	<reportparameters>
-		<reportparameter name="param_source"></reportparameter>
-		<reportparameter name="param_event_code"></reportparameter>
-		<reportparameter name="param_extract_name"></reportparameter>
-		<reportparameter name="param_event_name"></reportparameter>
-		<reportparameter name="param_conference_code"></reportparameter>
-		<reportparameter name="param_unit_key"></reportparameter>
-		<reportparameter name="param_event_only"></reportparameter>
-		<reportparameter name="param_application_status_accepted"></reportparameter>
-		<reportparameter name="param_application_status_cancelled"></reportparameter>
-		<reportparameter name="param_application_status_enquiry"></reportparameter>
-		<reportparameter name="param_application_status_hold"></reportparameter>
-		<reportparameter name="param_application_status_rejected"></reportparameter>
-	</reportparameters>
+    <description>
+    Report for the Languages
+  </description>
+    <reportparameters>
+      <reportparameter name="param_source"></reportparameter>
+      <reportparameter name="param_event_code"></reportparameter>
+      <reportparameter name="param_extract_name"></reportparameter>
+      <reportparameter name="param_event_name"></reportparameter>
+      <reportparameter name="param_conference_code"></reportparameter>
+      <reportparameter name="param_unit_key"></reportparameter>
+      <reportparameter name="param_event_only"></reportparameter>
+      <reportparameter name="param_application_status_accepted"></reportparameter>
+      <reportparameter name="param_application_status_cancelled"></reportparameter>
+      <reportparameter name="param_application_status_enquiry"></reportparameter>
+      <reportparameter name="param_application_status_hold"></reportparameter>
+      <reportparameter name="param_application_status_rejected"></reportparameter>
+    </reportparameters>
 
     <reportheader></reportheader>
     <pageheader>
-      <field whichfield="title1"><value text="Languages Report"></value></field>
-      <field whichfield="title2"><value function="getSiteName()"></value></field>
+      <field whichfield="title1">
+        <value text="Languages Report"></value>
+      </field>
+      <field whichfield="title2">
+        <value function="getSiteName()"></value>
+      </field>
       <field whichfield="descr1">
         <value text="Sorted by: "></value>
         <value variable="param_sortby_readable"></value>
       </field>
-	  
+
       <field whichfield="period1">
         <fielddetail>
-	  <value text="Application Status:"></value>
-	</fielddetail>
-	<fielddetail condition="eq({param_application_status_accepted}, true)">
-	  <value text=" Accepted"></value>
-	</fielddetail>
-	<fielddetail condition="eq({param_application_status_cancelled}, true)">
-	  <value text=" Cancelled"></value>
-	</fielddetail>
-	<fielddetail condition="eq({param_application_status_rejected}, true)">
-	  <value text=" Rejected"></value>
-	</fielddetail>
-	<fielddetail condition="eq({param_application_status_enquiry}, true)">
-	  <value text=" Enquiry"></value>
-	</fielddetail>
-	<fielddetail condition="eq({param_application_status_hold}, true)">
-	  <value text=" Hold"></value>
-	</fielddetail>
+          <value text="Application Status:"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_application_status_accepted}, true)">
+          <value text=" Accepted"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_application_status_cancelled}, true)">
+          <value text=" Cancelled"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_application_status_rejected}, true)">
+          <value text=" Rejected"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_application_status_enquiry}, true)">
+          <value text=" Enquiry"></value>
+        </fielddetail>
+        <fielddetail condition="eq({param_application_status_hold}, true)">
+          <value text=" Hold"></value>
+        </fielddetail>
       </field>
-	  
+
       <field whichfield="period2">
         <fielddetail>
           <value text="Selection: "></value>
         </fielddetail>
         <fielddetail condition="eq({param_source}, Outreach)">
-          <value text="Outreach: "></value><value variable="param_event_code"></value>
+          <value text="Outreach: "></value>
+          <value variable="param_event_code"></value>
         </fielddetail>
         <fielddetail condition="eq({param_source}, Conference)">
-          <value text="Conference: "></value><value variable="param_event_code"></value>
+          <value text="Conference: "></value>
+          <value variable="param_event_code"></value>
         </fielddetail>
         <fielddetail condition="eq({param_source}, Extract)">
-          <value text="Extract: "></value><value variable="param_extract_name"></value>
+          <value text="Extract: "></value>
+          <value variable="param_extract_name"></value>
         </fielddetail>
         <fielddetail condition="eq({param_source},EntireDatabase)">
           <value text="Entire Database"></value>
@@ -71,311 +78,295 @@
     </pageheader>
 
     <calculations>
-			
-	<calculation id="Select Partners" returns="automatic" returnsFormat="row">
-		<query>
-			<queryDetail condition="columnexist(eString:Event Code)"><value>
-				SELECT DISTINCT
-					PUB_p_partner.p_partner_key_n AS PartnerKey,
-					PUB_p_partner.p_partner_short_name_c AS PartnerName,
-					
-					PUB_pm_general_application.pm_gen_application_status_c AS ApplicationStatus,
-					
-					PUB_pm_short_term_application.pm_confirmed_option_code_c AS EventCode,
-					
-					PUB_pm_person_language.pm_willing_to_translate_l AS pm_willing_to_translate_l,
-					PUB_pm_person_language.pm_translate_into_l AS pm_translate_into_l,
-					PUB_pm_person_language.pm_translate_out_of_l AS pm_translate_out_of_l,
-					PUB_pm_person_language.pt_language_level_i AS Level,
-					PUB_pm_person_language.pm_years_of_experience_i AS Experience,
-					PUB_pm_person_language.p_language_code_c AS LanguageCode,
-					PUB_p_language.p_language_description_c AS Language
-			</value></queryDetail>
-					
-			<queryDetail condition="not(columnexist(eString:Event Code))"><value>
-				SELECT DISTINCT
-					PUB_p_partner.p_partner_key_n AS PartnerKey,
-					PUB_p_partner.p_partner_short_name_c AS PartnerName,
-					
-					PUB_pm_general_application.pm_gen_application_status_c AS ApplicationStatus,
-					
-					PUB_pm_person_language.pm_willing_to_translate_l AS pm_willing_to_translate_l,
-					PUB_pm_person_language.pm_translate_into_l AS pm_translate_into_l,
-					PUB_pm_person_language.pm_translate_out_of_l AS pm_translate_out_of_l,
-					PUB_pm_person_language.pt_language_level_i AS Level,
-					PUB_pm_person_language.pm_years_of_experience_i AS Experience,
-					PUB_pm_person_language.p_language_code_c AS LanguageCode,
-					PUB_p_language.p_language_description_c AS Language
-			</value></queryDetail>
-			
-			<queryDetail><value>
-				FROM
-					PUB_p_person, PUB_p_partner, PUB_pm_person_language,
-			</value></queryDetail>
-			
-			<!-- event and related options -->
-			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, related))"><value>
-					PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_language
-				WHERE
-					PUB_pm_short_term_application.pm_confirmed_option_code_c LIKE {param_conference_code}
-					AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
-			</value></queryDetail>
-			
-			<!-- this event only -->
-			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, this))"><value>
-					PUB_p_unit,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_language
-				WHERE
-					PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
-					AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
-			</value></queryDetail>
-			
-			<!-- all events -->
-			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, all))"><value>
-					PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_language
-				WHERE
-					PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
-					AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
-			</value></queryDetail>
-			
-			<!-- extract and event only -->
-			<queryDetail condition="and(eq({param_event_selection}, this), eq({param_source}, Extract))"><value>
-					PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit, PUB_p_language
-				WHERE
-					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
-					AND PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
-					AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
-			</value></queryDetail>
-			
-			<!-- extract and event and related otions -->
-			<queryDetail condition="and(eq({param_event_selection}, related), eq({param_source}, Extract))"><value>
-					PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit, PUB_p_language
-				WHERE
-					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c LIKE {param_conference_code}
-					AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
-			</value></queryDetail>
-			
-			<!-- extract and all events -->
-			<queryDetail condition="and(eq({param_event_selection}, all), eq({param_source}, Extract))"><value>
-					PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit, PUB_p_language
-				WHERE
-					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
-					AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
-			</value></queryDetail>
-			
-			<queryDetail><value>
-					AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
-					AND PUB_pm_short_term_application.p_partner_key_n = PUB_p_partner.p_partner_key_n
-					AND NOT PUB_pm_short_term_application.pm_st_basic_delete_flag_l = 1
-					AND NOT PUB_pm_general_application.pm_gen_app_delete_flag_l = 1
-					AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n
-					AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
-					AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
-					AND PUB_pm_person_language.p_partner_key_n = PUB_p_partner.p_partner_key_n
-					AND ( PUB_pm_general_application.pm_gen_application_status_c = ''
-			</value></queryDetail>
-			<queryDetail condition="eq({param_application_status_accepted}, true)"><value>
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'A'
-			</value></queryDetail>
-			<queryDetail condition="eq({param_application_status_cancelled}, true)"><value>
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C1'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C2'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C3'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C4'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C5'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C6'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C7' 
-			</value></queryDetail>
-			<queryDetail condition="eq({param_application_status_enquiry}, true)"><value>
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'E'
-			</value></queryDetail>
-			<queryDetail condition="eq({param_application_status_hold}, true)"><value>
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'H'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-LANG'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-MED'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-REF'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-SUP' 
-			</value></queryDetail>
-			<queryDetail condition="eq({param_application_status_rejected}, true)"><value>
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R1'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R2'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R3'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R4'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R5'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R6'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R7' 
-			</value></queryDetail>
-			<queryDetail><value>
-							)
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	
-	
-	<calculation id="CleanUp" returns="PartnerNameAndKey" returnsFormat="text">
-		<query>
-			<queryDetail condition="eq({pm_translate_into_l}, true)">
-				<value text="NO-SQL"/>
-				<value function="assign(Into, yes)"/>
-			</queryDetail>
-			<queryDetail condition="eq({pm_translate_into_l}, false)">
-				<value text="NO-SQL"/>
-				<value function="assign(Into, no)"/>
-			</queryDetail>
-			<queryDetail condition="eq({pm_translate_out_of_l}, true)">
-				<value text="NO-SQL"/>
-				<value function="assign(OutOf, yes)"/>
-			</queryDetail>
-			<queryDetail condition="eq({pm_translate_out_of_l}, false)">
-				<value text="NO-SQL"/>
-				<value function="assign(OutOf, no)"/>
-			</queryDetail>
-			<queryDetail condition="eq({pm_willing_to_translate_l}, true)">
-				<value text="NO-SQL"/>
-				<value function="assign(Translate, yes)"/>
-			</queryDetail>
-			<queryDetail condition="eq({pm_willing_to_translate_l}, false)">
-				<value text="NO-SQL"/>
-				<value function="assign(Translate, no)"/>
-			</queryDetail>
-			
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Application Status" returns="text" returnsFormat="text">
-		<caption><value text="App. Status"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ApplicationStatus"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Event Code" returns="text" returnsFormat="text">
-		<caption><value text="Event Code"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="EventCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Experience" returns="text" returnsFormat="text">
-		<caption><value text="Experience"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Experience"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Into" returns="text" returnsFormat="text">
-		<caption><value text="Into"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Into"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Language" returns="text" returnsFormat="text">
-		<caption><value text="Language"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Language"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Language Code" returns="text" returnsFormat="text">
-		<caption><value text="Language Code"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="LanguageCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Level" returns="text" returnsFormat="text">
-		<caption><value text="Level"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Level"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Out Of" returns="text" returnsFormat="text">
-		<caption><value text="Out Of"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="OutOf"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Partner Key"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
-		<caption><value text="Partner Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Registration Office" returns="text" returnsFormat="text">
-		<caption><value text="Registration Office"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="RegistrationOffice"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Translate" returns="text" returnsFormat="text">
-		<caption><value text="Translate"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Translate"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-    </calculations>
-    
-    <levels> 
-	<level name="main">
-		<detail>
-			<lowerLevelReport calculation="Select Partners" level="Partner Details"></lowerLevelReport>
-		</detail>
-	</level> 
 
-	<level name="Partner Details" identification="PartnerKey">
-		<detail>
-			<field whichfield="Columns" calculation="CleanUp" ></field>
-		</detail>
-	</level>
-	
+      <calculation id="Select Partners" returns="automatic" returnsFormat="row">
+        <query>
+          <queryDetail condition="columnexist(eString:Event Code)">
+            <value>
+        SELECT DISTINCT
+          PUB_p_partner.p_partner_key_n AS PartnerKey,
+          PUB_p_partner.p_partner_short_name_c AS PartnerName,
+
+          PUB_pm_general_application.pm_gen_application_status_c AS ApplicationStatus,
+          PUB_pm_short_term_application.pm_confirmed_option_code_c AS EventCode,
+          PUB_pm_person_language.pt_language_level_i AS Level,
+          PUB_pm_person_language.pm_years_of_experience_i AS Experience,
+          PUB_pm_person_language.p_language_code_c AS LanguageCode,
+          PUB_p_language.p_language_description_c AS Language
+            </value>
+          </queryDetail>
+
+          <queryDetail condition="not(columnexist(eString:Event Code))">
+            <value>
+        SELECT DISTINCT
+          PUB_p_partner.p_partner_key_n AS PartnerKey,
+          PUB_p_partner.p_partner_short_name_c AS PartnerName,
+          PUB_pm_general_application.pm_gen_application_status_c AS ApplicationStatus,
+          PUB_pm_person_language.pt_language_level_i AS Level,
+          PUB_pm_person_language.pm_years_of_experience_i AS Experience,
+          PUB_pm_person_language.p_language_code_c AS LanguageCode,
+          PUB_p_language.p_language_description_c AS Language
+            </value>
+          </queryDetail>
+
+          <queryDetail>
+            <value>
+        FROM
+          PUB_p_person, PUB_p_partner, PUB_pm_person_language,
+            </value>
+          </queryDetail>
+
+          <!-- event and related options -->
+          <queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, related))">
+            <value>
+          PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_language
+        WHERE
+          PUB_pm_short_term_application.pm_confirmed_option_code_c LIKE {param_conference_code}
+          AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
+            </value>
+          </queryDetail>
+
+          <!-- this event only -->
+          <queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, this))">
+            <value>
+          PUB_p_unit,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_language
+        WHERE
+          PUB_p_unit.p_partner_key_n = {param_unit_key}
+          AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
+          AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
+            </value>
+          </queryDetail>
+
+          <!-- all events -->
+          <queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, all))">
+            <value>
+          PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_language
+        WHERE
+          PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
+          AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
+            </value>
+          </queryDetail>
+
+          <!-- extract and event only -->
+          <queryDetail condition="and(eq({param_event_selection}, this), eq({param_source}, Extract))">
+            <value>
+          PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit, PUB_p_language
+        WHERE
+           PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+          AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+          AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+          AND PUB_p_unit.p_partner_key_n = {param_unit_key}
+          AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
+          AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
+            </value>
+          </queryDetail>
+
+          <!-- extract and event and related otions -->
+          <queryDetail condition="and(eq({param_event_selection}, related), eq({param_source}, Extract))">
+            <value>
+          PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit, PUB_p_language
+        WHERE
+           PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+          AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+          AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+          AND PUB_pm_short_term_application.pm_confirmed_option_code_c LIKE {param_conference_code}
+          AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
+            </value>
+          </queryDetail>
+
+          <!-- extract and all events -->
+          <queryDetail condition="and(eq({param_event_selection}, all), eq({param_source}, Extract))">
+            <value>
+          PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit, PUB_p_language
+        WHERE
+           PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+          AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+          AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+          AND PUB_p_language.p_language_code_c = PUB_pm_person_language.p_language_code_c
+            </value>
+          </queryDetail>
+
+          <queryDetail>
+            <value>
+          AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
+          AND PUB_pm_short_term_application.p_partner_key_n = PUB_p_partner.p_partner_key_n
+          AND NOT PUB_pm_short_term_application.pm_st_basic_delete_flag_l = 1
+          AND NOT PUB_pm_general_application.pm_gen_app_delete_flag_l = 1
+          AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n
+          AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
+          AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
+          AND PUB_pm_person_language.p_partner_key_n = PUB_p_partner.p_partner_key_n
+          AND ( PUB_pm_general_application.pm_gen_application_status_c = ''
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_application_status_accepted}, true)">
+            <value>
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'A'
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_application_status_cancelled}, true)">
+            <value>
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'C1'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'C2'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'C3'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'C4'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'C5'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'C6'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'C7' 
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_application_status_enquiry}, true)">
+            <value>
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'E'
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_application_status_hold}, true)">
+            <value>
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'H'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'H-LANG'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'H-MED'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'H-REF'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'H-SUP' 
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_application_status_rejected}, true)">
+            <value>
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'R1'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'R2'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'R3'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'R4'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'R5'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'R6'
+              OR PUB_pm_general_application.pm_gen_application_status_c = 'R7' 
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+              )
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="CleanUp" returns="PartnerNameAndKey" returnsFormat="text">
+        <query>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Application Status" returns="text" returnsFormat="text">
+        <caption>
+          <value text="App. Status"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="ApplicationStatus"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Event Code" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Event Code"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="EventCode"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Experience" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Experience"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="Experience"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Language" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Language"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="Language"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Language Code" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Language Code"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="LanguageCode"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Level" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Level"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="Level"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+        <caption>
+          <value text="Partner Key"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PartnerKey"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Partner Name"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PartnerName"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Registration Office" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Registration Office"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="RegistrationOffice"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+    </calculations>
+
+    <levels>
+      <level name="main">
+        <detail>
+          <lowerLevelReport calculation="Select Partners" level="Partner Details"></lowerLevelReport>
+        </detail>
+      </level>
+
+      <level name="Partner Details" identification="PartnerKey">
+        <detail>
+          <field whichfield="Columns" calculation="CleanUp" ></field>
+        </detail>
+      </level>
+
     </levels>
 
   </report>
-  
 </reports>

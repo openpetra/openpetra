@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,6 +40,8 @@ namespace Ict.Common.Data
     /// </summary>
     public class TTypedDataAccess
     {
+        private const string STR_INDENTATION = "    ";
+
         /// name of the column used for tracking changes, one ID per change
         public const string MODIFICATION_ID = "s_modification_id_t";
 
@@ -454,19 +456,35 @@ namespace Ict.Common.Data
         /// </summary>
         /// <returns>the Select Clause
         /// </returns>
-        public static String GenerateSelectClause(StringCollection AFieldList, short ATableID)
+        public static String GenerateSelectClause(StringCollection AFieldList, short ATableID, bool AIncludeTableNames = false)
         {
-            String ReturnValue = "";
+            String ReturnValue = String.Empty;
+            string Tablename = String.Empty;
 
             ReturnValue = "SELECT ";
 
             if ((AFieldList == null) || (AFieldList.Count == 0))
             {
-                ReturnValue = ReturnValue + '*';
+                ReturnValue += '*';
             }
             else
             {
-                ReturnValue = ReturnValue + StringHelper.StrMerge(AFieldList, ',');
+                if (AIncludeTableNames)
+                {
+                    Tablename = TTypedDataTable.GetTableNameSQL(ATableID);
+
+                    foreach (var Field in AFieldList)
+                    {
+                        ReturnValue += Tablename + "." + Field + ",";
+                    }
+
+                    // strip off trailing ','
+                    ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - 1);
+                }
+                else
+                {
+                    ReturnValue += StringHelper.StrMerge(AFieldList, ',');
+                }
 
                 string[] PrimKeyColumnStringList = TTypedDataTable.GetPrimaryKeyColumnStringList(ATableID);
 
@@ -474,13 +492,27 @@ namespace Ict.Common.Data
                 {
                     if ((!AFieldList.Contains(primKeyColumn)))
                     {
-                        ReturnValue = ReturnValue + ',' + primKeyColumn;
+                        ReturnValue += ',';
+
+                        if (AIncludeTableNames)
+                        {
+                            ReturnValue += Tablename + ".";
+                        }
+
+                        ReturnValue += primKeyColumn;
                     }
                 }
 
                 if ((!AFieldList.Contains(MODIFICATION_ID)))
                 {
-                    ReturnValue = ReturnValue + ',' + MODIFICATION_ID;
+                    ReturnValue += ',';
+
+                    if (AIncludeTableNames)
+                    {
+                        ReturnValue += Tablename + ".";
+                    }
+
+                    ReturnValue += MODIFICATION_ID;
                 }
             }
 
@@ -690,6 +722,61 @@ namespace Ict.Common.Data
                 }
 
                 ReturnValue += columnname + " = ?";
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// This function generates a where clause for a JOIN SQL Query
+        /// </summary>
+        /// <returns></returns>
+        private static String GenerateWhereClauseForJoin(string ATableName,
+            string AOtherTableName,
+            string[] APKFieldNames,
+            string[] AOtherPKFieldNames)
+        {
+            String ReturnValue = "";
+
+            if (APKFieldNames == null)
+            {
+                throw new ArgumentException("Argument 'APKFieldNames' must not be null");
+            }
+
+            if (AOtherPKFieldNames == null)
+            {
+                throw new ArgumentException("Argument 'AOtherPKFieldNames' must not be null");
+            }
+
+            if (APKFieldNames.Length != AOtherPKFieldNames.Length)
+            {
+                throw new ArgumentException("Argument 'APKFieldNames' and 'AOtherPKFieldNames' must contain the same number of items");
+            }
+
+            for (int Counter = 0; Counter < APKFieldNames.Length; Counter++)
+            {
+                if (ReturnValue.Length == 0)                     //first time around
+                {
+                    ReturnValue = " WHERE ";
+                }
+                else
+                {
+                    ReturnValue += " AND ";
+                }
+
+                if (!APKFieldNames[Counter].StartsWith(AOtherTableName + "."))
+                {
+                    ReturnValue += AOtherTableName + ".";
+                }
+
+                ReturnValue += APKFieldNames[Counter] + " = ";
+
+                if (!AOtherPKFieldNames[Counter].StartsWith(ATableName + "."))
+                {
+                    ReturnValue += ATableName + ".";
+                }
+
+                ReturnValue += AOtherPKFieldNames[Counter];
             }
 
             return ReturnValue;
@@ -1275,7 +1362,7 @@ namespace Ict.Common.Data
             ADataRow[CREATED_BY] = param.Value;
             ReturnValue.Add(param);
             param = new OdbcParameter("", OdbcType.Date);
-            param.Value = DateTime.Now;
+            param.Value = DateTime.Today;
             ADataRow[CREATED_DATE] = param.Value;
             ReturnValue.Add(param);
 
@@ -1327,7 +1414,7 @@ namespace Ict.Common.Data
             ADataRow[MODIFIED_BY] = parameter.Value;
             ReturnValue.Add(parameter);
             parameter = new OdbcParameter("s_date_modified_d", OdbcType.Date);
-            parameter.Value = DateTime.Now;
+            parameter.Value = DateTime.Today;
             ADataRow[MODIFIED_DATE] = parameter.Value;
             ReturnValue.Add(parameter);
 
@@ -1745,9 +1832,10 @@ namespace Ict.Common.Data
             int AMaxRecords)
         {
             DBAccess.GDBAccessObj.Select(ADataSet,
-                GenerateSelectClause(AFieldList, ATableId) +
+                GenerateSelectClause(AFieldList, ATableId, true) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
-                GenerateWhereClause(AThisFieldNames) +
+                GenerateWhereClauseForJoin(TTypedDataTable.GetTableNameSQL(AOtherTableId), TTypedDataTable.GetTableNameSQL(ATableId), AThisFieldNames,
+                    TTypedDataTable.GetPrimaryKeyColumnStringList(AOtherTableId)) +
                 GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
                     AOtherTableId, ATemplateRow, ATemplateOperators) +
                 GenerateOrderByClause(AOrderBy),
@@ -1772,9 +1860,10 @@ namespace Ict.Common.Data
             int AMaxRecords)
         {
             DBAccess.GDBAccessObj.SelectDT(ADataTable,
-                GenerateSelectClause(AFieldList, ATableId) +
+                GenerateSelectClause(AFieldList, ATableId, true) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
-                GenerateWhereClause(AThisFieldNames) +
+                GenerateWhereClauseForJoin(TTypedDataTable.GetTableNameSQL(AOtherTableId), TTypedDataTable.GetTableNameSQL(ATableId), AThisFieldNames,
+                    TTypedDataTable.GetPrimaryKeyColumnStringList(AOtherTableId)) +
                 GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
                     AOtherTableId, ATemplateRow, ATemplateOperators) +
                 GenerateOrderByClause(AOrderBy),
@@ -2275,6 +2364,360 @@ namespace Ict.Common.Data
             return SubmitChanges(ATable, ATransaction, ASelectedOperations, out AVerificationResult, AUserId, "", "");
         }
 
+        /// <summary>
+        /// Builds a <see cref="TVerificationResultCollection" /> from DB Table references created by a cascading count Method.
+        /// It will contain only a single <see cref="TVerificationResult" />.
+        /// </summary>
+        /// <returns><see cref="TVerificationResultCollection" /> from DB Table references created by a cascading count Method.
+        /// In case <paramref name="AReferences" /> does not contain elements a <see cref="TVerificationResultCollection" />
+        /// containing no elements will be returned.</returns>
+        /// <param name="AThisTable">Name of the DB Table (as in the DB) that the references point to.</param>
+        /// <param name="AThisTableLabel">Label (='friendly name' for the user) of the DB Table that the references point to.</param>
+        /// <param name="APKInfo"><see cref="Dictionary{T, T}" /> consisting of a string-object pair for each Primary Key Column.
+        /// The string (Key) is the Label ('friendly name' for the user) of the PK Column and the object (Value) holds the actual data
+        /// of the PK Column.</param>
+        /// <param name="AReferences">A <see cref="List{T}" /> of <see cref="TRowReferenceInfo" /> objects that contain information about
+        /// the DB Table references created by a cascading count Method.</param>
+        /// <param name="AResultSeverity">Allows the specification of a <see cref="TResultSeverity" /> for the <see cref="TVerificationResult" />
+        /// that gets added to the return value. (Default=<see cref="TResultSeverity.Resv_Critical" />.)</param>
+        /// <returns>A <see cref="TVerificationResultCollection" /> containing a single <see cref="TVerificationResult" /> that contains information
+        /// about DB Table references created by a cascading count Method.</returns>
+        public static TVerificationResultCollection BuildVerificationResultCollectionFromRefTables(string AThisTable,
+            string AThisTableLabel,
+            Dictionary <string, object>APKInfo,
+            List <TRowReferenceInfo>AReferences,
+            TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
+        {
+            const string STR_BULLET = "* ";
+
+            Guid VerificationRunGuid = Guid.NewGuid();
+            TVerificationResultCollection ReturnValue = new TVerificationResultCollection(VerificationRunGuid);
+            string MessageHeaderPart1 = Catalog.GetString(String.Format("The '{0}' record", AThisTableLabel));
+            string MessageHeaderPart2 = Catalog.GetString("{0}\r\n    cannot be deleted because\r\n");
+            string MessageFooter = Catalog.GetString("\r\n    {0} from the '{1}' Table:\r\n{2}");
+
+            string[] MessageDetails = null;
+            string CompleteMessageDetails = String.Empty;
+            string MessageContinuation = Catalog.GetString(" and\r\n");
+            string KeysAndValueInformation = String.Empty;
+            List <KeyValuePair <string, TRowReferenceInfo>>ConsolidatedReferences = new List <KeyValuePair <string, TRowReferenceInfo>>();
+            TRowReferenceInfo FirstReferenceInCascade;
+
+            if (AReferences.Count == 0)
+            {
+                return null;
+            }
+
+            // Iterate through References backwards because the insertion order in AReference is backwards
+            for (int Counter = AReferences.Count - 1; Counter >= 0; Counter--)
+            {
+                AddOrUpdateConsolidatedReferences(AReferences[Counter], ConsolidatedReferences);
+            }
+
+            MessageDetails = new string[ConsolidatedReferences.Count];
+
+            for (int Counter = 0; Counter < ConsolidatedReferences.Count; Counter++)
+            {
+                MessageDetails[Counter] = Catalog.GetPluralString(
+                    String.Format(STR_INDENTATION + new string(' ', ConsolidatedReferences[Counter].Value.NestingDepth - 1) +
+                        STR_BULLET + "a '{0}' record is {1} referencing it", ConsolidatedReferences[Counter].Value.ThisTableLabel,
+                        ConsolidatedReferences[Counter].Value.NestingDepth > 1 ? Catalog.GetString("indirectly") : Catalog.GetString("still")),
+                    String.Format(STR_INDENTATION + new string(' ', ConsolidatedReferences[Counter].Value.NestingDepth - 1) +
+                        STR_BULLET + "{0} '{1}' records are {2} referencing it", ConsolidatedReferences[Counter].Value.ReferenceCount,
+                        ConsolidatedReferences[Counter].Value.ThisTableLabel,
+                        ConsolidatedReferences[Counter].Value.NestingDepth > 1 ? Catalog.GetString("indirectly") : Catalog.GetString("still")),
+                    ConsolidatedReferences[Counter].Value.ReferenceCount);
+            }
+
+            if (MessageDetails.Length > 1)
+            {
+                for (int Counter = 0; Counter < MessageDetails.Length; Counter++)
+                {
+                    if (Counter != MessageDetails.Length - 1)
+                    {
+                        MessageDetails[Counter] += MessageContinuation;
+                    }
+
+                    CompleteMessageDetails += MessageDetails[Counter];
+                }
+            }
+            else
+            {
+                // Strip off leading STR_BULLET as we don't need one if there is only one MessageDetail
+                CompleteMessageDetails = STR_INDENTATION + MessageDetails[0].Substring(MessageDetails[0].IndexOf(STR_BULLET) + 2);
+            }
+
+            CompleteMessageDetails += ".";
+
+            // Build Keys and values for 'this table'
+            foreach (var element in APKInfo)
+            {
+                KeysAndValueInformation += STR_INDENTATION + STR_INDENTATION + element.Key + ": " + element.Value.ToString() + Environment.NewLine;
+            }
+
+            // Strip off trailing Environment.NewLine
+            KeysAndValueInformation = KeysAndValueInformation.Substring(0, KeysAndValueInformation.Length - Environment.NewLine.Length);
+
+            MessageHeaderPart2 = String.Format(MessageHeaderPart2,
+                "\r\n" + STR_INDENTATION + "  " + AThisTableLabel + Catalog.GetString(" code:\r\n") + KeysAndValueInformation);
+
+
+            // Build Keys and values for 'first referencing table in the cascade'
+            KeysAndValueInformation = String.Empty;
+            FirstReferenceInCascade = ConsolidatedReferences[0].Value;
+
+            foreach (var element in FirstReferenceInCascade.PKInfo)
+            {
+                KeysAndValueInformation += STR_INDENTATION + STR_INDENTATION + element.Key + ": " + element.Value.ToString() + Environment.NewLine;
+            }
+
+            // Strip off trailing Environment.NewLine
+            KeysAndValueInformation = KeysAndValueInformation.Substring(0, KeysAndValueInformation.Length - Environment.NewLine.Length);
+
+            MessageFooter = String.Format(MessageFooter,
+                FirstReferenceInCascade.ReferenceCount ==
+                1 ? Catalog.GetString("Referencing record") : Catalog.GetString("One of the referencing records"),
+                FirstReferenceInCascade.ThisTableLabel,
+                STR_INDENTATION + "  " + FirstReferenceInCascade.ThisTableLabel + Catalog.GetString(" code:\r\n") + KeysAndValueInformation);
+
+
+            ReturnValue.Add(new TVerificationResult(new TRowReferenceInfo(AThisTable, AThisTableLabel, APKInfo, ConsolidatedReferences),
+                    MessageHeaderPart1 + MessageHeaderPart2 + CompleteMessageDetails + MessageFooter,
+                    CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED,
+                    AResultSeverity, VerificationRunGuid));
+
+            return ReturnValue;
+        }
+
+        private static void AddOrUpdateConsolidatedReferences(TRowReferenceInfo AFurtherReference,
+            List <KeyValuePair <string, TRowReferenceInfo>>AConsolidatedReferences)
+        {
+            TRowReferenceInfo ExistingReference = null;
+
+            for (int Counter = 0; Counter < AConsolidatedReferences.Count; Counter++)
+            {
+                if (AConsolidatedReferences[Counter].Key == AFurtherReference.ThisTable)
+                {
+                    ExistingReference = AConsolidatedReferences[Counter].Value;
+                    break;
+                }
+            }
+
+            if (ExistingReference != null)
+            {
+                ExistingReference.SetReferenceCount(ExistingReference.ReferenceCount + AFurtherReference.ReferenceCount);
+                ExistingReference.PopulatePKInfoDataFromDataRow();
+            }
+            else
+            {
+                AFurtherReference.PopulatePKInfoDataFromDataRow();
+                AConsolidatedReferences.Add(new KeyValuePair <string, TRowReferenceInfo>(AFurtherReference.ThisTable, AFurtherReference));
+            }
+        }
+
         #endregion CalledByORMGenerateCode
+    }
+
+    /// <summary>
+    /// Data Class that holds information about DB Rows referencing another DB Row.
+    /// </summary>
+    [Serializable()]
+    public class TRowReferenceInfo
+    {
+        private string FThisTable = String.Empty;
+        private string FThisTableLabel = String.Empty;
+        private bool FRootTable = false;
+        private Dictionary <string, object>FPKInfo;
+        private List <KeyValuePair <string, TRowReferenceInfo>>FOtherTableRefs = null;
+        private long FReferenceCount = 0;
+        [NonSerialized]
+        private DataRow FDataRow = null;
+        private object[] FDataRowContents;
+        private int FNestingDepth;
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="AThisTable">Name of the DB Table (as in the DB) that holds the DB Row in question.</param>
+        /// <param name="AThisTableLabel">Label (='friendly name' for the user) of the DB Table that holds the DB Row in question.</param>
+        /// <param name="APKInfo"><see cref="Dictionary{T,T}" /> consisting of a string-object pair for each Primary Key Column.
+        /// The string (Key) is the Label ('friendly name' for the user) of the PK Column and the object (Value) holds the actual data
+        /// of the PK Column.</param>
+        /// <param name="AOtherTableRefs">References to the DB Row in question.</param>
+        public TRowReferenceInfo(string AThisTable, string AThisTableLabel,
+            Dictionary <string, object>APKInfo, List <KeyValuePair <string, TRowReferenceInfo>>AOtherTableRefs)
+        {
+            FThisTable = AThisTable;
+            FRootTable = true;
+            FNestingDepth = 0; // = for root table only
+            FThisTableLabel = AThisTableLabel;
+            FOtherTableRefs = AOtherTableRefs;
+            FPKInfo = APKInfo;
+            FReferenceCount = 1;
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="AThisTable">Name of the DB Table (as in the DB) that holds the DB Row in question.</param>
+        /// <param name="AThisTableLabel">Label (='friendly name') of the DB Table that holds the DB Row in question.</param>
+        /// <param name="AReferenceCount">References count.</param>
+        /// <param name="ADataRow">Referencing DataRow.</param>
+        /// <param name="ANestingDepth">The depth of how deep this instance of <see cref="TRowReferenceInfo" /> is nested.</param>
+        public TRowReferenceInfo(string AThisTable, string AThisTableLabel, long AReferenceCount, DataRow ADataRow, int ANestingDepth)
+        {
+            FThisTable = AThisTable;
+            FThisTableLabel = AThisTableLabel;
+            FReferenceCount = AReferenceCount;
+            FDataRow = ADataRow;
+            FDataRowContents = DataUtilities.GetPKValuesFromDataRow(FDataRow);
+            FNestingDepth = ANestingDepth;
+        }
+
+        /// <summary>
+        /// Name of the DB Table (as in the DB) that holds the DB Row in question.
+        /// </summary>
+        public string ThisTable
+        {
+            get
+            {
+                return FThisTable;
+            }
+        }
+
+        /// <summary>
+        /// Label (='friendly name' for the user) of the DB Table that holds the DB Row in question.
+        /// </summary>
+        public string ThisTableLabel
+        {
+            get
+            {
+                return FThisTableLabel;
+            }
+        }
+
+        /// <summary>
+        /// True if this instance is for the 'root' table in a cascading table hierarachy.
+        /// </summary>
+        public bool RootTable
+        {
+            get
+            {
+                return FRootTable;
+            }
+        }
+
+        /// <summary>
+        /// The depth of how deep this instance of <see cref="TRowReferenceInfo" /> is nested
+        /// </summary>
+        public int NestingDepth
+        {
+            get
+            {
+                return FNestingDepth;
+            }
+        }
+
+        /// <summary>
+        /// <see cref="Dictionary{T,T}" /> consisting of a string-object pair for each Primary Key Column.
+        /// The string (Key) is the Label ('friendly name' for the user) of the PK Column and the object (Value) holds the actual data
+        /// of the PK Column.
+        /// </summary>
+        public Dictionary <string, object>PKInfo
+        {
+            get
+            {
+                return FPKInfo;
+            }
+        }
+
+        /// <summary>
+        /// Number of references that point to the DB Row in question.
+        /// </summary>
+        public long ReferenceCount
+        {
+            get
+            {
+                return FReferenceCount;
+            }
+        }
+
+        /// <summary>
+        /// References to the DB Row in question.
+        /// </summary>
+        public List <KeyValuePair <string, TRowReferenceInfo>>OtherTableRefs
+        {
+            get
+            {
+                return FOtherTableRefs;
+            }
+        }
+
+        /// <summary>
+        /// Referencing DataRow.
+        /// </summary>
+        /// <remarks>Does not get serialised because the <see cref="DataRow" /> Class is not Serializable.
+        /// Use <see cref="DataRowContents" /> for accesing the data of the referencing DataRow instead in this case!</remarks>
+        public DataRow DataRow
+        {
+            get
+            {
+                return FDataRow;
+            }
+        }
+
+        /// <summary>
+        /// Data of the referencing DataRow represented as an Array of object. Use this for accesing the data of
+        /// the referencing DataRow when the instance of this class got remoted using .NET Remoting.
+        /// </summary>
+        public object[] DataRowContents
+        {
+            get
+            {
+                return FDataRowContents;
+            }
+        }
+
+        /// <summary>
+        /// Allows the setting of the <see cref="ReferenceCount" /> Property. Introduced so that the
+        /// <see cref="ReferenceCount" /> Property can stay read-only, which it should be.
+        /// </summary>
+        /// <param name="AReferenceCount">Reference Count.</param>
+        public void SetReferenceCount(long AReferenceCount)
+        {
+            FReferenceCount = AReferenceCount;
+        }
+
+        /// <summary>
+        /// Allows the setting of the <see cref="PKInfo" /> Property. Introduced so that the
+        /// <see cref="PKInfo" /> Property can stay read-only, which it should be.
+        /// </summary>
+        /// <param name="APKInfo">See <see cref="PKInfo" /> Property.</param>
+        public void SetPKInfo(Dictionary <string, object>APKInfo)
+        {
+            FPKInfo = APKInfo;
+        }
+
+        /// <summary>
+        /// Populates missing data in the Value part of the <see cref="PKInfo" /> Property from
+        /// the data in the <see cref="DataRow" /> (which must contain only Primary Key data for this
+        /// to work).
+        /// </summary>
+        public void PopulatePKInfoDataFromDataRow()
+        {
+            if (FPKInfo != null)
+            {
+                Dictionary <string, object>PKInfoNew = new Dictionary <string, object>(FPKInfo.Count);
+                int Counter = 0;
+
+                foreach (var SinglePKInfo in FPKInfo)
+                {
+                    PKInfoNew.Add(SinglePKInfo.Key, FDataRow[Counter]);
+                    Counter++;
+                }
+
+                FPKInfo = PKInfoNew;
+            }
+        }
     }
 }

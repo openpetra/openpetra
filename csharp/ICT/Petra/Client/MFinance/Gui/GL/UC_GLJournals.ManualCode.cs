@@ -58,9 +58,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns></returns>
         public GLBatchTDS JournalFMainDS()
         {
-        	return FMainDS;
+            return FMainDS;
         }
-        
+
         /// <summary>
         /// load the journals into the grid
         /// </summary>

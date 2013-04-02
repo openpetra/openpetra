@@ -261,9 +261,33 @@ namespace Ict.Common.DB
                             break;
 
                         case OdbcType.Date:
-                            ReturnValue[Counter] = new NpgsqlParameter(
-                            ParamName,
-                            NpgsqlDbType.Date);
+
+                            if (AParameterArrayOdbc[Counter].Value != DBNull.Value)
+                            {
+                                DateTime TmpDate = (DateTime)AParameterArrayOdbc[Counter].Value;
+
+                                if ((TmpDate.Hour == 0)
+                                    && (TmpDate.Minute == 0)
+                                    && (TmpDate.Second == 0)
+                                    && (TmpDate.Millisecond == 0))
+                                {
+                                    ReturnValue[Counter] = new NpgsqlParameter(
+                                        ParamName,
+                                        NpgsqlDbType.Date);
+                                }
+                                else
+                                {
+                                    ReturnValue[Counter] = new NpgsqlParameter(
+                                        ParamName,
+                                        NpgsqlDbType.Timestamp);
+                                }
+                            }
+                            else
+                            {
+                                ReturnValue[Counter] = new NpgsqlParameter(
+                                    ParamName,
+                                    NpgsqlDbType.Date);
+                            }
 
                             break;
 

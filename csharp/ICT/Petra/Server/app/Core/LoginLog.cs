@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.App.Core.Security
             NewLoginRow.LoginProcessId = -1;
             NewLoginRow.UserId = AUserID.ToUpper();
             NewLoginRow.LoginStatus = ALoginStatus;
-            NewLoginRow.LoginDate = LoginDateTime;
+            NewLoginRow.LoginDate = LoginDateTime.Date;
             NewLoginRow.LoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
 
             if (AImmediateLogout)
@@ -126,7 +126,7 @@ namespace Ict.Petra.Server.App.Core.Security
             ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar, 20);
             ParametersArray[0].Value = (System.Object)(AUserID);
             ParametersArray[1] = new OdbcParameter("", OdbcType.Date);
-            ParametersArray[1].Value = (System.Object)(LoginDateTime);
+            ParametersArray[1].Value = (System.Object)(LoginDateTime.Date);
             ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[2].Value = (System.Object)(NewLoginRow.LoginTime);
             ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 50);

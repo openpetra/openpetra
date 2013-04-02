@@ -168,6 +168,9 @@ namespace Ict.Petra.Shared
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_PURGEEXTRACTS = "PurgeExtracts";
 
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_GLREFMANDATORY = "GLRefMandatory";
+
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_DISCONNECT = "DISCONNECT";
 

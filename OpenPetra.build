@@ -170,6 +170,12 @@ useful parameters
   </delete>
 </target>
 
+<target name="setuptools" description="goes into the directory setup/tools">
+  <property name="target" value="indent" overwrite="false" />
+  <nant inheritall="false" target="${target}" 
+        buildfile="setup/tools/setuptools.build" />
+</target>
+
 <target name="nanttasks" description="goes into the directory inc/nanttasks">
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
@@ -189,7 +195,7 @@ useful parameters
 </target>
 
 <target name="internal-subdirs" description="Goes into all necessary subdirectories" 
-        depends="csharp,nanttasks,webserver" />
+        depends="csharp,nanttasks,webserver,setuptools" />
 
 <target name="generateSolutionNoCompile" description="generates the project and solution files. minimalGenerateSolution should already be executed"
         depends="generateProjectFiles"/>

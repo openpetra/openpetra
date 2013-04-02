@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ABatchTable.GetLedgerNumberDBName(),
                 ABatchTable.GetBatchNumberDBName()
                 );
-            
+
             grdDetails.Focus();
         }
 
@@ -127,9 +127,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns></returns>
         public GLBatchTDS BatchFMainDS()
         {
-        	return FMainDS;
+            return FMainDS;
         }
-        
+
         /// <summary>
         /// show ledger number
         /// </summary>
@@ -586,14 +586,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateTotals()
         {
-        	//Below not needed as yet
-			if (FPreviouslySelectedDetailRow != null)
-			{
-	            FPetraUtilsObject.DisableDataChangedEvent();
-	            GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow);
-	            txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
-	            FPetraUtilsObject.EnableDataChangedEvent();
-			}
+            //Below not needed as yet
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow);
+                txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
         }
 
         private bool SaveBatchForPosting()

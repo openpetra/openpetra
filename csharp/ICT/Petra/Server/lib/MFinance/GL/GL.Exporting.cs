@@ -259,7 +259,7 @@ namespace Ict.Petra.Server.MFinance.GL
             if (FSummary)
             {
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    Catalog.GetString("Summarizing"),
+                    Catalog.GetString("Summarising"),
                     95);
 
                 //To simplify matters this is always written even if there are no batches

@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Threading;
@@ -151,13 +152,26 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 PBankingDetailsUsageAccess.LoadViaPPartner(AInspectDS, FPartnerKey, ATransaction);
                 AInspectDS.PBankingDetailsUsage.AcceptChanges();
 
-
                 // make sure there is at least one main account, or no account at all
                 // make sure there are no multiple main accounts
 
                 PartnerEditTDS LocalDS = new PartnerEditTDS();
                 PBankingDetailsAccess.LoadViaPPartner(LocalDS, FPartnerKey, ATransaction);
+
+                // there are problems with Mono on merging deleted rows into the LocalDS, they become modified rows
+                // see https://tracker.openpetra.org/view.php?id=1871
                 LocalDS.Merge(AInspectDS.PBankingDetails);
+
+                // workaround for bug 1871
+                List <Int32>DeletedBankingDetails = new List <Int32>();
+
+                foreach (DataRow bdrow in AInspectDS.PBankingDetails.Rows)
+                {
+                    if (bdrow.RowState == DataRowState.Deleted)
+                    {
+                        DeletedBankingDetails.Add(Convert.ToInt32(bdrow[AInspectDS.PBankingDetails.ColumnBankingDetailsKey, DataRowVersion.Original]));
+                    }
+                }
 
                 bool ThereIsAtLeastOneAccount = false;
 
@@ -166,7 +180,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 foreach (PartnerEditTDSPBankingDetailsRow detailRow in LocalDS.PBankingDetails.Rows)
                 {
-                    if (detailRow.RowState != DataRowState.Deleted)
+                    if ((detailRow.RowState != DataRowState.Deleted) && !DeletedBankingDetails.Contains(detailRow.BankingDetailsKey))
                     {
                         ThereIsAtLeastOneAccount = true;
 
@@ -197,7 +211,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     {
                         DataRow bdrow = LocalDS.PBankingDetails.Rows.Find(usageRow.BankingDetailsKey);
 
-                        if ((bdrow == null) || (bdrow.RowState == DataRowState.Deleted))
+                        if ((bdrow == null) || (bdrow.RowState == DataRowState.Deleted)
+                            || DeletedBankingDetails.Contains(usageRow.BankingDetailsKey))
                         {
                             // deleting the account
                             usageRow.Delete();
@@ -2429,6 +2444,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 // can remove table PPerson here as this is part of both PartnerEditTDS and IndividualDataTDS and
                 // so the relevant data was already saved when PartnerEditTDS was saved
                 TempDS.RemoveTable("PPerson");
+                TempDS.InitVars();
 
                 IndividualDataResult = TIndividualDataWebConnector.SubmitChangesServerSide(ref TempDS, ref AInspectDS, ASubmitChangesTransaction,
                     out SingleVerificationResultCollection);

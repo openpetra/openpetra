@@ -343,7 +343,13 @@ namespace Ict.Petra.Client.App.PetraClient
 
                 ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
 
-                new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
+                TLogging Logger = new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
+                String LogFileMsg;
+
+                if (!Logger.CanWriteLogFile(out LogFileMsg))
+                {
+                    MessageBox.Show(LogFileMsg, Catalog.GetString("Failed to open logfile"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
 
                 Catalog.Init();
 

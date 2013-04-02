@@ -15,6 +15,7 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
+using Ict.Petra.Server.MCommon.Data.Cascading;
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -302,7 +303,33 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// <returns>True = Data are written to the data base successfully.</returns>
     public static bool SubmitChanges({#TABLENAME}Table ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
     {
-        return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+        TVerificationResultCollection SingleVerificationResultCollection;
+        DataView DeletedRows = new DataView(ATable, string.Empty, String.Empty, DataViewRowState.Deleted);
+
+        AVerificationResult = null;
+
+        for (int Counter = 0; Counter < DeletedRows.Count; Counter++) 
+        {
+            if({#TABLENAME}Cascading.CountByPrimaryKey(DataUtilities.GetPKValuesFromDataRow(DeletedRows[Counter].Row), ATransaction, true, 
+                out SingleVerificationResultCollection) > 0)
+            {
+                if (AVerificationResult == null) 
+                {
+                    AVerificationResult = new TVerificationResultCollection();
+                }
+                
+                AVerificationResult.AddCollection(SingleVerificationResultCollection);
+            }
+        }
+
+        if (AVerificationResult != null) 
+        {
+            return false;
+        }
+        else
+        {
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+        }
     }
 
 {#IFDEF FORMALPARAMETERSPRIMARYKEY}
