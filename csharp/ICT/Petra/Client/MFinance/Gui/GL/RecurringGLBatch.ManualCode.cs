@@ -308,6 +308,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             return ucoRecurringTransactions;
         }
-
     }
 }

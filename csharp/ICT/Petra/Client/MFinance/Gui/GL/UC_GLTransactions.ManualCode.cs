@@ -1086,8 +1086,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDebitAmountBase.NumberValueDecimal = 0;
             txtCreditAmount.NumberValueDecimal = 0;
             txtCreditAmountBase.NumberValueDecimal = 0;
-			//Refresh grids
-			RefreshAnalysisAttributesGrid();
+            //Refresh grids
+            RefreshAnalysisAttributesGrid();
             //Enable data change detection
             FPetraUtilsObject.EnableDataChangedEvent();
         }
@@ -1119,7 +1119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             // update key ministry combobox depending on account code and cost centre
-            UpdateCmbDetailKeyMinistryKey();        
+            UpdateCmbDetailKeyMinistryKey();
         }
 
         /// <summary>
@@ -1243,7 +1243,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdDetails.Focus();
             }
         }
-        
+
         private void TransDateChanged(object sender, EventArgs e)
         {
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
@@ -1267,6 +1267,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Do nothing
             }
         }
-        
     }
 }

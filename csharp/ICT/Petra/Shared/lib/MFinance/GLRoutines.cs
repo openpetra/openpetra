@@ -208,7 +208,5 @@ namespace Ict.Petra.Shared.MFinance
             AMainDS.ARecurringTransaction.DefaultView.RowFilter = origTransactionFilter;
             AMainDS.ARecurringJournal.DefaultView.RowFilter = origJournalFilter;
         }
-
-
     }
 }

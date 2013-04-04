@@ -125,7 +125,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
                 FAnalAttribTypeVal.EnableEdit = true;
                 grdAnalAttributes.AddTextColumn("Value",
-                    FMainDS.ARecurringTransAnalAttrib.Columns[ARecurringTransAnalAttribTable.GetAnalysisAttributeValueDBName()], 100, FAnalAttribTypeVal);
+                    FMainDS.ARecurringTransAnalAttrib.Columns[ARecurringTransAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
+                    FAnalAttribTypeVal);
                 FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(this.AnalysisAttributeValueChanged);
                 grdAnalAttributes.Columns[0].Width = 100;
             }
@@ -258,7 +259,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((GetSelectedDetailRow() != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 GetSelectedDetailRow().TransactionDate = AEffectiveDate;
-                
+
                 GetDetailsFromControls(GetSelectedDetailRow());
             }
         }
@@ -987,7 +988,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.ARecurringTransAnalAttrib.Clear();
                     FMainDS.ARecurringTransaction.Clear();
 
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(FLedgerNumber, FBatchNumber, FJournalNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(FLedgerNumber, FBatchNumber,
+                            FJournalNumber));
 
                     ResetTransactionDefaultView();
 
@@ -1068,9 +1070,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Clear Numeric Textboxes
             txtDebitAmount.NumberValueDecimal = 0;
             txtCreditAmount.NumberValueDecimal = 0;
-			//Clear grids
-			RefreshAnalysisAttributesGrid();
-			
+            //Clear grids
+            RefreshAnalysisAttributesGrid();
+
             //Enable data change detection
             FPetraUtilsObject.EnableDataChangedEvent();
         }
