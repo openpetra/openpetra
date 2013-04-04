@@ -205,24 +205,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 sumDebits += r.JournalDebitTotal;
             }
 
-            if (ABatch.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
-            {
-                if (ABatch.BatchCreditTotal != sumCredits)
-                {
-                    ABatch.BatchCreditTotal = sumCredits;
-                }
-
-                if (ABatch.BatchDebitTotal != sumDebits)
-                {
-                    ABatch.BatchDebitTotal = sumDebits;
-                }
-
-                if (ABatch.BatchRunningTotal != Math.Round(sumDebits - sumCredits, 2))
-                {
-                    ABatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
-                }
-            }
-
             FPetraUtilsObject.DisableDataChangedEvent();
             txtCurrentPeriod.Text = ABatch.BatchPeriod.ToString();
             txtDebit.NumberValueDecimal = sumDebits;
