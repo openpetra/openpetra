@@ -636,16 +636,15 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             ARecurringTransactionAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+            
+            ARecurringTransAnalAttribAccess.LoadViaARecurringJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
 
             foreach (GLBatchTDSARecurringTransactionRow transRow in MainDS.ARecurringTransaction.Rows)
             {
-                ARecurringTransAnalAttribAccess.LoadViaARecurringTransaction(MainDS,
-                    ALedgerNumber,
-                    ABatchNumber,
-                    AJournalNumber,
-                    transRow.TransactionNumber,
-                    Transaction);
-
+                MainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0} = {1}",
+                    ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                    transRow.TransactionNumber);
+            	
                 foreach (DataRowView rv in MainDS.ARecurringTransAnalAttrib.DefaultView)
                 {
                     ARecurringTransAnalAttribRow Row = (ARecurringTransAnalAttribRow)rv.Row;
@@ -662,12 +661,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 //clear the attributes string and table
                 strAnalAttr = string.Empty;
-
-                if (MainDS.ARecurringTransAnalAttrib.Count > 0)
-                {
-                    MainDS.ARecurringTransAnalAttrib.Clear();
-                }
             }
+
+            MainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
 
             if (NewTransaction)
             {
@@ -752,7 +748,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool recurrBatchTableInDataSet = (AInspectDS.ARecurringBatch != null);
             bool recurrJournalTableInDataSet = (AInspectDS.ARecurringJournal != null);
             bool recurrTransTableInDataSet = (AInspectDS.ARecurringTransaction != null);
-            bool recurrAttrTableInDataSet = (AInspectDS.ARecurringTransAnalAttrib != null);
 
             // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
             // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
@@ -1316,8 +1311,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLSetupTDS glSetupCacheDS = LoadAAnalysisAttributes(ALedgerNumber);
 
             //Account Number for AnalysisTable lookup
-            int currentRecurringTransactionNumber = 0;
-            string currentRecurringTransAccountCode = String.Empty;
+            int currentTransactionNumber = 0;
+            string currentTransAccountCode = String.Empty;
 
             if (glSetupCacheDS == null)
             {
@@ -1325,56 +1320,56 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             //Reference all transactions in dataset
-            DataView allRecurringTransView = AInspectDS.ARecurringTransaction.DefaultView;
-            DataView recurringTransAnalAttrView = AInspectDS.ARecurringTransAnalAttrib.DefaultView;
+            DataView allTransView = AInspectDS.ARecurringTransaction.DefaultView;
+            DataView transAnalAttrView = AInspectDS.ARecurringTransAnalAttrib.DefaultView;
 
-            recurringTransAnalAttrView.RowFilter = string.Empty;
+            transAnalAttrView.RowFilter = string.Empty;
 
-            allRecurringTransView.RowFilter = String.Format("{0}={1} and {2}={3}",
+            allTransView.RowFilter = String.Format("{0}={1} and {2}={3}",
                 ARecurringTransactionTable.GetBatchNumberDBName(),
                 ABatchNumber,
                 ARecurringTransactionTable.GetJournalNumberDBName(),
                 AJournalNumber);
 
-            foreach (DataRowView recurringTransRowView in allRecurringTransView)
+            foreach (DataRowView transRowView in allTransView)
             {
-                ARecurringTransactionRow currentRecurringTransactionRow = (ARecurringTransactionRow)recurringTransRowView.Row;
+                ARecurringTransactionRow currentTransactionRow = (ARecurringTransactionRow)transRowView.Row;
 
-                currentRecurringTransactionNumber = currentRecurringTransactionRow.TransactionNumber;
-                currentRecurringTransAccountCode = currentRecurringTransactionRow.AccountCode;
+                currentTransactionNumber = currentTransactionRow.TransactionNumber;
+                currentTransAccountCode = currentTransactionRow.AccountCode;
 
                 //If this account code is used need to delete it from TransAnal table.
                 //Delete any existing rows with old code
-                recurringTransAnalAttrView.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5} AND {6} <> '{7}'",
+                transAnalAttrView.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5} AND {6} <> '{7}'",
                     ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
                     ABatchNumber,
                     ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
                     AJournalNumber,
                     ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
-                    currentRecurringTransactionNumber,
+                    currentTransactionNumber,
                     ARecurringTransAnalAttribTable.GetAccountCodeDBName(),
-                    currentRecurringTransAccountCode);
+                    currentTransAccountCode);
 
-                foreach (DataRowView dv in recurringTransAnalAttrView)
+                foreach (DataRowView dv in transAnalAttrView)
                 {
                     ARecurringTransAnalAttribRow tr = (ARecurringTransAnalAttribRow)dv.Row;
 
                     tr.Delete();
                 }
 
-                recurringTransAnalAttrView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                transAnalAttrView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
                     ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
                     ABatchNumber,
                     ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
                     AJournalNumber,
                     ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
-                    currentRecurringTransactionNumber);
+                    currentTransactionNumber);
 
                 //Retrieve the analysis attributes for the supplied account
                 DataView analAttrView = glSetupCacheDS.AAnalysisAttribute.DefaultView;
                 analAttrView.RowFilter = String.Format("{0} = '{1}'",
                     AAnalysisAttributeTable.GetAccountCodeDBName(),
-                    currentRecurringTransAccountCode);
+                    currentTransAccountCode);
 
                 if (analAttrView.Count > 0)
                 {
@@ -1385,29 +1380,28 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         string analysisTypeCode = analAttrRow.AnalysisTypeCode;
 
                         //Check if the attribute type code exists in the Transaction Analysis Attributes table
-                        ARecurringTransAnalAttribRow recurringTransAnalAttrRow =
-                            (ARecurringTransAnalAttribRow)AInspectDS.ARecurringTransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber,
-                                                                                                                        AJournalNumber,
-                                                                                                                        currentRecurringTransactionNumber,
-                                                                                                                        analysisTypeCode });
+                        ARecurringTransAnalAttribRow transAnalAttrRow =
+                            (ARecurringTransAnalAttribRow)AInspectDS.ARecurringTransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber,
+                                                                                                      currentTransactionNumber,
+                                                                                                      analysisTypeCode });
 
-                        if (recurringTransAnalAttrRow == null)
+                        if (transAnalAttrRow == null)
                         {
                             //Create a new TypeCode for this account
                             ARecurringTransAnalAttribRow newRow = AInspectDS.ARecurringTransAnalAttrib.NewRowTyped(true);
                             newRow.LedgerNumber = ALedgerNumber;
                             newRow.BatchNumber = ABatchNumber;
                             newRow.JournalNumber = AJournalNumber;
-                            newRow.TransactionNumber = currentRecurringTransactionNumber;
+                            newRow.TransactionNumber = currentTransactionNumber;
                             newRow.AnalysisTypeCode = analysisTypeCode;
-                            newRow.AccountCode = currentRecurringTransAccountCode;
+                            newRow.AccountCode = currentTransAccountCode;
 
                             AInspectDS.ARecurringTransAnalAttrib.Rows.Add(newRow);
                         }
-                        else if (recurringTransAnalAttrRow.AccountCode != currentRecurringTransAccountCode)
+                        else if (transAnalAttrRow.AccountCode != currentTransAccountCode)
                         {
                             //Check account code is correct
-                            recurringTransAnalAttrRow.AccountCode = currentRecurringTransAccountCode;
+                            transAnalAttrRow.AccountCode = currentTransAccountCode;
                         }
                     }
                 }
@@ -1416,7 +1410,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
             }
 
-            recurringTransAnalAttrView.RowFilter = string.Empty;
+            transAnalAttrView.RowFilter = string.Empty;
         }
 
         /// <summary>
@@ -1436,6 +1430,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 JournalNumber;
             Int32 TransactionNumber;
             Int32 Counter;
+
+            bool recurrBatchTableInDataSet = (AInspectDS.ARecurringBatch != null);
+            bool recurrJournalTableInDataSet = (AInspectDS.ARecurringJournal != null);
+            bool recurrTransactionTableInDataSet = (AInspectDS.ARecurringTransaction != null);
+            bool recurrTransAnalTableInDataSet = (AInspectDS.ARecurringTransAnalAttrib != null);
 
             TSubmitChangesResult SubmissionResult = new TSubmitChangesResult();
 
@@ -1469,7 +1468,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                if (AInspectDS.ARecurringBatch != null)
+                if (recurrBatchTableInDataSet)
                 {
                     foreach (ARecurringBatchRow batch in AInspectDS.ARecurringBatch.Rows)
                     {
@@ -1516,7 +1515,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                if (AInspectDS.ARecurringJournal != null)
+                if (recurrJournalTableInDataSet)
                 {
                     foreach (ARecurringJournalRow journal in AInspectDS.ARecurringJournal.Rows)
                     {
@@ -1555,7 +1554,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                if (AInspectDS.ARecurringTransaction != null)
+                if (recurrTransactionTableInDataSet)
                 {
                     foreach (ARecurringTransactionRow transaction in AInspectDS.ARecurringTransaction.Rows)
                     {
@@ -1592,106 +1591,94 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 // now submit the actual dataset
                 SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-
-                //Process transactions and their analysis attributes
-
-                bool recurringTranTableInDataSet = (AInspectDS.ARecurringTransaction != null);
-                bool recurringAttrTableInDataSet = (AInspectDS.ARecurringTransAnalAttrib != null);
-
-                if (recurringTranTableInDataSet)
-                {
-                    AInspectDS.ARecurringTransaction.AcceptChanges();
-                }
-
-                if (recurringAttrTableInDataSet)
-                {
-                    AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
-                }
-
-                if ((SubmissionResult == TSubmitChangesResult.scrOK)
-                    && (AInspectDS.ARecurringTransaction != null) && (AInspectDS.ARecurringTransaction.Rows.Count > 0))
-                {
-                    ARecurringTransactionRow tranR = (ARecurringTransactionRow)AInspectDS.ARecurringTransaction.Rows[0];
-
-                    Int32 currentLedger = tranR.LedgerNumber;
-                    Int32 currentBatch = tranR.BatchNumber;
-                    Int32 currentJournal = tranR.JournalNumber;
-                    Int32 recurringTransNumberToDelete = 0;
-
-                    try
-                    {
-                        //A transaction has been deleted
-                        //Accept the deletion of the single details row
-                        AInspectDS.ARecurringTransaction.AcceptChanges();
-
-                        if (recurringAttrTableInDataSet)
-                        {
-                            AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
-                        }
-                        else
-                        {
-                            AInspectDS.Tables.Add(new ARecurringTransAnalAttribTable("ARecurringTransAnalAttrib"));
-                            AInspectDS.Merge(LoadARecurringTransAnalAttribForJournal(currentLedger, currentBatch, currentJournal));
-                            recurringAttrTableInDataSet = true;
-                        }
-
-                        //Assuming only transactions present for a single Ledger-Batch-Journal at any point in time
-                        ARecurringTransactionRow tr = (ARecurringTransactionRow)AInspectDS.ARecurringTransaction.Rows[0];
-                        currentLedger = tr.LedgerNumber;
-                        currentBatch = tr.BatchNumber;
-                        currentJournal = tr.JournalNumber;
-
-                        //Check if any records have been marked for deletion
-                        DataRow[] foundRecurringTransactionForDeletion = AInspectDS.ARecurringTransaction.Select(String.Format("{0} = '{1}'",
-                                ARecurringTransactionTable.GetSubTypeDBName(),
-                                MFinanceConstants.MARKED_FOR_DELETION));
-
-                        if (foundRecurringTransactionForDeletion.Length > 0)
-                        {
-                            ARecurringTransactionRow recurringTransRowClient = null;
-
-                            for (int i = 0; i < foundRecurringTransactionForDeletion.Length; i++)
-                            {
-                                recurringTransRowClient = (ARecurringTransactionRow)foundRecurringTransactionForDeletion[i];
-
-                                recurringTransNumberToDelete = recurringTransRowClient.TransactionNumber;
-                                TLogging.Log(String.Format("Recurring Transaction to Delete: {0} from Journal: {1} in Batch: {2}",
-                                        recurringTransNumberToDelete,
-                                        currentJournal,
-                                        currentBatch));
-
-                                recurringTransRowClient.Delete();
-                            }
-
-                            //save changes
-                            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-
-                            //Accept the deletion of the single detail row
-                            AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
-                            AInspectDS.ARecurringTransaction.AcceptChanges();
-                        }
-
-                        //Check that all analysis attributes exist
-                        CheckRecurringTransAnalysisAttributes(ref AInspectDS,
-                            currentLedger,
-                            currentBatch,
-                            currentJournal,
-                            ref SubmissionResult,
-                            ref AVerificationResult);
-                    }
-                    catch (Exception)
-                    {
-                        TLogging.Log(String.Format("Error trying to delete transaction: {0} in Journal: {1}, Batch: {2}",
-                                recurringTransNumberToDelete,
-                                currentJournal,
-                                currentBatch
-                                ));
-                    }
+	
+	            //Process transactions and their analysis attributes
+	            if (recurrTransactionTableInDataSet)
+	            {
+	                AInspectDS.ARecurringTransaction.AcceptChanges();
+	            }
+	
+	            if (recurrTransAnalTableInDataSet)
+	            {
+	                AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
+	            }
+	
+	            if ((SubmissionResult == TSubmitChangesResult.scrOK)
+	                && (recurrTransactionTableInDataSet) && (AInspectDS.ARecurringTransaction.Rows.Count > 0))
+	            {
+	                ARecurringTransactionRow tranR = (ARecurringTransactionRow)AInspectDS.ARecurringTransaction.Rows[0];
+	
+	                Int32 currentLedger = tranR.LedgerNumber;
+	                Int32 currentBatch = tranR.BatchNumber;
+	                Int32 currentJournal = tranR.JournalNumber;
+	                Int32 transToDelete = 0;
+	
+	                try
+	                {
+	                    //Check if a transaction has been deleted
+	                    //Accept the deletion of the single details row
+	                    //AInspectDS.ATransaction.AcceptChanges();
+	
+	                    if (!recurrTransAnalTableInDataSet)
+	                    {
+	                        AInspectDS.Tables.Add(new ARecurringTransAnalAttribTable("ARecurringTransAnalAttrib"));
+	                        AInspectDS.Merge(LoadARecurringTransAnalAttribForJournal(currentLedger, currentBatch, currentJournal));
+	                        recurrTransAnalTableInDataSet = true;
+	                    }
+	
+	                    //Check if any records have been marked for deletion
+	                    DataRow[] foundTransactionForDeletion = AInspectDS.ARecurringTransaction.Select(String.Format("{0} = '{1}'",
+	                            ARecurringTransactionTable.GetSubTypeDBName(),
+	                            MFinanceConstants.MARKED_FOR_DELETION));
+	
+	                    if (foundTransactionForDeletion.Length > 0)
+	                    {
+	                        ARecurringTransactionRow transRowClient = null;
+	
+	                        for (int i = 0; i < foundTransactionForDeletion.Length; i++)
+	                        {
+	                            transRowClient = (ARecurringTransactionRow)foundTransactionForDeletion[i];
+	
+	                            transToDelete = transRowClient.TransactionNumber;
+	                            TLogging.Log(String.Format("Transaction to Delete: {0} from Journal: {1} in Batch: {2}",
+	                                    transToDelete,
+	                                    currentJournal,
+	                                    currentBatch));
+	
+	                            transRowClient.Delete();
+	                        }
+	
+	                        //save changes
+	                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+	
+	                        //Accept the deletion of the single detail row
+	                        AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
+	                        AInspectDS.ARecurringTransaction.AcceptChanges();
+	                    }
+	
+	                    //Check that all analysis attributes exist
+	                    CheckRecurringTransAnalysisAttributes(ref AInspectDS,
+	                        currentLedger,
+	                        currentBatch,
+	                        currentJournal,
+	                        ref SubmissionResult,
+	                        ref AVerificationResult);
+	                }
+	                catch (Exception)
+	                {
+	                    TLogging.Log(String.Format("Error trying to delete recurring transaction: {0} in recurring Journal: {1}, recurring Batch: {2}",
+	                            transToDelete,
+	                            currentJournal,
+	                            currentBatch
+	                            ));
+	                }
+	
+	
+	                // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
+	                // TODO: calculate hash of saved batch or batch of saved gift
+	            }
 
 
-                    // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
-                    // TODO: calculate hash of saved batch or batch of saved gift
-                }
             }
             catch (Exception ex)
             {
@@ -2109,7 +2096,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ABatchNumber"></param>
         private static GLBatchTDS UpdateTotalsOfBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            TVerificationResultCollection AVerificationResult = new TVerificationResultCollection();
+            //TVerificationResultCollection AVerificationResult = new TVerificationResultCollection();
             GLBatchTDS glDS = new GLBatchTDS();
 
             decimal sumDebits = 0.0M;

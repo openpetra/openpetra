@@ -215,7 +215,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     this.tpgTransactions.Enabled = false;
                 }
 
-                //this.ucoBatches.UpdateTotals();
                 this.ucoBatches.FocusGrid();
                 FPreviousTab = eGLTabs.Batches;
             }
