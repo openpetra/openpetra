@@ -1,3 +1,2 @@
-The diffs are currently for the Mono 2.11.4 release
-
-CrossDomainMarshallerFix.diff: see https://bugzilla.xamarin.com/show_bug.cgi?id=6606
+see the project at https://github.com/tpokorra/mono-openpetra-packages 
+which provides prebuilt packages of Mono for use with OpenPetra, including the sources of the packages
