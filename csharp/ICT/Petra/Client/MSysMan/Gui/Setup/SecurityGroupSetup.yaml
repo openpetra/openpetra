@@ -3,7 +3,7 @@ RootNode:
     FormTitle: Maintain Security Groups
     Namespace: Ict.Petra.Client.MSysMan.Gui.Setup
     DetailTable: SGroup
-    UsingNamespaces: [Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan.Validation, Ict.Petra.Shared.Interfaces.MCommon, Ict.Common.Remoting.Client]
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan.Validation, Ict.Petra.Shared.Interfaces.MCommon]
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 650
