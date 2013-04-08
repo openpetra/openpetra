@@ -27,6 +27,7 @@ using Ict.Tools.CodeGeneration;
 using Ict.Tools.DBXML;
 using Ict.Common;
 using Ict.Tools.CodeGeneration.DataStore;
+using Ict.Tools.CodeGeneration.ReferenceCountConnectors;
 
 namespace Ict.Tools.GenerateORM
 {
@@ -53,8 +54,9 @@ namespace Ict.Tools.GenerateORM
             cmdLine = new TCmdOpts();
 
             if (!cmdLine.IsFlagSet("do")
-                || (cmdLine.GetOptValue("do") == "dataset")
-                && (!cmdLine.IsFlagSet("input") || !cmdLine.IsFlagSet("outputNamespace")))
+                || ((cmdLine.GetOptValue("do") == "dataset") && (!cmdLine.IsFlagSet("input") || !cmdLine.IsFlagSet("outputNamespace")))
+                || ((cmdLine.GetOptValue("do") == "referencecount")
+                     && (!cmdLine.IsFlagSet("inputclient") || !cmdLine.IsFlagSet("outputserver") || !cmdLine.IsFlagSet("templatedir"))))
             {
                 System.Console.WriteLine("GenerateORM: generate Typed Tables and Datasets");
                 System.Console.WriteLine("usage: GenerateORM -do:<operation> -petraxml:<xyz/petra.xml>");
@@ -73,6 +75,11 @@ namespace Ict.Tools.GenerateORM
                 System.Console.WriteLine("           with parameters: ");
                 System.Console.WriteLine("                 -cachedef:<dataset XML file>");
                 System.Console.WriteLine("                 -outputshared:<path to ICT\\Petra\\Shared>");
+                System.Console.WriteLine("  referencecount ");
+                System.Console.WriteLine("           with parameters: ");
+                System.Console.WriteLine("                 -inputclient:<path to ICT\\Petra\\Client>");
+                System.Console.WriteLine("                 -outputserver:<path to ICT\\Petra\\Server>");
+                System.Console.WriteLine("                 -templatedir:<path to inc\\template\\src>");
                 System.Console.WriteLine(
                     "       e.g. GenerateORM -do:dataset -petraxml:U:/sql/datadefinition/petra.xml -input:U:/sql/datadefinition/dataset.xml -outputNamespace:Ict.Petra.Shared.MCommon.Data.Dataset");
                 return 100;
@@ -80,6 +87,16 @@ namespace Ict.Tools.GenerateORM
 
             try
             {
+                if (cmdLine.GetOptValue("do") == "referencecount")
+                {
+                    // No need to parse the petra.xml document for this task - so we just run and exit
+                    new TLogging();
+                    TCreateReferenceCountConnectors createConnectors = new TCreateReferenceCountConnectors();
+                    createConnectors.CreateFiles(cmdLine.GetOptValue("outputserver"), cmdLine.GetOptValue("inputclient"), cmdLine.GetOptValue("templatedir"));
+                    
+                    return 0;
+                }
+
                 parser = new TDataDefinitionParser(cmdLine.GetOptValue("petraxml"));
                 store = new TDataDefinitionStore();
 
