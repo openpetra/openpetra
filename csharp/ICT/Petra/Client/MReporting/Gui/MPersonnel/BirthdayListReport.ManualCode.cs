@@ -87,6 +87,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             grdTypes.DataSource = new DevAge.ComponentModel.BoundDataView(FTypesTable.DefaultView);
             grdTypes.AutoSizeCells();
             grdTypes.Selection.EnableMultiSelection = true;
+            SelectTypesChanged(null, null);
+            chkAnniversariesCheckedChanged(null, null);
         }
 
         private void grdTypes_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
@@ -205,7 +207,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                         Catalog.GetString("Please specify the end date not longer than one year from the start date."),
                         TResultSeverity.Resv_Critical);
 
-                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+            }
+
+            // validation: If "only these anniversaries" is checked, the txt box should not be empty.
+            if (chkAnniversaries.Checked)
+            {
+                if (txtAnniversaries.Text == "")
+                {
+                    FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                        Catalog.GetString("Empty anniversaries list"),
+                        Catalog.GetString("Use a comma-separated list like '10,18,21,30,40'"),
+                        TResultSeverity.Resv_Critical
+                        ));
                 }
             }
         }

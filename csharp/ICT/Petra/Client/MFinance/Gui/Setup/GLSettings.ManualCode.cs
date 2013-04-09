@@ -338,6 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FCalendarStartDate,
                 ref ASubmitChanges,
                 out AVerificationResult);
+            TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
         }
 
         private void CalendarModeChanged(System.Object sender, EventArgs e)

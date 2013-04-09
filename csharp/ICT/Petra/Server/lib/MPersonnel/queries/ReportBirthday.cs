@@ -232,29 +232,30 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
                         r["Age"] = age;
                     }
-                }
 
-                // filter by anniversaries
-                if ((AParameters.Get("param_chkAnniversaries").ToBool() == true)
-                    && !AParameters.Get("param_txtAnniversaries").IsZeroOrNull())
-                {
-                    List <string>anniversaries = new List <string>(AParameters.Get("param_txtAnniversaries").ToString().Split(new char[] { ',' }));
-
-                    List <DataRow>RowsToDelete = new List <DataRow>();
-
-                    foreach (DataRow r in resultTable.Rows)
+                    // filter by anniversaries?
+                    if ((AParameters.Get("param_chkAnniversaries").ToBool() == true)
+                        && !AParameters.Get("param_txtAnniversaries").IsZeroOrNull())
                     {
-                        if (!anniversaries.Contains(r["Age"].ToString()))
+                        List <string>anniversaries = new List <string>(AParameters.Get("param_txtAnniversaries").ToString().Split(new char[] { ',' }));
+
+                        List <DataRow>RowsToDelete = new List <DataRow>();
+
+                        foreach (DataRow r in resultTable.Rows)
                         {
-                            RowsToDelete.Add(r);
+                            if (!anniversaries.Contains(r["Age"].ToString()))
+                            {
+                                RowsToDelete.Add(r);
+                            }
+                        }
+
+                        foreach (DataRow r in RowsToDelete)
+                        {
+                            resultTable.Rows.Remove(r);
                         }
                     }
-
-                    foreach (DataRow r in RowsToDelete)
-                    {
-                        resultTable.Rows.Remove(r);
-                    }
                 }
+
 
                 return resultTable;
             }
