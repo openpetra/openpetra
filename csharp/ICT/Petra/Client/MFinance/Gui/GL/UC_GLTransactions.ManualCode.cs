@@ -49,14 +49,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
-        private GLBatchTDSAJournalRow FJournalRow = null;
         private Int32 FTransactionNumber = -1;
         private string FTransactionCurrency = string.Empty;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
         private GLSetupTDS FCacheDS = null;
-        private SourceGrid.Cells.Editors.ComboBox FAnalAttribTypeVal;
+        private GLBatchTDSAJournalRow FJournalRow = null;
         private ATransAnalAttribRow FPSAttributesRow = null;
+        private SourceGrid.Cells.Editors.ComboBox FAnalAttribTypeVal;
         private bool FAttributesGridEntered = false;
 
         private ABatchRow FBatchRow = null;
@@ -171,6 +171,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateChangeableStatus();
         }
 
+        /// <summary>
+        /// Unload the currently loaded transactions
+        /// </summary>
+        public void UnloadTransactions()
+        {
+            if (FMainDS.ATransaction.DefaultView.Count > 0)
+            {
+                FPreviouslySelectedDetailRow = null;
+                FMainDS.ATransAnalAttrib.Clear();
+                FMainDS.ATransaction.Clear();
+                ClearControls();
+            }
+        }
+
         private void ResetTransactionDefaultView()
         {
             FMainDS.ATransaction.DefaultView.RowFilter = String.Empty;
@@ -232,19 +246,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Unload the currently loaded transactions
-        /// </summary>
-        public void UnloadTransactions()
-        {
-            if (FMainDS.ATransaction.DefaultView.Count > 0)
-            {
-                FPreviouslySelectedDetailRow = null;
-                FMainDS.ATransaction.Clear();
-                //ClearControls();
-            }
-        }
-
-        /// <summary>
         /// Update the effective date from outside
         /// </summary>
         /// <param name="AEffectiveDate"></param>
@@ -285,18 +286,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private GLBatchTDSAJournalRow GetJournalRow()
         {
             return ((TFrmGLBatch)ParentForm).GetJournalsControl().GetSelectedDetailRow();
-            //return (GLBatchTDSAJournalRow)FMainDS.AJournal.Rows[0];
-        }
-
-        /// <summary>
-        /// Merge the changes in the Transaction Journal row with the Journal dataset
-        /// </summary>
-        public void ReconcileJournalRow()
-        {
-//              if (FMainDS != null && FMainDS.AJournal != null && FMainDS.AJournal.Count > 0)
-//              {
-//                      ((TFrmGLBatch)ParentForm).GetJournalsControl().JournalFMainDS().AJournal.Merge(FMainDS.AJournal, false);
-//              }
         }
 
         private ABatchRow GetBatchRow()
@@ -670,30 +659,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void TransDateChanged(object sender, EventArgs e)
-        {
-            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
-            {
-                return;
-            }
-
-            try
-            {
-                DateTime dateValue;
-
-                string aDate = dtpDetailTransactionDate.Date.ToString();
-
-                if (!DateTime.TryParse(aDate, out dateValue))
-                {
-                    dtpDetailTransactionDate.Date = GetBatchRow().DateEffective;
-                }
-            }
-            catch
-            {
-                //Do nothing
-            }
-        }
-
         /// <summary>
         /// update amount in other currencies (optional) and recalculate all totals for current batch and journal
         /// </summary>
@@ -829,11 +794,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             pnlTransAnalysisAttributes.Enabled = changeable;
         }
 
-        /// <summary>
-        /// Called from the button press on the sub-form
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void DeleteRecord(System.Object sender, EventArgs e)
         {
             this.DeleteATransaction();
@@ -1126,9 +1086,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDebitAmountBase.NumberValueDecimal = 0;
             txtCreditAmount.NumberValueDecimal = 0;
             txtCreditAmountBase.NumberValueDecimal = 0;
-
+            //Refresh grids
+            RefreshAnalysisAttributesGrid();
             //Enable data change detection
             FPetraUtilsObject.EnableDataChangedEvent();
+        }
+
+        /// <summary>
+        /// if the cost centre code changes
+        /// </summary>
+        private void CostCentreCodeDetailChanged(object sender, EventArgs e)
+        {
+            // update key ministry combobox depending on account code and cost centre
+            UpdateCmbDetailKeyMinistryKey();
         }
 
         /// <summary>
@@ -1146,6 +1116,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ReconcileTransAnalysisAttributes();
                 RefreshAnalysisAttributesGrid();
+            }
+
+            // update key ministry combobox depending on account code and cost centre
+            UpdateCmbDetailKeyMinistryKey();
+        }
+
+        /// <summary>
+        /// if the cost centre code changes
+        /// </summary>
+        private void UpdateCmbDetailKeyMinistryKey()
+        {
+            Int64 RecipientKey;
+
+            // update key ministry combobox depending on account code and cost centre
+            if ((cmbDetailAccountCode.GetSelectedString() == MFinanceConstants.FUND_TRANSFER_INCOME_ACC)
+                && (cmbDetailCostCentreCode.GetSelectedString() != ""))
+            {
+                cmbDetailKeyMinistryKey.Enabled = true;
+                TRemote.MFinance.Common.ServerLookups.WebConnectors.GetPartnerKeyForForeignCostCentreCode(FLedgerNumber,
+                    cmbDetailCostCentreCode.GetSelectedString(),
+                    out RecipientKey);
+                TFinanceControls.GetRecipientData(ref cmbDetailKeyMinistryKey, RecipientKey);
+            }
+            else
+            {
+                cmbDetailKeyMinistryKey.SetSelectedString("", -1);
+                cmbDetailKeyMinistryKey.Enabled = false;
             }
         }
 
@@ -1184,11 +1181,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, currentAccountCode))
                 {
-                    //Add new empty one as per account code
-                    //-------------------------------------
-                    //Account Number for AnalysisTable lookup
-                    ATransactionRow currentTransactionRow = FPreviouslySelectedDetailRow;
-
                     //Retrieve the analysis attributes for the supplied account
                     DataView analAttrView = FCacheDS.AAnalysisAttribute.DefaultView;
                     analAttrView.RowFilter = String.Format("{0} = '{1}'",
@@ -1218,90 +1210,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
         }
-
-//        private void CheckTransAnalysisAttributes()
-//        {
-//            if (FPreviouslySelectedDetailRow == null)
-//            {
-//                return;
-//            }
-//
-//            //check if the necessary rows for the given account are there, automatically add/update account
-//            GLSetupTDS glSetupCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
-//
-//            if (glSetupCacheDS == null)
-//            {
-//                return;
-//            }
-//
-//            //Account Number for AnalysisTable lookup
-//            int currentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
-//            string currentAccountCode = cmbDetailAccountCode.GetSelectedString();
-//
-//            ATransactionRow currentTransactionRow = FPreviouslySelectedDetailRow;
-//
-//            //Retrieve the analysis attributes for the supplied account
-//            DataView analAttrView = glSetupCacheDS.AAnalysisAttribute.DefaultView;
-//            analAttrView.RowFilter = String.Format("{0} = '{1}'",
-//                AAnalysisAttributeTable.GetAccountCodeDBName(),
-//                currentAccountCode);
-//
-//            if (analAttrView.Count > 0)
-//            {
-//                for (int i = 0; i < analAttrView.Count; i++)
-//                {
-//                    //Read the Type Code for each attribute row
-//                    AAnalysisAttributeRow analAttrRow = (AAnalysisAttributeRow)analAttrView[i].Row;
-//                    string analysisTypeCode = analAttrRow.AnalysisTypeCode;
-//
-//                    //Check if the attribute type code exists in the Transaction Analysis Attributes table
-//                    ATransAnalAttribRow transAnalAttrRow =
-//                        (ATransAnalAttribRow)FMainDS.ATransAnalAttrib.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber,
-//                                                                                               currentTransactionNumber,
-//                                                                                               analysisTypeCode });
-//
-//                    if (transAnalAttrRow == null)
-//                    {
-//                        //Create a new TypeCode for this account
-//                        ATransAnalAttribRow newRow = FMainDS.ATransAnalAttrib.NewRowTyped(true);
-//                        newRow.LedgerNumber = FLedgerNumber;
-//                        newRow.BatchNumber = FBatchNumber;
-//                        newRow.JournalNumber = FJournalNumber;
-//                        newRow.TransactionNumber = currentTransactionNumber;
-//                        newRow.AnalysisTypeCode = analysisTypeCode;
-//                        newRow.AccountCode = currentAccountCode;
-//
-//                        FMainDS.ATransAnalAttrib.Rows.Add(newRow);
-//                    }
-//                    else if (transAnalAttrRow.AccountCode != currentAccountCode)
-//                    {
-//                        //Check account code is correct
-//                        transAnalAttrRow.AccountCode = currentAccountCode;
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                //If this account code is used need to delete it from TransAnal table.
-//                DataView transAnalAttrView = FMainDS.ATransAnalAttrib.DefaultView;
-//                transAnalAttrView.RowFilter = String.Format("{0}={1} AND {2}={3} AND ({4}={5} OR {6}='{7}')",
-//                    ATransAnalAttribTable.GetBatchNumberDBName(),
-//                    FBatchNumber,
-//                    ATransAnalAttribTable.GetJournalNumberDBName(),
-//                    FJournalNumber,
-//                    ATransAnalAttribTable.GetTransactionNumberDBName(),
-//                    currentTransactionNumber,
-//                    ATransAnalAttribTable.GetAccountCodeDBName(),
-//                    currentTransactionRow.AccountCode);
-//
-//                foreach (DataRowView dv in transAnalAttrView)
-//                {
-//                    ATransAnalAttribRow tr = (ATransAnalAttribRow)dv.Row;
-//
-//                    tr.Delete();
-//                }
-//            }
-//        }
 
         private void ValidateDataDetailsManual(ATransactionRow ARow)
         {
@@ -1333,6 +1241,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
             {
                 grdDetails.Focus();
+            }
+        }
+
+        private void TransDateChanged(object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            try
+            {
+                DateTime dateValue;
+
+                string aDate = dtpDetailTransactionDate.Date.ToString();
+
+                if (!DateTime.TryParse(aDate, out dateValue))
+                {
+                    dtpDetailTransactionDate.Date = GetBatchRow().DateEffective;
+                }
+            }
+            catch
+            {
+                //Do nothing
             }
         }
     }

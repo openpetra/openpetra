@@ -73,7 +73,7 @@ RootNode:
         pnlDetails:
             Dock: Left
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate, cmbDetailKeyMinistryKey, pnlDetailAmounts]
-        cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList}
+        cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, OnChange=CostCentreCodeDetailChanged}
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
         txtDetailNarrative:
             Label: Narrative
@@ -83,7 +83,7 @@ RootNode:
             ScrollBars: Vertical
         txtDetailReference: {Label=Reference}
         dtpDetailTransactionDate: {Label=Transaction Date, OnChange=TransDateChanged, Validation=true}
-        cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=330, TODOSELECTPARTNERKEYMIN}
+        cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=330, List=UserDefinedList}
         pnlDetailAmounts:
             Controls:
                 Row0: [lblTransactionCurrency, lblBaseCurrency]
