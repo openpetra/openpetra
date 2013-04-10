@@ -762,6 +762,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transaction.TransactionNumber = TransactionCounter++;
                         transaction.TransactionAmount = documentDetail.Amount;
                         transaction.TransactionDate = batch.DateEffective;
+                        transaction.SystemGenerated = true;
 
                         // Analysis Attributes - Any attributes linked to this row,
                         // I need to create equivalents in the Transaction DS.
@@ -836,6 +837,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     transaction.TransactionNumber = TransactionCounter++;
                     transaction.TransactionAmount = document.TotalAmount;
                     transaction.TransactionDate = batch.DateEffective;
+                    transaction.SystemGenerated = true;
 
                     if (!document.CreditNoteFlag)
                     {
@@ -1206,6 +1208,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transaction.TransactionNumber = TransactionCounter++;
                         transaction.TransactionAmount = documentPayment.Amount;
                         transaction.TransactionDate = batch.DateEffective;
+                        transaction.SystemGenerated = true;
 
                         transaction.DebitCreditIndicator = (transaction.TransactionAmount < 0);
 
@@ -1245,6 +1248,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transactionAPAccount.AmountInBaseCurrency = transaction.AmountInBaseCurrency;
                         transactionAPAccount.AmountInIntlCurrency = transaction.AmountInIntlCurrency;
                         transactionAPAccount.TransactionDate = batch.DateEffective;
+                        transactionAPAccount.SystemGenerated = true;
                         transactionAPAccount.AccountCode = documentRow.ApAccount;
                         transactionAPAccount.CostCentreCode = TLedgerInfo.GetStandardCostCentre(payment.LedgerNumber);
                         transactionAPAccount.Narrative = "AP Payment:" + payment.PaymentNumber.ToString() + " AP: " +
@@ -1294,6 +1298,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 transactionReval.AccountCode = LedgerTbl[0].ForexGainsLossesAccount;
                                 transactionReval.CostCentreCode = transaction.CostCentreCode;
                                 transactionReval.TransactionDate = batch.DateEffective;
+                                transactionReval.SystemGenerated = true;
                                 transactionReval.TransactionAmount = 0; // no real value
                                 transactionReval.AmountInIntlCurrency = 0; // no real value
                                 transactionReval.DebitCreditIndicator = (ForexGain > 0);
@@ -1312,6 +1317,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 transactionApReval.CostCentreCode = transaction.CostCentreCode;
                                 transactionApReval.TransactionAmount = 0; // no real value
                                 transactionApReval.TransactionDate = batch.DateEffective;
+                                transactionApReval.SystemGenerated = true;
                                 transactionApReval.DebitCreditIndicator = !transactionReval.DebitCreditIndicator;
                                 transactionApReval.AmountInBaseCurrency = transactionReval.AmountInBaseCurrency;
                                 transactionApReval.AmountInIntlCurrency = transactionReval.AmountInIntlCurrency;
