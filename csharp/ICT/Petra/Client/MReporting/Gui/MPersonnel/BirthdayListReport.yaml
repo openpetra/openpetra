@@ -38,10 +38,10 @@ RootNode:
         grpOptions:
             Label: Options
             Dock: Fill
-            Controls: [chkIncludeFamily, chkSelectTypes, grdTypes]           
+            Controls: [chkAnniversaries, chkIncludeFamily, chkSelectTypes, grdTypes]           
         chkUseDate:
             Label: Use date range
-            Controls: [dtpFromDate, dtpToDate, chkAnniversaries]
+            Controls: [dtpFromDate, dtpToDate]
             CheckBoxAttachedLabel: right
         dtpFromDate:
             Label: From

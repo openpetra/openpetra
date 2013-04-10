@@ -67,7 +67,7 @@
 					<value text = " and "/>
 					<value variable = "param_dtpToDate" format="formatteddate"/>
 				</fielddetail>
-				<fielddetail condition="and({param_chkUseDate},{param_chkAnniversaries})">
+				<fielddetail condition="eq({param_chkAnniversaries}, true)">
 					<value text = " Show only ages: "/>
 					<value variable = "param_txtAnniversaries"/>
 				</fielddetail>
