@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private String FStatusFilter = "";  // filter the status of invoices
         private int[] ColumnWidth =
         {
-            20, 70, 90, 90, 90, 100, 110
+            20, 70, 90, 90, 90, 90, 100, 110
         };
         private string FAgedOlderThan;
 
@@ -165,29 +165,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             ResultsTable = FFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
 //          ResultsTable.Columns.Add("DiscountMsg", typeof(string));
-            ResultsTable.Columns.Add("Type", typeof(string));
             ResultsTable.Columns.Add("Tagged", typeof(bool));
 
             foreach (DataRow Row in ResultsTable.Rows)
             {
                 Row["Tagged"] = false;
 
-                if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
+                if ((Row["Type"].ToString() == "Invoice") && (Row["CreditNote"].Equals(true)))
                 {
-//                  Row["DiscountMsg"] = "";
-
-                    if (Row["Status"].ToString().Length > 0) // Credit notes have Status, but payments don't.
-                    {
-                        Row["Type"] = "Credit Note";
-                    }
-                    else
-                    {
-                        Row["Type"] = "Payment";
-                    }
+                    Row["Type"] = "Credit Note";
                 }
-                else
-                {
-                    Row["Type"] = "Invoice";
 
 /*
  *                  Int32 DiscountDays = (Int32)Row["DiscountDays"];
@@ -204,7 +191,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
  *                      Row["DiscountMsg"] = "None";
  *                  }
  */
-                }
             }
 
             return ResultsTable;
@@ -218,6 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"], 70);
             grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"], 90);
             grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"], 2);
+            grdResult.AddCurrencyColumn("Outstanding", FPagedDataTable.Columns["OutstandingAmount"], 2);
             grdResult.AddTextColumn("Currency", FPagedDataTable.Columns["Currency"], 90);
 //          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
             grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"], 100);
@@ -241,15 +228,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     DataRow Row = rv.Row;
 
-                    if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Amount"].GetType() == typeof(Decimal)))
+                    if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["OutstandingAmount"].GetType() == typeof(Decimal)))
                     {
                         if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
                         {
-                            SumDisplayed -= (Decimal)Row["Amount"];
+                            SumDisplayed -= (Decimal)Row["OutstandingAmount"];
                         }
                         else
                         {
-                            SumDisplayed += (Decimal)Row["Amount"];
+                            SumDisplayed += (Decimal)Row["OutstandingAmount"];
                         }
                     }
                 }
@@ -363,30 +350,32 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 if (IsMyCurrency && Row["Tagged"].Equals(true))
                 {
-                    // If it's a payment or a credit note, I'll subract it
-                    // If it's an invoice, I'll add it!
-                    // (The payment of a credit note appears on this list as a negative number, so it's always subracted.)
-                    //
-                    if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
+                    if (Row["Type"].ToString() != "Payment")
                     {
-                        TotalSelected -= (Decimal)(Row["Amount"]);
-                    }
-                    else
-                    {
-                        TotalSelected += (Decimal)(Row["Amount"]);
-                    }
+                        // If it's a credit note, I'll subract it
+                        // If it's an invoice, I'll add it!
+                        //
+                        if (Row["CreditNote"].Equals(true))
+                        {
+                            TotalSelected -= (Decimal)(Row["OutstandingAmount"]);
+                        }
+                        else
+                        {
+                            TotalSelected += (Decimal)(Row["OutstandingAmount"]);
+                        }
 
-                    //
-                    // While I'm in this loop, I'll also check whether to enable the "Pay" and "Post" buttons.
-                    //
-                    if ("|POSTED|PARTPAID|".IndexOf("|" + Row["Status"].ToString()) >= 0)
-                    {
-                        TaggedInvoicesPayable = true;
-                    }
+                        //
+                        // While I'm in this loop, I'll also check whether to enable the "Pay" and "Post" buttons.
+                        //
+                        if ("|POSTED|PARTPAID|".IndexOf("|" + Row["Status"].ToString()) >= 0)
+                        {
+                            TaggedInvoicesPayable = true;
+                        }
 
-                    if ("|POSTED|PARTPAID|PAID|".IndexOf(Row["Status"].ToString()) < 0)
-                    {
-                        TaggedInvoicesPostable = true;
+                        if ("|POSTED|PARTPAID|PAID|".IndexOf(Row["Status"].ToString()) < 0)
+                        {
+                            TaggedInvoicesPostable = true;
+                        }
                     }
                 }
             }
@@ -506,8 +495,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["DocumentId"]);
                     TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
-                    frm.LoadAApDocument(FLedgerNumber, DocumentId);
-                    frm.Show();
+
+                    if (frm.LoadAApDocument(FLedgerNumber, DocumentId))
+                    {
+                        frm.Show();
+                    }
                 }
                 else
                 {
@@ -697,15 +689,38 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TFrmAPPayment frm = new TFrmAPPayment(this);
 
-            frm.AddDocumentsToPayment(TempDS, FLedgerNumber, TaggedDocuments);
-
-            frm.Show();
+            if (frm.AddDocumentsToPayment(TempDS, FLedgerNumber, TaggedDocuments))
+            {
+                frm.Show();
+            }
         }
 
         private void PaymentReport(object sender, EventArgs e)
         {
-            TFrmAP_PaymentReport reporter = new TFrmAP_PaymentReport(this);
+            Int32 PaymentNumStart = -1;
+            Int32 PaymentNumEnd = -1;
 
+            DataRowView[] SelectedGridRows = grdResult.SelectedDataRowsAsDataRowView;
+
+            foreach (DataRowView RowView in SelectedGridRows)
+            {
+                DataRow Row = RowView.Row;
+                Int32 PaymentNum = Convert.ToInt32(Row["ApNum"]);
+
+                if ((PaymentNumStart == -1) || (PaymentNum < PaymentNumStart))
+                {
+                    PaymentNumStart = PaymentNum;
+                }
+
+                if (PaymentNum > PaymentNumEnd)
+                {
+                    PaymentNumEnd = PaymentNum;
+                }
+            }
+
+            TFrmAP_PaymentReport reporter = new TFrmAP_PaymentReport(this);
+            reporter.LedgerNumber = FLedgerNumber;
+            reporter.SetPaymentNumber(PaymentNumStart, PaymentNumEnd);
             reporter.Show();
         }
     }

@@ -42,7 +42,7 @@
               PUB_a_ap_payment.a_bank_account_c AS PaymentBank,
               PUB_a_ap_payment.a_payment_date_d AS PaymentDate,
               PUB_a_ap_payment.a_reference_c AS PaymentRef,
-              PUB_a_ap_supplier.a_currency_code_c AS PaymentCurrency,
+              PUB_a_ap_payment.a_currency_code_c AS PaymentCurrency,
               PUB_a_ap_payment.a_amount_n AS PaymentTotal
               FROM
               PUB_a_ap_document, PUB_a_ap_supplier, PUB_a_ap_payment, PUB_a_ap_document_payment, PUB_p_partner

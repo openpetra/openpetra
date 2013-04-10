@@ -51,6 +51,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
 
+
+        /// <summary>
+        /// Returns FMainDS
+        /// </summary>
+        /// <returns></returns>
+        public GLBatchTDS JournalFMainDS()
+        {
+            return FMainDS;
+        }
+
         /// <summary>
         /// load the journals into the grid
         /// </summary>
@@ -122,9 +132,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             txtBatchNumber.Text = FBatchNumber.ToString();
-
-            //This will update Batch totals
-            UpdateTotals(GetBatchRow());
 
             grdDetails.Focus();
         }
@@ -300,24 +307,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 sumCredits += r.JournalCreditTotal;
                 sumDebits += r.JournalDebitTotal;
-            }
-
-            if (ABatch.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
-            {
-                if (ABatch.BatchCreditTotal != sumCredits)
-                {
-                    ABatch.BatchCreditTotal = sumCredits;
-                }
-
-                if (ABatch.BatchDebitTotal != sumDebits)
-                {
-                    ABatch.BatchDebitTotal = sumDebits;
-                }
-
-                if (ABatch.BatchRunningTotal != Math.Round(sumDebits - sumCredits, 2))
-                {
-                    ABatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
-                }
             }
 
             FPetraUtilsObject.DisableDataChangedEvent();

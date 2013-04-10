@@ -64,6 +64,9 @@ namespace Ict.Petra.Client.App.Gui
         /// <summary>Shown when invalid data was entered.</summary>
         private static readonly string StrInvalidDataTitle = Catalog.GetString("Invalid Data");
 
+        /// <summary>Shown when the Form contains deleted records and at least one of them is referenced in the DB (hence it cannot be deleted).</summary>
+        private static readonly string StrDeletionNotPossibleBecauseOfReferencesTitle = Catalog.GetString("Deletion of Record Not Possible!");
+
         /// <summary>Shown when the Form contains invalid data at a certain point when Data Validation runs (e.g. saving of data, change of context [e.g. switching of Tab]).</summary>
         private static readonly string StrInvalidDataNeedsCorrecting = Catalog.GetString(
             "The operation cannot be performed because the form contains invalid data:");
@@ -75,6 +78,11 @@ namespace Ict.Petra.Client.App.Gui
         /// <summary>Shown when a record contains invalid data at the point of changing to a different record.</summary>
         private static readonly string StrRecordChangeInvalidDataNeedsCorrecting = Catalog.GetString(
             "The currently edited record contains invalid data:");
+
+        /// <summary>Shown when the Form contains deleted records and at least one of them is referenced in the DB (hence it cannot be deleted).</summary>
+        private static readonly string StrDeletionNotPossibleBecauseOfReferences = Catalog.GetString(
+            "You tried to delete a record that is referenced from somewhere else; that record can therefore not be deleted.\r\n" +
+            "Saving of data is not possible anymore from this screen - please close it to continue your work.");
 
         /// <summary>Shown when the Form contains invalid data at the point of saving data.</summary>
         private static readonly string StrRecordChangeInvalidDataNeedsCorrectingTitle = Catalog.GetString("Record Contains Invalid Data!");
@@ -352,10 +360,13 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="AOnlyWarnings">Set this to true if the items in <paramref name="AVerificationError" />
         /// are only warnings.</param>
         /// <param name="ATypeWhichRaisesError">Instance of an object which raises the Error.</param>
+        /// <param name="AOnlyRecordDeletionErrorsBecauseOfReference">Set to true if the message only pertains to
+        /// the inability to delete (a) record(s) because they are referenced from within the DB.</param>
         public static void MsgFormSaveVerificationError(String AVerificationError,
             String AMessageNumber,
             bool AOnlyWarnings,
-            System.Type ATypeWhichRaisesError)
+            System.Type ATypeWhichRaisesError,
+            bool AOnlyRecordDeletionErrorsBecauseOfReference = false)
         {
             string Title;
             string Heading;
@@ -373,14 +384,23 @@ namespace Ict.Petra.Client.App.Gui
 
             if (AOnlyWarnings)
             {
-                Title = TMessages.StrFormDataWarningTitle;
+                Title = StrFormDataWarningTitle;
                 Heading = Messages.StrWarningsAttention;
                 Icon = MessageBoxIcon.Warning;
             }
             else
             {
-                Title = TMessages.StrInvalidDataNeedsCorrectingTitle;
-                Heading = StrInvalidDataNeedsCorrecting;
+                if (!AOnlyRecordDeletionErrorsBecauseOfReference)
+                {
+                    Title = StrInvalidDataNeedsCorrectingTitle;
+                    Heading = StrInvalidDataNeedsCorrecting;
+                }
+                else
+                {
+                    Title = StrDeletionNotPossibleBecauseOfReferencesTitle;
+                    Heading = StrDeletionNotPossibleBecauseOfReferences;
+                }
+
                 Icon = MessageBoxIcon.Error;
             }
 

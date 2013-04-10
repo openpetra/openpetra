@@ -87,7 +87,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ((TFrmGLBatch) this.ParentForm).DisableTransactions();
-            ((TFrmGLBatch) this.ParentForm).DisableAttributes();
 
             ShowData();
 
@@ -120,6 +119,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             GetDataFromControls();
             this.FPreviouslySelectedDetailRow = null;
             ShowData();
+        }
+
+        /// <summary>
+        /// Returns FMainDS
+        /// </summary>
+        /// <returns></returns>
+        public GLBatchTDS BatchFMainDS()
+        {
+            return FMainDS;
         }
 
         /// <summary>
@@ -388,7 +396,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (FMainDS.ATransaction.DefaultView.Count == 0)
                     {
-                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(FLedgerNumber, batchNumber, r.JournalNumber));
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, batchNumber, r.JournalNumber));
                     }
 
                     foreach (DataRowView w in FMainDS.ATransaction.DefaultView)
@@ -548,7 +556,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                         ((TFrmGLBatch)ParentForm).DisableJournals();
                         ((TFrmGLBatch)ParentForm).DisableTransactions();
-                        ((TFrmGLBatch)ParentForm).DisableAttributes();
                     }
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
@@ -580,7 +587,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void UpdateTotals()
         {
             //Below not needed as yet
-            //txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow);
+                txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
         }
 
         private bool SaveBatchForPosting()
@@ -979,7 +992,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 pnlDetails.Enabled = false;
                 ((TFrmGLBatch) this.ParentForm).DisableJournals();
                 ((TFrmGLBatch) this.ParentForm).DisableTransactions();
-                ((TFrmGLBatch) this.ParentForm).DisableAttributes();
             }
             else
             {

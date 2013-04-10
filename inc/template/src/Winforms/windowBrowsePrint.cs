@@ -159,7 +159,7 @@ namespace {#NAMESPACE}
             bool found = true;
             foreach (DataColumn myColumn in FMainDS.{#MASTERTABLE}.PrimaryKey)
             {
-                string value1 = row[myColumn].ToString();
+                string value1 = row[myColumn.Ordinal].ToString();
                 string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView.Table.Rows[Counter][myColumn.Ordinal].ToString();
                 if (value1 != value2)
                 {

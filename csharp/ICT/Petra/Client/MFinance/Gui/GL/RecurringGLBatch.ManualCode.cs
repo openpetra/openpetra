@@ -50,7 +50,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
                 ucoRecurringBatches.LoadBatches(FLedgerNumber);
-                ucoRecurringAttributes.LedgerNumber = value;
 
                 ucoRecurringTransactions.WorkAroundInitialization();
             }
@@ -76,7 +75,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             tabRecurringGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgJournals.Enabled = false;
             this.tpgTransactions.Enabled = false;
-            this.tpgAttributes.Enabled = false;
         }
 
         /// <summary>
@@ -88,7 +86,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tpgJournals.Enabled = true;
             DisableTransactions();
-            DisableAttributes();
             this.ucoRecurringJournals.LoadJournals(ALedgerNumber, ABatchNumber);
         }
 
@@ -112,27 +109,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void UnloadTransactions()
         {
             this.ucoRecurringTransactions.UnloadTransactions();
-        }
-
-        /// <summary>
-        /// Unload attributes from the form
-        /// </summary>
-        public void UnloadAttributes()
-        {
-            this.ucoRecurringAttributes.UnloadAttributes();
-        }
-
-        /// <summary>
-        /// activate the attributes tab and load the attributes of the transaction
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        /// <param name="ATransactionNumber"></param>
-        public void LoadAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
-        {
-            this.tpgAttributes.Enabled = true;
-            this.ucoRecurringAttributes.LoadAttributes(ALedgerNumber, ABatchNumber, AJournalNumber, ATransactionNumber);
         }
 
         /// <summary>
@@ -181,24 +157,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Enable the attributes tab if we have active transactions
-        /// </summary>
-        public void EnableAttributes()
-        {
-            this.tpgAttributes.Enabled = true;
-            this.Refresh();
-        }
-
-        /// <summary>
-        /// disable the attributes tab if we have no active transactions
-        /// </summary>
-        public void DisableAttributes()
-        {
-            this.tpgAttributes.Enabled = false;
-            this.Refresh();
-        }
-
-        /// <summary>
         /// disable the journal tab if we have no active batch
         /// </summary>
         public void DisableJournals()
@@ -230,23 +188,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             /// list of transactions
             RecurringTransactions,
-
-            /// list of attributes
-            RecurringAttributes
         };
 
+        private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
         /// <summary>
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
-            if (this.ucoRecurringAttributes.Enabled && (ATab != eGLTabs.RecurringAttributes))
-            {
-                //Unload any attributes
-                this.ucoRecurringAttributes.UnloadAttributes();
-            }
-
             if (ATab == eGLTabs.RecurringBatches)
             {
                 this.tabRecurringGLBatch.SelectedTab = this.tpgBatches;
@@ -260,9 +210,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     this.tpgTransactions.Enabled = false;
                 }
 
-                this.tpgAttributes.Enabled = false;
-
                 this.ucoRecurringBatches.FocusGrid();
+                FPreviousTab = eGLTabs.RecurringBatches;
             }
             else if (ATab == eGLTabs.RecurringJournals)
             {
@@ -275,9 +224,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoRecurringBatches.GetSelectedDetailRow().BatchStatus);
 
                     this.tpgTransactions.Enabled = (ucoRecurringJournals.GetSelectedDetailRow() != null);
-                    this.tpgAttributes.Enabled = false;
+
+                    if (this.tpgTransactions.Enabled && (FPreviousTab == eGLTabs.RecurringTransactions))
+                    {
+                        //Reconcile dataset tables
+                        this.ucoRecurringJournals.UpdateTotals(ucoRecurringBatches.GetSelectedDetailRow());
+                    }
 
                     this.ucoRecurringJournals.FocusGrid();
+
+                    FPreviousTab = eGLTabs.RecurringJournals;
                 }
             }
             else if (ATab == eGLTabs.RecurringTransactions)
@@ -285,7 +241,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (this.tpgTransactions.Enabled)
                 {
                     this.tabRecurringGLBatch.SelectedTab = this.tpgTransactions;
-                    this.tpgAttributes.Enabled = true;
 
                     this.ucoRecurringTransactions.LoadTransactions(
                         FLedgerNumber,
@@ -295,23 +250,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoRecurringBatches.GetSelectedDetailRow().BatchStatus,
                         ucoRecurringJournals.GetSelectedDetailRow().JournalStatus);
 
-                    this.tpgAttributes.Enabled = ((ucoRecurringTransactions.GetSelectedDetailRow() != null)
-                                                  && TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber,
-                                                      ucoRecurringTransactions.GetSelectedDetailRow().AccountCode));
-                }
-            }
-            else if (ATab == eGLTabs.RecurringAttributes)
-            {
-                if (this.tpgAttributes.Enabled)
-                {
-                    this.tabRecurringGLBatch.SelectedTab = this.tpgAttributes;
-
-                    this.ucoRecurringAttributes.LoadAttributes(
-                        FLedgerNumber,
-                        ucoRecurringTransactions.GetSelectedDetailRow().BatchNumber,
-                        ucoRecurringTransactions.GetSelectedDetailRow().JournalNumber,
-                        ucoRecurringTransactions.GetSelectedDetailRow().TransactionNumber
-                        );
+                    FPreviousTab = eGLTabs.RecurringTransactions;
                 }
             }
 
@@ -340,13 +279,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 SelectTab(eGLTabs.RecurringJournals);
             }
-            else if (ASelectedTabIndex == (int)eGLTabs.RecurringTransactions)
+            else //(ASelectedTabIndex == (int)eGLTabs.RecurringTransactions)
             {
                 SelectTab(eGLTabs.RecurringTransactions);
-            }
-            else  //eGLTabs.RecurringAttributes
-            {
-                SelectTab(eGLTabs.RecurringAttributes);
             }
         }
 
@@ -372,14 +307,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public TUC_RecurringGLTransactions GetTransactionsControl()
         {
             return ucoRecurringTransactions;
-        }
-
-        /// <summary>
-        /// directly access the attributes control
-        /// </summary>
-        public TUC_RecurringGLAttributes GetAttributesControl()
-        {
-            return ucoRecurringAttributes;
         }
     }
 }

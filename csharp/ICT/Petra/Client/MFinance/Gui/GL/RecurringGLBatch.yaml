@@ -26,9 +26,6 @@ RootNode:
         tpgTransactions:
             Label: Transactions
             Controls: [ucoRecurringTransactions]
-        tpgAttributes:
-            Label: Attributes
-            Controls: [ucoRecurringAttributes]
         ucoRecurringBatches:
             Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_RecurringGLBatches
             Dock: Fill
@@ -38,6 +35,3 @@ RootNode:
         ucoRecurringTransactions:
             Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_RecurringGLTransactions
             Dock: Fill
-        ucoRecurringAttributes:
-            Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_RecurringGLAttributes
-            Dock: Fill    

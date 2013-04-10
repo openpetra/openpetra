@@ -12,7 +12,7 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Controls: [pnlInfo, pnlDetailGrid, pnlDetailsSection]
             Dock: Fill
         pnlInfo:
             Controls:
@@ -24,11 +24,36 @@ RootNode:
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
+            Height: 200
+            Width: 600
+        pnlDetailsSection:
+            Dock: Bottom
+            Controls: [pnlDetails, pnlTransAnalysisAttributes]
+            Height: 320
         pnlDetailButtons:
             Dock: Right
             Controls: [btnNew, btnDelete]
         btnNew: {Action=actNew, Stretch=horizontally}
         btnDelete: {Action=actDelete, Stretch=horizontally}
+
+        pnlTransAnalysisAttributes:
+            Dock: Right
+            Controls: [lblAnalAttributes, grdAnalAttributes]
+            Width: 300
+
+        grdAnalAttributes:
+            TableName: ATransAnalAttrib
+            Width: 220
+            Height: 100
+            Columns: [AnalysisTypeCode]
+            CustomColumns:
+                AnalysisTypeCode: {Label=Type, Type=String}
+            ActionFocusRow: AnalysisAttributesGridFocusRow
+            ActionClick: AnalysisAttributesGridClick
+
+        lblAnalAttributes:
+            Label: Analysis Attributes
+
         grdDetails:
             Dock: Fill
             TableName: ARecurringTransaction
@@ -42,18 +67,21 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowAttributesTab
-            ActionEnterKeyPressed: ShowAttributesTab
             SortOrder: ARecurringTransaction.TransactionNumber ASC
             RowFilter: ARecurringTransaction.BatchNumber, ARecurringTransaction.JournalNumber
         pnlDetails:
-            Dock: Bottom
-            Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, cmbMinistry, pnlDetailAmounts]
+            Dock: Left
+            Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, cmbDetailKeyMinistryKey, pnlDetailAmounts]
         cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, OnChange=CostCentreCodeDetailChanged}
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
-        txtDetailNarrative: {Label=Narrative, Width=537}
+        cmbDetailKeyMinistryKey: {Label=Key Ministry, Width=330, List=UserDefinedList}
+        txtDetailNarrative:
+            Label: Narrative
+            Width: 300
+            Height: 50
+            Multiline: true
+            ScrollBars: Vertical
         txtDetailReference: {Label=Reference}
-        cmbMinistry: {Label=Key Ministry, Width=363, List=UserDefinedList}
         pnlDetailAmounts:
             Controls:
                 Row0: [lblTransactionCurrency]

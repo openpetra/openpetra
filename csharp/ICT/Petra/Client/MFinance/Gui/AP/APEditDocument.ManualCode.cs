@@ -554,8 +554,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show(Catalog.GetString(
-                        "The document Amount does not equal the sum of the detail lines."), Catalog.GetString("Balance Problem"));
+                System.Windows.Forms.MessageBox.Show(
+                    String.Format(Catalog.GetString("The document {0} Amount does not equal the sum of the detail lines."), AApDocument.DocumentCode),
+                    Catalog.GetString("Balance Problem"));
                 return false;
             }
         }
@@ -577,7 +578,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     if ((Row.AccountCode == "") || (Row.CostCentreCode == ""))
                     {
                         MessageBox.Show(
-                            Catalog.GetString("Account and Cost Centre must be specified."),
+                            String.Format(Catalog.GetString("Account and Cost Centre must be specified in Document {0}."), AApDocument.DocumentCode),
                             Catalog.GetString("Post Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                         return false;
                     }
@@ -624,7 +625,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         if (!AllPresent)
                         {
                             System.Windows.Forms.MessageBox.Show(
-                                String.Format(Catalog.GetString("Analysis Attributes are required for account {0}."), Row.AccountCode),
+                                String.Format(Catalog.GetString("Analysis Attributes are required for account {0} in Document {1}."),
+                                    Row.AccountCode, AApDocument.DocumentCode),
                                 Catalog.GetString("Analysis Attributes"));
                             return false;
                         }
@@ -635,13 +637,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return true;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="Atds"></param>
-        /// <param name="AApDocument"></param>
-        /// <returns></returns>
-        public static bool CurrencyIsOk(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
+        private static bool CurrencyIsOkForPosting(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
         {
             if (AApDocument.CurrencyCode != Atds.AApSupplier[0].CurrencyCode)
             {
@@ -666,7 +662,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (AApDocument.ExchangeRateToBase == 0)
             {
                 System.Windows.Forms.MessageBox.Show(
-                    Catalog.GetString("No Exchange Rate has been set."),
+                    String.Format(Catalog.GetString("No Exchange Rate has been set."), AApDocument.DocumentCode),
                     Catalog.GetString("Post Document"));
                 return false;
             }
@@ -704,7 +700,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return false;
             }
 
-            if (!CurrencyIsOk(Atds, Adocument))
+            if (!CurrencyIsOkForPosting(Atds, Adocument))
             {
                 return false;
             }
@@ -824,8 +820,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             List <int>PayTheseDocs = new List <int>();
 
             PayTheseDocs.Add(FMainDS.AApDocument[0].ApDocumentId);
-            PaymentScreen.AddDocumentsToPayment(FMainDS, FDocumentLedgerNumber, PayTheseDocs);
-            PaymentScreen.Show();
+
+            if (PaymentScreen.AddDocumentsToPayment(FMainDS, FDocumentLedgerNumber, PayTheseDocs))
+            {
+                PaymentScreen.Show();
+            }
         }
     }
 }

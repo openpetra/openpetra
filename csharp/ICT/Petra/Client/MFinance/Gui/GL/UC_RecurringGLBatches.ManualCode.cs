@@ -78,7 +78,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
-            ((TFrmRecurringGLBatch) this.ParentForm).DisableAttributes();
 
             ShowData();
 
@@ -344,7 +343,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (FMainDS.ARecurringTransaction.DefaultView.Count == 0)
                     {
-                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(FLedgerNumber, batchNumber, r.JournalNumber));
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, batchNumber, r.JournalNumber));
                     }
 
                     foreach (DataRowView w in FMainDS.ARecurringTransaction.DefaultView)
@@ -554,7 +553,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void UpdateTotals()
         {
             //Below not needed as yet
-            //txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                GLRoutines.UpdateTotalsOfRecurringBatch(ref FMainDS, FPreviouslySelectedDetailRow);
+                txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
         }
 
         private void SubmitBatch(System.Object sender, EventArgs e)
@@ -764,7 +769,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 pnlDetails.Enabled = false;
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
-                ((TFrmRecurringGLBatch) this.ParentForm).DisableAttributes();
             }
             else
             {
