@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -821,6 +821,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (ReturnValue == TSubmitChangesResult.scrOK)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
+
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheableFinanceTablesEnum.CostCentresLinkedToPartnerList.ToString());
                 }
                 else
                 {

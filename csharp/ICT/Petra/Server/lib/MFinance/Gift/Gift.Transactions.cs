@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -852,6 +852,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     transaction.DebitCreditIndicator = false;
                     transaction.TransactionAmount = 0;
                     transaction.AmountInBaseCurrency = 0;
+                    transaction.SystemGenerated = true;
                     transaction.TransactionDate = giftBatch.GlEffectiveDate;
 
                     GLDataset.ATransaction.Rows.Add(transaction);
@@ -876,6 +877,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             transactionForTotals.TransactionNumber = ++journal.LastTransactionNumber;
             transactionForTotals.TransactionAmount = 0;
             transactionForTotals.TransactionDate = giftBatch.GlEffectiveDate;
+            transactionForTotals.SystemGenerated = true;
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {

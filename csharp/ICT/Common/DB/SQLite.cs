@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -317,7 +317,7 @@ namespace Ict.Common.DB
         public bool AdjustIsolationLevel(ref IsolationLevel AIsolationLevel)
         {
             // somehow there is a problem with RepeatableRead
-            if (AIsolationLevel == IsolationLevel.RepeatableRead)
+            if ((AIsolationLevel == IsolationLevel.RepeatableRead) || (AIsolationLevel == IsolationLevel.ReadUncommitted))
             {
                 AIsolationLevel = IsolationLevel.ReadCommitted;
                 return true;
