@@ -622,7 +622,8 @@ namespace {#NAMESPACE}
             if ((MessageBox.Show(deletionQuestion,
                      Catalog.GetString("Confirm Delete"),
                      MessageBoxButtons.YesNo,
-                     MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
+                     MessageBoxIcon.Question,
+                     MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
             {
                 int nSelectedRow = grdDetails.SelectedRowIndex();
 {#IFDEF DELETEROWMANUAL}
