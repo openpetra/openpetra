@@ -71,8 +71,8 @@ namespace Ict.Common.DB
         /// <summary>DebugLevel for logging the SQL code from DB queries</summary>
         public const Int32 DB_DEBUGLEVEL_TRANSACTION = 10;
 
-        /// <summary>DebugLevel for logging results from DB queries: is 10 (was 4 before)</summary>
-        public const Int32 DB_DEBUGLEVEL_RESULT = 10;
+        /// <summary>DebugLevel for logging results from DB queries: is 6 (was 4 before)</summary>
+        public const Int32 DB_DEBUGLEVEL_RESULT = 6;
 
         /// <summary>DebugLevel for tracing (most verbose log output): is 10 (was 4 before)</summary>
         public const Int32 DB_DEBUGLEVEL_TRACE = 10;
@@ -2503,6 +2503,8 @@ namespace Ict.Common.DB
 
             TLogging.Log(line);
 
+            int MaxRows = 10;
+
             foreach (DataRow row in tab.Rows)
             {
                 line = "";
@@ -2512,7 +2514,20 @@ namespace Ict.Common.DB
                     line = line + ' ' + row[column].ToString();
                 }
 
-                TLogging.Log(line);
+                if ((MaxRows > 0) || (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE))
+                {
+                    MaxRows--;
+                    TLogging.Log(line);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (MaxRows == 0)
+            {
+                TLogging.Log("more rows have been skipped...");
             }
         }
 

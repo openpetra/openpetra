@@ -180,13 +180,14 @@
         </query>
       </calculation>
       <calculation id="Select Accounts of CostCentre"
-          returns="line_a_account_alias_c, line_a_account_code_c, account_name, a_debit_credit_indicator_l"
+          returns="line_a_account_alias_c, line_a_account_code_c, account_name, account_type, a_debit_credit_indicator_l"
           returnsFormat="row">
         <query>
           <queryDetail>
             <value>
           SELECT DISTINCT acc.a_account_code_c AS line_a_account_alias_c,
             acc.a_account_code_c AS line_a_account_code_c,
+            acc.a_account_type_c AS account_type,
             acc.a_account_code_short_desc_c AS account_name, a_debit_credit_indicator_l 
           FROM PUB_a_general_ledger_master AS glm, PUB_a_account AS acc 
           WHERE glm.a_ledger_number_i = acc.a_ledger_number_i 
@@ -218,6 +219,7 @@
           SELECT DISTINCT prop.a_property_value_c AS line_a_account_alias_c,
             acc.a_account_code_c AS line_a_account_code_c,
             acc.a_account_code_short_desc_c AS account_name, 
+            acc.a_account_type_c AS account_type,
             acc.a_debit_credit_indicator_l AS a_debit_credit_indicator_l
           FROM (PUB_a_general_ledger_master AS glm INNER JOIN PUB_a_account AS acc 
             ON glm.a_ledger_number_i = acc.a_ledger_number_i 
