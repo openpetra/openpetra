@@ -20,6 +20,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
@@ -407,7 +408,7 @@ namespace {#NAMESPACE}
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             {#SHOWDETAILS}
         }
-        FPetraUtilsObject.EnableDataChangedEvent();
+        {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     /// <summary>
@@ -491,7 +492,7 @@ namespace {#NAMESPACE}
         }
         FPrevRowChangedRow = e.Row;
     }
-
+{#DELETERECORD}
     /// <summary>
     /// Standard method to delete the Data Row whose Details are currently displayed.
     /// Optional manual code can be included to take action prior, during or after deletion.
@@ -504,9 +505,23 @@ namespace {#NAMESPACE}
         bool deletionPerformed = false;
         string deletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
         string completionMessage = string.Empty;
+        TVerificationResultCollection VerificationResults = null;
         
         if (FPreviouslySelectedDetailRow == null)
         {
+            return;
+        }
+
+        {#DELETEREFERENCECOUNT}
+        if ((VerificationResults != null)
+            && (VerificationResults.Count > 0))
+        {
+            MessageBox.Show(Messages.BuildMessageFromVerificationResult(
+                    Catalog.GetString("Record cannot be deleted!") +
+                    Environment.NewLine +
+                    Catalog.GetPluralString("Reason:", "Reasons:", VerificationResults.Count),
+                    VerificationResults),
+                    Catalog.GetString("Record Deletion"));
             return;
         }
 
@@ -1082,3 +1097,11 @@ namespace {#NAMESPACE}
 {#INCLUDE copyvalues.cs}
 {#INCLUDE validationcontrolsdict.cs}
 {#INCLUDE inline_typed_dataset.cs}
+
+{##SNIPDELETEREFERENCECOUNT}
+this.Cursor = Cursors.WaitCursor;
+TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
+    FMainDS.{#NONCACHEABLETABLENAME},
+    DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow),
+    out VerificationResults);
+this.Cursor = Cursors.Default;
