@@ -49,6 +49,7 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
         {
             // Work out the module name from the module path
             string[] items = AModulePath.Split(new char[] { Path.DirectorySeparatorChar });
+
             if (items.Length == 0)
             {
                 // the -inputclient command line parameter must be wrong
@@ -59,9 +60,9 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
             string moduleName = items[items.Length - 1];
 
             // Work out the actual folder/file for the output file
-            String OutputFolder = AOutputPath + Path.DirectorySeparatorChar + "lib"
-                + Path.DirectorySeparatorChar + moduleName
-                + Path.DirectorySeparatorChar + "web";
+            String OutputFolder = AOutputPath + Path.DirectorySeparatorChar + "lib" +
+                                  Path.DirectorySeparatorChar + moduleName +
+                                  Path.DirectorySeparatorChar + "web";
 
             if (!Directory.Exists(OutputFolder))
             {
@@ -73,16 +74,16 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
             Console.WriteLine("working on " + OutputFile);
 
             // Where is the template?
-            String templateFilename = ATemplateDir
-                + Path.DirectorySeparatorChar + "ORM"
-                + Path.DirectorySeparatorChar + "ReferenceCountWebConnector.cs";
-            
+            String templateFilename = ATemplateDir +
+                                      Path.DirectorySeparatorChar + "ORM" +
+                                      Path.DirectorySeparatorChar + "ReferenceCountWebConnector.cs";
+
             if (!File.Exists(templateFilename))
             {
                 // The -templatedir command line parameter must have been wrong
                 return false;
             }
-            
+
             // Open the template
             ProcessTemplate Template = new ProcessTemplate(templateFilename);
 
@@ -122,7 +123,8 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
 
                 string attDetailTableName = codeStorage.GetAttribute("DetailTable");
                 string attCacheableListName = codeStorage.GetAttribute("CacheableTable");
-                if (codeStorage.FControlList.ContainsKey("btnDelete") && attDetailTableName != String.Empty)
+
+                if (codeStorage.FControlList.ContainsKey("btnDelete") && (attDetailTableName != String.Empty))
                 {
                     if (attCacheableListName != String.Empty)
                     {
@@ -137,6 +139,7 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                     else
                     {
                         ProcessTemplate snippet = null;
+
                         if (nonCacheableCount == 0)
                         {
                             snippet = Template.GetSnippet("TABLEIF");
@@ -157,7 +160,7 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
             }
 
             // Now we finish off the template content depending on how many entries we made
-            if (nonCacheableCount == 0 && cacheableCount > 0)
+            if ((nonCacheableCount == 0) && (cacheableCount > 0))
             {
                 ProcessTemplate snippet = Template.GetSnippet("TABLENONE");
                 Template.InsertSnippet("TABLESELSE", snippet);
@@ -169,7 +172,7 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                 Template.InsertSnippet("TABLESELSE", snippet);
             }
 
-            if (cacheableCount > 0 || nonCacheableCount > 0)
+            if ((cacheableCount > 0) || (nonCacheableCount > 0))
             {
                 TLogging.Log("Finishing connector for " + className + Environment.NewLine + Environment.NewLine);
                 Template.FinishWriting(OutputFile, ".cs", true);
@@ -192,8 +195,9 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
         public bool CreateFiles(String AOutputPath, String AClientPath, String ATemplateDir)
         {
             bool returnValue = true;
+
             string[] allDirs = Directory.GetDirectories(Path.GetFullPath(AClientPath), "M*", SearchOption.TopDirectoryOnly);
-            
+
             if (allDirs.Length == 0)
             {
                 // the command line parameter must be wrong

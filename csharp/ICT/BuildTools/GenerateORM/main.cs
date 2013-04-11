@@ -56,7 +56,7 @@ namespace Ict.Tools.GenerateORM
             if (!cmdLine.IsFlagSet("do")
                 || ((cmdLine.GetOptValue("do") == "dataset") && (!cmdLine.IsFlagSet("input") || !cmdLine.IsFlagSet("outputNamespace")))
                 || ((cmdLine.GetOptValue("do") == "referencecount")
-                     && (!cmdLine.IsFlagSet("inputclient") || !cmdLine.IsFlagSet("outputserver") || !cmdLine.IsFlagSet("templatedir"))))
+                    && (!cmdLine.IsFlagSet("inputclient") || !cmdLine.IsFlagSet("outputserver") || !cmdLine.IsFlagSet("templatedir"))))
             {
                 System.Console.WriteLine("GenerateORM: generate Typed Tables and Datasets");
                 System.Console.WriteLine("usage: GenerateORM -do:<operation> -petraxml:<xyz/petra.xml>");
@@ -92,8 +92,9 @@ namespace Ict.Tools.GenerateORM
                     // No need to parse the petra.xml document for this task - so we just run and exit
                     new TLogging();
                     TCreateReferenceCountConnectors createConnectors = new TCreateReferenceCountConnectors();
-                    createConnectors.CreateFiles(cmdLine.GetOptValue("outputserver"), cmdLine.GetOptValue("inputclient"), cmdLine.GetOptValue("templatedir"));
-                    
+                    createConnectors.CreateFiles(cmdLine.GetOptValue("outputserver"), cmdLine.GetOptValue("inputclient"),
+                        cmdLine.GetOptValue("templatedir"));
+
                     return 0;
                 }
 

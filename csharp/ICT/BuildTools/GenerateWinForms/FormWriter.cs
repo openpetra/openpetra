@@ -924,6 +924,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 snippet.SetCodelet("CONNECTORNAMESPACE", rootNamespace);
 
                 string cacheableTableName = FCodeStorage.GetAttribute("CacheableTable");
+
                 if (cacheableTableName != String.Empty)
                 {
                     snippet.SetCodelet("CACHEABLETABLENAME", cacheableTableName);
@@ -1252,13 +1253,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     || FCodeStorage.ManualFileExistsAndContains("void DeleteRow("))
                 {
                     // Handled by manual code
-                    Console.WriteLine("Skipping DeleteRecord() handler because it is handled by " + Path.GetFileNameWithoutExtension(FCodeStorage.FManualCodeFilename));
+                    Console.WriteLine("Skipping DeleteRecord() handler because it is handled by " +
+                        Path.GetFileNameWithoutExtension(FCodeStorage.FManualCodeFilename));
                 }
                 else
                 {
                     // Write the event handler to call the DeleteTableName() method
-                    string deleteRecord = String.Format("{0}private void DeleteRecord(object sender, EventArgs e){1}{0}{{{1}{0}{0}Delete{2}();{1}{0}}}{1}{1}",
-                        "    ", Environment.NewLine, FCodeStorage.GetAttribute("DetailTable"));
+                    string deleteRecord = String.Format(
+                        "{0}private void DeleteRecord(object sender, EventArgs e){1}{0}{{{1}{0}{0}Delete{2}();{1}{0}}}{1}{1}",
+                        "    ",
+                        Environment.NewLine,
+                        FCodeStorage.GetAttribute("DetailTable"));
                     FTemplate.AddToCodelet("DELETERECORD", deleteRecord);
 
                     // Write the one-line codelet that handles enable/disable of the delete button
@@ -1270,7 +1275,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         enableDelete += "(ARow.Deletable == true) && ";
                     }
                     else if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletableFlag")
-                        || FCodeStorage.FControlList.ContainsKey("chkDeletableFlag"))
+                             || FCodeStorage.FControlList.ContainsKey("chkDeletableFlag"))
                     {
                         enableDelete += "(ARow.DeletableFlag == true) && ";
                     }
