@@ -556,7 +556,7 @@ namespace Ict.Tools.CodeGeneration
 
                 foreach (string filename in Directory.GetFiles(dir, "*.cs", option))
                 {
-                    if (!filename.EndsWith("-generated.cs") || filename.EndsWith("Cacheable-generated.cs"))
+                    if (!filename.EndsWith("-generated.cs") || filename.EndsWith("Cacheable-generated.cs") || filename.EndsWith("ReferenceCount-generated.cs"))
                     {
                         if (!FParsedFiles.ContainsKey(filename))
                         {
