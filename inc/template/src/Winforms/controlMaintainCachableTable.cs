@@ -592,10 +592,10 @@ namespace {#NAMESPACE}
     /// </summary>
     private void Delete{#DETAILTABLE}()
     {
-        bool allowDeletion = true;
-        bool deletionPerformed = false;
-        string deletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
-        string completionMessage = string.Empty;
+        bool AllowDeletion = true;
+        bool DeletionPerformed = false;
+        string DeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+        string CompletionMessage = string.Empty;
         TVerificationResultCollection VerificationResults = null;
         
         if (FPreviouslySelectedDetailRow == null)
@@ -604,6 +604,7 @@ namespace {#NAMESPACE}
         }
         
         {#DELETEREFERENCECOUNT}
+
         if ((VerificationResults != null)
             && (VerificationResults.Count > 0))
         {
@@ -617,28 +618,28 @@ namespace {#NAMESPACE}
         }
 
         {#PREDELETEMANUAL}
-        if(allowDeletion)
+        if(AllowDeletion)
         {
-            if ((MessageBox.Show(deletionQuestion,
+            if ((MessageBox.Show(DeletionQuestion,
                      Catalog.GetString("Confirm Delete"),
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question,
                      MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
             {
-                int nSelectedRow = grdDetails.SelectedRowIndex();
+                int SelectedRow = grdDetails.SelectedRowIndex();
 {#IFDEF DELETEROWMANUAL}
                 {#DELETEROWMANUAL}
 {#ENDIF DELETEROWMANUAL}
 {#IFNDEF DELETEROWMANUAL}               
                 FPreviouslySelectedDetailRow.Delete();
-                deletionPerformed = true;
+                DeletionPerformed = true;
 {#ENDIFN DELETEROWMANUAL}               
             
-                if (deletionPerformed)
+                if (DeletionPerformed)
                 {
                     FPetraUtilsObject.SetChangedFlag();
                     // Select and display the details of the nearest row to the one previously selected
-                    SelectRowInGrid(nSelectedRow);
+                    SelectRowInGrid(SelectedRow);
                 }
             }
         }
@@ -647,9 +648,9 @@ namespace {#NAMESPACE}
         {#POSTDELETEMANUAL}
 {#ENDIF POSTDELETEMANUAL}
 {#IFNDEF POSTDELETEMANUAL}
-        if(deletionPerformed && completionMessage.Length > 0)
+        if(DeletionPerformed && CompletionMessage.Length > 0)
         {
-            MessageBox.Show(completionMessage,
+            MessageBox.Show(CompletionMessage,
                              Catalog.GetString("Deletion Completed"));
         }
 {#ENDIFN POSTDELETEMANUAL}
@@ -1032,3 +1033,11 @@ namespace {#NAMESPACE}
 {#INCLUDE copyvalues.cs}
 {#INCLUDE validationcontrolsdict.cs}
 {#INCLUDE inline_typed_dataset.cs}
+
+{##SNIPDELETEREFERENCECOUNT}
+this.Cursor = Cursors.WaitCursor;
+TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetCacheableRecordReferenceCount(
+    "{#CACHEABLETABLENAME}",
+    DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow),
+    out VerificationResults);
+this.Cursor = Cursors.Default;

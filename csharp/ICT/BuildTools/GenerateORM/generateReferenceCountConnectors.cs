@@ -124,7 +124,15 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                 string attDetailTableName = codeStorage.GetAttribute("DetailTable");
                 string attCacheableListName = codeStorage.GetAttribute("CacheableTable");
 
-                if (codeStorage.FControlList.ContainsKey("btnDelete") && (attDetailTableName != String.Empty))
+                // Note - this IF clause needs to be the same as the one in FormWriter.cs which is generating the client side code
+                // Do Ctrl+F to find: this IF clause needs to be the same
+                // in that file
+                if ((attDetailTableName != String.Empty)
+                    && (codeStorage.FControlList.ContainsKey("btnDelete")
+                    || codeStorage.FControlList.ContainsKey("btnDeleteType")
+                    || codeStorage.FControlList.ContainsKey("btnDeleteExtract")
+                    || codeStorage.FControlList.ContainsKey("btnDeleteDetail")
+                    || (codeStorage.FControlList.ContainsKey("btnRemoveDetail") && codeStorage.GetAttribute("FormType") != "report")))
                 {
                     if (attCacheableListName != String.Empty)
                     {
