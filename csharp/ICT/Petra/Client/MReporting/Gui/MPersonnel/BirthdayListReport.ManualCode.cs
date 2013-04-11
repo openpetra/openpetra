@@ -188,7 +188,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            // validation: date range not longer than a year.
+            // validation: start date and end date must be provided.
             if (chkUseDate.Checked)
             {
                 if (!dtpFromDate.Date.HasValue || !dtpToDate.Date.HasValue || !dtpFromDate.ValidDate(false) || !dtpToDate.ValidDate(false))
@@ -200,11 +200,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
-                else if (dtpFromDate.Date.Value.AddYears(1).CompareTo(dtpToDate.Date) <= 0)
+                else 
+                // validation: start date should be less than end date.
+                if (dtpFromDate.Date.Value > dtpToDate.Date.Value)
                 {
                     TVerificationResult VerificationResult = new TVerificationResult(
-                        Catalog.GetString("Not more than a year between start and end date"),
-                        Catalog.GetString("Please specify the end date not longer than one year from the start date."),
+                        Catalog.GetString("Invalid date range"),
+                        Catalog.GetString("The end date must be after the start date."),
                         TResultSeverity.Resv_Critical);
 
                 }
