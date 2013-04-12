@@ -31,7 +31,7 @@ ENDLOCAL
 </target>
 
 <target name="downloadTranslations">
-  <exec program="bzr" commandline="checkout lp:~jomammele/openpetraorg/translationfiles" workingdir="${tempdir}"/>
+  <exec program="bzr" commandline="checkout http://bazaar.launchpad.net/~jomammele/openpetraorg/translationfiles" workingdir="${tempdir}"/>
   <move todir="${dir.root}/i18n/">
     <fileset basedir="${tempdir}/translationfiles/i18n">
       <include name="*.po" />
