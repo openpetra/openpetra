@@ -910,6 +910,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
             }
 
+            if (attrTableInDataSet)
+            {
+                foreach (ATransAnalAttribRow transAnalAttrib in AInspectDS.ATransAnalAttrib.Rows)
+                {
+                    Int32 BatchNumber;
+
+                    BatchNumber = transAnalAttrib.BatchNumber;
+
+                    if (!BatchNumbersInvolved.Contains(BatchNumber))
+                    {
+                        BatchNumbersInvolved.Add(BatchNumber);
+                    }
+                }
+            }
+            
             // load previously stored batches and check for posted status
             if (BatchNumbersInvolved.Count == 0)
             {
