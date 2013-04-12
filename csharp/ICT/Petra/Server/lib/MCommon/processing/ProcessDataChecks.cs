@@ -126,13 +126,30 @@ namespace Ict.Petra.Server.MCommon.Processing
         {
             // Create excel output of the errors table
             string excelfile = TAppSettingsManager.GetValue("DataChecks.TempPath") + "/errors.xlsx";
-            StreamWriter sw = new StreamWriter(excelfile);
-            MemoryStream m = new MemoryStream();
 
-            TCsv2Xml.DataTable2ExcelStream(AErrors, m);
-            m.WriteTo(sw.BaseStream);
-            m.Close();
-            sw.Close();
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(excelfile))
+                {
+                    using (MemoryStream m = new MemoryStream())
+                    {
+                        if (!TCsv2Xml.DataTable2ExcelStream(AErrors, m))
+                        {
+                            return;
+                        }
+
+                        m.WriteTo(sw.BaseStream);
+                        m.Close();
+                        sw.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problems writing to file " + excelfile);
+                TLogging.Log(e.ToString());
+                return;
+            }
 
             if (TAppSettingsManager.HasValue("DataChecks.Email.Recipient"))
             {
@@ -155,18 +172,35 @@ namespace Ict.Petra.Server.MCommon.Processing
             SUserRow userrow = SUserAccess.LoadByPrimaryKey(AUserId, null)[0];
 
             string excelfile = TAppSettingsManager.GetValue("DataChecks.TempPath") + "/errors" + AUserId + ".xlsx";
-            StreamWriter sw = new StreamWriter(excelfile);
-            MemoryStream m = new MemoryStream();
 
             DataView v = new DataView(AErrors,
                 "(CreatedBy='" + AUserId + "' AND ModifiedBy IS NULL AND DateCreated > #" + Errors_SinceDate.ToString("MM/dd/yyyy") + "#) " +
                 "OR (ModifiedBy='" + AUserId + "' AND DateModified > #" + Errors_SinceDate.ToString("MM/dd/yyyy") + "#)",
                 string.Empty, DataViewRowState.CurrentRows);
 
-            TCsv2Xml.DataTable2ExcelStream(v.ToTable(), m);
-            m.WriteTo(sw.BaseStream);
-            m.Close();
-            sw.Close();
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(excelfile))
+                {
+                    using (MemoryStream m = new MemoryStream())
+                    {
+                        if (!TCsv2Xml.DataTable2ExcelStream(v.ToTable(), m))
+                        {
+                            return;
+                        }
+
+                        m.WriteTo(sw.BaseStream);
+                        m.Close();
+                        sw.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problems writing to file " + excelfile);
+                TLogging.Log(e.ToString());
+                return;
+            }
 
             string recipientEmail = string.Empty;
 

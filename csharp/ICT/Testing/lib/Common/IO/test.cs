@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -508,7 +508,7 @@ namespace Ict.Common.IO.Testing
             {
                 using (MemoryStream m = new MemoryStream())
                 {
-                    using (ExcelPackage pck = new ExcelPackage(new FileInfo(filename)))
+                    using (ExcelPackage pck = new ExcelPackage(m))
                     {
                         ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("test");
 
