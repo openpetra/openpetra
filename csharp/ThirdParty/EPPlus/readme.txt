@@ -5,12 +5,21 @@ http://epplus.codeplex.com/
 licensed under LGPL
 
 current version:
-modified version based on Mercurial from 23 June 2012 
-http://epplus.codeplex.com/SourceControl/changeset/view/67b2e199f54f
+modified version based on Mercurial from 11 April 2013 (version 3.1.3)
 
 my own branch:
 http://epplus.codeplex.com/SourceControl/network/forks/tpokorra/monoWorkarounds
 hg clone https://hg.codeplex.com/forks/tpokorra/monoworkarounds
+
+merge from tip:
+hg pull https://hg.codeplex.com/epplus
+hg merge
+resolve conflicts manually, then run: hg resolve --mark
+vi ~/.hgrc
+ [ui]
+ username = Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+hg commit
+hg push --branch default --new-branch
 
 Problems with Mono:
 
