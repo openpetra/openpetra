@@ -459,8 +459,6 @@ namespace Ict.Common.IO.Testing
 
             if (File.Exists(filename))
             {
-                ExcelPackage read = new ExcelPackage(new FileInfo(filename));
-                // System.IO.FileFormatException : Compressed part has inconsistent data length.
                 File.Delete(filename);
             }
 
@@ -499,8 +497,6 @@ namespace Ict.Common.IO.Testing
 
             if (File.Exists(filename))
             {
-                ExcelPackage read = new ExcelPackage(new FileInfo(filename));
-                // System.IO.FileFormatException : Compressed part has inconsistent data length.
                 File.Delete(filename);
             }
 
