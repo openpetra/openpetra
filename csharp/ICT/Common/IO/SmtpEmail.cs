@@ -104,15 +104,15 @@ namespace Ict.Common.IO
                     email.Body = body;
                     email.IsBodyHtml = false;
 
+                    Attachment data = null;
+
                     //Attachement if any:
                     if ((attachfile != null) && (attachfile.Length > 0))
                     {
                         if (System.IO.File.Exists(attachfile) == true)
                         {
-                            using (Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet))
-                            {
-                                email.Attachments.Add(data);
-                            }
+                            data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
+                            email.Attachments.Add(data);
                         }
                         else
                         {
@@ -122,7 +122,15 @@ namespace Ict.Common.IO
                         }
                     }
 
-                    return SendMessage(email);
+                    bool Result = SendMessage(email);
+
+                    if (data != null)
+                    {
+                        // make sure that the file is not locked any longer
+                        data.Dispose();
+                    }
+
+                    return Result;
                 }
             }
             catch (Exception ex)
