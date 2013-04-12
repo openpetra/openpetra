@@ -34,6 +34,8 @@ using System.IO;
 using Ict.Common;
 using Ict.Common.IO;
 using Jayrock.Json;
+using OfficeOpenXml;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace Ict.Common.IO.Testing
 {
@@ -442,6 +444,96 @@ namespace Ict.Common.IO.Testing
             test = JSONFormData.Replace("#LASTNAME", problem);
             obj = TJsonTools.ParseValues(test);
             Assert.AreEqual(problem.Replace("\"", "&quot;"), obj["LastName"].ToString());
+        }
+
+        /// <summary>
+        /// test writing to an Excel file
+        /// </summary>
+        [Test]
+        public void TestExcelExportFile()
+        {
+            string filename = PathToTestData + "test.xlsx";
+
+            // display error messages in english
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+
+            if (File.Exists(filename))
+            {
+                ExcelPackage read = new ExcelPackage(new FileInfo(filename));
+                // System.IO.FileFormatException : Compressed part has inconsistent data length.
+                File.Delete(filename);
+            }
+
+            using (ExcelPackage pck = new ExcelPackage(new FileInfo(filename)))
+            {
+                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("test");
+
+                worksheet.Cells["A1"].Value = "test1";
+                worksheet.Cells["B3"].Value = "test2";
+                worksheet.Cells["B7"].Value = "test2";
+
+                TLogging.Log("writing to " + filename);
+
+                pck.Save();
+            }
+
+            new ExcelPackage(new FileInfo(filename));
+            PackTools.Unzip(PathToTestData + "testUnzip", filename);
+
+            FileInfo f = new FileInfo(PathToTestData + "testUnzip/xl/sharedStrings.xml");
+            Assert.AreNotEqual(0, f.Length, "file sharedStrings.xml should not be empty");
+
+            Assert.IsInstanceOf(typeof(ExcelPackage), new ExcelPackage(new FileInfo(filename)), "cannot open excel file");
+        }
+
+        /// <summary>
+        /// test writing to an Excel file
+        /// </summary>
+        [Test]
+        public void TestExcelExportStream()
+        {
+            string filename = PathToTestData + "test.xlsx";
+
+            // display error messages in english
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+
+            if (File.Exists(filename))
+            {
+                ExcelPackage read = new ExcelPackage(new FileInfo(filename));
+                // System.IO.FileFormatException : Compressed part has inconsistent data length.
+                File.Delete(filename);
+            }
+
+            using (StreamWriter sw = new StreamWriter(filename))
+            {
+                using (MemoryStream m = new MemoryStream())
+                {
+                    using (ExcelPackage pck = new ExcelPackage(new FileInfo(filename)))
+                    {
+                        ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("test");
+
+                        worksheet.Cells["A1"].Value = "test1";
+                        worksheet.Cells["B3"].Value = "test2";
+                        worksheet.Cells["B7"].Value = "test2";
+
+                        pck.Save();
+                    }
+
+                    TLogging.Log("writing to " + filename);
+
+                    m.WriteTo(sw.BaseStream);
+                    m.Close();
+                    sw.Close();
+                }
+            }
+
+            new ExcelPackage(new FileInfo(filename));
+            PackTools.Unzip(PathToTestData + "testUnzip", filename);
+
+            FileInfo f = new FileInfo(PathToTestData + "testUnzip/xl/sharedStrings.xml");
+            Assert.AreNotEqual(0, f.Length, "file sharedStrings.xml should not be empty");
+
+            Assert.IsInstanceOf(typeof(ExcelPackage), new ExcelPackage(new FileInfo(filename)), "cannot open excel file");
         }
     }
 }
