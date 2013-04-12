@@ -92,35 +92,38 @@ namespace Ict.Common.IO
         {
             try
             {
-                MailMessage email = new MailMessage();
-                //From and To
-                email.Sender = new MailAddress(fromemail, fromDisplayName);
-                email.From = new MailAddress(fromemail, fromDisplayName);
-                email.To.Add(receipients);
-
-                //Subject and Body
-                email.Subject = subject;
-                email.Body = body;
-                email.IsBodyHtml = false;
-
-                //Attachement if any:
-                if ((attachfile != null) && (attachfile.Length > 0))
+                using (MailMessage email = new MailMessage())
                 {
-                    if (System.IO.File.Exists(attachfile) == true)
-                    {
-                        Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
+                    //From and To
+                    email.Sender = new MailAddress(fromemail, fromDisplayName);
+                    email.From = new MailAddress(fromemail, fromDisplayName);
+                    email.To.Add(receipients);
 
-                        email.Attachments.Add(data);
-                    }
-                    else
+                    //Subject and Body
+                    email.Subject = subject;
+                    email.Body = body;
+                    email.IsBodyHtml = false;
+
+                    //Attachement if any:
+                    if ((attachfile != null) && (attachfile.Length > 0))
                     {
-                        TLogging.Log("Could not send email");
-                        TLogging.Log("File to attach '" + attachfile + "' does not exist!");
-                        return false;
+                        if (System.IO.File.Exists(attachfile) == true)
+                        {
+                            using (Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet))
+                            {
+                                email.Attachments.Add(data);
+                            }
+                        }
+                        else
+                        {
+                            TLogging.Log("Could not send email");
+                            TLogging.Log("File to attach '" + attachfile + "' does not exist!");
+                            return false;
+                        }
                     }
+
+                    return SendMessage(email);
                 }
-
-                return SendMessage(ref email);
             }
             catch (Exception ex)
             {
@@ -135,7 +138,7 @@ namespace Ict.Common.IO
         /// </summary>
         /// <param name="AEmail">on successful sending, the header is modified with the sent date</param>
         /// <returns>true if email was sent successfully</returns>
-        public bool SendMessage(ref MailMessage AEmail)
+        public bool SendMessage(MailMessage AEmail)
         {
             if (AEmail.Headers.Get("Date-Sent") != null)
             {
