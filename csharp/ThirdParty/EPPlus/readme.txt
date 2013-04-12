@@ -4,11 +4,9 @@ http://epplus.codeplex.com/
 
 licensed under LGPL
 
-current version: 3.1.3 from Apr 11, 2013
-
-I used to have my own branch,
-but it seems the workarounds for Mono are not necessary anymore.
-
+current version:
+modified version based on Mercurial from 23 June 2012 
+http://epplus.codeplex.com/SourceControl/changeset/view/67b2e199f54f
 
 my own branch:
 http://epplus.codeplex.com/SourceControl/network/forks/tpokorra/monoWorkarounds
