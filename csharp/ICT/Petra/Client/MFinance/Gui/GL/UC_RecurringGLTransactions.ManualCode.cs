@@ -474,6 +474,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (grdAnalAttributes.Enabled)
                 {
                     grdAnalAttributes.Enabled = false;
+                    lblAnalAttributes.Enabled = false;
                 }
 
                 return;
@@ -483,6 +484,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (!grdAnalAttributes.Enabled)
                 {
                     grdAnalAttributes.Enabled = true;
+                    lblAnalAttributes.Enabled = true;
                 }
             }
 
@@ -777,6 +779,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             pnlDetailsProtected = !changeable;
             pnlDetails.Enabled = changeable;
             pnlTransAnalysisAttributes.Enabled = changeable;
+            lblAnalAttributes.Enabled = changeable;
+
+            // if there is no transaction in the grid yet then disable entry fields
+            if (grdDetails.Rows.Count < 2)
+            {
+                pnlDetails.Enabled = false;
+                lblAnalAttributes.Enabled = false;
+            }
         }
 
         private void DeleteRecord(System.Object sender, EventArgs e)
