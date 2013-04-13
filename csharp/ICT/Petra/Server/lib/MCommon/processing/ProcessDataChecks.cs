@@ -208,6 +208,11 @@ namespace Ict.Petra.Server.MCommon.Processing
             {
                 recipientEmail = userrow.EmailAddress;
             }
+            else if (TAppSettingsManager.HasValue("DataChecks.Email.Recipient.UserDomain"))
+            {
+                recipientEmail = userrow.FirstName + "." + userrow.LastName + "@" + TAppSettingsManager.GetValue(
+                    "DataChecks.Email.Recipient.UserDomain");
+            }
             else if (TAppSettingsManager.HasValue("DataChecks.Email.Recipient"))
             {
                 recipientEmail = TAppSettingsManager.GetValue("DataChecks.Email.Recipient");
