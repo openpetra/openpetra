@@ -293,7 +293,7 @@ namespace Ict.Tools.NAntTasks
             parameters.OutputAssembly = OutputFile;
             parameters.WarningLevel = 4;
 
-            parameters.CompilerOptions = "/define:DEBUGMODE /doc:\"" + OutputFile + ".xml\"";
+            parameters.CompilerOptions = "/define:DEBUGMODE /doc:\"" + OutputFile.Replace("\\", "/") + ".xml\"";
 
             if (this.Project.PlatformName == "unix")
             {
