@@ -447,9 +447,12 @@ namespace Ict.Common.IO.Testing
         }
 
         /// <summary>
-        /// test writing to an Excel file
+        /// test writing to an Excel file.
+        /// currently fails on Windows and on Linux on Dispose: System.NotSupportedException : Stream does not support writing.
+        /// solution for the moment: use saving via stream, see TestExcelExportStream
         /// </summary>
         [Test]
+        [Ignore("does not work on Windows or Mono. better use TestExcelExportStream")]
         public void TestExcelExportFile()
         {
             string filename = PathToTestData + "test.xlsx";
@@ -462,7 +465,7 @@ namespace Ict.Common.IO.Testing
                 File.Delete(filename);
             }
 
-            using (ExcelPackage pck = new ExcelPackage(new FileInfo(filename)))
+            using (ExcelPackage pck = new ExcelPackage())
             {
                 ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("test");
 
@@ -472,7 +475,7 @@ namespace Ict.Common.IO.Testing
 
                 TLogging.Log("writing to " + filename);
 
-                pck.Save();
+                pck.SaveAs(new FileInfo(filename));
             }
 
             new ExcelPackage(new FileInfo(filename));
