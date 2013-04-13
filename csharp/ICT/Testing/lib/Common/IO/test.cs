@@ -514,7 +514,7 @@ namespace Ict.Common.IO.Testing
                         worksheet.Cells["A1"].Value = "test1";
                         worksheet.Cells["B3"].Value = "test2";
                         worksheet.Cells["B7"].Value = "test2";
-                        
+
                         pck.SaveAs(m);
                     }
 
