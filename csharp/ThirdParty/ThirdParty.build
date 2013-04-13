@@ -24,6 +24,7 @@
   <include name="GNU.Gettext.dll"/>
   <include name="SourceGrid.dll"/>
   <include name="PdfSharp.dll"/>
+  <include name="EPPlus.dll"/>
   <include name="Npgsql.dll"/>
   <include name="Mono.Security.dll" /> <!-- Needed for Npgsql.dll -->
   <include name="MySql.Data.dll"/>
