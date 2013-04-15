@@ -659,7 +659,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 UpdateTotals();
             }
-            
+
             // If combobox to set analysis attribute value has focus when save button is pressed then currently
             // displayed value is not stored in database.
             // --> move focus to different field so that grid accepts value for storing in database
@@ -803,7 +803,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             pnlDetails.Enabled = changeable;
             pnlTransAnalysisAttributes.Enabled = changeable;
             lblAnalAttributes.Enabled = changeable;
-            
+
             // if there is no transaction in the grid yet then disable entry fields
             if (grdDetails.Rows.Count < 2)
             {

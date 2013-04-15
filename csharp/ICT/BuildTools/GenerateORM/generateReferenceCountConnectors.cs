@@ -129,10 +129,10 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                 // in that file
                 if ((attDetailTableName != String.Empty)
                     && (codeStorage.FControlList.ContainsKey("btnDelete")
-                    || codeStorage.FControlList.ContainsKey("btnDeleteType")
-                    || codeStorage.FControlList.ContainsKey("btnDeleteExtract")
-                    || codeStorage.FControlList.ContainsKey("btnDeleteDetail")
-                    || (codeStorage.FControlList.ContainsKey("btnRemoveDetail") && codeStorage.GetAttribute("FormType") != "report")))
+                        || codeStorage.FControlList.ContainsKey("btnDeleteType")
+                        || codeStorage.FControlList.ContainsKey("btnDeleteExtract")
+                        || codeStorage.FControlList.ContainsKey("btnDeleteDetail")
+                        || (codeStorage.FControlList.ContainsKey("btnRemoveDetail") && (codeStorage.GetAttribute("FormType") != "report"))))
                 {
                     if (attCacheableListName != String.Empty)
                     {

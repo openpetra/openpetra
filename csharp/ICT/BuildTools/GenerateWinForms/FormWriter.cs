@@ -1245,10 +1245,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // in that file
             if ((FCodeStorage.GetAttribute("DetailTable") != String.Empty)
                 && (FCodeStorage.FControlList.ContainsKey("btnDelete")
-                || FCodeStorage.FControlList.ContainsKey("btnDeleteType")
-                || FCodeStorage.FControlList.ContainsKey("btnDeleteExtract")
-                || FCodeStorage.FControlList.ContainsKey("btnDeleteDetail")
-                || (FCodeStorage.FControlList.ContainsKey("btnRemoveDetail") && FCodeStorage.GetAttribute("FormType") != "report")))
+                    || FCodeStorage.FControlList.ContainsKey("btnDeleteType")
+                    || FCodeStorage.FControlList.ContainsKey("btnDeleteExtract")
+                    || FCodeStorage.FControlList.ContainsKey("btnDeleteDetail")
+                    || (FCodeStorage.FControlList.ContainsKey("btnRemoveDetail") && (FCodeStorage.GetAttribute("FormType") != "report"))))
             {
                 // We always auto-generate code to calculate the record reference count when a delete button exists
                 AddDeleteReferenceCountImplementation();
