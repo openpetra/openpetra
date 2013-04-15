@@ -22,8 +22,10 @@ RootNode:
             Controls: [btnNew, btnDelete]
         btnNew:
             Action: actNew
+            Stretch: horizontally
         btnDelete:
             Action: actDelete
+            Stretch: horizontally
         grdDetails:
             Dock: Fill
             Columns: [DetailContactAttrDetailCode, DetailContactAttrDetailDescr, DetailActive]

@@ -924,7 +924,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
             }
-            
+
             // load previously stored batches and check for posted status
             if (BatchNumbersInvolved.Count == 0)
             {
