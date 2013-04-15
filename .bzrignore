@@ -66,3 +66,4 @@ i18n/template.pot.withallsources
 *.de-DE.yaml
 *.da-DK.yaml
 *.es-ES.yaml
+-*.xml

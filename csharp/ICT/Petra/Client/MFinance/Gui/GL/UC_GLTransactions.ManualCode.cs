@@ -480,6 +480,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (grdAnalAttributes.Enabled)
                 {
                     grdAnalAttributes.Enabled = false;
+                    lblAnalAttributes.Enabled = false;
                 }
 
                 return;
@@ -489,6 +490,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (!grdAnalAttributes.Enabled)
                 {
                     grdAnalAttributes.Enabled = true;
+                    lblAnalAttributes.Enabled = true;
                 }
             }
 
@@ -657,6 +659,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 UpdateTotals();
             }
+            
+            // If combobox to set analysis attribute value has focus when save button is pressed then currently
+            // displayed value is not stored in database.
+            // --> move focus to different field so that grid accepts value for storing in database
+            if (FAnalAttribTypeVal.Control.Focused)
+            {
+                cmbDetailCostCentreCode.Focus();
+            }
         }
 
         /// <summary>
@@ -792,6 +802,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             pnlDetailsProtected = !changeable;
             pnlDetails.Enabled = changeable;
             pnlTransAnalysisAttributes.Enabled = changeable;
+            lblAnalAttributes.Enabled = changeable;
+            
+            // if there is no transaction in the grid yet then disable entry fields
+            if (grdDetails.Rows.Count < 2)
+            {
+                pnlDetails.Enabled = false;
+                lblAnalAttributes.Enabled = false;
+            }
         }
 
         private void DeleteRecord(System.Object sender, EventArgs e)

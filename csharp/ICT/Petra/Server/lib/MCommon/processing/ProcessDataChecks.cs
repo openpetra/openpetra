@@ -27,10 +27,12 @@ using System.Data;
 using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Petra.Server.MSysMan.Cacheable.WebConnectors;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 namespace Ict.Petra.Server.MCommon.Processing
 {
@@ -40,6 +42,9 @@ namespace Ict.Petra.Server.MCommon.Processing
     public class TProcessDataChecks
     {
         private const string PROCESSDATACHECK_LAST_RUN = "PROCESSDATACHECK_LAST_RUN";
+        private const float SENDREPORTFORDAYS_TOUSERS = 14.0f;
+        private static DateTime Errors_SinceDate;
+
         /// <summary>
         /// Gets called in regular intervals from a Timer in Class TTimedProcessing.
         /// </summary>
@@ -65,6 +70,8 @@ namespace Ict.Petra.Server.MCommon.Processing
                     return;
                 }
             }
+
+            Errors_SinceDate = DateTime.Today.AddDays(-1 * SENDREPORTFORDAYS_TOUSERS);
 
             TLogging.LogAtLevel(1, "TProcessDataChecks.Process: Checking Modules");
             CheckModule(ADBAccessObj, "DataCheck.MPartner.");
@@ -108,14 +115,41 @@ namespace Ict.Petra.Server.MCommon.Processing
                 errors.Merge(ADBAccessObj.SelectDT(sql, "temp", null));
             }
 
+            if (errors.Rows.Count > 0)
+            {
+                SendEmailToAdmin(errors);
+                SendEmailsPerUser(errors);
+            }
+        }
+
+        private static void SendEmailToAdmin(DataTable AErrors)
+        {
             // Create excel output of the errors table
             string excelfile = TAppSettingsManager.GetValue("DataChecks.TempPath") + "/errors.xlsx";
-            StreamWriter sw = new StreamWriter(excelfile);
-            MemoryStream m = new MemoryStream();
-            TCsv2Xml.DataTable2ExcelStream(errors, m);
-            m.WriteTo(sw.BaseStream);
-            m.Close();
-            sw.Close();
+
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(excelfile))
+                {
+                    using (MemoryStream m = new MemoryStream())
+                    {
+                        if (!TCsv2Xml.DataTable2ExcelStream(AErrors, m))
+                        {
+                            return;
+                        }
+
+                        m.WriteTo(sw.BaseStream);
+                        m.Close();
+                        sw.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problems writing to file " + excelfile);
+                TLogging.Log(e.ToString());
+                return;
+            }
 
             if (TAppSettingsManager.HasValue("DataChecks.Email.Recipient"))
             {
@@ -123,12 +157,106 @@ namespace Ict.Petra.Server.MCommon.Processing
                     "OpenPetra DataCheck Robot",
                     TAppSettingsManager.GetValue("DataChecks.Email.Recipient"),
                     "Data Check",
-                    "there are " + errors.Rows.Count.ToString() + " errors. Please see attachment!",
+                    "there are " + AErrors.Rows.Count.ToString() + " errors. Please see attachment!",
                     excelfile);
             }
             else
             {
                 TLogging.Log("there is no email sent because DataChecks.Email.Recipient is not defined in the config file");
+            }
+        }
+
+        private static void SendEmailForUser(string AUserId, DataTable AErrors)
+        {
+            // get the email address of the user
+            SUserRow userrow = SUserAccess.LoadByPrimaryKey(AUserId, null)[0];
+
+            string excelfile = TAppSettingsManager.GetValue("DataChecks.TempPath") + "/errors" + AUserId + ".xlsx";
+
+            DataView v = new DataView(AErrors,
+                "(CreatedBy='" + AUserId + "' AND ModifiedBy IS NULL AND DateCreated > #" + Errors_SinceDate.ToString("MM/dd/yyyy") + "#) " +
+                "OR (ModifiedBy='" + AUserId + "' AND DateModified > #" + Errors_SinceDate.ToString("MM/dd/yyyy") + "#)",
+                string.Empty, DataViewRowState.CurrentRows);
+
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(excelfile))
+                {
+                    using (MemoryStream m = new MemoryStream())
+                    {
+                        if (!TCsv2Xml.DataTable2ExcelStream(v.ToTable(), m))
+                        {
+                            return;
+                        }
+
+                        m.WriteTo(sw.BaseStream);
+                        m.Close();
+                        sw.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problems writing to file " + excelfile);
+                TLogging.Log(e.ToString());
+                return;
+            }
+
+            string recipientEmail = string.Empty;
+
+            if (!userrow.IsEmailAddressNull())
+            {
+                recipientEmail = userrow.EmailAddress;
+            }
+            else if (TAppSettingsManager.HasValue("DataChecks.Email.Recipient.UserDomain"))
+            {
+                recipientEmail = userrow.FirstName + "." + userrow.LastName + "@" + TAppSettingsManager.GetValue(
+                    "DataChecks.Email.Recipient.UserDomain");
+            }
+            else if (TAppSettingsManager.HasValue("DataChecks.Email.Recipient"))
+            {
+                recipientEmail = TAppSettingsManager.GetValue("DataChecks.Email.Recipient");
+            }
+
+            if (recipientEmail.Length > 0)
+            {
+                new TSmtpSender().SendEmail("<" + TAppSettingsManager.GetValue("DataChecks.Email.Sender") + ">",
+                    "OpenPetra DataCheck Robot",
+                    recipientEmail,
+                    "Data Check for " + AUserId,
+                    "there are " + v.Count.ToString() + " errors. Please see attachment!",
+                    excelfile);
+            }
+            else
+            {
+                TLogging.Log("no email can be sent to " + AUserId);
+            }
+        }
+
+        private static void SendEmailsPerUser(DataTable AErrors)
+        {
+            // get all users that have created or modified the records in the past week(s)
+            List <String>Users = new List <string>();
+
+            foreach (DataRow r in AErrors.Rows)
+            {
+                string lastUser = string.Empty;
+
+                if (!r.IsNull("DateModified") && (Convert.ToDateTime(r["DateModified"]) > Errors_SinceDate))
+                {
+                    lastUser = r["ModifiedBy"].ToString();
+                }
+                else if (!r.IsNull("DateCreated") && (Convert.ToDateTime(r["DateCreated"]) > Errors_SinceDate))
+                {
+                    lastUser = r["CreatedBy"].ToString();
+                }
+
+                if ((lastUser.Trim().Length > 0) && !Users.Contains(lastUser))
+                {
+                    Users.Add(lastUser);
+
+                    SendEmailForUser(lastUser, AErrors);
+                }
             }
         }
     }

@@ -301,6 +301,13 @@ namespace Ict.Common.IO
             {
                 foreach (DataColumn col in table.Columns)
                 {
+                    if (row.IsNull(col) || (row[col] == null))
+                    {
+                        AWorksheet.Cells[rowCounter, colCounter].Value = "";
+                        colCounter++;
+                        continue;
+                    }
+
                     object value = row[col];
 
                     if (value is DateTime)
