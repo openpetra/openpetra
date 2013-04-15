@@ -114,44 +114,74 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.PPartnerBankingDetails.Rows.Add(partnerBankingDetails);
         }
 
+        private bool PreDeleteManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, ref String ADeletionQuestion)
+        {
+            ADeletionQuestion = String.Format(
+                Catalog.GetString("You have choosen to delete the bank account {0}.{1}{1}Do you really want to delete it?"),
+                FPreviouslySelectedDetailRow.AccountName,
+                Environment.NewLine);
+            return true;
+        }
+
+        private bool DeleteRowManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, out String ACompletionMessage)
+        {
+            ACompletionMessage = String.Empty;
+
+            // TODO what if several people are using the same bank account?
+            FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName();
+            FMainDS.PPartnerBankingDetails.DefaultView.FindRows(FPreviouslySelectedDetailRow.BankingDetailsKey)[0].Row.Delete();
+
+            ARowToDelete.Delete();
+
+            return true;
+        }
+
+        private void PostDeleteManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, Boolean AAllowDeletion, Boolean ADeletionPerformed, String ACompletionMessage)
+        {
+            if (ADeletionPerformed)
+            {
+                DoRecalculateScreenParts();
+            }
+        }
+
         private void DeleteRow(System.Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
+            //if (FPreviouslySelectedDetailRow == null)
+            //{
+            //    return;
+            //}
 
-            if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete the bank account {0}.\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.AccountName), Catalog.GetString("Confirm Delete"),
-                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-            {
-                int rowIndex = grdDetails.SelectedRowIndex();
+            //if (MessageBox.Show(String.Format(Catalog.GetString(
+            //                "You have choosen to delete the bank account {0}.\n\nDo you really want to delete it?"),
+            //            FPreviouslySelectedDetailRow.AccountName), Catalog.GetString("Confirm Delete"),
+            //        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            //{
+            //    int rowIndex = grdDetails.SelectedRowIndex();
 
-                // TODO what if several people are using the same bank account?
-                FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName();
-                FMainDS.PPartnerBankingDetails.DefaultView.FindRows(FPreviouslySelectedDetailRow.BankingDetailsKey)[0].Row.Delete();
+            //    // TODO what if several people are using the same bank account?
+            //    FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName();
+            //    FMainDS.PPartnerBankingDetails.DefaultView.FindRows(FPreviouslySelectedDetailRow.BankingDetailsKey)[0].Row.Delete();
 
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
+            //    FPreviouslySelectedDetailRow.Delete();
+            //    FPetraUtilsObject.SetChangedFlag();
 
-                // temporarily reset selected row to avoid interference with validation
-                FPreviouslySelectedDetailRow = null;
-                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                grdDetails.SelectRowInGrid(rowIndex, true);
-                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
+            //    // temporarily reset selected row to avoid interference with validation
+            //    FPreviouslySelectedDetailRow = null;
+            //    grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+            //    grdDetails.SelectRowInGrid(rowIndex, true);
+            //    grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+            //    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            //    ShowDetails(FPreviouslySelectedDetailRow);
 
-                DoRecalculateScreenParts();
+            //    DoRecalculateScreenParts();
 
-                if (grdDetails.Rows.Count <= 1)
-                {
-                    // hide details part and disable buttons if no record in grid (first row for headings)
-                    btnDelete.Enabled = false;
-                    pnlDetails.Visible = false;
-                }
-            }
+            //    if (grdDetails.Rows.Count <= 1)
+            //    {
+            //        // hide details part and disable buttons if no record in grid (first row for headings)
+            //        btnDelete.Enabled = false;
+            //        pnlDetails.Visible = false;
+            //    }
+            //}
         }
 
         private void DoRecalculateScreenParts()

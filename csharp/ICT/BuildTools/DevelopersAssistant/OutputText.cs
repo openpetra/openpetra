@@ -188,7 +188,8 @@ namespace Ict.Tools.DevelopersAssistant
                                  && _verboseOutput.Substring(p - 1, 12).CompareTo("\\ErrorLog.cs") != 0
                                  && _verboseOutput.Substring(p - 1, 22).CompareTo("\\ErrorCodeInventory.cs") != 0
                                  && _verboseOutput.Substring(p - 1, 20).CompareTo("\\ErrorCodesHelper.cs") != 0
-                                 && _verboseOutput.Substring(p - 1, 14).CompareTo("\\ErrorCodes.cs") != 0);
+                                 && _verboseOutput.Substring(p - 1, 14).CompareTo("\\ErrorCodes.cs") != 0
+                                 && _verboseOutput.Substring(p, 15).CompareTo("ErrorCodeDoc.cs") != 0);
                         }
                         else if (itemID == 3)
                         {
@@ -303,7 +304,8 @@ namespace Ict.Tools.DevelopersAssistant
                                 && (TextToParse.Substring(p - 1, 12).CompareTo("\\ErrorLog.cs") != 0)
                                 && (TextToParse.Substring(p - 1, 22).CompareTo("\\ErrorCodeInventory.cs") != 0)
                                 && (TextToParse.Substring(p - 1, 20).CompareTo("\\ErrorCodesHelper.cs") != 0)
-                                && (TextToParse.Substring(p - 1, 14).CompareTo("\\ErrorCodes.cs") != 0))
+                                && (TextToParse.Substring(p - 1, 14).CompareTo("\\ErrorCodes.cs") != 0)
+                                && (TextToParse.Substring(p, 15).CompareTo("ErrorCodeDoc.cs") != 0))
                             {
                                 NumWarnings++;
                             }

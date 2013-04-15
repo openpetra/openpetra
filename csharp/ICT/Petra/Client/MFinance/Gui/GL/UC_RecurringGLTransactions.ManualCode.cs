@@ -831,28 +831,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string ACompletionMessage)
         {
             /*Code to execute after the delete has occurred*/
+            UpdateTotals();
+
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
-                if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
-                {
-                    ClearControls();
-                }
+                MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
             }
-            else if (!AAllowDeletion)
+
+            if ((grdDetails.Rows.Count < 2) || !pnlDetails.Enabled)
             {
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion not allowed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-            else if (!ADeletionPerformed)
-            {
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                ClearControls();
+                UpdateChangeableStatus();
             }
         }
 
@@ -867,12 +856,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool deletionSuccessful = false;
 
             GLBatchTDS FTempDS = (GLBatchTDS)FMainDS.Copy();
-
-            if (ARowToDelete == null)
-            {
-                ACompletionMessage = string.Empty;
-                return deletionSuccessful;
-            }
 
             int transactionNumberToDelete = ARowToDelete.TransactionNumber;
             int lastTransactionNumber = FJournalRow.LastTransactionNumber;
@@ -979,9 +962,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             catch (Exception ex)
             {
-                ACompletionMessage = ex.Message;
+                ACompletionMessage = String.Empty;
                 MessageBox.Show(ex.Message,
-                    "Deletion Error",
+                    Catalog.GetString("Deletion Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
@@ -1023,14 +1006,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS = (GLBatchTDS)FTempDS.Copy();
                 deletionSuccessful = false;
                 return deletionSuccessful;
-            }
-
-            UpdateTotals();
-
-            if (grdDetails.Rows.Count < 2)
-            {
-                ClearControls();
-                UpdateChangeableStatus();
             }
 
             return deletionSuccessful;

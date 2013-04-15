@@ -259,33 +259,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // delete single selected record from extract
             if (CountRowsToDelete == 1)
             {
-                if (FPreviouslySelectedDetailRow == null)
-                {
-                    return;
-                }
-
-                if (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have choosen to delete this extract ({0}).\n\nDo you really want to delete it?"),
-                            FPreviouslySelectedDetailRow.ExtractName), Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-                {
-                    int rowIndex = grdDetails.SelectedRowIndex();
-                    FPreviouslySelectedDetailRow.Delete();
-                    FPetraUtilsObject.SetChangedFlag();
-
-                    grdDetails.SelectRowInGrid(rowIndex);
-                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                    ShowDetails(FPreviouslySelectedDetailRow);
-                }
+                DeleteMExtractMaster();
             }
-            // delete single selected record from extract
             else if (CountRowsToDelete > 1)
             {
+                // delete multiple selected records from extract
                 if (MessageBox.Show(Catalog.GetString("Do you want to delete the selected extracts?"),
                         Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                        MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
                 {
                     DataRowView RowView;
                     int rowIndex = grdDetails.SelectedRowIndex();
@@ -309,14 +292,21 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                     FPetraUtilsObject.SetChangedFlag();
 
-                    grdDetails.SelectRowInGrid(rowIndex);
-                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                    ShowDetails(FPreviouslySelectedDetailRow);
+                    SelectRowInGrid(rowIndex);
                 }
             }
 
             // enable/disable buttons
             UpdateButtonStatus();
+        }
+
+        private bool PreDeleteManual(MExtractMasterRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            ADeletionQuestion = String.Format(
+                Catalog.GetString("You have choosen to delete this extract ({0}).{1}{1}Do you really want to delete it?"),
+                FPreviouslySelectedDetailRow.ExtractName,
+                Environment.NewLine);
+            return true;
         }
 
         /// <summary>

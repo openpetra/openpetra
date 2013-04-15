@@ -365,67 +365,51 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>true if row deletion is successful</returns>
         private bool DeleteRowManual(ARecurringJournalRow ARowToDelete, out string ACompletionMessage)
         {
-            bool deletionSuccessful = false;
 
             int batchNumber = ARowToDelete.BatchNumber;
             int journalNumber = ARowToDelete.JournalNumber;
 
-            try
+            // Delete on client side data through views that is already loaded. Data that is not
+            // loaded yet will be deleted with cascading delete on server side so we don't have
+            // to worry about this here.
+
+            ACompletionMessage = String.Format(Catalog.GetString("Journal no.: {0} deleted successfully."),
+                journalNumber);
+
+            // Delete the associated recurring transaction analysis attributes
+            DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
+            viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5}",
+                ARecurringTransAnalAttribTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                batchNumber,
+                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                journalNumber);
+
+            foreach (DataRowView row in viewRecurringTransAnalAttrib)
             {
-                // Delete on client side data through views that is already loaded. Data that is not
-                // loaded yet will be deleted with cascading delete on server side so we don't have
-                // to worry about this here.
-
-                ACompletionMessage = String.Format(Catalog.GetString("Journal no.: {0} deleted successfully."),
-                    journalNumber);
-
-                // Delete the associated recurring transaction analysis attributes
-                DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
-                viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5}",
-                    ARecurringTransAnalAttribTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
-                    batchNumber,
-                    ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
-                    journalNumber);
-
-                foreach (DataRowView row in viewRecurringTransAnalAttrib)
-                {
-                    row.Delete();
-                }
-
-                // Delete the associated recurring transactions
-                DataView viewRecurringTransaction = new DataView(FMainDS.ARecurringTransaction);
-                viewRecurringTransaction.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5}",
-                    ARecurringTransactionTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    ARecurringTransactionTable.GetBatchNumberDBName(),
-                    batchNumber,
-                    ARecurringTransactionTable.GetJournalNumberDBName(),
-                    journalNumber);
-
-                foreach (DataRowView row in viewRecurringTransaction)
-                {
-                    row.Delete();
-                }
-
-                // Delete the recurring journal row.
-                ARowToDelete.Delete();
-
-                FPreviouslySelectedDetailRow = null;
-
-                deletionSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
-                    "Deletion Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                row.Delete();
             }
 
-            return deletionSuccessful;
+            // Delete the associated recurring transactions
+            DataView viewRecurringTransaction = new DataView(FMainDS.ARecurringTransaction);
+            viewRecurringTransaction.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5}",
+                ARecurringTransactionTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                batchNumber,
+                ARecurringTransactionTable.GetJournalNumberDBName(),
+                journalNumber);
+
+            foreach (DataRowView row in viewRecurringTransaction)
+            {
+                row.Delete();
+            }
+
+            // Delete the recurring journal row.
+            ARowToDelete.Delete();
+
+            return true;
         }
 
         /// <summary>
@@ -443,31 +427,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
-                //MessageBox.Show(ACompletionMessage,
-                //    "Deletion completed",
-                //    MessageBoxButtons.OK,
-                //    MessageBoxIcon.Information);
+                MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
+            }
 
-                if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
-                {
-                    ClearControls();
-                }
-            }
-            else if (!AAllowDeletion)
+            if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
             {
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion not allowed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-            else if (!ADeletionPerformed)
-            {
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                ClearControls();
             }
 
             if (grdDetails.Rows.Count > 1)

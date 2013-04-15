@@ -145,54 +145,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Deletes the current row and optionally populates a completion message
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to delete</param>
-        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(PmPersonAbilityRow ARowToDelete, out string ACompletionMessage)
-        {
-            bool deletionSuccessful = false;
-
-            // no message to be shown after deletion
-            ACompletionMessage = "";
-
-            try
-            {
-                ARowToDelete.Delete();
-                deletionSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
-                    "Deletion Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-
-            return deletionSuccessful;
-        }
-
-        /// <summary>
         /// Code to be run after the deletion process
         /// </summary>
         /// <param name="ARowToDelete">the row that was/was to be deleted</param>
         /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
         /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        private void PostDeleteManual(PmPersonAbilityRow ARowToDelete,
-            bool AAllowDeletion,
-            bool ADeletionPerformed,
-            string ACompletionMessage)
+        private void PostDeleteManual(PmPersonAbilityRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
         {
-            DoRecalculateScreenParts();
-
-            if (grdDetails.Rows.Count <= 1)
+            if (ADeletionPerformed)
             {
-                // hide details part and disable buttons if no record in grid (first row for headings)
-                btnDelete.Enabled = false;
-                pnlDetails.Visible = false;
+                DoRecalculateScreenParts();
             }
         }
 

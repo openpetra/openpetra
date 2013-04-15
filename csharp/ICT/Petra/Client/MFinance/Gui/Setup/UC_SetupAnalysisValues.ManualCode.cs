@@ -95,33 +95,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void DeleteRow(System.Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
+            DeleteAFreeformAnalysis();
+        }
 
-            int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
-                FPreviouslySelectedDetailRow.AnalysisTypeCode,
-                FPreviouslySelectedDetailRow.AnalysisValue);
-
-            if (num > 0)
-            {
-                MessageBox.Show(Catalog.GetString(
-                        "This value is already referenced and cannot be deleted."));
-                return;
-            }
-
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have chosen to delete this value ({0}).\n\nDo you really want to delete it?"),
-                            FPreviouslySelectedDetailRow.AnalysisValue), Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
-            {
-                int rowIndex = grdDetails.SelectedRowIndex();
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
-                SelectRowInGrid(rowIndex);
-            }
+        private bool PreDeleteManual(AFreeformAnalysisRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            ADeletionQuestion = String.Format(
+                Catalog.GetString("You have chosen to delete this value ({0}).{1}{1}Do you really want to delete it?"),
+                FPreviouslySelectedDetailRow.AnalysisValue,
+                Environment.NewLine);
+            return true;
         }
 
         private void GetDetailDataFromControlsManual(AFreeformAnalysisRow ARow)

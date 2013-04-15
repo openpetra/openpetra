@@ -240,55 +240,92 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
+        private bool PreDeleteManual(IndividualDataTDSPmGeneralApplicationRow ARowToDelete, ref String ADeletionQuestion)
+        {
+            ADeletionQuestion = String.Format(
+                Catalog.GetString("You have choosen to delete the record for {0} {1}.{2}{2}Do you really want to delete it?"),
+                FPreviouslySelectedDetailRow.ApplicationForEventOrField,
+                FPreviouslySelectedDetailRow.EventOrFieldName,
+                Environment.NewLine);
+            return true;
+        }
+
+        private bool DeleteRowManual(IndividualDataTDSPmGeneralApplicationRow ARowToDelete, out String ACompletionMessage)
+        {
+            ACompletionMessage = String.Empty;
+
+            // along with the general application record the specific record needs to be deleted
+            if (IsEventApplication(FPreviouslySelectedDetailRow))
+            {
+                GetEventApplicationRow(FPreviouslySelectedDetailRow).Delete();
+            }
+            else
+            {
+                GetFieldApplicationRow(FPreviouslySelectedDetailRow).Delete();
+            }
+
+            ARowToDelete.Delete();
+
+            return true;
+        }
+
+        private void PostDeleteManual(IndividualDataTDSPmGeneralApplicationRow ARowToDelete, Boolean AAllowDeletion, Boolean ADeletionPerformed, String ACompletionMessage)
+        {
+            if (ADeletionPerformed)
+            {
+                DoRecalculateScreenParts();
+            }
+        }
+
         private void DeleteRow(System.Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
+            //if (FPreviouslySelectedDetailRow == null)
+            //{
+            //    return;
+            //}
 
-            if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete the record for {0} {1}.\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.ApplicationForEventOrField,
-                        FPreviouslySelectedDetailRow.EventOrFieldName),
-                    Catalog.GetString("Confirm Delete"),
-                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-            {
-                int rowIndex = grdDetails.SelectedRowIndex();
+            //if (MessageBox.Show(String.Format(Catalog.GetString(
+            //                "You have choosen to delete the record for {0} {1}.\n\nDo you really want to delete it?"),
+            //            FPreviouslySelectedDetailRow.ApplicationForEventOrField,
+            //            FPreviouslySelectedDetailRow.EventOrFieldName),
+            //        Catalog.GetString("Confirm Delete"),
+            //        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            //{
+            //    int rowIndex = grdDetails.SelectedRowIndex();
 
-                // along with the general application record the specific record needs to be deleted
-                if (IsEventApplication(FPreviouslySelectedDetailRow))
-                {
-                    GetEventApplicationRow(FPreviouslySelectedDetailRow).Delete();
-                }
-                else
-                {
-                    GetFieldApplicationRow(FPreviouslySelectedDetailRow).Delete();
-                }
+            //    // along with the general application record the specific record needs to be deleted
+            //    if (IsEventApplication(FPreviouslySelectedDetailRow))
+            //    {
+            //        GetEventApplicationRow(FPreviouslySelectedDetailRow).Delete();
+            //    }
+            //    else
+            //    {
+            //        GetFieldApplicationRow(FPreviouslySelectedDetailRow).Delete();
+            //    }
 
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
+            //    FPreviouslySelectedDetailRow.Delete();
+            //    FPetraUtilsObject.SetChangedFlag();
 
-                // temporarily reset selected row to avoid interference with validation
-                //FPreviouslySelectedDetailRow = null;
-                //grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                //grdDetails.SelectRowInGrid(rowIndex, true);
-                //grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                //FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                //ShowDetails(FPreviouslySelectedDetailRow);
+            //    // temporarily reset selected row to avoid interference with validation
+            //    //FPreviouslySelectedDetailRow = null;
+            //    //grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+            //    //grdDetails.SelectRowInGrid(rowIndex, true);
+            //    //grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+            //    //FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            //    //ShowDetails(FPreviouslySelectedDetailRow);
 
-                // AlanP Upgrade note... I think the previous, commented lines can be replaced with this...
-                SelectRowInGrid(rowIndex);
+            //    // AlanP Upgrade note... I think the previous, commented lines can be replaced with this...
+            //    SelectRowInGrid(rowIndex);
 
-                DoRecalculateScreenParts();
+            //    DoRecalculateScreenParts();
 
-                if (grdDetails.Rows.Count <= 1)
-                {
-                    // hide details part and disable buttons if no record in grid (first row for headings)
-                    btnDelete.Enabled = false;
-                    pnlDetails.Visible = false;
-                }
-            }
+            //    if (grdDetails.Rows.Count <= 1)
+            //    {
+            //        // hide details part and disable buttons if no record in grid (first row for headings)
+            //        btnDelete.Enabled = false;
+            //        pnlDetails.Visible = false;
+            //    }
+            //}
         }
 
         private void DoRecalculateScreenParts()

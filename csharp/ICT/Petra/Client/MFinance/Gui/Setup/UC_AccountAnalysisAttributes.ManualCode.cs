@@ -151,37 +151,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void DeleteRow(System.Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
+            DeleteAAnalysisAttribute();
+        }
 
-            // TODO: Do I need to check whether I can detatch this AnalTypeCode from this account?
-
-            /*
-             * int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
-             *  FPreviouslySelectedDetailRow.AnalysisTypeCode,
-             *  "*All*");
-             *
-             * if (num > 0)
-             * {
-             *  MessageBox.Show(Catalog.GetString(
-             *          "{0} is already referenced and cannot be deleted."), FPreviouslySelectedDetailRow.AnalysisTypeCode);
-             *  return;
-             * }
-             */
-
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "Confirm you want to Remove {0} from this account."),
-                            FPreviouslySelectedDetailRow.AnalysisTypeCode), Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
-            {
-                int rowIndex = CurrentRowIndex();
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
-                SelectByIndex(rowIndex);
-            }
+        private bool PreDeleteManual(AAnalysisAttributeRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            ADeletionQuestion = String.Format(
+                Catalog.GetString("Confirm you want to Remove {0} from this account."),
+                FPreviouslySelectedDetailRow.AnalysisTypeCode);
+            return true;
         }
 
         private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
