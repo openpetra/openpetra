@@ -110,11 +110,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.Key = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_past_experience));
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePmPastExperience();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable

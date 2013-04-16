@@ -326,11 +326,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PublicationCode = "";
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePSubscription();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable

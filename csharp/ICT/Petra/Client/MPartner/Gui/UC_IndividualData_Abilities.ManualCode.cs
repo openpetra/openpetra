@@ -124,11 +124,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.AbilityAreaName = newName;
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePmPersonAbility();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable

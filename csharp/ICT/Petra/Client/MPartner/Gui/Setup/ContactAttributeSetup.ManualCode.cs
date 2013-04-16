@@ -123,34 +123,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             txtDetailContactAttributeCode.Focus();
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
+        private bool PreDeleteManual(PContactAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
+            ADeletionQuestion = Catalog.GetString(
+                "Are you sure that you want to delete the current Contact Attribute?  If you choose 'Yes', all the detail attributes for this Contact Attribute will be deleted as well.");
+            return true;
+        }
 
-            if (MessageBox.Show(Catalog.GetString(
-                        "Are you sure that you want to delete the current Contact Attribute?  If you choose 'Yes', all the detail attributes for this Contact Attribute will be deleted as well."),
-                    Catalog.GetString("Delete Row"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == DialogResult.No)
-            {
-                return;
-            }
+        private bool DeleteRowManual(PContactAttributeRow ARowToDelete, out String ACompletionMessage)
+        {
+            ACompletionMessage = String.Empty;
 
             // Now we need to remove all the detail attributes associated with this contact attribute.
             // (If we can delete the current row, it must also be the case that we can delete all the detail attributes for this row)
             // Then we can delete the contact attribute itself...
             ucoContactDetail.DeleteAll();
 
-            // Get the selected grid row
-            int nSelectedRow = grdDetails.SelectedRowIndex();
-            FPreviouslySelectedDetailRow.Delete();
-            FPetraUtilsObject.SetChangedFlag();
-
-            // Select the next row to show
-            SelectRowInGrid(nSelectedRow);
+            // Now delete this row
+            ARowToDelete.Delete();
+            
+            return true;
         }
 
         private void ShowDetailsManual(PContactAttributeRow ARow)

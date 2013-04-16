@@ -149,11 +149,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.AnalysisTypeCode = NewUniqueAnalTypeCode();
         }
 
-        private void DeleteRow(System.Object sender, EventArgs e)
-        {
-            DeleteAAnalysisAttribute();
-        }
-
         private bool PreDeleteManual(AAnalysisAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
             ADeletionQuestion = String.Format(

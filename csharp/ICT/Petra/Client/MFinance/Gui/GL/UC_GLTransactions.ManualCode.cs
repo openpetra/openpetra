@@ -147,7 +147,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ShowDataManual();
 
             btnNew.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
-            btnRemove.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
+            btnDelete.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
 
             SetTransactionDefaultView();
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
@@ -812,11 +812,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void DeleteRecord(System.Object sender, EventArgs e)
-        {
-            this.DeleteATransaction();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
@@ -826,19 +821,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(ATransactionRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
-            {
-                MessageBox.Show(Catalog.GetString("No GL Transaction is selected to delete."),
-                    Catalog.GetString("Deleting GL Transaction"));
-                return false;
-            }
-            else
-            {
-                // ask if the user really wants to cancel the transaction
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete GL Transaction no: {0} ?"),
-                    ARowToDelete.TransactionNumber);
-                return true;
-            }
+            // ask if the user really wants to cancel the transaction
+            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete GL Transaction no: {0} ?"),
+                ARowToDelete.TransactionNumber);
+            return true;
         }
 
         /// <summary>

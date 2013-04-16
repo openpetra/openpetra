@@ -117,11 +117,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.StartOfCommitment = DateTime.Now.Date;
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePmStaffData();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable

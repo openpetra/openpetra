@@ -144,46 +144,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void DeleteRow(System.Object sender, EventArgs e)
-        {
-            //if (FPreviouslySelectedDetailRow == null)
-            //{
-            //    return;
-            //}
-
-            //if (MessageBox.Show(String.Format(Catalog.GetString(
-            //                "You have choosen to delete the bank account {0}.\n\nDo you really want to delete it?"),
-            //            FPreviouslySelectedDetailRow.AccountName), Catalog.GetString("Confirm Delete"),
-            //        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-            //{
-            //    int rowIndex = grdDetails.SelectedRowIndex();
-
-            //    // TODO what if several people are using the same bank account?
-            //    FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName();
-            //    FMainDS.PPartnerBankingDetails.DefaultView.FindRows(FPreviouslySelectedDetailRow.BankingDetailsKey)[0].Row.Delete();
-
-            //    FPreviouslySelectedDetailRow.Delete();
-            //    FPetraUtilsObject.SetChangedFlag();
-
-            //    // temporarily reset selected row to avoid interference with validation
-            //    FPreviouslySelectedDetailRow = null;
-            //    grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-            //    grdDetails.SelectRowInGrid(rowIndex, true);
-            //    grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-            //    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-            //    ShowDetails(FPreviouslySelectedDetailRow);
-
-            //    DoRecalculateScreenParts();
-
-            //    if (grdDetails.Rows.Count <= 1)
-            //    {
-            //        // hide details part and disable buttons if no record in grid (first row for headings)
-            //        btnDelete.Enabled = false;
-            //        pnlDetails.Visible = false;
-            //    }
-            //}
-        }
-
         private void DoRecalculateScreenParts()
         {
             OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {
@@ -281,7 +241,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.Row != -1)
             {
-                this.DeleteRow(this, null);
+                this.DeleteRecord(this, null);
             }
         }
 

@@ -13,7 +13,7 @@ RootNode:
     Actions:
         cndDiscountEnabled: {InitialValue=false}
         actNewDetail: {Label=Add De&tail, ActionClick=NewDetail}
-        actRemoveDetail:  {Label=&Remove Detail, ActionClick=RemoveDetail}
+        actRemoveDetail:  {Label=&Remove Detail, ActionClick=DeleteRecord}
         actAnalyse: {ActionClick=Analyse}
         actPostDocument: {Label=Post, ActionClick=PostDocument}
         actPayDocument: {Label=Pay, ActionClick=PayDocument}

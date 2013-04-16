@@ -231,58 +231,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             CreateNewABudget();
         }
 
-        private void DeleteRow(System.Object sender, EventArgs e)
+        /// <summary>
+        /// Performs checks to determine whether a deletion of the current
+        ///  row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(ABudgetRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                EnableBudgetEntry(false);
-                return;
-            }
+            ADeletionQuestion = String.Format(Catalog.GetString(
+                "You have chosen to delete this budget (Cost Centre: {0}, Account: {1}, Type: {2}, Revision: {3}).{4}{4}Do you really want to delete it?"),
+                FPreviouslySelectedDetailRow.CostCentreCode,
+                FPreviouslySelectedDetailRow.AccountCode,
+                FPreviouslySelectedDetailRow.BudgetTypeCode,
+                FPreviouslySelectedDetailRow.Revision,
+                Environment.NewLine);
+            return true;
+        }
 
-            //TODO need to create CheckDeleteABudgetSequence
-            int num = 0; //TRemote.MFinance.Budget.WebConnectors.CheckDeleteABudgetSequence(FPreviouslySelectedDetailRow.BudgetSequence);
+        /// <summary>
+        /// Deletes the current row and optionally populates a completion message
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to delete</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        /// <returns>true if row deletion is successful</returns>
+        private bool DeleteRowManual(ABudgetRow ARowToDelete, out string ACompletionMessage)
+        {
+            ACompletionMessage = String.Empty;
 
-            if (num > 0)
-            {
-                MessageBox.Show(Catalog.GetString("This budget is already referenced and cannot be deleted."));
-                return;
-            }
-
-            bool isBudgetUsed = false;
             int BudgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
+            DeleteBudgetPeriodData(BudgetSequence);
+            ARowToDelete.Delete();
+            
+            return true;
+        }
 
-//            for (int i = 0; i < 13; i++)
-//            {
-//                if (FMainDS.ABudgetPeriod.Rows.Find(new object[] { BudgetSequence, i }) != null)
-//                {
-//                    isBudgetUsed = true;
-//                    break;
-//                }
-//            }
-
-            if (isBudgetUsed)
-            {
-                MessageBox.Show(Catalog.GetString(
-                        "Budget figures exist for last year and this year. The budget cannot be deleted. Do you wish to cancel the budget figures for next year?"));
-                return;
-            }
-
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have chosen to delete this budget (Cost Centre: {0}, Account: {1}, Type: {2}, Revision: {3}).\n\nDo you really want to delete it?"),
-                            FPreviouslySelectedDetailRow.CostCentreCode,
-                            FPreviouslySelectedDetailRow.AccountCode,
-                            FPreviouslySelectedDetailRow.BudgetTypeCode,
-                            FPreviouslySelectedDetailRow.Revision), Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
-            {
-                int rowIndex = CurrentRowIndex();
-                DeleteBudgetPeriodData(BudgetSequence);
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
-                SelectByIndex(rowIndex);
-            }
-
+        private void PostDeleteManual(ABudgetRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
             //Disable the controls if no records found
             if (FPreviouslySelectedDetailRow == null)
             {

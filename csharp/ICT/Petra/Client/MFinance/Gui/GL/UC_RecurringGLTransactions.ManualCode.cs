@@ -789,11 +789,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void DeleteRecord(System.Object sender, EventArgs e)
-        {
-            this.DeleteARecurringTransaction();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable

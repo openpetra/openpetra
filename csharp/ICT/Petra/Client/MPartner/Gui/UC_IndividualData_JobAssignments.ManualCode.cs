@@ -122,11 +122,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.JobAssignmentKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_job_assignment));
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePmJobAssignment();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable

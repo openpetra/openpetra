@@ -121,11 +121,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.EvaluationDate = EvaluationDate;
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePmPersonEvaluation();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable

@@ -192,11 +192,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.LanguageCode = newName;
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePmPersonLanguage();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable

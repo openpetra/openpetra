@@ -117,11 +117,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePmPersonSkill();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable

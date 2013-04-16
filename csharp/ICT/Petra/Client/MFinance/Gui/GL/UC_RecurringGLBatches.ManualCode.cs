@@ -396,11 +396,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void DeleteRecord(System.Object sender, EventArgs e)
-        {
-            this.DeleteARecurringBatch();
-        }
-
         /// <summary>
         /// Deletes the current row and optionally populates a completion message
         /// </summary>

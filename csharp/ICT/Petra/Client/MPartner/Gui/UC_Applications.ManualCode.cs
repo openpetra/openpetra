@@ -277,57 +277,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void DeleteRow(System.Object sender, EventArgs e)
-        {
-            //if (FPreviouslySelectedDetailRow == null)
-            //{
-            //    return;
-            //}
-
-            //if (MessageBox.Show(String.Format(Catalog.GetString(
-            //                "You have choosen to delete the record for {0} {1}.\n\nDo you really want to delete it?"),
-            //            FPreviouslySelectedDetailRow.ApplicationForEventOrField,
-            //            FPreviouslySelectedDetailRow.EventOrFieldName),
-            //        Catalog.GetString("Confirm Delete"),
-            //        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-            //{
-            //    int rowIndex = grdDetails.SelectedRowIndex();
-
-            //    // along with the general application record the specific record needs to be deleted
-            //    if (IsEventApplication(FPreviouslySelectedDetailRow))
-            //    {
-            //        GetEventApplicationRow(FPreviouslySelectedDetailRow).Delete();
-            //    }
-            //    else
-            //    {
-            //        GetFieldApplicationRow(FPreviouslySelectedDetailRow).Delete();
-            //    }
-
-            //    FPreviouslySelectedDetailRow.Delete();
-            //    FPetraUtilsObject.SetChangedFlag();
-
-            //    // temporarily reset selected row to avoid interference with validation
-            //    //FPreviouslySelectedDetailRow = null;
-            //    //grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-            //    //grdDetails.SelectRowInGrid(rowIndex, true);
-            //    //grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-            //    //FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-            //    //ShowDetails(FPreviouslySelectedDetailRow);
-
-            //    // AlanP Upgrade note... I think the previous, commented lines can be replaced with this...
-            //    SelectRowInGrid(rowIndex);
-
-            //    DoRecalculateScreenParts();
-
-            //    if (grdDetails.Rows.Count <= 1)
-            //    {
-            //        // hide details part and disable buttons if no record in grid (first row for headings)
-            //        btnDelete.Enabled = false;
-            //        pnlDetails.Visible = false;
-            //    }
-            //}
-        }
-
         private void DoRecalculateScreenParts()
         {
             OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {
@@ -542,7 +491,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.Row != -1)
             {
-                this.DeleteRow(this, null);
+                this.DeleteRecord(this, null);
             }
         }
 

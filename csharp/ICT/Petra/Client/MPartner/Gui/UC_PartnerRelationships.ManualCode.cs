@@ -321,11 +321,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.RelationKey = ARow.PartnerKey;
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePPartnerRelationship();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
