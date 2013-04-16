@@ -1254,7 +1254,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddDeleteReferenceCountImplementation();
 
                 // The generated code only writes the delete button event handler if there is a delete button and there is no manual code to handle the event
-                if (FCodeStorage.ManualFileExistsAndContains("btnDelete.Click +=")
+                if ((FCodeStorage.FActionList.ContainsKey("actDelete") && (FCodeStorage.FActionList["actDelete"].actionClick != "DeleteRecord"))
+                    || FCodeStorage.ManualFileExistsAndContains("btnDelete.Click +=")
                     || FCodeStorage.ManualFileExistsAndContains("void DeleteRecord(")
                     || FCodeStorage.ManualFileExistsAndContains("void DeleteDetail(")
                     || FCodeStorage.ManualFileExistsAndContains("void DeleteRow(")
