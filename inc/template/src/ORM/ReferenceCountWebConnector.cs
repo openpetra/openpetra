@@ -50,20 +50,20 @@ namespace Ict.Petra.Server.M{#TOPLEVELMODULE}.ReferenceCount.WebConnectors
     public class {#CLASSNAME}
     {
         /// <summary>
-        /// Counts the records that reference a <see cref="DataRow " /> of a cachable DataTable. The record count is recursive, i.e.
-        /// counts all records of all related DB tables that reference the <see cref="DataRow" /> AND the records that reference
-        /// the record(s) of all related DB tables that reference the <see cref="DataRow" />!
+        /// Counts the records that reference a <see cref="System.Data.DataRow " /> of a cachable DataTable. The record count is recursive, i.e.
+        /// counts all records of all related DB tables that reference the <see cref="System.Data.DataRow" /> AND the records that reference
+        /// the record(s) of all related DB tables that reference the <see cref="System.Data.DataRow" />!
         /// </summary>
-        /// <param name="ACacheableTable">Tells for which cachable DataTable the records that reference a <see cref="DataRow " />
+        /// <param name="ACacheableTable">Tells for which cachable DataTable the records that reference a <see cref="System.Data.DataRow " />
         /// of that cachable DataTable should be counted.
         /// IMPORTANT NOTE: Only tables that have a client screen with a delete button are implemented.</param>
         /// <param name="APrimaryKeyValues">Values of the Primary Key of the DataRow in question represented as an Array of object.
-        /// (This can easily be obtained using the Method <see cref="DataUtilities.GetPKValuesFromDataRow" />). The reason why
-        /// a DataRow isn't passed for this Argument is that the <see cref="DataRow" /> Class is not Serializable. </param>
-        /// <param name="AVerificationResult">A <see cref="TVerificationResultCollection" /> containing a single
-        /// <see cref="TVerificationResult "/> that contains information about DB Table references created by a cascading count
+        /// (This can easily be obtained using the Method <see cref="Ict.Common.Data.DataUtilities.GetPKValuesFromDataRow" />). The reason why
+        /// a DataRow isn't passed for this Argument is that the <see cref="System.Data.DataRow" /> Class is not Serializable. </param>
+        /// <param name="AVerificationResult">A <see cref="Ict.Common.Verification.TVerificationResultCollection" /> containing a single
+        /// <see cref="Ict.Common.Verification.TVerificationResult "/> that contains information about DB Table references created by a cascading count
         /// Method if the count yielded more than 0 referencing DataRows.</param>
-        /// <returns>The number records that reference a <see cref="DataRow " /> of a cachable DataTable.</returns>
+        /// <returns>The number records that reference a <see cref="System.Data.DataRow " /> of a cachable DataTable.</returns>
         [RequireModulePermission("NONE")]
         public static int GetCacheableRecordReferenceCount(String ACacheableTable,
             object[] APrimaryKeyValues, out TVerificationResultCollection AVerificationResult)
@@ -101,20 +101,20 @@ namespace Ict.Petra.Server.M{#TOPLEVELMODULE}.ReferenceCount.WebConnectors
         }
 
         /// <summary>
-        /// Counts the records that reference a <see cref="DataRow " /> of a non-cachable DataTable. The record count is recursive, i.e.
-        /// counts all records of all related DB tables that reference the <see cref="DataRow" /> AND the records that reference
-        /// the record(s) of all related DB tables that reference the <see cref="DataRow" />!
+        /// Counts the records that reference a <see cref="System.Data.DataRow " /> of a non-cachable DataTable. The record count is recursive, i.e.
+        /// counts all records of all related DB tables that reference the <see cref="System.Data.DataRow" /> AND the records that reference
+        /// the record(s) of all related DB tables that reference the <see cref="System.Data.DataRow" />!
         /// </summary>
-        /// <param name="ADataTable">Tells for which non-cachable DataTable the records that reference a <see cref="DataRow " />
+        /// <param name="ADataTable">Tells for which non-cachable DataTable the records that reference a <see cref="System.Data.DataRow " />
         /// of that cachable DataTable should be counted.
         /// IMPORTANT NOTE: Only tables that have a client screen with a delete button are implemented.</param>
         /// <param name="APrimaryKeyValues">Values of the Primary Key of the DataRow in question represented as an Array of object.
-        /// (This can easily be obtained using the Method <see cref="DataUtilities.GetPKValuesFromDataRow" />). The reason why
-        /// a DataRow isn't passed for this Argument is that the <see cref="DataRow" /> Class is not Serializable. </param>
-        /// <param name="AVerificationResult">A <see cref="TVerificationResultCollection" /> containing a single
-        /// <see cref="TVerificationResult "/> that contains information about DB Table references created by a cascading count
+        /// (This can easily be obtained using the Method <see cref="Ict.Common.Data.DataUtilities.GetPKValuesFromDataRow" />). The reason why
+        /// a DataRow isn't passed for this Argument is that the <see cref="System.Data.DataRow" /> Class is not Serializable. </param>
+        /// <param name="AVerificationResult">A <see cref="Ict.Common.Verification.TVerificationResultCollection" /> containing a single
+        /// <see cref="Ict.Common.Verification.TVerificationResult "/> that contains information about DB Table references created by a cascading count
         /// Method if the count yielded more than 0 referencing DataRows.</param>
-        /// <returns>The number records that reference a <see cref="DataRow " /> of a cachable DataTable.</returns>
+        /// <returns>The number records that reference a <see cref="System.Data.DataRow " /> of a non-cachable DataTable.</returns>
         [RequireModulePermission("NONE")]
         public static int GetNonCacheableRecordReferenceCount(TTypedDataTable ADataTable, object[] APrimaryKeyValues, out TVerificationResultCollection AVerificationResult)
         {
