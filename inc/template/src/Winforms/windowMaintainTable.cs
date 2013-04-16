@@ -507,7 +507,9 @@ namespace {#NAMESPACE}
         string CompletionMessage = string.Empty;
         TVerificationResultCollection VerificationResults = null;
         
-        if (FPreviouslySelectedDetailRow == null)
+        int SelectedRow = grdDetails.SelectedRowIndex();
+
+        if ((FPreviouslySelectedDetailRow == null) || (SelectedRow == -1))
         {
             return;
         }
@@ -535,7 +537,6 @@ namespace {#NAMESPACE}
                      MessageBoxIcon.Question,
                      MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
             {
-                int SelectedRow = grdDetails.SelectedRowIndex();
 {#IFDEF DELETEROWMANUAL}
                 {#DELETEROWMANUAL}
 {#ENDIF DELETEROWMANUAL}
