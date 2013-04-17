@@ -105,10 +105,14 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
             Template.SetCodelet("CACHEABLETABLENAME", string.Empty);
             Template.SetCodelet("CACHEABLETABLECASE", string.Empty);
             Template.SetCodelet("CACHEABLETABLELISTNAME", string.Empty);
+            Template.SetCodelet("CACHEABLETRANSACTION", string.Empty);
+            Template.SetCodelet("CACHEABLEFINALLY", string.Empty);
             Template.SetCodelet("TABLESIF", string.Empty);
             Template.SetCodelet("TABLESELSEIF", string.Empty);
             Template.SetCodelet("TABLESELSE", string.Empty);
             Template.SetCodelet("TABLENAME", string.Empty);
+            Template.SetCodelet("NONCACHEABLETRANSACTION", string.Empty);
+            Template.SetCodelet("NONCACHEABLEFINALLY", string.Empty);
 
             // Find all the YAML files in the client module folder
             string[] clientFiles = Directory.GetFiles(AModulePath, "*.yaml", SearchOption.AllDirectories);
@@ -141,6 +145,15 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                         snippet.SetCodelet("CACHEABLETABLELISTNAME", attCacheableListName);
                         Template.InsertSnippet("CACHEABLETABLECASES", snippet);
 
+                        if (cacheableCount == 0)
+                        {
+                            // Add these on the first time through
+                            snippet = Template.GetSnippet("CACHEABLETRANSACTIONSNIP");
+                            Template.InsertSnippet("CACHEABLETRANSACTION", snippet);
+                            snippet = Template.GetSnippet("CACHEABLEFINALLYSNIP");
+                            Template.InsertSnippet("CACHEABLEFINALLY", snippet);
+                        }
+
                         TLogging.Log("Creating cacheable reference count connector for " + attCacheableListName);
                         cacheableCount++;
                     }
@@ -153,6 +166,11 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                             snippet = Template.GetSnippet("TABLEIF");
                             snippet.SetCodelet("TABLENAME", attDetailTableName);
                             Template.InsertSnippet("TABLESIF", snippet);
+
+                            snippet = Template.GetSnippet("NONCACHEABLETRANSACTIONSNIP");
+                            Template.InsertSnippet("NONCACHEABLETRANSACTION", snippet);
+                            snippet = Template.GetSnippet("NONCACHEABLEFINALLYSNIP");
+                            Template.InsertSnippet("NONCACHEABLEFINALLY", snippet);
                         }
                         else
                         {
