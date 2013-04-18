@@ -1276,7 +1276,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FTemplate.AddToCodelet("DELETERECORD", deleteRecord);
 
                     // Write the one-line codelet that handles enable/disable of the delete button
-                    string enableDelete = "FPetraUtilsObject.EnableAction(\"actDelete\", ((ARow != null) && ";
+                    string enableDelete = "FPetraUtilsObject.EnableAction(\"actDelete\", ";
 
                     if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletable")
                         || FCodeStorage.FControlList.ContainsKey("chkDeletable"))
@@ -1293,7 +1293,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         enableDelete += "(ARow.TypeDeletable == true) && ";
                     }
 
-                    enableDelete += "!FPetraUtilsObject.DetailProtectedMode));" + Environment.NewLine;
+                    enableDelete += "pnlDetails.Enabled);" + Environment.NewLine;
 
                     FTemplate.AddToCodelet("ENABLEDELETEBUTTON", enableDelete);
                 }
