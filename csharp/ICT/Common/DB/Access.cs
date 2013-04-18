@@ -1766,55 +1766,6 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// Executes a SQL statement that does not give back any results (eg. an UPDATE
-        /// SQL command). The statement is executed in a transaction
-        /// </summary>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />.
-        /// </param>
-        /// <returns>number of rows affected</returns>
-        public int ExecuteNonQuery(String ASqlStatement, TDBTransaction ATransaction)
-        {
-            return ExecuteNonQuery(ASqlStatement, ATransaction, false);
-        }
-
-        /// <summary>
-        /// Executes a SQL statement that does not give back any results (eg. an UPDATE
-        /// SQL command). The statement is executed in a transaction;
-        /// Suitable for parameterised SQL statements.
-        ///
-        /// </summary>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />.
-        /// </param>
-        /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
-        /// (including parameter Value)
-        /// </param>
-        /// <returns>number of rows affected</returns>
-        public int ExecuteNonQuery(String ASqlStatement, TDBTransaction ATransaction, DbParameter[] AParametersArray)
-        {
-            return ExecuteNonQuery(ASqlStatement, ATransaction, false, AParametersArray);
-        }
-
-        /// <summary>
-        /// Executes a SQL statement that does not give back any results (eg. an UPDATE
-        /// SQL command). The statement is executed in a transaction. Not suitable for
-        /// parameterised SQL statements.
-        ///
-        /// </summary>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" /></param>
-        /// <param name="ACommitTransaction">The transaction is committed if set to true,
-        /// otherwise the transaction is not committed (useful when the caller wants to
-        /// do further things in the same transaction).
-        /// </param>
-        /// <returns>number of rows affected</returns>
-        public int ExecuteNonQuery(String ASqlStatement, TDBTransaction ATransaction, bool ACommitTransaction)
-        {
-            return ExecuteNonQuery(ASqlStatement, ATransaction, ACommitTransaction, new OdbcParameter[0]);
-        }
-
-        /// <summary>
-        /// Executes a SQL statement that does not give back any results (eg. an UPDATE
         /// SQL command). The statement is executed in a transaction. Suitable for
         /// parameterised SQL statements.
         ///
@@ -1828,7 +1779,10 @@ namespace Ict.Common.DB
         /// (including parameter Value)
         /// </param>
         /// <returns>Number of Rows affected</returns>
-        public int ExecuteNonQuery(String ASqlStatement, TDBTransaction ATransaction, bool ACommitTransaction, DbParameter[] AParametersArray)
+        public int ExecuteNonQuery(String ASqlStatement,
+            TDBTransaction ATransaction,
+            DbParameter[] AParametersArray = null,
+            bool ACommitTransaction = false)
         {
             IDbCommand TransactionCommand = null;
 
@@ -1936,23 +1890,6 @@ namespace Ict.Common.DB
         /// <summary>
         /// Executes 1..n SQL statements in a batch (in one go). The statements are
         /// executed in a transaction - if one statement results in an Exception, all
-        /// statements executed so far are rolled back. Suitable for
-        /// parameterised SQL statements.
-        ///
-        /// </summary>
-        /// <param name="AStatementHashTable">A HashTable. Key: a unique identifier;
-        /// Value: an instantiated <see cref="TSQLBatchStatementEntry" /> object</param>
-        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />
-        /// </param>
-        /// <returns>void</returns>
-        public void ExecuteNonQueryBatch(Hashtable AStatementHashTable, TDBTransaction ATransaction)
-        {
-            ExecuteNonQueryBatch(AStatementHashTable, ATransaction, false);
-        }
-
-        /// <summary>
-        /// Executes 1..n SQL statements in a batch (in one go). The statements are
-        /// executed in a transaction - if one statement results in an Exception, all
         /// statements executed so far are rolled back. Suitable for parameterised SQL
         /// statements.
         ///
@@ -1966,7 +1903,7 @@ namespace Ict.Common.DB
         /// transaction).
         /// </param>
         /// <returns>void</returns>
-        public void ExecuteNonQueryBatch(Hashtable AStatementHashTable, TDBTransaction ATransaction, bool ACommitTransaction)
+        public void ExecuteNonQueryBatch(Hashtable AStatementHashTable, TDBTransaction ATransaction, bool ACommitTransaction = false)
         {
             int SqlCommandNumber;
             String CurrentBatchEntryKey = "";
@@ -2002,7 +1939,7 @@ namespace Ict.Common.DB
                         BatchStatementEntryValue = (TSQLBatchStatementEntry)BatchStatementEntryIterator.Value;
                         CurrentBatchEntryKey = BatchStatementEntryIterator.Key.ToString();
                         CurrentBatchEntrySQLStatement = BatchStatementEntryValue.SQLStatement;
-                        ExecuteNonQuery(CurrentBatchEntrySQLStatement, ATransaction, false,
+                        ExecuteNonQuery(CurrentBatchEntrySQLStatement, ATransaction,
                             BatchStatementEntryValue.Parameters);
                         SqlCommandNumber = SqlCommandNumber + 1;
                     }

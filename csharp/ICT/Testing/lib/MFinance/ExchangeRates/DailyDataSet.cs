@@ -471,7 +471,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                     Boolean IsNewTransaction;
                     TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                         out IsNewTransaction);
-                    nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(sql, WriteTransaction, IsNewTransaction);
+                    nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(sql, WriteTransaction, null, IsNewTransaction);
                 }
 
                 // Did we do anything?

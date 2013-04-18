@@ -104,12 +104,12 @@ namespace Ict.Common.DB.Testing
                 t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
                       "VALUES(43, 99999999, 1)";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
                 sql =
                     "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c) "
                     +
                     "VALUES(43, 99999999, '6000', 1, 'EUR', '4300')";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
             catch
@@ -122,10 +122,10 @@ namespace Ict.Common.DB.Testing
             t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             sql = "DELETE FROM a_gift" +
                   " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999 AND a_gift_transaction_number_i = 1";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
             sql = "DELETE FROM a_gift_batch" +
                   " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
@@ -183,7 +183,7 @@ namespace Ict.Common.DB.Testing
                 "test",
                 "test");
 
-            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(insertSql, t, false));
+            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(insertSql, t));
 
             string getTimeStampSql = String.Format(
                 "SELECT s_modification_id_t FROM PUB_s_system_defaults WHERE s_default_code_c = '{0}'",
@@ -198,7 +198,7 @@ namespace Ict.Common.DB.Testing
             OdbcParameter param = new OdbcParameter("timestamp", OdbcType.DateTime);
             param.Value = timestamp;
 
-            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(updateSql, t, false, new OdbcParameter[] { param }), "update by timestamp");
+            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(updateSql, t, new OdbcParameter[] { param }), "update by timestamp");
 
             DBAccess.GDBAccessObj.RollbackTransaction();
         }

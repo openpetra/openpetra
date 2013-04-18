@@ -370,8 +370,8 @@ namespace Ict.Common.DB
             IDbConnection AConnection,
             Int64 ARestartValue)
         {
-            ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction, false);
-            ADatabase.ExecuteNonQuery("INSERT INTO " + ASequenceName + " VALUES(" + ARestartValue.ToString() + ", -1);", ATransaction, false);
+            ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction);
+            ADatabase.ExecuteNonQuery("INSERT INTO " + ASequenceName + " VALUES(" + ARestartValue.ToString() + ", -1);", ATransaction);
         }
 
         /// <summary>
@@ -440,7 +440,7 @@ namespace Ict.Common.DB
 
                                 if (!line.StartsWith("--"))
                                 {
-                                    DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction, false);
+                                    DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction);
                                 }
                             }
 
@@ -456,7 +456,7 @@ namespace Ict.Common.DB
                     string newVersionSql =
                         String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
                             AExeVersion.ToStringDotsHyphen());
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction, false);
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction);
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
                 else

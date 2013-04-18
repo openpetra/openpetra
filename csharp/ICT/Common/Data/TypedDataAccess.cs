@@ -245,7 +245,7 @@ namespace Ict.Common.Data
             List <OdbcParameter>parameters =
                 GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser, false);
 
-            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(query, ATransaction, false, parameters.ToArray()))
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(query, ATransaction, parameters.ToArray()))
             {
                 throw new Exception("problems inserting a row");
             }
@@ -291,7 +291,7 @@ namespace Ict.Common.Data
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
                         Columns,
                         ADataRow,
-                        PrimKeyColumnOrdList), ATransaction, false,
+                        PrimKeyColumnOrdList), ATransaction,
                     GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser)))
             {
                 // Was not able to update the row,
@@ -363,7 +363,7 @@ namespace Ict.Common.Data
                     int RowsChanged = DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
                             Columns,
                             ADataRow,
-                            PrimKeyColumnOrdList), ATransaction, false,
+                            PrimKeyColumnOrdList), ATransaction,
                         GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser));
 
                     if (RowsChanged == 0)
@@ -445,7 +445,7 @@ namespace Ict.Common.Data
             DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + DBTableName,
                     Columns,
                     ADataRow,
-                    PrimKeyColumnOrdList), ATransaction, false,
+                    PrimKeyColumnOrdList), ATransaction,
                 GetParametersForDeleteClause(ATableId, ADataRow, PrimKeyColumnOrdList));
         }
 
@@ -1984,7 +1984,7 @@ namespace Ict.Common.Data
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
             DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClauseFromPrimaryKey(ATableId),
-                ATransaction, false, ParametersArray);
+                ATransaction, ParametersArray);
         }
 
         /// <summary>
@@ -2125,7 +2125,7 @@ namespace Ict.Common.Data
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ATemplateRow, ATemplateOperators),
-                ATransaction, false,
+                ATransaction,
                 GetParametersForWhereClause(ATableId, ATemplateRow));
         }
 
@@ -2139,7 +2139,7 @@ namespace Ict.Common.Data
         {
             DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                                                    GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ASearchCriteria)),
-                ATransaction, false,
+                ATransaction,
                 GetParametersForWhereClause(ATableId, ASearchCriteria));
         }
 
@@ -2275,7 +2275,7 @@ namespace Ict.Common.Data
                     if (InsertParameters.Count > MAX_SQL_PARAMETERS)
                     {
                         // Inserts in one query
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, InsertParameters.ToArray());
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
                         InsertStatement = new StringBuilder();
                         InsertParameters = new List <OdbcParameter>();
                     }
@@ -2298,7 +2298,7 @@ namespace Ict.Common.Data
                 try
                 {
                     // Inserts in one query
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, InsertParameters.ToArray());
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
                 }
                 catch (OdbcException ex)
                 {

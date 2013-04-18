@@ -618,7 +618,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " FROM " + PPartnerContactTable.GetTableDBName() +
                               " WHERE " + PPartnerContactTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() + ")";
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction, false);
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
                 }
                 catch (Exception e)
                 {
@@ -1181,7 +1181,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 SqlStmt = "DELETE FROM pub_" + ATableName +
                           " WHERE " + APartnerKeyColumnName + " = " + APartnerKey.ToString();
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction, false);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction);
             }
             catch (Exception e)
             {
@@ -1214,7 +1214,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                           " SET " + APartnerKeyColumnName + " = 0" +
                           " WHERE " + APartnerKeyColumnName + " = " + APartnerKey.ToString();
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction, false);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction);
             }
             catch (Exception e)
             {
