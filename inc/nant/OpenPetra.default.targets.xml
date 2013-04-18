@@ -42,7 +42,7 @@
   <property name="templateFile" value="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"/>
   
   <if test="${DBMS.Type == 'sqlite'}">
-	<property name="DBMS.DBHostOrFile" value="${SQLitedbWork.file}"/>
+    <property name="DBMS.DBHostOrFile" value="${SQLitedbWork.file}"/>
   </if>
   
   <property name="configFile" value="${ServerConfigFile}"/>

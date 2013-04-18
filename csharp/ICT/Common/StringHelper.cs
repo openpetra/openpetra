@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -778,16 +778,34 @@ namespace Ict.Common
         /// <summary>
         /// parse a line of CSV values, and return a StringCollection with the values
         /// </summary>
-        public static StringCollection GetCSVList(string list, string delimiter)
+        public static StringCollection GetCSVList(string list, string delimiter, bool trimmedValues = false)
         {
             string listcsv = list;
             StringCollection Result = new StringCollection();
 
-            Result.Add(GetNextCSV(ref listcsv, delimiter));
+            string value = GetNextCSV(ref listcsv, delimiter);
+
+            if (trimmedValues)
+            {
+                Result.Add(value.Trim());
+            }
+            else
+            {
+                Result.Add(value);
+            }
 
             while ((listcsv.Length != 0))
             {
-                Result.Add(GetNextCSV(ref listcsv, delimiter));
+                value = GetNextCSV(ref listcsv, delimiter);
+
+                if (trimmedValues)
+                {
+                    Result.Add(value.Trim());
+                }
+                else
+                {
+                    Result.Add(value);
+                }
             }
 
             return Result;
