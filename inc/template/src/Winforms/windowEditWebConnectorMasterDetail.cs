@@ -412,9 +412,7 @@ namespace {#NAMESPACE}
     /// </summary>
     private void ShowDetails()
     {
-        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-        pnlDetails.Enabled = (FPreviouslySelectedDetailRow != null);
-        ShowDetails(FPreviouslySelectedDetailRow);
+        ShowDetails(GetSelectedDetailRow());
     }
 
     /// <summary>
@@ -426,8 +424,13 @@ namespace {#NAMESPACE}
     private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
+        
+        FPreviouslySelectedDetailRow = ARow;
+        pnlDetails.Enabled = (ARow != null);
+        
         {#SHOWDETAILS}
-        FPetraUtilsObject.EnableDataChangedEvent();
+        
+        {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     /// <summary>
