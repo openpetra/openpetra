@@ -550,16 +550,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                                                                                               AGiftDetailNumber });
         }
 
-        /// <summary>
-        /// delete a gift detail, and if it is the last detail, delete the whole gift
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteDetail(System.Object sender, EventArgs e)
-        {
-            DeleteARecurringGiftDetail();
-        }
-
         ARecurringGiftRow FGift = null;
         string FFilterAllDetailsOfGift = string.Empty;
         DataView FGiftDetailView = null;

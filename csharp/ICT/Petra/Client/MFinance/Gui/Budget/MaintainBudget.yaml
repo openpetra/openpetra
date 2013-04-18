@@ -12,7 +12,7 @@ RootNode:
     #WindowHeight: 900
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
-        actDelete: {Label=&Delete, ActionClick=DeleteRecordManual}      
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
         actImport: {Label=&Import, ActionClick=ImportBudget}      
     Controls:
         pnlContent:

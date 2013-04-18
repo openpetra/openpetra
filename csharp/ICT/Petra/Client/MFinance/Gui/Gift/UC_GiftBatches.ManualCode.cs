@@ -626,16 +626,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// cancel a batch (there is no deletion of batches)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CancelRow(System.Object sender, EventArgs e)
-        {
-            this.DeleteAGiftBatch();
-        }
-
-        /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
         /// </summary>
@@ -644,19 +634,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(AGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
-            {
-                MessageBox.Show(Catalog.GetString("No Gift Batch is selected to delete."),
-                    Catalog.GetString("Cancelling of Gift Batch"));
-                return false;
-            }
-            else
-            {
-                // ask if the user really wants to cancel the batch
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to cancel Gift Batch no: {0} ?"),
-                    ARowToDelete.BatchNumber);
-                return true;
-            }
+            // ask if the user really wants to cancel the batch
+            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to cancel Gift Batch no: {0} ?"),
+                ARowToDelete.BatchNumber);
+            return true;
         }
 
         /// <summary>

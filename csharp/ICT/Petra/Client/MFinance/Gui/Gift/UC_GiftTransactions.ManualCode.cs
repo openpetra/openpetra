@@ -632,28 +632,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                                                                             AGiftDetailNumber });
         }
 
-        /// <summary>
-        /// delete a gift detail, and if it is the last detail, delete the whole gift
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteDetail(System.Object sender, EventArgs e)
-        {
-            int nSelectedRow = grdDetails.SelectedRowIndex();
-
-            FDeletionPerformed = false;
-            DeleteAGiftDetail();
-
-            if (grdDetails.Rows.Count > 1)
-            {
-                SelectRowInGrid(nSelectedRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-            }
-        }
-
         AGiftRow FGift = null;
         string FFilterAllDetailsOfGift = string.Empty;
         DataView FGiftDetailView = null;
@@ -844,21 +822,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return deleteSuccessful;
         }
 
-        bool FDeletionPerformed;
-
         private void PostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,
             bool AAllowDeletion,
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            FDeletionPerformed = ADeletionPerformed;
-
             if (ACompletionMessage.Length > 0)
             {
                 MessageBox.Show(ACompletionMessage);
             }
 
-            if (FDeletionPerformed && FGiftSelectedForDeletion)
+            if (ADeletionPerformed && FGiftSelectedForDeletion)
             {
                 FGiftSelectedForDeletion = false;
 

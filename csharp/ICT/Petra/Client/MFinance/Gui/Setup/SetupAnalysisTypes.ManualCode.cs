@@ -88,46 +88,36 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitChanges, out AVerificationResult);
         }
 
-        private void DeleteRow(System.Object sender, EventArgs e)
+        /// <summary>
+        /// Performs checks to determine whether a deletion of the current
+        ///  row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(AAnalysisTypeRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
-
+            /*Code to execute before the delete can take place*/
             DataView view = new DataView(FMainDS.AFreeformAnalysis);
             view.RowStateFilter = DataViewRowState.CurrentRows;
             view.RowFilter = String.Format("{0} = '{1}'",
                 AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
-                FPreviouslySelectedDetailRow.AnalysisTypeCode);
+                ARowToDelete.AnalysisTypeCode);
 
             if (view.Count > 0)
             {
-                MessageBox.Show(Catalog.GetString(
-                        "Please delete the unused values first!\n\nNote:Used types and types with used values cannot be deleted."));
-                return;
+                // We do not want to delete if any rows exist in the DataView
+                MessageBox.Show(String.Format(
+                    Catalog.GetString("Please delete the unused values first!{0}{0}Note:Used types and types with used values cannot be deleted."),
+                    Environment.NewLine));
+                return false;
             }
 
-            int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAAnalysisType(FPreviouslySelectedDetailRow.AnalysisTypeCode);
-
-            if (num > 0)
-            {
-                MessageBox.Show(Catalog.GetString(
-                        "This type is already referenced and cannot be deleted."));
-                return;
-            }
-
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have chosen to delete this type ({0}).\n\nDo you really want to delete it?"),
-                            FPreviouslySelectedDetailRow.AnalysisTypeCode), Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
-            {
-                int rowIndex = grdDetails.SelectedRowIndex();
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
-                SelectRowInGrid(rowIndex);
-            }
+            ADeletionQuestion = String.Format(
+                Catalog.GetString("You have chosen to delete this type ({0}).{1}{1}Do you really want to delete it?"),
+                ARowToDelete.AnalysisTypeCode,
+                Environment.NewLine);
+            return true;
         }
 
         private void GetDetailDataFromControlsManual(AAnalysisTypeRow ARow)

@@ -63,11 +63,6 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             CreateNewPInternationalPostalType();
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            DeletePInternationalPostalType();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable

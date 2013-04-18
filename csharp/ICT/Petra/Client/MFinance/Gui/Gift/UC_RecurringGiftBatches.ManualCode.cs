@@ -218,24 +218,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(ARecurringGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
-            {
-                MessageBox.Show(Catalog.GetString("No recurring gift batch is selected to delete."),
-                    Catalog.GetString("Deleting Recurring Gift Batch"));
-                return false;
-            }
-            else
-            {
-                // ask if the user really wants to cancel the batch
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring Gift Batch no: {0} ?"),
-                    ARowToDelete.BatchNumber);
-                return true;
-            }
-        }
-
-        private void DeleteRow(System.Object sender, EventArgs e)
-        {
-            this.DeleteARecurringGiftBatch();
+            // ask if the user really wants to cancel the batch
+            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring Gift Batch no: {0} ?"),
+                ARowToDelete.BatchNumber);
+            return true;
         }
 
         /// <summary>
