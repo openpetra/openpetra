@@ -1316,7 +1316,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
                 "a_ledger_number_i=" + ALedgerNumber + " AND " +
                 "a_account_code_c = '" + AAccountCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
             bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
 
             if (!IsInUse)
@@ -1325,7 +1325,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
                     "a_ledger_number_i=" + ALedgerNumber + " AND " +
                     "a_account_code_c = '" + AAccountCode + "';";
-                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
                 IsInUse = (Convert.ToInt32(SqlResult) > 0);
             }
 
@@ -1338,7 +1338,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 "SELECT COUNT (*) FROM PUB_a_account_hierarchy_detail WHERE " +
                 "a_ledger_number_i=" + ALedgerNumber + " AND " +
                 "a_account_code_to_report_to_c = '" + AAccountCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
 
             return Convert.ToInt32(SqlResult) > 0;
         }
@@ -3054,7 +3054,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 "SELECT COUNT (*) FROM PUB_a_cost_centre WHERE " +
                 "a_ledger_number_i=" + ALedgerNumber + " AND " +
                 "a_cost_centre_to_report_to_c = '" + ACostCentreCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
 
             return Convert.ToInt32(SqlResult) > 0;
         }
@@ -3069,7 +3069,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
                 "a_ledger_number_i=" + ALedgerNumber + " AND " +
                 "a_cost_centre_code_c = '" + ACostCentreCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
             bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
 
             if (!IsInUse)
@@ -3078,7 +3078,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
                     "a_ledger_number_i=" + ALedgerNumber + " AND " +
                     "a_cost_centre_code_c = '" + ACostCentreCode + "';";
-                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
                 IsInUse = (Convert.ToInt32(SqlResult) > 0);
             }
 

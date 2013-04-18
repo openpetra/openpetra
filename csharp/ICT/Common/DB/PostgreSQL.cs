@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -512,7 +512,7 @@ namespace Ict.Common.DB
             // TODO problem: sequence should be committed? separate transaction?
             // see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=44
             // or use locking? see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=50
-            return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT NEXTVAL('" + ASequenceName + "')", ATransaction, false));
+            return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT NEXTVAL('" + ASequenceName + "')", ATransaction));
         }
 
         /// <summary>
@@ -526,7 +526,7 @@ namespace Ict.Common.DB
         /// <returns>Sequence Value.</returns>
         public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
-            return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT last_value FROM " + ASequenceName + "", ATransaction, false));
+            return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT last_value FROM " + ASequenceName + "", ATransaction));
         }
 
         /// <summary>
@@ -539,7 +539,7 @@ namespace Ict.Common.DB
             Int64 ARestartValue)
         {
             ADatabase.ExecuteScalar(
-                "SELECT pg_catalog.setval('" + ASequenceName + "', " + ARestartValue.ToString() + ", true);", ATransaction, false);
+                "SELECT pg_catalog.setval('" + ASequenceName + "', " + ARestartValue.ToString() + ", true);", ATransaction);
         }
 
         /// <summary>

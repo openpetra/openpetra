@@ -730,6 +730,11 @@ namespace Ict.Common.DB
         {
             IDbCommand ObjReturn = null;
 
+            if (AParametersArray == null)
+            {
+                AParametersArray = new OdbcParameter[0];
+            }
+
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Entering " + this.GetType().FullName + ".Command()...");
@@ -1761,43 +1766,33 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// Executes a SQL statement that does not give back any results (eg. an UPDATE
-        /// SQL command). The statement is executed in a transaction; the transaction is
-        /// automatically committed. Not suitable for parameterised SQL statements.
-        ///
+        /// SQL command). The statement is executed in a transaction
         /// </summary>
         /// <param name="ASqlStatement">SQL statement</param>
         /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />.
-        /// The transaction is automatically committed! Can be null.
         /// </param>
         /// <returns>number of rows affected</returns>
         public int ExecuteNonQuery(String ASqlStatement, TDBTransaction ATransaction)
         {
-            if (ATransaction != null)
-            {
-                return ExecuteNonQuery(ASqlStatement, ATransaction, true);
-            }
-            else
-            {
-                return ExecuteNonQuery(ASqlStatement, ATransaction, false);
-            }
+            return ExecuteNonQuery(ASqlStatement, ATransaction, false);
         }
 
         /// <summary>
         /// Executes a SQL statement that does not give back any results (eg. an UPDATE
-        /// SQL command). The statement is executed in a transaction; the transaction is
-        /// automatically committed. Suitable for parameterised SQL statements.
+        /// SQL command). The statement is executed in a transaction;
+        /// Suitable for parameterised SQL statements.
         ///
         /// </summary>
         /// <param name="ASqlStatement">SQL statement</param>
         /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />.
-        /// The transaction is automatically committed!</param>
+        /// </param>
         /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
         /// (including parameter Value)
         /// </param>
         /// <returns>number of rows affected</returns>
         public int ExecuteNonQuery(String ASqlStatement, TDBTransaction ATransaction, DbParameter[] AParametersArray)
         {
-            return ExecuteNonQuery(ASqlStatement, ATransaction, true, AParametersArray);
+            return ExecuteNonQuery(ASqlStatement, ATransaction, false, AParametersArray);
         }
 
         /// <summary>
@@ -1903,7 +1898,7 @@ namespace Ict.Common.DB
             if (ConnectionReady())
             {
                 EnclosingTransaction = BeginTransaction(IsolationLevel.ReadCommitted);
-                ExecuteNonQueryBatch(AStatementHashTable, EnclosingTransaction);
+                ExecuteNonQueryBatch(AStatementHashTable, EnclosingTransaction, true);
             }
             else
             {
@@ -1941,8 +1936,7 @@ namespace Ict.Common.DB
         /// <summary>
         /// Executes 1..n SQL statements in a batch (in one go). The statements are
         /// executed in a transaction - if one statement results in an Exception, all
-        /// statements executed so far are rolled back. The transaction is automatically
-        /// committed if all statements could be executed without error. Suitable for
+        /// statements executed so far are rolled back. Suitable for
         /// parameterised SQL statements.
         ///
         /// </summary>
@@ -1953,7 +1947,7 @@ namespace Ict.Common.DB
         /// <returns>void</returns>
         public void ExecuteNonQueryBatch(Hashtable AStatementHashTable, TDBTransaction ATransaction)
         {
-            ExecuteNonQueryBatch(AStatementHashTable, ATransaction, true);
+            ExecuteNonQueryBatch(AStatementHashTable, ATransaction, false);
         }
 
         /// <summary>
@@ -2050,23 +2044,6 @@ namespace Ict.Common.DB
         /// SQL command or a call to a Stored Procedure that inserts data and returns
         /// the value of a auto-numbered field). The statement is executed in a
         /// transaction with the desired <see cref="IsolationLevel" /> and
-        /// the transaction is automatically committed. Not suitable for
-        /// parameterised SQL statements.
-        /// </summary>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="AIsolationLevel">Desired <see cref="IsolationLevel" /> of the transaction</param>
-        /// <returns>Single result as object
-        /// </returns>
-        public object ExecuteScalar(String ASqlStatement, IsolationLevel AIsolationLevel)
-        {
-            return ExecuteScalar(ASqlStatement, AIsolationLevel, new OdbcParameter[0]);
-        }
-
-        /// <summary>
-        /// Executes a SQL statement that returns a single result (eg. an SELECT COUNT(*)
-        /// SQL command or a call to a Stored Procedure that inserts data and returns
-        /// the value of a auto-numbered field). The statement is executed in a
-        /// transaction with the desired <see cref="IsolationLevel" /> and
         /// the transaction is automatically committed. Suitable for
         /// parameterised SQL statements.
         /// </summary>
@@ -2076,7 +2053,7 @@ namespace Ict.Common.DB
         /// (including parameter Value)</param>
         /// <returns>Single result as object
         /// </returns>
-        public object ExecuteScalar(String ASqlStatement, IsolationLevel AIsolationLevel, DbParameter[] AParametersArray)
+        public object ExecuteScalar(String ASqlStatement, IsolationLevel AIsolationLevel, DbParameter[] AParametersArray = null)
         {
             object ReturnValue = null;
             TDBTransaction EnclosingTransaction;
@@ -2087,7 +2064,7 @@ namespace Ict.Common.DB
 
                 try
                 {
-                    ReturnValue = ExecuteScalar(ASqlStatement, EnclosingTransaction, true, AParametersArray);
+                    ReturnValue = ExecuteScalar(ASqlStatement, EnclosingTransaction, AParametersArray);
                 }
                 catch (Exception)
                 {
@@ -2111,58 +2088,6 @@ namespace Ict.Common.DB
         /// Executes a SQL statement that returns a single result (eg. an SELECT COUNT(*)
         /// SQL command or a call to a Stored Procedure that inserts data and returns
         /// the value of a auto-numbered field). The statement is executed in a
-        /// transaction; the transaction is automatically committed. Not suitable for
-        /// parameterised SQL statements.
-        /// </summary>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" /></param>
-        /// <returns>Single result as object
-        /// </returns>
-        public object ExecuteScalar(String ASqlStatement, TDBTransaction ATransaction)
-        {
-            return ExecuteScalar(ASqlStatement, ATransaction, new OdbcParameter[0]);
-        }
-
-        /// <summary>
-        /// Executes a SQL statement that returns a single result (eg. an SELECT COUNT(*)
-        /// SQL command or a call to a Stored Procedure that inserts data and returns
-        /// the value of a auto-numbered field). The statement is executed in a
-        /// transaction; the transaction is automatically committed. Suitable for
-        /// parameterised SQL statements.
-        /// </summary>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" /></param>
-        /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
-        /// (including parameter Value)</param>
-        /// <returns>Single result as object
-        /// </returns>
-        public object ExecuteScalar(String ASqlStatement, TDBTransaction ATransaction, DbParameter[] AParametersArray)
-        {
-            return ExecuteScalar(ASqlStatement, ATransaction, true, AParametersArray);
-        }
-
-        /// <summary>
-        /// Executes a SQL statement that returns a single result (eg. an SELECT COUNT(*)
-        /// SQL command or a call to a Stored Procedure that inserts data and returns
-        /// the value of a auto-numbered field). The statement is executed in a
-        /// transaction. Not suitable for parameterised SQL statements.
-        /// </summary>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" /></param>
-        /// <param name="ACommitTransaction">The transaction is committed if set to true,
-        /// otherwise the transaction is not committed (useful when the caller wants to
-        /// do further things in the same transaction).</param>
-        /// <returns>Single result as TObject
-        /// </returns>
-        public object ExecuteScalar(String ASqlStatement, TDBTransaction ATransaction, bool ACommitTransaction)
-        {
-            return ExecuteScalar(ASqlStatement, ATransaction, ACommitTransaction, new OdbcParameter[0]);
-        }
-
-        /// <summary>
-        /// Executes a SQL statement that returns a single result (eg. an SELECT COUNT(*)
-        /// SQL command or a call to a Stored Procedure that inserts data and returns
-        /// the value of a auto-numbered field). The statement is executed in a
         /// transaction. Suitable for parameterised SQL statements.
         /// </summary>
         /// <param name="ASqlStatement">SQL statement</param>
@@ -2174,7 +2099,10 @@ namespace Ict.Common.DB
         /// (including parameter Value)</param>
         /// <returns>Single result as TObject
         /// </returns>
-        public object ExecuteScalar(String ASqlStatement, TDBTransaction ATransaction, bool ACommitTransaction, DbParameter[] AParametersArray)
+        public object ExecuteScalar(String ASqlStatement,
+            TDBTransaction ATransaction = null,
+            DbParameter[] AParametersArray = null,
+            bool ACommitTransaction = false)
         {
             object ReturnValue = null;
             IDbCommand TransactionCommand = null;

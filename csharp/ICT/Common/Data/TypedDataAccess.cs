@@ -1935,7 +1935,6 @@ namespace Ict.Common.Data
                     "SELECT COUNT(*) FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClause(AThisFieldNames),
                     ATransaction,
-                    false,
                     ParametersArray));
         }
 
@@ -1954,7 +1953,6 @@ namespace Ict.Common.Data
                     GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
                         AOtherTableId, ATemplateRow, ATemplateOperators),
                     ATransaction,
-                    false,
                     ParametersArray));
         }
 
@@ -1972,7 +1970,6 @@ namespace Ict.Common.Data
                     GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
                         ASearchCriteria),
                     ATransaction,
-                    false,
                     ParametersArray));
         }
 
@@ -2002,7 +1999,7 @@ namespace Ict.Common.Data
             return 1 == Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
                     TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClauseFromPrimaryKey(ATableId),
-                    ATransaction, false, ParametersArray));
+                    ATransaction, ParametersArray));
         }
 
         /// <summary>
@@ -2017,7 +2014,7 @@ namespace Ict.Common.Data
             return 1 == Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
                     TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClauseFromUniqueKey(ATableId),
-                    ATransaction, false, ParametersArray));
+                    ATransaction, ParametersArray));
         }
 
         /// <summary>

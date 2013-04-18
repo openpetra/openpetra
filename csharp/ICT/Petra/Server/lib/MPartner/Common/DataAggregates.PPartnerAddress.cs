@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1623,7 +1623,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     "SELECT COUNT(*) " + "FROM PUB_" + PPartnerLocationTable.GetTableDBName() + ' ' +
                     "WHERE " + PPartnerLocationTable.GetPartnerKeyDBName() + " = ? " +
                     "AND " + PPartnerLocationTable.GetLocationKeyDBName() + " NOT IN " +
-                    "(" + LocationKeyInString + ")", AReadTransaction, false, ParametersArray));
+                    "(" + LocationKeyInString + ")", AReadTransaction, ParametersArray));
 //          TLogging.LogAtLevel(9, "CheckHasPartnerOtherPartnerLocations: Partner " + APartnerKey.ToString() + ": has " + OtherLocations.ToString() + " other PartnerLocations.");
             return OtherLocations != 0;
         }

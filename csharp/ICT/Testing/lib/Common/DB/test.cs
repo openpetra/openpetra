@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,6 +35,7 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Npgsql;
 using NpgsqlTypes;
+using Mono.Data.Sqlite;
 
 namespace Ict.Common.DB.Testing
 {
@@ -135,7 +136,15 @@ namespace Ict.Common.DB.Testing
             // see http://nunit.net/blogs/?p=63, we expect an exception to be thrown
             // also http://nunit.org/index.php?p=exceptionAsserts&r=2.5
             Assert.Throws(Is.InstanceOf(typeof(Exception)), new TestDelegate(WrongOrderSqlStatements));
-            Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
+
+            if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "postgresql")
+            {
+                Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
+            }
+            else if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "sqlite")
+            {
+                Assert.Throws <SqliteException>(new TestDelegate(WrongOrderSqlStatements));
+            }
         }
 
         /// test sequences
@@ -174,7 +183,7 @@ namespace Ict.Common.DB.Testing
                 "test",
                 "test");
 
-            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(insertSql, t));
+            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(insertSql, t, false));
 
             string getTimeStampSql = String.Format(
                 "SELECT s_modification_id_t FROM PUB_s_system_defaults WHERE s_default_code_c = '{0}'",
@@ -189,7 +198,7 @@ namespace Ict.Common.DB.Testing
             OdbcParameter param = new OdbcParameter("timestamp", OdbcType.DateTime);
             param.Value = timestamp;
 
-            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(updateSql, t, new OdbcParameter[] { param }), "update by timestamp");
+            Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(updateSql, t, false, new OdbcParameter[] { param }), "update by timestamp");
 
             DBAccess.GDBAccessObj.RollbackTransaction();
         }
