@@ -184,6 +184,7 @@ public class TSQLiteWriter
         ADBPwd = string.Empty;
 
         TLogging.Log("Connecting to sqlite database " + ADBFilename);
+        TLogging.Log("Loading file " + ASqlfile);
 
         if (!File.Exists(ADBFilename))
         {
@@ -353,12 +354,10 @@ public class TSQLiteWriter
                         throw new Exception("error parsing date time " + val);
                     }
                 }
-
-                TLogging.Log("writing DateTime: " + val.ToString());
             }
             else if (field.strType == "bit")
             {
-                val = (val.ToString() == "true");
+                val = (val.ToString() == "true") || (val.ToString() == "t");
             }
 
             cmd.Parameters[count].Value = val;

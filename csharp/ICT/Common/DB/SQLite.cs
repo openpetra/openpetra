@@ -146,6 +146,7 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("PUB.", "");
             ReturnValue = ReturnValue.Replace("pub_", "");
             ReturnValue = ReturnValue.Replace("pub.", "");
+            ReturnValue = ReturnValue.Replace("public.", "");
             ReturnValue = ReturnValue.Replace("\"", "'");
 
             ReturnValue = ReturnValue.Replace("NOW()", "datetime('now')");

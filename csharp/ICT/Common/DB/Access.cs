@@ -1312,13 +1312,18 @@ namespace Ict.Common.DB
         /// Transaction while another one is still running (gives time for the
         /// currently running DB Transaction to be finished).</param>
         /// <returns>Started Transaction (null if an error occured)</returns>
-        public TDBTransaction BeginTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful)
+        public TDBTransaction BeginTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful = -1)
         {
             TDBTransaction ReturnValue;
 
             if (FDataBaseRDBMS == null)
             {
                 throw new Exception("DBAccess BeginTransaction: FDataBaseRDBMS is null");
+            }
+
+            if (this.Transaction != null)
+            {
+                throw new Exception("BeginTransaction would overwrite existing transaction, better use GetNewOrExistingTransaction");
             }
 
             FDataBaseRDBMS.AdjustIsolationLevel(ref AIsolationLevel);
@@ -1407,17 +1412,6 @@ namespace Ict.Common.DB
 
             FLastDBAction = DateTime.Now;
             return new TDBTransaction(FTransaction, FSqlConnection);
-        }
-
-        /// <summary>
-        /// Starts a Transaction with a defined <see cref="IsolationLevel" /> on the current DB
-        /// connection.
-        /// </summary>
-        /// <param name="AIsolationLevel">Desired <see cref="IsolationLevel" /></param>
-        /// <returns>Started Transaction (null if an error occured)</returns>
-        public TDBTransaction BeginTransaction(IsolationLevel AIsolationLevel)
-        {
-            return BeginTransaction(AIsolationLevel, -1);
         }
 
         /// <summary>
