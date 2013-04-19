@@ -805,12 +805,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transaction.TransactionAmount *= -1;
                         }
 
-                        transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
+                        transaction.AmountInBaseCurrency = GLRoutines.Multiply(transaction.TransactionAmount,
+                            journal.ExchangeRateToBase);
 
-                        transaction.AmountInIntlCurrency = transaction.AmountInBaseCurrency * TExchangeRateTools.GetDailyExchangeRate(
-                            GLDataset.ALedger[0].BaseCurrency,
-                            GLDataset.ALedger[0].IntlCurrency,
-                            transaction.TransactionDate);
+                        transaction.AmountInIntlCurrency = GLRoutines.Multiply(transaction.AmountInBaseCurrency,
+                            TExchangeRateTools.GetDailyExchangeRate(
+                                GLDataset.ALedger[0].BaseCurrency,
+                                GLDataset.ALedger[0].IntlCurrency,
+                                transaction.TransactionDate));
 
                         transaction.AccountCode = documentDetail.AccountCode;
                         transaction.CostCentreCode = documentDetail.CostCentreCode;
@@ -856,12 +858,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transaction.TransactionAmount *= -1;
                     }
 
-                    transaction.AmountInIntlCurrency = transaction.TransactionAmount * TExchangeRateTools.GetDailyExchangeRate(
-                        journal.TransactionCurrency,
-                        GLDataset.ALedger[0].IntlCurrency,
-                        transaction.TransactionDate);
+                    transaction.AmountInIntlCurrency = GLRoutines.Multiply(transaction.TransactionAmount,
+                        TExchangeRateTools.GetDailyExchangeRate(
+                            journal.TransactionCurrency,
+                            GLDataset.ALedger[0].IntlCurrency,
+                            transaction.TransactionDate));
 
-                    transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
+                    transaction.AmountInBaseCurrency = GLRoutines.Multiply(transaction.TransactionAmount,
+                        journal.ExchangeRateToBase);
 
                     transaction.AccountCode = document.ApAccount;
                     transaction.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
@@ -1217,12 +1221,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transaction.TransactionAmount *= -1;
                         }
 
-                        transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
+                        transaction.AmountInBaseCurrency = GLRoutines.Multiply(transaction.TransactionAmount, journal.ExchangeRateToBase);
 
-                        transaction.AmountInIntlCurrency = transaction.AmountInBaseCurrency * TExchangeRateTools.GetDailyExchangeRate(
-                            GLDataset.ALedger[0].BaseCurrency,
-                            GLDataset.ALedger[0].IntlCurrency,
-                            transaction.TransactionDate);
+                        transaction.AmountInIntlCurrency = GLRoutines.Multiply(transaction.AmountInBaseCurrency,
+                            TExchangeRateTools.GetDailyExchangeRate(
+                                GLDataset.ALedger[0].BaseCurrency,
+                                GLDataset.ALedger[0].IntlCurrency,
+                                transaction.TransactionDate));
 
                         transaction.AccountCode = payment.BankAccount;
                         transaction.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(
@@ -1266,8 +1271,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             // may have changed since it was first posted. To keep the ledger balanced,
                             // an adjusting entry is made to the the ForexGainsLossesAccount account.
 
-                            Decimal OriginalBaseAmount = documentPayment.Amount / documentRow.ExchangeRateToBase;
-                            Decimal NewBaseAmount = documentPayment.Amount / payment.ExchangeRateToBase;
+                            Decimal OriginalBaseAmount = GLRoutines.Divide(documentPayment.Amount, documentRow.ExchangeRateToBase);
+                            Decimal NewBaseAmount = GLRoutines.Divide(documentPayment.Amount, payment.ExchangeRateToBase);
                             Decimal ForexGain = NewBaseAmount - OriginalBaseAmount;
 
                             if (ForexGain != 0)

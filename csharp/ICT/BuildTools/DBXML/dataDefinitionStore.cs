@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -314,23 +314,13 @@ namespace Ict.Tools.DBXML
         }
 
         /// <summary>
-        /// overload, do warn about missing fields (if GEnabledLoggingMissingFields is set)
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        public TTableField GetField(string s)
-        {
-            return GetField(s, true);
-        }
-
-        /// <summary>
         /// return the reference to a column, given by name
         /// </summary>
         /// <param name="s">name of the column</param>
         /// <param name="AShowWarningNonExistingField">show warning if there is no field with that name;
         /// only takes effect if GEnabledLoggingMissingFields is true</param>
         /// <returns>reference to the column</returns>
-        public TTableField GetField(string s, bool AShowWarningNonExistingField)
+        public TTableField GetField(string s, bool AShowWarningNonExistingField = true)
         {
             TTableField ReturnValue;
 

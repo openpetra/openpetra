@@ -238,7 +238,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// this method is called by all overloads
     public static int CountAll(TDBTransaction ATransaction)
     {
-        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}", ATransaction, false));
+        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}", ATransaction));
     }
 {#IFDEF FORMALPARAMETERSPRIMARYKEY}
 
@@ -260,14 +260,14 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// this method is called by all overloads
     public static int CountUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
     {
-        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause(TTypedDataTable.GetColumnStringList({#TABLENAME}Table.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false, 
+        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause(TTypedDataTable.GetColumnStringList({#TABLENAME}Table.TableId), ATemplateRow, ATemplateOperators)), ATransaction, 
                GetParametersForWhereClause({#TABLENAME}Table.TableId, ATemplateRow)));
     }
 
     /// this method is called by all overloads
     public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
     {
-        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause(TTypedDataTable.GetColumnStringList({#TABLENAME}Table.TableId), ASearchCriteria)), ATransaction, false, 
+        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause(TTypedDataTable.GetColumnStringList({#TABLENAME}Table.TableId), ASearchCriteria)), ATransaction, 
         GetParametersForWhereClause({#TABLENAME}Table.TableId, ASearchCriteria)));
     }
     {#VIAOTHERTABLE}
@@ -677,7 +677,7 @@ public static int Count{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, T
     {#ODBCPARAMETERSFOREIGNKEY}
     return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME} WHERE " +
                 "{#WHERECLAUSEVIALINKTABLE}",
-                ATransaction, false, ParametersArray));
+                ATransaction, ParametersArray));
 }
 
 /// auto generated
@@ -685,7 +685,7 @@ public static int Count{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplat
 {
     return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
                 "{#WHERECLAUSEALLVIATABLES}" +
-                GenerateWhereClauseLong("PUB_{#SQLLINKTABLENAME}", {#TABLENAME}Table.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false, 
+                GenerateWhereClauseLong("PUB_{#SQLLINKTABLENAME}", {#TABLENAME}Table.TableId, ATemplateRow, ATemplateOperators)), ATransaction, 
                 GetParametersForWhereClauseWithPrimaryKey({#OTHERTABLENAME}Table.TableId, ATemplateRow)));
 }
 
@@ -694,6 +694,6 @@ public static int Count{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCrit
 {
     return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
                 "{#WHERECLAUSEALLVIATABLES}" +
-                GenerateWhereClauseLong("PUB_{#SQLLINKTABLENAME}", ASearchCriteria)), ATransaction, false, 
+                GenerateWhereClauseLong("PUB_{#SQLLINKTABLENAME}", ASearchCriteria)), ATransaction, 
                 GetParametersForWhereClause({#TABLENAME}Table.TableId, ASearchCriteria)));
 }
