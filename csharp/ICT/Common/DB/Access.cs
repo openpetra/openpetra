@@ -700,21 +700,6 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// Returns an IDbCommand for a given command text in the context of a
-        /// DB transaction. Not suitable for parameterised SQL statements.
-        /// </summary>
-        /// <remarks>This function does not execute the Command, it just creates it!</remarks>
-        /// <param name="ACommandText">Command Text</param>
-        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />, or nil if the command
-        /// should not be enlisted in a transaction.</param>
-        /// <returns>Instantiated IDbCommand
-        /// </returns>
-        public IDbCommand Command(String ACommandText, TDBTransaction ATransaction)
-        {
-            return Command(ACommandText, ATransaction, new OdbcParameter[0]);
-        }
-
-        /// <summary>
-        /// Returns an IDbCommand for a given command text in the context of a
         /// DB transaction. Suitable for parameterised SQL statements.
         /// Allows the passing in of Parameters for the SQL statement
         /// </summary>
@@ -815,22 +800,6 @@ namespace Ict.Common.DB
         /// Returns a <see cref="DataSet" /> containing a <see cref="DataTable" /> with the result of a given SQL
         /// statement.
         /// The SQL statement is executed in the given transaction context (which should
-        /// have the desired <see cref="IsolationLevel" />). Not suitable for parameterised SQL statements.
-        /// </summary>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="ADataTableName">Name that the <see cref="DataTable" /> should get</param>
-        /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
-        /// <see cref="IsolationLevel" /></param>
-        /// <returns>Instantiated <see cref="DataSet" /></returns>
-        public DataSet Select(String ASqlStatement, String ADataTableName, TDBTransaction AReadTransaction)
-        {
-            return Select(ASqlStatement, ADataTableName, AReadTransaction, new OdbcParameter[0]);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="DataSet" /> containing a <see cref="DataTable" /> with the result of a given SQL
-        /// statement.
-        /// The SQL statement is executed in the given transaction context (which should
         /// have the desired <see cref="IsolationLevel" />). Suitable for parameterised SQL statements.
         /// </summary>
         /// <param name="ASqlStatement">SQL statement</param>
@@ -843,7 +812,7 @@ namespace Ict.Common.DB
         public DataSet Select(String ASqlStatement,
             String ADataTableName,
             TDBTransaction AReadTransaction,
-            DbParameter[] AParametersArray)
+            DbParameter[] AParametersArray = null)
         {
             DataSet InputDataSet;
             DataSet ObjReturn;
@@ -880,45 +849,6 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// Puts a <see cref="DataTable" /> with the result of a  given SQL statement into an existing
-        /// <see cref="DataSet" />.
-        /// The SQL statement is executed in the given transaction context (which should
-        /// have the desired <see cref="IsolationLevel" />). Not suitable for parameterised SQL statements.
-        /// </summary>
-        /// <param name="AFillDataSet">Existing <see cref="DataSet" /></param>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="ADataTableName">Name that the <see cref="DataTable" /> should get</param>
-        /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
-        /// <see cref="IsolationLevel" /></param>
-        /// <param name="AStartRecord">Start record that should be returned</param>
-        /// <returns>Existing <see cref="DataSet" />, additionally containing the new <see cref="DataTable" /></returns>
-        public DataSet Select(DataSet AFillDataSet,
-            String ASqlStatement,
-            String ADataTableName,
-            TDBTransaction AReadTransaction,
-            System.Int32 AStartRecord)
-        {
-            return Select(AFillDataSet, ASqlStatement, ADataTableName, AReadTransaction, AStartRecord, 0);
-        }
-
-        /// <summary>
-        /// Puts a <see cref="DataTable" /> with the result of a  given SQL statement into an existing
-        /// <see cref="DataSet" />.
-        /// The SQL statement is executed in the given transaction context (which should
-        /// have the desired <see cref="IsolationLevel" />). Not suitable for parameterised SQL statements.
-        /// </summary>
-        /// <param name="AFillDataSet">Existing <see cref="DataSet" />.</param>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="ADataTableName">Name that the <see cref="DataTable" /> should get</param>
-        /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
-        /// <see cref="IsolationLevel" /></param>
-        /// <returns>Existing <see cref="DataSet" />, additionally containing the new <see cref="DataTable" />.</returns>
-        public DataSet Select(DataSet AFillDataSet, String ASqlStatement, String ADataTableName, TDBTransaction AReadTransaction)
-        {
-            return Select(AFillDataSet, ASqlStatement, ADataTableName, AReadTransaction, 0, 0);
-        }
-
-        /// <summary>
         /// Puts a <see cref="DataTable" /> with the result of a given SQL statement into an existing
         /// <see cref="DataSet" />.
         /// The SQL statement is executed in the given transaction context (which should
@@ -938,9 +868,9 @@ namespace Ict.Common.DB
             String ASqlStatement,
             String ADataTableName,
             TDBTransaction AReadTransaction,
-            DbParameter[] AParametersArray,
-            System.Int32 AStartRecord,
-            System.Int32 AMaxRecords)
+            DbParameter[] AParametersArray = null,
+            System.Int32 AStartRecord = 0,
+            System.Int32 AMaxRecords = 0)
         {
             DataSet ObjReturn;
 
@@ -1083,78 +1013,9 @@ namespace Ict.Common.DB
             return ObjReturn;
         }
 
-        /// <summary>
-        /// Puts a <see cref="DataTable" /> with the result of a  given SQL statement into an existing
-        /// <see cref="DataSet" />.
-        /// The SQL statement is executed in the given transaction context (which should
-        /// have the desired <see cref="IsolationLevel" />). Suitable for parameterised SQL statements.
-        /// </summary>
-        /// <param name="AFillDataSet">Existing <see cref="DataSet" /></param>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="ADataTableName">Name that the <see cref="DataTable" /> should get</param>
-        /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
-        /// <see cref="IsolationLevel" /></param>
-        /// <param name="AParametersArray">An array holding 1..n instantiated OdbcParameters
-        /// (including parameter Value)</param>
-        /// <param name="AStartRecord">Start record that should be returned</param>
-        /// <returns>Existing <see cref="DataSet" />, additionally containing the new <see cref="DataTable" /></returns>
-        public DataSet Select(DataSet AFillDataSet,
-            String ASqlStatement,
-            String ADataTableName,
-            TDBTransaction AReadTransaction,
-            OdbcParameter[] AParametersArray,
-            System.Int32 AStartRecord)
-        {
-            return Select(AFillDataSet, ASqlStatement, ADataTableName, AReadTransaction, AParametersArray, AStartRecord, 0);
-        }
-
-        /// <summary>
-        /// Puts a <see cref="DataTable" /> with the result of a  given SQL statement into an existing
-        /// <see cref="DataSet" />.
-        /// The SQL statement is executed in the given transaction context (which should
-        /// have the desired <see cref="IsolationLevel" />). Suitable for parameterised SQL statements.
-        /// </summary>
-        /// <param name="AFillDataSet">Existing <see cref="DataSet" /></param>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="ADataTableName">Name that the <see cref="DataTable" /> should get</param>
-        /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
-        /// <see cref="IsolationLevel" /></param>
-        /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
-        /// (including parameter Value)</param>
-        /// <returns>Existing <see cref="DataSet" />, additionally containing the new <see cref="DataTable" /></returns>
-        public DataSet Select(DataSet AFillDataSet,
-            String ASqlStatement,
-            String ADataTableName,
-            TDBTransaction AReadTransaction,
-            DbParameter[] AParametersArray)
-        {
-            return Select(AFillDataSet, ASqlStatement, ADataTableName, AReadTransaction, AParametersArray, 0, 0);
-        }
-
         #endregion
 
         #region SelectDA
-
-        /// <summary>
-        /// Returns an <see cref="IDbDataAdapter" /> (eg. <see cref="OdbcDataAdapter" />, NpgsqlDataAdapter) for a given SQL statement.
-        /// The SQL statement is executed in the given transaction context (which should
-        /// have the desired <see cref="IsolationLevel" />). Not suitable for parameterised SQL statements.
-        ///
-        /// </summary>
-        /// <param name="ASqlStatement">SQL statement</param>
-        /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
-        /// <see cref="IsolationLevel" /></param>
-        /// <returns>Instantiated <see cref="IDbDataAdapter" /></returns>
-        public IDbDataAdapter SelectDA(String ASqlStatement, TDBTransaction AReadTransaction)
-        {
-            return SelectDA(ASqlStatement, AReadTransaction, new OdbcParameter[0]);
-#if WITH_POSTGRESQL_LOGGING
-            if (TLogging.DL >= DB_DEBUGLEVEL_TRACE)
-            {
-                NpgsqlEventLog.Level = LogLevel.None;
-            }
-#endif
-        }
 
         /// <summary>
         /// Returns an <see cref="IDbDataAdapter" /> (eg. <see cref="OdbcDataAdapter" />, NpgsqlDataAdapter) for a given SQL statement.
@@ -1169,7 +1030,7 @@ namespace Ict.Common.DB
         /// (including parameter Value)</param>
         /// <returns>Instantiated <see cref="IDbDataAdapter" />
         /// </returns>
-        public IDbDataAdapter SelectDA(String ASqlStatement, TDBTransaction AReadTransaction, DbParameter[] AParametersArray)
+        public IDbDataAdapter SelectDA(String ASqlStatement, TDBTransaction AReadTransaction, DbParameter[] AParametersArray = null)
         {
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
@@ -1184,6 +1045,11 @@ namespace Ict.Common.DB
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log(this.GetType().FullName + ".SelectDA: now opening IDbDataAdapter(" + ASqlStatement + ")...");
+            }
+
+            if (AParametersArray == null)
+            {
+                AParametersArray = new OdbcParameter[0];
             }
 
             IDbDataAdapter TheAdapter = FDataBaseRDBMS.NewAdapter();
@@ -1810,6 +1676,8 @@ namespace Ict.Common.DB
                 {
                     int NumberOfRowsAffected = TransactionCommand.ExecuteNonQuery();
 
+                    TransactionCommand.Dispose();
+
                     if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
                         TLogging.Log("Number of rows affected: " + NumberOfRowsAffected.ToString());
@@ -2077,6 +1945,7 @@ namespace Ict.Common.DB
                     }
 
                     ReturnValue = TransactionCommand.ExecuteScalar();
+                    TransactionCommand.Dispose();
 
                     if (ReturnValue == null)
                     {

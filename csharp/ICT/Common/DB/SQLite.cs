@@ -291,6 +291,9 @@ namespace Ict.Common.DB
             string ADataTableName)
         {
             ((SqliteDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
+
+            TheAdapter.SelectCommand.Dispose();
+            ((SqliteDataAdapter)TheAdapter).Dispose();
         }
 
         /// <summary>
@@ -307,6 +310,9 @@ namespace Ict.Common.DB
             Int32 AMaxRecords)
         {
             ((SqliteDataAdapter)TheAdapter).Fill(AFillDataTable);
+
+            TheAdapter.SelectCommand.Dispose();
+            ((SqliteDataAdapter)TheAdapter).Dispose();
         }
 
         /// <summary>
@@ -338,10 +344,12 @@ namespace Ict.Common.DB
         public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
             string stmt = "INSERT INTO " + ASequenceName + " VALUES(NULL, -1);";
-            SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection);
 
-            cmd.ExecuteNonQuery();
-            return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase, AConnection);
+            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection))
+            {
+                cmd.ExecuteNonQuery();
+                return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase, AConnection);
+            }
         }
 
         /// <summary>
@@ -356,9 +364,11 @@ namespace Ict.Common.DB
         public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
             string stmt = "SELECT MAX(sequence) FROM " + ASequenceName + ";";
-            SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection);
 
-            return Convert.ToInt64(cmd.ExecuteScalar());
+            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection))
+            {
+                return Convert.ToInt64(cmd.ExecuteScalar());
+            }
         }
 
         /// <summary>
