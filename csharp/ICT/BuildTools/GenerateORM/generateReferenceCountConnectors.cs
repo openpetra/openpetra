@@ -91,7 +91,7 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
             moduleName = moduleName.Substring(1);
             string className = "T" + moduleName + "ReferenceCountWebConnector";
 
-            TLogging.Log("Starting connector for " + className + Environment.NewLine);
+            Console.WriteLine("Starting connector for " + className + Environment.NewLine);
 
             int cacheableCount = 0;
             int nonCacheableCount = 0;
@@ -154,7 +154,7 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                             Template.InsertSnippet("CACHEABLEFINALLY", snippet);
                         }
 
-                        TLogging.Log("Creating cacheable reference count connector for " + attCacheableListName);
+                        Console.WriteLine("Creating cacheable reference count connector for " + attCacheableListName);
                         cacheableCount++;
                     }
                     else
@@ -179,7 +179,7 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                             Template.InsertSnippet("TABLESELSEIF", snippet);
                         }
 
-                        TLogging.Log("Creating non-cacheable reference count connector for " + attDetailTableName);
+                        Console.WriteLine("Creating non-cacheable reference count connector for " + attDetailTableName);
                         nonCacheableCount++;
                     }
                 }
@@ -200,7 +200,7 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
 
             if ((cacheableCount > 0) || (nonCacheableCount > 0))
             {
-                TLogging.Log("Finishing connector for " + className + Environment.NewLine + Environment.NewLine);
+                Console.WriteLine("Finishing connector for " + className + Environment.NewLine + Environment.NewLine);
                 Template.FinishWriting(OutputFile, ".cs", true);
 
                 FTotalCacheable += cacheableCount;
@@ -238,9 +238,9 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                 }
             }
 
-            TLogging.Log("*** Total cacheable tables: " + FTotalCacheable.ToString());
-            TLogging.Log("*** Total non-cacheable tables: " + FTotalNonCacheable.ToString());
-            TLogging.Log("*** Total connectors: " + FTotalConnectors.ToString());
+            Console.WriteLine("*** Total cacheable tables: " + FTotalCacheable.ToString());
+            Console.WriteLine("*** Total non-cacheable tables: " + FTotalNonCacheable.ToString());
+            Console.WriteLine("*** Total connectors: " + FTotalConnectors.ToString());
 
             return returnValue;
         }
