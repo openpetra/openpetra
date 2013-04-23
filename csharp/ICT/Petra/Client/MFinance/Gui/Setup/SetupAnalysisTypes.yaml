@@ -25,8 +25,10 @@ RootNode:
             Controls: [btnNewType, btnDeleteType]
         btnNewType:
             Action: actNew
+            Stretch: horizontally
         btnDeleteType:
             Action: actDelete
+            Stretch: horizontally
         grdDetails:
             Dock: Fill
             Columns: [AAnalysisType.AnalysisTypeCode, AAnalysisType.AnalysisTypeDescription]

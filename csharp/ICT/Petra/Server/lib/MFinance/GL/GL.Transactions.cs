@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, matthiash
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -453,11 +453,15 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadATransAnalAttribForJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             ATransAnalAttribAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return MainDS;
         }
@@ -488,12 +492,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLSetupTDS LoadAAnalysisAttributes(Int32 ALedgerNumber)
         {
             GLSetupTDS CacheDS = new GLSetupTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             AAnalysisTypeAccess.LoadAll(CacheDS, Transaction);
             AFreeformAnalysisAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
             AAnalysisAttributeAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
             return CacheDS;
         }
 
@@ -741,6 +751,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             AVerificationResult = new TVerificationResultCollection();
 
+            // make sure that empty tables are removed
+            AInspectDS = AInspectDS.GetChangesTyped(true);
+
             bool batchTableInDataSet = (AInspectDS.ABatch != null);
             bool journalTableInDataSet = (AInspectDS.AJournal != null);
             bool transTableInDataSet = (AInspectDS.ATransaction != null);
@@ -761,6 +774,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 || recurrJournalTableInDataSet
                 || recurrTransTableInDataSet)
             {
+                if (batchTableInDataSet || journalTableInDataSet || transTableInDataSet || attrTableInDataSet)
+                {
+                    throw new Exception(
+                        "SaveGLBatchTDS: need to call GetChangesTyped before saving, otherwise confusion about recurring or normal gl batch");
+                }
+
                 return SaveRecurringGLBatchTDS(ref AInspectDS, out AVerificationResult);
             }
 
@@ -910,6 +929,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
             }
 
+            if (attrTableInDataSet)
+            {
+                foreach (ATransAnalAttribRow transAnalAttrib in AInspectDS.ATransAnalAttrib.Rows)
+                {
+                    Int32 BatchNumber;
+
+                    BatchNumber = transAnalAttrib.BatchNumber;
+
+                    if (!BatchNumbersInvolved.Contains(BatchNumber))
+                    {
+                        BatchNumbersInvolved.Add(BatchNumber);
+                    }
+                }
+            }
+
             // load previously stored batches and check for posted status
             if (BatchNumbersInvolved.Count == 0)
             {
@@ -969,16 +1003,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-            //Process transactions and their analysis attributes
-            if (transTableInDataSet)
-            {
-                AInspectDS.ATransaction.AcceptChanges();
-            }
-
-            if (attrTableInDataSet)
-            {
-                AInspectDS.ATransAnalAttrib.AcceptChanges();
-            }
+            AInspectDS.AcceptChanges();
 
             if ((SubmissionResult == TSubmitChangesResult.scrOK)
                 && (transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))

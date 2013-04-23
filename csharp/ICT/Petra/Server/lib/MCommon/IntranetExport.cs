@@ -864,7 +864,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
 
                     msg.Attachments.Add(new Attachment(FExportFilePath + "data.zip.gpg"));
 
-                    if (SendMail.SendMessage(ref msg))
+                    if (SendMail.SendMessage(msg))
                     {
                         FExportTrace += ("\r\nEmail sent to " + msg.To[0].Address);
                     }

@@ -4,7 +4,7 @@
 // @Authors:
 //       alanp
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -104,6 +104,10 @@ namespace Ict.Tools.DevelopersAssistant
             /// Generate ORM Access
             /// </summary>
             generateORMAccess,
+            /// <summary>
+            /// Generate ORM Reference Count WebConnector files
+            /// </summary>
+            generateORMReferenceCounts,
             /// <summary>
             /// Generate glue
             /// </summary>
@@ -348,6 +352,10 @@ namespace Ict.Tools.DevelopersAssistant
                 {
                     _taskItem = TaskItem.generateORMData;
                 }
+                else if (TaskName.IndexOf(" ORM reference", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    _taskItem = TaskItem.generateORMReferenceCounts;
+                }
                 else if (TaskName.IndexOf("with no ", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     _taskItem = TaskItem.generateSolutionNoCompile;
@@ -444,6 +452,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.generateORMData: return "Generating ORM data.  Please wait ...";
 
+                    case TaskItem.generateORMReferenceCounts: return "Generating ORM reference count files.  Please wait ...";
+
                     case TaskItem.generateSolution: return "Generating solution with full compile.  This could take several minutes ...";
 
                     case TaskItem.generateSolutionNoCompile: return "Generating solution without compilation.  This could take a minute or two ...";
@@ -537,6 +547,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.generateORMData: return "Starting generate ORM data";
 
+                    case TaskItem.generateORMReferenceCounts: return "Starting generate ORM reference count files";
+
                     case TaskItem.generateSolution: return "Starting generateSolution with full compile";
 
                     case TaskItem.generateSolutionNoCompile: return "Starting generateSolution with NoCompile";
@@ -607,6 +619,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.generateORMData: return "Generate the ORM data";
 
+                    case TaskItem.generateORMReferenceCounts: return "Generate the ORM reference count files";
+
                     case TaskItem.generateSolution: return "Generate the solution with full compile";
 
                     case TaskItem.generateSolutionNoCompile: return "Generate the solution with no compile";
@@ -676,6 +690,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.generateORMCachedTables: return "Generate the ORM cached tables";
 
                     case TaskItem.generateORMData: return "Generate the ORM data";
+
+                    case TaskItem.generateORMReferenceCounts: return "Generate the ORM reference count files";
 
                     case TaskItem.generateSolution: return "Generate the solution with full compile";
 

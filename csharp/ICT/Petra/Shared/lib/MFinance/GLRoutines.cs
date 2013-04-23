@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -71,7 +71,7 @@ namespace Ict.Petra.Shared.MFinance
 
                 if (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
                 {
-                    r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
+                    r.AmountInBaseCurrency = Divide(r.TransactionAmount, ACurrentJournal.ExchangeRateToBase);
                 }
 
                 if (r.DebitCreditIndicator)
@@ -123,7 +123,7 @@ namespace Ict.Petra.Shared.MFinance
 
                 if (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
                 {
-                    r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
+                    r.AmountInBaseCurrency = Divide(r.TransactionAmount, ACurrentJournal.ExchangeRateToBase);
                 }
 
                 if (r.DebitCreditIndicator)
@@ -207,6 +207,30 @@ namespace Ict.Petra.Shared.MFinance
 
             AMainDS.ARecurringTransaction.DefaultView.RowFilter = origTransactionFilter;
             AMainDS.ARecurringJournal.DefaultView.RowFilter = origJournalFilter;
+        }
+
+        private static int DECIMALS = 10;
+
+        /// <summary>
+        /// use this method to calculate the new amount, using an exchange rate.
+        /// This will round the result to the defined limit of decimal places
+        /// </summary>
+        public static decimal Multiply(decimal AAmount, decimal AExchangeRate)
+        {
+            decimal Result = AAmount * AExchangeRate;
+
+            return Math.Round(Result, DECIMALS);
+        }
+
+        /// <summary>
+        /// use this method to calculate the new amount, using an exchange rate.
+        /// This will round the result to the defined limit of decimal places
+        /// </summary>
+        public static decimal Divide(decimal AAmount, decimal AExchangeRate)
+        {
+            decimal Result = AAmount / AExchangeRate;
+
+            return Math.Round(Result, DECIMALS);
         }
     }
 }

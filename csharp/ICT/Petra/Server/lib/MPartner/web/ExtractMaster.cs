@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -371,26 +371,26 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     MExtractTable.GetTableDBName());
                 DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
                     MExtractTable.GetTableDBName() + "." + MExtractTable.GetExtractIdDBName());
-                DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, false, parameterArray);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                 // delete MExtractParameterTable
                 DeleteStmt = DeleteStmtTemplate.Replace("##cascading_table_extract_id##",
                     MExtractParameterTable.GetTableDBName());
                 DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
                     MExtractParameterTable.GetTableDBName() + "." + MExtractParameterTable.GetExtractIdDBName());
-                DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, false, parameterArray);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                 // delete SGroupExtractTable
                 DeleteStmt = DeleteStmtTemplate.Replace("##cascading_table_extract_id##",
                     SGroupExtractTable.GetTableDBName());
                 DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
                     SGroupExtractTable.GetTableDBName() + "." + SGroupExtractTable.GetExtractIdDBName());
-                DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, false, parameterArray);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                 // delete MExtractMasterTable
                 DeleteStmt = "DELETE FROM pub_" + MExtractMasterTable.GetTableDBName() +
                              " WHERE " + WhereStmtMaster;
-                DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, false, parameterArray);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                 // commit whole transaction if successful
                 DBAccess.GDBAccessObj.CommitTransaction();

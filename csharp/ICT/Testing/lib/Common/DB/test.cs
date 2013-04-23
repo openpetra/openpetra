@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,6 +35,7 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Npgsql;
 using NpgsqlTypes;
+using Mono.Data.Sqlite;
 
 namespace Ict.Common.DB.Testing
 {
@@ -103,12 +104,12 @@ namespace Ict.Common.DB.Testing
                 t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
                       "VALUES(43, 99999999, 1)";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
                 sql =
                     "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c) "
                     +
                     "VALUES(43, 99999999, '6000', 1, 'EUR', '4300')";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
             catch
@@ -121,10 +122,10 @@ namespace Ict.Common.DB.Testing
             t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             sql = "DELETE FROM a_gift" +
                   " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999 AND a_gift_transaction_number_i = 1";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
             sql = "DELETE FROM a_gift_batch" +
                   " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999";
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t, false);
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
@@ -135,7 +136,15 @@ namespace Ict.Common.DB.Testing
             // see http://nunit.net/blogs/?p=63, we expect an exception to be thrown
             // also http://nunit.org/index.php?p=exceptionAsserts&r=2.5
             Assert.Throws(Is.InstanceOf(typeof(Exception)), new TestDelegate(WrongOrderSqlStatements));
-            Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
+
+            if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "postgresql")
+            {
+                Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
+            }
+            else if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "sqlite")
+            {
+                Assert.Throws <SqliteException>(new TestDelegate(WrongOrderSqlStatements));
+            }
         }
 
         /// test sequences

@@ -3,13 +3,14 @@ RootNode:
     FormTitle: Maintain Mailings
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PMailing
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation, Ict.Petra.Shared.Interfaces.MCommon, Ict.Common.Remoting.Client]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation, Ict.Petra.Shared.Interfaces.MCommon]
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 800
     WindowHeight: 575
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -19,8 +20,13 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew]
+            Controls: [btnNew, btnDelete]
         btnNew:
+            Action: actNew
+            Stretch: horizontally
+        btnDelete:
+            Action: actDelete
+            Stretch: horizontally
         grdDetails:
             Dock: Fill
             Columns: [DetailMailingCode, DetailMailingDescription, DetailMailingDate, DetailMailingCost]

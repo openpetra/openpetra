@@ -42,6 +42,7 @@
           <CustomField name="InvNum" type="string"/>
           <CustomField name="CreditNote" type="Boolean"/>
           <CustomField name="Amount" type="Decimal"/>
+          <CustomField name="OutstandingAmount" type="Decimal"/>
           <CustomField name="Status" type="string"/>
           <CustomField name="DiscountPercent" type="Decimal"/>
           <CustomField name="DiscountDays" type="Int32"/>

@@ -51,8 +51,8 @@ namespace Tests.MFinance.Server.Gift
     {
         Int32 FLedgerNumber = -1;
 
-        const string MainFeesPayableCode = "ICT";
-        const string MainFeesReceivableCode = "HO_ADMIN";
+        const string MainFeesPayableCode = "GIF2";
+        const string MainFeesReceivableCode = "HO_ADMIN2";
 
         /// <summary>
         /// open database connection or prepare other things for this test
@@ -126,7 +126,14 @@ namespace Tests.MFinance.Server.Gift
 
             AFeesPayableTable FeesPayableTable = AFeesPayableAccess.LoadUsingTemplate(template, Transaction);
 
-            TLogging.Log("Fees payable" + FeesPayableTable.Count.ToString());
+            AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
+
+            template1.LedgerNumber = FLedgerNumber;
+            template1.FeeCode = MainFeesReceivableCode;
+
+            AFeesReceivableTable FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
 
             if (FeesPayableTable.Count == 0)
             {
@@ -134,20 +141,11 @@ namespace Tests.MFinance.Server.Gift
                     "test-sql\\gl-test-feespayable-data.sql");
             }
 
-            AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
-
-            template.LedgerNumber = FLedgerNumber;
-            template.FeeCode = MainFeesReceivableCode;
-
-            AFeesReceivableTable FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
-
             if (FeesReceivableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                     "test-sql\\gl-test-feesreceivable-data.sql");
             }
-
-            DBAccess.GDBAccessObj.CommitTransaction();
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -162,7 +160,7 @@ namespace Tests.MFinance.Server.Gift
             // Test also for exception handling
             Assert.AreEqual(12m, TGiftTransactionWebConnector.CalculateAdminFee(MainDS,
                     FLedgerNumber,
-                    "GIF2",
+                    MainFeesPayableCode,
                     100m,
                     out VerficationResults), "admin fee fixed 12% of 100 expect 12");
         }

@@ -46,7 +46,14 @@ public class {#DATASETNAME} : TTypedDataSet
     /// auto generated
     public new virtual {#DATASETNAME} GetChangesTyped(bool removeEmptyTables)
     {
-        return (({#DATASETNAME})(base.GetChangesTyped(removeEmptyTables)));
+        {#DATASETNAME} result = ({#DATASETNAME})(base.GetChangesTyped(removeEmptyTables));
+
+        if (removeEmptyTables)
+        {
+            result.InitVars();
+        }
+
+        return result;
     }
     
     /// auto generated

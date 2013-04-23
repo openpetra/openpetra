@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1209,18 +1209,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (!NewTransaction.IsTransactionDateNull())
                 {
-                    NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
-                        ARefJournalRow.TransactionCurrency,
-                        FMainDS.ALedger[0].BaseCurrency,
-                        NewTransaction.TransactionDate);
+                    NewTransaction.AmountInBaseCurrency = GLRoutines.Multiply(NewTransaction.TransactionAmount,
+                        TExchangeRateCache.GetDailyExchangeRate(
+                            ARefJournalRow.TransactionCurrency,
+                            FMainDS.ALedger[0].BaseCurrency,
+                            NewTransaction.TransactionDate));
                     //
                     // The International currency calculation is changed to "Base -> International", because it's likely
                     // we won't have a "Transaction -> International" conversion rate defined.
                     //
-                    NewTransaction.AmountInIntlCurrency = NewTransaction.AmountInBaseCurrency * TExchangeRateCache.GetDailyExchangeRate(
-                        FMainDS.ALedger[0].BaseCurrency,
-                        FMainDS.ALedger[0].IntlCurrency,
-                        NewTransaction.TransactionDate);
+                    NewTransaction.AmountInIntlCurrency = GLRoutines.Multiply(NewTransaction.AmountInBaseCurrency,
+                        TExchangeRateCache.GetDailyExchangeRate(
+                            FMainDS.ALedger[0].BaseCurrency,
+                            FMainDS.ALedger[0].IntlCurrency,
+                            NewTransaction.TransactionDate));
                 }
             } while (!dataFile.EndOfStream);
 
@@ -1250,14 +1252,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     sumCredits += BalancingTransaction.TransactionAmount;
                 }
 
-                BalancingTransaction.AmountInIntlCurrency = BalancingTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
-                    ARefJournalRow.TransactionCurrency,
-                    FMainDS.ALedger[0].IntlCurrency,
-                    BalancingTransaction.TransactionDate);
-                BalancingTransaction.AmountInBaseCurrency = BalancingTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
-                    ARefJournalRow.TransactionCurrency,
-                    FMainDS.ALedger[0].BaseCurrency,
-                    BalancingTransaction.TransactionDate);
+                BalancingTransaction.AmountInIntlCurrency = GLRoutines.Multiply(BalancingTransaction.TransactionAmount,
+                    TExchangeRateCache.GetDailyExchangeRate(
+                        ARefJournalRow.TransactionCurrency,
+                        FMainDS.ALedger[0].IntlCurrency,
+                        BalancingTransaction.TransactionDate));
+                BalancingTransaction.AmountInBaseCurrency = GLRoutines.Multiply(BalancingTransaction.TransactionAmount,
+                    TExchangeRateCache.GetDailyExchangeRate(
+                        ARefJournalRow.TransactionCurrency,
+                        FMainDS.ALedger[0].BaseCurrency,
+                        BalancingTransaction.TransactionDate));
                 BalancingTransaction.Narrative = Catalog.GetString("Automatically generated balancing transaction");
                 BalancingTransaction.CostCentreCode = TXMLParser.GetAttribute(ARootNode, "CashCostCentre");
                 BalancingTransaction.AccountCode = TXMLParser.GetAttribute(ARootNode, "CashAccount");

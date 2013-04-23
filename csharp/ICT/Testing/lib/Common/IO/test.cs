@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,6 +34,8 @@ using System.IO;
 using Ict.Common;
 using Ict.Common.IO;
 using Jayrock.Json;
+using OfficeOpenXml;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace Ict.Common.IO.Testing
 {
@@ -442,6 +444,95 @@ namespace Ict.Common.IO.Testing
             test = JSONFormData.Replace("#LASTNAME", problem);
             obj = TJsonTools.ParseValues(test);
             Assert.AreEqual(problem.Replace("\"", "&quot;"), obj["LastName"].ToString());
+        }
+
+        /// <summary>
+        /// test writing to an Excel file.
+        /// currently fails on Windows and on Linux on Dispose: System.NotSupportedException : Stream does not support writing.
+        /// solution for the moment: use saving via stream, see TestExcelExportStream
+        /// </summary>
+        [Test]
+        [Ignore("does not work on Windows or Mono. better use TestExcelExportStream")]
+        public void TestExcelExportFile()
+        {
+            string filename = PathToTestData + "test.xlsx";
+
+            // display error messages in english
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+
+            if (File.Exists(filename))
+            {
+                File.Delete(filename);
+            }
+
+            using (ExcelPackage pck = new ExcelPackage())
+            {
+                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("test");
+
+                worksheet.Cells["A1"].Value = "test1";
+                worksheet.Cells["B3"].Value = "test2";
+                worksheet.Cells["B7"].Value = "test2";
+
+                TLogging.Log("writing to " + filename);
+
+                pck.SaveAs(new FileInfo(filename));
+            }
+
+            new ExcelPackage(new FileInfo(filename));
+            PackTools.Unzip(PathToTestData + "testUnzip", filename);
+
+            FileInfo f = new FileInfo(PathToTestData + "testUnzip/xl/sharedStrings.xml");
+            Assert.AreNotEqual(0, f.Length, "file sharedStrings.xml should not be empty");
+
+            Assert.IsInstanceOf(typeof(ExcelPackage), new ExcelPackage(new FileInfo(filename)), "cannot open excel file");
+        }
+
+        /// <summary>
+        /// test writing to an Excel file
+        /// </summary>
+        [Test]
+        public void TestExcelExportStream()
+        {
+            string filename = PathToTestData + "test.xlsx";
+
+            // display error messages in english
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+
+            if (File.Exists(filename))
+            {
+                File.Delete(filename);
+            }
+
+            using (StreamWriter sw = new StreamWriter(filename))
+            {
+                using (MemoryStream m = new MemoryStream())
+                {
+                    using (ExcelPackage pck = new ExcelPackage(m))
+                    {
+                        ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("test");
+
+                        worksheet.Cells["A1"].Value = "test1";
+                        worksheet.Cells["B3"].Value = "test2";
+                        worksheet.Cells["B7"].Value = "test2";
+
+                        pck.SaveAs(m);
+                    }
+
+                    TLogging.Log("writing to " + filename);
+
+                    m.WriteTo(sw.BaseStream);
+                    m.Close();
+                    sw.Close();
+                }
+            }
+
+            new ExcelPackage(new FileInfo(filename));
+            PackTools.Unzip(PathToTestData + "testUnzip", filename);
+
+            FileInfo f = new FileInfo(PathToTestData + "testUnzip/xl/sharedStrings.xml");
+            Assert.AreNotEqual(0, f.Length, "file sharedStrings.xml should not be empty");
+
+            Assert.IsInstanceOf(typeof(ExcelPackage), new ExcelPackage(new FileInfo(filename)), "cannot open excel file");
         }
     }
 }

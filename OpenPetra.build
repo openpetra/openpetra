@@ -45,7 +45,7 @@ compat:
   loadDatabaseFromBackup: load the database from a backup
         (includes table specification)
   generateORM: generates Object Relational Mapping routines from petra.xml
-    sub items: generateORMCachedTables, generateORMData, generateORMAccess
+    sub items: generateORMCachedTables, generateORMData, generateORMAccess, generateORMReferenceCounts
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
   generateWinforms: generates all yaml files in csharp\ICT\Petra\Client
   generateWinform: generate a single yaml file, and optionally compile and start the client
@@ -295,7 +295,7 @@ useful parameters
   <CompileProject CSProjFile="${path::get-full-path(file)}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
 </target>
 
-<target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess">
+<target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess,generateORMReferenceCounts">
   <echo message="please compile the code after the files have been regenerated"/>
 </target>
 
