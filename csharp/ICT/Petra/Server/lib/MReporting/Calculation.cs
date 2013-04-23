@@ -97,33 +97,16 @@ namespace Ict.Petra.Server.MReporting
         /// </returns>
         public int Calculate(TRptLevel rptLevel, int masterRow)
         {
-            int ReturnValue;
-            int thisRunningCode;
-            TRptDetail rptDetail;
-
-            List <TRptLowerLevel>rptGrpLowerLevel;
-            List <TRptField>rptGrpField;
-            TRptDataCalcSwitch calcSwitch;
-            TRptDataCalcLowerLevel calcLowerLevel;
-            TRptDataCalcField calcGrpField;
-            TRptDataCalcHeaderFooter calcHeaderFooter;
-            string strIdentification;
-            string strId;
-            TRptDataCalcResult calcResult;
-            Int16 subreport;
-
-            ReturnValue = -1;
-
             if (rptLevel == null)
             {
-                return ReturnValue;
+                return -1;
             }
 
-            rptDetail = rptLevel.rptDetail;
+            TRptDetail rptDetail = rptLevel.rptDetail;
 
             if (rptDetail == null)
             {
-                return ReturnValue;
+                return -1;
             }
 
             if (Parameters.Get("CancelReportCalculation").ToBool() == true)
@@ -132,21 +115,24 @@ namespace Ict.Petra.Server.MReporting
                 return -1;
             }
 
-            thisRunningCode = GetNextRunningCode();
-            rptGrpField = rptDetail.rptGrpField;
-            rptGrpLowerLevel = rptDetail.rptGrpLowerLevel;
+            int thisRunningCode = GetNextRunningCode();
+            List <TRptField> rptGrpField = rptDetail.rptGrpField;
+            List <TRptLowerLevel> rptGrpLowerLevel = rptDetail.rptGrpLowerLevel;
+//          TLogging.Log("[MReporting\\Calculation.cs] Calculate(" + rptLevel.strName + ", " + masterRow + ")");
 
             if (rptDetail.rptSwitch != null)
             {
-                calcSwitch = new TRptDataCalcSwitch(this);
+                TRptDataCalcSwitch calcSwitch = new TRptDataCalcSwitch(this);
                 calcSwitch.Calculate(rptDetail.rptSwitch, out rptGrpLowerLevel, out rptGrpField);
             }
 
             if (rptGrpLowerLevel != null)
             {
-                if (Depth == 0)
+               TRptDataCalcLowerLevel calcLowerLevel;
+
+               if (Depth == 0)
                 {
-                    subreport = 0;
+                    Int16 subreport = 0;
 
                     foreach (TRptLowerLevel rptLowerLevel in rptGrpLowerLevel)
                     {
@@ -181,29 +167,30 @@ namespace Ict.Petra.Server.MReporting
             }
             else if (rptGrpField != null)
             {
-                calcGrpField = new TRptDataCalcField(this);
+                TRptDataCalcField calcGrpField = new TRptDataCalcField(this);
                 calcGrpField.Calculate(rptGrpField);
             }
 
-            calcHeaderFooter = new TRptDataCalcHeaderFooter(this);
+            TRptDataCalcHeaderFooter calcHeaderFooter = new TRptDataCalcHeaderFooter(this);
             calcHeaderFooter.Calculate(rptLevel.rptGrpHeaderField, rptLevel.rptGrpHeaderSwitch);
             calcHeaderFooter.Calculate(rptLevel.rptGrpFooterField, rptLevel.rptGrpFooterSwitch, rptLevel.strFooterLine, rptLevel.strFooterSpace);
-            strIdentification = rptLevel.strIdentification;
-            strId = "";
+
+            string strIdentification = rptLevel.strIdentification;
+            string strId = "";
 
             while (strIdentification.Length != 0)
             {
                 if (strId.Length != 0)
                 {
-                    strId = strId + '/';
+                    strId += '/';
                 }
 
-                strId = strId + Parameters.Get(StringHelper.GetNextCSV(ref strIdentification).Trim(), -1, Depth).ToString(false);
+                strId += Parameters.Get(StringHelper.GetNextCSV(ref strIdentification).Trim(), -1, Depth).ToString(false);
             }
 
             this.LineId = thisRunningCode;
             this.ParentRowId = masterRow;
-            calcResult = new TRptDataCalcResult(this, Depth, -1, this.LineId, this.ParentRowId);
+            TRptDataCalcResult calcResult = new TRptDataCalcResult(this, Depth, -1, this.LineId, this.ParentRowId);
 
             if (calcResult.SavePrecalculation(masterRow, rptLevel.strCondition, strId))
             {
@@ -1062,24 +1049,18 @@ namespace Ict.Petra.Server.MReporting
         }
 
         /// <summary>
-        /// todoComment
         /// </summary>
         /// <param name="query"></param>
         /// <param name="rptGrpParameter"></param>
         /// <returns></returns>
         public String Calculate(String query, List <TRptParameter>rptGrpParameter)
         {
-            String ReturnValue;
-            string name;
-            TVariant value;
-            TRptDataCalcValue rptDataCalcValue;
-
-            value = new TVariant();
-            ReturnValue = query;
+            String ReturnValue = query;
 
             foreach (TRptParameter rptParameter in rptGrpParameter)
             {
-                name = rptParameter.strName;
+                string name = rptParameter.strName;
+                TVariant value;
 
                 if (rptParameter.strValue.Length != 0)
                 {
@@ -1090,7 +1071,7 @@ namespace Ict.Petra.Server.MReporting
                 {
                     if (rptParameter.rptGrpValue != null)
                     {
-                        rptDataCalcValue = new TRptDataCalcValue(this);
+                        TRptDataCalcValue rptDataCalcValue = new TRptDataCalcValue(this);
                         value = rptDataCalcValue.Calculate(rptParameter.rptGrpValue);
                         Parameters.Add(name, value, -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                     }
@@ -1263,9 +1244,9 @@ namespace Ict.Petra.Server.MReporting
             }
 
             // ShowMessage (query);
-            if (strSql.Substring(0, 4) == "CSV:")
+            if (strSql.StartsWith("CSV:"))
             {
-                strSql = strSql.Substring(4, strSql.Length - 4);
+                strSql = strSql.Substring(4);
 
                 while (strSql.Length > 0)
                 {
@@ -1278,13 +1259,14 @@ namespace Ict.Petra.Server.MReporting
                         // the parameters are stored first
                         Parameters.Add(strName, StringHelper.GetNextCSV(
                                 ref strSql).Trim(), -1, Depth + 1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
-                    }
 
-                    if (strLowerLevel.Length > 0)
-                    {
-                        TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
-                        rptDataCalcLevel.Depth++;
-                        rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
+                        if (strLowerLevel != String.Empty)
+                        {
+                            TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
+                            rptDataCalcLevel.Depth++;
+                            rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
+                        }
+
                     }
                 }
             }
@@ -1325,23 +1307,24 @@ namespace Ict.Petra.Server.MReporting
             }
             else
             {
-                if (strSql.IndexOf("NO-SQL") == 0)
+                if (strSql.StartsWith("NO-SQL"))
                 {
-                    // we don't want to execute the result as SQL; this can be used to sequentially execute calculations/functions in a query.
+                    // Don't execute the result as SQL. This can be used to sequentially execute calculations/functions in a query.
                     // example: ap_payment_export, Select Payments by Batch Number
-                    if (strSql.ToUpper().IndexOf("SELECT") >= 0)
-                    {
-                        strSql = strSql.ToUpper().Substring(strSql.IndexOf("SELECT"));
-                    }
-                    else
-                    {
-                        strSql = "";
-                    }
-                }
+                    strSql = strSql.Substring(7);
+                    Parameters.Add(rptCalculation.strId, strSql, -1, StoreResultsAtDepth, null, null, ReportingConsts.CALCULATIONPARAMETERS);
 
+                    if (strLowerLevel != String.Empty)
+                    {
+                        TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
+                        rptDataCalcLevel.Depth++;
+                        rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
+                    }
+                    return this.Parameters.Get(rptCalculation.strId, -1, StoreResultsAtDepth, eParameterFit.eBestFitEvenLowerLevel);
+                }
+                else
                 if (strSql.Length > 0)
                 {
-//                  TLogging.Log("Evaluate(" + rptCalculation.strId + "): " + strSql + "\r\n");
                     DataTable tab = DatabaseConnection.SelectDT(strSql, "", DatabaseConnection.Transaction);
                     string strReturns = rptCalculation.strReturns;
 
@@ -1367,7 +1350,7 @@ namespace Ict.Petra.Server.MReporting
                         }
                     }
                 }
-            }
+            } // else
 
             if (this.Parameters.Exists(rptCalculation.strReturns, -1, StoreResultsAtDepth, eParameterFit.eBestFitEvenLowerLevel))
             {
@@ -1587,7 +1570,6 @@ namespace Ict.Petra.Server.MReporting
         }
 
         /// <summary>
-        /// todoComment
         /// </summary>
         /// <param name="rptCalculation"></param>
         /// <param name="rptGrpParameter"></param>
@@ -1603,26 +1585,20 @@ namespace Ict.Petra.Server.MReporting
         }
 
         /// <summary>
-        /// This procedure adds the returned values from the sql query to the Parameters, according to the returns attribute of the calculation
+        /// This procedure adds the returned values from the sql query to the Parameters, 
+        /// according to the returns attribute of the calculation
         /// </summary>
         /// <returns>void</returns>
         public void AddResultsToParameter(String AStrReturns, String AStrReturnsFormat, DataRow ARow, Int32 ADepth)
         {
-            String strReturns;
-            String strName;
-            TVariant value;
-
             // the results of each column should be added to one variable per column
-            Boolean AddToList;
-            TVariant newValue;
-            Boolean ClearParameter;
 
-            strReturns = AStrReturns;
-            AddToList = AStrReturnsFormat.ToLower() == "list";
+            String strReturns = AStrReturns;
+            Boolean AddToList = AStrReturnsFormat.ToLower() == "list";
 
             while (strReturns.Length != 0)
             {
-                strName = StringHelper.GetNextCSV(ref strReturns).Trim();
+                String strName = StringHelper.GetNextCSV(ref strReturns).Trim();
 
                 // in sqlite, eg. accountdetailcommon.xml, select j.a_transaction_currency_c will keep the j; other db's will remove the table name
                 if (!ARow.Table.Columns.Contains(strName))
@@ -1636,6 +1612,7 @@ namespace Ict.Petra.Server.MReporting
                     }
                 }
 
+                TVariant value;
                 // the parameters are stored first
                 if (ARow[strName].GetType() == typeof(String))
                 {
@@ -1646,11 +1623,11 @@ namespace Ict.Petra.Server.MReporting
                     value = new TVariant(ARow[strName]);
                 }
 
-                ClearParameter = true;
+                Boolean ClearParameter = true;
 
                 if ((AddToList) && (!value.IsNil()))
                 {
-                    newValue = new TVariant(Parameters.Get(strName, -1, ADepth));
+                    TVariant newValue = new TVariant(Parameters.Get(strName, -1, ADepth));
                     newValue.Add(value, "", false);
 
                     // no format given, that needs to be done in the column calculation or field value
@@ -1677,7 +1654,7 @@ namespace Ict.Petra.Server.MReporting
 
                 if (ClearParameter == true)
                 {
-                    // make sure, that the variable is empty; otherwise the calculator would perhaps use the values from previous rows.
+                    // make sure that the variable is empty; otherwise the calculator would perhaps use the values from previous rows.
                     // this is important for all columns that are directly based on results from the query
                     Parameters.Add(strName, "", -1, ADepth, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                 }
