@@ -103,6 +103,9 @@ namespace Ict.Tools.CodeGeneration
 
         private string FManualCodeFileContent = "";
 
+        private const string STOCK_NEW_RECORD_IMAGE = "New_Record.ico";
+        private const string STOCK_DELETE_RECORD_IMAGE = "Delete_Record.ico";
+
         /// <summary>constructor</summary>
         public TCodeStorage(XmlDocument AXmlDocument, SortedList AXmlNodes)
         {
@@ -564,6 +567,29 @@ namespace Ict.Tools.CodeGeneration
             string ActionTooltip = TYml2Xml.GetAttribute(AParsedNode, "Tooltip");
             string ActionImage = TYml2Xml.GetAttribute(AParsedNode, "Image");
             string ActionId = TYml2Xml.GetAttribute(AParsedNode, "ActionId");
+
+            if (AParsedNode.Name == "actNew")
+            {
+                if (ActionImage.ToLower() == "none")
+                {
+                    ActionImage = String.Empty;
+                }
+                else if (ActionImage == String.Empty)
+                {
+                    ActionImage = STOCK_NEW_RECORD_IMAGE;
+                }
+            }
+            else if (AParsedNode.Name == "actDelete")
+            {
+                if (ActionImage.ToLower() == "none")
+                {
+                    ActionImage = String.Empty;
+                }
+                else if (ActionImage == String.Empty)
+                {
+                    ActionImage = STOCK_DELETE_RECORD_IMAGE;
+                }
+            }
 
             TActionHandler result = new TActionHandler(AParsedNode, AParsedNode.Name, ActionClick, ActionId, ActionLabel, ActionTooltip, ActionImage);
 
