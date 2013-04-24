@@ -2,570 +2,754 @@
 <!DOCTYPE reports SYSTEM "../reports.dtd">
 <reports>
 
-	<report id="Account Detail">
-		<description>
-			todo
-		</description>
-		<reportparameters>
-			<reportparameter name="param_account_hierarchy_c"/>
-			<reportparameter name="param_ledger_number_i"/>
-			<reportparameter name="param_start_period_i"/>
-			<reportparameter name="param_end_period_i"/>
-			<reportparameter name="param_start_date"/>
-			<reportparameter name="param_end_date"/>
-			<reportparameter name="param_with_analysis_attributes"/>
-			<reportparameter name="param_sortby">
-				<option name="Account"/>
-				<option name="Cost Centre" condition="not param_currency = Transaction"/>
-				<option name="Reference" condition="not param_currency = Transaction"/>
-				<option name="Analysis Type" condition="not param_currency = Transaction"/>
-			</reportparameter>
-			<reportparameter name="param_year_i">
-				<option name="Date Range"/>
-				<option name="Available Years" calculation="Select Available Years"/>
-			</reportparameter>
-			<reportparameter name="param_currency"> 
-				<option name="Base"/>
-				<option name="International"/>
-				<option name="Transaction"/>
-			</reportparameter>
-			<reportparameter name="param_cost_centre_code_start">
-				<option name="all costcentres from the current ledger with a_posting_cost_centre_flag_l"/>
-			</reportparameter>
-			<reportparameter name="param_cost_centre_code_end">
-				<option name="all costcentres from the current ledger with a_posting_cost_centre_flag_l"/>
-			</reportparameter>
-			<reportparameter name="param_cost_centre_codes"/> <!-- alternative to cost centre range, comma separated list of cost centre codes -->
-            <reportparameter name="param_rgrCostCentres">
-                <option name="CostCentreList"/>
-                <option name="CostCentreRange"/>
-            </reportparameter>
-			<reportparameter name="param_account_code_start"> 
-				<option name="all accounts from the current ledger with a_posting_status_l"/>
-			</reportparameter>
-			<reportparameter name="param_account_code_end">
-				<option name="all accounts from the current ledger with a_posting_status_l"/>
-			</reportparameter>
-			<reportparameter name="param_account_codes"/> <!-- alternative to account code range, comma separated list of account codes -->
-            <reportparameter name="param_rgrAccounts">
-                <option name="AccountList"/>
-                <option name="AccountRange"/>
-            </reportparameter>
-			<reportparameter name="param_reference_start" condition="param_sortby = Reference"/>
-			<reportparameter name="param_reference_end" condition="param_sortby = Reference" />
-			<reportparameter name="param_analyis_type_start" condition="param_sortby = Analysis Type" />
-			<reportparameter name="param_analyis_type_end" condition="param_sortby = Analysis Type"/>
-		</reportparameters>
-		
-		<reportheader/>
-		
-		<pageheader>
-			<field whichfield="title1">
-				<fielddetail>
-					<switch>
-						<case condition="eq({param_with_analysis_attributes}, yes)">
-							<value text ="Account Detail with Analysis Attributes" />
-						</case>
-						<default>
-							<value text ="Account Detail" />
-						</default>
-					</switch>
-				</fielddetail>
-			</field>
-			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
-			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
-				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
-			</field>
-			<field whichfield="period2" align="right">
-				<fielddetail>
-					<switch>
-						<case condition="eq({param_sortby}, Reference)">
-							<switch>
-								<case condition="and(ne(length({param_reference_start}),0), ne(length({param_reference_end}),0))">
-									<value text="Reference: "/>
-									<value variable="param_reference_start"/>
-									<value text=" To "/>				
-									<value variable="param_reference_end"/>
-								</case>
-								<default>
-									<value text="Reference: All references"/>								
-								</default>
-							</switch>
-						</case>
-						<case condition="eq({param_sortby}, Analysis Type)">
-							<switch>
-								<case condition="and(ne(length({param_analysis_type_start}),0), ne(length({param_analysis_type_end}),0))">
-									<value text="Analysis Attributes: "/>
-									<value variable="param_analysis_type_start"/>
-									<value text=" To "/>				
-									<value variable="param_analysis_type_end"/>
-								</case>
-								<default>
-									<value text="Analysis Attributes: All Analysis Attributes"/>								
-								</default>
-							</switch>
-						</case>
-					</switch>
-				</fielddetail>
-				<fielddetail condition="eq({param_rgrCostCentres},CostCentreRange)">
-					<value text="    Cost Centre: "/>
-					<value variable="param_cost_centre_code_start"/>
-					<value text=" To "/>				
-					<value variable="param_cost_centre_code_end"/>
-				</fielddetail>
-				<fielddetail condition="eq({param_rgrCostCentres},CostCentreList)">
-					<value text="    Cost Centres: "/>
-					<value function="replace({param_cost_centre_codes},&quot;,)"/>
-				</fielddetail>
-			</field>
-			<field whichfield="period3" align="right">
-				<fielddetail>
-					<value function="getAccountingHierarchy({param_account_hierarchy_c})"/>
-				</fielddetail>
-				<fielddetail condition="eq({param_rgrAccounts},AccountRange)">
-					<value text="Account: "/>
-					<value variable="param_account_code_start"/>
-					<value text=" To "/>				
-					<value variable="param_account_code_end"/>
-				</fielddetail>
-				<fielddetail condition="eq({param_rgrAccounts},AccountList)">
-					<value text="Accounts: "/>
-					<value function="replace({param_account_codes},&quot;,)"/>
-				</fielddetail>
-			</field>
+  <report id="Account Detail">
+    <description>
+      todo
+    </description>
+    <reportparameters>
+      <reportparameter name="param_account_hierarchy_c"/>
+      <reportparameter name="param_ledger_number_i"/>
+      <reportparameter name="param_start_period_i"/>
+      <reportparameter name="param_end_period_i"/>
+      <reportparameter name="param_start_date"/>
+      <reportparameter name="param_end_date"/>
+      <reportparameter name="param_with_analysis_attributes"/>
+      <reportparameter name="param_sortby">
+        <option name="Account"/>
+        <option name="Cost Centre" condition="not param_currency = Transaction"/>
+        <option name="Reference" condition="not param_currency = Transaction"/>
+        <option name="Analysis Type" condition="not param_currency = Transaction"/>
+      </reportparameter>
+      <reportparameter name="param_year_i">
+        <option name="Date Range"/>
+        <option name="Available Years" calculation="Select Available Years"/>
+      </reportparameter>
+      <reportparameter name="param_currency">
+        <option name="Base"/>
+        <option name="International"/>
+        <option name="Transaction"/>
+      </reportparameter>
+      <reportparameter name="param_cost_centre_code_start">
+        <option name="all costcentres from the current ledger with a_posting_cost_centre_flag_l"/>
+      </reportparameter>
+      <reportparameter name="param_cost_centre_code_end">
+        <option name="all costcentres from the current ledger with a_posting_cost_centre_flag_l"/>
+      </reportparameter>
+      <reportparameter name="param_cost_centre_codes"/>
+      <!-- alternative to cost centre range, comma separated list of cost centre codes -->
+      <reportparameter name="param_rgrCostCentres">
+        <option name="CostCentreList"/>
+        <option name="CostCentreRange"/>
+      </reportparameter>
+      <reportparameter name="param_account_code_start">
+        <option name="all accounts from the current ledger with a_posting_status_l"/>
+      </reportparameter>
+      <reportparameter name="param_account_code_end">
+        <option name="all accounts from the current ledger with a_posting_status_l"/>
+      </reportparameter>
+      <reportparameter name="param_account_codes"/>
+      <!-- alternative to account code range, comma separated list of account codes -->
+      <reportparameter name="param_rgrAccounts">
+        <option name="AccountList"/>
+        <option name="AccountRange"/>
+      </reportparameter>
+      <reportparameter name="param_reference_start" condition="param_sortby = Reference"/>
+      <reportparameter name="param_reference_end" condition="param_sortby = Reference" />
+      <reportparameter name="param_analyis_type_start" condition="param_sortby = Analysis Type" />
+      <reportparameter name="param_analyis_type_end" condition="param_sortby = Analysis Type"/>
+    </reportparameters>
+
+    <reportheader/>
+
+    <pageheader>
+      <field whichfield="title1">
+        <fielddetail>
+          <switch>
+            <case condition="eq({param_with_analysis_attributes}, yes)">
+              <value text ="Account Detail with Analysis Attributes" />
+            </case>
+            <default>
+              <value text ="Account Detail" />
+            </default>
+          </switch>
+        </fielddetail>
+      </field>
+      <field whichfield="title2">
+        <value function="getLedgerName({{param_ledger_number_i}})"/>
+      </field>
+      <field whichfield="descr1">
+        <value text="Ledger "/>
+        <value variable="param_ledger_number_i"/>
+        <value text="   "/>
+        <value function="getLedgerName({{param_ledger_number_i}})"/>
+      </field>
+      <field whichfield="period2" align="right">
+        <fielddetail>
+          <switch>
+            <case condition="eq({param_sortby}, Reference)">
+              <switch>
+                <case condition="and(ne(length({param_reference_start}),0), ne(length({param_reference_end}),0))">
+                  <value text="Reference: "/>
+                  <value variable="param_reference_start"/>
+                  <value text=" To "/>
+                  <value variable="param_reference_end"/>
+                </case>
+                <default>
+                  <value text="Reference: All references"/>
+                </default>
+              </switch>
+            </case>
+            <case condition="eq({param_sortby}, Analysis Type)">
+              <switch>
+                <case condition="and(ne(length({param_analysis_type_start}),0), ne(length({param_analysis_type_end}),0))">
+                  <value text="Analysis Attributes: "/>
+                  <value variable="param_analysis_type_start"/>
+                  <value text=" To "/>
+                  <value variable="param_analysis_type_end"/>
+                </case>
+                <default>
+                  <value text="Analysis Attributes: All Analysis Attributes"/>
+                </default>
+              </switch>
+            </case>
+          </switch>
+        </fielddetail>
+        <fielddetail condition="eq({param_rgrCostCentres},CostCentreRange)">
+          <value text="    Cost Centre: "/>
+          <value variable="param_cost_centre_code_start"/>
+          <value text=" To "/>
+          <value variable="param_cost_centre_code_end"/>
+        </fielddetail>
+        <fielddetail condition="eq({param_rgrCostCentres},CostCentreList)">
+          <value text="    Cost Centres: "/>
+          <value function="replace({param_cost_centre_codes},&quot;,)"/>
+        </fielddetail>
+      </field>
+      <field whichfield="period3" align="right">
+        <fielddetail>
+          <value function="getAccountingHierarchy({param_account_hierarchy_c})"/>
+        </fielddetail>
+        <fielddetail condition="eq({param_rgrAccounts},AccountRange)">
+          <value text="Account: "/>
+          <value variable="param_account_code_start"/>
+          <value text=" To "/>
+          <value variable="param_account_code_end"/>
+        </fielddetail>
+        <fielddetail condition="eq({param_rgrAccounts},AccountList)">
+          <value text="Accounts: "/>
+          <value function="replace({param_account_codes},&quot;,)"/>
+        </fielddetail>
+      </field>
 
 
-			<field whichfield="descr2" width="7 cm"><value text="Currency: "/>
-				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
-				<value text=" Ordered by: "/>
-				<value variable="param_sortby"/>
-			</field>
-			<field whichfield="descr3"><value text="Current Period is "/>
-				<value variable="param_current_period_i"/>
-			</field>			
-			<field whichfield="period1">
-				<fielddetail condition="eq({param_daterange},true)">
-					<value text="Period:  "/>
-					<value variable="param_start_date" format="formatteddate"/>
-					<value text=" To "/>
-					<value variable="param_end_date" format="formatteddate"/>
-				</fielddetail>
-				<fielddetail condition="eq({param_period},true)">
-					<value text="Period:  "/>
-					<value function="getPeriodStartDate({{param_ledger_number_i}}, {{param_start_period_i}})"/>
-					<value text=" To "/>
-					<value function="getPeriodEndDate({{param_ledger_number_i}}, {{param_end_period_i}})"/>
-					<value text = "   (" />
-					<value variable="param_start_period_i"/>
-					<value text=" To "/>
-					<value variable="param_end_period_i"/>
-					<value text = ")    (" />
-					<value function="getStatePeriod({{param_ledger_number_i}}, {{param_year_i}}, {{param_end_period_i}})"/>
-					<value text = ")" />
-				</fielddetail>
-				<fielddetail condition="eq({param_quarter},true)">
-					<value text="Period:  "/>
-					<value variable="param_start_date" format="formatteddate"/>
-					<value text=" To "/>
-					<value variable="param_end_date" format="formatteddate"/>
-					<value text="   (Quarter:  "/>
-					<value function="div({param_end_period_i}, 3)"/>
-					<value text=")"/>
-				</fielddetail>
-			</field>
-			<switch>
-				<case condition="or(eq({param_sortby},Reference), eq({param_sortby}, Analysis Type))">
-					<field whichfield="left1" pos="0 cm" width="2 cm"><value text = "CC/Account"/></field>
-					<field whichfield="left2" pos="2 cm" width="3 cm"><value text = "Date              Ref."/></field>
-				</case>
-				<default>
-					<field whichfield="left1" pos="0 cm" width="7 cm"><value text = "CostCentre/Account"/></field>
-				</default>
-			</switch>
-		</pageheader>
-		
-		<calculations>		
+      <field whichfield="descr2" width="7 cm">
+        <value text="Currency: "/>
+        <value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+        <value text=" Ordered by: "/>
+        <value variable="param_sortby"/>
+      </field>
+      <field whichfield="descr3">
+        <value text="Current Period is "/>
+        <value variable="param_current_period_i"/>
+      </field>
+      <field whichfield="period1">
+        <fielddetail condition="eq({param_daterange},true)">
+          <value text="Period:  "/>
+          <value variable="param_start_date" format="formatteddate"/>
+          <value text=" To "/>
+          <value variable="param_end_date" format="formatteddate"/>
+        </fielddetail>
+        <fielddetail condition="eq({param_period},true)">
+          <value text="Period:  "/>
+          <value function="getPeriodStartDate({{param_ledger_number_i}}, {{param_start_period_i}})"/>
+          <value text=" To "/>
+          <value function="getPeriodEndDate({{param_ledger_number_i}}, {{param_end_period_i}})"/>
+          <value text = "   (" />
+          <value variable="param_start_period_i"/>
+          <value text=" To "/>
+          <value variable="param_end_period_i"/>
+          <value text = ")    (" />
+          <value function="getStatePeriod({{param_ledger_number_i}}, {{param_year_i}}, {{param_end_period_i}})"/>
+          <value text = ")" />
+        </fielddetail>
+        <fielddetail condition="eq({param_quarter},true)">
+          <value text="Period:  "/>
+          <value variable="param_start_date" format="formatteddate"/>
+          <value text=" To "/>
+          <value variable="param_end_date" format="formatteddate"/>
+          <value text="   (Quarter:  "/>
+          <value function="div({param_end_period_i}, 3)"/>
+          <value text=")"/>
+        </fielddetail>
+      </field>
+      <switch>
+        <case condition="or(eq({param_sortby},Reference), eq({param_sortby}, Analysis Type))">
+          <field whichfield="left1" pos="0 cm" width="2 cm">
+            <value text = "CC/Account"/>
+          </field>
+          <field whichfield="left2" pos="2 cm" width="3 cm">
+            <value text = "Date              Ref."/>
+          </field>
+        </case>
+        <default>
+          <field whichfield="left1" pos="0 cm" width="7 cm">
+            <value text = "CostCentre/Account"/>
+          </field>
+        </default>
+      </switch>
+    </pageheader>
 
-			<calculation id="Debit" 
-					returnsFormat="#,##0.00; ; ; ;" returns="amount">
-				<caption><value text="Debits"/></caption>
-				<query>
-					<queryDetail>
-						<value function="getAccountDetailAmount(getTransactionAmount({param_currency}),{ALLLEVELS:a_debit_credit_indicator_l})"/>
-					</queryDetail>
-				</query>
-			</calculation>
+    <calculations>
 
-			<calculation id="Credit" 
-					returnsFormat=" ; #,##0.00; ; ;" returns="amount">
-				<caption><value text="Credits"/></caption>
-				<query>
-					<queryDetail>
-						<value function="getAccountDetailAmount(getTransactionAmount({param_currency}),{ALLLEVELS:a_debit_credit_indicator_l})"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Debit"
+          returnsFormat="#,##0.00; ; ; ;" returns="amount">
+        <caption>
+          <value text="Debits"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value function="getAccountDetailAmount(getTransactionAmount({param_currency}),{ALLLEVELS:a_debit_credit_indicator_l})"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Transaction Currency" 
-					returnsFormat="text" returns="text" align="left">
-				<caption><value text=" "/></caption>
-				<query>
-					<queryDetail><value variable="a_transaction_currency_c"/></queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Transaction Narrative" 
-					returnsFormat="text" returns="text" align="left">
-				<caption><value text=" "/></caption>
-				<query>
-					<queryDetail><value variable="a_narrative_c"/></queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Start Balance" 
-					returnsFormat="nothing" returns="amount">
-				<caption><value text="Start Balance"/></caption>
-				<query><queryDetail></queryDetail>
-				</query>
-			</calculation>
-			<calculation id="End Balance" 
-					returnsFormat="nothing" returns="amount">
-				<caption><value text="End Balance"/></caption>
-				<query><queryDetail></queryDetail>
-				</query>
-			</calculation>
-			<calculation id="AnalysisType" 
-					returnsFormat="nothing" returns="text">
-				<caption><value text="Analysis Type"/></caption>
-				<query><queryDetail></queryDetail>
-				</query>
-			</calculation>
-			<calculation id="AnalysisValue" 
-					returnsFormat="nothing" returns="text">
-				<caption><value text="Analysis Value"/></caption>
-				<query><queryDetail></queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Start Balance CostCentre" 
-					returnsFormat="internal" returns="internal">
-				<caption><value text="Start Balance"/></caption>
-				<query>
-                    <queryDetail><value function="getAccountDetailAmount(
-                                    getActual(
-                                              sub({{param_start_period_i}},1),
-                                              {{param_year_i}},
-                                              true,
-                                              {param_currency}),
-                                    not({ALLLEVELS:a_debit_credit_indicator_l}))"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation id="End Balance CostCentre" 
-					returnsFormat="internal" returns="internal">
-				<caption><value text="End Balance"/></caption>
-				<query>
-                    <queryDetail><value function="getAccountDetailAmount(
-                                    getActual(
-                                              {{param_end_period_i}},
-                                              {{param_year_i}},
-                                              true,
-                                              {param_currency}),
-                                    not({ALLLEVELS:a_debit_credit_indicator_l}))"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Credit"
+          returnsFormat=" ; #,##0.00; ; ;" returns="amount">
+        <caption>
+          <value text="Credits"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value function="getAccountDetailAmount(getTransactionAmount({param_currency}),{ALLLEVELS:a_debit_credit_indicator_l})"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-		</calculations>
-		<levels>
-		<level name="main">
-			<detail>
-				<lowerLevelReport level="GrandTotalNetBalance"/>
-			</detail>
-		</level> <!-- main -->
+      <calculation id="Transaction Currency"
+          returnsFormat="text" returns="text" align="left">
+        <caption>
+          <value text=" "/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="a_transaction_currency_c"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-		<level name="GrandTotalNetBalance" identification="">
-			<header>
-			</header>
-			<detail>
-				<lowerLevelReport level="GrandTotal">
-				</lowerLevelReport>			
-			</detail>
-			<footer>
-				<field whichfield="left 0" pos = "0cm" width="2cm" align="left"><value text="Net Balance:"/></field>
-				<field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
-				<field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
-			</footer>
-		</level><!-- GrandTotalNetBalance -->
+      <calculation id="Transaction Narrative"
+          returnsFormat="text" returns="text" align="left">
+        <caption>
+          <value text=" "/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="a_narrative_c"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-		<level name="GrandTotal" identification="">
-			<header>
-			</header>
-			<detail>
-				<switch>
-					<case condition="eq({param_sortby}, Account)">
-						<lowerLevelReport level="AccountDetailNetBalance" calculation ="Select Account Detail SortBy Account"/>
-					</case>
-					<case condition="eq({param_sortby}, Cost Centre)">
-						<lowerLevelReport level="CostCentreDetailNetBalance" calculation ="Select Account Detail SortBy CostCentre"/>
-					</case>
-					<case condition="eq({param_sortby}, Reference)">
-						<lowerLevelReport level="ReferenceDetailNetBalance" calculation ="Select Reference Names"/>
-					</case>
-					<case condition="eq({param_sortby}, Analysis Type)">
-						<lowerLevelReport level="AnalysisTypeDetailNetBalance" calculation ="Select Analysis Attribute Names"/>
-					</case>
-				</switch>
-			</detail>
-			<footer line="above">
-				<field whichfield="left 0" pos = "0cm" width="2cm" align="left"><value text="Grand Total:"/></field>
-				<field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-				<field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-				<if condition="not(isNull(param_start_period_i))" >
-					<field whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
-						<value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-					<field whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
-						<value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-				</if>
-			</footer>
-		</level><!-- GrandTotal -->
+      <calculation id="Start Balance"
+          returnsFormat="nothing" returns="amount">
+        <caption>
+          <value text="Start Balance"/>
+        </caption>
+        <query>
+          <queryDetail></queryDetail>
+        </query>
+      </calculation>
 
-		<level name="AccountDetailNetBalance" identification=""
-				condition="HasChildColumns">
-			<header>
-			</header>
-			<detail>
-				<lowerLevelReport level="AccountDetail"/>
-			</detail>
-			<footer line="below">
-				<field whichfield="left 0" pos = "2cm" width="2cm" align="right"><value text="Net Balance:"/></field>
-				<field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
-				<field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
-			</footer>
-		</level><!-- AccountDetailNetBalance -->
+      <calculation id="End Balance"
+          returnsFormat="nothing" returns="amount">
+        <caption>
+          <value text="End Balance"/>
+        </caption>
+        <query>
+          <queryDetail></queryDetail>
+        </query>
+      </calculation>
 
-		<level name="AccountDetail" identification="line_a_account_code_c"
-				condition="HasChildRows">
-			<header>
-			</header>
-			<detail>
-				<lowerLevelReport level="DetailNetBalance" calculation ="Select CostCentres of Account"/>
-			</detail>
-			<footer>
-				<field whichfield="left 0" pos = "2cm" width="2cm" align="right"><value text="Account Total:"/></field>
-				<field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-				<field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-				<if condition="not(isNull(param_start_period_i))" >
-					<field whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
-						<value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-					<field whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
-						<value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-				</if>
-			</footer>
-		</level><!-- AccountDetail -->
+      <calculation id="AnalysisType"
+          returnsFormat="nothing" returns="text">
+        <caption>
+          <value text="Analysis Type"/>
+        </caption>
+        <query>
+          <queryDetail></queryDetail>
+        </query>
+      </calculation>
 
-		<level name="CostCentreDetailNetBalance" identification="line_a_cost_centre_code_c"
-				condition="HasChildColumns">
-			<header>
-			</header>
-			<detail>
-				<lowerLevelReport level="CostCentreDetail"/>
-			</detail>
-			<footer line="below">
-				<field whichfield="left 0" pos = "2cm" width="3cm" align="right"><value text="Net Balance:"/></field>
-				<field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
-				<field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
-			</footer>
-		</level><!-- CostCentreDetailNetBalance -->
+      <calculation id="AnalysisValue"
+          returnsFormat="nothing" returns="text">
+        <caption>
+          <value text="Analysis Value"/>
+        </caption>
+        <query>
+          <queryDetail></queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Start Balance CostCentre"
+          returnsFormat="internal" returns="internal">
+        <caption>
+          <value text="Start Balance"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value function="getAccountDetailAmount(
+                getActual(
+                          sub({{param_start_period_i}},1),
+                          {{param_year_i}},
+                          true,
+                          {param_currency}),
+                not({ALLLEVELS:a_debit_credit_indicator_l}))"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="End Balance CostCentre"
+          returnsFormat="internal" returns="internal">
+        <caption>
+          <value text="End Balance"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value function="getAccountDetailAmount(
+                  getActual(
+                            {{param_end_period_i}},
+                            {{param_year_i}},
+                            true,
+                            {param_currency}),
+                  not({ALLLEVELS:a_debit_credit_indicator_l}))"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+    </calculations>
+    <levels>
+      <level name="main">
+        <detail>
+          <lowerLevelReport level="GrandTotalNetBalance"/>
+        </detail>
+      </level>
+      <!-- main -->
+
+      <level name="GrandTotalNetBalance" identification="">
+        <header>
+        </header>
+        <detail>
+          <lowerLevelReport level="GrandTotal">
+          </lowerLevelReport>
+        </detail>
+        <footer>
+          <field whichfield="left 0" pos = "0cm" width="2cm" align="left">
+            <value text="Net Balance:"/>
+          </field>
+          <field whichfield="column 0" format="#,##0.00; ; ; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+          <field whichfield="column 1" format=" ;#,##0.00;0.00; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+        </footer>
+      </level>
+      <!-- GrandTotalNetBalance -->
+
+      <level name="GrandTotal" identification="">
+        <header>
+        </header>
+        <detail>
+          <switch>
+            <case condition="eq({param_sortby}, Account)">
+              <lowerLevelReport level="AccountDetailNetBalance" calculation ="Select Account Detail SortBy Account"/>
+            </case>
+            <case condition="eq({param_sortby}, Cost Centre)">
+              <lowerLevelReport level="CostCentreDetailNetBalance" calculation ="Select Account Detail SortBy CostCentre"/>
+            </case>
+            <case condition="eq({param_sortby}, Reference)">
+              <lowerLevelReport level="ReferenceDetailNetBalance" calculation ="Select Reference Names"/>
+            </case>
+            <case condition="eq({param_sortby}, Analysis Type)">
+              <lowerLevelReport level="AnalysisTypeDetailNetBalance" calculation ="Select Analysis Attribute Names"/>
+            </case>
+          </switch>
+        </detail>
+        <footer line="above">
+          <field whichfield="left 0" pos = "0cm" width="2cm" align="left">
+            <value text="Grand Total:"/>
+          </field>
+          <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00">
+            <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+          </field>
+          <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00">
+            <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+          </field>
+          <if condition="not(isNull(param_start_period_i))" >
+            <field whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
+              <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+            </field>
+            <field whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
+              <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+            </field>
+          </if>
+        </footer>
+      </level>
+      <!-- GrandTotal -->
+
+      <level name="AccountDetailNetBalance" identification=""
+          condition="HasChildColumns">
+        <header>
+        </header>
+        <detail>
+          <lowerLevelReport level="AccountDetail"/>
+        </detail>
+        <footer line="below">
+          <field whichfield="left 0" pos = "2cm" width="2cm" align="right">
+            <value text="Net Balance:"/>
+          </field>
+          <field whichfield="column 0" format="#,##0.00; ; ; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+          <field whichfield="column 1" format=" ;#,##0.00;0.00; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+        </footer>
+      </level>
+      <!-- AccountDetailNetBalance -->
+
+      <level name="AccountDetail" identification="line_a_account_code_c"
+          condition="HasChildRows">
+        <header>
+        </header>
+        <detail>
+          <lowerLevelReport level="DetailNetBalance" calculation ="Select CostCentres of Account"/>
+        </detail>
+        <footer>
+          <field whichfield="left 0" pos = "2cm" width="2cm" align="right">
+            <value text="Account Total:"/>
+          </field>
+          <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00">
+            <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+          </field>
+          <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00">
+            <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+          </field>
+          <if condition="not(isNull(param_start_period_i))" >
+            <field whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
+              <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+            </field>
+            <field whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
+              <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+            </field>
+          </if>
+        </footer>
+      </level>
+      <!-- AccountDetail -->
+
+      <level name="CostCentreDetailNetBalance" identification="line_a_cost_centre_code_c"
+          condition="HasChildColumns">
+        <header>
+        </header>
+        <detail>
+          <lowerLevelReport level="CostCentreDetail"/>
+        </detail>
+        <footer line="below">
+          <field whichfield="left 0" pos = "2cm" width="3cm" align="right">
+            <value text="Net Balance:"/>
+          </field>
+          <field whichfield="column 0" format="#,##0.00; ; ; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+          <field whichfield="column 1" format=" ;#,##0.00;0.00; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+        </footer>
+      </level>
+      <!-- CostCentreDetailNetBalance -->
 
 
-		<level name="CostCentreDetail" identification="line_a_cost_centre_code_c"
-				condition="HasChildRows">
-			<header>
-			</header>
-			<detail>
-				<lowerLevelReport level="DetailNetBalance" calculation ="Select Accounts of CostCentre"/>
-			</detail>
-			<footer>
-				<field whichfield="left 0" pos = "2cm" width="3cm" align="right"><value text="Cost Centre Total:"/></field>
-				<field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-				<field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-				<if condition="not(isNull(param_start_period_i))" >
-					<field whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
-						<value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-					<field whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
-						<value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-				</if>
-			</footer>
-		</level><!-- CostCentreDetail -->
+      <level name="CostCentreDetail" identification="line_a_cost_centre_code_c"
+          condition="HasChildRows">
+        <header>
+        </header>
+        <detail>
+          <lowerLevelReport level="DetailNetBalance" calculation ="Select Accounts of CostCentre"/>
+        </detail>
+        <footer>
+          <field whichfield="left 0" pos = "2cm" width="3cm" align="right">
+            <value text="Cost Centre Total:"/>
+          </field>
+          <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00">
+            <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+          </field>
+          <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00">
+            <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+          </field>
+          <if condition="not(isNull(param_start_period_i))" >
+            <field whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
+              <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+            </field>
+            <field whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
+              <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+            </field>
+          </if>
+        </footer>
+      </level>
+      <!-- CostCentreDetail -->
 
-		<level name="DetailNetBalance" identification="line_a_account_code_c, line_a_cost_centre_code_c"
-				condition = "HasChildColumns">
-			<header>
-			</header>
-			<detail>
-				<lowerLevelReport level="AccountCostCentreDetail"/>
-			</detail>
-			<footer space="below">
-				<field whichfield="left 0" pos = "2cm" width="2cm" align="right"><value text="Net Balance:"/></field>
-				<field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
-				<field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
-			</footer>
-		</level><!-- DetailNetBalance -->
+      <level name="DetailNetBalance" identification="line_a_account_code_c, line_a_cost_centre_code_c"
+          condition = "HasChildColumns">
+        <header>
+        </header>
+        <detail>
+          <lowerLevelReport level="AccountCostCentreDetail"/>
+        </detail>
+        <footer space="below">
+          <field whichfield="left 0" pos = "2cm" width="2cm" align="right">
+            <value text="Net Balance:"/>
+          </field>
+          <field whichfield="column 0" format="#,##0.00; ; ; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+          <field whichfield="column 1" format=" ;#,##0.00;0.00; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+        </footer>
+      </level>
+      <!-- DetailNetBalance -->
 
-		<level name="ReferenceDetailNetBalance" identification="line_reference_c"
-				condition="HasChildColumns">
-			<header>
-			</header>
-			<detail>
-				<lowerLevelReport level="ReferenceDetail"/>
-			</detail>
-			<footer space="below">
-				<field whichfield="left 0" pos = "2cm" width="3cm" align="right"><value text="Net Balance:"/></field>
-				<field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
-				<field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
-			</footer>
-		</level><!-- ReferenceDetailNetBalance -->
+      <level name="ReferenceDetailNetBalance" identification="line_reference_c"
+          condition="HasChildColumns">
+        <header>
+        </header>
+        <detail>
+          <lowerLevelReport level="ReferenceDetail"/>
+        </detail>
+        <footer space="below">
+          <field whichfield="left 0" pos = "2cm" width="3cm" align="right">
+            <value text="Net Balance:"/>
+          </field>
+          <field whichfield="column 0" format="#,##0.00; ; ; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+          <field whichfield="column 1" format=" ;#,##0.00;0.00; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+        </footer>
+      </level>
+      <!-- ReferenceDetailNetBalance -->
 
-		<level name="AnalysisTypeDetailNetBalance" identification="line_analysis_attribute_value_c"
-				condition="HasChildColumns">
-			<header>
-			</header>
-			<detail>
-				<lowerLevelReport level="AnalysisDetail"/>
-			</detail>
-			<footer space="below">
-				<field whichfield="left 0" pos = "2cm" width="3cm" align="right"><value text="Net Balance:"/></field>
-				<field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
-				<field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
-			</footer>
-		</level><!-- AnalysisTypeDetailNetBalance -->
+      <level name="AnalysisTypeDetailNetBalance" identification="line_analysis_attribute_value_c"
+          condition="HasChildColumns">
+        <header>
+        </header>
+        <detail>
+          <lowerLevelReport level="AnalysisDetail"/>
+        </detail>
+        <footer space="below">
+          <field whichfield="left 0" pos = "2cm" width="3cm" align="right">
+            <value text="Net Balance:"/>
+          </field>
+          <field whichfield="column 0" format="#,##0.00; ; ; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+          <field whichfield="column 1" format=" ;#,##0.00;0.00; ">
+            <value function="getNetBalance({{lineId}})"/>
+          </field>
+        </footer>
+      </level>
+      <!-- AnalysisTypeDetailNetBalance -->
 
-		<level name="AccountCostCentreDetail" identification="line_a_account_code_c, line_a_cost_centre_code_c"
-			condition="HasColumns">
-			<header>
-				<field whichfield="header 0" pos="0 cm" width="3cm" align="left"><value variable="line_a_cost_centre_code_c"/>
-					<value text="-"/><value variable="line_a_account_alias_c"/></field>
-				<field whichfield="header 1" pos="4cm" width="12cm" align="left"><value variable="account_name"/>
-					<value text=", "/><value variable="cost_centre_name"/></field>
-			</header>
-			<detail>
-				<lowerLevelReport level="TransactionDetail" calculation ="Select Transactions of AccountCostCentre"/>
-			</detail>
-			<footer>
-				<field whichfield="left 0" pos = "2cm" width="2cm" align="right"><value text="Sub Total:"/></field>
-				<if condition="eq({param_with_analysis_attributes}, yes)">
-					<field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-					<field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
-				</if>
-				<if condition="eq({param_with_analysis_attributes}, no)">
-					<field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
-					<field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
-				</if>
-				<if condition="not(isNull(param_start_period_i))" >
-					<field calculation="GetGLMSequences" whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
-						<value calculation="Start Balance CostCentre"/></field>
-					<field calculation="GetGLMSequences" whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
-						<value calculation="End Balance CostCentre"/></field>
-				</if>
-			</footer>
-		</level> <!-- AccountCostCentreDetail -->
+      <level name="AccountCostCentreDetail" identification="line_a_account_code_c, line_a_cost_centre_code_c"
+        condition="HasColumns">
+        <header>
+          <field whichfield="header 0" pos="0 cm" width="3cm" align="left">
+            <value variable="line_a_cost_centre_code_c"/>
+            <value text="-"/>
+            <value variable="line_a_account_alias_c"/>
+          </field>
+          <field whichfield="header 1" pos="4cm" width="12cm" align="left">
+            <value variable="account_name"/>
+            <value text=", "/>
+            <value variable="cost_centre_name"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="TransactionDetail" calculation ="Select Transactions of AccountCostCentre"/>
+        </detail>
+        <footer>
+          <field whichfield="left 0" pos = "2cm" width="2cm" align="right">
+            <value text="Sub Total:"/>
+          </field>
+          <if condition="eq({param_with_analysis_attributes}, yes)">
+            <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00">
+              <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+            </field>
+            <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00">
+              <value function="getSumLower2Report({{lineId}}, {{column}})"/>
+            </field>
+          </if>
+          <if condition="eq({param_with_analysis_attributes}, no)">
+            <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00">
+              <value function="getSumLowerReport({{lineId}}, {{column}})"/>
+            </field>
+            <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00">
+              <value function="getSumLowerReport({{lineId}}, {{column}})"/>
+            </field>
+          </if>
+          <if condition="not(isNull(param_start_period_i))" >
+            <field calculation="GetGLMSequences" whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
+              <value calculation="Start Balance CostCentre"/>
+            </field>
+            <field calculation="GetGLMSequences" whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
+              <value calculation="End Balance CostCentre"/>
+            </field>
+          </if>
+        </footer>
+      </level>
+      <!-- AccountCostCentreDetail -->
 
-		<level name="ReferenceDetail" identification="line_reference_c" condition="HasColumns">
-			<header>
-			</header>
-			<detail>
-				<lowerLevelReport level="ReferenceTransactionDetail" calculation ="Select Transactions by Reference"/>
-			</detail>
-			<footer space="above">
-				<field whichfield="left 0" pos = "3cm" width="3cm" align="right"><value text="Reference Total:"/></field>
-				<field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
-				<field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
-			</footer>
-		</level> <!-- ReferenceDetail -->
+      <level name="ReferenceDetail" identification="line_reference_c" condition="HasColumns">
+        <header>
+        </header>
+        <detail>
+          <lowerLevelReport level="ReferenceTransactionDetail" calculation ="Select Transactions by Reference"/>
+        </detail>
+        <footer space="above">
+          <field whichfield="left 0" pos = "3cm" width="3cm" align="right">
+            <value text="Reference Total:"/>
+          </field>
+          <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00">
+            <value function="getSumLowerReport({{lineId}}, {{column}})"/>
+          </field>
+          <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00">
+            <value function="getSumLowerReport({{lineId}}, {{column}})"/>
+          </field>
+        </footer>
+      </level>
+      <!-- ReferenceDetail -->
 
-		<level name="AnalysisDetail" identification="line_analysis_attribute_value_c" condition="HasColumns">
-			<header>
-				<field whichfield="header 0" pos="0cm" width="7 cm">
-					<value text="("/><value variable="a_analysis_type_code_c"/>
-					<value text=")   Analysis of "/><value variable="a_analysis_type_description_c"/>
-					<value text=": "/>
-				</field>
-				<field whichfield="header 1" pos="7cm" width="4 cm">
-					<value variable = "line_analysis_attribute_value_c"/>
-				</field>
-			</header>
-			<detail>
-				<lowerLevelReport level="ReferenceTransactionDetail" calculation ="Select Transactions by Analysis Attribute"/>
-			</detail>
-			<footer space="above">
-				<field whichfield="left 0" pos = "3cm" width="3cm" align="right"><value text="Analysis Total:"/></field>
-				<field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
-				<field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
-			</footer>
-		</level> <!-- AnalysisDetail -->
+      <level name="AnalysisDetail" identification="line_analysis_attribute_value_c" condition="HasColumns">
+        <header>
+          <field whichfield="header 0" pos="0cm" width="7 cm">
+            <value text="("/>
+            <value variable="a_analysis_type_code_c"/>
+            <value text=")   Analysis of "/>
+            <value variable="a_analysis_type_description_c"/>
+            <value text=": "/>
+          </field>
+          <field whichfield="header 1" pos="7cm" width="4 cm">
+            <value variable = "line_analysis_attribute_value_c"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="ReferenceTransactionDetail" calculation ="Select Transactions by Analysis Attribute"/>
+        </detail>
+        <footer space="above">
+          <field whichfield="left 0" pos = "3cm" width="3cm" align="right">
+            <value text="Analysis Total:"/>
+          </field>
+          <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00">
+            <value function="getSumLowerReport({{lineId}}, {{column}})"/>
+          </field>
+          <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00">
+            <value function="getSumLowerReport({{lineId}}, {{column}})"/>
+          </field>
+        </footer>
+      </level>
+      <!-- AnalysisDetail -->
 
-		<level name="TransactionDetail" identification="line_a_account_code_c, line_a_cost_centre_code_c, a_reference_c">
-			<header>
-			</header>
-			<detail>
-				<switch>
-					<case condition="eq({param_with_analysis_attributes}, yes)">
-						<lowerLevelReport level="TransactionDetail2"/>
-						<lowerLevelReport level="TransactionAnalysisAttributes" calculation ="Select Analysis Attributes of Transaction"/>
-					</case>
-					<default>
-						<field whichfield="left 0" pos="1 cm" width="2cm" align="left"><value variable="a_transaction_date_d"/></field>
-						<field whichfield="left 1" pos="3.5 cm" width="3cm" align="left"><value variable="a_reference_c"/></field>
-						<field whichfield="columns" />
-					</default>
-				</switch>
-			</detail>
-			<footer>
-			</footer>
-		</level><!-- TransactionDetail -->
+      <level name="TransactionDetail" identification="line_a_account_code_c, line_a_cost_centre_code_c, a_reference_c">
+        <header>
+        </header>
+        <detail>
+          <switch>
+            <case condition="eq({param_with_analysis_attributes}, yes)">
+              <lowerLevelReport level="TransactionDetail2"/>
+              <lowerLevelReport level="TransactionAnalysisAttributes" calculation ="Select Analysis Attributes of Transaction"/>
+            </case>
+            <default>
+              <field whichfield="left 0" pos="1 cm" width="2cm" align="left">
+                <value variable="a_transaction_date_d"/>
+              </field>
+              <field whichfield="left 1" pos="3.5 cm" width="3cm" align="left">
+                <value variable="a_reference_c"/>
+              </field>
+              <field whichfield="columns" />
+            </default>
+          </switch>
+        </detail>
+        <footer>
+        </footer>
+      </level>
+      <!-- TransactionDetail -->
 
-		<level name="TransactionDetail2" identification="line_a_account_code_c, line_a_cost_centre_code_c, a_reference_c">
-			<header>
-			</header>
-			<detail>
-				<field whichfield="left 0" pos="1 cm" width="2cm" align="left"><value variable="a_transaction_date_d"/></field>
-				<field whichfield="left 1" pos="3.5 cm" width="3cm" align="left"><value variable="a_reference_c"/></field>
-				<field whichfield="columns" />
-			</detail>
-			<footer>
-			</footer>
-		</level><!-- TransactionDetail2 -->
+      <level name="TransactionDetail2" identification="line_a_account_code_c, line_a_cost_centre_code_c, a_reference_c">
+        <header>
+        </header>
+        <detail>
+          <field whichfield="left 0" pos="1 cm" width="2cm" align="left">
+            <value variable="a_transaction_date_d"/>
+          </field>
+          <field whichfield="left 1" pos="3.5 cm" width="3cm" align="left">
+            <value variable="a_reference_c"/>
+          </field>
+          <field whichfield="columns" />
+        </detail>
+        <footer>
+        </footer>
+      </level>
+      <!-- TransactionDetail2 -->
 
-		<level name="TransactionAnalysisAttributes" identification="line_a_account_code_c, line_a_cost_centre_code_c, a_reference_c, a_analysis_type_code_c"
-			condition="HasColumns">
-			<header>
-			</header>
-			<detail>
-				<!-- overwrite texts -->
-				<field whichfield="left 0"><value text=""/></field>
-				<field whichfield="left 1"><value text=""/></field>
-				<field whichfield="column 6" pos="11.5 cm" width="2 cm" align="left"><value variable="a_analysis_type_code_c"/></field>
-				<field whichfield="column 7" pos="13.5 cm" width="3cm" align="left"><value variable="a_analysis_attribute_value_c"/></field>
-				<field whichfield="columns"><value text=""/></field> <!-- overwrite all other columns -->
-			</detail>
-			<footer>
-			</footer>
-		</level><!-- TransactionAnalysisAttributes -->
+      <level name="TransactionAnalysisAttributes" identification="line_a_account_code_c, line_a_cost_centre_code_c, a_reference_c, a_analysis_type_code_c"
+        condition="HasColumns">
+        <header>
+        </header>
+        <detail>
+          <!-- overwrite texts -->
+          <field whichfield="left 0">
+            <value text=""/>
+          </field>
+          <field whichfield="left 1">
+            <value text=""/>
+          </field>
+          <field whichfield="column 6" pos="11.5 cm" width="2 cm" align="left">
+            <value variable="a_analysis_type_code_c"/>
+          </field>
+          <field whichfield="column 7" pos="13.5 cm" width="3cm" align="left">
+            <value variable="a_analysis_attribute_value_c"/>
+          </field>
+          <field whichfield="columns">
+            <value text=""/>
+          </field>
+          <!-- overwrite all other columns -->
+        </detail>
+        <footer>
+        </footer>
+      </level>
+      <!-- TransactionAnalysisAttributes -->
 
-		<level name="ReferenceTransactionDetail" identification="line_reference_c, a_transaction_date_d">
-			<header>
-			</header>
-			<detail>
-				<field whichfield="left 0" pos="0 cm" width="2cm" align="left">
-					<value variable="a_cost_centre_code_c"/><value text="-"/>
-					<value variable="a_account_code_c"/>
-				</field>
-				<field whichfield="left 1" pos="2 cm" width="3cm" align="left">
-					<value variable="a_transaction_date_d" format="formatteddate"/> <value text = "     "/>
-					<value variable="line_reference_c"/></field>
-				<field whichfield="columns" />
-			</detail>
-			<footer>
-			</footer>
-		</level><!-- ReferenceTransactionDetail -->
-		</levels>
-	</report><!-- Account Detail -->
+      <level name="ReferenceTransactionDetail" identification="line_reference_c, a_transaction_date_d">
+        <header>
+        </header>
+        <detail>
+          <field whichfield="left 0" pos="0 cm" width="2cm" align="left">
+            <value variable="a_cost_centre_code_c"/>
+            <value text="-"/>
+            <value variable="a_account_code_c"/>
+          </field>
+          <field whichfield="left 1" pos="2 cm" width="3cm" align="left">
+            <value variable="a_transaction_date_d" format="formatteddate"/>
+            <value text = "     "/>
+            <value variable="line_reference_c"/>
+          </field>
+          <field whichfield="columns" />
+        </detail>
+        <footer>
+        </footer>
+      </level>
+      <!-- ReferenceTransactionDetail -->
+    </levels>
+  </report>
+  <!-- Account Detail -->
 </reports>

@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         /// <summary>DataTables that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FSupplierTable;
-        private DataTable FInvoiceTable;
+        private AccountsPayableGUITDSInvoiceListTable FInvoiceTable;
         private ALedgerRow FLedgerInfo;
 
         private Int32 FLedgerNumber;
@@ -118,6 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             DataTable CriteriaTable = new DataTable();
             CriteriaTable.Columns.Add("LedgerNumber", typeof(Int32));
             CriteriaTable.Columns.Add("SupplierId", typeof(string));
+            CriteriaTable.Columns.Add("DaysPlus", typeof(decimal));
 
             decimal DaysPlus = -1;
 
@@ -139,7 +140,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 DaysPlus = 0;
             }
 
-            CriteriaTable.Columns.Add("DaysPlus", typeof(decimal));
             DataRow row = CriteriaTable.NewRow();
             row["DaysPlus"] = DaysPlus;
             row["SupplierId"] = cmbSupplierCode.Text;
@@ -149,10 +149,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Start the asynchronous search operation on the PetraServer
             if (FSearchForSuppliers)
             {
+                grdSupplierResult.DataSource = null;
+                FSupplierTable = null;
                 FSupplierFindObject.FindSupplier(CriteriaTable);
             }
             else
             {
+                grdInvoiceResult.DataSource = null;
+                FInvoiceTable = null;
                 FInvoiceFindObject.FindInvoices(CriteriaTable);
             }
 
@@ -224,28 +228,28 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 grdSupplierResult.Columns.Clear();
                 grdSupplierResult.AddTextColumn("Supplier Key", FSupplierTable.Columns[0], 90);
-                grdSupplierResult.AddTextColumn("Supplier Name", FSupplierTable.Columns[1], 250);
+                grdSupplierResult.AddTextColumn("Supplier Name", FSupplierTable.Columns[1], 150);
                 grdSupplierResult.AddTextColumn("Currency", FSupplierTable.Columns[2], 85);
             }
             else
             {
                 grdInvoiceResult.Columns.Clear();
-                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 25, false);
-                grdInvoiceResult.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"], 55);
-//              grdInvoiceResult.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
-                grdInvoiceResult.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 240);
-                grdInvoiceResult.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"], 2);
-                grdInvoiceResult.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"], 2);
-                grdInvoiceResult.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"], 70);
-                grdInvoiceResult.AddDateColumn("Due Date", FInvoiceTable.Columns["DateDue"]);
-                grdInvoiceResult.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"], 100);
-                grdInvoiceResult.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
-//              grdInvoiceResult.AddTextColumn("Discount", FInvoiceTable.Columns["DiscountMsg"], 150);
+                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.ColumnSelected, 20, false);
+                grdInvoiceResult.AddTextColumn("AP#", FInvoiceTable.ColumnApNumber, 55);
+                grdInvoiceResult.AddTextColumn("Inv#", FInvoiceTable.ColumnDocumentCode, 90);
+                grdInvoiceResult.AddTextColumn("Supplier", FInvoiceTable.ColumnPartnerShortName, 150);
+                grdInvoiceResult.AddCurrencyColumn("Amount", FInvoiceTable.ColumnTotalAmount, 2);
+                grdInvoiceResult.AddCurrencyColumn("Outstanding", FInvoiceTable.ColumnOutstandingAmount, 2);
+                grdInvoiceResult.AddTextColumn("Currency", FInvoiceTable.ColumnCurrencyCode, 70);
+                grdInvoiceResult.AddDateColumn("Due Date", FInvoiceTable.ColumnDateDue);
+                grdInvoiceResult.AddTextColumn("Status", FInvoiceTable.ColumnDocumentStatus, 100);
+                grdInvoiceResult.AddDateColumn("Issued", FInvoiceTable.ColumnDateIssued);
+//              grdInvoiceResult.AddTextColumn("Discount", FInvoiceTable.ColumnDiscountMsg, 150);
 
-                grdInvoiceResult.Columns[3].Width = 90;  // Only the text columns can have their widths set while
-                grdInvoiceResult.Columns[4].Width = 90;  // they're being added.
-                grdInvoiceResult.Columns[6].Width = 110; // For these currency and date columns,
-                grdInvoiceResult.Columns[8].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
+                grdInvoiceResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while
+                grdInvoiceResult.Columns[5].Width = 90;  // they're being added.
+                grdInvoiceResult.Columns[7].Width = 110; // For these currency and date columns,
+                grdInvoiceResult.Columns[9].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
 
                 grdInvoiceResult.MouseClick += new MouseEventHandler(grdInvoiceResult_Click);
             }
@@ -296,7 +300,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             }
                         }
 
-                        String BarStatus = "|" + Row["DocumentStatus"].ToString();
+                        String BarStatus = "|" + Row["DocumentStatus"].ToString() + "|";
 
                         //
                         // While I'm in this loop, I'll also check whether to enable the "Pay", "Post", "Reverse" and "Delete" buttons.
@@ -373,6 +377,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 myDataView.AllowNew = false;
                 grdSupplierResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
                 grdSupplierResult.Visible = true;
+                SetSupplierFilters(null, null);
 
                 if (grdSupplierResult.TotalPages > 0)
                 {
@@ -443,12 +448,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         FSupplierTable = NewPage;
                     }
 
-/*
- *                  else
- *                  {
- *                      FSupplierTable.Merge(NewPage);
- *                  }
- */
                     return NewPage;
                 }
             }
@@ -460,15 +459,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     if (FInvoiceTable == null)
                     {
-                        FInvoiceTable = NewPage;
+                        FInvoiceTable = (AccountsPayableGUITDSInvoiceListTable)NewPage;
                     }
 
-/*
- *                  else
- *                  {
- *                      FInvoiceTable.Merge(NewPage);
- *                  }
- */
                     return NewPage;
                 }
             }
@@ -562,8 +555,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (SelectedInvoice > 0)
             {
                 TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
-                frm.LoadAApDocument(FLedgerNumber, SelectedInvoice);
-                frm.Show();
+
+                if (frm.LoadAApDocument(FLedgerNumber, SelectedInvoice))
+                {
+                    frm.Show();
+                }
             }
         }
 
@@ -646,29 +642,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        private void SupplierOutstandingOpt(object sender, EventArgs e)
-        {
-        }
-
-        private void SetDueFilters(object sender, EventArgs e)
-        {
-            bool CanShow =
-                (chkDueToday.CheckState == CheckState.Checked)
-                || (chkOverdue.CheckState == CheckState.Checked)
-                || (chkDueFuture.CheckState == CheckState.Checked);
-
-            if (!CanShow)
-            {
-                chkShowOutstandingAmounts.CheckState = CheckState.Unchecked;
-            }
-
-            chkShowOutstandingAmounts.Enabled = CanShow;
-        }
-
         private void SetSupplierFilters(object sender, EventArgs e)
         {
             String CurrencyRowFilter = "";
-            String ActiveRowFilter = "";
+            String SupplierActiveRowFilter = "";
 
             String CurrencyCode = cmbSupplierCurrency.cmbCombobox.Text;
 
@@ -679,26 +656,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (chkHideInactiveSuppliers.CheckState == CheckState.Checked)
             {
-                ActiveRowFilter = "StatusCode='ACTIVE'";
+                SupplierActiveRowFilter = "StatusCode='ACTIVE'";
             }
 
-            String RowFilter = CurrencyRowFilter;
+            String SupplierRowFilter = CurrencyRowFilter;
 
-            if ((CurrencyRowFilter != "") && (ActiveRowFilter != ""))
+            if ((CurrencyRowFilter != "") && (SupplierActiveRowFilter != ""))
             {
-                RowFilter += " AND ";
+                SupplierRowFilter += " AND ";
             }
 
-            RowFilter += ActiveRowFilter;
+            SupplierRowFilter += SupplierActiveRowFilter;
 
             if (grdSupplierResult.IsInitialised)
             {
-                grdSupplierResult.PagedDataTable.DefaultView.RowFilter = RowFilter;
-            }
-
-            if (grdInvoiceResult.IsInitialised)
-            {
-                grdInvoiceResult.PagedDataTable.DefaultView.RowFilter = RowFilter;
+                grdSupplierResult.PagedDataTable.DefaultView.RowFilter = SupplierRowFilter;
             }
         }
 
@@ -746,7 +718,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (Row["Selected"].Equals(true))
                 {
-                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, (int)Row["ApNumber"]));
+                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, (int)Row["DocumentId"]));
                 }
             }
 
@@ -799,20 +771,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         out Verifications))
                 {
                     System.Windows.Forms.MessageBox.Show("Invoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                    DoSearch(null, null);
                     return;
                 }
                 else
                 {
-                    string ErrorMessages = String.Empty;
-
-                    foreach (TVerificationResult verif in Verifications)
-                    {
-                        ErrorMessages += "[" + verif.ResultContext + "] " +
-                                         verif.ResultTextCaption + ": " +
-                                         verif.ResultText + Environment.NewLine;
-                    }
-
-                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reversal"));
+                    string ErrorMessages = Verifications.BuildVerificationResultString();
+                    MessageBox.Show(ErrorMessages, Catalog.GetString("Reverse Invoice"));
                 }
             }
         }
@@ -850,24 +815,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FLedgerNumber, DeleteTheseDocs, out Verifications))
             {
                 MessageBox.Show(Catalog.GetString("Document(s) deleted successfully!"));
+                DoSearch(null, null);
             }
             else
             {
-                string ErrorMessages = String.Empty;
-
-                foreach (TVerificationResult verif in Verifications)
-                {
-                    ErrorMessages += "[" + verif.ResultContext + "] " +
-                                     verif.ResultTextCaption + ": " +
-                                     verif.ResultText + Environment.NewLine;
-                }
-
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Document Deletion failed"));
+                string ErrorMessages = Verifications.BuildVerificationResultString();
+                MessageBox.Show(ErrorMessages, Catalog.GetString("Document Deletion"));
             }
         }
 
         private void OpenAllTagged(object sender, EventArgs e)
         {
+            foreach (DataRow Row in grdInvoiceResult.PagedDataTable.Rows)
+            {
+                if (Row["Selected"].Equals(true))
+                {
+                    TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
+
+                    if (frm.LoadAApDocument(FLedgerNumber, (int)Row["DocumentId"]))
+                    {
+                        frm.Show();
+                    }
+                }
+            }
         }
 
         private void PayAllTagged(object sender, EventArgs e)
@@ -880,7 +850,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             foreach (DataRow Row in grdInvoiceResult.PagedDataTable.Rows)
             {
                 if ((Row["Selected"].Equals(true)
-                     && ("|POSTED|PARTPAID".IndexOf("|" + Row["DocumentStatus"].ToString()) >= 0)))
+                     && ("|POSTED|PARTPAID|".IndexOf("|" + Row["DocumentStatus"].ToString() + "|") >= 0)))
                 {
                     PayTheseDocs.Add((int)Row["DocumentId"]);
                 }
@@ -888,8 +858,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (PayTheseDocs.Count > 0)
             {
-                PaymentScreen.AddDocumentsToPayment(TempDS, FLedgerNumber, PayTheseDocs);
-                PaymentScreen.Show();
+                if (PaymentScreen.AddDocumentsToPayment(TempDS, FLedgerNumber, PayTheseDocs))
+                {
+                    PaymentScreen.Show();
+                }
             }
         }
 
@@ -898,12 +870,25 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             AccountsPayableTDS TempDS = LoadTaggedDocuments();
 
             List <int>PostTheseDocs = new List <int>();
+            TempDS.AApDocument.DefaultView.Sort = AApDocumentDetailTable.GetApDocumentIdDBName();
 
             foreach (DataRow Row in grdInvoiceResult.PagedDataTable.Rows)
             {
                 if ((Row["Selected"].Equals(true) && ("|POSTED|PARTPAID|PAID|".IndexOf(Row["DocumentStatus"].ToString()) < 0)))
                 {
-                    PostTheseDocs.Add((int)Row["DocumentId"]);
+                    int DocId = (int)Row["DocumentId"];
+
+                    int RowIdx = TempDS.AApDocument.DefaultView.Find(DocId);
+
+                    if (RowIdx >= 0)
+                    {
+                        AApDocumentRow DocumentRow = (AApDocumentRow)TempDS.AApDocument.DefaultView[RowIdx].Row;
+
+                        if (TFrmAPEditDocument.ApDocumentCanPost(TempDS, DocumentRow)) // This will produce an message box if there's a problem.
+                        {
+                            PostTheseDocs.Add(DocId);
+                        }
+                    }
                 }
             }
 
@@ -913,6 +898,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     // TODO: print reports on successfully posted batch
                     MessageBox.Show(Catalog.GetString("The tagged documents have been posted successfully!"));
+                    DoSearch(null, null);
 
                     // TODO: show posting register of GL Batch?
                 }
@@ -937,6 +923,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 tbbPostTagged.Visible = true;
                 tbbPayTagged.Visible = true;
                 tbbReverseTagged.Visible = true;
+                pnlInvSearchFilter.Visible = true;
+                pnlSupplierSearchFilter.Visible = false;
             }
             else // Suppliers
             {
@@ -954,6 +942,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 tbbPostTagged.Visible = false;
                 tbbPayTagged.Visible = false;
                 tbbReverseTagged.Visible = false;
+                pnlInvSearchFilter.Visible = false;
+                pnlSupplierSearchFilter.Visible = true;
             }
 
             RefreshSumTagged(null, null);

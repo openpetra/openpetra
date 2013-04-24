@@ -8,9 +8,9 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
+        actNew: {Label=&Add Journal, ActionClick=NewRow}
         actCancel:
-            Label: &Cancel
+            Label: &Cancel Journal
             ActionClick: CancelRow
     Controls:
         pnlContent:
@@ -38,7 +38,16 @@ RootNode:
         btnCancel: {Action=actCancel, Stretch=horizontally}
         grdDetails:
             Dock: Fill
-            Columns: [AJournal.JournalNumber, AJournal.JournalStatus, AJournal.JournalDebitTotal, AJournal.JournalCreditTotal, AJournal.TransactionCurrency, AJournal.JournalDescription, AJournal.SubSystemCode, AJournal.TransactionTypeCode]
+            Columns: [JournalNumber, JournalStatus, JournalDebitTotal, JournalCreditTotal, TransactionCurrency, JournalDescription, SubSystemCode, TransactionTypeCode]
+            CustomColumns:
+                JournalNumber: {Label=Journal, Type=Integer}
+                JournalStatus: {Label=Journal Status}
+                JournalDebitTotal: {Label=Debit Total, Type=Currency}
+                JournalCreditTotal: {Label=Credit Total, Type=Currency}
+                TransactionCurrency: {Label=Currency}
+                JournalDescription: {Label=Description}
+                SubSystemCode: {Label=Subsystem Code}
+                TransactionTypeCode: {Label=Transaction Type}
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
             ActionEnterKeyPressed: ShowTransactionTab

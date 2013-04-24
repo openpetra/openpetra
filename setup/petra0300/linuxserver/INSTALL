@@ -20,24 +20,23 @@ Run that file: . config.sh
 then run: . setup.sh
 
 To load the initial database:
-/etc/init.d/MyOpenPetra init
+  /etc/init.d/MyOpenPetra init
 
 To start the server, type:
-
-/etc/init.d/MyOpenPetra start
+  /etc/init.d/MyOpenPetra start
 
 To see the menu and administrate the server, type:
+  /etc/init.d/MyOpenPetra menu
 
-/etc/init.d/MyOpenPetra menu
+To install a base database:
+  Download one of the available databases from https://sourceforge.net/projects/openpetraorg/files/openpetraorg/demodata/
+  then go into the OpenPetra menu, and use option i for importing the database from the yml.gz file
 
 To stop the server, type:
-
-/etc/init.d/MyOpenPetra stop
+  /etc/init.d/MyOpenPetra stop
 
 To backup the database, type:
-
-/etc/init.d/MyOpenPetra backup
+  /etc/init.d/MyOpenPetra backup
 
 To restore the database from a backup, type:
-
-/etc/init.d/MyOpenPetra restore
+  /etc/init.d/MyOpenPetra restore

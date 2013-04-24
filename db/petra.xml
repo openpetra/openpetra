@@ -10438,6 +10438,16 @@
                 thisFields="a_ledger_number_i, a_cost_centre_code_c"
                 otherTable="a_cost_centre"
                 otherFields="a_ledger_number_i, a_cost_centre_code_c"/>
+    <foreignkey name="a_recurring_trans_anal_attr_fk6"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i"
+                otherTable="a_recurring_batch"
+                otherFields="a_ledger_number_i, a_batch_number_i"/>
+    <foreignkey name="a_recurring_trans_anal_attr_fk7"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i, a_journal_number_i"
+                otherTable="a_recurring_journal"
+                otherFields="a_ledger_number_i, a_batch_number_i, a_journal_number_i"/>
     <!-- Explicit Indexes on table a_recurring_trans_anal_attrib  -->
   </table>
   <table name="a_recurring_gift_batch"
@@ -12133,6 +12143,11 @@
                 thisFields="a_ledger_number_i, a_batch_number_i"
                 otherTable="a_batch"
                 otherFields="a_ledger_number_i, a_batch_number_i"/>
+    <foreignkey name="a_trans_anal_attrib_fk7"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i, a_journal_number_i"
+                otherTable="a_journal"
+                otherFields="a_ledger_number_i, a_batch_number_i, a_journal_number_i"/>
     <!-- Explicit Indexes on table a_trans_anal_attrib  -->
   </table>
   <table name="a_suspense_account"
@@ -15704,7 +15719,7 @@
                 label="Start Date"
                 columnlabel="Start Date"
                 help="Start date of previous experience."
-                notnull="yes" />
+                notnull="no" />
     <tablefield name="pm_end_date_d"
                 type="date"
                 descr="End date of previous experience."
@@ -15712,7 +15727,7 @@
                 label="End Date"
                 columnlabel="End Date"
                 help="End date of previous experience."
-                notnull="yes" />
+                notnull="no" />
     <tablefield name="pm_prev_location_c"
                 type="varchar"
                 descr="Location of previous work . "

@@ -7,7 +7,7 @@
   <Parameter id="param_account_hierarchy_c" value="eString:STANDARD" />
   <Parameter id="param_currency" value="eString:Base" />
   <Parameter id="param_quarter" value="eString:false" />
-  <Parameter id="param_costcentreoptions" value="eString:SelectedCostCentres" />
+  <Parameter id="param_costcentreoptions" value="eString:AllActiveCostCentres" />
   <Parameter id="param_cost_centre_codes" value="eString:" />
   <Parameter id="param_cost_centre_summary" value="eString:false" />
   <Parameter id="param_cost_centre_breakdown" value="eString:false" />

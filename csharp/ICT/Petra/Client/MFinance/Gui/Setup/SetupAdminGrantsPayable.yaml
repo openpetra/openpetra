@@ -3,13 +3,16 @@ RootNode:
     FormTitle: Maintain Payable Administration Grants
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DetailTable: AFeesPayable
+    CacheableTable: FeesPayableList
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
-    Template: windowMaintainTable
+    Template: windowMaintainCacheableTable
     WindowWidth: 790
     WindowHeight: 500
+    CacheableTableSpecificFilter: Ledger
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -19,9 +22,13 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew]
+            Controls: [btnNew, btnDelete]
         btnNew:
             Action: actNew
+            Stretch: horizontally
+        btnDelete:
+            Action: actDelete
+            Stretch: horizontally
         grdDetails:
             Dock: Fill
             Columns: [FeeCode, FeeDescription, ChargeOption, ChargePercentage, ChargeAmount, DrAccountCode, CostCentreCode, AccountCode]

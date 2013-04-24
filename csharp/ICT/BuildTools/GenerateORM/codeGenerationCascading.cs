@@ -43,7 +43,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
             TTable ACurrentTable,
             out string csvListPrimaryKeyFields,
             out string formalParametersPrimaryKey,
-            out string actualParametersPrimaryKey)
+            out string actualParametersPrimaryKey,
+            out Tuple <string, string, string>[] formalParametersPrimaryKeySeparate)
         {
             csvListPrimaryKeyFields = "";
             formalParametersPrimaryKey = "";
@@ -52,8 +53,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             if (!ACurrentTable.HasPrimaryKey())
             {
+                formalParametersPrimaryKeySeparate = new Tuple <string, string, string>[0];
                 return;
             }
+
+            formalParametersPrimaryKeySeparate = new Tuple <string, string, string>[ACurrentTable.GetPrimaryKey().strThisFields.Count];
 
             foreach (string field in ACurrentTable.GetPrimaryKey().strThisFields)
             {
@@ -69,6 +73,9 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 csvListPrimaryKeyFields += field;
                 formalParametersPrimaryKey += typedField.GetDotNetType() + " A" + TTable.NiceFieldName(field);
                 actualParametersPrimaryKey += "A" + TTable.NiceFieldName(field);
+
+                formalParametersPrimaryKeySeparate[counterPrimaryKeyField] = new Tuple <string, string, string>(
+                    typedField.GetDotNetType(), " A" + TTable.NiceFieldName(field), typedField.strLabel);
 
                 counterPrimaryKeyField++;
             }
@@ -87,26 +94,47 @@ namespace Ict.Tools.CodeGeneration.DataStore
             ProcessTemplate ATemplate,
             ProcessTemplate ASnippet)
         {
-            // for the moment, don't implement it for too big tables, e.g. s_user)
-            if (!ACurrentTable.HasPrimaryKey() || (ACurrentTable.FReferenced.Count > CASCADING_DELETE_MAX_REFERENCES))
-            {
-                return false;
-            }
-
-            ASnippet.AddToCodelet("TABLENAME", TTable.NiceTableName(ACurrentTable.strName));
-
             string csvListPrimaryKeyFields;
             string formalParametersPrimaryKey;
             string actualParametersPrimaryKey;
 
+            Tuple <string, string, string>[] formalParametersPrimaryKeySeparate;
+            string actualParametersPrimaryKeyFromPKArray = String.Empty;
+
+            ASnippet.AddToCodelet("TABLENAME", TTable.NiceTableName(ACurrentTable.strName));
+            ASnippet.AddToCodelet("THISTABLELABEL", ACurrentTable.strLabel);
+
             PrepareCodeletsPrimaryKey(ACurrentTable,
                 out csvListPrimaryKeyFields,
                 out formalParametersPrimaryKey,
-                out actualParametersPrimaryKey);
+                out actualParametersPrimaryKey,
+                out formalParametersPrimaryKeySeparate);
+
+            for (int Counter = 0; Counter < formalParametersPrimaryKeySeparate.Length; Counter++)
+            {
+                actualParametersPrimaryKeyFromPKArray +=
+                    "(" + formalParametersPrimaryKeySeparate[Counter].Item1 + ")" +
+                    "APrimaryKeyValues[" + Counter.ToString() + "], ";
+            }
+
+            // Strip off trailing ", "
+            actualParametersPrimaryKeyFromPKArray = actualParametersPrimaryKeyFromPKArray.Substring(0,
+                actualParametersPrimaryKeyFromPKArray.Length - 2);
 
             ASnippet.AddToCodelet("CSVLISTPRIMARYKEYFIELDS", csvListPrimaryKeyFields);
             ASnippet.AddToCodelet("FORMALPARAMETERSPRIMARYKEY", formalParametersPrimaryKey);
             ASnippet.AddToCodelet("ACTUALPARAMETERSPRIMARYKEY", actualParametersPrimaryKey);
+            ASnippet.AddToCodelet("ACTUALPARAMETERSPRIMARYKEYFROMPKARRAY", actualParametersPrimaryKeyFromPKArray);
+
+            for (int Counter = 0; Counter < ACurrentTable.GetPrimaryKey().strThisFields.Count; Counter++)
+            {
+                ProcessTemplate PKInfoDictBuilding = ASnippet.GetSnippet("PRIMARYKEYINFODICTBUILDING");
+                PKInfoDictBuilding.SetCodelet("PKCOLUMNLABEL", formalParametersPrimaryKeySeparate[Counter].Item3);
+                PKInfoDictBuilding.SetCodelet("PKCOLUMNCONTENT", formalParametersPrimaryKeySeparate[Counter].Item2);
+                ASnippet.InsertSnippet("PRIMARYKEYINFODICTBUILDING", PKInfoDictBuilding);
+            }
+
+            ASnippet.AddToCodelet("PRIMARYKEYCOLUMNCOUNT", ACurrentTable.GetPrimaryKey().strThisFields.Count.ToString());
 
             foreach (TConstraint constraint in ACurrentTable.FReferenced)
             {
@@ -114,11 +142,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 {
                     string csvListOtherPrimaryKeyFields;
                     string notUsed;
+                    Tuple <string, string, string>[] formalParametersPrimaryKeySeparate2;
+
                     TTable OtherTable = AStore.GetTable(constraint.strThisTable);
+
                     PrepareCodeletsPrimaryKey(OtherTable,
                         out csvListOtherPrimaryKeyFields,
                         out notUsed,
-                        out notUsed);
+                        out notUsed,
+                        out formalParametersPrimaryKeySeparate2);
 
                     // check if other foreign key exists that references the same table, e.g.
                     // PBankAccess.LoadViaPPartnerPartnerKey
@@ -135,57 +167,74 @@ namespace Ict.Tools.CodeGeneration.DataStore
                         MyOtherTableName += TTable.NiceFieldName(DifferentField);
                     }
 
-                    ProcessTemplate snippetDelete = ASnippet.GetSnippet("DELETEBYPRIMARYKEYCASCADING");
-                    snippetDelete.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
-                    snippetDelete.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
-                    snippetDelete.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
-                    snippetDelete.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
-
-                    if (OtherTable.FReferenced.Count <= CASCADING_DELETE_MAX_REFERENCES)
+                    // for the moment, don't implement it for too big tables, e.g. s_user)
+                    if ((ACurrentTable.HasPrimaryKey() || (ACurrentTable.FReferenced.Count <= CASCADING_DELETE_MAX_REFERENCES))
+                        && ((constraint.strThisTable != "a_ledger")
+                            && (!LoadViaProcedureName.StartsWith("SUser"))))
                     {
+                        ProcessTemplate snippetDelete = ASnippet.GetSnippet("DELETEBYPRIMARYKEYCASCADING");
+                        snippetDelete.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
+                        snippetDelete.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
+                        snippetDelete.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
+                        snippetDelete.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
                         snippetDelete.SetCodelet("OTHERTABLEALSOCASCADING", "true");
-                    }
 
-                    ASnippet.InsertSnippet("DELETEBYPRIMARYKEYCASCADING", snippetDelete);
 
-                    snippetDelete = ASnippet.GetSnippet("DELETEBYTEMPLATECASCADING");
-                    snippetDelete.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
-                    snippetDelete.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
-                    snippetDelete.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
-                    snippetDelete.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
+                        ASnippet.InsertSnippet("DELETEBYPRIMARYKEYCASCADING", snippetDelete);
 
-                    if (OtherTable.FReferenced.Count <= CASCADING_DELETE_MAX_REFERENCES)
-                    {
+                        snippetDelete = ASnippet.GetSnippet("DELETEBYTEMPLATECASCADING");
+                        snippetDelete.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
+                        snippetDelete.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
+                        snippetDelete.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
+                        snippetDelete.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
                         snippetDelete.SetCodelet("OTHERTABLEALSOCASCADING", "true");
+
+
+                        ASnippet.InsertSnippet("DELETEBYTEMPLATECASCADING", snippetDelete);
                     }
 
-                    ASnippet.InsertSnippet("DELETEBYTEMPLATECASCADING", snippetDelete);
-
-                    ProcessTemplate snippetCount = ASnippet.GetSnippet("COUNTBYPRIMARYKEYCASCADING");
-                    snippetCount.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
-                    snippetCount.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
-                    snippetCount.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
-                    snippetCount.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
-
-                    if (OtherTable.FReferenced.Count <= CASCADING_DELETE_MAX_REFERENCES)
+                    if ((constraint.strThisTable != "a_ledger")
+                        && (!LoadViaProcedureName.StartsWith("SUser")))
                     {
+                        ProcessTemplate snippetCount = ASnippet.GetSnippet("COUNTBYPRIMARYKEYCASCADING");
+                        snippetCount.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
+                        snippetCount.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
+                        snippetCount.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
+                        snippetCount.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
                         snippetCount.SetCodelet("OTHERTABLEALSOCASCADING", "true");
-                    }
 
-                    ASnippet.InsertSnippet("COUNTBYPRIMARYKEYCASCADING", snippetCount);
+                        for (int Counter = 0; Counter < OtherTable.GetPrimaryKey().strThisFields.Count; Counter++)
+                        {
+                            ProcessTemplate PKInfoDictBuilding2 = ASnippet.GetSnippet("PRIMARYKEYINFODICTBUILDING");
+                            PKInfoDictBuilding2.SetCodelet("PKCOLUMNLABEL", formalParametersPrimaryKeySeparate2[Counter].Item3);
+                            PKInfoDictBuilding2.SetCodelet("PKCOLUMNCONTENT", "\"\"");
+                            snippetCount.InsertSnippet("PRIMARYKEYINFODICTBUILDING2", PKInfoDictBuilding2);
+                        }
 
-                    snippetCount = ASnippet.GetSnippet("COUNTBYTEMPLATECASCADING");
-                    snippetCount.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
-                    snippetCount.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
-                    snippetCount.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
-                    snippetCount.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
+                        snippetCount.SetCodelet("PRIMARYKEYCOLUMNCOUNT2", OtherTable.GetPrimaryKey().strThisFields.Count.ToString());
 
-                    if (OtherTable.FReferenced.Count <= CASCADING_DELETE_MAX_REFERENCES)
-                    {
+                        ASnippet.InsertSnippet("COUNTBYPRIMARYKEYCASCADING", snippetCount);
+
+                        snippetCount = ASnippet.GetSnippet("COUNTBYTEMPLATECASCADING");
+                        snippetCount.SetCodelet("OTHERTABLENAME", TTable.NiceTableName(constraint.strThisTable));
+                        snippetCount.SetCodelet("OTHERTABLELABEL", OtherTable.strLabel);
+                        snippetCount.SetCodelet("MYOTHERTABLENAME", MyOtherTableName);
+                        snippetCount.SetCodelet("VIAPROCEDURENAME", "Via" + LoadViaProcedureName);
+                        snippetCount.SetCodelet("CSVLISTOTHERPRIMARYKEYFIELDS", csvListOtherPrimaryKeyFields);
                         snippetCount.SetCodelet("OTHERTABLEALSOCASCADING", "true");
-                    }
 
-                    ASnippet.InsertSnippet("COUNTBYTEMPLATECASCADING", snippetCount);
+                        for (int Counter = 0; Counter < OtherTable.GetPrimaryKey().strThisFields.Count; Counter++)
+                        {
+                            ProcessTemplate PKInfoDictBuilding2 = ASnippet.GetSnippet("PRIMARYKEYINFODICTBUILDING");
+                            PKInfoDictBuilding2.SetCodelet("PKCOLUMNLABEL", formalParametersPrimaryKeySeparate2[Counter].Item3);
+                            PKInfoDictBuilding2.SetCodelet("PKCOLUMNCONTENT", "\"\"");
+                            snippetCount.InsertSnippet("PRIMARYKEYINFODICTBUILDING2", PKInfoDictBuilding2);
+                        }
+
+                        snippetCount.SetCodelet("PRIMARYKEYCOLUMNCOUNT2", OtherTable.GetPrimaryKey().strThisFields.Count.ToString());
+
+                        ASnippet.InsertSnippet("COUNTBYTEMPLATECASCADING", snippetCount);
+                    }
                 }
             }
 

@@ -23,6 +23,7 @@
     <OutputPath>${dir.bin}</OutputPath>
     <StartArguments>${DebugStartArguments}</StartArguments>
     <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugSymbols>False</DebugSymbols>
@@ -31,6 +32,7 @@
     <BaseIntermediateOutputPath>${dir.obj}\${Namespace}\</BaseIntermediateOutputPath>
     <OutputPath>${dir.bin}</OutputPath>
     <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 ${ApplicationIcon}${PreBuildEvent}${PostBuildEvent}  <ItemGroup>
 ${TemplateReferences}  </ItemGroup>

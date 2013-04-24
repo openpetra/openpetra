@@ -161,11 +161,9 @@ namespace Ict.Common.Verification
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
 
-            try
-            {
-                System.Convert.ToDateTime(AString);
-            }
-            catch (System.Exception)
+            DateTime temp;
+
+            if (!DateTime.TryParse(AString, out temp))
             {
                 ReturnValue = GetInvalidDateVerificationResult(Description, AResultContext);
 

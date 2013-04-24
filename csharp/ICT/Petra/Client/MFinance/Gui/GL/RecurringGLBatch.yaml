@@ -1,0 +1,37 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Recurring GL Batches
+    Namespace: Ict.Petra.Client.MFinance.Gui.GL
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
+    FormType: browse
+    Template: windowTDS
+    WindowWidth: 760
+    WindowHeight: 700
+    UsingNamespaces: [Ict.Petra.Shared.Interfaces.MFinance]
+
+    Events:
+        Load: {class=System.EventHandler, method=TFrmRecurringGLBatch_Load}    
+
+    Controls:
+        pnlContent:
+            Controls: [tabRecurringGLBatch]
+            Dock: Fill
+        tabRecurringGLBatch: {Dock=Fill, DragTabPageEnabled=false}
+        tpgBatches:
+            Label: Batches
+            Controls: [ucoRecurringBatches]
+        tpgJournals:
+            Label: Journals
+            Controls: [ucoRecurringJournals]
+        tpgTransactions:
+            Label: Transactions
+            Controls: [ucoRecurringTransactions]
+        ucoRecurringBatches:
+            Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_RecurringGLBatches
+            Dock: Fill
+        ucoRecurringJournals:
+            Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_RecurringGLJournals
+            Dock: Fill
+        ucoRecurringTransactions:
+            Type: Ict.Petra.Client.MFinance.Gui.GL.TUC_RecurringGLTransactions
+            Dock: Fill

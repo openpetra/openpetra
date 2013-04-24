@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
@@ -73,6 +74,16 @@ namespace Ict.Petra.Server.MFinance.GL
             out TVerificationResultCollection AMessages
             )
         {
+            Int32 ProgressTrackerCounter = 0;
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Importing GL Batches"),
+                100);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Initialising"),
+                5);
+
             AMessages = new TVerificationResultCollection();
             GLBatchTDS MainDS = new GLBatchTDS();
             GLSetupTDS SetupDS = new GLSetupTDS();
@@ -146,6 +157,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewBatch.BatchControlTotal = ImportDecimal(Catalog.GetString("batch hash value"));
                             NewBatch.DateEffective = ImportDate(Catalog.GetString("batch effective date"));
 
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                string.Format(Catalog.GetString("Batch {0}"), NewBatch.BatchNumber),
+                                10);
+
                             int PeriodNumber, YearNr;
 
                             if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
@@ -168,6 +183,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             if (!ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out AMessages))
                             {
+                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                    Catalog.GetString("Database I/O failure"),
+                                    0);
+
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
                                 return false;
                             }
 
@@ -193,6 +214,13 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal.JournalPeriod = NewBatch.BatchPeriod;
                             NewBatch.LastJournal++;
 
+                            ProgressTrackerCounter = 0;   // counts transactions per journal
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                string.Format(Catalog.GetString("Batch {0}, Journal {1}"),
+                                    NewBatch.BatchNumber,
+                                    NewJournal.JournalNumber),
+                                15);
+
                             MainDS.AJournal.Rows.Add(NewJournal);
 
                             NewJournal.JournalDescription = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("description"));
@@ -216,6 +244,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             if (!AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction, out AMessages))
                             {
+                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                    Catalog.GetString("Database I/O failure"),
+                                    0);
+
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
                                 return false;
                             }
 
@@ -317,7 +351,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 NewTransaction.TransactionAmount = CreditAmount;
                             }
 
-                            NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount / NewJournal.ExchangeRateToBase;
+                            NewTransaction.AmountInBaseCurrency = GLRoutines.Divide(NewTransaction.TransactionAmount, NewJournal.ExchangeRateToBase);
 
                             for (int i = 0; i < 10; i++)
                             {
@@ -351,6 +385,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             if (AMessages.HasCriticalErrors)
                             {
+                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                    Catalog.GetString("Batch has critical errors"),
+                                    0);
+
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
                                 return false;
                             }
 
@@ -362,6 +402,12 @@ namespace Ict.Petra.Server.MFinance.GL
                             // TODO If this is a fund transfer to a foreign cost centre, check whether there are Key Ministries available for it.
                             if (!ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction, out AMessages))
                             {
+                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                    Catalog.GetString("Database I/O failure"),
+                                    0);
+
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
                                 return false;
                             }
 
@@ -370,10 +416,27 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             if (!ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction, out AMessages))
                             {
+                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                    Catalog.GetString("Database I/O failure"),
+                                    0);
+
+                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
                                 return false;
                             }
 
                             MainDS.ATransAnalAttrib.AcceptChanges();
+
+                            // Update progress tracker every 40 records
+                            if (++ProgressTrackerCounter % 40 == 0)
+                            {
+                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                    string.Format(Catalog.GetString("Batch {0}, Journal {1}: {2}"),
+                                        NewBatch.BatchNumber,
+                                        NewJournal.JournalNumber,
+                                        ProgressTrackerCounter),
+                                    ((ProgressTrackerCounter / 40) + 2) * 10 > 90 ? 90 : ((ProgressTrackerCounter / 40) + 2) * 10);
+                            }
                         }
                         else
                         {
@@ -419,6 +482,13 @@ namespace Ict.Petra.Server.MFinance.GL
                         Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
                 DBAccess.GDBAccessObj.RollbackTransaction();
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    String.Format(Catalog.GetString("Problem parsing the file in row {0}"), RowNumber),
+                    0);
+
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
                 return false;
             }
             finally
@@ -433,6 +503,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             return true;
         }

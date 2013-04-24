@@ -24,6 +24,7 @@
 using System;
 using System.Windows.Forms;
 
+using Ict.Common;
 using Ict.Common.Verification;
 
 namespace Ict.Petra.Client.App.Gui
@@ -55,6 +56,7 @@ namespace Ict.Petra.Client.App.Gui
             string ErrorMessages;
             Control FirstErrorControl;
             object FirstErrorContext;
+            bool RecordDeletionErrorsBecauseOfReference = false;
 
             // In case there were only warnings, we return true and record change/saving of data can go ahead,
             // otherwise false is returned to prevent record change/saving of data.
@@ -78,7 +80,26 @@ namespace Ict.Petra.Client.App.Gui
                     }
                     else
                     {
-                        TMessages.MsgFormSaveVerificationError(ErrorMessages, ReturnValue, ATypeWhichRaisesError);
+                        for (int Counter = 0; Counter < AVerificationResultCollection.Count; Counter++)
+                        {
+                            if (AVerificationResultCollection[Counter].ResultCode == CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED)
+                            {
+                                RecordDeletionErrorsBecauseOfReference = true;
+                                break;
+                            }
+                        }
+
+                        if (!RecordDeletionErrorsBecauseOfReference)
+                        {
+                            TMessages.MsgFormSaveVerificationError(ErrorMessages, ReturnValue, ATypeWhichRaisesError);
+                        }
+                        else
+                        {
+                            TMessages.MsgFormSaveVerificationError(ErrorMessages,
+                                CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED,
+                                ReturnValue, ATypeWhichRaisesError,
+                                true);
+                        }
                     }
 
                     // Put Focus on first Control that an error was recorded for

@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
+using Ict.Petra.Shared.Security;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Server.App.Core
 {
@@ -45,7 +47,7 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>
         /// delegate for processing
         /// </summary>
-        public delegate void TProcessDelegate(TDataBase Database);
+        public delegate void TProcessDelegate(TDataBase Database, bool ARunManually);
         private static SortedList <string, TProcessDelegate>FProcessDelegates = new SortedList <string, TTimedProcessing.TProcessDelegate>();
         private static List <System.Threading.Timer>FTimers = new List <Timer>();
 
@@ -75,9 +77,18 @@ namespace Ict.Petra.Server.App.Core
         }
 
         /// <summary>
-        /// Processes the delegate
+        /// Processes the delegate.
+        /// overload for the thread, does not work with 2 parameters
         /// </summary>
         private static void GenericProcessor(object ADelegateName)
+        {
+            GenericProcessor(ADelegateName, false);
+        }
+
+        /// <summary>
+        /// processes the delegate
+        /// </summary>
+        private static void GenericProcessor(object ADelegateName, bool ARunManually)
         {
             if (!FProcessDelegates.ContainsKey((string)ADelegateName))
             {
@@ -86,9 +97,16 @@ namespace Ict.Petra.Server.App.Core
 
             TDataBase db = EstablishDBConnection();
 
+            TPetraIdentity PetraIdentity = new TPetraIdentity(
+                "SYSADMIN", "", "", "", "", DateTime.MinValue,
+                DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false,
+                false);
+
+            UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
+
             TProcessDelegate TypedDelegate = FProcessDelegates[(string)ADelegateName];
 
-            TypedDelegate(db);
+            TypedDelegate(db, ARunManually);
 
             CloseDBConnection(db);
 
@@ -158,7 +176,7 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="ADelegateName"></param>
         public static void RunJobManually(string ADelegateName)
         {
-            GenericProcessor(ADelegateName);
+            GenericProcessor(ADelegateName, true);
         }
 
         /// <summary>

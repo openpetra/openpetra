@@ -74,21 +74,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
             ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
 
-        private string JournalRowFilter = "(" + AJournalTable.GetTransactionCurrencyDBName() + " = '{0}' OR " +
-                                          AJournalTable.GetTransactionCurrencyDBName() + " = '{1}') AND " +
-                                          AJournalTable.GetDateEffectiveDBName() + " >= #{2}# AND " +
-                                          AJournalTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
-                                          AJournalTable.GetJournalStatusDBName() + " = '{5}'";
         private string JournalRowFilterRange = "(" + AJournalTable.GetTransactionCurrencyDBName() + " = '{0}' OR " +
                                                AJournalTable.GetTransactionCurrencyDBName() + " = '{1}') AND " +
                                                AJournalTable.GetDateEffectiveDBName() + " >= #{2}# AND " +
-                                               AJournalTable.GetDateEffectiveDBName() + " < #{3}# AND " +
+                                               AJournalTable.GetDateEffectiveDBName() + " <= #{3}# AND " +
                                                AJournalTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
                                                AJournalTable.GetJournalStatusDBName() + " = '{5}'";
         private string GiftBatchRowFilter = "(" + AGiftBatchTable.GetCurrencyCodeDBName() + " = '{0}' OR " +
                                             AGiftBatchTable.GetCurrencyCodeDBName() + " = '{1}') AND " +
                                             AGiftBatchTable.GetGlEffectiveDateDBName() + " >= #{2}# AND " +
-                                            AGiftBatchTable.GetGlEffectiveDateDBName() + " < #{3}# AND " +
+                                            AGiftBatchTable.GetGlEffectiveDateDBName() + " <= #{3}# AND " +
                                             AGiftBatchTable.GetExchangeRateToBaseDBName() + " = {4} AND " +
                                             AGiftBatchTable.GetBatchStatusDBName() + " = 'Unposted'";
 
@@ -314,6 +309,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        /// <summary>
+        /// Gets the current text from the rate usage tooltip (used by the test software)
+        /// </summary>
+        public string Usage
+        {
+            get
+            {
+                return tooltipDeleteInfo.GetToolTip(btnInvertExchangeRate);
+            }
+        }
+
         private void InitializeManualCode()
         {
             // This code runs just before the auto-generated code binds the data to the grid
@@ -492,7 +498,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             DateTime dateEnd2 = dteEnd.AddDays(1.0);
             minModalEffectiveDate = dteStart;
-            maxModalEffectiveDate = dateEnd2;
+            maxModalEffectiveDate = dteEnd;
 
             // Do not use local formats here!
             string filter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' and {2}='{3}' and {4}<#{5}#",
@@ -644,6 +650,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e">not used</param>
         private void CancelDialog(object sender, EventArgs e)
         {
+            if (btnCancel.DialogResult == DialogResult.Abort)
+            {
+                FPetraUtilsObject.DisableSaveButton();
+            }
+
             // Although the user has clicked Cancel, we need to ask if we need to save any changes that have been made
             if (FPetraUtilsObject.CloseFormCheck())
             {
@@ -841,7 +852,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         /// Updates the lblValueOneDirection and lblValueOtherDirection labels
         /// </summary>
-        private void UpdateExchangeRateLabels()
+        private void UpdateExchangeRateLabels(object Sender = null, EventArgs e = null)
         {
             // Call can cope with null for Row, but rate must have a valid value
             if (txtDetailRateOfExchange.NumberValueDecimal.HasValue)
@@ -918,6 +929,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 txtDetailRateOfExchange.NumberValueDecimal = null;
                 FIsCurrentRowStateAdded = false;
+                btnDelete.Enabled = false;
             }
             else
             {
@@ -942,6 +954,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 SetEnabledStates();
             }
 
+            btnClose.Enabled = ARow != null;
             UpdateExchangeRateLabels();
         }
 
@@ -976,8 +989,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 btnInvertExchangeRate.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
                 btnDelete.Enabled = (FIsCurrentRowStateAdded || FCanDeleteCurrentRow);
             }
-
-            //UpdateExchangeRateLabels();
         }
 
         private void txtDetailRateOfExchange_TextChanged(object sender, EventArgs e)
@@ -1001,15 +1012,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
+            // We need not only the current row info from the exchange rate table, but also the next row later in time, if it exists
+            // Create a special view because we don't know how the grid is sorted
+            string filter =
+                ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + ARow.FromCurrencyCode + "' and " +
+                ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + ARow.Table + "'";
+            DataView dvDailyRate = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
+
+            // Find our current row and hence the previous one
+            DateTime ToDate = DateTime.MaxValue;
+            int nThis = FindRowInDataView(dvDailyRate, ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom);
+
+            while (nThis > 0)
+            {
+                DateTime tryDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+
+                if (tryDate == ARow.DateEffectiveFrom)
+                {
+                    // keep going till we find a different date because different times on the same date don't count
+                    nThis--;
+                }
+                else
+                {
+                    ToDate = tryDate;
+                    break;
+                }
+            }
+
             // OK, so we might have changed the rate
             if (FJournalDS.HasMatchingUnpostedRate && (FJournalDS.MatchingRate != ARow.RateOfExchange))
             {
                 // change all the relevant entries
                 DataView dvJournal = FJournalDS.JournalTable.DefaultView;
-                dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), FJournalDS.MatchingRate, "Unposted");
+                dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilterRange, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
+                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d",
+                        CultureInfo.InvariantCulture), FJournalDS.MatchingRate, "Unposted");
 
-                for (int i = 0; i < dvJournal.Count; i++)
+                for (int i = dvJournal.Count - 1; i >= 0; i--)
                 {
                     AJournalRow row = ((AJournalRow)dvJournal[i].Row);
                     row.BeginEdit();
@@ -1026,9 +1065,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // change all the relevant entries
                 DataView dvGift = FGiftBatchDS.GiftBatchTable.DefaultView;
                 dvGift.RowFilter = String.Format(CultureInfo.InvariantCulture, GiftBatchRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), FGiftBatchDS.MatchingRate);
+                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d",
+                        CultureInfo.InvariantCulture), FGiftBatchDS.MatchingRate);
 
-                for (int i = 0; i < dvGift.Count; i++)
+                for (int i = dvGift.Count - 1; i >= 0; i--)
                 {
                     AGiftBatchRow row = ((AGiftBatchRow)dvGift[i].Row);
                     row.BeginEdit();
@@ -1064,8 +1104,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void Import(System.Object sender, EventArgs e)
         {
-            TImportExchangeRates.ImportCurrencyExRates(FMainDS.ADailyExchangeRate, "Daily");
-            FPetraUtilsObject.SetChangedFlag();
+            if (ValidateAllData(true, true))
+            {
+                TVerificationResultCollection results = FPetraUtilsObject.VerificationResultCollection;
+
+                TImportExchangeRates.ImportCurrencyExRates(FMainDS.ADailyExchangeRate, "Daily", results);
+                FPetraUtilsObject.SetChangedFlag();
+            }
         }
 
         private void ValidateDataDetailsManual(ADailyExchangeRateRow ARow)
@@ -1200,9 +1245,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             DateTime ToDate = DateTime.MaxValue;
             int nThis = FindRowInDataView(dvDailyRate, FromCurrency, ToCurrency, FromDate, FromTime);
 
-            if (nThis > 0)
+            while (nThis > 0)
             {
-                ToDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+                DateTime tryDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+
+                if (tryDate == FromDate)
+                {
+                    // keep going till we find a different date because different times on the same date don't count
+                    nThis--;
+                }
+                else
+                {
+                    ToDate = tryDate;
+                    break;
+                }
             }
 
             // Set up a row filter on the two external tables
@@ -1214,8 +1270,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FGiftBatchDS.HasMatchingUnpostedRate)
             {
-                List <int>listLedgers = new List <int>();
                 FGiftBatchDS.MatchingRate = rate;
+
+                List <int>listLedgers = new List <int>();
 
                 for (int i = 0; i < dvGift.Count; i++)
                 {
@@ -1255,15 +1312,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FJournalDS.MatchingRate = rate;
 
-                if (tipText != String.Empty)
-                {
-                    tipText += Environment.NewLine;
-                }
-
                 List <int>listLedgers = new List <int>();
-                FGiftBatchDS.MatchingRate = rate;
 
-                for (int i = 0; i < dvGift.Count; i++)
+                for (int i = 0; i < dvJournal.Count; i++)
                 {
                     int ledgerNum = ((AJournalRow)dvJournal[i].Row).LedgerNumber;
 
@@ -1271,6 +1322,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         listLedgers.Add(ledgerNum);
                     }
+                }
+
+                if (tipText != String.Empty)
+                {
+                    tipText += Environment.NewLine;
                 }
 
                 if (dvJournal.Count == 1)
@@ -1297,15 +1353,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (bHasPostedJournalEntries)
             {
-                if (tipText != String.Empty)
-                {
-                    tipText += Environment.NewLine;
-                }
+                FJournalDS.MatchingRate = rate;
 
                 List <int>listLedgers = new List <int>();
-                FGiftBatchDS.MatchingRate = rate;
 
-                for (int i = 0; i < dvGift.Count; i++)
+                for (int i = 0; i < dvJournal.Count; i++)
                 {
                     int ledgerNum = ((AJournalRow)dvJournal[i].Row).LedgerNumber;
 
@@ -1313,6 +1365,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         listLedgers.Add(ledgerNum);
                     }
+                }
+
+                if (tipText != String.Empty)
+                {
+                    tipText += Environment.NewLine;
                 }
 
                 if (dvJournal.Count == 1)
@@ -1446,6 +1503,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
         {
+            FIsCurrentRowStateAdded = FPreviouslySelectedDetailRow.RowState == DataRowState.Added;
+
             // Just quit if we didn't save our stuff
             if (!e.Success)
             {
@@ -1453,14 +1512,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // Finally, save any changes to the extra data sets
+            bool bUpdateAfterSave = false;
+
             if (FJournalDS.NeedsSave && FJournalDS.SaveChanges())
             {
                 FJournalDS.NeedsSave = false;
+                bUpdateAfterSave = true;
             }
 
             if (FGiftBatchDS.NeedsSave && FGiftBatchDS.SaveChanges())
             {
                 FGiftBatchDS.NeedsSave = false;
+                bUpdateAfterSave = true;
+            }
+
+            if (bUpdateAfterSave)
+            {
+                ShowDetailsManual(FPreviouslySelectedDetailRow);
             }
         }
 

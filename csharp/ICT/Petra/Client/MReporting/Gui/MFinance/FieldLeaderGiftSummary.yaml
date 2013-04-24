@@ -15,7 +15,6 @@ RootNode:
         READCONTROLSVERIFICATION:BLANK
         READCONTROLSLOCALVARS: BLANK
         SETCONTROLSLOCALVARS: BLANK
-        INITUSERCONTROLS: InitFieldList();
     Security:
         ModulePermissionRequired: [FINANCE-1]
     Actions:

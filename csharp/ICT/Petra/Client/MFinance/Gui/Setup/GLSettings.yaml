@@ -20,7 +20,7 @@ RootNode:
         grpMiscellaneousFlags: {Label=Miscellaneous, Stretch=horizontally}
             Controls: [pnlSuspenseAccounts, pnlBudget, pnlFwdPosting, pnlBranchProcess]
         grpDataRetention: {Label=Data Retention, Stretch=horizontally}
-            Controls: [nudActualsDataRetention, nudBudgetDataRetention, nudGiftDataRetention]
+            Controls: [nudActualsDataRetention, nudGiftDataRetention]
         pnlSuspenseAccounts:
             Controls: [chkSuspenseAccountFlag]
         pnlBudget:
@@ -57,5 +57,5 @@ RootNode:
         nudNumberFwdPostingPeriods: {Label=Forward Posting Periods, Validation=true}
         chkBranchProcessing: {Label=Branch processing, CheckBoxAttachedLabel=right}
         nudActualsDataRetention: {Label=Actuals Data Retention Period}
-        nudBudgetDataRetention: {Label=Budget Data Retention Period}
+        #nudBudgetDataRetention: {Label=Budget Data Retention Period}
         nudGiftDataRetention: {Label=Gift Data Retention Period}

@@ -35,9 +35,13 @@ OpenPetra:
                         WorkWithLastPartner: {Label=Work with Last Partner, Description=Open last Partner worked with, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
                         DeletePartner: {Label=Delete Partner, Description=Delete a selected Partner, ActionClick=TPartnerMain.DeletePartnerRecord}
                     CreatePartner:
-                        AddNewFamily: {ActionClick=TPartnerMain.NewPartner, Description=Create a new Partner of Class FAMILY}
-                        AddNewPerson: {ActionClick=TPartnerMain.NewPerson, Description=Create a new Partner of Class PERSON}
-                        AddNewOrganisation: {ActionClick=TPartnerMain.NewOrganisation, Description=Create a new Partner of Class ORGANISATION}
+                        AddNewFamily: {ActionClick=TPartnerMain.NewPartner_Family, Description=Create a new Partner of Class FAMILY}
+                        AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person, Description=Create a new Partner of Class PERSON}
+                        AddNewOrganisation: {ActionClick=TPartnerMain.NewPartner_Organisation, Description=Create a new Partner of Class ORGANISATION}
+                        AddNewChurch: {ActionClick=TPartnerMain.NewPartner_Church, Description=Create a new Partner of Class CHURCH}
+                        AddNewBank: {ActionClick=TPartnerMain.NewPartner_Bank, Description=Create a new Partner of Class BANK}
+                        AddNewVenue: {ActionClick=TPartnerMain.NewPartner_Venue, Description=Create a new Partner of Class VENUE}
+                        AddNewUnit: {ActionClick=TPartnerMain.NewPartner_Unit, Description=Create a new Partner of Class UNIT}
 #                        AddNewFamilyShepherd: {ActionOpenScreen=TShepherdFamilyForm}
 #                        AddNewChurchShepherd: {ActionOpenScreen=TShepherdChurchForm}
                     Contacts:
@@ -186,6 +190,7 @@ OpenPetra:
                         LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
                         ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
+                        RecurringGLBatches: {Label=Recurring GL Batches, Description:Enter and submit recurring General Ledger batches, ActionOpenScreen=TFrmRecurringGLBatch}
                         GLRevaluation: {Description:Runs a Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
                         #EnterTransactions:
                         #ImportTransactions:
@@ -202,6 +207,7 @@ OpenPetra:
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
                         AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
                         TrialBalance: {ActionOpenScreen=TFrmTrialBalance}
+                        HOSA: {Description: Home Office Statement of Accounts, ActionOpenScreen=TFrmHOSA}
                         SurplusDeficit: {ActionOpenScreen=TFrmSurplusDeficit}
                         BalanceSheetStandard: {ActionOpenScreen=TFrmBalanceSheetStandard}
                         BalanceSheetMultiLedger: {ActionOpenScreen=TFrmBalanceSheetMultiLedger}
@@ -248,6 +254,7 @@ OpenPetra:
                         SetupSuspenseAccounts: {Description="Maintain Suspense Accounts", ActionOpenScreen=TFrmSetupSuspenseAccount}
                         #LedgerSetupShepherd:
                         SetupCalendar: {Description="Maintain Accounting Periods", ActionOpenScreen=TFrmSetupAccountingPeriod}
+                        EnableSubsystems: {Description="Enable/Disable Subsystems", ActionOpenScreen=TFrmGLEnableSubsystems}
                         #ChangeNumberOfForwardingPeriods:
                     GiftReceipting: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                         MotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}

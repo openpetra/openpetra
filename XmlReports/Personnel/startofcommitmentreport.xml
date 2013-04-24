@@ -1,273 +1,320 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE reports SYSTEM "../reports.dtd">           
+<!DOCTYPE reports SYSTEM "../reports.dtd">
 <reports>
-	<report id="Start of Commitment Report">
-		<description>
-			All selected active partners within given date range are
-			printed
-			1) - all, but no commitment status is given
-			2) - only the ones with commmitment status; status is given
-			3) - the ones with commitment status and the ones with no status;
-				 status is given, if any
+  <report id="Start of Commitment Report">
+    <description>
+      All selected active partners within given date range are printed
+      1) - all, but no commitment status is given
+      2) - only the ones with commmitment status; status is given
+      3) - the ones with commitment status and the ones with no status; status is given, if any
 
-			requires personnel.xml
+      requires personnel.xml
 
-		</description>
-		<reportparameters>
-			<reportparameter name="param_dtpStartDate"/>
-			<reportparameter name="param_dtpEndDate"/>
-			<reportparameter name="param_chkSelectedStatus"/>
-			<reportparameter name="param_commitmentstatuses"/>
-			<reportparameter name="param_chkNoSelectedStatus"/>
-			<!-- Below comma separated list of the column numbers. Not done! -->
-			<reportparameter name="param_sortby"/>
-			<!-- Below comma separated list of the column names. Not done! -->
-			<reportparameter name="param_sortby_readable"/>
-		</reportparameters>
-		<reportheader/>
+    </description>
+    <reportparameters>
+      <reportparameter name="param_dtpStartDate"/>
+      <reportparameter name="param_dtpEndDate"/>
+      <reportparameter name="param_chkSelectedStatus"/>
+      <reportparameter name="param_commitmentstatuses"/>
+      <reportparameter name="param_chkNoSelectedStatus"/>
+      <!-- Below comma separated list of the column numbers. Not done! -->
+      <reportparameter name="param_sortby"/>
+      <!-- Below comma separated list of the column names. Not done! -->
+      <reportparameter name="param_sortby_readable"/>
+    </reportparameters>
+    <reportheader/>
 
-		<pageheader>
-			<field whichfield="title1"><value text ="Start Of Commitment" /></field>
-			<field whichfield="title2"><value function = "getSiteName()"/></field>
- 			<field whichfield="descr1">
-				<fielddetail>
-					<switch><case condition="eq({param_chkSelectedStatus},false)">
-							<value text = "Selected Status: any"/>
-					</case></switch>
-				</fielddetail>
-				<fielddetail>
-					<switch><case condition="and(eq({param_chkSelectedStatus},true),eq({param_chkNoSelectedStatus},false))">
-							<value text = "Selected Status(es): "/>
-							<value variable = "param_commitmentstatuses"/>
-					</case></switch>
-				</fielddetail>
-				<fielddetail>
-					<switch><case condition="and(eq({param_chkSelectedStatus},true),eq({param_chkNoSelectedStatus},true))">
-							<value text = "Selected Status(es): "/>
-							<value variable = "param_commitmentstatuses"/>
-							<value text = " and without status"/>
-					</case></switch>
-				</fielddetail>
-			</field>
-   			<field whichfield="descr2">
-				<fielddetail>
-					<value text="Sorted by: "/>
-					<value variable="param_sortby_readable"/>
-				</fielddetail>
-			</field>
-			<field whichfield="period1">
-				<fielddetail>
-					<value text = "Commitments starting between "/>
-				</fielddetail>
-				<fielddetail>
-					<switch><case condition="not(isnull(param_dtpStartDate))">
-							<value variable = "param_dtpStartDate" format="formatteddate"/>
-					</case></switch>
-				</fielddetail>
-				<fielddetail>
-					<switch><case condition="not(isnull(param_dtpEndDate))">
-							<value text = " and "/>
-							<value variable = "param_dtpEndDate" format="formatteddate"/>
-					</case></switch>
-				</fielddetail>
-			</field>
-		</pageheader>
+    <pageheader>
+      <field whichfield="title1">
+        <value text ="Start Of Commitment" />
+      </field>
+      <field whichfield="title2">
+        <value function = "getSiteName()"/>
+      </field>
+      <field whichfield="descr1">
+        <fielddetail>
+          <switch>
+            <case condition="eq({param_chkSelectedStatus},false)">
+              <value text = "Selected Status: any"/>
+            </case>
+          </switch>
+        </fielddetail>
+        <fielddetail>
+          <switch>
+            <case condition="and(eq({param_chkSelectedStatus},true),eq({param_chkNoSelectedStatus},false))">
+              <value text = "Selected Status(es): "/>
+              <value variable = "param_commitmentstatuses"/>
+            </case>
+          </switch>
+        </fielddetail>
+        <fielddetail>
+          <switch>
+            <case condition="and(eq({param_chkSelectedStatus},true),eq({param_chkNoSelectedStatus},true))">
+              <value text = "Selected Status(es): "/>
+              <value variable = "param_commitmentstatuses"/>
+              <value text = " and without status"/>
+            </case>
+          </switch>
+        </fielddetail>
+      </field>
+      <field whichfield="descr2">
+        <fielddetail>
+          <value text="Sorted by: "/>
+          <value variable="param_sortby_readable"/>
+        </fielddetail>
+      </field>
+      <field whichfield="period1">
+        <fielddetail>
+          <value text = "Commitments starting between "/>
+        </fielddetail>
+        <fielddetail>
+          <switch>
+            <case condition="not(isnull(param_dtpStartDate))">
+              <value variable = "param_dtpStartDate" format="formatteddate"/>
+            </case>
+          </switch>
+        </fielddetail>
+        <fielddetail>
+          <switch>
+            <case condition="not(isnull(param_dtpEndDate))">
+              <value text = " and "/>
+              <value variable = "param_dtpEndDate" format="formatteddate"/>
+            </case>
+          </switch>
+        </fielddetail>
+      </field>
+    </pageheader>
 
-		<calculations>
-			<calculation id="Select Partners"
-					returns="PartnerKey, StartDate, EndDate, CommitmentStatus, ShortName, FieldName"
-					returnsFormat="row">
-				<query>
-					<queryDetail><value>
-						SELECT DISTINCT person.p_partner_key_n AS PartnerKey,
-						   staff.pm_start_of_commitment_d AS StartDate,
-						   staff.pm_end_of_commitment_d AS EndDate,
-						   staff.pm_status_code_c AS CommitmentStatus,
-						   partner.p_partner_short_name_c AS ShortName,
-						   unit.p_unit_name_c AS FieldName
-						FROM
-							PUB_p_person AS person,
-							PUB_p_partner AS partner,
-							PUB_pm_staff_data AS staff,
-							PUB_p_unit AS unit
-						WHERE
-			<!--	Prints only records without commitment status	-->
-							person.p_partner_key_n = partner.p_partner_key_n
-						AND person.p_partner_key_n = staff.p_partner_key_n
-				 		AND staff.pm_receiving_field_office_n = unit.p_partner_key_n
-						AND partner.p_status_code_c = 'ACTIVE'
-						AND staff.pm_start_of_commitment_d &gt;= {#param_dtpStartDate#}
-						AND staff.pm_start_of_commitment_d &lt;= {#param_dtpEndDate#}
-					</value></queryDetail>
-					<queryDetail condition="and(eq({param_chkSelectedStatus},true),eq({param_chkNoSelectedStatus},false))"><value>
-			  <!--	Prints only records with commitment status	-->
-						AND
-					</value>
-					<value function = "csv" text="staff.pm_status_code_c" variable="param_commitmentstatuses"/>
-					</queryDetail>
-					<queryDetail condition="and(eq({param_chkSelectedStatus},true),eq({param_chkNoSelectedStatus},true))"><value>
-			  <!--	Prints all chosen records with commitment statuses incl blanks   -->
-							AND (
-						</value>
-						<value function = "csv" text="staff.pm_status_code_c" variable="param_commitmentstatuses"/>
-						<value>
-							OR staff.pm_status_code_c = ""
-							OR staff.pm_status_code_c IS NULL)
-						</value>
-					</queryDetail>
-				</query>
-			</calculation> <!-- Select Partners -->
-  
-			<calculation id="GetAddressAndEmail" returnsFormat="internal" returns="StreetName, PostalCode, City, CountryCode, EMailAddress">
-				<query>
-					<queryDetail>
-						<value function="GetPartnerBestAddress({PartnerKey})"/>
-					</queryDetail>
-				</query>
-			</calculation>
-		
-			<calculation id="Partner Name" returnsFormat="text" returns="text">
-				<caption><value text="Name"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="ShortName"/>
-					</queryDetail>
-				</query>
-			</calculation>
+    <calculations>
+      <calculation id="Select Partners"
+          returns="PartnerKey, StartDate, EndDate, CommitmentStatus, ShortName, FieldName"
+          returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT person.p_partner_key_n AS PartnerKey,
+                 staff.pm_start_of_commitment_d AS StartDate,
+                 staff.pm_end_of_commitment_d AS EndDate,
+                 staff.pm_status_code_c AS CommitmentStatus,
+                 partner.p_partner_short_name_c AS ShortName,
+                 unit.p_unit_name_c AS FieldName
+              FROM
+                PUB_p_person AS person,
+                PUB_p_partner AS partner,
+                PUB_pm_staff_data AS staff,
+                PUB_p_unit AS unit
+              WHERE
+        <!--  Prints only records without commitment status  -->
+                person.p_partner_key_n = partner.p_partner_key_n
+                AND person.p_partner_key_n = staff.p_partner_key_n
+                AND staff.pm_receiving_field_office_n = unit.p_partner_key_n
+                AND partner.p_status_code_c = 'ACTIVE'
+                AND staff.pm_start_of_commitment_d &gt;= {#param_dtpStartDate#}
+                AND staff.pm_start_of_commitment_d &lt;= {#param_dtpEndDate#}
+            </value>
+          </queryDetail>
+          <queryDetail condition="and(eq({param_chkSelectedStatus},true),eq({param_chkNoSelectedStatus},false))">
+            <value>
+        <!--  Prints only records with commitment status  -->
+            AND
+          </value>
+            <value function = "csv" text="staff.pm_status_code_c" variable="param_commitmentstatuses"/>
+          </queryDetail>
+          <queryDetail condition="and(eq({param_chkSelectedStatus},true),eq({param_chkNoSelectedStatus},true))">
+            <value>
+        <!--  Prints all chosen records with commitment statuses incl blanks   -->
+              AND (
+            </value>
+            <value function = "csv" text="staff.pm_status_code_c" variable="param_commitmentstatuses"/>
+            <value>
+              OR staff.pm_status_code_c = ""
+              OR staff.pm_status_code_c IS NULL)
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+      <!-- Select Partners -->
 
-			<calculation id="Partner Key" returnsFormat="partnerkey" returns="text">
-				<caption><value text="Key"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="PartnerKey"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="GetAddressAndEmail" returnsFormat="internal" returns="StreetName, PostalCode, City, CountryCode, EMailAddress">
+        <query>
+          <queryDetail>
+            <value function="GetPartnerBestAddress({PartnerKey})"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-  			<calculation id="Start Date" returnsFormat="formatteddate" returns="date">
-				<caption><value text="Start Date"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="StartDate" format="formatteddate"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Partner Name" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Name"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="ShortName"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="End Date" returnsFormat="formatteddate" returns="date">
-				<caption><value text="End Date"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="EndDate" format="formatteddate"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Partner Key" returnsFormat="partnerkey" returns="text">
+        <caption>
+          <value text="Key"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PartnerKey"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Commitment Status" returnsFormat="csvlistslash:text" returns="text">
-				<caption><value text="Commit. Status"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="CommitmentStatus"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Start Date" returnsFormat="formatteddate" returns="date">
+        <caption>
+          <value text="Start Date"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="StartDate" format="formatteddate"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Field Name" returnsFormat="text" returns="text">
-				<caption><value text="Field Name"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="FieldName"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="End Date" returnsFormat="formatteddate" returns="date">
+        <caption>
+          <value text="End Date"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="EndDate" format="formatteddate"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Partner Address" returnsFormat="text" returns="text">
-				<caption><value text="Partner Address"/></caption>
-				<query>
-					<queryDetail>
-					<value variable="streetName"/><value text=","/>
-					<value variable="PostalCode"/>
-					<value variable="City"/>
-					<value variable="CountryCode"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Commitment Status" returnsFormat="csvlistslash:text" returns="text">
+        <caption>
+          <value text="Commit. Status"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="CommitmentStatus"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="E-Mail Address" returnsFormat="text" returns="text">
-				<caption><value text="E-mail Address"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="EMailAddress"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Telephone" returns="text" returnsFormat="text">
-				<caption><value text="Telephone"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="TelephoneNumber"></value>
-						<value variable="Extension"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Fax Number" returns="text" returnsFormat="text">
-				<caption><value text="Fax Number"/></caption>
-				<query>
-					<queryDetail condition="lt({FaxNumber}, 1)">
-						<value variable="FaxNumber"></value>
-					</queryDetail>
-					<queryDetail condition="gt({FaxNumber}, 0)">
-						<value variable="FaxNumber"></value>
-						<value variable="FaxExtension"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Mobile" returns="text" returnsFormat="text">
-				<caption><value text="Mobile"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="MobileNumber"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
-				<caption><value text="Alternate Telephone"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="AlternateTelephone"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="URL" returns="text" returnsFormat="text">
-				<caption><value text="URL"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="Url"></value>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Field Name" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Field Name"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="FieldName"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-		</calculations>
-		
-		<levels>
-		<level name="main">
-			<detail>
-				<lowerLevelReport level="Partner Detail" calculation ="Select Partners">
-				</lowerLevelReport>
-			</detail>
-		</level> <!-- main -->
+      <calculation id="Partner Address" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Partner Address"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="streetName"/>
+            <value text=","/>
+            <value variable="PostalCode"/>
+            <value variable="City"/>
+            <value variable="CountryCode"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-		<level name="Partner Detail" identification="PartnerKey">
-			<detail>
-				<field whichfield="columns" calculation="GetAddressAndEmail"/>
-			</detail>
-		</level>  <!-- Partner Detail -->
-		</levels>
+      <calculation id="E-Mail Address" returnsFormat="text" returns="text">
+        <caption>
+          <value text="E-mail Address"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="EMailAddress"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-	</report><!-- End of Start Of Commitment List -->
+      <calculation align="left" id="Telephone" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Telephone"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="TelephoneNumber"></value>
+            <value variable="Extension"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Fax Number" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Fax Number"/>
+        </caption>
+        <query>
+          <queryDetail condition="lt({FaxNumber}, 1)">
+            <value variable="FaxNumber"></value>
+          </queryDetail>
+          <queryDetail condition="gt({FaxNumber}, 0)">
+            <value variable="FaxNumber"></value>
+            <value variable="FaxExtension"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Mobile" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Mobile"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="MobileNumber"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
+        <caption>
+          <value text="Alternate Telephone"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="AlternateTelephone"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation align="left" id="URL" returns="text" returnsFormat="text">
+        <caption>
+          <value text="URL"></value>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="Url"></value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+    </calculations>
+
+    <levels>
+      <level name="main">
+        <detail>
+          <lowerLevelReport level="Partner Detail" calculation ="Select Partners">
+          </lowerLevelReport>
+        </detail>
+      </level>
+      <!-- main -->
+
+      <level name="Partner Detail" identification="PartnerKey">
+        <detail>
+          <field whichfield="columns" calculation="GetAddressAndEmail"/>
+        </detail>
+      </level>
+      <!-- Partner Detail -->
+    </levels>
+
+  </report>
+  <!-- End of Start Of Commitment List -->
 
 </reports>

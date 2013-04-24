@@ -61,6 +61,24 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             rbtDate.Enabled = false;
             txtQuarter.Enabled = false;
             cmbQuarterYear.Enabled = false;
+
+            /* This is not required because of a fix in cmbAutoComplete:
+             *
+             * cmbAccountHierarchy.Leave += new EventHandler(RequireCmbValue);
+             * cmbCurrency.Leave += new EventHandler(RequireCmbValue);
+             * cmbPeriodYear.Leave += new EventHandler(RequireCmbValue);
+             * cmbQuarterYear.Leave += new EventHandler(RequireCmbValue);
+             */
+        }
+
+        void RequireCmbValue(object sender, EventArgs e)
+        {
+            ComboBox cmb = (sender is TCmbLabelled) ? ((TCmbLabelled)sender).cmbCombobox : (ComboBox)sender;
+
+            if (cmb.SelectedIndex < 0)
+            {
+                cmb.SelectedIndex = 0;
+            }
         }
 
         /// <summary>
@@ -75,17 +93,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
-            int SelectedIndex = cmbPeriodYear.SelectedIndex;
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
-            cmbPeriodYear.SelectedIndex = SelectedIndex;
+            cmbPeriodYear.SelectedIndex = 0;
 
-            SelectedIndex = cmbQuarterYear.SelectedIndex;
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbQuarterYear, FLedgerNumber);
-            cmbQuarterYear.SelectedIndex = SelectedIndex;
+            cmbQuarterYear.SelectedIndex = 0;
 
-            SelectedIndex = cmbAccountHierarchy.SelectedIndex;
             TFinanceControls.InitialiseAccountHierarchyList(ref cmbAccountHierarchy, FLedgerNumber);
-            cmbAccountHierarchy.SelectedIndex = SelectedIndex;
+            cmbAccountHierarchy.SelectedIndex = 0;
 
             // if there is only one hierarchy, disable the control
 //			cmbAccountHierarchy.Enabled = (cmbAccountHierarchy.Count > 1);
@@ -128,7 +143,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
             ACalculator.AddParameter("param_currency", this.cmbCurrency.GetSelectedString());
 
-            ACalculator.AddParameter("param_quarter", rbtQuarter.Checked);
             ACalculator.AddParameter("param_period", rbtPeriod.Checked);
             ACalculator.AddParameter("param_date_checked", rbtDate.Checked);
 
@@ -137,6 +151,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 Year = cmbQuarterYear.GetSelectedInt32();
 
                 int Quarter = (Int32)StringHelper.TryStrToInt(txtQuarter.Text, 1);
+                ACalculator.AddParameter("param_quarter", (System.Object)(Quarter));
                 ACalculator.AddParameter("param_start_period_i", (System.Object)(Quarter * 3 - 2));
                 ACalculator.AddParameter("param_end_period_i", (System.Object)(Quarter * 3));
 
@@ -391,6 +406,32 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                         "X_0041",
                         TResultSeverity.Resv_Critical));
             }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public void DisableToPeriod()
+        {
+            txtEndPeriod.Enabled = false;
+            txtStartPeriod.TextChanged += new EventHandler(txtStartPeriod_TextChanged);
+            rbtPeriod.CheckedChanged += new EventHandler(rbtPeriod_CheckedChanged);
+        }
+
+        //
+        // This handler disables the "to" period txt box,
+        // iff DisableToPeriod, above, has been called.
+        void rbtPeriod_CheckedChanged(object sender, EventArgs e)
+        {
+            txtEndPeriod.Enabled = false;
+        }
+
+        //
+        // This handler copies the "from" period to the "to" period,
+        // iff DisableToPeriod, above, has been called.
+        void txtStartPeriod_TextChanged(object sender, EventArgs e)
+        {
+            txtEndPeriod.Text = txtStartPeriod.Text;
         }
     }
 }

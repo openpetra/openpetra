@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -179,7 +179,6 @@ namespace Ict.Petra.Shared
              FullDescription = "The International Postal Code entered is not a valid International Postal Type.")]
         public const String ERR_INVALIDINTERNATIONALPOSTALCODE = "PARTN.00008V";
 
-
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>
@@ -211,6 +210,19 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Cannot have an end date without setting status to 'CANCELLED' or 'EXPIRED'.",
              ErrorMessageTitle = "Clear Date Ended")]
         public const String ERR_SUBSCRIPTION_DATEENDEDSET_WHEN_ACTIVE = "PARTN.00012V";
+
+        #endregion
+
+        #region Banking Details
+        /// <summary>Banking Details: only one main account.</summary>
+        [ErrCodeAttribute("Only one main account.",
+             ErrorMessageText = "You can only have one main bank account per partner.")]
+        public const String ERR_BANKINGDETAILS_ONLYONEMAINACCOUNT = "PARTN.00013V";
+
+        /// <summary>Banking Details: At least one main account.</summary>
+        [ErrCodeAttribute("At least one main account.",
+             ErrorMessageText = "You must set at least one bank account as main account.")]
+        public const String ERR_BANKINGDETAILS_ATLEASTONEMAINACCOUNT = "PARTN.00014V";
 
         #endregion
 

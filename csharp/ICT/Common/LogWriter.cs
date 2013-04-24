@@ -36,6 +36,8 @@ namespace Ict.Common
     {
         private static string ULogFileName = "";
         private static string ULogtextPrefix = "";
+        private String FLogFileErrorMsg;
+        private bool FCanWriteLogFile;
 
         /// <summary>
         /// this text is always printed in front of each line in the logging
@@ -83,6 +85,27 @@ namespace Ict.Common
             }
 
             ULogFileName = LogfileName;
+            //
+            // Test whether I can write to this file.
+            FileStream temp = null;
+            try
+            {
+                FCanWriteLogFile = true;
+                FLogFileErrorMsg = "Log file is " + ULogFileName;
+                temp = new FileStream(ULogFileName, FileMode.OpenOrCreate, FileAccess.Write);
+            }
+            catch (Exception e)
+            {
+                FLogFileErrorMsg = "Error opening log file " + ULogFileName + ": " + e.Message;
+                FCanWriteLogFile = false;
+            }
+            finally
+            {
+                if (temp != null)
+                {
+                    temp.Close();
+                }
+            }
         }
 
         /// <summary>
@@ -92,6 +115,17 @@ namespace Ict.Common
         public static String GetLogFileName()
         {
             return ULogFileName;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALogFileMsg"></param>
+        /// <returns></returns>
+        public bool CanWriteLogFile(out String ALogFileMsg)
+        {
+            ALogFileMsg = FLogFileErrorMsg;
+            return FCanWriteLogFile;
         }
 
         /// <summary>

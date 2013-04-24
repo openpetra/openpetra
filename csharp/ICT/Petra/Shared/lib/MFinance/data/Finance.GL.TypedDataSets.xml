@@ -16,8 +16,19 @@
             <CustomField name="AnalysisAttributes" type="string"/>
         </Table>
         <Table sqltable="a_trans_anal_attrib" />	
+
+        <Table sqltable="a_recurring_batch"/>
+        <Table sqltable="a_recurring_journal">
+            <CustomField name="JournalDebitTotalBase" type="decimal"/>
+            <CustomField name="JournalCreditTotalBase" type="decimal"/>
+        </Table>
+        <Table sqltable="a_recurring_transaction">
+            <CustomField name="DateEntered" type="DateTime"/>
+            <CustomField name="AnalysisAttributes" type="string"/>
+        </Table>
+        <Table sqltable="a_recurring_trans_anal_attrib" />	
     </DataSet>
-    
+
     <DataSet name="GLPostingTDS">
         <Table sqltable="a_ledger"/>
         <Table sqltable="a_account"/>
@@ -70,6 +81,9 @@
 
         <Table sqltable="a_motivation_group"/>
         <Table sqltable="a_motivation_detail"/>
+        <Table sqltable="a_motivation_detail_fee"/>
+        <Table sqltable="a_fees_payable"/>
+        <Table sqltable="a_fees_receivable"/>
         
         <Table sqltable="s_module"/>
         <Table sqltable="s_system_defaults"/>

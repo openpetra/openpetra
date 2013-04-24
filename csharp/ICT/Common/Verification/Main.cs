@@ -645,7 +645,8 @@ namespace Ict.Common.Verification
     {
         #region Resourcestrings
 
-        private static readonly string StrMessageFooter = Catalog.GetString("  Context: {0}; Severity: {1}.\r\n    Problem: {2}\r\n    Code: {3}");
+        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1}, Code={3})");
+        private static readonly string StrStatusFooter = Catalog.GetString("{0}\r\n    Status: {2}\r\n");
 
         #endregion
 
@@ -673,6 +674,14 @@ namespace Ict.Common.Verification
         /// </summary>
         public TVerificationResultCollection()
         {
+        }
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TVerificationResultCollection(System.Guid ACurrentDataValidationRunID)
+        {
+            FCurrentDataValidationRunID = ACurrentDataValidationRunID;
         }
 
         /// <summary>
@@ -960,10 +969,25 @@ namespace Ict.Common.Verification
             for (int i = 0; i <= Count - 1; i += 1)
             {
                 si = (TVerificationResult)(List[i]);
+                String Status = "Info";
+                String Formatter = StrStatusFooter; // For either Resv_Status or Resv_Info, this smaller message format is used.
+
+                switch (si.ResultSeverity)
+                {
+                    case TResultSeverity.Resv_Critical:
+                        Status = "Critical";
+                        Formatter = StrErrorFooter;
+                        break;
+
+                    case TResultSeverity.Resv_Noncritical:
+                        Status = "Non-critical";
+                        Formatter = StrErrorFooter;
+                        break;
+                }
 
                 ReturnValue = ReturnValue +
-                              (String.Format(StrMessageFooter,
-                                   new object[] { si.ResultContext, si.ResultSeverity, si.ResultText, si.ResultCode })) +
+                              (String.Format(Formatter,
+                                   new object[] { si.ResultContext, Status, si.ResultText, si.ResultCode })) +
                               Environment.NewLine + Environment.NewLine;
             }
 
@@ -1549,13 +1573,18 @@ namespace Ict.Common.Verification
         public static void DowngradeScreenVerificationResults(TVerificationResultCollection AScreenVerificationResults)
         {
             int NumberOfVerificationResults = AScreenVerificationResults.Count;
+            int NumberOfDowngradedVerificationResults = 0;
 
             for (int Counter1 = 0; Counter1 < NumberOfVerificationResults; Counter1++)
             {
-                AScreenVerificationResults.Add(new TVerificationResult((TScreenVerificationResult)AScreenVerificationResults[Counter1]));
+                if (AScreenVerificationResults[Counter1] is TScreenVerificationResult)
+                {
+                    AScreenVerificationResults.Add(new TVerificationResult((TScreenVerificationResult)AScreenVerificationResults[Counter1]));
+                    NumberOfDowngradedVerificationResults++;
+                }
             }
 
-            for (int Counter2 = 0; Counter2 < NumberOfVerificationResults; Counter2++)
+            for (int Counter2 = 0; Counter2 < NumberOfDowngradedVerificationResults; Counter2++)
             {
                 AScreenVerificationResults.RemoveAt(0);
             }

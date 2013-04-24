@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,7 +62,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             XmlNode rootNode = OpenPetraData.FirstChild.NextSibling;
 
-            Assembly TypedTablesAssembly = Assembly.LoadFrom("Ict.Petra.Shared.lib.data.dll");
+            Assembly TypedTablesAssembly = Assembly.LoadFrom(
+                TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + "Ict.Petra.Shared.lib.data.dll");
 
             ExportTables(rootNode, "MSysMan", "", TypedTablesAssembly);
             ExportTables(rootNode, "MCommon", "", TypedTablesAssembly);
@@ -254,7 +255,13 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 foreach (string table in tables)
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction, false);
+                    DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction);
+                }
+
+                if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    return false;
                 }
 
                 TSimpleYmlParser ymlParser = new TSimpleYmlParser(PackTools.UnzipString(AZippedNewDatabaseData));
@@ -279,7 +286,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
                 DBAccess.GDBAccessObj.ExecuteNonQuery(String.Format(
                         "UPDATE PUB_s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                        serverExeInfo.ToString()), Transaction, false);
+                        serverExeInfo.ToString()), Transaction);
 
                 if (!success)
                 {
@@ -287,12 +294,21 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     return false;
                 }
 
+                if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    return false;
+                }
+
                 DBAccess.GDBAccessObj.CommitTransaction();
+
                 tables.Remove("s_user");
                 tables.Remove("s_module");
                 tables.Remove("s_user_module_access_permission");
                 tables.Remove("s_system_defaults");
                 tables.Remove("s_system_status");
+
+                FCurrencyPerLedger = new SortedList <int, string>();
 
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -372,6 +388,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             return false;
         }
 
+        private static SortedList <Int32, string>FCurrencyPerLedger = new SortedList <int, string>();
+
         private static bool LoadTable(string ATableName, TSimpleYmlParser AYmlParser, TDBTransaction ATransaction)
         {
             if (!AYmlParser.StartParseList(StringHelper.UpperCamelCase(ATableName, false, false) + "Table"))
@@ -402,7 +420,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         // SQLite does not support INSERT of several rows at the same time
                         try
                         {
-                            DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, Parameters.ToArray());
+                            DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, Parameters.ToArray());
                         }
                         catch (Exception e)
                         {
@@ -420,6 +438,12 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 }
 
                 InsertStatement.Append("(");
+
+                // needed for workaround for version 0.2.24, AAPDocument.BaseCurrency and AAPPayment.BaseCurrency;
+                if (ATableName == "a_ledger")
+                {
+                    FCurrencyPerLedger.Add(Convert.ToInt32(RowDetails["LedgerNumber"]), RowDetails["BaseCurrency"]);
+                }
 
                 bool firstColumn = true;
 
@@ -499,7 +523,28 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     }
                     else
                     {
-                        InsertStatement.Append("NULL"); // DEFAULT
+                        // the following statements are for the demo databases generated before version 0.2.24.
+                        // CurrencyCode was added to a_ap_document and a_ap_payment.
+                        // it is impossible during the load, to get the correct currencycode, via the supplier, because a_ap_supplier is loaded after a_ap_document.
+                        // as a temporary workaround, and because we are still in Alpha, we are using the Base currency of the ledger
+                        if ((ATableName == "a_ap_document") && (col.ColumnName == "CurrencyCode"))
+                        {
+                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
+                            p.Value = FCurrencyPerLedger[Convert.ToInt32(RowDetails["LedgerNumber"])];
+                            Parameters.Add(p);
+                            InsertStatement.Append("?");
+                        }
+                        else if ((ATableName == "a_ap_payment") && (col.ColumnName == "CurrencyCode"))
+                        {
+                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
+                            p.Value = FCurrencyPerLedger[Convert.ToInt32(RowDetails["LedgerNumber"])];
+                            Parameters.Add(p);
+                            InsertStatement.Append("?");
+                        }
+                        else
+                        {
+                            InsertStatement.Append("NULL"); // DEFAULT
+                        }
                     }
                 }
 
@@ -508,7 +553,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             try
             {
-                DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, Parameters.ToArray());
+                DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, Parameters.ToArray());
             }
             catch (Exception e)
             {

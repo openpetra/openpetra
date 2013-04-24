@@ -70,11 +70,6 @@ namespace Ict.Petra.Client.App.PetraClient
     /// </summary>
     public class TPetraClientMain
     {
-//        /// <summary>Email Address is invalid.</summary>
-//        [ErrCodeAttribute("Email Address is invalid.",
-//                          FullDescription = "The email address entered is not a valid date.")]
-//        public const String ERR_EMAILADDRESSINVALID = "GENC.00007V";
-
         private static TSplashScreenManager FSplashScreen;
 
         /// <summary>tells whether the Login was successful, or not</summary>
@@ -348,7 +343,13 @@ namespace Ict.Petra.Client.App.PetraClient
 
                 ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
 
-                new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
+                TLogging Logger = new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
+                String LogFileMsg;
+
+                if (!Logger.CanWriteLogFile(out LogFileMsg))
+                {
+                    MessageBox.Show(LogFileMsg, Catalog.GetString("Failed to open logfile"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
 
                 Catalog.Init();
 

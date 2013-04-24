@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -175,6 +175,102 @@ namespace Ict.Petra.Client.MFinance.Logic
             DataView view = new DataView(Table);
 
             view.RowFilter = PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ALocalOnly);
+
+            DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
+            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            AControl.Columns.Clear();
+            AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+        }
+
+        /// <summary>
+        /// fill checkedlistbox values with cost centre list
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APostingOnly"></param>
+        /// <param name="AExcludePosting"></param>
+        /// <param name="AActiveOnly"></param>
+        /// <param name="AFieldOnly"></param>
+        /// <param name="ADepartmentOnly"></param>
+        /// <param name="APersonalOnly"></param>
+        public static void InitialiseCostCentreList(ref TClbVersatile AControl,
+            Int32 ALedgerNumber,
+            bool APostingOnly,
+            bool AExcludePosting,
+            bool AActiveOnly,
+            bool AFieldOnly,
+            bool ADepartmentOnly,
+            bool APersonalOnly)
+        {
+            string CheckedMember = "CHECKED";
+            string DisplayMember = ACostCentreTable.GetCostCentreNameDBName();
+            string ValueMember = ACostCentreTable.GetCostCentreCodeDBName();
+
+            DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
+
+            Type TableType;
+            DataTable LinkedCostCentres = TDataCache.TMFinance.GetBasedOnLedger(
+                TCacheableFinanceTablesEnum.CostCentresLinkedToPartnerList,
+                ALedgerTable.GetLedgerNumberDBName(),
+                ALedgerNumber,
+                out TableType);
+
+            LinkedCostCentres.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+
+            foreach (DataRow r in Table.Rows)
+            {
+                // there can be several partners linked to a cost centre
+                DataRowView[] LinkedCCs = LinkedCostCentres.DefaultView.FindRows(r[ACostCentreTable.GetCostCentreCodeDBName()].ToString());
+
+                bool DoNotShow = true;
+
+                foreach (DataRowView rv in LinkedCCs)
+                {
+                    DataRow LinkedCC = rv.Row;
+
+                    if (APersonalOnly)
+                    {
+                        // personal costcentres are linked to a partner of type FAMILY
+                        if ((LinkedCC != null)
+                            && (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() == MPartnerConstants.PARTNERCLASS_FAMILY))
+                        {
+                            DoNotShow = false;
+                        }
+                    }
+                    else if (ADepartmentOnly)
+                    {
+                        // department costcentres are a local costcentre, linked to no partner, or are not a unit, or UnitType != F
+                        if ((LinkedCC == null)
+                            || ((LinkedCC[PUnitTable.GetUnitTypeCodeDBName()].ToString() != MPartnerConstants.UNIT_TYPE_FIELD)
+                                && (LinkedCC[PPartnerTable.GetPartnerClassDBName()].ToString() != MPartnerConstants.PARTNERCLASS_FAMILY)))
+                        {
+                            DoNotShow = false;
+                        }
+                    }
+                    else if (AFieldOnly)
+                    {
+                        // field costcentres are linked to a partner, UnitType is F
+                        if ((LinkedCC != null) && (LinkedCC[PUnitTable.GetUnitTypeCodeDBName()].ToString() == MPartnerConstants.UNIT_TYPE_FIELD))
+                        {
+                            DoNotShow = false;
+                        }
+                    }
+                }
+
+                if (DoNotShow)
+                {
+                    r[ACostCentreTable.GetCostCentreNameDBName()] = "DONOTSHOW";
+                }
+            }
+
+            DataView view = new DataView(Table);
+
+            view.RowFilter = "(" + PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ADepartmentOnly) +
+                             ") AND NOT " + ACostCentreTable.GetCostCentreNameDBName() + "='DONOTSHOW'";
 
             DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
@@ -526,6 +622,31 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="APartnerKey"></param>
         public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, ref TtxtAutoPopulatedButtonLabel txtField, System.Int64 APartnerKey)
         {
+            GetRecipientData(ref cmbMinistry, APartnerKey, out FFieldNumber);
+
+            txtField.Text = FFieldNumber.ToString();
+        }
+
+        /// <summary>
+        /// This function fills the combobox for the key ministry depending on the partnerkey
+        /// </summary>
+        /// <param name="cmbMinistry"></param>
+        /// <param name="APartnerKey"></param>
+        public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, System.Int64 APartnerKey)
+        {
+            GetRecipientData(ref cmbMinistry, APartnerKey, out FFieldNumber);
+        }
+
+        /// <summary>
+        /// This function fills the combobox for the key ministry depending on the partnerkey
+        /// </summary>
+        /// <param name="cmbMinistry"></param>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AFieldNumber"></param>
+        private static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, System.Int64 APartnerKey, out Int64 AFieldNumber)
+        {
+            AFieldNumber = 0;
+
             if (FKeyMinTable != null)
             {
                 if (FindAndSelect(ref cmbMinistry, APartnerKey))
@@ -537,7 +658,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             string DisplayMember = PUnitTable.GetUnitNameDBName();
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
             FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out FFieldNumber);
-            txtField.Text = FFieldNumber.ToString();
+            AFieldNumber = FFieldNumber;
             FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
 
             cmbMinistry.InitialiseUserControl(FKeyMinTable,

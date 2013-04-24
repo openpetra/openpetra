@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -87,7 +87,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ((TFrmGLBatch) this.ParentForm).DisableTransactions();
-            ((TFrmGLBatch) this.ParentForm).DisableAttributes();
 
             ShowData();
 
@@ -120,6 +119,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             GetDataFromControls();
             this.FPreviouslySelectedDetailRow = null;
             ShowData();
+        }
+
+        /// <summary>
+        /// Returns FMainDS
+        /// </summary>
+        /// <returns></returns>
+        public GLBatchTDS BatchFMainDS()
+        {
+            return FMainDS;
         }
 
         /// <summary>
@@ -388,7 +396,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (FMainDS.ATransaction.DefaultView.Count == 0)
                     {
-                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionWithAttributes(FLedgerNumber, batchNumber, r.JournalNumber));
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, batchNumber, r.JournalNumber));
                     }
 
                     foreach (DataRowView w in FMainDS.ATransaction.DefaultView)
@@ -494,7 +502,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //save the position of the actual row
                 //int rowIndex = CurrentRowIndex();
 
-                if (!TRemote.MFinance.GL.WebConnectors.CancelGLBatch(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
+                if (!TRemote.MFinance.GL.WebConnectors.GLBatchCanBeCancelled(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
                 {
                     string ErrorMessages = String.Empty;
 
@@ -548,7 +556,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                         ((TFrmGLBatch)ParentForm).DisableJournals();
                         ((TFrmGLBatch)ParentForm).DisableTransactions();
-                        ((TFrmGLBatch)ParentForm).DisableAttributes();
                     }
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
@@ -580,7 +587,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void UpdateTotals()
         {
             //Below not needed as yet
-            //txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow);
+                txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
         }
 
         private bool SaveBatchForPosting()
@@ -979,7 +992,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 pnlDetails.Enabled = false;
                 ((TFrmGLBatch) this.ParentForm).DisableJournals();
                 ((TFrmGLBatch) this.ParentForm).DisableTransactions();
-                ((TFrmGLBatch) this.ParentForm).DisableAttributes();
             }
             else
             {
@@ -1197,18 +1209,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (!NewTransaction.IsTransactionDateNull())
                 {
-                    NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
-                        ARefJournalRow.TransactionCurrency,
-                        FMainDS.ALedger[0].BaseCurrency,
-                        NewTransaction.TransactionDate);
+                    NewTransaction.AmountInBaseCurrency = GLRoutines.Multiply(NewTransaction.TransactionAmount,
+                        TExchangeRateCache.GetDailyExchangeRate(
+                            ARefJournalRow.TransactionCurrency,
+                            FMainDS.ALedger[0].BaseCurrency,
+                            NewTransaction.TransactionDate));
                     //
                     // The International currency calculation is changed to "Base -> International", because it's likely
                     // we won't have a "Transaction -> International" conversion rate defined.
                     //
-                    NewTransaction.AmountInIntlCurrency = NewTransaction.AmountInBaseCurrency * TExchangeRateCache.GetDailyExchangeRate(
-                        FMainDS.ALedger[0].BaseCurrency,
-                        FMainDS.ALedger[0].IntlCurrency,
-                        NewTransaction.TransactionDate);
+                    NewTransaction.AmountInIntlCurrency = GLRoutines.Multiply(NewTransaction.AmountInBaseCurrency,
+                        TExchangeRateCache.GetDailyExchangeRate(
+                            FMainDS.ALedger[0].BaseCurrency,
+                            FMainDS.ALedger[0].IntlCurrency,
+                            NewTransaction.TransactionDate));
                 }
             } while (!dataFile.EndOfStream);
 
@@ -1238,14 +1252,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     sumCredits += BalancingTransaction.TransactionAmount;
                 }
 
-                BalancingTransaction.AmountInIntlCurrency = BalancingTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
-                    ARefJournalRow.TransactionCurrency,
-                    FMainDS.ALedger[0].IntlCurrency,
-                    BalancingTransaction.TransactionDate);
-                BalancingTransaction.AmountInBaseCurrency = BalancingTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
-                    ARefJournalRow.TransactionCurrency,
-                    FMainDS.ALedger[0].BaseCurrency,
-                    BalancingTransaction.TransactionDate);
+                BalancingTransaction.AmountInIntlCurrency = GLRoutines.Multiply(BalancingTransaction.TransactionAmount,
+                    TExchangeRateCache.GetDailyExchangeRate(
+                        ARefJournalRow.TransactionCurrency,
+                        FMainDS.ALedger[0].IntlCurrency,
+                        BalancingTransaction.TransactionDate));
+                BalancingTransaction.AmountInBaseCurrency = GLRoutines.Multiply(BalancingTransaction.TransactionAmount,
+                    TExchangeRateCache.GetDailyExchangeRate(
+                        ARefJournalRow.TransactionCurrency,
+                        FMainDS.ALedger[0].BaseCurrency,
+                        BalancingTransaction.TransactionDate));
                 BalancingTransaction.Narrative = Catalog.GetString("Automatically generated balancing transaction");
                 BalancingTransaction.CostCentreCode = TXMLParser.GetAttribute(ARootNode, "CashCostCentre");
                 BalancingTransaction.AccountCode = TXMLParser.GetAttribute(ARootNode, "CashAccount");

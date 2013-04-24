@@ -493,7 +493,14 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return accountRow.AccountCode;
+                if (accountRow == null)
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return accountRow.AccountCode;
+                }
             }
             set
             {

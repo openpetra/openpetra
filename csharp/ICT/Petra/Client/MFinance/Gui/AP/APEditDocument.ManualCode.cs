@@ -39,12 +39,14 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPEditDocument
     {
-        Int32 FLedgerNumber;
+        Int32 FDocumentLedgerNumber;
         ALedgerRow FLedgerRow = null;
 
         /// <summary>
@@ -90,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             int selectedEffectiveTime;
 
             if (setupDailyExchangeRate.ShowDialog(
-                    FLedgerNumber,
+                    FDocumentLedgerNumber,
                     DateTime.Now,
                     txtSupplierCurrency.Text,
                     1.0m,
@@ -267,13 +269,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
             AApSupplierRow SupplierRow = FMainDS.AApSupplier[0];
 
+            FDocumentLedgerNumber = DocumentRow.LedgerNumber;
+
+            //
+            // If this document's currency is that of my own ledger,
+            // I need to disable the rate of exchange field.
+            ALedgerRow ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                     TCacheableFinanceTablesEnum.LedgerDetails, FDocumentLedgerNumber))[0];
+
+            String MyCurrencyCode = ledger.BaseCurrency;
+
+            if (DocumentRow.CurrencyCode == MyCurrencyCode)
+            {
+                txtExchangeRateToBase.Enabled = false;
+                btnLookupExchangeRate.Enabled = false;
+            }
+
             txtTotalAmount.CurrencySymbol = DocumentRow.CurrencyCode;
             txtDetailAmount.CurrencySymbol = DocumentRow.CurrencyCode;
 
-            FLedgerNumber = DocumentRow.LedgerNumber;
-            this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+            this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FDocumentLedgerNumber);
 
-            ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
+            ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FDocumentLedgerNumber);
             FLedgerRow = Tbl[0];
             txtDetailBaseAmount.CurrencySymbol = FLedgerRow.BaseCurrency;
             dtpDateDue.Date = DocumentRow.DateIssued.AddDays(Convert.ToDouble(nudCreditTerms.Value));
@@ -536,8 +554,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show(Catalog.GetString(
-                        "The document Amount does not equal the sum of the detail lines."), Catalog.GetString("Balance Problem"));
+                System.Windows.Forms.MessageBox.Show(
+                    String.Format(Catalog.GetString("The document {0} Amount does not equal the sum of the detail lines."), AApDocument.DocumentCode),
+                    Catalog.GetString("Balance Problem"));
                 return false;
             }
         }
@@ -559,7 +578,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     if ((Row.AccountCode == "") || (Row.CostCentreCode == ""))
                     {
                         MessageBox.Show(
-                            Catalog.GetString("Account and Cost Centre must be specified."),
+                            String.Format(Catalog.GetString("Account and Cost Centre must be specified in Document {0}."), AApDocument.DocumentCode),
                             Catalog.GetString("Post Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                         return false;
                     }
@@ -606,7 +625,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         if (!AllPresent)
                         {
                             System.Windows.Forms.MessageBox.Show(
-                                String.Format(Catalog.GetString("Analysis Attributes are required for account {0}."), Row.AccountCode),
+                                String.Format(Catalog.GetString("Analysis Attributes are required for account {0} in Document {1}."),
+                                    Row.AccountCode, AApDocument.DocumentCode),
                                 Catalog.GetString("Analysis Attributes"));
                             return false;
                         }
@@ -617,13 +637,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return true;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="Atds"></param>
-        /// <param name="AApDocument"></param>
-        /// <returns></returns>
-        public static bool CurrencyIsOk(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
+        private static bool CurrencyIsOkForPosting(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
         {
             if (AApDocument.CurrencyCode != Atds.AApSupplier[0].CurrencyCode)
             {
@@ -648,7 +662,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (AApDocument.ExchangeRateToBase == 0)
             {
                 System.Windows.Forms.MessageBox.Show(
-                    Catalog.GetString("No Exchange Rate has been set."),
+                    String.Format(Catalog.GetString("No Exchange Rate has been set."), AApDocument.DocumentCode),
                     Catalog.GetString("Post Document"));
                 return false;
             }
@@ -686,7 +700,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return false;
             }
 
-            if (!CurrencyIsOk(Atds, Adocument))
+            if (!CurrencyIsOkForPosting(Atds, Adocument))
             {
                 return false;
             }
@@ -779,7 +793,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 Int32 DocumentId = FMainDS.AApDocument[0].ApDocumentId;
                 FMainDS.Clear();
                 FPreviouslySelectedDetailRow = null;
-                LoadAApDocument(FLedgerNumber, DocumentId);
+                LoadAApDocument(FDocumentLedgerNumber, DocumentId);
 
                 //
                 // Also refresh the opener?
@@ -806,8 +820,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             List <int>PayTheseDocs = new List <int>();
 
             PayTheseDocs.Add(FMainDS.AApDocument[0].ApDocumentId);
-            PaymentScreen.AddDocumentsToPayment(FMainDS, FLedgerNumber, PayTheseDocs);
-            PaymentScreen.Show();
+
+            if (PaymentScreen.AddDocumentsToPayment(FMainDS, FDocumentLedgerNumber, PayTheseDocs))
+            {
+                PaymentScreen.Show();
+            }
         }
     }
 }

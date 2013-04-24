@@ -4,7 +4,7 @@
     Namespace: Ict.Petra.Client.MSysMan.Gui
     DetailTable: SUser
     DatasetType: Ict.Petra.Shared.MSysMan.Data.MaintainUsersTDS
-    UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data,Ict.Common.Data,Ict.Petra.Shared.MSysMan.Validation]
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data,Ict.Petra.Shared.MSysMan.Validation]
     FormType: edit
     Template: windowEdit
     Actions:

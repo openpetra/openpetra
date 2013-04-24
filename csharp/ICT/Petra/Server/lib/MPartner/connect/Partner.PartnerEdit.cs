@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Threading;
@@ -141,58 +142,166 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         #region BankingDetails
 
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="APartnerKey"></param>
-        /// <returns></returns>
-        public PartnerEditTDS GetBankingDetails(System.Int64 APartnerKey)
+        private void PrepareBankingDetailsForSaving(ref PartnerEditTDS AInspectDS, ref TVerificationResultCollection AVerificationResult,
+            TDBTransaction ATransaction)
         {
-            PartnerEditTDS ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
-
-            TLogging.Log("GetBankingDetails(APartnerKey: System.Int64)", TLoggingType.ToLogfile);
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-            ReturnValue = GetBankingDetailsInternal(ReadTransaction, APartnerKey);
-
-            if (NewTransaction)
+            if ((AInspectDS.PBankingDetails != null) && (AInspectDS.PBankingDetails.Rows.Count > 0))
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetBankingDetails: committed own transaction.");
-            }
+                AInspectDS.Merge(new PBankingDetailsUsageTable());
+                AInspectDS.InitVars();
+                PBankingDetailsUsageAccess.LoadViaPPartner(AInspectDS, FPartnerKey, ATransaction);
+                AInspectDS.PBankingDetailsUsage.AcceptChanges();
 
-            return ReturnValue;
+                // make sure there is at least one main account, or no account at all
+                // make sure there are no multiple main accounts
+
+                PartnerEditTDS LocalDS = new PartnerEditTDS();
+                PBankingDetailsAccess.LoadViaPPartner(LocalDS, FPartnerKey, ATransaction);
+
+                // there are problems with Mono on merging deleted rows into the LocalDS, they become modified rows
+                // see https://tracker.openpetra.org/view.php?id=1871
+                LocalDS.Merge(AInspectDS.PBankingDetails);
+
+                // workaround for bug 1871
+                List <Int32>DeletedBankingDetails = new List <Int32>();
+
+                foreach (DataRow bdrow in AInspectDS.PBankingDetails.Rows)
+                {
+                    if (bdrow.RowState == DataRowState.Deleted)
+                    {
+                        DeletedBankingDetails.Add(Convert.ToInt32(bdrow[AInspectDS.PBankingDetails.ColumnBankingDetailsKey, DataRowVersion.Original]));
+                    }
+                }
+
+                bool ThereIsAtLeastOneAccount = false;
+
+                // get the main account
+                Int32 MainAccountBankingDetails = Int32.MinValue;
+
+                foreach (PartnerEditTDSPBankingDetailsRow detailRow in LocalDS.PBankingDetails.Rows)
+                {
+                    if ((detailRow.RowState != DataRowState.Deleted) && !DeletedBankingDetails.Contains(detailRow.BankingDetailsKey))
+                    {
+                        ThereIsAtLeastOneAccount = true;
+
+                        if (!detailRow.IsMainAccountNull() && detailRow.MainAccount)
+                        {
+                            if ((MainAccountBankingDetails != Int32.MinValue) && (detailRow.BankingDetailsKey != MainAccountBankingDetails))
+                            {
+                                AVerificationResult.Add(new TVerificationResult(
+                                        String.Format("Banking Details"),
+                                        string.Format("there are multiple main accounts"),
+                                        TResultSeverity.Resv_Critical));
+                                return;
+                            }
+                            else
+                            {
+                                // if the main account has been changed
+                                MainAccountBankingDetails = detailRow.BankingDetailsKey;
+                            }
+                        }
+                    }
+                }
+
+                bool alreadyExists = false;
+
+                foreach (PBankingDetailsUsageRow usageRow in AInspectDS.PBankingDetailsUsage.Rows)
+                {
+                    if (usageRow.Type == MPartnerConstants.BANKINGUSAGETYPE_MAIN)
+                    {
+                        DataRow bdrow = LocalDS.PBankingDetails.Rows.Find(usageRow.BankingDetailsKey);
+
+                        if ((bdrow == null) || (bdrow.RowState == DataRowState.Deleted)
+                            || DeletedBankingDetails.Contains(usageRow.BankingDetailsKey))
+                        {
+                            // deleting the account
+                            usageRow.Delete();
+                        }
+                        else if (MainAccountBankingDetails == Int32.MinValue)
+                        {
+                            MainAccountBankingDetails = usageRow.BankingDetailsKey;
+                            alreadyExists = true;
+                        }
+                        else if ((MainAccountBankingDetails != Int32.MinValue) && (usageRow.BankingDetailsKey != MainAccountBankingDetails))
+                        {
+                            usageRow.Delete();
+                        }
+                        else
+                        {
+                            alreadyExists = true;
+                        }
+                    }
+                }
+
+                if (!alreadyExists && ThereIsAtLeastOneAccount)
+                {
+                    if (MainAccountBankingDetails == Int32.MinValue)
+                    {
+                        AVerificationResult.Add(new TVerificationResult(
+                                "Banking Details",
+                                "there is no main account",
+                                TResultSeverity.Resv_Critical));
+                        return;
+                    }
+                    else
+                    {
+                        PBankingDetailsUsageRow newUsageRow = AInspectDS.PBankingDetailsUsage.NewRowTyped(true);
+                        newUsageRow.PartnerKey = FPartnerKey;
+                        newUsageRow.BankingDetailsKey = MainAccountBankingDetails;
+                        newUsageRow.Type = MPartnerConstants.BANKINGUSAGETYPE_MAIN;
+                        AInspectDS.PBankingDetailsUsage.Rows.Add(newUsageRow);
+                    }
+                }
+            }
         }
 
-        private PartnerEditTDS GetBankingDetailsInternal(TDBTransaction AReadTransaction, System.Int64 APartnerKey)
+        /// <summary>
+        /// get the banking details of the current partner
+        /// </summary>
+        public PartnerEditTDS GetBankingDetails()
         {
-            PartnerEditTDS ReturnValue;
+            Boolean NewTransaction;
 
-            ReturnValue = FPartnerEditScreenDS;
-            TLogging.Log("GetBankingDetails(AReadTransaction: TDBTransaction; APartnerKey: System.Int64)", TLoggingType.ToLogfile);
+            PartnerEditTDS localDS = new PartnerEditTDS();
 
-            // Get hold of the two tables needed for the banking informaiton:
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            // Get hold of the two tables needed for the banking information:
             // p_partner_banking_details
             // p_banking_details
             try
             {
-                // PPartnerBankingDetailsAccess Table
-                // PPartnerBankingDetailsAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, AReadTransaction);
-                // TLogging.Log('PPartnerBankingDetailsAccess.LoadViaPPartner', [TLoggingType.ToLogfile]);
-                // PBankingDetailsAccess Table
-                PBankingDetailsAccess.LoadViaPBank(FPartnerEditScreenDS, FPartnerKey, AReadTransaction);
-                TLogging.Log("PBankingDetailsAccess.LoadViaPBank", TLoggingType.ToLogfile);
+                PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+                PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+                PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
             }
             catch (Exception)
             {
                 TLogging.Log("An exception happened while retrieving data.", TLoggingType.ToLogfile);
                 throw;
             }
-            TLogging.Log("Number of rows loaded: " + FPartnerEditScreenDS.PBankingDetails.Rows.Count.ToString(), TLoggingType.ToLogfile);
-            return ReturnValue;
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetBankingDetails: committed own transaction.");
+                }
+            }
+
+            foreach (PartnerEditTDSPBankingDetailsRow bd in localDS.PBankingDetails.Rows)
+            {
+                bd.MainAccount =
+                    (localDS.PBankingDetailsUsage.Rows.Find(
+                         new object[] { FPartnerKey, bd.BankingDetailsKey, MPartnerConstants.BANKINGUSAGETYPE_MAIN }) != null);
+            }
+
+            localDS.PBankingDetailsUsage.Clear();
+            localDS.RemoveEmptyTables();
+
+            return localDS;
         }
 
         #endregion
@@ -373,6 +482,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountFamilyMembers = 0;
             Int32 ItemsCountPartnerInterests = 0;
             Int32 ItemsCountInterests = 0;
+            Int32 ItemsCountPartnerBankingDetails = 0;
             Int64 FoundationOwner1Key = 0;
             Int64 FoundationOwner2Key = 0;
             bool HasEXWORKERPartnerType = false;
@@ -697,6 +807,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     #endregion
 
+                    // financial details
+                    if ((!ADelayedDataLoading) || (ATabPage == TPartnerEditTabPageEnum.petpFinanceDetails))
+                    {
+                        FPartnerEditScreenDS.Merge(GetBankingDetails());
+                    }
+
+                    ItemsCountPartnerBankingDetails = PPartnerBankingDetailsAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
+
                     // Office Specific Data
                     if ((!ADelayedDataLoading) || (ATabPage == TPartnerEditTabPageEnum.petpOfficeSpecific))
                     {
@@ -775,6 +893,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     MiscellaneousDataDR.ItemsCountPartnerRelationships = ItemsCountPartnerRelationships;
                     MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
                     MiscellaneousDataDR.ItemsCountInterests = ItemsCountPartnerInterests;
+                    MiscellaneousDataDR.ItemsCountPartnerBankingDetails = ItemsCountPartnerBankingDetails;
                     MiscellaneousDataDR.OfficeSpecificDataLabelsAvailable = OfficeSpecificDataLabelsAvailable;
                     MiscellaneousDataDR.FoundationOwner1Key = FoundationOwner1Key;
                     MiscellaneousDataDR.FoundationOwner2Key = FoundationOwner2Key;
@@ -1487,7 +1606,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             PPartnerTable.GetPartnerKeyDBName() + ' ' +
                             "WHERE " + PPersonTable.GetFamilyKeyDBName() + " = ? " +
                             "AND " + PPartnerTable.GetStatusCodeDBName() + " <> " + '"' +
-                            SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + '"', ReadTransaction, false,
+                            SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + '"', ReadTransaction,
                             ParametersArray));
 
                     // Make sure we don't count MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
@@ -1844,10 +1963,20 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
-                FSubmissionDS = AInspectDS;
+
                 TVerificationResultCollection SingleVerificationResultCollection;
                 AVerificationResult = new TVerificationResultCollection();
                 TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                PrepareBankingDetailsForSaving(ref AInspectDS, ref AVerificationResult, SubmitChangesTransaction);
+
+                if (AVerificationResult.HasCriticalErrors)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    return TSubmitChangesResult.scrError;
+                }
+
+                FSubmissionDS = AInspectDS;
 
                 try
                 {
@@ -2329,6 +2458,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 // can remove table PPerson here as this is part of both PartnerEditTDS and IndividualDataTDS and
                 // so the relevant data was already saved when PartnerEditTDS was saved
                 TempDS.RemoveTable("PPerson");
+                TempDS.InitVars();
 
                 IndividualDataResult = TIndividualDataWebConnector.SubmitChangesServerSide(ref TempDS, ref AInspectDS, ASubmitChangesTransaction,
                     out SingleVerificationResultCollection);

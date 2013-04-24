@@ -74,6 +74,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
+            Int32 FilterByPaymentNum = 0;
+
+            if ((txtPaymentNumFrom.Text != "") && (txtPaymentNumTo.Text != ""))
+            {
+                FilterByPaymentNum = 1;
+            }
+
+            Int32 FilterByDate = 0;
+
+            if ((dtpPaymentDateFrom.Text != "") && (dtpPaymentDateTo.Text != ""))
+            {
+                FilterByDate = 1;
+            }
+
+            ACalc.AddParameter("param_filter_by_date", FilterByDate);
+            ACalc.AddParameter("param_filter_by_payment_num", FilterByPaymentNum);
             DefineReportColumns(ACalc);
         }
 
@@ -101,10 +117,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
  *          Calculator.AddParameter("param_payment_date_from_i", DateTime.Now);
  *          Calculator.AddParameter("param_payment_date_to_i", DateTime.Now);
  */
+            Calculator.AddParameter("param_filter_by_date", 0);
+            Calculator.AddParameter("param_filter_by_payment_num", 1);
             Calculator.AddParameter("param_ledger_number_i", ALedgerNumber);
             DefineReportColumns(Calculator);
 
             TFrmPetraReportingUtils.GenerateReport(Calculator, Owner, "APPaymentReport", true);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="PaymentNumStart"></param>
+        /// <param name="PaymentNumEnd"></param>
+        public void SetPaymentNumber(Int32 PaymentNumStart, Int32 PaymentNumEnd)
+        {
+            txtPaymentNumFrom.Text = PaymentNumStart.ToString();
+            txtPaymentNumTo.Text = PaymentNumEnd.ToString();
         }
     }
 }

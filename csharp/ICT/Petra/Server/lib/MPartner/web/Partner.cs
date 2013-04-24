@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -211,7 +211,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 && (SUserAccess.CountViaPPartner(APartnerKey, Transaction) > 0))
             {
                 ResultValue = false;
-                ADisplayMessage = Catalog.GetString("Unable to delete a Petra user.");
+                ADisplayMessage = Catalog.GetString("Unable to delete an OpenPetra user.");
             }
 
             // make sure we don't delete an active ledger
@@ -219,7 +219,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 && (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
                             "SELECT COUNT(*) FROM PUB_" + ALedgerTable.GetTableDBName() +
                             " WHERE " + ALedgerTable.GetLedgerNumberDBName() + " * 1000000 = " + APartnerKey.ToString(),
-                            Transaction, false)) > 0))
+                            Transaction)) > 0))
             {
                 ResultValue = false;
                 ADisplayMessage = Catalog.GetString("Unable to delete an active ledger.");
@@ -339,7 +339,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         "SELECT COUNT(*) FROM PUB_" + PSubscriptionTable.GetTableDBName() +
                         " WHERE " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
                         " AND " + PSubscriptionTable.GetSubscriptionStatusDBName() + " NOT IN (\"CANCELLED\",\"EXPIRED\")",
-                        Transaction, false));
+                        Transaction));
                 ADisplayMessage += String.Format(Catalog.GetString("{0} active Subscriptions"), Count.ToString()) + Linebreak;
 
                 // count contact records
@@ -618,7 +618,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " FROM " + PPartnerContactTable.GetTableDBName() +
                               " WHERE " + PPartnerContactTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() + ")";
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction, false);
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
                 }
                 catch (Exception e)
                 {
@@ -873,7 +873,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if ((PFoundationAccess.CountViaPPartnerOwner1Key(APartnerKey, ATransaction) > 0)
                 || (PFoundationAccess.CountViaPPartnerOwner2Key(APartnerKey, ATransaction) > 0))
             {
-                ADisplayMessage = Catalog.GetString("Unable to delete this person because he/she is owner of a following.");
+                ADisplayMessage = Catalog.GetString("Unable to delete this person because he/she is owner of a foundation.");
                 return false;
             }
 
@@ -1181,7 +1181,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 SqlStmt = "DELETE FROM pub_" + ATableName +
                           " WHERE " + APartnerKeyColumnName + " = " + APartnerKey.ToString();
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction, false);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction);
             }
             catch (Exception e)
             {
@@ -1214,7 +1214,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                           " SET " + APartnerKeyColumnName + " = 0" +
                           " WHERE " + APartnerKeyColumnName + " = " + APartnerKey.ToString();
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction, false);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction);
             }
             catch (Exception e)
             {

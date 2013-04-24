@@ -57,18 +57,37 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <summary>
         /// Month end master routine ...
         /// </summary>
-        /// <param name="ALedgerNum"></param>
-        /// <param name="AIsInInfoMode"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AInfoMode"></param>
+        /// <param name="AVerificationResults"></param>
+        /// <returns>false if there's no problem</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool TPeriodMonthEnd(
-            int ALedgerNum,
-            bool AIsInInfoMode,
-            out TVerificationResultCollection AVerificationResult)
+            int ALedgerNumber,
+            bool AInfoMode,
+            out TVerificationResultCollection AVerificationResults)
         {
-            return new TMonthEnd().RunMonthEnd(ALedgerNum, AIsInInfoMode,
-                out AVerificationResult);
+            TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
+
+            bool res = new TMonthEnd().RunMonthEnd(ALedgerNumber, AInfoMode,
+                out AVerificationResults);
+
+            if (!res && !AInfoMode)
+            {
+                AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, ledgerInfo.CurrentPeriod, null);
+
+                if (PeriodTbl.Rows.Count > 0)
+                {
+                    AVerificationResults.Add(
+                        new TVerificationResult(
+                            Catalog.GetString("Month End"),
+                            String.Format(Catalog.GetString("The period {0} - {1} has been closed."),
+                                PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()),
+                            TResultSeverity.Resv_Status));
+                }
+            }
+
+            return res;
         }
     }
 }
@@ -81,24 +100,64 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class TMonthEnd : TPeriodEndOperations
     {
-        TLedgerInfo ledgerInfo;
+        TLedgerInfo FledgerInfo;
+        /// <summary>
+        ///
+        /// </summary>
+        [NoRemoting]
+        public delegate bool StewardshipCalculation(int ALedgerNumber,
+            int APeriodNumber,
+            out TVerificationResultCollection AVerificationResult);
+        private static StewardshipCalculation FStewardshipCalculationDelegate;
+
+        /// <summary>
+        ///
+        /// </summary>
+        [NoRemoting]
+        public static StewardshipCalculation StewardshipCalculationDelegate
+        {
+            get
+            {
+                return FStewardshipCalculationDelegate;
+            }
+            set
+            {
+                FStewardshipCalculationDelegate = value;
+            }
+        }
+
 
         /// <summary>
         /// Main Entry point. The parameters are the same as in
         /// Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthEnd
         /// </summary>
-        /// <param name="ALedgerNum"></param>
+        /// <param name="ALedgerNumber"></param>
         /// <param name="AInfoMode"></param>
         /// <param name="AVRCollection"></param>
-        /// <returns></returns>
-        public bool RunMonthEnd(int ALedgerNum, bool AInfoMode,
+        /// <returns>false if it went OK</returns>
+        public bool RunMonthEnd(int ALedgerNumber, bool AInfoMode,
             out TVerificationResultCollection AVRCollection)
         {
-            blnIsInInfoMode = AInfoMode;
-            ledgerInfo = new TLedgerInfo(ALedgerNum);
+            FInfoMode = AInfoMode;
+            FledgerInfo = new TLedgerInfo(ALedgerNumber);
             verificationResults = new TVerificationResultCollection();
 
-            TCarryForward carryForward = new TCarryForward(ledgerInfo);
+            if (AInfoMode)
+            {
+                AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, FledgerInfo.CurrentPeriod, null);
+
+                if (PeriodTbl.Rows.Count > 0)
+                {
+                    verificationResults.Add(
+                        new TVerificationResult(
+                            Catalog.GetString("Month End"),
+                            String.Format(Catalog.GetString("Current period is {0} - {1}"),
+                                PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()),
+                            TResultSeverity.Resv_Status));
+                }
+            }
+
+            TCarryForward carryForward = new TCarryForward(FledgerInfo);
 
             if (carryForward.GetPeriodType != TCarryForwardENum.Month)
             {
@@ -108,26 +167,49 @@ namespace Ict.Petra.Server.MFinance.GL
                         TPeriodEndErrorAndStatusCodes.PEEC_03.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
-                blnCriticalErrors = true;
+                FHasCriticalErrors = true;
             }
 
-            RunPeriodEndCheck(new RunMonthEndChecks(ledgerInfo), verificationResults);
+            RunPeriodEndCheck(new RunMonthEndChecks(FledgerInfo), verificationResults);
 
-            // TODO: Admin Fees and
-            // TODO: ICH stewardship ...
+            if (!AInfoMode)
+            {
+                TVerificationResultCollection IchVerificationReults;
+
+                if (!StewardshipCalculationDelegate(ALedgerNumber, FledgerInfo.CurrentPeriod,
+                        out IchVerificationReults))
+                {
+                    FHasCriticalErrors = true;
+                }
+
+                // Merge VerificationResults:
+                verificationResults.AddCollection(IchVerificationReults);
+            }
 
             // RunPeriodEndSequence(new RunMonthlyAdminFees(), "Example");
 
-            if (!blnIsInInfoMode)
+            if (!FInfoMode)
             {
-                if (!blnCriticalErrors)
+                if (!FHasCriticalErrors)
                 {
                     carryForward.SetNextPeriod();
                 }
             }
 
+            //
+            // The 4GL code throws out these reports:
+            //
+            //     Admin fee calculations report.
+            //     ICH stewardship report.
+            //     "Trial Balance" with account details.
+            //     HOSA for each foreign cost centre (ledger/fund).
+            //     Income Statement/Profit & Loss
+            //     Current Accounts Payable if interfaced.  M025
+            //     AFO report.
+            //     Executive Summary Report.
+            //
             AVRCollection = verificationResults;
-            return blnCriticalErrors;
+            return FHasCriticalErrors;
         }
     }
 
@@ -135,7 +217,6 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         TLedgerInfo ledgerInfo;
 
-        bool blnZerorValueSuspenseAccountsFound = false;
         GetSuspenseAccountInfo getSuspenseAccountInfo = null;
 
         public RunMonthEndChecks(TLedgerInfo ALedgerInfo)
@@ -161,11 +242,7 @@ namespace Ict.Petra.Server.MFinance.GL
             CheckForUnpostedBatches();
             CheckForUnpostedGiftBatches();
             CheckForSuspenseAcountsZero();
-
-            if (!blnZerorValueSuspenseAccountsFound)
-            {
-                CheckForSuspenseAcounts();
-            }
+            CheckForSuspenseAcounts();
         }
 
         private void CheckIfRevaluationIsDone()
@@ -187,12 +264,12 @@ namespace Ict.Petra.Server.MFinance.GL
                       TLedgerInitFlagEnum.Revaluation).Flag))
             {
                 TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("A Revaluation shall be done first"),
-                    Catalog.GetString("Please run a revalution for Ledger first."), "",
+                    Catalog.GetString("Ledger revaluation"),
+                    Catalog.GetString("Please run a ledger revalution first."), "",
                     TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
                 // Error is critical but additional checks shall be done
                 verificationResults.Add(tvr);
-                blnCriticalErrors = true;
+                FHasCriticalErrors = true;
             }
         }
 
@@ -210,7 +287,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         getBatchInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_06.ToString(), TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvr);
-                blnCriticalErrors = true;
+                FHasCriticalErrors = true;
             }
         }
 
@@ -222,13 +299,13 @@ namespace Ict.Petra.Server.MFinance.GL
                     new GetSuspenseAccountInfo(ledgerInfo.LedgerNumber);
             }
 
-            if (getSuspenseAccountInfo.Rows != 0)
+            if (getSuspenseAccountInfo.RowCount != 0)
             {
                 TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("Suspended Accounts found ..."),
+                    Catalog.GetString("Suspended Accounts found"),
                     String.Format(
                         Catalog.GetString(
-                            "You have checked the suspense account details of {0} before?"),
+                            "Have you checked the details of suspense account {0}?"),
                         getSuspenseAccountInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Status);
                 verificationResults.Add(tvr);
@@ -245,13 +322,13 @@ namespace Ict.Petra.Server.MFinance.GL
             if (getUnpostedGiftInfo.Rows > 0)
             {
                 TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("Unposted Gift Batches found ..."),
+                    Catalog.GetString("Unposted Gift Batches found"),
                     String.Format(
                         "Please post or cancel the gift batches {0} first!",
                         getUnpostedGiftInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_08.ToString(), TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvr);
-                blnCriticalErrors = true;
+                FHasCriticalErrors = true;
             }
         }
 
@@ -259,24 +336,23 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
             {
+                // This means: The last accounting period of the year is running!
+
                 if (getSuspenseAccountInfo == null)
                 {
                     getSuspenseAccountInfo =
                         new GetSuspenseAccountInfo(ledgerInfo.LedgerNumber);
                 }
 
-                // This means: The last accounting period of the year is running!
-                if (getSuspenseAccountInfo.Rows > 0)
+                if (getSuspenseAccountInfo.RowCount > 0)
                 {
-                    // blnZerorValueSuspenseAccountsFound = true;
-
                     ASuspenseAccountRow aSuspenseAccountRow;
                     decimal decAccountTotalSum = 0;
                     string strMessage = Catalog.GetString(
                         "Suspense account {0} has the balance value {1}, " +
                         "which is required to be zero.");
 
-                    for (int i = 0; i < getSuspenseAccountInfo.Rows; ++i)
+                    for (int i = 0; i < getSuspenseAccountInfo.RowCount; ++i)
                     {
                         aSuspenseAccountRow = getSuspenseAccountInfo.Row(i);
                         TGet_GLM_Info get_GLM_Info = new TGet_GLM_Info(ledgerInfo.LedgerNumber,
@@ -290,11 +366,11 @@ namespace Ict.Petra.Server.MFinance.GL
                         if (get_GLMp_Info.ActualBase != 0)
                         {
                             TVerificationResult tvr = new TVerificationResult(
-                                Catalog.GetString("Non Zero Suspense Account found ..."),
+                                Catalog.GetString("Non Zero Suspense Account found"),
                                 String.Format(strMessage, ledgerInfo.LedgerNumber,
                                     get_GLMp_Info.ActualBase), "",
                                 "GL.CAT.08", TResultSeverity.Resv_Critical);
-                            blnCriticalErrors = true;
+                            FHasCriticalErrors = true;
                             verificationResults.Add(tvr);
                         }
                     }
@@ -329,7 +405,7 @@ namespace Ict.Petra.Server.MFinance.GL
     }
 
     /// <summary>
-    /// Routine to finde unposted gifts batches.
+    /// Routine to find unposted gifts batches.
     /// </summary>
     public class GetUnpostedGiftInfo
     {
@@ -399,8 +475,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     for (int i = 1; i < Rows; ++i)
                     {
-                        strH += ", " +
-                                (string)dataTable.Rows[i][AGiftBatchTable.GetBatchNumberDBName()];
+                        strH += (", " + Convert.ToString(dataTable.Rows[i][AGiftBatchTable.GetBatchNumberDBName()]));
                     }
                 }
             }
@@ -431,7 +506,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         /// In case of an error message you need the number of entries.
         /// </summary>
-        public int Rows
+        public int RowCount
         {
             get
             {
@@ -450,15 +525,15 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Produces a comma separated list of the suspense account codes for the
-        /// use in the status message(s).
+        /// Produces a comma separated list of suspense account codes
+        /// for use in the status message(s).
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
             string strH;
 
-            if (Rows == 0)
+            if (RowCount == 0)
             {
                 strH = "-";
             }
@@ -466,9 +541,9 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 strH = table[0].SuspenseAccountCode;
 
-                if (Rows > 1)
+                if (RowCount > 1)
                 {
-                    for (int i = 1; i < Rows; ++i)
+                    for (int i = 1; i < RowCount; ++i)
                     {
                         strH += ", " + table[i].SuspenseAccountCode;
                     }

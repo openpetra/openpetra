@@ -11,6 +11,12 @@
 
 <target name="custdepend">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+
+   <!-- if this repository gets mirrored to git, the empty directories will be gone -->
+   <mkdir dir="${dir.root}/csharp/ICT/Petra/Shared/lib/data" failonerror="false"/>
+   <mkdir dir="${dir.root}/csharp/ICT/Petra/Shared/lib/MHospitality/validation" failonerror="false"/>
+   <mkdir dir="${dir.root}/csharp/ICT/Petra/Shared/lib/MSysMan/validation" failonerror="false"/>
+
    <ExecDotNet program="${tool-generateORM}" 
    commandline="-do:defaulttables -petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Shared -TemplateDir:${dir.incdir.template.src}"/> 
 

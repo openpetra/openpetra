@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -205,9 +205,33 @@ namespace Ict.Common.DB
                             break;
 
                         case OdbcType.Date:
-                            ReturnValue[Counter] = new MySqlParameter(
-                            ParamName,
-                            MySqlDbType.Date);
+
+                            if (AParameterArrayOdbc[Counter].Value != DBNull.Value)
+                            {
+                                DateTime TmpDate = (DateTime)AParameterArrayOdbc[Counter].Value;
+
+                                if ((TmpDate.Hour == 0)
+                                    && (TmpDate.Minute == 0)
+                                    && (TmpDate.Second == 0)
+                                    && (TmpDate.Millisecond == 0))
+                                {
+                                    ReturnValue[Counter] = new MySqlParameter(
+                                        ParamName,
+                                        MySqlDbType.Date);
+                                }
+                                else
+                                {
+                                    ReturnValue[Counter] = new MySqlParameter(
+                                        ParamName,
+                                        MySqlDbType.Timestamp);
+                                }
+                            }
+                            else
+                            {
+                                ReturnValue[Counter] = new MySqlParameter(
+                                    ParamName,
+                                    MySqlDbType.Date);
+                            }
 
                             break;
 
@@ -461,8 +485,8 @@ namespace Ict.Common.DB
             IDbConnection AConnection,
             Int64 ARestartValue)
         {
-            ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction, false);
-            ADatabase.ExecuteNonQuery("INSERT INTO " + ASequenceName + " VALUES(" + ARestartValue.ToString() + ", -1);", ATransaction, false);
+            ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction);
+            ADatabase.ExecuteNonQuery("INSERT INTO " + ASequenceName + " VALUES(" + ARestartValue.ToString() + ", -1);", ATransaction);
         }
 
         /// <summary>

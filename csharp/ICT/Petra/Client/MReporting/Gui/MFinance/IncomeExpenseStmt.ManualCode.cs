@@ -45,6 +45,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
+                uco_GeneralSettings.DisableToPeriod();
             }
         }
 
