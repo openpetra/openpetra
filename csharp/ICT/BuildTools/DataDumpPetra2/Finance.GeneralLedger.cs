@@ -128,5 +128,26 @@ namespace Ict.Tools.DataDumpPetra2
 
             return true;
         }
+
+        /// <summary>
+        /// Supply the new a_report_coumn_c field
+        /// </summary>
+        /// <param name="AColumnNames"></param>
+        /// <param name="ANewRow"></param>
+        /// <returns>(false if the row should be dropped) - ALWAYS TRUE!</returns>
+        public static bool FixAMotivationDetail(StringCollection AColumnNames, ref string[] ANewRow)
+        {
+            String motivationDetailCode = GetValue(AColumnNames, ANewRow, "a_motivation_detail_code_c");
+            String ReportColumn = "Field";
+
+            if ((motivationDetailCode == "SUPPORT") || (motivationDetailCode == "PERSONAL"))
+            {
+                ReportColumn = "Worker";
+            }
+            SetValue(AColumnNames, ref ANewRow, "a_report_column_c", ReportColumn);
+
+            return true;
+        }
+            
     }
 }

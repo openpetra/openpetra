@@ -446,6 +446,12 @@ namespace Ict.Tools.DataDumpPetra2
                 return TFinanceGeneralLedgerUpgrader.FixABatch(AColumnNames, ref ANewRow);
             }
 
+            if (ATableName == "a_motivation_detail")
+            {
+                return TFinanceGeneralLedgerUpgrader.FixAMotivationDetail(AColumnNames, ref ANewRow);
+            }
+
+
             // wrong gift batch status, need to have case sensitive status
             if (ATableName == "a_gift_batch")
             {
