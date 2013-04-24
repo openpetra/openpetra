@@ -569,9 +569,10 @@ namespace {#NAMESPACE}
                 if (DeletionPerformed)
                 {
                     FPetraUtilsObject.SetChangedFlag();
-                    // Select and display the details of the nearest row to the one previously selected
-                    SelectRowInGrid(SelectedRow);
                 }
+            
+                // Select and display the details of the nearest row to the one previously selected
+                SelectRowInGrid(SelectedRow);
             }
         }
 
