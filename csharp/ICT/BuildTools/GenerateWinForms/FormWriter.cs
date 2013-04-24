@@ -1281,16 +1281,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletable")
                         || FCodeStorage.FControlList.ContainsKey("chkDeletable"))
                     {
-                        enableDelete += "(ARow.Deletable == true) && ";
+                        enableDelete += "(ARow != null) && (ARow.Deletable == true) && ";
                     }
                     else if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletableFlag")
                              || FCodeStorage.FControlList.ContainsKey("chkDeletableFlag"))
                     {
-                        enableDelete += "(ARow.DeletableFlag == true) && ";
+                        enableDelete += "(ARow != null) && (ARow.DeletableFlag == true) && ";
                     }
                     else if (FCodeStorage.FControlList.ContainsKey("chkDetailTypeDeletable"))
                     {
-                        enableDelete += "(ARow.TypeDeletable == true) && ";
+                        enableDelete += "(ARow != null) && (ARow.TypeDeletable == true) && ";
                     }
 
                     enableDelete += "pnlDetails.Enabled);" + Environment.NewLine;
@@ -1422,6 +1422,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 FTemplate.AddToCodelet("SHOWDETAILS", "ShowDetailsManual(ARow);" + Environment.NewLine);
                 FTemplate.AddToCodelet("CLEARDETAILS", "ShowDetailsManual(ARow);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.FControlList.ContainsKey("pnlDetails"))
+            {
+                FTemplate.AddToCodelet("CLEARDETAILS", "FPetraUtilsObject.ClearControls(pnlDetails);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual()"))
