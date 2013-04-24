@@ -63,6 +63,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private static readonly string StrAddressesTabHeader = Catalog.GetString("Addresses");
 
+        private static readonly string StrContactDetailsTabHeader = Catalog.GetString("Contact Details");
+
         private static readonly string StrSubscriptionsTabHeader = Catalog.GetString("Subscriptions");
 
         private static readonly string StrSpecialTypesTabHeader = Catalog.GetString("Special Types");
@@ -76,7 +78,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 // TODO        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
 
         private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
-
+        
         private static readonly string StrAddressesSingular = Catalog.GetString("Address");
 
         private static readonly string StrSubscriptionsSingular = Catalog.GetString("Subscription");
@@ -448,6 +450,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                     (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
 
                 if (!UCPartnerAddresses.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucContactDetails))
+            {
+                TUC_ContactDetails UCContactDetails =
+                    (TUC_ContactDetails)FTabSetup[TDynamicLoadableUserControls.dlucContactDetails];
+
+                if (!UCContactDetails.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -1194,6 +1207,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     case TPartnerEditTabPageEnum.petpDetails:
                         tabPartners.SelectedTab = tpgPartnerDetails;
+                        break;
+
+                    case TPartnerEditTabPageEnum.petpContactDetails:
+                        tabPartners.SelectedTab = tpgContactDetails;
                         break;
 
                     case TPartnerEditTabPageEnum.petpFoundationDetails:

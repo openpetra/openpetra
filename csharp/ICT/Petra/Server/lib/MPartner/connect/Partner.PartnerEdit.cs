@@ -366,6 +366,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountAddresses = 0;
             Int32 ItemsCountAddressesActive = 0;
             Int32 ItemsCountSubscriptions = 0;
+            Int32 ItemsCountContactDetails = 0;
             Int32 ItemsCountSubscriptionsActive = 0;
             Int32 ItemsCountPartnerTypes = 0;
             Int32 ItemsCountPartnerRelationships = 0;
@@ -441,6 +442,19 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         // Empty Tables again, we don't want to transfer the data contained in them
                         FPartnerEditScreenDS.PSubscription.Rows.Clear();
+                    }
+
+                    // Contact Details
+                    FPartnerEditScreenDS.Merge(GetContactDetailsInternal(out ItemsCountContactDetails, false));
+
+                    if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpContactDetails))
+                    {
+                        // Only count Contact Details
+                        Calculations.CalculateTabCountsPartnerRelationships(FPartnerEditScreenDS.PPartnerRelationship,
+                            out ItemsCountPartnerRelationships);
+
+                        // Empty Tables again, we don't want to transfer the data contained in them
+                        FPartnerEditScreenDS.PPartnerRelationship.Rows.Clear();
                     }
 
                     // Partner Relationships
@@ -2590,6 +2604,55 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return GetSubscriptionsInternal(out ACount, false);
         }
 
+        private PPartnerAttributeTable GetContactDetailsInternal(out Int32 ACount, Boolean ACountOnly)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            PPartnerAttributeTable AttributeDT;
+            PPartnerTable PartnerDT;
+
+            AttributeDT = new PPartnerAttributeTable();
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                if (ACountOnly)
+                {
+                    // count Partner Attributes
+                    // TODO: filter on Attribute Types that constitute a Contact Attribute Type (p_is_contact_detail_l = true!)
+                    ACount = PPartnerAttributeAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
+                }
+                else
+                {
+                  TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetContactDetailsInternal: loading Contact Details for Partner " + FPartnerKey.ToString() + "...");
+                    try
+                    {
+                        // load relationships where partner is involved with partner key or reciprocal
+                        AttributeDT.Merge(PPartnerAttributeAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
+
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+
+                    ACount = AttributeDT.Rows.Count;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetContactDetailsInternal: committed own transaction.");
+                }
+            }
+            
+            return AttributeDT;
+        }
+        
         private PartnerEditTDSPPartnerRelationshipTable GetPartnerRelationshipsInternal(out Int32 ACount, Boolean ACountOnly)
         {
             TDBTransaction ReadTransaction;

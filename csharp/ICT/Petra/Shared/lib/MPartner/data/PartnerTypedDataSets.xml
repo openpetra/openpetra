@@ -16,6 +16,7 @@
       <CustomField name="BestAddress" type="bool"/>
       <CustomField name="Icon" type="Int32"/>
     </Table>
+    <Table sqltable="p_partner_attribute"/>
     <Table sqltable="p_family">
       <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
     </Table>

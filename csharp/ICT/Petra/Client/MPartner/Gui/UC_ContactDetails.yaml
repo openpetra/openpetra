@@ -1,0 +1,48 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    DetailTable: PPartnerAttribute
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails,pnlButtons]
+
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew,btnDelete]
+        btnNew: {Stretch=horizontally}
+            Action: actNew
+        btnDelete: {Stretch=horizontally}
+            Action: actDelete
+
+        grdDetails:
+            Dock: Fill
+            Columns: [PPartnerAttribute.Code, PPartnerAttribute.Value, PPartnerAttribute.ValidFrom, PPartnerAttribute.ValidTo]
+            ActionFocusRow: FocusedRowChanged
+
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [cmbCode]
+                Row1: [txtValue]
+                Row2: [txtComment]
+                Row3: [dtpValidFrom, dtpValidTo]
+        cmbCode: {Label=Type, List=RelationList, Validation=true}
+        txtValue:
+            Label: Value
+        txtComment: {Label=Comment, Multiline=true, Stretch=fully, DataField=PPartnerAttribute.Comment}
+        dtpValidFrom:
+            Validation: Pair(dtpValidTo)
+        dtpValidTo:
+            Label: To

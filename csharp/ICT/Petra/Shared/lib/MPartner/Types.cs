@@ -46,6 +46,11 @@ namespace Ict.Petra.Shared.MPartner
         petpDetails,
 
         /// <summary>
+        /// page for contacts
+        /// </summary>
+        petpContactDetails,
+        
+        /// <summary>
         /// detail page for partner class foundations
         /// </summary>
         petpFoundationDetails,
