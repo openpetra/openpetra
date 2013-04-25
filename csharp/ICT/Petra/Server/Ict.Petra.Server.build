@@ -14,6 +14,11 @@
 
   <!-- if this repository gets mirrored to git, the empty directories will be gone -->
   <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/data" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MCommon/web" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MConference/web" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MFinance/web" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MSysMan/web" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MReporting/web" failonerror="false"/>
 
   <ExecDotNet program="${tool-generateORM}" 
    commandline="-do:dataaccess -petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Server -TemplateDir:${dir.incdir.template.src}"/> 

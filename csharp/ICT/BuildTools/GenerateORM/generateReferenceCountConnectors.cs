@@ -66,7 +66,8 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
 
             if (!Directory.Exists(OutputFolder))
             {
-                // The -outputserver command line parameter must be wrong
+                // The -outputserver command line parameter must be wrong, or the directory does not exist yet
+                Console.WriteLine("Error: directory does not exist: " + OutputFolder);
                 return false;
             }
 
