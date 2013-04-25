@@ -120,6 +120,12 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
 
             foreach (String fn in clientFiles)
             {
+                // only look for main files, not language specific files (*.xy-XY.yaml or *.xy.yaml)
+                if (TProcessYAMLForms.IgnoreLanguageSpecificYamlFile(fn))
+                {
+                    continue;
+                }
+
                 XmlDocument doc = TYml2Xml.CreateXmlDocument();
                 SortedList sortedNodes = null;
                 TCodeStorage codeStorage = new TCodeStorage(doc, sortedNodes);
