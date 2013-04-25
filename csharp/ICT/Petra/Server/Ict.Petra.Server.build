@@ -19,6 +19,14 @@
   <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MFinance/web" failonerror="false"/>
   <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MSysMan/web" failonerror="false"/>
   <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MReporting/web" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MCommon/connect" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MConference/connect" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MFinance/connect" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MFinDev/connect" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MPartner/connect" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MPersonnel/connect" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MReporting/connect" failonerror="false"/>
+  <mkdir dir="${dir.root}/csharp/ICT/Petra/Server/lib/MSysMan/connect" failonerror="false"/>
 
   <ExecDotNet program="${tool-generateORM}" 
    commandline="-do:dataaccess -petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Server -TemplateDir:${dir.incdir.template.src}"/> 
