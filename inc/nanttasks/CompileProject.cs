@@ -274,6 +274,7 @@ namespace Ict.Tools.NAntTasks
             CompilerParameters parameters = new CompilerParameters();
 
             parameters.GenerateInMemory = false;
+            parameters.CompilerOptions = string.Empty;
 
             string OutputFile = mainProperties["OutputPath"];
 
@@ -284,6 +285,12 @@ namespace Ict.Tools.NAntTasks
                 parameters.GenerateExecutable = false;
                 OutputFile += ".dll";
             }
+            else if (mainProperties["OutputType"].ToLower() == "winexe")
+            {
+                parameters.GenerateExecutable = true;
+                parameters.CompilerOptions += " /target:winexe";
+                OutputFile += ".exe";
+            }
             else
             {
                 parameters.GenerateExecutable = true;
@@ -293,12 +300,16 @@ namespace Ict.Tools.NAntTasks
             parameters.OutputAssembly = OutputFile;
             parameters.WarningLevel = 4;
 
-            parameters.CompilerOptions = "/define:DEBUGMODE /doc:\"" + OutputFile.Replace("\\", "/") + ".xml\"";
+            parameters.CompilerOptions += " /define:DEBUGMODE /doc:\"XMLOUTPUTFILE.xml\"";
 
             if (this.Project.PlatformName == "unix")
             {
+                // command line options use - instead of /, eg. /define or -define
                 parameters.CompilerOptions = parameters.CompilerOptions.Replace("/", "-");
             }
+
+            // insert the path to the xml output file after the command line options thing has been done
+            parameters.CompilerOptions = parameters.CompilerOptions.Replace("XMLOUTPUTFILE", OutputFile.Replace("\\", "/"));
 
             String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);
 

@@ -89,7 +89,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             //
             // Transactions older than
             DateTime AgedOlderThan = DateTime.Now;
-            AgedOlderThan = AgedOlderThan.AddMonths(0 - FSupplierRow.PreferredScreenDisplay);
+
+            if (!FSupplierRow.IsPreferredScreenDisplayNull())
+            {
+                AgedOlderThan = AgedOlderThan.AddMonths(0 - FSupplierRow.PreferredScreenDisplay);
+            }
+
             FAgedOlderThan = AgedOlderThan.ToString("u");
 
             txtSupplierName.Text = FMainDS.PPartner[0].PartnerShortName;
