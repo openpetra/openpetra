@@ -22,19 +22,44 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common;
+using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
     public partial class TFrmSetupCurrency
     {
+        /// <summary>
+        /// I'm using my own code here because that provided by the auto-generated code 
+        /// causes a NULL value DB error.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            // TODO
+            if (ValidateAllData(true, true))
+            {
+                ACurrencyRow NewRow = FMainDS.ACurrency.NewRowTyped();
+                NewRow.CurrencyCode = "";
+                NewRow.CurrencyName = Catalog.GetString("New Currency");
+                NewRow.CurrencySymbol = "";
+                NewRow.CountryCode = "99";
+                NewRow.DisplayFormat = "->>>,>>>,>>>,>>9.99";
+                FMainDS.ACurrency.Rows.Add(NewRow);
+
+                FPetraUtilsObject.SetChangedFlag();
+
+                grdDetails.DataSource = null;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ACurrency.DefaultView);
+
+                SelectDetailRowByDataTableIndex(FMainDS.ACurrency.Rows.Count - 1);
+                txtDetailCurrencyCode.Focus();
+            }
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
         {
-            // TODO
+            DeleteACurrency();
         }
     }
 }
