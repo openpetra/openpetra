@@ -144,10 +144,10 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 ReportColumn = "Worker";
             }
+
             SetValue(AColumnNames, ref ANewRow, "a_report_column_c", ReportColumn);
 
             return true;
         }
-            
     }
 }

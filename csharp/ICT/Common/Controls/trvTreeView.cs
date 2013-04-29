@@ -89,7 +89,7 @@ namespace Ict.Common.Controls
             {
                 CheckColorInitializing();
 
-                if (colorsInitialized && workNode != null)
+                if (colorsInitialized && (workNode != null))
                 {
                     // restore the node colors
                     workNode.BackColor = treeBackgroundColor;

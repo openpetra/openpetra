@@ -922,6 +922,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Boolean CreateDefaultCalendar = false;
 
             AVerificationResult = new TVerificationResultCollection();
+
             if (AInspectDS == null)
             {
                 return TSubmitChangesResult.scrNothingToBeSaved;
@@ -932,7 +933,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             try
             {
-
                 // load ledger row currently saved in database so it can be used for comparison with modified data
                 LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
                 LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
@@ -1077,7 +1077,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 if (AGeneralLedgerMasterPeriodAccess.Exists(GLMPeriodRow.GlmSequence, Period, Transaction))
                                 {
                                     // if the record already exists then just change values
-                                    TempGLMPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(GLMPeriodRow.GlmSequence, Period, Transaction);
+                                    TempGLMPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(GLMPeriodRow.GlmSequence,
+                                        Period,
+                                        Transaction);
                                     TempGLMPeriodRow = (AGeneralLedgerMasterPeriodRow)TempGLMPeriodTable.Rows[0];
                                     TempGLMPeriodRow.ActualBase = GLMPeriodRow.ActualBase;
                                     TempGLMPeriodRow.ActualIntl = GLMPeriodRow.ActualIntl;
@@ -1701,27 +1703,24 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 if ((accountRow.RowState != DataRowState.Deleted) && !ImportedAccountNames.Contains(accountRow.AccountCode))
                 {
-                    // TODO: delete accounts that don't exist anymore in the new hierarchy, or deactivate them?
-                    //       but need to raise a failure because they are missing in the account hierarchy
-                    // (check if their balance is empty and no transactions exist, or catch database constraint violation)
-                    // TODO: what about system accounts? probably alright to ignore here
+                    // if there are any existing posted transactions that reference this account, it can't be deleted.
+                    ATransactionTable TransTbl = ATransactionAccess.LoadViaAAccount(ALedgerNumber, accountRow.AccountCode, null);
 
-                    accountRow.Delete();
-                }
-            }
+                    if (TransTbl.Rows.Count == 0) // No-one's used this account, so I can delete it.
+                    {
+                        //
+                        // If the deleted account included Analysis types I need to unlink them from the Account first.
 
-            //
-            // The imported hierarchy did not include Analysis types, but previously there may have been
-            // AnalysisTypes assigned to accounts, which have now been deleted, or have a different meaning
-            // in the newly imported hierarchy.
-            //
-            // I'll keep any AnalysisAttribute types that are defined, but unlink them from Accounts.
+                        foreach (AAnalysisAttributeRow Row in MainDS.AAnalysisAttribute.Rows)
+                        {
+                            if ((Row.LedgerNumber == ALedgerNumber) && (Row.AccountCode == accountRow.AccountCode))
+                            {
+                                Row.Delete();
+                            }
+                        }
 
-            foreach (AAnalysisAttributeRow Row in MainDS.AAnalysisAttribute.Rows)
-            {
-                if (Row.LedgerNumber == ALedgerNumber)
-                {
-                    Row.AccountCode = "";
+                        accountRow.Delete();
+                    }
                 }
             }
 

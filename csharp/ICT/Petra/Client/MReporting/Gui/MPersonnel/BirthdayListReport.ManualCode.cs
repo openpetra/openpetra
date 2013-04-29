@@ -200,7 +200,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
-                else 
+                else
                 // validation: start date should be less than end date.
                 if (dtpFromDate.Date.Value > dtpToDate.Date.Value)
                 {
@@ -208,7 +208,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                         Catalog.GetString("Invalid date range"),
                         Catalog.GetString("The end date must be after the start date."),
                         TResultSeverity.Resv_Critical);
-
                 }
             }
 
@@ -218,10 +217,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 if (txtAnniversaries.Text == "")
                 {
                     FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
-                        Catalog.GetString("Empty anniversaries list"),
-                        Catalog.GetString("Use a comma-separated list like '10,18,21,30,40'"),
-                        TResultSeverity.Resv_Critical
-                        ));
+                            Catalog.GetString("Empty anniversaries list"),
+                            Catalog.GetString("Use a comma-separated list like '10,18,21,30,40'"),
+                            TResultSeverity.Resv_Critical
+                            ));
                 }
             }
         }

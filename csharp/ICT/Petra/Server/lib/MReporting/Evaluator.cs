@@ -1082,7 +1082,6 @@ namespace Ict.Petra.Server.MReporting
                     myParams.Add(targetVariableName, ops[2], -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                 }
 
-
 //              TLogging.Log("Assign: " + targetVariableName + "=" + ops[2].ToString());
                 ReturnValue = ops[2];
             }

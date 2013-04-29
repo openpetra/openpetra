@@ -182,6 +182,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 {
                     DateTime FromDate = AParameters.Get("param_dtpFromDate").ToDate();
                     DateTime ToDate = AParameters.Get("param_dtpToDate").ToDate();
+
                     if (FromDate.DayOfYear < ToDate.DayOfYear)
                     {
                         Defines.Add("WITHDATERANGE", string.Empty);

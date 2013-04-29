@@ -144,6 +144,7 @@ namespace Ict.Petra.Server.MReporting
             {
                 int firstRealChar = bracket + searchOpen.Length;
                 int paramEndIdx = resultString.IndexOf(searchClose, firstRealChar);
+
                 if (paramEndIdx <= 0)
                 {
                     // missing closing bracket; can happen with e.g. #testdate; should be #testdate#
@@ -175,6 +176,7 @@ namespace Ict.Petra.Server.MReporting
                     {
                         newvalue = parameters.Get(parameter, column, depth, eParameterFit.eBestFitEvenLowerLevel);
                     }
+
                     ParameterExists = (newvalue.TypeVariant != eVariantTypes.eEmpty);
                 }
                 else
@@ -208,8 +210,8 @@ namespace Ict.Petra.Server.MReporting
                         {
                             // this can be alright, for empty values; for example method of giving can be empty; for report GiftTransactions
                             TLogging.Log(
-                                "Variable " + parameter + " could not be found (column: " + column.ToString()
-                                 + "; level: " + depth.ToString() + "). " + resultString);
+                                "Variable " + parameter + " could not be found (column: " + column.ToString() +
+                                "; level: " + depth.ToString() + "). " + resultString);
                         }
                         else if (CountWarning % 20 == 0)
                         {

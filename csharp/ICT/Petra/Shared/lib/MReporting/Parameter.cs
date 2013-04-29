@@ -443,7 +443,7 @@ namespace Ict.Petra.Shared.MReporting
             // find if there is already an element in the list with the exact same column/level combination
             foreach (TParameter element in parameters)
             {
-                if ((element.name == parameterId) && (element.level == depth) && (element.column == column) && (element.subreport == subreport) )
+                if ((element.name == parameterId) && (element.level == depth) && (element.column == column) && (element.subreport == subreport))
                 {
                     element.value = value;
                     element.pRptElement = pRptElement;
@@ -874,20 +874,20 @@ namespace Ict.Petra.Shared.MReporting
             }
 
 /* Perhaps I'll get more speed if I remove this..
-            // just to be careful: if curly brackets were used by accident in the xml file, remove them
-            if (parameterId[0] == '{')
-            {
-                TLogging.Log(
-                    "deprecated: " + parameterId +
-                    "; make sure your report xml file is correct, you might be using a variable with brackets in a function call to exists or isnull");
-                parameterId = parameterId.Substring(1, parameterId.Length - 2);
-
-                if ((parameterId[0] == '{') || (parameterId[0] == '#'))
-                {
-                    parameterId = parameterId.Substring(1, parameterId.Length - 2);
-                }
-            }
-*/
+ *          // just to be careful: if curly brackets were used by accident in the xml file, remove them
+ *          if (parameterId[0] == '{')
+ *          {
+ *              TLogging.Log(
+ *                  "deprecated: " + parameterId +
+ *                  "; make sure your report xml file is correct, you might be using a variable with brackets in a function call to exists or isnull");
+ *              parameterId = parameterId.Substring(1, parameterId.Length - 2);
+ *
+ *              if ((parameterId[0] == '{') || (parameterId[0] == '#'))
+ *              {
+ *                  parameterId = parameterId.Substring(1, parameterId.Length - 2);
+ *              }
+ *          }
+ */
             foreach (TParameter element in parameters)
             {
                 if (((element.subreport == subreport) || (element.subreport == -1)) && StringHelper.IsSame(element.name, parameterId))
@@ -936,6 +936,7 @@ namespace Ict.Petra.Shared.MReporting
                         anyFit = element;
                     }
                 } // if
+
             } // foreach
 
             if (exact == eParameterFit.eExact)

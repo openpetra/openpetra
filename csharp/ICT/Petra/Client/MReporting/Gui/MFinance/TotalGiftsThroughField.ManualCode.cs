@@ -96,10 +96,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ++ColumnCounter;
 //          ACalc.AddParameter("param_calculation", "YearMonthlyAverageCount", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
+
 /*
-            ++ColumnCounter;
-            ACalc.SetMaxDisplayColumns(ColumnCounter);
-*/
+ * ++ColumnCounter;
+ *          ACalc.SetMaxDisplayColumns(ColumnCounter);
+ */
         }
     }
 }

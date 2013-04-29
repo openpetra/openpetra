@@ -85,12 +85,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         private void NewRowManual(ref AMotivationDetailRow ARow)
         {
             ARow.LedgerNumber = FLedgerNumber;
-            if (FMainDS.AMotivationGroup == null || FMainDS.AMotivationGroup.Rows.Count == 0)
+
+            if ((FMainDS.AMotivationGroup == null) || (FMainDS.AMotivationGroup.Rows.Count == 0))
             {
-                MessageBox.Show(Catalog.GetString("You must define at least one Motivation Group."), Catalog.GetString("New Motivation Detail"), 
+                MessageBox.Show(Catalog.GetString("You must define at least one Motivation Group."), Catalog.GetString("New Motivation Detail"),
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
+
             ARow.MotivationGroupCode = FMainDS.AMotivationGroup[0].MotivationGroupCode;
 
             string newName = Catalog.GetString("NEWDETAIL");

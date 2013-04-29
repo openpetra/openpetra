@@ -180,7 +180,8 @@ namespace Ict.Petra.Server.MFinance.queries
             string YearEnd = String.Format("#{0:0000}-12-31#", Year);
 
             string SqlQuery = "SELECT batch.a_gl_effective_date_d as Date, motive.a_report_column_c AS ReportColumn, ";
-            if (AParameters.Get("param_currency").ToString() == "Base") 
+
+            if (AParameters.Get("param_currency").ToString() == "Base")
             {
                 SqlQuery += "detail.a_gift_amount_n AS Amount";
             }
@@ -188,48 +189,52 @@ namespace Ict.Petra.Server.MFinance.queries
             {
                 SqlQuery += "detail.a_gift_amount_intl_n AS Amount";
             }
+
             SqlQuery += (" FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch as batch, PUB_a_motivation_detail AS motive"
 
-                + " WHERE detail.a_ledger_number_i = " + LedgerNum
-                + " AND batch.a_batch_status_c = 'Posted'"
-                + " AND batch.a_batch_number_i = gift.a_batch_number_i"
-                + " AND batch.a_ledger_number_i = " + LedgerNum
-                + " AND batch.a_gl_effective_date_d >= " + YearStart
-                + " AND batch.a_gl_effective_date_d <= " + YearEnd
+                         + " WHERE detail.a_ledger_number_i = " + LedgerNum +
+                         " AND batch.a_batch_status_c = 'Posted'" +
+                         " AND batch.a_batch_number_i = gift.a_batch_number_i" +
+                         " AND batch.a_ledger_number_i = " + LedgerNum +
+                         " AND batch.a_gl_effective_date_d >= " + YearStart +
+                         " AND batch.a_gl_effective_date_d <= " + YearEnd
 
-                + " AND gift.a_ledger_number_i = " + LedgerNum
-				+ " AND detail.a_batch_number_i = gift.a_batch_number_i"
-				+ " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i"
+                         + " AND gift.a_ledger_number_i = " + LedgerNum +
+                         " AND detail.a_batch_number_i = gift.a_batch_number_i" +
+                         " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i"
 
-                + " AND motive.a_ledger_number_i = " + LedgerNum
-                + " AND motive.a_motivation_group_code_c = detail.a_motivation_group_code_c"
-                + " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c"
-                + " AND motive.a_receipt_l = true");
+                         + " AND motive.a_ledger_number_i = " + LedgerNum +
+                         " AND motive.a_motivation_group_code_c = detail.a_motivation_group_code_c" +
+                         " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
+                         " AND motive.a_receipt_l = true");
             Boolean newTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
             DataTable tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+
             if (newTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-           DataTable resultTable = new DataTable();
-           resultTable.Columns.Add("MonthName", typeof(String));                //
-           resultTable.Columns.Add("MonthWorker", typeof(Decimal));             // These are the names of the variables
-           resultTable.Columns.Add("MonthWorkerCount", typeof(Int32));          // returned by this calculation.
-           resultTable.Columns.Add("MonthField", typeof(Decimal));              //
-           resultTable.Columns.Add("MonthFieldCount", typeof(Int32));           //
-           resultTable.Columns.Add("MonthTotal", typeof(Decimal));              //
-           resultTable.Columns.Add("MonthTotalCount", typeof(Int32));           //
+            DataTable resultTable = new DataTable();
+            resultTable.Columns.Add("MonthName", typeof(String));               //
+            resultTable.Columns.Add("MonthWorker", typeof(Decimal));            // These are the names of the variables
+            resultTable.Columns.Add("MonthWorkerCount", typeof(Int32));         // returned by this calculation.
+            resultTable.Columns.Add("MonthField", typeof(Decimal));             //
+            resultTable.Columns.Add("MonthFieldCount", typeof(Int32));          //
+            resultTable.Columns.Add("MonthTotal", typeof(Decimal));             //
+            resultTable.Columns.Add("MonthTotalCount", typeof(Int32));          //
 
-           for (int mnth = 1; mnth <= 12; mnth++)
-             {  
+            for (int mnth = 1; mnth <= 12; mnth++)
+            {
                 string monthStart = String.Format("#{0:0000}-{1:00}-01#", Year, mnth);
-                string nextMonthStart = String.Format("#{0:0000}-{1:00}-01#", Year, mnth+1);
+                string nextMonthStart = String.Format("#{0:0000}-{1:00}-01#", Year, mnth + 1);
+
                 if (mnth == 12)
                 {
                     nextMonthStart = String.Format("#{0:0000}-12-31#", Year);
                 }
+
                 tempTbl.DefaultView.RowFilter = "Date >= " + monthStart + " AND Date < " + nextMonthStart;
 
                 Decimal WorkerTotal = 0;
@@ -237,9 +242,11 @@ namespace Ict.Petra.Server.MFinance.queries
                 Int32 WorkerCount = 0;
                 Int32 FieldCount = 0;
                 Int32 TotalCount = tempTbl.DefaultView.Count;
+
                 for (int i = 0; i < TotalCount; i++)
                 {
                     DataRow Row = tempTbl.DefaultView[i].Row;
+
                     if (Row["ReportColumn"].ToString() == "Worker")
                     {
                         WorkerCount++;
@@ -251,17 +258,19 @@ namespace Ict.Petra.Server.MFinance.queries
                         FieldTotal += Convert.ToDecimal(Row["Amount"]);
                     }
                 }
+
                 DataRow resultRow = resultTable.NewRow();
 
                 resultRow["MonthName"] = StringHelper.GetLongMonthName(mnth);
                 resultRow["MonthWorker"] = WorkerTotal;
                 resultRow["MonthWorkerCount"] = WorkerCount;
-                resultRow["MonthField"]  = FieldTotal;
+                resultRow["MonthField"] = FieldTotal;
                 resultRow["MonthFieldCount"] = FieldCount;
                 resultRow["MonthTotal"] = WorkerTotal + FieldTotal;
                 resultRow["MonthTotalCount"] = TotalCount;
                 resultTable.Rows.Add(resultRow);
             }
+
             return resultTable;
         }
 
@@ -272,6 +281,7 @@ namespace Ict.Petra.Server.MFinance.queries
         {
             Int32 LedgerNum = AParameters.Get("param_ledger_number_i").ToInt32();
             string SqlQuery = "SELECT batch.a_gl_effective_date_d as Date, motive.a_report_column_c AS ReportColumn, ";
+
             if (AParameters.Get("param_currency").ToString() == "Base")
             {
                 SqlQuery += "detail.a_gift_amount_n AS Amount";
@@ -280,24 +290,26 @@ namespace Ict.Petra.Server.MFinance.queries
             {
                 SqlQuery += "detail.a_gift_amount_intl_n AS Amount";
             }
+
             SqlQuery += (" FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch as batch, PUB_a_motivation_detail AS motive"
 
-                + " WHERE detail.a_ledger_number_i = " + LedgerNum
-                + " AND batch.a_batch_status_c = 'Posted'"
-                + " AND batch.a_batch_number_i = gift.a_batch_number_i"
-                + " AND batch.a_ledger_number_i = " + LedgerNum
+                         + " WHERE detail.a_ledger_number_i = " + LedgerNum +
+                         " AND batch.a_batch_status_c = 'Posted'" +
+                         " AND batch.a_batch_number_i = gift.a_batch_number_i" +
+                         " AND batch.a_ledger_number_i = " + LedgerNum
 
-                + " AND gift.a_ledger_number_i = " + LedgerNum
-                + " AND detail.a_batch_number_i = gift.a_batch_number_i"
-                + " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i"
+                         + " AND gift.a_ledger_number_i = " + LedgerNum +
+                         " AND detail.a_batch_number_i = gift.a_batch_number_i" +
+                         " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i"
 
-                + " AND motive.a_ledger_number_i = " + LedgerNum
-                + " AND motive.a_motivation_group_code_c = detail.a_motivation_group_code_c"
-                + " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c"
-                + " AND motive.a_receipt_l = true");
+                         + " AND motive.a_ledger_number_i = " + LedgerNum +
+                         " AND motive.a_motivation_group_code_c = detail.a_motivation_group_code_c" +
+                         " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
+                         " AND motive.a_receipt_l = true");
             Boolean newTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
             DataTable tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+
             if (newTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
@@ -326,9 +338,11 @@ namespace Ict.Petra.Server.MFinance.queries
                 Int32 WorkerCount = 0;
                 Int32 FieldCount = 0;
                 Int32 TotalCount = tempTbl.DefaultView.Count;
+
                 for (int i = 0; i < TotalCount; i++)
                 {
                     DataRow Row = tempTbl.DefaultView[i].Row;
+
                     if (Row["ReportColumn"].ToString() == "Worker")
                     {
                         WorkerCount++;
@@ -340,6 +354,7 @@ namespace Ict.Petra.Server.MFinance.queries
                         FieldTotal += Convert.ToDecimal(Row["Amount"]);
                     }
                 }
+
                 DataRow resultRow = resultTable.NewRow();
 
                 resultRow["SummaryYear"] = Year - YearIdx;

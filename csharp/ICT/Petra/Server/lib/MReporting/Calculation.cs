@@ -116,8 +116,8 @@ namespace Ict.Petra.Server.MReporting
             }
 
             int thisRunningCode = GetNextRunningCode();
-            List <TRptField> rptGrpField = rptDetail.rptGrpField;
-            List <TRptLowerLevel> rptGrpLowerLevel = rptDetail.rptGrpLowerLevel;
+            List <TRptField>rptGrpField = rptDetail.rptGrpField;
+            List <TRptLowerLevel>rptGrpLowerLevel = rptDetail.rptGrpLowerLevel;
 //          TLogging.Log("[MReporting\\Calculation.cs] Calculate(" + rptLevel.strName + ", " + masterRow + ")");
 
             if (rptDetail.rptSwitch != null)
@@ -128,9 +128,9 @@ namespace Ict.Petra.Server.MReporting
 
             if (rptGrpLowerLevel != null)
             {
-               TRptDataCalcLowerLevel calcLowerLevel;
+                TRptDataCalcLowerLevel calcLowerLevel;
 
-               if (Depth == 0)
+                if (Depth == 0)
                 {
                     Int16 subreport = 0;
 
@@ -1266,7 +1266,6 @@ namespace Ict.Petra.Server.MReporting
                             rptDataCalcLevel.Depth++;
                             rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
                         }
-
                     }
                 }
             }
@@ -1320,10 +1319,10 @@ namespace Ict.Petra.Server.MReporting
                         rptDataCalcLevel.Depth++;
                         rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
                     }
+
                     return this.Parameters.Get(rptCalculation.strId, -1, StoreResultsAtDepth, eParameterFit.eBestFitEvenLowerLevel);
                 }
-                else
-                if (strSql.Length > 0)
+                else if (strSql.Length > 0)
                 {
                     DataTable tab = DatabaseConnection.SelectDT(strSql, "", DatabaseConnection.Transaction);
                     string strReturns = rptCalculation.strReturns;
@@ -1585,7 +1584,7 @@ namespace Ict.Petra.Server.MReporting
         }
 
         /// <summary>
-        /// This procedure adds the returned values from the sql query to the Parameters, 
+        /// This procedure adds the returned values from the sql query to the Parameters,
         /// according to the returns attribute of the calculation
         /// </summary>
         /// <returns>void</returns>
@@ -1613,6 +1612,7 @@ namespace Ict.Petra.Server.MReporting
                 }
 
                 TVariant value;
+
                 // the parameters are stored first
                 if (ARow[strName].GetType() == typeof(String))
                 {
