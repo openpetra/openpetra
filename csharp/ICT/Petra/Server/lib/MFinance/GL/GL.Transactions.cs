@@ -454,7 +454,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             GLBatchTDS MainDS = new GLBatchTDS();
             bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             ATransAnalAttribAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
 
@@ -751,7 +751,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             AVerificationResult = new TVerificationResultCollection();
 
-            // make sure that empty tables are removed
+			// make sure that empty tables are removed
             AInspectDS = AInspectDS.GetChangesTyped(true);
 
             bool batchTableInDataSet = (AInspectDS.ABatch != null);
@@ -761,6 +761,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool recurrBatchTableInDataSet = (AInspectDS.ARecurringBatch != null);
             bool recurrJournalTableInDataSet = (AInspectDS.ARecurringJournal != null);
             bool recurrTransTableInDataSet = (AInspectDS.ARecurringTransaction != null);
+            
+            bool newTransaction = false;
+            TDBTransaction Transaction = null;
 
             // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
             // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
@@ -787,11 +790,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 LedgerNumber = ((ABatchRow)AInspectDS.ABatch.Rows[0]).LedgerNumber;
 
-                bool NewTransaction = false;
-
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
+                    out newTransaction);
 
                 foreach (ABatchRow batch in AInspectDS.ABatch.Rows)
                 {
@@ -828,9 +829,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                if (NewTransaction)
+                if (newTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    newTransaction = false;
+                	DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
 
@@ -935,11 +937,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     Int32 BatchNumber;
 
-                    BatchNumber = transAnalAttrib.BatchNumber;
-
-                    if (!BatchNumbersInvolved.Contains(BatchNumber))
+                    if (transAnalAttrib.RowState != DataRowState.Deleted)
                     {
-                        BatchNumbersInvolved.Add(BatchNumber);
+	                    BatchNumber = transAnalAttrib.BatchNumber;
+	
+	                    if (!BatchNumbersInvolved.Contains(BatchNumber))
+	                    {
+	                        BatchNumbersInvolved.Add(BatchNumber);
+	                    }
                     }
                 }
             }
@@ -967,9 +972,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 GLBatchTDS BatchDS = new GLBatchTDS();
 
-                bool tempTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out tempTransaction);
+                //Get new or existing transaction
+                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out newTransaction);
 
                 try
                 {
@@ -977,9 +982,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
                 finally
                 {
-                    if (tempTransaction)
+                    if (newTransaction)
                     {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        newTransaction = false;
+                    	DBAccess.GDBAccessObj.RollbackTransaction();
                     }
                 }
 
@@ -1001,14 +1007,20 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 return TSubmitChangesResult.scrError;
             }
 
+			//Need to save changes before deleting any transactions
             TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-
-            AInspectDS.AcceptChanges();
-
-            if ((SubmissionResult == TSubmitChangesResult.scrOK)
-                && (transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
+            
+            if (SubmissionResult == TSubmitChangesResult.scrOK && (transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
             {
-                ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
+            	//Accept deletion of Attributes to allow deletion of transactions
+	            if (attrTableInDataSet)
+            	{
+            		AInspectDS.ATransAnalAttrib.AcceptChanges();
+            	}
+
+	            AInspectDS.ATransaction.AcceptChanges();
+
+            	ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
 
                 Int32 currentLedger = tranR.LedgerNumber;
                 Int32 currentBatch = tranR.BatchNumber;
@@ -1017,24 +1029,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 try
                 {
-                    //Check if a transaction has been deleted
-                    //Accept the deletion of the single details row
-                    //AInspectDS.ATransaction.AcceptChanges();
-
-                    if (!attrTableInDataSet)
-                    {
-                        AInspectDS.Tables.Add(new ATransAnalAttribTable("ATransAnalAttrib"));
-                        AInspectDS.Merge(LoadATransAnalAttribForJournal(currentLedger, currentBatch, currentJournal));
-                        attrTableInDataSet = true;
-                    }
-
                     //Check if any records have been marked for deletion
                     DataRow[] foundTransactionForDeletion = AInspectDS.ATransaction.Select(String.Format("{0} = '{1}'",
                             ATransactionTable.GetSubTypeDBName(),
                             MFinanceConstants.MARKED_FOR_DELETION));
 
-                    if (foundTransactionForDeletion.Length > 0)
+					if (foundTransactionForDeletion.Length > 0)
                     {
+						TLogging.Log(String.Format("foundTransactionForDeletion: {0}",
+	                          foundTransactionForDeletion));
+					
                         ATransactionRow transRowClient = null;
 
                         for (int i = 0; i < foundTransactionForDeletion.Length; i++)
@@ -1049,37 +1053,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                             transRowClient.Delete();
                         }
-
-                        //save changes
-                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-
-                        //Accept the deletion of the single detail row
-                        AInspectDS.ATransAnalAttrib.AcceptChanges();
-                        AInspectDS.ATransaction.AcceptChanges();
                     }
 
-                    //Check that all analysis attributes exist
-                    CheckTransAnalysisAttributes(ref AInspectDS,
-                        currentLedger,
-                        currentBatch,
-                        currentJournal,
-                        ref SubmissionResult,
-                        ref AVerificationResult);
+					//Submit all changes
+		            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    TLogging.Log(String.Format("Error trying to delete transaction: {0} in Journal: {1}, Batch: {2}",
+                	TLogging.Log("Saving DataSet: " + ex.Message);
+                	
+                	TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
                             transToDelete,
                             currentJournal,
                             currentBatch
                             ));
+                	
+                	SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
-
-                // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
-                // TODO: calculate hash of saved batch or batch of saved gift
             }
-
+            
             return SubmissionResult;
         }
 
