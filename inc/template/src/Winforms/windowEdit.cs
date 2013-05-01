@@ -177,7 +177,7 @@ namespace {#NAMESPACE}
                 Control keyControl = null;
                 foreach (Control detailsCtrl in pnl[0].Controls)
                 {
-                    if (keyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
+                    if (keyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox || detailsCtrl is TCmbAutoPopulated))
                     {
                         keyControl = detailsCtrl;
                     }
@@ -371,7 +371,7 @@ namespace {#NAMESPACE}
     /// so that the reference to the row object is updated automatically.
     /// </summary>
     private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
-	
+    
 {#IFDEF SAVEDETAILS}
     private void grdDetails_Enter(object sender, EventArgs e)
     {
@@ -439,7 +439,7 @@ namespace {#NAMESPACE}
             ShowDetails();
         }
         FPrevRowChangedRow = e.Row;
-	}
+    }
 {#DELETERECORD}
     /// <summary>
     /// Standard method to delete the Data Row whose Details are currently displayed.
@@ -449,16 +449,16 @@ namespace {#NAMESPACE}
     /// </summary>
     private void Delete{#DETAILTABLE}()
     {
-		bool AllowDeletion = true;
-		bool DeletionPerformed = false;
-		string DeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
-		string CompletionMessage = string.Empty;
+        bool AllowDeletion = true;
+        bool DeletionPerformed = false;
+        string DeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+        string CompletionMessage = string.Empty;
         TVerificationResultCollection VerificationResults = null;
-		
-		if (FPreviouslySelectedDetailRow == null)
-		{
-			return;
-		}
+        
+        if (FPreviouslySelectedDetailRow == null)
+        {
+            return;
+        }
 
         {#DELETEREFERENCECOUNT}
 
@@ -474,42 +474,42 @@ namespace {#NAMESPACE}
             return;
         }
 
-		{#PREDELETEMANUAL}
-		if(AllowDeletion)
-		{
-        	if ((MessageBox.Show(DeletionQuestion,
-					 Catalog.GetString("Confirm Delete"),
+        {#PREDELETEMANUAL}
+        if(AllowDeletion)
+        {
+            if ((MessageBox.Show(DeletionQuestion,
+                     Catalog.GetString("Confirm Delete"),
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question,
                      MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
-			{
+            {
                 int SelectedRow = grdDetails.SelectedRowIndex();
 {#IFDEF DELETEROWMANUAL}
-				{#DELETEROWMANUAL}
+                {#DELETEROWMANUAL}
 {#ENDIF DELETEROWMANUAL}
-{#IFNDEF DELETEROWMANUAL}				
-				FPreviouslySelectedDetailRow.Delete();
-				DeletionPerformed = true;
-{#ENDIFN DELETEROWMANUAL}				
-			
-				if (DeletionPerformed)
-				{
-					FPetraUtilsObject.SetChangedFlag();
+{#IFNDEF DELETEROWMANUAL}               
+                FPreviouslySelectedDetailRow.Delete();
+                DeletionPerformed = true;
+{#ENDIFN DELETEROWMANUAL}               
+            
+                if (DeletionPerformed)
+                {
+                    FPetraUtilsObject.SetChangedFlag();
                     // Select and display the details of the nearest row to the one previously selected
                     SelectRowInGrid(SelectedRow);
-				}
-			}
-		}
+                }
+            }
+        }
 
 {#IFDEF POSTDELETEMANUAL}
-		{#POSTDELETEMANUAL}
+        {#POSTDELETEMANUAL}
 {#ENDIF POSTDELETEMANUAL}
 {#IFNDEF POSTDELETEMANUAL}
-		if(DeletionPerformed && CompletionMessage.Length > 0)
-		{
-			MessageBox.Show(CompletionMessage,
-							 Catalog.GetString("Deletion Completed"));
-		}
+        if(DeletionPerformed && CompletionMessage.Length > 0)
+        {
+            MessageBox.Show(CompletionMessage,
+                             Catalog.GetString("Deletion Completed"));
+        }
 {#ENDIFN POSTDELETEMANUAL}
 
     }
@@ -562,13 +562,13 @@ namespace {#NAMESPACE}
         {            
             if (AIsNewRow)
             {
-				{#SAVEDETAILS}
+                {#SAVEDETAILS}
             }
             else
             {
                 object[] beforeEdit = ARow.ItemArray;
-				ARow.BeginEdit();
-				{#SAVEDETAILS}
+                ARow.BeginEdit();
+                {#SAVEDETAILS}
                 if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
                 {
                     ARow.CancelEdit();
@@ -579,7 +579,7 @@ namespace {#NAMESPACE}
                 }
             }
         }
-    }							
+    }                           
 {#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
 
     private void ControlUpdateDataHandler(object sender, EventArgs e)
