@@ -182,8 +182,8 @@ OpenPetra:
                         ExportBudget: {ActionOpenScreen=TFrmExportBudget}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
-                        IncomeExpenseStatementMultiPeriod: {ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
-                        IncomeExpenseStatementMultiLedger: {ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
+                        IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
+                        IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Transaction, Batch]
                     General:
@@ -209,23 +209,23 @@ OpenPetra:
                         TrialBalance: {ActionOpenScreen=TFrmTrialBalance}
                         HOSA: {Description: Home Office Statement of Accounts, ActionOpenScreen=TFrmHOSA}
                         SurplusDeficit: {ActionOpenScreen=TFrmSurplusDeficit}
-                        BalanceSheetStandard: {ActionOpenScreen=TFrmBalanceSheetStandard}
-                        BalanceSheetMultiLedger: {ActionOpenScreen=TFrmBalanceSheetMultiLedger}
+                        BalanceSheetStandard: {Label=Standard Balance Sheet, ActionOpenScreen=TFrmBalanceSheetStandard}
+                        BalanceSheetMultiLedger: {Label=Multi Ledger Balance Sheet, ActionOpenScreen=TFrmBalanceSheetMultiLedger}
                             #CurrentPeriod:
                             #EndOfLastYear:
                             #SpecifyParameters:
                             #RepeatLastReport:
                             #MyFancyBalanceSheetWithCoolGraph:
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
-                        IncomeExpenseStatementMultiPeriod: {ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
-                        IncomeExpenseStatementMultiLedger: {ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
+                        IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
+                        IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
                     Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
-                        RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Recipient by Field, ActionClick=TFinanceMain.RecipientByFieldExtract}
-                        DonorByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Donor by Field, ActionClick=TFinanceMain.DonorByFieldExtract}
-                        DonorByMotivation: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Donor by Motivation, ActionClick=TFinanceMain.DonorByMotivationExtract}
-                        DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Donor by Amount, ActionClick=TFinanceMain.DonorByAmountExtract}
-                        DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtract}
+                        RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFinanceMain.RecipientByFieldExtract}
+                        DonorByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Field, ActionClick=TFinanceMain.DonorByFieldExtract}
+                        DonorByMotivation: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Motivation, ActionClick=TFinanceMain.DonorByMotivationExtract}
+                        DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Amount, ActionClick=TFinanceMain.DonorByAmountExtract}
+                        DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtract}
                 #Reports:
                 Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     GeneralLedgerSetup:

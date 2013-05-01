@@ -374,5 +374,253 @@ namespace Ict.Petra.Server.MFinance.queries
 
             return resultTable;
         }
+
+        /// <summary>
+        /// Find recipient Partner Key and name for all partners who received gifts in the timeframe.
+        /// NOTE - the user can select the PartnerType of the recipient.
+        /// </summary>
+        /// <returns>RecipientKey, RecipientName</returns>
+        public static DataTable SelectGiftRecipients(TParameterList AParameters, TResultList AResults)
+        {
+            Int32 LedgerNum = AParameters.Get("param_ledger_number_i").ToInt32();
+            Boolean onlySelectedTypes = AParameters.Get("param_type_selection").ToString() == "selected_types";
+            Boolean onlySelectedFields = AParameters.Get("param_field_selection").ToString() == "selected_fields";
+            Boolean fromExtract = AParameters.Get("param_recipient").ToString() == "Extract";
+            Boolean oneRecipient = AParameters.Get("param_recipient").ToString() == "One Recipient";
+            String periodStart = String.Format("'{0}'", AParameters.Get("param_from_date_3").ToString());
+            String periodEnd = String.Format("'{0}'", AParameters.Get("param_to_date_0").ToString());
+
+            string SqlQuery = "SELECT DISTINCT "
+                + "PUB_p_partner.p_partner_key_n AS RecipientKey, "
+                + "PUB_p_partner.p_partner_short_name_c AS RecipientName "
+                + "FROM PUB_p_partner, PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch ";
+
+            if (onlySelectedTypes)
+            {
+                SqlQuery += ", PUB_p_partner_type ";
+            }
+
+            if (fromExtract)
+            {
+                String extractName = AParameters.Get("param_extract_name").ToString();
+                SqlQuery += (", PUB_m_extract, PUB_m_extract_master "
+                    + "WHERE "
+                    + "PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n "
+                    + "AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i "
+                    + "AND PUB_m_extract_master.m_extract_name_c = '" + extractName +"' "
+                    + "AND "
+                    );
+            }
+            else
+            {
+                SqlQuery += "WHERE ";
+            }
+
+            SqlQuery += ("detail.a_ledger_number_i = " + LedgerNum + " "
+                + "AND detail.p_recipient_key_n = PUB_p_partner.p_partner_key_n "
+                + "AND detail.a_batch_number_i = gift.a_batch_number_i "
+                + "AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i "
+                + "AND gift.a_date_entered_d BETWEEN " + periodStart + " AND " + periodEnd + " "
+                + "AND gift.a_ledger_number_i = " + LedgerNum + " "
+                + "AND PUB_a_gift_batch.a_batch_status_c = \"Posted\" "
+                + "AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i "
+                + "AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNum + " ");
+
+            if (oneRecipient)
+            {
+                String recipientKey = AParameters.Get("param_recipient_key").ToString();
+                SqlQuery += ("AND PUB_p_partner.p_partner_key_n = " + recipientKey + " ");
+            }
+
+            if (onlySelectedFields)
+            {
+                String selectedFieldList = AParameters.Get ("param_clbFields").ToString();
+                SqlQuery += ("AND detail.a_recipient_ledger_number_n IN " + selectedFieldList );
+            }
+
+            if (onlySelectedTypes)
+            {
+                String selectedTypeList = AParameters.Get ("param_clbTypes").ToString();;
+                SqlQuery += ("AND PUB_p_partner_type.p_partner_key_n = detail.p_recipient_key_n "
+                    + "AND PUB_p_partner_type.p_type_code_c IN " + selectedTypeList);
+            }
+            SqlQuery += " ORDER BY PUB_p_partner.p_partner_short_name_c";
+
+            Boolean newTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
+            DataTable result = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+
+            if (newTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Find all the gifts for a worker, presenting the results in four year columns.
+        /// NOTE - the user can select the field of the donor.
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable SelectGiftDonors(TParameterList AParameters, TResultList AResults)
+        {
+            Int64 recipientKey = AParameters.Get("RecipientKey").ToInt64();
+            Int32 LedgerNum = AParameters.Get("param_ledger_number_i").ToInt32();
+
+            String period0Start = String.Format("'{0}'", AParameters.Get("param_from_date_0").ToString());
+            String period0End = String.Format("'{0}'", AParameters.Get("param_to_date_0").ToString());
+            String period1Start = String.Format("'{0}'", AParameters.Get("param_from_date_1").ToString());
+            String period1End = String.Format("'{0}'", AParameters.Get("param_to_date_1").ToString());
+            String period2Start = String.Format("'{0}'", AParameters.Get("param_from_date_2").ToString());
+            String period2End = String.Format("'{0}'", AParameters.Get("param_to_date_2").ToString());
+            String period3Start = String.Format("'{0}'", AParameters.Get("param_from_date_3").ToString());
+            String period3End = String.Format("'{0}'", AParameters.Get("param_to_date_3").ToString());
+
+            Boolean onlySelectedFields = AParameters.Get("param_field_selection").ToString() == "selected_fields";
+            String amountFieldName = (AParameters.Get("param_currency").ToString() == "International") ?
+                "detail.a_gift_amount_intl_n":"detail.a_gift_amount_n";
+
+            String SqlQuery = "SELECT gift.p_donor_key_n AS DonorKey, detail.p_recipient_key_n AS Recipient, "
+                + "partner.p_partner_short_name_c AS DonorName, partner.p_partner_class_c AS DonorClass, "
+                + "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period0Start + " AND " + period0End + " "
+                + "THEN DETAIL.a_GIFT_amount_N ELSE 0 END )as YearTotal0, "
+                + "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period1Start + " AND " + period1End + " "
+                + "THEN DETAIL.a_GIFT_amount_N ELSE 0 END )as YearTotal1, "
+                + "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period2Start + " AND " + period2End + " "
+                + "THEN DETAIL.a_GIFT_amount_N ELSE 0 END )as YearTotal2, "
+                + "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period3Start + " AND " + period3End + " "
+                + "THEN DETAIL.a_GIFT_amount_N ELSE 0 END )as YearTotal3 "
+                + "FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch, PUB_p_partner AS partner "
+                + "WHERE detail.a_ledger_number_i = " + LedgerNum + " "
+                + "AND detail.p_recipient_key_n = " + recipientKey + " "
+                + "AND detail.a_batch_number_i = gift.a_batch_number_i "
+                + "AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i "
+                + "AND gift.a_date_entered_d BETWEEN " + period3Start + " AND " + period0End + " "
+                + "AND gift.a_ledger_number_i = " + LedgerNum + " "
+                + "AND PUB_a_gift_batch.a_batch_status_c = 'Posted' "
+                + "AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i "
+                + "AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNum + " "
+                + "AND partner.p_partner_key_n = gift.p_donor_key_n ";
+
+
+            if (onlySelectedFields)
+            {
+                String selectedFieldList = AParameters.Get("param_clbFields").ToString();
+                SqlQuery += ("AND detail.a_recipient_ledger_number_n IN " + selectedFieldList);
+            }
+
+            SqlQuery += ("GROUP by gift.p_donor_key_n, detail.p_recipient_key_n, partner.p_partner_short_name_c, partner.p_partner_class_c "
+                + "ORDER BY partner.p_partner_short_name_c");
+
+            Boolean newTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
+            DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+
+            if (newTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return resultTable;
+        }
+/*
+            String SqlQuery = "SELECT DISTINCT "
+                + "gift.p_donor_key_n AS DonorKey, "
+                + "PUB_p_partner.p_partner_short_name_c AS DonorName, "
+                + "PUB_p_partner.p_partner_class_c AS DonorClass, "
+                + "gift.a_date_entered_d AS GiftDate, "
+                +  amountFieldName + " AS GiftAmount "
+
+                + "FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch, PUB_p_partner "
+                + "WHERE detail.a_ledger_number_i = " + LedgerNum + " "
+                + "AND detail.p_recipient_key_n = " + recipientKey + " "
+                + "AND detail.a_batch_number_i = gift.a_batch_number_i "
+                + "AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i "
+                + "AND gift.a_date_entered_d BETWEEN " + periodStart + " AND " + periodEnd + " "
+                + "AND gift.a_ledger_number_i = " + LedgerNum + " "
+                + "AND PUB_a_gift_batch.a_batch_status_c = \"Posted\" "
+                + "AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i "
+                + "AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNum + " "
+                + "AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n ";
+
+            if (onlySelectedFields)
+            {
+                String selectedFieldList = AParameters.Get("param_clbFields").ToString();
+                SqlQuery += ("AND detail.a_recipient_ledger_number_n IN " + selectedFieldList);
+            }
+
+            SqlQuery += "ORDER BY PUB_p_partner.p_partner_short_name_c";
+
+            Boolean newTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
+            DataTable tmpTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+
+            if (tmpTbl.Rows.Count == 0)  // if there's no data, I don't need to do any processing?
+            {
+                return tmpTbl;
+            }
+
+            if (newTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            DataTable resultTable = new DataTable();
+            resultTable.Columns.Add("DonorKey", typeof(String));        //
+            resultTable.Columns.Add("DonorName", typeof(String));       // These are the names of the variables
+            resultTable.Columns.Add("DonorClass", typeof(String));      // returned by this calculation.
+            resultTable.Columns.Add("Year0", typeof(Decimal));          //
+            resultTable.Columns.Add("Year1", typeof(Decimal));          //
+            resultTable.Columns.Add("Year2", typeof(Decimal));          //
+            resultTable.Columns.Add("Year3", typeof(Decimal));          //
+
+            if (tmpTbl.Rows.Count == 0)  // if there's no data, I don't need to do any processing!
+            {
+                return resultTable;
+            }
+
+            Int64 currentPartnerKey = Convert.ToInt64(tmpTbl.Rows[0]["DonorKey"]);
+            Decimal Year0 = 0;
+            Decimal Year1 = 0;
+            Decimal Year2 = 0;
+            Decimal Year3 = 0;
+
+            foreach (DataRow tmpRow in tmpTbl.Rows)
+            {
+                Int64 PartnerKey = Convert.ToInt64(tmpRow["DonorKey"]);
+                if (currentPartnerKey != PartnerKey)
+                {
+                    DataRow NewRow = resultTable.NewRow();
+                    NewRow["DonorKey"] = tmpRow["DonorKey"];
+                    NewRow["DonorName"] = tmpRow["DonorName"];
+                    NewRow["DonorClass"] = tmpRow["DonorClass"];
+                    NewRow["Year0"] = Year0;
+                    NewRow["Year1"] = Year1;
+                    NewRow["Year2"] = Year2;
+                    NewRow["Year3"] = Year3;
+                    resultTable.Rows.Add(NewRow);
+                    currentPartnerKey = PartnerKey;
+                    Year0 = 0;
+                    Year1 = 0;
+                    Year2 = 0;
+                    Year3 = 0;
+                }
+
+                DateTime giftDate = Convert.ToDateTime(tmpRow["GiftDate"]);
+                Decimal giftAmount = Convert.ToDecimal(tmpRow["GiftAmount"]);
+                Int32 yearsAgo = DateTime.Now.Year - giftDate.Year;
+                switch (yearsAgo)
+                {
+                    case 0: Year0 += giftAmount; break;
+                    case 1: Year1 += giftAmount; break;
+                    case 2: Year2 += giftAmount; break;
+                    case 3: Year3 += giftAmount; break;
+                }
+            }
+
+            return resultTable;
+        }
+ */
+        
     }
 }
