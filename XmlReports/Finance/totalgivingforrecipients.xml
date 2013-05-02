@@ -70,81 +70,6 @@
         <query>
           <queryDetail>
             <value>Ict.Petra.Server.MFinance.queries.QueryFinanceReport.SelectGiftRecipients</value>
-            <!--
-						SELECT DISTINCT
-							PUB_p_partner.p_partner_key_n AS RecipientKey,
-							PUB_p_partner.p_partner_short_name_c AS RecipientName
-						FROM
-							PUB_p_partner,
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch
-						</value>
-					</queryDetail>
-					<queryDetail condition="eq({param_type_selection}, selected_types)">
-						<value>
-							, PUB_p_partner_type
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_recipient}, Extract)">
-						<value>
-							, PUB_m_extract,
-							PUB_m_extract_master
-						WHERE 
-							PUB_p_partner.p_partner_key_n =  PUB_m_extract.p_partner_key_n
-							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-							AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
-							AND
-						</value>
-					</queryDetail>
-					<queryDetail condition="not(eq({param_recipient}, Extract))">
-						<value>
-						WHERE 
-						</value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.p_recipient_key_n = PUB_p_partner.p_partner_key_n
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND gift.a_date_entered_d BETWEEN {#param_from_date_3#} AND {#param_to_date_0#}
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
-							
-						</value>
-					</queryDetail>
-					<queryDetail condition="eq({param_recipient}, One Recipient))">
-						<value>
-							AND PUB_p_partner.p_partner_key_n = {{param_recipient_key}}
-						</value>
-					</queryDetail>
-					<queryDetail condition="eq({param_field_selection}, selected_fields)">
-						<value>
-							AND
-						</value>
-						<value function="csv" text="detail.a_recipient_ledger_number_n" 
-								variable="param_clbFields" calculation="OR" format="Number">
-						</value>
-					</queryDetail>
-					
-					<queryDetail condition="eq({param_type_selection}, selected_types)">
-						<value>
-							AND
-								PUB_p_partner_type.p_partner_key_n = detail.p_recipient_key_n
-							AND
-						</value>
-						<value function="csv" text="PUB_p_partner_type.p_type_code_c" 
-								variable="param_clbTypes" calculation="OR" format="Text">
-						</value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-							ORDER BY PUB_p_partner.p_partner_short_name_c
-						</value>
--->
           </queryDetail>
         </query>
       </calculation>
@@ -153,242 +78,18 @@
         <query>
           <queryDetail>
             <value>Ict.Petra.Server.MFinance.queries.QueryFinanceReport.SelectGiftDonors</value>
-<!--
-            <value>
-						SELECT DISTINCT
-							gift.p_donor_key_n AS DonorKey,
-							PUB_p_partner.p_partner_short_name_c AS DonorName,
-							PUB_p_partner.p_partner_class_c AS DonorClass
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch,
-							PUB_p_partner
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.p_recipient_key_n = {RecipientKey}
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND gift.a_date_entered_d BETWEEN {#param_from_date_3#} AND {#param_to_date_0#}
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
-							
-							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n
-						</value>
-          </queryDetail>
-          <queryDetail condition="eq({param_field_selection}, selected_fields)">
-            <value>
-              AND
-            </value>
-          </queryDetail>
-          <queryDetail condition="eq({param_field_selection}, selected_fields)">
-            <value function="csv" text="detail.a_recipient_ledger_number_n"
-                variable="param_clbFields" calculation="OR" format="Number">
-            </value>
-          </queryDetail>
-
-          <queryDetail>
-            <value>
-              ORDER BY PUB_p_partner.p_partner_short_name_c
-            </value>
--->
-          </queryDetail>
-        </query>
-      </calculation>
-
-      <calculation id="SelectSumYear0" returns="Year_0" returnsFormat="row">
-        <query>
-          <queryDetail condition="eq({param_currency}, Base)">
-            <value>
-              SELECT SUM (detail.a_gift_amount_n) AS Year_0
-            </value>
-          </queryDetail>
-          <queryDetail condition="eq({param_currency}, International)">
-            <value>
-              SELECT SUM (detail.a_gift_amount_intl_n) AS Year_0
-            </value>
-          </queryDetail>
-          <queryDetail>
-            <value>
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.p_recipient_key_n = {RecipientKey}
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND gift.a_date_entered_d BETWEEN {#param_from_date_0#} AND {#param_to_date_0#}
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
-							
-							AND gift.p_donor_key_n = {DonorKey}
-						</value>
-          </queryDetail>
-          <queryDetail condition="eq({param_field_selection}, selected_fields)">
-            <value>
-              AND
-            </value>
-          </queryDetail>
-          <queryDetail condition="eq({param_field_selection}, selected_fields)">
-            <value function="csv" text="detail.a_recipient_ledger_number_n"
-                variable="param_clbFields" calculation="OR" format="Number">
-            </value>
-          </queryDetail>
-
-        </query>
-      </calculation>
-
-      <calculation id="SelectSumYear1" returns="Year_1" returnsFormat="row">
-        <query>
-          <queryDetail condition="eq({param_currency}, Base)">
-            <value>
-              SELECT SUM (detail.a_gift_amount_n) AS Year_1
-            </value>
-          </queryDetail>
-          <queryDetail condition="eq({param_currency}, International)">
-            <value>
-              SELECT SUM (detail.a_gift_amount_intl_n) AS Year_1
-            </value>
-          </queryDetail>
-          <queryDetail>
-            <value>
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.p_recipient_key_n = {RecipientKey}
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND gift.a_date_entered_d BETWEEN {#param_from_date_1#} AND {#param_to_date_1#}
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
-							
-							AND gift.p_donor_key_n = {DonorKey}
-						</value>
-          </queryDetail>
-          <queryDetail condition="eq({param_field_selection}, selected_fields)">
-            <value>
-              AND
-            </value>
-          </queryDetail>
-          <queryDetail condition="eq({param_field_selection}, selected_fields)">
-            <value function="csv" text="detail.a_recipient_ledger_number_n"
-                variable="param_clbFields" calculation="OR" format="Number">
-            </value>
-          </queryDetail>
-        </query>
-      </calculation>
-
-      <calculation id="SelectSumYear2" returns="Year_2" returnsFormat="row">
-        <query>
-          <queryDetail condition="eq({param_currency}, Base)">
-            <value>
-              SELECT SUM (detail.a_gift_amount_n) AS Year_2
-            </value>
-          </queryDetail>
-          <queryDetail condition="eq({param_currency}, International)">
-            <value>
-              SELECT SUM (detail.a_gift_amount_intl_n) AS Year_2
-            </value>
-          </queryDetail>
-          <queryDetail>
-            <value>
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.p_recipient_key_n = {RecipientKey}
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND gift.a_date_entered_d BETWEEN {#param_from_date_2#} AND {#param_to_date_2#}
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
-							
-							AND gift.p_donor_key_n = {DonorKey}
-						</value>
-          </queryDetail>
-          <queryDetail condition="eq({param_field_selection}, selected_fields)">
-            <value>
-              AND
-            </value>
-          </queryDetail>
-          <queryDetail condition="eq({param_field_selection}, selected_fields)">
-            <value function="csv" text="detail.a_recipient_ledger_number_n"
-                variable="param_clbFields" calculation="OR" format="Number">
-            </value>
-          </queryDetail>
-        </query>
-      </calculation>
-
-      <calculation id="SelectSumYear3" returns="Year_3" returnsFormat="row">
-        <query>
-          <queryDetail condition="eq({param_currency}, Base)">
-            <value>
-              SELECT SUM (detail.a_gift_amount_n) AS Year_3
-            </value>
-          </queryDetail>
-          <queryDetail condition="eq({param_currency}, International)">
-            <value>
-              SELECT SUM (detail.a_gift_amount_intl_n) AS Year_3
-            </value>
-          </queryDetail>
-          <queryDetail>
-            <value>
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.p_recipient_key_n = {RecipientKey}
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND gift.a_date_entered_d BETWEEN {#param_from_date_3#} AND {#param_to_date_3#}
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
-							
-							AND gift.p_donor_key_n = {DonorKey}
-						</value>
-          </queryDetail>
-          <queryDetail condition="eq({param_field_selection}, selected_fields)">
-            <value>
-              AND
-            </value>
-          </queryDetail>
-          <queryDetail condition="eq({param_field_selection}, selected_fields)">
-            <value function="csv" text="detail.a_recipient_ledger_number_n"
-                variable="param_clbFields" calculation="OR" format="Number">
-            </value>
           </queryDetail>
         </query>
       </calculation>
 
       <calculation id="PartnerKey" returnsFormat="partnerkey" returns="text">
-        <caption>
-          <value text="Donor Key"/>
-        </caption>
+        <caption><value text="Donor Key"/></caption>
         <query>
-          <queryDetail>
-            <value variable="DonorKey"/>
-          </queryDetail>
+          <queryDetail><value variable="DonorKey"/>
+          </queryDetail>                                          
         </query>
       </calculation>
+
       <calculation id="DonorName" returnsFormat="text" returns="text">
         <caption>
           <value text="Donor Name"/>
@@ -399,6 +100,7 @@
           </queryDetail>
         </query>
       </calculation>
+
       <calculation id="DonorClass" returnsFormat="text" returns="text">
         <caption>
           <value text="Class"/>
@@ -409,6 +111,7 @@
           </queryDetail>
         </query>
       </calculation>
+
       <calculation id="Recipient Key" returnsFormat="partnerkey" returns="text">
         <caption>
           <value text="Recipient Key"/>
@@ -419,6 +122,7 @@
           </queryDetail>
         </query>
       </calculation>
+
       <calculation id="Recipient Name" returnsFormat="text" returns="text">
         <caption>
           <value text="Recipient Name"/>
@@ -437,6 +141,7 @@
         <query>
         </query>
       </calculation>
+
       <calculation id="Year-1" returnsFormat="currency" returns="amount">
         <caption>
           <value variable="Year1"/>
@@ -444,6 +149,7 @@
         <query>
         </query>
       </calculation>
+
       <calculation id="Year-2" returnsFormat="currency" returns="amount">
         <caption>
           <value variable="Year2"/>
@@ -451,6 +157,7 @@
         <query>
         </query>
       </calculation>
+
       <calculation id="Year-3" returnsFormat="currency" returns="amount">
         <caption>
           <value variable="Year3"/>
@@ -522,9 +229,6 @@
         </detail>
       </level>
 
-
     </levels>
-
   </report>
-
 </reports>
