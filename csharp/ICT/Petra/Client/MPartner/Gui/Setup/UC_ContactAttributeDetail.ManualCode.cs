@@ -290,7 +290,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
 
             // we go round a loop where, as we change the column value, the number of rows in the dataview becomes zero
-            int curRow = grdDetails.SelectedRowIndex();
+            int curRow = GetSelectedRowIndex();
 
             while (dv.Count > 0)
             {

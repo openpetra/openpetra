@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
             {
                 //Same as previously selected
-                if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
+                if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (GetSelectedRowIndex() > 0))
                 {
                     if (FGLEffectivePeriodChanged)
                     {

@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                 {
-                    if (grdDetails.SelectedRowIndex() > 0)
+                    if (GetSelectedRowIndex() > 0)
                     {
                         GetDetailsFromControls(GetSelectedDetailRow());
                     }
@@ -444,7 +444,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            int currentRowIndex = grdDetails.SelectedRowIndex();
+            int currentRowIndex = GetSelectedRowIndex();
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(

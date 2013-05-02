@@ -381,7 +381,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(ARecurringBatchRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
+            if ((GetSelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
             {
                 MessageBox.Show(Catalog.GetString("No Recurring GL Batch is selected to delete."),
                     Catalog.GetString("Deleting Recurring GL Batch"));

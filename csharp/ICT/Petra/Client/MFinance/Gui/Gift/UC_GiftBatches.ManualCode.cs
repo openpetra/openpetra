@@ -880,7 +880,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Read current rows position ready to reposition after removal of posted row from grid
-            int newCurrentRowPos = grdDetails.SelectedRowIndex();
+            int newCurrentRowPos = GetSelectedRowIndex();
 
             if (newCurrentRowPos < 0)
             {

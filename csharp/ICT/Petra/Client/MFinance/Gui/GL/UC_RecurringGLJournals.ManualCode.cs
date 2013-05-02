@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                 {
-                    if ((grdDetails.SelectedRowIndex() > 0)
+                    if ((GetSelectedRowIndex() > 0)
                         && (GetSelectedDetailRow().RowState != DataRowState.Deleted))
                     {
                         GetDetailsFromControls(GetSelectedDetailRow());
@@ -337,7 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(ARecurringJournalRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
+            if ((GetSelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
             {
                 MessageBox.Show(Catalog.GetString("No Recurring GL Journal is selected to delete."),
                     Catalog.GetString("Deleting Recurring GL Journal"));

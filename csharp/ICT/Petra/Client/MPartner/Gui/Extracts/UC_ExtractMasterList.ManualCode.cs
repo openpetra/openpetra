@@ -271,7 +271,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
                 {
                     DataRowView RowView;
-                    int rowIndex = grdDetails.SelectedRowIndex();
+                    int rowIndex = GetSelectedRowIndex();
 
                     // build a collection of objects to be deleted before actually deleting them (as otherwise
                     // indexes may not be valid any longer)

@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FTypeCode = value;
                 //save the position of the actual row
-                int rowIndex = grdDetails.SelectedRowIndex();
+                int rowIndex = GetSelectedRowIndex();
                 FMainDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                     AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                     FTypeCode);

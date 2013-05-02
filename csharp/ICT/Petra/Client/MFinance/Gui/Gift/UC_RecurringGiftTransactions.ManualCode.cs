@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber))
             {
                 //Same as previously selected
-                if (grdDetails.SelectedRowIndex() > 0)
+                if (GetSelectedRowIndex() > 0)
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
 

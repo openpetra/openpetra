@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FJournalRow = GetJournalRow();
 
                 //Same as previously selected
-                if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
+                if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (GetSelectedRowIndex() > 0))
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
                 }
@@ -512,10 +512,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FAttributesGridEntered = true;
             }
 
-            if (grdAnalAttributes.SelectedRowIndex() > 0)
+            if (grdAnalAttributes.GetFirstHighlightedRowIndex() > 0)
             {
                 //Ensures that when the user first enters the grid, the combo appears.
-                grdAnalAttributes.Selection.Focus(new Position(grdAnalAttributes.SelectedRowIndex(), 1), true);
+                grdAnalAttributes.Selection.Focus(new Position(grdAnalAttributes.GetFirstHighlightedRowIndex(), 1), true);
             }
             else if (grdAnalAttributes.Rows.Count > 1)
             {
@@ -542,10 +542,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if (grdAnalAttributes.SelectedRowIndex() > 0)
+            if (grdAnalAttributes.GetFirstHighlightedRowIndex() > 0)
             {
                 //Ensures that when the user first enters the grid, the combo appears.
-                grdAnalAttributes.Selection.Focus(new Position(grdAnalAttributes.SelectedRowIndex(), 1), true);
+                grdAnalAttributes.Selection.Focus(new Position(grdAnalAttributes.GetFirstHighlightedRowIndex(), 1), true);
             }
             else if (grdAnalAttributes.Rows.Count > 1)
             {
@@ -590,7 +590,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FAnalAttribTypeVal.StandardValues = analTypeValues;
             Int32 RowNumber;
 
-            RowNumber = grdAnalAttributes.SelectedRowIndex();
+            RowNumber = grdAnalAttributes.GetFirstHighlightedRowIndex();
             FAnalAttribTypeVal.EnableEdit = true;
             FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
             grdAnalAttributes.Selection.Focus(new Position(RowNumber, grdAnalAttributes.Columns.Count - 1), true);
@@ -798,7 +798,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(ARecurringTransactionRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
+            if ((GetSelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
             {
                 MessageBox.Show(Catalog.GetString("No Recurring GL Transaction is selected to delete."),
                     Catalog.GetString("Deleting Recurring GL Transaction"));
