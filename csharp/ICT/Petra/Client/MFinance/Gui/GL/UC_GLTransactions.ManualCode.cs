@@ -1061,7 +1061,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             SetTransactionDefaultView();
 
-            //Reverse Order
             if (FMainDS.ATransaction.DefaultView.Count > 0)
             {
                 ATransactionRow transRow = (ATransactionRow)FMainDS.ATransaction.DefaultView[0].Row;

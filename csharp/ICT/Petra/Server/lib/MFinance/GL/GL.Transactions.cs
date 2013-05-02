@@ -1036,9 +1036,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
 					if (foundTransactionForDeletion.Length > 0)
                     {
-						TLogging.Log(String.Format("foundTransactionForDeletion: {0}",
-	                          foundTransactionForDeletion));
-					
                         ATransactionRow transRowClient = null;
 
                         for (int i = 0; i < foundTransactionForDeletion.Length; i++)

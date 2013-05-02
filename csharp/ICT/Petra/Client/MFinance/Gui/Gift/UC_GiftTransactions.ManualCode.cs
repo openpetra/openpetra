@@ -134,9 +134,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Apply new filter
             FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
-
-            FMainDS.AGiftDetail.DefaultView.RowFilter = AGiftDetailTable.GetBatchNumberDBName() + "=" + FBatchNumber.ToString();
 
             // if this form is readonly, then we need all codes, because old codes might have been used
             if (firstLoad || (FActiveOnly != this.Enabled))
@@ -161,13 +158,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
-            FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} ASC, {1} ASC",
-                AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                AGiftDetailTable.GetDetailNumberDBName());
-
             ShowData();
             ShowDetails();
 
+            SetGiftDetailDefaultView();
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
+            
             if (AFromTabClick)
             {
                 grdDetails.Focus();
@@ -671,6 +667,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FGiftDetailView = new DataView(FMainDS.AGiftDetail);
             FGiftDetailView.RowFilter = FFilterAllDetailsOfGift;
+            FGiftDetailView.Sort = AGiftDetailTable.GetDetailNumberDBName() + " ASC";
 
             if (FGiftDetailView.Count == 1)
             {
@@ -714,13 +711,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, out string ACompletionMessage)
         {
-            bool deleteSuccessful = false;
+            bool deletionSuccessful = false;
             string originatingDetailRef = string.Empty;
-
             ACompletionMessage = string.Empty;
 
-            int selectedDetailNumber = ARowToDelete.DetailNumber;
+            if (ARowToDelete == null)
+            {
+                return deletionSuccessful;
+            }
 
+			if (ARowToDelete.RowState != DataRowState.Added && !((TFrmGiftBatch) this.ParentForm).SaveChanges())
+			{
+				MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
+				return deletionSuccessful;
+			}
+			
+            //Backup the Dataset for reversion purposes
+            GiftBatchTDS FTempDS = (GiftBatchTDS)FMainDS.Copy();
+
+            int selectedDetailNumber = ARowToDelete.DetailNumber;
+            int giftToDeleteTransNo = 0;
+            int currentBatchNumber = 0;
+            string filterAllGiftsOfBatch = String.Empty;
+            string filterAllGiftDetailsOfBatch = String.Empty;
+
+            //Clear the grid
+            //grdDetails.DataSource = null;
+            
             try
             {
                 if (ARowToDelete.ModifiedDetailKey != null)
@@ -728,10 +745,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     originatingDetailRef = ARowToDelete.ModifiedDetailKey;
                 }
 
+				//If deleting a detail row as opposed to a gift header
                 if (FGiftDetailView.Count > 1)
                 {
                     ARowToDelete.Delete();
-                    ARowToDelete = null;
 
                     FGiftSelectedForDeletion = false;
 
@@ -746,16 +763,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     FGift.LastDetailNumber--;
+
+                    FPetraUtilsObject.SetChangedFlag();
                 }
                 else
                 {
                     ARowToDelete.Delete();
-                    ARowToDelete = null;
+                    
+                    giftToDeleteTransNo = FGift.GiftTransactionNumber;
+                    currentBatchNumber = FGift.BatchNumber;
 
-                    int giftToDeleteTransNo = FGift.GiftTransactionNumber;
-                    int currentBatchNumber = FGift.BatchNumber;
-
-                    string filterAllGiftDetailsOfBatch = String.Format("{0}={1}",
+                    filterAllGiftDetailsOfBatch = String.Format("{0}={1}",
                         AGiftDetailTable.GetBatchNumberDBName(),
                         currentBatchNumber);
 
@@ -772,7 +790,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
 
-                    string filterAllGiftsOfBatch = String.Format("{0}={1}",
+                    filterAllGiftsOfBatch = String.Format("{0}={1}",
                         AGiftTable.GetBatchNumberDBName(),
                         currentBatchNumber);
 
@@ -815,7 +833,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         giftRowToReceive = giftRowCurrent;
                     }
 
+	                FPreviouslySelectedDetailRow = null;
                     FGift = null;
+		
+                    FPetraUtilsObject.SetChangedFlag();
 
                     FGiftSelectedForDeletion = true;
                 }
@@ -827,21 +848,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (!ok)
                     {
-                        MessageBox.Show("Error in trying to reset Modified Detail field of the originating gift detail.");
+                        throw new Exception("Error in trying to reset Modified Detail field of the originating gift detail.");
                     }
                 }
+                
+				//Try to save changes
+                if (((TFrmGiftBatch) this.ParentForm).SaveChanges())
+                {
+                    //Reload from server
+                    FMainDS.AGiftDetail.Clear();
+                    FMainDS.AGift.Clear();
 
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FBatchNumber));
+                }
+                else
+                {
+                    throw new Exception("Unable to save after deleting a gift!");
+                }
+               
                 ACompletionMessage = Catalog.GetString("Gift row deleted successfully!");
-                deleteSuccessful = true;
+                
+                deletionSuccessful = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(String.Format(Catalog.GetString("Error in trying to delete the current gift!" + "\n\r\n\r" + "Error: {0}"),
-                        ex.Message),
-                    "Delete Row Error");
+                ACompletionMessage = ex.Message;
+                MessageBox.Show(ex.Message,
+                    "Gift Deletion Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                //Revert to previous state
+                FMainDS = (GiftBatchTDS)FTempDS.Copy();
+            }
+            finally
+            {
+                SetGiftDetailDefaultView();
+                //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
             }
 
-            return deleteSuccessful;
+            return deletionSuccessful;
         }
 
         bool FDeletionPerformed;
@@ -853,32 +899,90 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FDeletionPerformed = ADeletionPerformed;
 
-            if (ACompletionMessage.Length > 0)
+            if (FDeletionPerformed)
             {
-                MessageBox.Show(ACompletionMessage);
+				if (FGiftSelectedForDeletion)
+				{
+					FGiftSelectedForDeletion = false;
+
+					SetBatchLastGiftNumber();
+
+	            	UpdateControlsProtection();
+                
+	                if (!pnlDetails.Enabled)
+		            {
+		                ClearControls();
+		            }
+				}
+                
+                UpdateTotals();
+
+                ((TFrmGiftBatch) this.ParentForm).SaveChanges();
+
+                //message to user
+                MessageBox.Show(ACompletionMessage,
+                    "Deletion Successful",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);              
             }
-
-            if (FDeletionPerformed && FGiftSelectedForDeletion)
+            else if (!AAllowDeletion && ACompletionMessage.Length > 0)
             {
-                FGiftSelectedForDeletion = false;
-
-                if (!((TFrmGiftBatch)ParentForm).SaveChanges())
-                {
-                    MessageBox.Show("Error in renumbering gifts!");
-                }
-
-                //Load data from server if Gift removed and others renumbered
-                FMainDS.AGift.Clear();
-                FMainDS.AGiftDetail.Clear();
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, GetBatchRow().BatchNumber));
+                //message to user
+                MessageBox.Show(ACompletionMessage,
+                    "Deletion not allowed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
-
-            if (!pnlDetails.Enabled)
+            else if (!ADeletionPerformed && ACompletionMessage.Length > 0)
             {
-                ClearControls();
+                //message to user
+                MessageBox.Show(ACompletionMessage,
+                    "Deletion failed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
+        private void SetBatchLastGiftNumber()
+        {
+        	FMainDS.AGift.DefaultView.RowFilter = String.Format("{0}={1}",
+        	                                                    AGiftTable.GetBatchNumberDBName(),
+        	                                                    FBatchNumber);
+            	
+        	FMainDS.AGift.DefaultView.Sort = String.Format("{0} DESC",
+        	                                               AGiftTable.GetGiftTransactionNumberDBName());
+        	if (FMainDS.AGift.DefaultView.Count > 0)
+            {
+                AGiftRow transRow = (AGiftRow)FMainDS.AGift.DefaultView[0].Row;
+                FBatchRow.LastGiftNumber = transRow.GiftTransactionNumber;
+            }
+            else
+            {
+                FBatchRow.LastGiftNumber = 0;
+            }
+        }
+
+        private void ClearGiftDetailDefaultView()
+        {
+            FMainDS.AGiftDetail.DefaultView.RowFilter = String.Empty;
+        }
+
+        private void SetGiftDetailDefaultView()
+        {
+            if (FBatchNumber != -1)
+            {
+                ClearGiftDetailDefaultView();
+
+                FMainDS.AGiftDetail.DefaultView.RowFilter = String.Format("{0}={1}",
+                    AGiftDetailTable.GetBatchNumberDBName(),
+                    FBatchNumber);
+
+	            FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1} ASC",
+	                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+	                AGiftDetailTable.GetDetailNumberDBName());
+            }
+        }
+        
         private void ClearControls()
         {
             try
