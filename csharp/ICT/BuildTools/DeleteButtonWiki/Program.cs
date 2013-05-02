@@ -90,7 +90,7 @@ namespace Ict.Tools.DeleteButtonWiki
             }
 
             FLogFile.WriteLine(
-                "Has New Button !! Has Delete Button !! Has Auto-delete !! Has ReferenceCount !! Has Deletable Flag !! Has Enable Delete !! Calls .Delete() !! Manual Calls Auto !! Client/Server Match");
+                "Has New Button !! Has Delete Button !! Has Auto-delete !! Has ReferenceCount !! Has Deletable Flag !! Has Enable Delete !! Calls .Delete() !! Manual Calls Auto !! PreDelete !! DeleteRow !! PostDelete !! Client/Server Match");
 
             foreach (string tryPath in AListToCheck)
             {
@@ -222,10 +222,20 @@ namespace Ict.Tools.DeleteButtonWiki
                         }
 
                         // Col6: HasReferenceCount code to check for usage
+                        bool bRefCountingEnabled = true;
+
                         if (bHasDelete && !generated.Contains("CacheableRecordReferenceCount"))
                         {
-                            FLogFile.WriteLine("|style=\"background:yellow\" |No");
-                            FIssueCount++;
+                            if (yml.Contains("ReferenceCheckOnDelete: False"))
+                            {
+                                FLogFile.WriteLine("|style=\"background:LightSkyBlue\" |Disabled");
+                                bRefCountingEnabled = false;
+                            }
+                            else
+                            {
+                                FLogFile.WriteLine("|style=\"background:yellow\" |No");
+                                FIssueCount++;
+                            }
                         }
                         else
                         {
@@ -248,8 +258,8 @@ namespace Ict.Tools.DeleteButtonWiki
                         // Col8: Has Enable Delete
                         if (bHasDeletable)
                         {
-                            if (generated.Contains("\"actDelete\", (ARow != null) && (ARow.Deletable")
-                                || generated.Contains("\"actDelete\", (ARow != null) && (ARow.TypeDeletable"))
+                            if (generated.Contains("\"actDelete\", ((grdDetails.")
+                                || generated.Contains("\"actDelete\", pnlDetails.Enabled"))
                             {
                                 FLogFile.WriteLine("|Yes");
                             }
@@ -314,8 +324,38 @@ namespace Ict.Tools.DeleteButtonWiki
                             FLogFile.WriteLine("|No");
                         }
 
-                        // Col11: Client/server tablename match
-                        if (bHasDelete)
+                        // Col11: Has PreDeleteManual
+                        if (manual.Contains("bool PreDeleteManual"))
+                        {
+                            FLogFile.WriteLine("|style=\"background:LightSkyBlue\" |Yes");
+                        }
+                        else
+                        {
+                            FLogFile.WriteLine("|No");
+                        }
+
+                        // Col12: Has DeleteRowManual
+                        if (manual.Contains("bool DeleteRowManual"))
+                        {
+                            FLogFile.WriteLine("|style=\"background:LightSkyBlue\" |Yes");
+                        }
+                        else
+                        {
+                            FLogFile.WriteLine("|No");
+                        }
+
+                        // Col13: Has PostDeleteManual
+                        if (manual.Contains("PostDeleteManual("))
+                        {
+                            FLogFile.WriteLine("|style=\"background:LightSkyBlue\" |Yes");
+                        }
+                        else
+                        {
+                            FLogFile.WriteLine("|No");
+                        }
+
+                        // Col14: Client/server tablename match
+                        if (bHasDelete && bRefCountingEnabled)
                         {
                             bool bOk = false;
                             string searchForInServer = String.Empty;

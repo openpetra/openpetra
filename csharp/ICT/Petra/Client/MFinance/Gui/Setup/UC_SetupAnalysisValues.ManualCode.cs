@@ -93,15 +93,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.AnalysisTypeCode = FTypeCode;
         }
 
-        private bool PreDeleteManual(AFreeformAnalysisRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            ADeletionQuestion = String.Format(
-                Catalog.GetString("You have chosen to delete this value ({0}).{1}{1}Do you really want to delete it?"),
-                FPreviouslySelectedDetailRow.AnalysisValue,
-                Environment.NewLine);
-            return true;
-        }
-
         private void GetDetailDataFromControlsManual(AFreeformAnalysisRow ARow)
         {
             // TODO

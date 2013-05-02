@@ -114,10 +114,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return false;
             }
 
-            ADeletionQuestion = String.Format(
-                Catalog.GetString("You have chosen to delete this type ({0}).{1}{1}Do you really want to delete it?"),
-                ARowToDelete.AnalysisTypeCode,
-                Environment.NewLine);
             return true;
         }
 

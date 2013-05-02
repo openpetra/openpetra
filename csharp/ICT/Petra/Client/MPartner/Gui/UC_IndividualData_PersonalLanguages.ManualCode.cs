@@ -93,9 +93,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FLanguageCodeDT = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
 
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-
             if (grdDetails.Rows.Count <= 1)
             {
                 pnlDetails.Visible = false;
@@ -190,21 +187,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             ARow.LanguageCode = newName;
-        }
-
-        /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(PmPersonLanguageRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Language record: '{0}'?"),
-                ARowToDelete.LanguageCode);
-            return true;
         }
 
         /// <summary>
@@ -346,15 +328,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 RecalculateScreenParts(this, e);
             }
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            NewRecord(this, null);
         }
 
         private void ValidateDataDetailsManual(PmPersonLanguageRow ARow)

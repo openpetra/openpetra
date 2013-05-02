@@ -373,30 +373,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(ARecurringBatchRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            if ((GetSelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
-            {
-                MessageBox.Show(Catalog.GetString("No Recurring GL Batch is selected to delete."),
-                    Catalog.GetString("Deleting Recurring GL Batch"));
-                return false;
-            }
-            else
-            {
-                // ask if the user really wants to cancel the batch
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring GL Batch no: {0} ?"),
-                    ARowToDelete.BatchNumber);
-                return true;
-            }
-        }
-
-        /// <summary>
         /// Deletes the current row and optionally populates a completion message
         /// </summary>
         /// <param name="ARowToDelete">the currently selected row to delete</param>

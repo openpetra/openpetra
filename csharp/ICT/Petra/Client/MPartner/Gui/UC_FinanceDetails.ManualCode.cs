@@ -75,10 +75,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             LoadDataOnDemand();
 
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
-
             if (grdDetails.Rows.Count <= 1)
             {
                 btnDelete.Enabled = false;
@@ -226,25 +222,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (RecalculateScreenParts != null)
             {
                 RecalculateScreenParts(this, e);
-            }
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            NewRow(this, null);
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            if (e.Row != -1)
-            {
-                this.DeleteRecord(this, null);
             }
         }
 

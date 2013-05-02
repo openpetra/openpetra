@@ -103,7 +103,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
 
             // enable grid to react to modified event or field key in details part
             ucoApplicationEvent.ApplicationEventChanged += new TUC_Application_Event.TDelegateApplicationEventChanged(
@@ -484,18 +483,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
             NewRowShortTermApp(this, null);
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            if (e.Row != -1)
-            {
-                this.DeleteRecord(this, null);
-            }
         }
 
         /// <summary>

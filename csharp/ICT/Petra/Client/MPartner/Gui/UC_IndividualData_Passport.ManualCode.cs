@@ -95,9 +95,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             //FPassportTypeDT = (PtPassportTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList);
 
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-
             if (grdDetails.Rows.Count <= 1)
             {
                 pnlDetails.Visible = false;
@@ -189,21 +186,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             ARow.PassportNumber = newName;
-        }
-
-        /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(PmPassportDetailsRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Passport record: '{0}'?"),
-                ARowToDelete.PassportNumber);
-            return true;
         }
 
         /// <summary>
@@ -380,15 +362,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             Scd.Dispose();
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            NewRecord(this, null);
         }
 
         private void ValidateDataDetailsManual(PmPassportDetailsRow ARow)

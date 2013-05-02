@@ -201,9 +201,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
 
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
@@ -285,15 +282,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void GetDetailDataFromControlsManual(PSubscriptionRow ARow)
         {
             ucoDetails.GetDetails(ARow);
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            NewRecord(this, null);
         }
 
         /// <summary>

@@ -790,30 +790,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(ARecurringTransactionRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            if ((GetSelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
-            {
-                MessageBox.Show(Catalog.GetString("No Recurring GL Transaction is selected to delete."),
-                    Catalog.GetString("Deleting Recurring GL Transaction"));
-                return false;
-            }
-            else
-            {
-                // ask if the user really wants to cancel the transaction
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring GL Transaction no: {0} ?"),
-                    ARowToDelete.TransactionNumber);
-                return true;
-            }
-        }
-
-        /// <summary>
         /// Code to be run after the deletion process
         /// </summary>
         /// <param name="ARowToDelete">the row that was/was to be deleted</param>
