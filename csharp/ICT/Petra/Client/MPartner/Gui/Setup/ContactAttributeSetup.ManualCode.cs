@@ -141,7 +141,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             // Now delete this row
             ARowToDelete.Delete();
-            
+
             return true;
         }
 

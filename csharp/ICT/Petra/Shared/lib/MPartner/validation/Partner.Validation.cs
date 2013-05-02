@@ -318,9 +318,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                 {
                     VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                        (ARow.StartDate, ARow.ExpiryDate,
-                        ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                             (ARow.StartDate, ARow.ExpiryDate,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -332,9 +332,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                 {
                     VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                        (ARow.StartDate, ARow.SubscriptionRenewalDate,
-                        ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                             (ARow.StartDate, ARow.SubscriptionRenewalDate,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -346,9 +346,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                 {
                     VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                        (ARow.StartDate, ARow.DateCancelled,
-                        ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                             (ARow.StartDate, ARow.DateCancelled,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -360,9 +360,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                 {
                     VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                        (ARow.StartDate, ARow.DateNoticeSent,
-                        ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                             (ARow.StartDate, ARow.DateNoticeSent,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -374,9 +374,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                 {
                     VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                        (ARow.StartDate, ARow.FirstIssue,
-                        ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                             (ARow.StartDate, ARow.FirstIssue,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -388,9 +388,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                 {
                     VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                        (ARow.StartDate, ARow.LastIssue,
-                        ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                             (ARow.StartDate, ARow.LastIssue,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -404,9 +404,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
             {
                 // 'Date Renewed' must not be later than today
                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                    (ARow.SubscriptionRenewalDate, DateTime.Today,
-                    ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                         (ARow.SubscriptionRenewalDate, DateTime.Today,
+                                         ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -418,9 +418,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                 {
                     VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                        (ARow.SubscriptionRenewalDate, ARow.ExpiryDate,
-                        ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                             (ARow.SubscriptionRenewalDate, ARow.ExpiryDate,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -432,9 +432,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                 {
                     VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                        (ARow.SubscriptionRenewalDate, ARow.DateNoticeSent,
-                        ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                             (ARow.SubscriptionRenewalDate, ARow.DateNoticeSent,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -447,9 +447,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                    (ARow.DateCancelled, DateTime.Today,
-                    ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                         (ARow.DateCancelled, DateTime.Today,
+                                         ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -465,9 +465,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                 {
                     VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                        (ARow.FirstIssue, ARow.LastIssue,
-                        ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                             (ARow.FirstIssue, ARow.LastIssue,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -480,9 +480,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                    (ARow.FirstIssue, DateTime.Today,
-                    ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                         (ARow.FirstIssue, DateTime.Today,
+                                         ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -498,9 +498,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
                 {
                     VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                        (ARow.StartDate, ARow.FirstIssue,
-                        ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                             (ARow.StartDate, ARow.FirstIssue,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -513,9 +513,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                    (ARow.LastIssue, DateTime.Today,
-                    ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                                         (ARow.LastIssue, DateTime.Today,
+                                         ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -553,7 +553,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 }
                 else
                 {
-                    // When Reason ended or End date are set then status must be CANCELLED or EXPIRED 
+                    // When Reason ended or End date are set then status must be CANCELLED or EXPIRED
                     if ((!ARow.IsReasonSubsCancelledCodeNull())
                         && (ARow.ReasonSubsCancelledCode != String.Empty))
                     {
@@ -575,9 +575,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                     }
                 }
-
             }
-
         }
 
         /// <summary>

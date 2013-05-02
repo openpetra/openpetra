@@ -360,7 +360,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>true if row deletion is successful</returns>
         private bool DeleteRowManual(ARecurringJournalRow ARowToDelete, ref string ACompletionMessage)
         {
-
             int batchNumber = ARowToDelete.BatchNumber;
             int journalNumber = ARowToDelete.JournalNumber;
 

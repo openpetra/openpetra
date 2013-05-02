@@ -140,7 +140,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             return true;
         }
 
-
         /// <summary>
         /// Code to be run after the deletion process
         /// </summary>

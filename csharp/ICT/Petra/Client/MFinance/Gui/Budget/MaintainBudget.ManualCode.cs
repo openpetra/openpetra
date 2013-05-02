@@ -241,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private bool PreDeleteManual(ABudgetRow ARowToDelete, ref string ADeletionQuestion)
         {
             ADeletionQuestion = String.Format(Catalog.GetString(
-                "You have chosen to delete this budget (Cost Centre: {0}, Account: {1}, Type: {2}, Revision: {3}).{4}{4}Do you really want to delete it?"),
+                    "You have chosen to delete this budget (Cost Centre: {0}, Account: {1}, Type: {2}, Revision: {3}).{4}{4}Do you really want to delete it?"),
                 FPreviouslySelectedDetailRow.CostCentreCode,
                 FPreviouslySelectedDetailRow.AccountCode,
                 FPreviouslySelectedDetailRow.BudgetTypeCode,
@@ -263,7 +263,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             int BudgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
             DeleteBudgetPeriodData(BudgetSequence);
             ARowToDelete.Delete();
-            
+
             return true;
         }
 

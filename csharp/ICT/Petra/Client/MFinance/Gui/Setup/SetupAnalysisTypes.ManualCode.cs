@@ -99,6 +99,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             /*Code to execute before the delete can take place*/
             DataView view = new DataView(FMainDS.AFreeformAnalysis);
+
             view.RowStateFilter = DataViewRowState.CurrentRows;
             view.RowFilter = String.Format("{0} = '{1}'",
                 AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
@@ -108,8 +109,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // We do not want to delete if any rows exist in the DataView
                 MessageBox.Show(String.Format(
-                    Catalog.GetString("Please delete the unused values first!{0}{0}Note:Used types and types with used values cannot be deleted."),
-                    Environment.NewLine));
+                        Catalog.GetString("Please delete the unused values first!{0}{0}Note:Used types and types with used values cannot be deleted."),
+                        Environment.NewLine));
                 return false;
             }
 

@@ -399,7 +399,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// Recursively clears the content of all the controls in the specified container without 
+        /// Recursively clears the content of all the controls in the specified container without
         /// </summary>
         /// <param name="AParentControl">The container control whose controls are to be cleared (often this will be pnlDetails)</param>
         public void ClearControls(Control AParentControl)
@@ -461,7 +461,8 @@ namespace Ict.Petra.Client.CommonForms
                 }
                 catch (Exception ex)
                 {
-                    TLogging.LogAtLevel(7, "Exception caught in TFrmPetraEditUtils.ClearControls(): " + ctrl.Name + "(" + ctrl.ToString() + "): " + ex.Message);
+                    TLogging.LogAtLevel(7,
+                        "Exception caught in TFrmPetraEditUtils.ClearControls(): " + ctrl.Name + "(" + ctrl.ToString() + "): " + ex.Message);
                 }
             }
 

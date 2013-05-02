@@ -136,7 +136,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             return true;
         }
 
-        private void PostDeleteManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, Boolean AAllowDeletion, Boolean ADeletionPerformed, String ACompletionMessage)
+        private void PostDeleteManual(PartnerEditTDSPBankingDetailsRow ARowToDelete,
+            Boolean AAllowDeletion,
+            Boolean ADeletionPerformed,
+            String ACompletionMessage)
         {
             if (ADeletionPerformed)
             {
