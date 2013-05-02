@@ -130,7 +130,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             return true;
         }
 
-        private bool DeleteRowManual(PContactAttributeRow ARowToDelete, out String ACompletionMessage)
+        private bool DeleteRowManual(PContactAttributeRow ARowToDelete, ref String ACompletionMessage)
         {
             ACompletionMessage = String.Empty;
 

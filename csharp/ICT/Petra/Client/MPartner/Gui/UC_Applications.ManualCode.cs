@@ -250,7 +250,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             return true;
         }
 
-        private bool DeleteRowManual(IndividualDataTDSPmGeneralApplicationRow ARowToDelete, out String ACompletionMessage)
+        private bool DeleteRowManual(IndividualDataTDSPmGeneralApplicationRow ARowToDelete, ref String ACompletionMessage)
         {
             ACompletionMessage = String.Empty;
 

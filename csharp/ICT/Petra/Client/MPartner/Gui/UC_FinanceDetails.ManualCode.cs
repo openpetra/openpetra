@@ -123,7 +123,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             return true;
         }
 
-        private bool DeleteRowManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, out String ACompletionMessage)
+        private bool DeleteRowManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, ref String ACompletionMessage)
         {
             ACompletionMessage = String.Empty;
 

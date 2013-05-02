@@ -84,15 +84,23 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(PInternationalPostalTypeRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(PInternationalPostalTypeRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 
             try
             {
                 //Must set the message parameters before the delete is performed if requiring any of the row values
-                ACompletionMessage = String.Format(Catalog.GetString("Postal Type Code: '{0}' deleted successfully."),
-                    ARowToDelete.InternatPostalTypeCode);
+                if (ACompletionMessage == String.Empty)
+                {
+                    ACompletionMessage = String.Format(Catalog.GetString("Postal Type Code: '{0}' deleted successfully."),
+                        ARowToDelete.InternatPostalTypeCode);
+                }
+                else if (ACompletionMessage.StartsWith("Postal"))
+                {
+                    ACompletionMessage = "Multiple records were deleted.";
+                }
+
                 ARowToDelete.Delete();
                 deletionSuccessful = true;
             }
