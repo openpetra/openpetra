@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         /// <summary>DataTables that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FSupplierTable;
-        private DataTable FInvoiceTable;
+        private AccountsPayableGUITDSInvoiceListTable FInvoiceTable;
         private ALedgerRow FLedgerInfo;
 
         private Int32 FLedgerNumber;
@@ -234,17 +234,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 grdInvoiceResult.Columns.Clear();
-                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 20, false);
-                grdInvoiceResult.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"], 55);
-                grdInvoiceResult.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
-                grdInvoiceResult.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 150);
-                grdInvoiceResult.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"], 2);
-                grdInvoiceResult.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"], 2);
-                grdInvoiceResult.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"], 70);
-                grdInvoiceResult.AddDateColumn("Due Date", FInvoiceTable.Columns["DateDue"]);
-                grdInvoiceResult.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"], 100);
-                grdInvoiceResult.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
-//              grdInvoiceResult.AddTextColumn("Discount", FInvoiceTable.Columns["DiscountMsg"], 150);
+                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.ColumnSelected, 20, false);
+                grdInvoiceResult.AddTextColumn("AP#", FInvoiceTable.ColumnApNumber, 55);
+                grdInvoiceResult.AddTextColumn("Inv#", FInvoiceTable.ColumnDocumentCode, 90);
+                grdInvoiceResult.AddTextColumn("Supplier", FInvoiceTable.ColumnPartnerShortName, 150);
+                grdInvoiceResult.AddCurrencyColumn("Amount", FInvoiceTable.ColumnTotalAmount, 2);
+                grdInvoiceResult.AddCurrencyColumn("Outstanding", FInvoiceTable.ColumnOutstandingAmount, 2);
+                grdInvoiceResult.AddTextColumn("Currency", FInvoiceTable.ColumnCurrencyCode, 70);
+                grdInvoiceResult.AddDateColumn("Due Date", FInvoiceTable.ColumnDateDue);
+                grdInvoiceResult.AddTextColumn("Status", FInvoiceTable.ColumnDocumentStatus, 100);
+                grdInvoiceResult.AddDateColumn("Issued", FInvoiceTable.ColumnDateIssued);
+//              grdInvoiceResult.AddTextColumn("Discount", FInvoiceTable.ColumnDiscountMsg, 150);
 
                 grdInvoiceResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while
                 grdInvoiceResult.Columns[5].Width = 90;  // they're being added.
@@ -459,7 +459,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     if (FInvoiceTable == null)
                     {
-                        FInvoiceTable = NewPage;
+                        FInvoiceTable = (AccountsPayableGUITDSInvoiceListTable)NewPage;
                     }
 
                     return NewPage;

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -177,7 +177,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction, false);
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction);
 
             DBAccess.GDBAccessObj.CommitTransaction();
 
@@ -216,8 +216,8 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction, false);
-            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlMarkBudgetForConsolidation, Transaction, false);
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction);
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlMarkBudgetForConsolidation, Transaction);
 
             DBAccess.GDBAccessObj.CommitTransaction();
 

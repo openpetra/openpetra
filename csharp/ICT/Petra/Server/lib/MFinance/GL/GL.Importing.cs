@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -351,7 +351,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 NewTransaction.TransactionAmount = CreditAmount;
                             }
 
-                            NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount / NewJournal.ExchangeRateToBase;
+                            NewTransaction.AmountInBaseCurrency = GLRoutines.Divide(NewTransaction.TransactionAmount, NewJournal.ExchangeRateToBase);
 
                             for (int i = 0; i < 10; i++)
                             {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -705,7 +705,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (journal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
                     {
-                        r.AmountInBaseCurrency = r.TransactionAmount / journal.ExchangeRateToBase;
+                        r.AmountInBaseCurrency = GLRoutines.Divide(r.TransactionAmount, journal.ExchangeRateToBase);
                     }
 
                     if (r.DebitCreditIndicator)

@@ -255,7 +255,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 foreach (string table in tables)
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction, false);
+                    DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction);
                 }
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
@@ -286,7 +286,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
                 DBAccess.GDBAccessObj.ExecuteNonQuery(String.Format(
                         "UPDATE PUB_s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                        serverExeInfo.ToString()), Transaction, false);
+                        serverExeInfo.ToString()), Transaction);
 
                 if (!success)
                 {
@@ -420,7 +420,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         // SQLite does not support INSERT of several rows at the same time
                         try
                         {
-                            DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, Parameters.ToArray());
+                            DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, Parameters.ToArray());
                         }
                         catch (Exception e)
                         {
@@ -553,7 +553,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             try
             {
-                DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, Parameters.ToArray());
+                DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, Parameters.ToArray());
             }
             catch (Exception e)
             {

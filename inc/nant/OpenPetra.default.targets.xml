@@ -40,6 +40,11 @@
 
 <target name="initConfigFiles" description="write and overwrite the config files for client, server and testing, and the version.txt">
   <property name="templateFile" value="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"/>
+  
+  <if test="${DBMS.Type == 'sqlite'}">
+    <property name="DBMS.DBHostOrFile" value="${SQLitedbWork.file}"/>
+  </if>
+  
   <property name="configFile" value="${ServerConfigFile}"/>
   <call target="initConfigFiles-internal"/>
 

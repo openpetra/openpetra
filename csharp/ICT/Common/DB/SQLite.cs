@@ -146,6 +146,7 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("PUB.", "");
             ReturnValue = ReturnValue.Replace("pub_", "");
             ReturnValue = ReturnValue.Replace("pub.", "");
+            ReturnValue = ReturnValue.Replace("public.", "");
             ReturnValue = ReturnValue.Replace("\"", "'");
 
             ReturnValue = ReturnValue.Replace("NOW()", "datetime('now')");
@@ -291,6 +292,9 @@ namespace Ict.Common.DB
             string ADataTableName)
         {
             ((SqliteDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
+
+            TheAdapter.SelectCommand.Dispose();
+            ((SqliteDataAdapter)TheAdapter).Dispose();
         }
 
         /// <summary>
@@ -307,6 +311,9 @@ namespace Ict.Common.DB
             Int32 AMaxRecords)
         {
             ((SqliteDataAdapter)TheAdapter).Fill(AFillDataTable);
+
+            TheAdapter.SelectCommand.Dispose();
+            ((SqliteDataAdapter)TheAdapter).Dispose();
         }
 
         /// <summary>
@@ -338,10 +345,12 @@ namespace Ict.Common.DB
         public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
             string stmt = "INSERT INTO " + ASequenceName + " VALUES(NULL, -1);";
-            SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection);
 
-            cmd.ExecuteNonQuery();
-            return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase, AConnection);
+            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection))
+            {
+                cmd.ExecuteNonQuery();
+                return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase, AConnection);
+            }
         }
 
         /// <summary>
@@ -356,9 +365,11 @@ namespace Ict.Common.DB
         public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
         {
             string stmt = "SELECT MAX(sequence) FROM " + ASequenceName + ";";
-            SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection);
 
-            return Convert.ToInt64(cmd.ExecuteScalar());
+            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection))
+            {
+                return Convert.ToInt64(cmd.ExecuteScalar());
+            }
         }
 
         /// <summary>
@@ -370,8 +381,8 @@ namespace Ict.Common.DB
             IDbConnection AConnection,
             Int64 ARestartValue)
         {
-            ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction, false);
-            ADatabase.ExecuteNonQuery("INSERT INTO " + ASequenceName + " VALUES(" + ARestartValue.ToString() + ", -1);", ATransaction, false);
+            ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction);
+            ADatabase.ExecuteNonQuery("INSERT INTO " + ASequenceName + " VALUES(" + ARestartValue.ToString() + ", -1);", ATransaction);
         }
 
         /// <summary>
@@ -440,7 +451,7 @@ namespace Ict.Common.DB
 
                                 if (!line.StartsWith("--"))
                                 {
-                                    DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction, false);
+                                    DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction);
                                 }
                             }
 
@@ -456,7 +467,7 @@ namespace Ict.Common.DB
                     string newVersionSql =
                         String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
                             AExeVersion.ToStringDotsHyphen());
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction, false);
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction);
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
                 else

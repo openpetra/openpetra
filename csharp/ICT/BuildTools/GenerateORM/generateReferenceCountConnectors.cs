@@ -66,7 +66,8 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
 
             if (!Directory.Exists(OutputFolder))
             {
-                // The -outputserver command line parameter must be wrong
+                // The -outputserver command line parameter must be wrong, or the directory does not exist yet
+                Console.WriteLine("Error: directory does not exist: " + OutputFolder);
                 return false;
             }
 
@@ -91,7 +92,7 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
             moduleName = moduleName.Substring(1);
             string className = "T" + moduleName + "ReferenceCountWebConnector";
 
-            TLogging.Log("Starting connector for " + className + Environment.NewLine);
+            Console.WriteLine("Starting connector for " + className + Environment.NewLine);
 
             int cacheableCount = 0;
             int nonCacheableCount = 0;
@@ -105,16 +106,26 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
             Template.SetCodelet("CACHEABLETABLENAME", string.Empty);
             Template.SetCodelet("CACHEABLETABLECASE", string.Empty);
             Template.SetCodelet("CACHEABLETABLELISTNAME", string.Empty);
+            Template.SetCodelet("CACHEABLETRANSACTION", string.Empty);
+            Template.SetCodelet("CACHEABLEFINALLY", string.Empty);
             Template.SetCodelet("TABLESIF", string.Empty);
             Template.SetCodelet("TABLESELSEIF", string.Empty);
             Template.SetCodelet("TABLESELSE", string.Empty);
             Template.SetCodelet("TABLENAME", string.Empty);
+            Template.SetCodelet("NONCACHEABLETRANSACTION", string.Empty);
+            Template.SetCodelet("NONCACHEABLEFINALLY", string.Empty);
 
             // Find all the YAML files in the client module folder
             string[] clientFiles = Directory.GetFiles(AModulePath, "*.yaml", SearchOption.AllDirectories);
 
             foreach (String fn in clientFiles)
             {
+                // only look for main files, not language specific files (*.xy-XY.yaml or *.xy.yaml)
+                if (TProcessYAMLForms.IgnoreLanguageSpecificYamlFile(fn))
+                {
+                    continue;
+                }
+
                 XmlDocument doc = TYml2Xml.CreateXmlDocument();
                 SortedList sortedNodes = null;
                 TCodeStorage codeStorage = new TCodeStorage(doc, sortedNodes);
@@ -141,7 +152,16 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                         snippet.SetCodelet("CACHEABLETABLELISTNAME", attCacheableListName);
                         Template.InsertSnippet("CACHEABLETABLECASES", snippet);
 
-                        TLogging.Log("Creating cacheable reference count connector for " + attCacheableListName);
+                        if (cacheableCount == 0)
+                        {
+                            // Add these on the first time through
+                            snippet = Template.GetSnippet("CACHEABLETRANSACTIONSNIP");
+                            Template.InsertSnippet("CACHEABLETRANSACTION", snippet);
+                            snippet = Template.GetSnippet("CACHEABLEFINALLYSNIP");
+                            Template.InsertSnippet("CACHEABLEFINALLY", snippet);
+                        }
+
+                        Console.WriteLine("Creating cacheable reference count connector for " + attCacheableListName);
                         cacheableCount++;
                     }
                     else
@@ -153,6 +173,11 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                             snippet = Template.GetSnippet("TABLEIF");
                             snippet.SetCodelet("TABLENAME", attDetailTableName);
                             Template.InsertSnippet("TABLESIF", snippet);
+
+                            snippet = Template.GetSnippet("NONCACHEABLETRANSACTIONSNIP");
+                            Template.InsertSnippet("NONCACHEABLETRANSACTION", snippet);
+                            snippet = Template.GetSnippet("NONCACHEABLEFINALLYSNIP");
+                            Template.InsertSnippet("NONCACHEABLEFINALLY", snippet);
                         }
                         else
                         {
@@ -161,7 +186,7 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                             Template.InsertSnippet("TABLESELSEIF", snippet);
                         }
 
-                        TLogging.Log("Creating non-cacheable reference count connector for " + attDetailTableName);
+                        Console.WriteLine("Creating non-cacheable reference count connector for " + attDetailTableName);
                         nonCacheableCount++;
                     }
                 }
@@ -182,7 +207,7 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
 
             if ((cacheableCount > 0) || (nonCacheableCount > 0))
             {
-                TLogging.Log("Finishing connector for " + className + Environment.NewLine + Environment.NewLine);
+                Console.WriteLine("Finishing connector for " + className + Environment.NewLine + Environment.NewLine);
                 Template.FinishWriting(OutputFile, ".cs", true);
 
                 FTotalCacheable += cacheableCount;
@@ -220,9 +245,9 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                 }
             }
 
-            TLogging.Log("*** Total cacheable tables: " + FTotalCacheable.ToString());
-            TLogging.Log("*** Total non-cacheable tables: " + FTotalNonCacheable.ToString());
-            TLogging.Log("*** Total connectors: " + FTotalConnectors.ToString());
+            Console.WriteLine("*** Total cacheable tables: " + FTotalCacheable.ToString());
+            Console.WriteLine("*** Total non-cacheable tables: " + FTotalNonCacheable.ToString());
+            Console.WriteLine("*** Total connectors: " + FTotalConnectors.ToString());
 
             return returnValue;
         }

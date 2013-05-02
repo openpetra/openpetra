@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, alanp
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -92,8 +92,12 @@ namespace Ict.Tools.GenerateORM
                     // No need to parse the petra.xml document for this task - so we just run and exit
                     new TLogging();
                     TCreateReferenceCountConnectors createConnectors = new TCreateReferenceCountConnectors();
-                    createConnectors.CreateFiles(cmdLine.GetOptValue("outputserver"), cmdLine.GetOptValue("inputclient"),
-                        cmdLine.GetOptValue("templatedir"));
+
+                    if (!createConnectors.CreateFiles(cmdLine.GetOptValue("outputserver"), cmdLine.GetOptValue("inputclient"),
+                            cmdLine.GetOptValue("templatedir")))
+                    {
+                        return -1;
+                    }
 
                     return 0;
                 }

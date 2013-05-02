@@ -1316,7 +1316,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
                 "a_ledger_number_i=" + ALedgerNumber + " AND " +
                 "a_account_code_c = '" + AAccountCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
             bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
 
             if (!IsInUse)
@@ -1325,7 +1325,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
                     "a_ledger_number_i=" + ALedgerNumber + " AND " +
                     "a_account_code_c = '" + AAccountCode + "';";
-                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
                 IsInUse = (Convert.ToInt32(SqlResult) > 0);
             }
 
@@ -1338,7 +1338,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 "SELECT COUNT (*) FROM PUB_a_account_hierarchy_detail WHERE " +
                 "a_ledger_number_i=" + ALedgerNumber + " AND " +
                 "a_account_code_to_report_to_c = '" + AAccountCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
 
             return Convert.ToInt32(SqlResult) > 0;
         }
@@ -2577,14 +2577,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         SUserModuleAccessPermissionTable.GetTableDBName(),
                         SUserModuleAccessPermissionTable.GetModuleIdDBName(),
                         ALedgerNumber),
-                    Transaction, false);
+                    Transaction);
 
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
                         SModuleTable.GetTableDBName(),
                         SModuleTable.GetModuleIdDBName(),
                         ALedgerNumber),
-                    Transaction, false);
+                    Transaction);
 
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     String.Format(
@@ -2597,7 +2597,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName(),
                         AGeneralLedgerMasterTable.GetTableDBName(),
                         AGeneralLedgerMasterTable.GetLedgerNumberDBName()),
-                    Transaction, false, ledgerparameter);
+                    Transaction, ledgerparameter);
 
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     String.Format(
@@ -2610,7 +2610,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         ABudgetPeriodTable.GetBudgetSequenceDBName(),
                         ABudgetTable.GetTableDBName(),
                         ABudgetTable.GetLedgerNumberDBName()),
-                    Transaction, false, ledgerparameter);
+                    Transaction, ledgerparameter);
 
                 // the following tables are not deleted at the moment as they are not in use
                 //      PFoundationProposalDetailTable.GetTableDBName(),
@@ -2693,7 +2693,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 {
                     DBAccess.GDBAccessObj.ExecuteNonQuery(
                         String.Format("DELETE FROM PUB_{0} WHERE a_ledger_number_i = ?", table),
-                        Transaction, false, ledgerparameter);
+                        Transaction, ledgerparameter);
                 }
 
                 ALedgerAccess.DeleteByPrimaryKey(ALedgerNumber, Transaction);
@@ -2703,7 +2703,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     String.Format("DELETE FROM PUB_{0} WHERE p_partner_key_n = {1}",
                         PPartnerLedgerTable.GetTableDBName(),
                         Convert.ToInt64(ALedgerNumber) * 1000000),
-                    Transaction, false);
+                    Transaction);
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                 {
@@ -2825,7 +2825,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 QuerySql += (" AND a_ledger_number_i=" + ALedgerNumber);
             }
 
-            DBAccess.GDBAccessObj.ExecuteNonQuery(QuerySql, ATransaction, false);
+            DBAccess.GDBAccessObj.ExecuteNonQuery(QuerySql, ATransaction);
         }
 
         /// <summary>
@@ -3054,7 +3054,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 "SELECT COUNT (*) FROM PUB_a_cost_centre WHERE " +
                 "a_ledger_number_i=" + ALedgerNumber + " AND " +
                 "a_cost_centre_to_report_to_c = '" + ACostCentreCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
 
             return Convert.ToInt32(SqlResult) > 0;
         }
@@ -3069,7 +3069,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
                 "a_ledger_number_i=" + ALedgerNumber + " AND " +
                 "a_cost_centre_code_c = '" + ACostCentreCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
             bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
 
             if (!IsInUse)
@@ -3078,7 +3078,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
                     "a_ledger_number_i=" + ALedgerNumber + " AND " +
                     "a_cost_centre_code_c = '" + ACostCentreCode + "';";
-                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction, false);
+                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
                 IsInUse = (Convert.ToInt32(SqlResult) > 0);
             }
 

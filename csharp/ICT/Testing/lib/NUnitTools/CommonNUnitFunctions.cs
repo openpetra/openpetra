@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,11 +25,10 @@ using System.IO;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
-
 using Ict.Common;
+using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
@@ -98,7 +97,20 @@ namespace Ict.Testing.NUnitTools
         /// </summary>
         public static void ResetDatabase()
         {
+            if (TSrvSetting.RDMBSType == TDBType.SQLite)
+            {
+                DBAccess.GDBAccessObj.CloseDBConnection();
+            }
+
             nant("resetDatabase", false);
+
+            if (TSrvSetting.RDMBSType == TDBType.SQLite)
+            {
+                DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+                    TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
+                    TSrvSetting.PostgreSQLDatabaseName,
+                    TSrvSetting.DBUsername, TSrvSetting.DBPassword, "");
+            }
         }
 
         /// <summary>
@@ -108,12 +120,20 @@ namespace Ict.Testing.NUnitTools
         /// (csharp\\ICT\\Testing\\...\\filename.sql)</param>
         public static void LoadTestDataBase(string strSqlFilePathFromCSharpName)
         {
-            TLogging.Log("LoadTestDataBase file: " + strSqlFilePathFromCSharpName);
-            //nant("stopPetraServer", true);
-            // csharp\\ICT\\Testing\\...\\filename.sql"
-            //  + " >C:\\report.txt"
+            if (TSrvSetting.RDMBSType == TDBType.SQLite)
+            {
+                DBAccess.GDBAccessObj.CloseDBConnection();
+            }
+
             nant("loadDatabaseIncrement -D:file=" + strSqlFilePathFromCSharpName, false);
-            //nant("startPetraServer", true);
+
+            if (TSrvSetting.RDMBSType == TDBType.SQLite)
+            {
+                DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+                    TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
+                    TSrvSetting.PostgreSQLDatabaseName,
+                    TSrvSetting.DBUsername, TSrvSetting.DBPassword, "");
+            }
         }
 
         /// <summary>
@@ -170,6 +190,11 @@ namespace Ict.Testing.NUnitTools
             TLogging.Log(sr.ReadToEnd());
             sr.Close();
             File.Delete(rootPath + Path.DirectorySeparatorChar + "nant.txt");
+
+            if ((NantProcess.ExitCode != 0) && !ignoreError)
+            {
+                throw new Exception("Nant did not succeed");
+            }
         }
     }
 

@@ -497,8 +497,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 LedgerTable[0].ForexGainsLossesAccount, CostCentreCode).YtdActual;
 
             // check the amount on the AP account
-            Assert.AreEqual(APAccountBalanceAfter, APAccountBalanceBefore, "After paying then reversing, the AP account should be as before.");
-            Assert.AreEqual(BankAccountAfter, BankAccountBefore, "After paying then reversing, the Bank account should be as before.");
+            Assert.AreEqual(APAccountBalanceBefore, APAccountBalanceAfter, "After paying then reversing, the AP account should be as before.");
+            Assert.AreEqual(BankAccountBefore, BankAccountAfter, "After paying then reversing, the Bank account should be as before.");
             Assert.AreEqual(
                 Math.Round(RevalAccountAfter, 5),
                 Math.Round(RevalAccountBefore, 5),
