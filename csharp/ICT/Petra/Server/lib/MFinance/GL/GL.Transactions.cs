@@ -1439,7 +1439,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             bool NewTransaction = false;
-            bool transactionCommitted = false;
             Int32 LedgerNumber;
             Int32 BatchNumber;
             Int32 JournalNumber;
@@ -1453,11 +1452,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             TSubmitChangesResult SubmissionResult = new TSubmitChangesResult();
 
-            //Error handling
-            string ErrorContext = "Save a recurring batch";
-            string ErrorMessage = String.Empty;
-            //Set default type as non-critical
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+//            //Error handling
+//            string ErrorContext = "Save a recurring batch";
+//            string ErrorMessage = String.Empty;
+//            //Set default type as non-critical
+//            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -1599,7 +1598,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-                transactionCommitted = true;
             }
 
             // now submit the changes
@@ -1632,9 +1630,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                     if (foundTransactionForDeletion.Length > 0)
                     {
-						TLogging.Log(String.Format("foundRecurringTransactionForDeletion: {0}",
-	                          foundTransactionForDeletion));
-				
                         ARecurringTransactionRow transRowClient = null;
 
                         for (int i = 0; i < foundTransactionForDeletion.Length; i++)

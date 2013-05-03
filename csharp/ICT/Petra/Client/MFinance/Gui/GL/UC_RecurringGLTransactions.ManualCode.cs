@@ -897,10 +897,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int transactionNumberToDelete = ARowToDelete.TransactionNumber;
             int lastTransactionNumber = FJournalRow.LastTransactionNumber;
 
-            //Untie the atttributes grid.
-            grdAnalAttributes.DataSource = null;
-            grdDetails.DataSource = null;
-
             try
             {
                 // Delete on client side data through views that is already loaded. Data that is not
@@ -1032,8 +1028,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             finally
             {
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransaction.DefaultView);
-                grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransAnalAttrib.DefaultView);
                 SetTransactionDefaultView();
             }
 

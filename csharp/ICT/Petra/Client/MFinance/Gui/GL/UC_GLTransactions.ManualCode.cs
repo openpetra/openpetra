@@ -914,10 +914,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int transactionNumberToDelete = ARowToDelete.TransactionNumber;
             int lastTransactionNumber = FJournalRow.LastTransactionNumber;
 
-            //Unbind the grids.
-            grdAnalAttributes.DataSource = null;
-            grdDetails.DataSource = null;
-
             try
             {
                 // Delete on client side data through views that is already loaded. Data that is not
@@ -1049,8 +1045,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             finally
             {
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
-                grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
                 SetTransactionDefaultView();
             }
 

@@ -74,5 +74,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ValidationControlsDict);
             }
         }
+        
+        static partial void ValidateRecurringGiftBatchManual(TValidationControlsDict AValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
+        {
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+
+            ValidationControlsDict.Add(ASubmitTable.Columns[ARecurringGiftBatchTable.ColumnBatchDescriptionId],
+                new TValidationControlsData(null, ARecurringGiftBatchTable.GetBatchDescriptionDBName()));
+
+            for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
+            {
+                TSharedFinanceValidation_Gift.ValidateRecurringGiftBatchManual("TTransactionWebConnector" +
+                    " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
+                    (ARecurringGiftBatchRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
+                    ValidationControlsDict);
+            }
+        }
+
+        static partial void ValidateRecurringGiftDetailManual(TValidationControlsDict AValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
+        {
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+
+            ValidationControlsDict.Add(ASubmitTable.Columns[ARecurringGiftDetailTable.ColumnGiftCommentOneId],
+                new TValidationControlsData(null, ARecurringGiftDetailTable.GetGiftCommentOneDBName()));
+
+            for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
+            {
+                TSharedFinanceValidation_Gift.ValidateRecurringGiftDetailManual("TTransactionWebConnector" +
+                    " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
+                    (ARecurringGiftDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
+                    ValidationControlsDict);
+            }
+        }
+        
     }
 }
