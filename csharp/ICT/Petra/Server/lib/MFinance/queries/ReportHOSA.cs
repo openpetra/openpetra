@@ -92,7 +92,7 @@ namespace Ict.Petra.Server.MFinance.queries
                         {
                             Value = AParameters.Get("param_start_period_i").ToInt32()
                         });
-                    SqlParameterList.Add(new OdbcParameter("batchperiod_start", OdbcType.Int)
+                    SqlParameterList.Add(new OdbcParameter("batchperiod_end", OdbcType.Int)
                         {
                             Value = AParameters.Get("param_end_period_i").ToInt32()
                         });
