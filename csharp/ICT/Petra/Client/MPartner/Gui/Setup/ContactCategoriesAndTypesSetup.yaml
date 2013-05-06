@@ -1,0 +1,65 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Contact Categories and Types
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerContactSetupTDS
+    DetailTable: PPartnerAttributeCategory
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    FormType: edit
+    Template: windowEdit
+    WindowWidth: 790
+    WindowHeight: 700
+    Actions:
+        actNewCategory: {Label=&New, ActionClick=NewRecord}
+        actDeleteCategory: {Label=&Delete, ActionClick=DeleteRecord}      
+        actPromoteCategory: {ActionClick=ContactCategoryPromote, Image: MoveDownArrow.ico}
+        actDemoteCategory: {ActionClick=ContactCategoryDemote, Image: MoveUpArrow.ico}        
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlValues, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Height: 220
+            Dock: Top
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNewCategory, btnDeleteCategory, pnlPromoteDemoteCategory]
+        btnNewCategory:
+            Stretch: horizontally
+        btnDeleteCategory:
+            Stretch: horizontally
+        pnlPromoteDemoteCategory:
+            Controls: [btnDemoteCategory, btnPromoteCategory]
+            Margin: 0,0,0,0
+            Padding: 0,0,0,0
+        btnPromoteCategory: {NoLabel=true, Width=15}
+        btnDemoteCategory: {NoLabel=true, Width=15}
+        grdDetails:
+            Dock: Fill
+            TableName: PPartnerAttributeCategory
+            Columns: [CategoryCode, CategoryDesc, Deletable]
+            CustomColumns:
+                CategoryCode: {Label=Contact Category}
+                CategoryDesc: {Label=Description}
+                Deletable: {Label=Deletable?, Type=Boolean}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailCategoryCode, txtDetailCategoryDescription]
+                Row1: [chkDetailCategoryDeletable]
+        pnlValues:
+            Dock: Bottom
+            Height: 400
+            Controls: [ucoValues]
+        ucoValues:
+            Type: Ict.Petra.Client.MPartner.Gui.Setup.TUC_ContactCategoriesAndTypesDetail
+            Dock: Fill
+          
+        txtDetailCategoryCode: {Label=Contact Category, Width=200, Validation=true}
+        txtDetailCategoryDescription: {Label=Description, Width=290, Validation=true}
+        chkDetailCategoryDeletable: {Label=Deletable, ReadOnly=true}
+    Toolbar:
+        tbbNew:
+            Label: New Contact Category

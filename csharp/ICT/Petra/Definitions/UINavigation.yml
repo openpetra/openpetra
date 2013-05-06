@@ -103,6 +103,7 @@ OpenPetra:
                         RelationshipCategory: {Label=Relationship Categories, Description=Maintain Relationship Categories, ActionOpenScreen=TFrmRelationCategorySetup}   
                         Relationship:  {Label=Relationships, Description=Maintain Relationships, ActionOpenScreen=TFrmRelationshipSetup} 
                         ContactMethod: {Label=Contact Methods, Description=Maintain Contact Methods, ActionOpenScreen=TFrmContactMethodSetup}   
+                        PartnerContactCategoriesAndTypes: {Label=Partner Contact Categories and Types, Description=Maintain Partner Contact Categories and Types, ActionOpenScreen=TFrmContactCategoriesAndTypesSetup}   
                         InterestCategory: {Label=Interest Categories, Description=Maintain Interest Categories, ActionOpenScreen=TFrmInterestCategorySetup}   
                         Interest: {Label=Partner Interests, Description=Maintain Partner Interests, ActionOpenScreen=TFrmInterestSetup}   
                                                 

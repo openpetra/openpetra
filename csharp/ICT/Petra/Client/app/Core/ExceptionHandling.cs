@@ -110,6 +110,7 @@ namespace Ict.Petra.Client.App.Core
         public void OnThreadException(object ASender, ThreadExceptionEventArgs AEventArgs)
         {
             TUnhandledExceptionForm UEDialogue;
+            string FunctionalityNotImplementedMsg = Catalog.GetString("This functionality is not yet implemented in OpenPetra.");
 
             if (!(AEventArgs.Exception is NotImplementedException))
             {
@@ -125,10 +126,15 @@ namespace Ict.Petra.Client.App.Core
             }
             else
             {
-                TLogging.Log(Catalog.GetString("This functionality is not yet implemented in OpenPetra."));
+                if(AEventArgs.Exception.Message != String.Empty)
+                {
+                    FunctionalityNotImplementedMsg = AEventArgs.Exception.Message;
+                }
+                TLogging.Log(FunctionalityNotImplementedMsg);
                 TLogging.Log(AEventArgs.Exception.StackTrace);
-                MessageBox.Show(Catalog.GetString("This functionality is not yet implemented in OpenPetra."),
-                    Catalog.GetString("Not Implemented"),
+                
+                MessageBox.Show(Catalog.GetString(FunctionalityNotImplementedMsg),
+                    Catalog.GetString("Not Yet Implemented in OpenPetra"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }

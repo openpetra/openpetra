@@ -74,6 +74,7 @@ namespace Ict.Petra.Shared
             list.Add("p_partner_classes");
             list.Add("p_location");
             list.Add("p_location_type");
+            list.Add("p_partner_attribute_category");
             list.Add("p_partner_attribute_type");
             list.Add("u_unit_type");
             list.Add("pt_marital_status");

@@ -9,40 +9,83 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
-        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actPromote: {ActionClick=ContactTypePromote, Image: MoveDownArrow.ico}
+        actDemote: {ActionClick=ContactTypeDemote, Image: MoveUpArrow.ico}
+        actLaunchHyperlinkPrefEMail: {ActionClick=LaunchHyperlinkPrefEMail, Image: Email.ico}
+        actLaunchHyperlinkEMailWithinOrg: {ActionClick=LaunchHyperlinkEMailWithinOrg, Image: Email.ico}
+
     Controls:
         pnlContent:
+            Controls: [grpOverallContactSettings, grpContactDetails]
+            Dock: Fill
+        grpOverallContactSettings:
+            Controls: 
+                Row0: [cmbPreferredWayOfContacting]
+                Row1: [cmbPreferredPhoneForContacting, cmbPhoneWithinTheOrganisation]
+                Row2: [cmbPreferredEMail, btnLaunchHyperlinkPrefEMail, cmbEMailWithinTheOrganisation, btnLaunchHyperlinkEMailWithinOrg]
+            Dock: Top
+        cmbPreferredWayOfContacting: {OptionalValues=Phone, E-Mail, Letter, Skype, SocialNetwork, Width=147, Validation=true}
+        cmbPreferredPhoneForContacting: {List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
+        cmbPhoneWithinTheOrganisation: {List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
+        cmbPreferredEMail: {Label=Preferred E-Mail, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
+        cmbEMailWithinTheOrganisation: {Label=E-Mail Within The Organisation, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
+        btnLaunchHyperlinkPrefEMail: {NoLabel=true, Width=15}
+        btnLaunchHyperlinkEMailWithinOrg: {NoLabel=true, Width=15}
+            
+        grpContactDetails:
+            Controls: [grpFilter, pnlEditing]
+            Dock: Fill
+        grpFilter:
+            Controls: [chkValidContactDetailsOnly]
+            Dock: Top
+        pnlEditing:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
+        chkValidContactDetailsOnly: {CheckBoxAttachedLabel=Left, OnChange=FilterCriteriaChanged}
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails,pnlButtons]
-
+            Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew,btnDelete]
+            Controls: [btnNew, btnDelete, pnlPromoteDemote]
         btnNew: {Stretch=horizontally}
             Action: actNew
         btnDelete: {Stretch=horizontally}
             Action: actDelete
-
+        pnlPromoteDemote:
+            Controls: [btnDemote, btnPromote]
+            Margin: 0,0,0,0
+            Padding: 0,40,0,0
+        btnPromote: {NoLabel=true, Width=15}
+        btnDemote: {NoLabel=true, Width=15}
+            
         grdDetails:
             Dock: Fill
-            Columns: [PPartnerAttribute.Code, PPartnerAttribute.Value, PPartnerAttribute.ValidFrom, PPartnerAttribute.ValidTo]
+            Columns: [PPartnerAttribute.AttributeType, PPartnerAttribute.Value, PPartnerAttribute.Comment, PPartnerAttribute.Sensitive]
             ActionFocusRow: FocusedRowChanged
-
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [cmbCode]
-                Row1: [txtValue]
-                Row2: [txtComment]
-                Row3: [dtpValidFrom, dtpValidTo]
-        cmbCode: {Label=Type, List=RelationList, Validation=true}
+                Row0: [cmbContactCategory, cmbContactType, chkWork]
+                Row1: [txtValue, txtComment]
+#                Row2: [chkCurrent, dtpInvalidFrom, chkSensitive]
+        cmbContactCategory: {List=PartnerAttributeCategoryList, ComboBoxWidth=200, Width=200, Validation=true}
+        cmbContactType: {List=PartnerAttributeTypeList, ComboBoxWidth=204, Width=204, DataField=PPartnerAttribute.AttributeType, Validation=true}
+        chkWork: 
+           Validation: true   # only to cause data to be updated on-the-fly...
         txtValue:
             Label: Value
-        txtComment: {Label=Comment, Multiline=true, Stretch=fully, DataField=PPartnerAttribute.Comment}
-        dtpValidFrom:
-            Validation: Pair(dtpValidTo)
-        dtpValidTo:
-            Label: To
+            Width: 200
+            Type: Hyperlink
+            LinkType: http
+#            ColSpan: 2
+        txtComment: {Label=Comment, Width=276, ColSpan=2, DataField=PPartnerAttribute.Comment}
+        Empty:
+        Empty2:
+        chkCurrent:
+            OnChange: ValidChanged
+        dtpInvalidFrom:
+            Validation: true
+#            ColSpan: 2
+        chkSensitive:

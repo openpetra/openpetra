@@ -189,6 +189,12 @@ namespace Ict.Petra.Client.CommonControls
             MethodOfPaymentList,
 
             /// <summary>todoComment</summary>
+            PartnerAttributeCategoryList,
+            
+            /// <summary>todoComment</summary>
+            PartnerAttributeTypeList,
+            
+            /// <summary>todoComment</summary>
             PartnerClassList,
 
             /// <summary>todoComment</summary>
@@ -741,6 +747,24 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MethodOfPaymentList),
                     AMethodOfPaymentTable.GetMethodOfPaymentCodeDBName(),
                     AMethodOfPaymentTable.GetMethodOfPaymentDescDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.PartnerAttributeCategoryList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.PartnerAttributeCategoryList),
+                    "p_category_code_c",
+                    "p_category_desc_c",
+                    null);
+                    break;
+                    
+                case TListTableEnum.PartnerAttributeTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.PartnerAttributeTypeList),
+                    "p_code_c",
+                    "p_description_c",
                     null);
                     break;
 
@@ -1307,6 +1331,16 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 39;
                     this.ColumnWidthCol2 = 230;
                     cmbCombobox.MaxDropDownItems = 10;
+                    break;
+
+                case TListTableEnum.PartnerAttributeCategoryList:
+                    this.ColumnWidthCol1 = 200;
+                    this.ColumnWidthCol2 = 250;
+                    break;
+
+                case TListTableEnum.PartnerAttributeTypeList:
+                    this.ColumnWidthCol1 = 200;
+                    this.ColumnWidthCol2 = 250;
                     break;
 
                 case TListTableEnum.PartnerClassList:

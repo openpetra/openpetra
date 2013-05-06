@@ -20,6 +20,8 @@ CachedTables:
                 PtMaritalStatus:
                 PMethodOfContact:
                 POccupation:
+                PPartnerAttributeCategory:
+                PPartnerAttributeType:
                 PPartnerStatus:
                 PType: {Enum=PartnerTypeList}
                 PFoundationProposalStatus: {Enum=ProposalStatusList}

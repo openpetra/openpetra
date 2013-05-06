@@ -1,0 +1,91 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerContactSetupTDS
+    DetailTable: PPartnerAttributeType
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+        actPromote: {ActionClick=ContactTypePromote, Image: MoveDownArrow.ico}
+        actDemote: {ActionClick=ContactTypeDemote, Image: MoveUpArrow.ico}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlDetailTop, grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete, pnlPromoteDemote]
+        btnNew:
+            Stretch: horizontally
+        btnDelete:
+            Stretch: horizontally
+        pnlPromoteDemote:
+            Controls: [btnDemote, btnPromote]
+            Margin: 0,0,0,0
+            Padding: 0,20,0,0
+        btnPromote: {NoLabel=true, Width=15}
+        btnDemote: {NoLabel=true, Width=15}
+            
+        grdDetails:
+            Dock: Fill
+            TableName: PPartnerAttributeType
+            Columns: [Code, Description, Unassignable, UnassignableDate, Deletable]
+            CustomColumns:
+                Code: {Label=Contact Type}
+                Description: {Label=Description}
+                Unassignable: {Label=Unassignable?, Type=Boolean}
+                UnassignableDate: {Label=Unassignable Date, Type=DateTime}
+                Deletable: {Label=Deletable?, Type=Boolean}
+            ActionFocusRow: FocusedRowChanged
+            
+        pnlDetails:
+            Height: 165
+            Dock: Bottom
+            Controls: [pnlDetailsLeft, pnlDetailsRight]
+            ControlsOrientation: horizontal
+        pnlDetailsLeft:
+            Controls:
+                Row0: [txtDetailCode]
+                Row1: [txtDetailSpecialLabel]
+                Row2: [txtDetailDescription]
+                Row3: [pnlUnassignableGrouping]
+        pnlUnassignableGrouping:
+            Controls: 
+                Row0: [chkDetailUnassignable, dtpDetailUnassignableDate]
+                Row1: [chkDetailDeletable]
+            Margin: 57,0,0,0
+        pnlDetailsRight:
+            Controls: [grpValueKind]
+            Height: 140
+        grpValueKind:
+            Controls: [cmbDetailAttributeTypeValueKind, txtDetailHyperlinkFormat, lblLinkFormatTip]
+            Margin: 0,12,0,0
+            Width: 311
+            Height: 109
+        txtDetailCode: {Label=Contact Type, Width=255}
+        txtDetailSpecialLabel: {Label=Label When for Business, Width=255}
+        txtDetailDescription: {Width=255}
+        chkDetailUnassignable:
+        dtpDetailUnassignableDate: {ReadOnly=true}
+        chkDetailDeletable: {ReadOnly=true}
+        cmbDetailAttributeTypeValueKind: {Label=Value Is, Width=150}
+            OptionalValues: [=Plain Text, E-Mail Address, Hyperlink (Fixed), Hyperlink With Value, Skype ID]  
+        txtDetailHyperlinkFormat: {Label=Link Format, Width=206, Enabled=false}
+        lblLinkFormatTip: 
+            Text: Enter the URL that should be launched for the Contact Type ( e.g. http://www.facebook.com/{VALUE} ).
+            Width: 215
+            Height: 37
+            Margin: 89,0,0,0
+            Enabled: false
+            Visible: false
+        pnlDetailTop:
+            Dock: Top
+            Controls: [txtHeaderCategory]
+        txtHeaderCategory: {Label=Contact Types for Category, ReadOnly=true, Width=200}

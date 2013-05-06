@@ -135,7 +135,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     || (TYml2Xml.GetAttribute(curNode, "Type") == "Extract")
                     || (TYml2Xml.GetAttribute(curNode, "Type") == "Occupation")
                     || (TYml2Xml.GetAttribute(curNode, "Type") == "Conference")
-                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Event"))
+                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Event")
+                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Hyperlink"))
                 {
                     return false;
                 }
@@ -872,6 +873,105 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.SetControlProperty(ctrl, "DecimalPlaces", FDecimalPrecision.ToString());
             writer.SetControlProperty(ctrl, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
             writer.SetControlProperty(ctrl, "CurrencySymbol", "\"###\"");
+
+            return writer.FTemplate;
+        }
+    }
+    
+    /// <summary>
+    /// generator for a Hyperlink Textbox
+    /// </summary>
+    public class TTxtLinkTextBoxGenerator : TControlGenerator
+    {
+        private string FLinkType = "None";
+        
+        /// <summary>constructor</summary>
+        public TTxtLinkTextBoxGenerator()
+            : base("txt", "Ict.Common.Controls.TTxtLinkTextBox")
+        {
+            FChangeEventName = "TextChanged";
+            FHasReadOnlyProperty = true;
+            FDefaultHeight = 22;
+        }
+
+        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (base.ControlFitsNode(curNode))
+            {
+                if ((TYml2Xml.GetAttribute(curNode, "Format") != String.Empty))
+                {
+                    return false;
+                }
+//Console.WriteLine("TTxtLinkTextBoxGenerator ControlFitsNode");
+                if (TYml2Xml.GetAttribute(curNode, "Type") == "Hyperlink")
+                {
+                    if(TYml2Xml.HasAttribute(curNode, "LinkType"))
+                    {
+//Console.WriteLine("TTxtLinkTextBoxGenerator: LinkType=" + TYml2Xml.GetAttribute(curNode, "LinkType"));                        
+                        string LinkTypeStr = TYml2Xml.GetAttribute(curNode, "LinkType").ToLower();
+                        
+                        if (LinkTypeStr == "http") 
+                        {
+                            FLinkType = "Http";    
+                        }
+                        else if (LinkTypeStr == "ftp") 
+                        {
+                            FLinkType = "Ftp";    
+                        }
+                        else if (LinkTypeStr == "email") 
+                        {
+                            FLinkType = "Email";    
+                        }
+                        else if (LinkTypeStr == "ftp") 
+                        {
+                            FLinkType = "Ftp";    
+                        }
+                        else if (LinkTypeStr == "skype") 
+                        {
+                            FLinkType = "Skype";    
+                        }                        
+                    }
+
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        /// <summary>
+        /// how to get the value from the control
+        /// </summary>
+        protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == null)
+            {
+                return ctrl.controlName + ".Text == null";
+            }
+
+            return ctrl.controlName + ".Text";
+        }
+
+        /// <summary>
+        /// how to assign a value to the control
+        /// </summary>
+        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldOrNull == null)
+            {
+                return ctrl.controlName + ".Text = String.Empty;";
+            }
+            
+            return ctrl.controlName + ".Text = " + AFieldOrNull + ";";
+        }
+
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            writer.SetControlProperty(ctrl, "LinkType", "TLinkTypes." + FLinkType);
 
             return writer.FTemplate;
         }

@@ -42,8 +42,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
-//        private TUCPartnerRelationshipsLogic FLogic;
-
+        private Boolean FPartnerAttributesExist;
+        
         #region Public Methods
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -108,20 +108,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public void SpecialInitUserControl()
         {
+            // disable change event while controls are being initialized as otherwise save button might get enabled
+            FPetraUtilsObject.DisableDataChangedEvent();
+
+
+
+            
             // Set up screen logic
 //            FLogic.MultiTableDS = (PartnerEditTDS)FMainDS;
 //            FLogic.PartnerEditUIConnector = FPartnerEditUIConnector;
 //            FLogic.LoadDataOnDemand();
 
-            grdDetails.Columns.Clear();
-            grdDetails.AddTextColumn("Description", FMainDS.PPartnerRelationship.Columns["RelationDescription"]);
-            grdDetails.AddPartnerKeyColumn("Partner Key", FMainDS.PPartnerRelationship.Columns["OtherPartnerKey"]);
-            grdDetails.AddTextColumn("Partner Name",
-                FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerShortNameDBName()]);
-            grdDetails.AddTextColumn("Class", FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerClassDBName()]);
-            grdDetails.AddTextColumn("Comment", FMainDS.PPartnerRelationship.Columns[PPartnerRelationshipTable.GetCommentDBName()]);
-
-            OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpPartnerRelationships));
+            OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpContactDetails));
 
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
@@ -129,6 +127,53 @@ namespace Ict.Petra.Client.MPartner.Gui
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
 
+
+
+            /* Check if data needs to be retrieved from the PetraServer */
+            if (FMainDS.PPartnerAttribute == null)
+            {
+                FPartnerAttributesExist = LoadDataOnDemand();
+            }
+            else
+            {
+                FMainDS.InitVars();
+                FPartnerAttributesExist = FMainDS.FamilyMembers.Rows.Count > 0;
+            }
+
+            
+            /* Create SourceDataGrid columns */
+            CreateGridColumns();
+
+            /* Setup the DataGrid's visual appearance */
+//            SetupDataGridVisualAppearance();
+
+            /* Prepare the Demote and Promote buttons first time */
+//            PrepareArrowButtons();
+
+            /* Hook up event that fires when a different Row is selected */
+//            grdDetails.Selection.FocusRowEntered += new RowEventHandler(this.DataGrid_FocusRowEntered);
+            
+            OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpFamilyMembers));
+
+            if (!FPartnerAttributesExist)
+            {
+                // TODO
+//                /* If Family has no members, these buttons are disabled */
+//                this.btnFamilyMemberDemote.Enabled = false;
+//                this.btnFamilyMemberPromote.Enabled = false;
+//                this.btnMovePersonToOtherFamily.Enabled = false;
+//                this.btnEditPerson.Enabled = false;
+//                this.btnEditFamilyID.Enabled = false;
+
+                /* this.btnAddExistingPersonToThisFamily.enabled := false; */
+                /* this.btnAddNewPersonThisFamily.enabled := false; */
+            }
+
+
+
+            
+            
+            
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
@@ -138,6 +183,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MakeDetailsInvisible(true);
                 btnDelete.Enabled = false;
             }
+            
+            // now changes to controls can trigger enabling of save button again
+            FPetraUtilsObject.EnableDataChangedEvent();
+
+//            ApplySecurity();            // TODO
         }
 
         /// <summary>
@@ -165,6 +215,53 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.InitVars();
         }
 
+        /// <summary>
+        /// Loads Partner Types Data from Petra Server into FMainDS.
+        /// </summary>
+        /// <returns>true if successful, otherwise false.</returns>
+        public Boolean LoadDataOnDemand()
+        {
+            Boolean ReturnValue;
+
+            // retrieve Contact Details (stored in PPartnerAttribute Table) from PetraServer
+            // If the Partner has got no Contact Details: returns false
+            try
+            {
+                // Make sure that Typed DataTable is already there at Client side
+                if (FMainDS.PPartnerAttribute == null)
+                {
+                    FMainDS.Tables.Add(new PPartnerAttributeTable(PPartnerAttributeTable.GetTableName()));
+                    FMainDS.InitVars();
+                }
+
+                FMainDS.PPartnerAttribute.Rows.Clear();
+                FMainDS.Merge(FPartnerEditUIConnector.GetDataPartnerAttributes());
+                FMainDS.PPartnerAttribute.AcceptChanges();
+
+                if (FMainDS.PPartnerAttribute.Rows.Count > 0)
+                {
+                    ReturnValue = true;
+                }
+                else
+                {
+                    ReturnValue = false;
+                }
+            }
+            catch (System.NullReferenceException)
+            {
+                ReturnValue = false;
+                return false;
+            }
+            catch (Exception)
+            {
+                ReturnValue = false;
+
+                // raise;
+            }
+
+            return ReturnValue;
+        }
+        
         private void ShowDataManual()
         {
         }
@@ -220,7 +317,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (CreateNewPPartnerAttribute())
             {
-                cmbCode.Focus();
+                cmbContactCategory.Focus();
             }
 
             // Fire OnRecalculateScreenParts event: reset counter in tab header
@@ -328,6 +425,68 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlDetails.Visible = !value;
         }
 
+        /// <summary>
+        /// Creates custom DataColumns that will be shown in the Grid.
+        /// </summary>
+        /// <returns>void</returns>
+        public void CreateCustomDataColumns()
+        {
+            DataColumn ForeignTableColumn;
+            
+            ForeignTableColumn = new DataColumn();
+            ForeignTableColumn.DataType = System.Type.GetType("System.String");
+            ForeignTableColumn.ColumnName = "Parent_" + PPartnerAttributeTypeTable.GetCodeDBName();
+            ForeignTableColumn.Expression = "Parent." + PPartnerAttributeTypeTable.GetCodeDBName();
+            FMainDS.PPartnerAttribute.Columns.Add(ForeignTableColumn);
+            
+            ForeignTableColumn = new DataColumn();
+            ForeignTableColumn.DataType = System.Type.GetType("System.String");
+            ForeignTableColumn.ColumnName = "ContactType";
+            ForeignTableColumn.Expression = "IIF(Specialised, Parent." + PPartnerAttributeTypeTable.GetSpecialLabelDBName() + ", Parent." + PPartnerAttributeTypeTable.GetCodeDBName() + ")";
+            FMainDS.PPartnerAttribute.Columns.Add(ForeignTableColumn);
+        }
+        
+        /// <summary>
+        /// Creates DataBound columns for the Grid control.
+        /// </summary>
+        /// <returns>void</returns>
+        public void CreateGridColumns()
+        {
+// TODO           FDataGrid.AddImageColumn(@GetAddressKindIconForGridRow);
+
+            //
+            // Contact Type
+            grdDetails.AddTextColumn("Type Code", FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerAttributeTypeTable.GetCodeDBName()]);
+
+            //
+            // Contact Type
+            grdDetails.AddTextColumn("Contact Type", FMainDS.PPartnerAttribute.Columns["ContactType"]);
+            
+            // Value
+            grdDetails.AddTextColumn("Value", FMainDS.PPartnerAttribute.ColumnValue);
+
+            // Comment
+            grdDetails.AddTextColumn("Comments", FMainDS.PPartnerAttribute.ColumnComment);
+
+            // Current
+            grdDetails.AddCheckBoxColumn("Current", FMainDS.PPartnerAttribute.ColumnCurrent);
+
+            // Confidential
+            grdDetails.AddCheckBoxColumn("Confidential", FMainDS.PPartnerAttribute.ColumnSensitive);
+            
+            // p_location_key_i (for testing purposes only...)
+            // grdDetails.AddTextColumn("Location Key", FMainDS.PPartnerAttribute.ColumnLocationKey);
+
+            // p_location_key_i (for testing purposes only...)
+            // grdDetails.AddTextColumn("PartnerLocation Key", FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerLocationTable.GetLocationKeyDBName()]);
+
+            // Location Type
+            grdDetails.AddTextColumn("Location Type", FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerLocationTable.GetLocationTypeDBName()]);
+
+            // Modification TimeStamp (for testing purposes only...)
+            // grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
+        }
+        
         private void ValidateDataDetailsManual(PPartnerAttributeRow ARow)
         {
             bool NewPartner = (FMainDS.PPartner.Rows[0].RowState == DataRowState.Added);
@@ -338,6 +497,40 @@ namespace Ict.Petra.Client.MPartner.Gui
 //                FValidationControlsDict, NewPartner, ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey);
         }
 
+        #endregion
+        
+        #region Event Handlers
+        
+        private void ContactTypePromote(object sender, EventArgs e)
+        {
+            throw new NotImplementedException("Promotion of Contact Types not implemented yet!");
+        }
+
+        private void ContactTypeDemote(object sender, EventArgs e)
+        {
+            throw new NotImplementedException("Demotion of Contact Types not implemented yet!");
+        }
+
+        private void LaunchHyperlinkPrefEMail(object sender, EventArgs e)
+        {
+            throw new NotImplementedException("Launching of E-Mail program not implemented yet!");
+        }
+
+        private void LaunchHyperlinkEMailWithinOrg(object sender, EventArgs e)
+        {
+            throw new NotImplementedException("Launching of E-Mail program not implemented yet!");
+        }
+        
+        private void FilterCriteriaChanged(object sender, EventArgs e)
+        {
+            throw new NotImplementedException("Filtering is not implemented yet!");
+        }
+        
+        private void ValidChanged(object sender, EventArgs e)
+        {
+            // TODO
+        }
+        
         #endregion
     }
 }
