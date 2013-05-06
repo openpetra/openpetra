@@ -531,7 +531,7 @@ namespace {#NAMESPACE}
             {
                 DeletionQuestion += String.Format("{0}{0}({1} {2})",
                     Environment.NewLine,
-                    FPrimaryKeyLabel.Text,
+                    FPrimaryKeyLabel.Text.Replace("&", ""),
                     TControlExtensions.GetDisplayTextForControl(FPrimaryKeyControl));
             }
 
@@ -548,13 +548,16 @@ namespace {#NAMESPACE}
                          MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
                 {
 {#IFDEF DELETEROWMANUAL}
-                    {#DELETEROWMANUAL}
+                    try
+                    {
+                        {#DELETEROWMANUAL}
 {#ENDIF DELETEROWMANUAL}
 {#IFNDEF DELETEROWMANUAL}               
                     try
                     {
                         FPreviouslySelectedDetailRow.Delete();
                         DeletionPerformed = true;
+{#ENDIFN DELETEROWMANUAL}               
                     }
                     catch (Exception ex)
                     {
@@ -564,7 +567,6 @@ namespace {#NAMESPACE}
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Warning);
                     }
-{#ENDIFN DELETEROWMANUAL}               
             
                     if (DeletionPerformed)
                     {
@@ -690,7 +692,7 @@ namespace {#NAMESPACE}
                 if (recordsDeleted > 0)
                 {
                     string s1 = Catalog.GetPluralString("record", "records", recordsDeleted);
-                    string s2 = Catalog.GetPluralString("was", "were", recordsUndeletable);
+                    string s2 = Catalog.GetPluralString("was", "were", recordsDeleted);
                     results = String.Format(Catalog.GetString("{0} {1} {2} successfully deleted."), recordsDeleted, s1, s2);
                 }
                 else
