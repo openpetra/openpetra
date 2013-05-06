@@ -18,7 +18,7 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlDetailTop, grdDetails, pnlButtons]
+            Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
             Controls: [btnNew, btnDelete, pnlPromoteDemote]
@@ -46,7 +46,7 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             
         pnlDetails:
-            Height: 165
+            Height: 175
             Dock: Bottom
             Controls: [pnlDetailsLeft, pnlDetailsRight]
             ControlsOrientation: horizontal
@@ -85,7 +85,3 @@ RootNode:
             Margin: 89,0,0,0
             Enabled: false
             Visible: false
-        pnlDetailTop:
-            Dock: Top
-            Controls: [txtHeaderCategory]
-        txtHeaderCategory: {Label=Contact Types for Category, ReadOnly=true, Width=200}

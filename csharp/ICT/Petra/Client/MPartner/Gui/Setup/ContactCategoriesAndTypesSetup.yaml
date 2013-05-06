@@ -16,11 +16,11 @@ RootNode:
         actDemoteCategory: {ActionClick=ContactCategoryDemote, Image: MoveUpArrow.ico}        
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlValues, pnlDetails]
+            Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
-            Height: 220
-            Dock: Top
+            Height: 300
+            Dock: Fill
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
@@ -49,16 +49,22 @@ RootNode:
             Controls:
                 Row0: [txtDetailCategoryCode, txtDetailCategoryDescription]
                 Row1: [chkDetailCategoryDeletable]
-        pnlValues:
-            Dock: Bottom
-            Height: 400
+                Row2: [grpExtraDetails]
+        grpExtraDetails: {Label=Contact Types}
             Controls: [ucoValues]
+            ColSpan: 2
+            Height: 382            
+            Width: 775
+            Padding: 2,5,9,10                
+            
         ucoValues:
             Type: Ict.Petra.Client.MPartner.Gui.Setup.TUC_ContactCategoriesAndTypesDetail
-            Dock: Fill
+            Width: 765
+            Stretch: horizontally
+            Padding: 3,5,0,5                
           
         txtDetailCategoryCode: {Label=Contact Category, Width=200, Validation=true}
-        txtDetailCategoryDescription: {Label=Description, Width=290, Validation=true}
+        txtDetailCategoryDescription: {Label=Description, Width=293, Validation=true}
         chkDetailCategoryDeletable: {Label=Deletable, ReadOnly=true}
     Toolbar:
         tbbNew:
