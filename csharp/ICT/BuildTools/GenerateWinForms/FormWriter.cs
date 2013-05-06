@@ -1450,15 +1450,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("SHOWDATA", "ShowDataManual(ARow);" + Environment.NewLine);
             }
 
+            if (FCodeStorage.FControlList.ContainsKey("pnlDetails"))
+            {
+                FTemplate.AddToCodelet("CLEARDETAILS", "FPetraUtilsObject.ClearControls(pnlDetails);" + Environment.NewLine);
+            }
+
             if (FCodeStorage.ManualFileExistsAndContains("void ShowDetailsManual"))
             {
                 FTemplate.AddToCodelet("SHOWDETAILS", "ShowDetailsManual(ARow);" + Environment.NewLine);
                 FTemplate.AddToCodelet("CLEARDETAILS", "ShowDetailsManual(ARow);" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.FControlList.ContainsKey("pnlDetails"))
-            {
-                FTemplate.AddToCodelet("CLEARDETAILS", "FPetraUtilsObject.ClearControls(pnlDetails);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsManual()"))
