@@ -224,8 +224,12 @@ namespace Ict.Petra.Client.CommonControls
                 else if (controlName.StartsWith("pnl") || controlName.StartsWith("grp"))
                 {
                     // Call ourself recursively to see if the desired control is on a sub-panel
-                    if (GetControlsForPrimaryKey(APrimaryKey, AHostControl.Controls[i], out ALabelControl, out ADataControl))
+                    Label subLabelControl = null;
+                    Control subDataControl = null;
+                    if (GetControlsForPrimaryKey(APrimaryKey, AHostControl.Controls[i], out subLabelControl, out subDataControl))
                     {
+                        ALabelControl = subLabelControl;
+                        ADataControl = subDataControl;
                         bFound = true;
                         break;
                     }
