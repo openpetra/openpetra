@@ -90,7 +90,7 @@ namespace Ict.Tools.DeleteButtonWiki
             }
 
             FLogFile.WriteLine(
-                "Has New Button !! Has Delete Button !! Has Auto-delete !! Has ReferenceCount !! Has Deletable Flag !! Has Enable Delete !! Calls .Delete() !! Manual Calls Auto !! PreDelete !! DeleteRow !! PostDelete !! Client/Server Match");
+                "Has New Button !! Has Delete Button !! Has Auto-delete !! Has ReferenceCount !! Has Deletable Flag !! Has Enable Delete !! Calls .Delete() !! Manual Calls Auto !! PreDelete !! DeleteRow !! PostDelete !! Client/Server Match !! Multi Select");
 
             foreach (string tryPath in AListToCheck)
             {
@@ -416,6 +416,16 @@ namespace Ict.Tools.DeleteButtonWiki
                         else
                         {
                             FLogFile.WriteLine("|n/a");
+                        }
+
+                        // Col15: Multi-select
+                        if (generated.Contains("EnableMultiSelection = true"))
+                        {
+                            FLogFile.WriteLine("|Yes");
+                        }
+                        else
+                        {
+                            FLogFile.WriteLine("|No");
                         }
 
                         if (FIssueCount != startCount)
