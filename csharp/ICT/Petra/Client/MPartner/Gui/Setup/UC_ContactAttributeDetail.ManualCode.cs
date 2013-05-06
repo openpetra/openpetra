@@ -162,7 +162,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(PContactAttributeDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
-            ADeletionQuestion = Catalog.GetString("Are you sure that you want to delete the current Contact Detail Attribute?");
+            if (grdDetails.Rows.Count <= 2)
+            {
+                MessageBox.Show(
+                    Catalog.GetString("You cannot delete the final row in this table.  Every Contact Attribute must have at least one Detail Attribute.  You can delete the Contact Attribute itself.  Then all the corresponding detail attributes will also be deleted."),
+                    Catalog.GetString("Deletion Error"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return false;
+            }
+
             return true;
         }
 
