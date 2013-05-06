@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                ClearControls();
+                ShowDetails(null);
                 ((TFrmRecurringGiftBatch) this.ParentForm).DisableTransactionsTab();
             }
 
@@ -308,7 +308,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
                 {
-                    ClearControls();
+                    ShowDetails(null);
                 }
             }
             else if (!AAllowDeletion)
@@ -328,23 +328,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 ((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
-            }
-        }
-
-        private void ClearControls()
-        {
-            try
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                txtDetailBatchDescription.Clear();
-                txtDetailHashTotal.NumberValueDecimal = 0;
-                cmbDetailBankCostCentre.SelectedIndex = -1;
-                cmbDetailBankAccountCode.SelectedIndex = -1;
-                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-            }
-            finally
-            {
-                FPetraUtilsObject.EnableDataChangedEvent();
             }
         }
 

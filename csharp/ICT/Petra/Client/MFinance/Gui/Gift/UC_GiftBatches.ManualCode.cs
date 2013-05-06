@@ -374,7 +374,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (grdDetails.Rows.Count < 2)
             {
-                ClearControls();
+                ShowDetails(null);
                 ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
             }
             else if (FBatchLoaded == true)
@@ -530,6 +530,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ARow == null)
             {
+                dtpDetailGlEffectiveDate.Date = FDefaultDate;
                 return;
             }
 
@@ -705,25 +706,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 ((TFrmGiftBatch)ParentForm).DisableTransactions();
-                ClearControls();
-            }
-        }
-
-        private void ClearControls()
-        {
-            try
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                txtDetailBatchDescription.Clear();
-                txtDetailHashTotal.NumberValueDecimal = 0;
-                dtpDetailGlEffectiveDate.Date = FDefaultDate;
-                cmbDetailBankCostCentre.SelectedIndex = -1;
-                cmbDetailBankAccountCode.SelectedIndex = -1;
-                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-            }
-            finally
-            {
-                FPetraUtilsObject.EnableDataChangedEvent();
+                ShowDetails(null);
             }
         }
 
