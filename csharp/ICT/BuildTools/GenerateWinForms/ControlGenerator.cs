@@ -84,7 +84,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             // TODO this does not work yet. see EventRole Maintain screen
-            if (!ctrl.HasAttribute("Align"))
+            if ((!ctrl.HasAttribute("Align")) 
+                && (!ctrl.HasAttribute("Width")))
             {
                 ctrl.SetAttribute("Stretch", "horizontally");
             }
@@ -106,11 +107,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 labelText = ctrl.Label + ":";
             }
 
-            int width = PanelLayoutGenerator.MeasureTextWidth(labelText) + 5;
-
-            if (Convert.ToInt32(ctrl.GetAttribute("Width", "1")) < width)
+            if (ctrl.HasAttribute("Width"))
             {
-                ctrl.SetAttribute("Width", width.ToString());
+                ctrl.SetAttribute("Width", ctrl.GetAttribute("Width"));
+            }
+            else
+            {
+                ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(labelText) + 5).ToString());
+            }
+
+            if (ctrl.HasAttribute("Height"))
+            {
+                ctrl.SetAttribute("Height", ctrl.GetAttribute("Height"));
             }
 
             writer.SetControlProperty(ctrl, "Text", "\"" + labelText + "\"");

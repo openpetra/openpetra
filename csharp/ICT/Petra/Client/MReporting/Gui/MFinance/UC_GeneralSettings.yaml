@@ -47,7 +47,6 @@ RootNode:
             List: UserDefinedList
             ParameterName: param_year_i
             Width:100
-            LabelWidth:20
 
         rbtQuarter:
             ControlsOrientation: horizontal
