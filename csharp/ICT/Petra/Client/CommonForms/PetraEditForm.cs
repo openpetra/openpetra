@@ -450,6 +450,10 @@ namespace Ict.Petra.Client.CommonForms
                     {
                         ((Ict.Common.Controls.TTxtNumericTextBox)ctrl).ClearBox();
                     }
+                    else if (ctrl.GetType() == typeof(Ict.Common.Controls.TTxtCurrencyTextBox))
+                    {
+                        ((Ict.Common.Controls.TTxtCurrencyTextBox)ctrl).NumberValueDecimal = 0;
+                    }
                     else if (ctrl.Controls.Count > 0)
                     {
                         // Clear these controls as well
