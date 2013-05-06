@@ -518,6 +518,7 @@ namespace Ict.Tools.DBXML
         {
             TIndex index;
             TIndexField indexfield;
+            TTable OtherTable;
 
             grpConstraint.Sort(new ConstraintComparer());
 
@@ -526,7 +527,16 @@ namespace Ict.Tools.DBXML
                 if (constr.strType == "foreignkey")
                 {
                     constr.strThisTable = strName;
-                    db.GetTable(constr.strOtherTable).AddReference(constr);
+                    OtherTable = db.GetTable(constr.strOtherTable);
+                    if (OtherTable == null) 
+                    {
+                        Console.WriteLine("*** Foreign Key relationship: otherTable '" + constr.strOtherTable + "' is not a valid table name (Foreing Key of table '" + strName + "')");
+                        Environment.Exit(1);                       
+                    }
+                    else
+                    {
+                        db.GetTable(constr.strOtherTable).AddReference(constr);
+                    }
                 }
 
                 // indexes

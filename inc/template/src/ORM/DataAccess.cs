@@ -383,7 +383,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
 public static void Load{#VIAPROCEDURENAME}(DataSet ADataSet, {#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
     LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, ADataSet, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
-        new System.Object[{#NUMBERFIELDS}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        new System.Object[{#NUMBERFIELDSOTHER}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
 }
 
 /// auto generated
@@ -403,7 +403,7 @@ public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERP
 {
     {#TABLENAME}Table Data = new {#TABLENAME}Table();
     LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, Data, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
-        new System.Object[{#NUMBERFIELDS}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        new System.Object[{#NUMBERFIELDSOTHER}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
     return Data;
 }
 
@@ -509,7 +509,7 @@ public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template(TSearchCriteria[
 public static int Count{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, TDBTransaction ATransaction)
 {
     return CountViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}}, 
-        new System.Object[{#NUMBERFIELDS}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, ATransaction);
+        new System.Object[{#NUMBERFIELDSOTHER}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, ATransaction);
 }
 
 /// auto generated

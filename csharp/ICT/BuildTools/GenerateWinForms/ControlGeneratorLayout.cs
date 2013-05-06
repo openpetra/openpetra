@@ -458,7 +458,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         if (FTabOrder == "Horizontal")
                         {
                             writer.SetControlProperty(childctrl.controlName, "TabIndex", FCurrentTabIndex.ToString(), false);
-                            FCurrentTabIndex++;
+                            FCurrentTabIndex += 10;
                         }
                     }
 
@@ -519,7 +519,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             TControlDef childctrl = FGrid[columnCounter, rowCounter];
 
                             writer.SetControlProperty(childctrl.controlName, "TabIndex", FCurrentTabIndex.ToString(), false);
-                            FCurrentTabIndex++;
+                            FCurrentTabIndex += 10;
                         }
                     }
                 }
@@ -906,5 +906,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FCurrentColumn += ctrl.colSpan;
             }
         }
-    }
+        
+        /// <summary>
+        /// Call this Method to reset the TabIndex counter for each YAML file.
+        /// </summary>
+        public static void ResetTabIndex()
+        {
+            FCurrentTabIndex = 0;
+        }
+    }    
 }

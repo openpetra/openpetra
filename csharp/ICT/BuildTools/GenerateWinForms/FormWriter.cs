@@ -770,6 +770,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FResumePerformLayout = "";
             FControlDataTypes = new SortedList();
             PanelLayoutGenerator.countTableLayoutPanel = 0;
+            PanelLayoutGenerator.ResetTabIndex();
         }
 
         /// <summary>

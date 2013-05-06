@@ -66,7 +66,8 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
 
             if (!Directory.Exists(OutputFolder))
             {
-                // The -outputserver command line parameter must be wrong
+                // The -outputserver command line parameter must be wrong, or the directory does not exist yet
+                Console.WriteLine("Error: directory does not exist: " + OutputFolder);
                 return false;
             }
 
@@ -119,6 +120,12 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
 
             foreach (String fn in clientFiles)
             {
+                // only look for main files, not language specific files (*.xy-XY.yaml or *.xy.yaml)
+                if (TProcessYAMLForms.IgnoreLanguageSpecificYamlFile(fn))
+                {
+                    continue;
+                }
+
                 XmlDocument doc = TYml2Xml.CreateXmlDocument();
                 SortedList sortedNodes = null;
                 TCodeStorage codeStorage = new TCodeStorage(doc, sortedNodes);

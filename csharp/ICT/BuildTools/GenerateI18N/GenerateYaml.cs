@@ -64,7 +64,7 @@ public class GenerateYamlFiles
         foreach (string yamlfile in yamlfiles)
         {
             // only look for main files, not language specific files (*.xy-XY.yaml or *.xy.yaml)
-            if (((yamlfile[yamlfile.Length - 11] == '.') && (yamlfile[yamlfile.Length - 8] == '-')) || (yamlfile[yamlfile.Length - 8] == '.'))
+            if (TProcessYAMLForms.IgnoreLanguageSpecificYamlFile(yamlfile))
             {
                 continue;
             }
