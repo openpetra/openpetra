@@ -808,7 +808,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
 	                FPreviouslySelectedDetailRow = null;
-                    FGift = null;
 		
                     FPetraUtilsObject.SetChangedFlag();
 

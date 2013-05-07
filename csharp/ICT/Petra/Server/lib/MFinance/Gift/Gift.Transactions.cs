@@ -738,8 +738,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
             	SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && giftBatchTableInDataSet
-                    && giftTableInDataSet && AInspectDS.AGift.Count > 0)
+                if ((SubmissionResult == TSubmitChangesResult.scrOK) && giftTableInDataSet && AInspectDS.AGift.Count > 0)
                 {
 	            	if (giftDetailTableInDataSet)
 	                {
