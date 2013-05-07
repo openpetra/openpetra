@@ -753,23 +753,18 @@ namespace Ict.Petra.Shared.MReporting
 
         /// <summary>
         /// Common procedure to retrieve a parameter of any type; will return a TVariant object
-        ///
         /// </summary>
         /// <returns>void</returns>
         public TVariant Get(String parameterId, int column, int depth, eParameterFit exact)
         {
-            TVariant ReturnValue;
-            TParameter element;
-
-            ReturnValue = new TVariant();
-            element = GetParameter(parameterId, column, depth, exact);
+            TParameter element = GetParameter(parameterId, column, depth, exact);
 
             if (element != null)
             {
-                ReturnValue = element.value;
+                return element.value;
             }
 
-            return ReturnValue;
+            return new TVariant();
         }
 
         /// <summary>
@@ -861,7 +856,7 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public TParameter GetParameter(String parameterId, int column, int depth, eParameterFit exact)
         {
-            int subreport;
+            int subreport = -1;
 
             TParameter ReturnValue = null;
             TParameter columnFit = null;
@@ -877,28 +872,25 @@ namespace Ict.Petra.Shared.MReporting
             {
                 subreport = GetOrDefault("CurrentSubReport", -1, new TVariant(-1)).ToInt();
             }
-            else
-            {
-                subreport = -1;
-            }
 
-            // just to be careful: if curly brackets were used by accident in the xml file, remove them
-            if (parameterId[0] == '{')
-            {
-                TLogging.Log(
-                    "deprecated: " + parameterId +
-                    "; make sure your report xml file is correct, you might be using a variable with brackets in a function call to exists or isnull");
-                parameterId = parameterId.Substring(1, parameterId.Length - 2);
-
-                if ((parameterId[0] == '{') || (parameterId[0] == '#'))
-                {
-                    parameterId = parameterId.Substring(1, parameterId.Length - 2);
-                }
-            }
-
+/* Perhaps I'll get more speed if I remove this..
+ *          // just to be careful: if curly brackets were used by accident in the xml file, remove them
+ *          if (parameterId[0] == '{')
+ *          {
+ *              TLogging.Log(
+ *                  "deprecated: " + parameterId +
+ *                  "; make sure your report xml file is correct, you might be using a variable with brackets in a function call to exists or isnull");
+ *              parameterId = parameterId.Substring(1, parameterId.Length - 2);
+ *
+ *              if ((parameterId[0] == '{') || (parameterId[0] == '#'))
+ *              {
+ *                  parameterId = parameterId.Substring(1, parameterId.Length - 2);
+ *              }
+ *          }
+ */
             foreach (TParameter element in parameters)
             {
-                if (StringHelper.IsSame(element.name, parameterId) && ((element.subreport == subreport) || (element.subreport == -1)))
+                if (((element.subreport == subreport) || (element.subreport == -1)) && StringHelper.IsSame(element.name, parameterId))
                 {
                     // is there an exact match?
                     if ((element.level == depth) && (element.column == column))
@@ -943,8 +935,9 @@ namespace Ict.Petra.Shared.MReporting
                     {
                         anyFit = element;
                     }
-                }
-            }
+                } // if
+
+            } // foreach
 
             if (exact == eParameterFit.eExact)
             {

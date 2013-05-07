@@ -9548,6 +9548,13 @@
                 label="Export to Intranet?"
                 help="Should gifts with this motivation be exported to worldwide Intranet?"
                 initial="yes"/>                
+    <tablefield name="a_report_column_c"
+                type="varchar"
+                descr="Which column should these gifts be reported in?"
+                format="X(20)"
+                label="Reporting Column (Worker or Field)"
+                columnlabel="Reporting Column"
+                help="Any gifts for personnel should be assigned to Worker, otherwise Field."/>
     <!-- Constraints on table a_motivation_detail -->
     <primarykey name="a_motivation_detail_pk"
                 descr=""

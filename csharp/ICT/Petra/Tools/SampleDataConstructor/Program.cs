@@ -60,8 +60,6 @@ namespace Ict.Petra.Tools.SampleDataConstructor
     /// These can then be saved in Petra.
     /// </para>
     ///
-    /// TODO: Check comment from Timo: This is actually rather a tool than a test
-    /// - so one could change it's location.
     /// </remarks>
     class TSampleDataConstructor
     {

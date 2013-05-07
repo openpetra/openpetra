@@ -42,11 +42,16 @@ RootNode:
             Controls:
                 Row0: [cmbDetailMotivationGroupCode]
                 Row1: [txtDetailMotivationDetailCode, txtDetailMotivationDetailDesc]
-                Row3: [cmbDetailAccountCode, chkDetailMotivationStatus]
-                Row4: [cmbDetailCostCentreCode, chkDetailReceipt]
+                Row3: [cmbDetailAccountCode, pnlMoreChecks]
+                Row4: [cmbDetailCostCentreCode, cmbReportColumn]
                 Row5: [lblFeePayable, lblFeeReceivable]
                 Row6: [clbDetailFeesPayable, clbDetailFeesReceivable]
             ColWidths: [1=Fixed:200, 2=Fixed:120]
+        pnlMoreChecks:
+            ControlsOrientation: horizontal
+            Controls: [chkDetailMotivationStatus, chkDetailReceipt]
+        cmbReportColumn:
+            OptionalValues: [Worker, =Field]
         cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
         txtDetailMotivationDetailDesc: {Label=Description, Width=173}
