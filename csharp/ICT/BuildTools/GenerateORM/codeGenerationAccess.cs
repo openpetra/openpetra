@@ -339,6 +339,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 out notUsedInt);
 
             int numberFields;
+            
             string namesOfThisTableFields;
             string notUsed;
             PrepareCodeletsForeignKey(
@@ -354,6 +355,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             snippetViaTable.SetCodelet("FORMALPARAMETERSOTHERPRIMARYKEY", formalParametersOtherPrimaryKey);
             snippetViaTable.SetCodelet("ACTUALPARAMETERSOTHERPRIMARYKEY", actualParametersOtherPrimaryKey);
             snippetViaTable.SetCodelet("NUMBERFIELDS", numberFields.ToString());
+            snippetViaTable.SetCodelet("NUMBERFIELDSOTHER", (actualParametersOtherPrimaryKey.Split(',').Length).ToString());
             snippetViaTable.SetCodelet("THISTABLEFIELDS", namesOfThisTableFields);
 
             AddDirectReference(AConstraint);
