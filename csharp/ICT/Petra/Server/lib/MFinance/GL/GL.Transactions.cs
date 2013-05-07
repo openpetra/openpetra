@@ -454,7 +454,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             GLBatchTDS MainDS = new GLBatchTDS();
             bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             ATransAnalAttribAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
 
@@ -762,6 +762,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool recurrJournalTableInDataSet = (AInspectDS.ARecurringJournal != null);
             bool recurrTransTableInDataSet = (AInspectDS.ARecurringTransaction != null);
 
+            bool newTransaction = false;
+            TDBTransaction Transaction = null;
+
             // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
             // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
 
@@ -787,11 +790,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 LedgerNumber = ((ABatchRow)AInspectDS.ABatch.Rows[0]).LedgerNumber;
 
-                bool NewTransaction = false;
-
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
+                    out newTransaction);
 
                 foreach (ABatchRow batch in AInspectDS.ABatch.Rows)
                 {
@@ -828,8 +829,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                if (NewTransaction)
+                if (newTransaction)
                 {
+                    newTransaction = false;
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
@@ -935,11 +937,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 {
                     Int32 BatchNumber;
 
-                    BatchNumber = transAnalAttrib.BatchNumber;
-
-                    if (!BatchNumbersInvolved.Contains(BatchNumber))
+                    if (transAnalAttrib.RowState != DataRowState.Deleted)
                     {
-                        BatchNumbersInvolved.Add(BatchNumber);
+                        BatchNumber = transAnalAttrib.BatchNumber;
+
+                        if (!BatchNumbersInvolved.Contains(BatchNumber))
+                        {
+                            BatchNumbersInvolved.Add(BatchNumber);
+                        }
                     }
                 }
             }
@@ -967,9 +972,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 GLBatchTDS BatchDS = new GLBatchTDS();
 
-                bool tempTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out tempTransaction);
+                //Get new or existing transaction
+                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                  (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out newTransaction);
 
                 try
                 {
@@ -977,8 +982,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
                 finally
                 {
-                    if (tempTransaction)
+                    if (newTransaction)
                     {
+                        newTransaction = false;
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
                 }
@@ -1001,13 +1007,19 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 return TSubmitChangesResult.scrError;
             }
 
+            //Need to save changes before deleting any transactions
             TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-            AInspectDS.AcceptChanges();
-
-            if ((SubmissionResult == TSubmitChangesResult.scrOK)
-                && (transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
+            if ((SubmissionResult == TSubmitChangesResult.scrOK) && (transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
             {
+                //Accept deletion of Attributes to allow deletion of transactions
+                if (attrTableInDataSet)
+                {
+                    AInspectDS.ATransAnalAttrib.AcceptChanges();
+                }
+
+                AInspectDS.ATransaction.AcceptChanges();
+
                 ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
 
                 Int32 currentLedger = tranR.LedgerNumber;
@@ -1017,17 +1029,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 try
                 {
-                    //Check if a transaction has been deleted
-                    //Accept the deletion of the single details row
-                    //AInspectDS.ATransaction.AcceptChanges();
-
-                    if (!attrTableInDataSet)
-                    {
-                        AInspectDS.Tables.Add(new ATransAnalAttribTable("ATransAnalAttrib"));
-                        AInspectDS.Merge(LoadATransAnalAttribForJournal(currentLedger, currentBatch, currentJournal));
-                        attrTableInDataSet = true;
-                    }
-
                     //Check if any records have been marked for deletion
                     DataRow[] foundTransactionForDeletion = AInspectDS.ATransaction.Select(String.Format("{0} = '{1}'",
                             ATransactionTable.GetSubTypeDBName(),
@@ -1049,35 +1050,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                             transRowClient.Delete();
                         }
-
-                        //save changes
-                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-
-                        //Accept the deletion of the single detail row
-                        AInspectDS.ATransAnalAttrib.AcceptChanges();
-                        AInspectDS.ATransaction.AcceptChanges();
                     }
 
-                    //Check that all analysis attributes exist
-                    CheckTransAnalysisAttributes(ref AInspectDS,
-                        currentLedger,
-                        currentBatch,
-                        currentJournal,
-                        ref SubmissionResult,
-                        ref AVerificationResult);
+                    //Submit all changes
+                    SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    TLogging.Log(String.Format("Error trying to delete transaction: {0} in Journal: {1}, Batch: {2}",
+                    TLogging.Log("Saving DataSet: " + ex.Message);
+
+                    TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
                             transToDelete,
                             currentJournal,
                             currentBatch
                             ));
+
+                    SubmissionResult = TSubmitChangesResult.scrError;
                 }
-
-
-                // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
-                // TODO: calculate hash of saved batch or batch of saved gift
             }
 
             return SubmissionResult;
@@ -1450,7 +1439,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             bool NewTransaction = false;
-            bool transactionCommitted = false;
             Int32 LedgerNumber;
             Int32 BatchNumber;
             Int32 JournalNumber;
@@ -1464,11 +1452,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             TSubmitChangesResult SubmissionResult = new TSubmitChangesResult();
 
-            //Error handling
-            string ErrorContext = "Save a recurring batch";
-            string ErrorMessage = String.Empty;
-            //Set default type as non-critical
-            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+//            //Error handling
+//            string ErrorContext = "Save a recurring batch";
+//            string ErrorMessage = String.Empty;
+//            //Set default type as non-critical
+//            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -1492,232 +1480,187 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
-            try
+            if (recurrBatchTableInDataSet)
             {
-                if (recurrBatchTableInDataSet)
+                foreach (ARecurringBatchRow batch in AInspectDS.ARecurringBatch.Rows)
                 {
-                    foreach (ARecurringBatchRow batch in AInspectDS.ARecurringBatch.Rows)
+                    if (batch.RowState == DataRowState.Deleted)
                     {
-                        if (batch.RowState == DataRowState.Deleted)
+                        // need to use this way of retrieving data from deleted rows
+                        LedgerNumber = (Int32)batch[ARecurringBatchTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                        BatchNumber = (Int32)batch[ARecurringBatchTable.ColumnBatchNumberId, DataRowVersion.Original];
+
+                        // load all depending journals, transactions and attributes and make sure they are also deleted via the dataset
+                        TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
+                        TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
+                        DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
+
+                        for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
                         {
-                            // need to use this way of retrieving data from deleted rows
-                            LedgerNumber = (Int32)batch[ARecurringBatchTable.ColumnLedgerNumberId, DataRowVersion.Original];
-                            BatchNumber = (Int32)batch[ARecurringBatchTable.ColumnBatchNumberId, DataRowVersion.Original];
-
-                            // load all depending journals, transactions and attributes and make sure they are also deleted via the dataset
-                            TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
-                            TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
-                            DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
-
-                            for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
-                            {
-                                DeletedTransAnalAttribTable.Rows[Counter].Delete();
-                            }
-
-                            AInspectDS.Merge(DeletedTransAnalAttribTable);
-
-                            TemplateTransactionRow.LedgerNumber = LedgerNumber;
-                            TemplateTransactionRow.BatchNumber = BatchNumber;
-                            ARecurringTransactionAccess.LoadUsingTemplate(DeletedDS, TemplateTransactionRow, Transaction);
-
-                            for (Counter = DeletedDS.ARecurringTransaction.Count - 1; Counter >= 0; Counter--)
-                            {
-                                DeletedDS.ARecurringTransaction.Rows[Counter].Delete();
-                            }
-
-                            AInspectDS.Merge(DeletedDS.ARecurringTransaction);
-
-                            TemplateJournalRow.LedgerNumber = LedgerNumber;
-                            TemplateJournalRow.BatchNumber = BatchNumber;
-                            ARecurringJournalAccess.LoadUsingTemplate(DeletedDS, TemplateJournalRow, Transaction);
-
-                            for (Counter = DeletedDS.ARecurringJournal.Count - 1; Counter >= 0; Counter--)
-                            {
-                                DeletedDS.ARecurringJournal.Rows[Counter].Delete();
-                            }
-
-                            AInspectDS.Merge(DeletedDS.ARecurringJournal);
+                            DeletedTransAnalAttribTable.Rows[Counter].Delete();
                         }
+
+                        AInspectDS.Merge(DeletedTransAnalAttribTable);
+
+                        TemplateTransactionRow.LedgerNumber = LedgerNumber;
+                        TemplateTransactionRow.BatchNumber = BatchNumber;
+                        ARecurringTransactionAccess.LoadUsingTemplate(DeletedDS, TemplateTransactionRow, Transaction);
+
+                        for (Counter = DeletedDS.ARecurringTransaction.Count - 1; Counter >= 0; Counter--)
+                        {
+                            DeletedDS.ARecurringTransaction.Rows[Counter].Delete();
+                        }
+
+                        AInspectDS.Merge(DeletedDS.ARecurringTransaction);
+
+                        TemplateJournalRow.LedgerNumber = LedgerNumber;
+                        TemplateJournalRow.BatchNumber = BatchNumber;
+                        ARecurringJournalAccess.LoadUsingTemplate(DeletedDS, TemplateJournalRow, Transaction);
+
+                        for (Counter = DeletedDS.ARecurringJournal.Count - 1; Counter >= 0; Counter--)
+                        {
+                            DeletedDS.ARecurringJournal.Rows[Counter].Delete();
+                        }
+
+                        AInspectDS.Merge(DeletedDS.ARecurringJournal);
                     }
                 }
+            }
 
-                if (recurrJournalTableInDataSet)
+            if (recurrJournalTableInDataSet)
+            {
+                foreach (ARecurringJournalRow journal in AInspectDS.ARecurringJournal.Rows)
                 {
-                    foreach (ARecurringJournalRow journal in AInspectDS.ARecurringJournal.Rows)
+                    if (journal.RowState == DataRowState.Deleted)
                     {
-                        if (journal.RowState == DataRowState.Deleted)
+                        // need to use this way of retrieving data from deleted rows
+                        LedgerNumber = (Int32)journal[ARecurringJournalTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                        BatchNumber = (Int32)journal[ARecurringJournalTable.ColumnBatchNumberId, DataRowVersion.Original];
+                        JournalNumber = (Int32)journal[ARecurringJournalTable.ColumnJournalNumberId, DataRowVersion.Original];
+
+                        // load all depending transactions and attributes and make sure they are also deleted via the dataset
+                        TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
+                        TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
+                        TemplateTransAnalAttribRow.JournalNumber = JournalNumber;
+                        DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
+
+                        for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
                         {
-                            // need to use this way of retrieving data from deleted rows
-                            LedgerNumber = (Int32)journal[ARecurringJournalTable.ColumnLedgerNumberId, DataRowVersion.Original];
-                            BatchNumber = (Int32)journal[ARecurringJournalTable.ColumnBatchNumberId, DataRowVersion.Original];
-                            JournalNumber = (Int32)journal[ARecurringJournalTable.ColumnJournalNumberId, DataRowVersion.Original];
-
-                            // load all depending transactions and attributes and make sure they are also deleted via the dataset
-                            TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
-                            TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
-                            TemplateTransAnalAttribRow.JournalNumber = JournalNumber;
-                            DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
-
-                            for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
-                            {
-                                DeletedTransAnalAttribTable.Rows[Counter].Delete();
-                            }
-
-                            AInspectDS.Merge(DeletedTransAnalAttribTable);
-
-                            TemplateTransactionRow.LedgerNumber = LedgerNumber;
-                            TemplateTransactionRow.BatchNumber = BatchNumber;
-                            TemplateTransactionRow.JournalNumber = JournalNumber;
-                            ARecurringTransactionAccess.LoadUsingTemplate(DeletedDS, TemplateTransactionRow, Transaction);
-
-                            for (Counter = DeletedDS.ARecurringTransaction.Count - 1; Counter >= 0; Counter--)
-                            {
-                                DeletedDS.ARecurringTransaction.Rows[Counter].Delete();
-                            }
-
-                            AInspectDS.Merge(DeletedDS.ARecurringTransaction);
+                            DeletedTransAnalAttribTable.Rows[Counter].Delete();
                         }
+
+                        AInspectDS.Merge(DeletedTransAnalAttribTable);
+
+                        TemplateTransactionRow.LedgerNumber = LedgerNumber;
+                        TemplateTransactionRow.BatchNumber = BatchNumber;
+                        TemplateTransactionRow.JournalNumber = JournalNumber;
+                        ARecurringTransactionAccess.LoadUsingTemplate(DeletedDS, TemplateTransactionRow, Transaction);
+
+                        for (Counter = DeletedDS.ARecurringTransaction.Count - 1; Counter >= 0; Counter--)
+                        {
+                            DeletedDS.ARecurringTransaction.Rows[Counter].Delete();
+                        }
+
+                        AInspectDS.Merge(DeletedDS.ARecurringTransaction);
                     }
                 }
+            }
 
-                if (recurrTransactionTableInDataSet)
+            if (recurrTransactionTableInDataSet)
+            {
+                foreach (ARecurringTransactionRow transaction in AInspectDS.ARecurringTransaction.Rows)
                 {
-                    foreach (ARecurringTransactionRow transaction in AInspectDS.ARecurringTransaction.Rows)
+                    if (transaction.RowState == DataRowState.Deleted)
                     {
-                        if (transaction.RowState == DataRowState.Deleted)
+                        // need to use this way of retrieving data from deleted rows
+                        LedgerNumber = (Int32)transaction[ARecurringTransactionTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                        BatchNumber = (Int32)transaction[ARecurringTransactionTable.ColumnBatchNumberId, DataRowVersion.Original];
+                        JournalNumber = (Int32)transaction[ARecurringTransactionTable.ColumnJournalNumberId, DataRowVersion.Original];
+                        TransactionNumber = (Int32)transaction[ARecurringTransactionTable.ColumnTransactionNumberId, DataRowVersion.Original];
+
+                        // load all depending transactions and attributes and make sure they are also deleted via the dataset
+                        TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
+                        TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
+                        TemplateTransAnalAttribRow.JournalNumber = JournalNumber;
+                        TemplateTransAnalAttribRow.TransactionNumber = TransactionNumber;
+                        DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
+
+                        for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
                         {
-                            // need to use this way of retrieving data from deleted rows
-                            LedgerNumber = (Int32)transaction[ARecurringTransactionTable.ColumnLedgerNumberId, DataRowVersion.Original];
-                            BatchNumber = (Int32)transaction[ARecurringTransactionTable.ColumnBatchNumberId, DataRowVersion.Original];
-                            JournalNumber = (Int32)transaction[ARecurringTransactionTable.ColumnJournalNumberId, DataRowVersion.Original];
-                            TransactionNumber = (Int32)transaction[ARecurringTransactionTable.ColumnTransactionNumberId, DataRowVersion.Original];
-
-                            // load all depending transactions and attributes and make sure they are also deleted via the dataset
-                            TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
-                            TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
-                            TemplateTransAnalAttribRow.JournalNumber = JournalNumber;
-                            TemplateTransAnalAttribRow.TransactionNumber = TransactionNumber;
-                            DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
-
-                            for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
-                            {
-                                DeletedTransAnalAttribTable.Rows[Counter].Delete();
-                            }
-
-                            AInspectDS.Merge(DeletedTransAnalAttribTable);
+                            DeletedTransAnalAttribTable.Rows[Counter].Delete();
                         }
+
+                        AInspectDS.Merge(DeletedTransAnalAttribTable);
                     }
                 }
+            }
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    transactionCommitted = true;
-                }
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
 
-                // now submit the actual dataset
-                SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+            // now submit the changes
+            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-                //Process transactions and their analysis attributes
-                if (recurrTransactionTableInDataSet)
-                {
-                    AInspectDS.ARecurringTransaction.AcceptChanges();
-                }
-
+            if ((SubmissionResult == TSubmitChangesResult.scrOK)
+                && (recurrTransactionTableInDataSet) && (AInspectDS.ARecurringTransaction.Rows.Count > 0))
+            {
+                //Accept deletion of Attributes to allow deletion of transactions
                 if (recurrTransAnalTableInDataSet)
                 {
                     AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
                 }
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK)
-                    && (recurrTransactionTableInDataSet) && (AInspectDS.ARecurringTransaction.Rows.Count > 0))
+                AInspectDS.ARecurringTransaction.AcceptChanges();
+
+                ARecurringTransactionRow tranR = (ARecurringTransactionRow)AInspectDS.ARecurringTransaction.Rows[0];
+
+                Int32 currentLedger = tranR.LedgerNumber;
+                Int32 currentBatch = tranR.BatchNumber;
+                Int32 currentJournal = tranR.JournalNumber;
+                Int32 transToDelete = 0;
+
+                try
                 {
-                    ARecurringTransactionRow tranR = (ARecurringTransactionRow)AInspectDS.ARecurringTransaction.Rows[0];
+                    //Check if any records have been marked for deletion
+                    DataRow[] foundTransactionForDeletion = AInspectDS.ARecurringTransaction.Select(String.Format("{0} = '{1}'",
+                            ARecurringTransactionTable.GetSubTypeDBName(),
+                            MFinanceConstants.MARKED_FOR_DELETION));
 
-                    Int32 currentLedger = tranR.LedgerNumber;
-                    Int32 currentBatch = tranR.BatchNumber;
-                    Int32 currentJournal = tranR.JournalNumber;
-                    Int32 transToDelete = 0;
-
-                    try
+                    if (foundTransactionForDeletion.Length > 0)
                     {
-                        //Check if a transaction has been deleted
-                        //Accept the deletion of the single details row
-                        //AInspectDS.ATransaction.AcceptChanges();
+                        ARecurringTransactionRow transRowClient = null;
 
-                        if (!recurrTransAnalTableInDataSet)
+                        for (int i = 0; i < foundTransactionForDeletion.Length; i++)
                         {
-                            AInspectDS.Tables.Add(new ARecurringTransAnalAttribTable("ARecurringTransAnalAttrib"));
-                            AInspectDS.Merge(LoadARecurringTransAnalAttribForJournal(currentLedger, currentBatch, currentJournal));
-                            recurrTransAnalTableInDataSet = true;
+                            transRowClient = (ARecurringTransactionRow)foundTransactionForDeletion[i];
+
+                            transToDelete = transRowClient.TransactionNumber;
+                            TLogging.Log(String.Format("Recurring transaction to Delete: {0} from Journal: {1} in Batch: {2}",
+                                    transToDelete,
+                                    currentJournal,
+                                    currentBatch));
+
+                            transRowClient.Delete();
                         }
 
-                        //Check if any records have been marked for deletion
-                        DataRow[] foundTransactionForDeletion = AInspectDS.ARecurringTransaction.Select(String.Format("{0} = '{1}'",
-                                ARecurringTransactionTable.GetSubTypeDBName(),
-                                MFinanceConstants.MARKED_FOR_DELETION));
+                        //save changes
+                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TLogging.Log("Saving DataSet: " + ex.Message);
 
-                        if (foundTransactionForDeletion.Length > 0)
-                        {
-                            ARecurringTransactionRow transRowClient = null;
-
-                            for (int i = 0; i < foundTransactionForDeletion.Length; i++)
-                            {
-                                transRowClient = (ARecurringTransactionRow)foundTransactionForDeletion[i];
-
-                                transToDelete = transRowClient.TransactionNumber;
-                                TLogging.Log(String.Format("Transaction to Delete: {0} from Journal: {1} in Batch: {2}",
-                                        transToDelete,
-                                        currentJournal,
-                                        currentBatch));
-
-                                transRowClient.Delete();
-                            }
-
-                            //save changes
-                            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-
-                            //Accept the deletion of the single detail row
-                            AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
-                            AInspectDS.ARecurringTransaction.AcceptChanges();
-                        }
-
-                        //Check that all analysis attributes exist
-                        CheckRecurringTransAnalysisAttributes(ref AInspectDS,
-                            currentLedger,
-                            currentBatch,
+                    TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
+                            transToDelete,
                             currentJournal,
-                            ref SubmissionResult,
-                            ref AVerificationResult);
-                    }
-                    catch (Exception)
-                    {
-                        TLogging.Log(String.Format(
-                                "Error trying to delete recurring transaction: {0} in recurring Journal: {1}, recurring Batch: {2}",
-                                transToDelete,
-                                currentJournal,
-                                currentBatch
-                                ));
-                    }
+                            currentBatch
+                            ));
 
-
-                    // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
-                    // TODO: calculate hash of saved batch or batch of saved gift
+                    SubmissionResult = TSubmitChangesResult.scrError;
                 }
-            }
-            catch (Exception ex)
-            {
-                if (NewTransaction && !transactionCommitted)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                ErrorMessage = Catalog.GetString("Unknown error while saving a recurring batch." +
-                    Environment.NewLine + Environment.NewLine + ex.ToString());
-                ErrorType = TResultSeverity.Resv_Critical;
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                SubmissionResult = TSubmitChangesResult.scrError;
             }
 
             return SubmissionResult;
