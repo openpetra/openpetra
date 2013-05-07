@@ -327,7 +327,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FInKeyMinistryChanging = true;
-            
+
             try
             {
                 if (cmbMinistry.Count == 0)
@@ -493,50 +493,50 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
             }
-			else
-			{
-	            GiftNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
-	
-	            foreach (ARecurringGiftDetailRow gdr in FMainDS.ARecurringGiftDetail.Rows)
-	            {
-	                if (gdr.RowState != DataRowState.Deleted)
-	                {
-	                    if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
-	                    {
-	                        if (gdr.GiftTransactionNumber == GiftNumber)
-	                        {
-	                            if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
-	                            {
-	                                sum += Convert.ToDecimal(txtDetailGiftAmount.NumberValueDecimal);
-	                                sumBatch += Convert.ToDecimal(txtDetailGiftAmount.NumberValueDecimal);
-	                            }
-	                            else
-	                            {
-	                                sum += gdr.GiftAmount;
-	                                sumBatch += gdr.GiftAmount;
-	                            }
-	                        }
-	                        else
-	                        {
-	                            sumBatch += gdr.GiftAmount;
-	                        }
-	                    }
-	                }
-	            }
-	
-	            txtGiftTotal.NumberValueDecimal = sum;
-	            txtGiftTotal.CurrencySymbol = txtDetailGiftAmount.CurrencySymbol;
-	            txtGiftTotal.ReadOnly = true;
-	            //this is here because at the moment the generator does not generate this
-	            txtBatchTotal.NumberValueDecimal = sumBatch;
-	            //Now we look at the batch and update the batch data
-	            FBatchRow.BatchTotal = sumBatch;
-        	}
+            else
+            {
+                GiftNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
+
+                foreach (ARecurringGiftDetailRow gdr in FMainDS.ARecurringGiftDetail.Rows)
+                {
+                    if (gdr.RowState != DataRowState.Deleted)
+                    {
+                        if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
+                        {
+                            if (gdr.GiftTransactionNumber == GiftNumber)
+                            {
+                                if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
+                                {
+                                    sum += Convert.ToDecimal(txtDetailGiftAmount.NumberValueDecimal);
+                                    sumBatch += Convert.ToDecimal(txtDetailGiftAmount.NumberValueDecimal);
+                                }
+                                else
+                                {
+                                    sum += gdr.GiftAmount;
+                                    sumBatch += gdr.GiftAmount;
+                                }
+                            }
+                            else
+                            {
+                                sumBatch += gdr.GiftAmount;
+                            }
+                        }
+                    }
+                }
+
+                txtGiftTotal.NumberValueDecimal = sum;
+                txtGiftTotal.CurrencySymbol = txtDetailGiftAmount.CurrencySymbol;
+                txtGiftTotal.ReadOnly = true;
+                //this is here because at the moment the generator does not generate this
+                txtBatchTotal.NumberValueDecimal = sumBatch;
+                //Now we look at the batch and update the batch data
+                FBatchRow.BatchTotal = sumBatch;
+            }
 
             if (disableSaveButton && FPetraUtilsObject.HasChanges)
             {
                 FPetraUtilsObject.DisableSaveButton();
-            }			
+            }
         }
 
         /// reset the control
@@ -662,12 +662,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return deletionSuccessful;
             }
 
-			if (ARowToDelete.RowState != DataRowState.Added && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
-			{
-				MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
-				return deletionSuccessful;
-			}
-			
+            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+            {
+                MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
+                return deletionSuccessful;
+            }
+
             //Backup the Dataset for reversion purposes
             GiftBatchTDS FTempDS = (GiftBatchTDS)FMainDS.Copy();
 
@@ -679,7 +679,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-				//If deleting a detail row as opposed to a gift header
+                //If deleting a detail row as opposed to a gift header
                 if (FGiftDetailView.Count > 1)
                 {
                     ARowToDelete.Delete();
@@ -703,7 +703,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     ARowToDelete.Delete();
-                    
+
                     giftToDeleteTransNo = FGift.GiftTransactionNumber;
                     currentBatchNumber = FGift.BatchNumber;
 
@@ -767,14 +767,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         giftRowToReceive = giftRowCurrent;
                     }
 
-	                FPreviouslySelectedDetailRow = null;
-		
+                    FPreviouslySelectedDetailRow = null;
+
                     FPetraUtilsObject.SetChangedFlag();
 
                     FGiftSelectedForDeletion = true;
                 }
 
-				//Try to save changes
+                //Try to save changes
                 if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
                 {
                     //Reload from server
@@ -787,9 +787,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     throw new Exception("Unable to save after deleting a recurring gift!");
                 }
-               
+
                 ACompletionMessage = Catalog.GetString("Recurring gift row deleted successfully!");
-                
+
                 deletionSuccessful = true;
             }
             catch (Exception ex)
@@ -818,20 +818,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ADeletionPerformed)
             {
-				if (FGiftSelectedForDeletion)
-				{
-					FGiftSelectedForDeletion = false;
+                if (FGiftSelectedForDeletion)
+                {
+                    FGiftSelectedForDeletion = false;
 
-					SetBatchLastGiftNumber();
+                    SetBatchLastGiftNumber();
 
-	            	UpdateControlsProtection();
-                
-	                if (!pnlDetails.Enabled)
-		            {
-		                ClearControls();
-		            }
-				}
-                
+                    UpdateControlsProtection();
+
+                    if (!pnlDetails.Enabled)
+                    {
+                        ClearControls();
+                    }
+                }
+
                 UpdateTotals();
 
                 ((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges();
@@ -840,9 +840,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 MessageBox.Show(ACompletionMessage,
                     "Deletion Successful",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);              
+                    MessageBoxIcon.Information);
             }
-            else if (!AAllowDeletion && ACompletionMessage.Length > 0)
+            else if (!AAllowDeletion && (ACompletionMessage.Length > 0))
             {
                 //message to user
                 MessageBox.Show(ACompletionMessage,
@@ -850,7 +850,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-            else if (!ADeletionPerformed && ACompletionMessage.Length > 0)
+            else if (!ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
                 //message to user
                 MessageBox.Show(ACompletionMessage,
@@ -862,13 +862,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SetBatchLastGiftNumber()
         {
-        	FMainDS.ARecurringGift.DefaultView.RowFilter = String.Format("{0}={1}",
-        	                                                    ARecurringGiftTable.GetBatchNumberDBName(),
-        	                                                    FBatchNumber);
-            	
-        	FMainDS.ARecurringGift.DefaultView.Sort = String.Format("{0} DESC",
-        	                                               ARecurringGiftTable.GetGiftTransactionNumberDBName());
-        	if (FMainDS.ARecurringGift.DefaultView.Count > 0)
+            FMainDS.ARecurringGift.DefaultView.RowFilter = String.Format("{0}={1}",
+                ARecurringGiftTable.GetBatchNumberDBName(),
+                FBatchNumber);
+
+            FMainDS.ARecurringGift.DefaultView.Sort = String.Format("{0} DESC",
+                ARecurringGiftTable.GetGiftTransactionNumberDBName());
+
+            if (FMainDS.ARecurringGift.DefaultView.Count > 0)
             {
                 ARecurringGiftRow transRow = (ARecurringGiftRow)FMainDS.ARecurringGift.DefaultView[0].Row;
                 FBatchRow.LastGiftNumber = transRow.GiftTransactionNumber;
@@ -894,12 +895,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ARecurringGiftDetailTable.GetBatchNumberDBName(),
                     FBatchNumber);
 
-	            FMainDS.ARecurringGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1} ASC",
-	                ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
-	                ARecurringGiftDetailTable.GetDetailNumberDBName());
+                FMainDS.ARecurringGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1} ASC",
+                    ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
+                    ARecurringGiftDetailTable.GetDetailNumberDBName());
             }
         }
-        
+
         private void ClearControls()
         {
             try
@@ -967,29 +968,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private ARecurringGiftDetailRow NewGift()
         {
             GiftBatchTDSARecurringGiftDetailRow newRow = null;
-        	
+
             if (ValidateAllData(true, true))
             {
-	        	ARecurringGiftRow giftRow = FMainDS.ARecurringGift.NewRowTyped(true);
-	
-	            giftRow.Active = true;
-	
-	            giftRow.LedgerNumber = FBatchRow.LedgerNumber;
-	            giftRow.BatchNumber = FBatchRow.BatchNumber;
-	            giftRow.GiftTransactionNumber = FBatchRow.LastGiftNumber + 1;
-	            FBatchRow.LastGiftNumber++;
-	            giftRow.LastDetailNumber = 1;
-	
-	            FMainDS.ARecurringGift.Rows.Add(giftRow);
-	
-	            newRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
-	            
-	            newRow.LedgerNumber = FBatchRow.LedgerNumber;
-	            newRow.BatchNumber = FBatchRow.BatchNumber;
-	            newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
-	            newRow.DetailNumber = 1;
-	            newRow.DonorKey = 0;
-	            cmbDetailMotivationGroupCode.SelectedIndex = 0;
+                ARecurringGiftRow giftRow = FMainDS.ARecurringGift.NewRowTyped(true);
+
+                giftRow.Active = true;
+
+                giftRow.LedgerNumber = FBatchRow.LedgerNumber;
+                giftRow.BatchNumber = FBatchRow.BatchNumber;
+                giftRow.GiftTransactionNumber = FBatchRow.LastGiftNumber + 1;
+                FBatchRow.LastGiftNumber++;
+                giftRow.LastDetailNumber = 1;
+
+                FMainDS.ARecurringGift.Rows.Add(giftRow);
+
+                newRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
+
+                newRow.LedgerNumber = FBatchRow.LedgerNumber;
+                newRow.BatchNumber = FBatchRow.BatchNumber;
+                newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
+                newRow.DetailNumber = 1;
+                newRow.DonorKey = 0;
+                cmbDetailMotivationGroupCode.SelectedIndex = 0;
                 newRow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
                 newRow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
                 RetrieveMotivationDetailCostCentreCode();
@@ -1040,34 +1041,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private ARecurringGiftDetailRow NewGiftDetail(GiftBatchTDSARecurringGiftDetailRow ACurrentRow)
         {
             GiftBatchTDSARecurringGiftDetailRow newRow = null;
-            
+
             if (ValidateAllData(true, true))
             {
-            	if (ACurrentRow == null)
-	            {
-	                return NewGift();
-	            }
-	
-	            // find gift row
-	            ARecurringGiftRow giftRow = GetGiftRow(ACurrentRow.GiftTransactionNumber);
-	
-	            giftRow.LastDetailNumber++;
-	
-	            newRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
-	            
-	            newRow.LedgerNumber = giftRow.LedgerNumber;
-	            newRow.BatchNumber = giftRow.BatchNumber;
-	            newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
-	            newRow.DetailNumber = giftRow.LastDetailNumber;
-	            newRow.DonorKey = ACurrentRow.DonorKey;
-	            newRow.DonorName = ACurrentRow.DonorName;
-	            newRow.DateEntered = ACurrentRow.DateEntered;
+                if (ACurrentRow == null)
+                {
+                    return NewGift();
+                }
+
+                // find gift row
+                ARecurringGiftRow giftRow = GetGiftRow(ACurrentRow.GiftTransactionNumber);
+
+                giftRow.LastDetailNumber++;
+
+                newRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
+
+                newRow.LedgerNumber = giftRow.LedgerNumber;
+                newRow.BatchNumber = giftRow.BatchNumber;
+                newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
+                newRow.DetailNumber = giftRow.LastDetailNumber;
+                newRow.DonorKey = ACurrentRow.DonorKey;
+                newRow.DonorName = ACurrentRow.DonorName;
+                newRow.DateEntered = ACurrentRow.DateEntered;
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
                 newRow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
                 newRow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
                 RetrieveMotivationDetailCostCentreCode();
 
-	            FMainDS.ARecurringGiftDetail.Rows.Add(newRow);
+                FMainDS.ARecurringGiftDetail.Rows.Add(newRow);
             }
 
             return newRow;
@@ -1127,7 +1128,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ARecurringGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
 
-            
+
             cmbDetailMethodOfPaymentCode.SetSelectedString(giftRow.MethodOfPaymentCode);
 
             if (((GiftBatchTDSARecurringGiftDetailRow)ARow).IsDonorKeyNull())
@@ -1139,7 +1140,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailDonorKey.Text = ((GiftBatchTDSARecurringGiftDetailRow)ARow).DonorKey.ToString();
             }
 
-            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0 && (cmbDetailMotivationGroupCode.SelectedIndex == -1))
+            if ((Convert.ToInt64(txtDetailRecipientKey.Text) == 0) && (cmbDetailMotivationGroupCode.SelectedIndex == -1))
             {
                 txtDetailCostCentreCode.Text = string.Empty;
             }

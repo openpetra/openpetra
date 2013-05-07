@@ -210,7 +210,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     );
             }
         }
-        
+
         private void ClearTransAnalAttributeDefaultView()
         {
             FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Empty;
@@ -847,14 +847,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (ADeletionPerformed)
             {
-				SetJournalLastTransNumber();
+                SetJournalLastTransNumber();
 
                 UpdateChangeableStatus();
 
                 if (!pnlDetails.Enabled)
-	            {
-	                ClearControls();
-	            }
+                {
+                    ClearControls();
+                }
 
                 UpdateTotals();
 
@@ -866,7 +866,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
             }
-            else if (!AAllowDeletion && ACompletionMessage.Length > 0)
+            else if (!AAllowDeletion && (ACompletionMessage.Length > 0))
             {
                 //message to user
                 MessageBox.Show(ACompletionMessage,
@@ -874,7 +874,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-            else if (!ADeletionPerformed && ACompletionMessage.Length > 0)
+            else if (!ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
                 //message to user
                 MessageBox.Show(ACompletionMessage,
@@ -892,23 +892,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>true if row deletion is successful</returns>
         private bool DeleteRowManual(ATransactionRow ARowToDelete, out string ACompletionMessage)
         {
-			//Assign a default values
+            //Assign a default values
             bool deletionSuccessful = false;
+
             ACompletionMessage = string.Empty;
 
             if (ARowToDelete == null)
             {
                 return deletionSuccessful;
             }
-            
+
             bool newRecord = (ARowToDelete.RowState == DataRowState.Added);
 
-			if (!newRecord && !((TFrmGLBatch) this.ParentForm).SaveChanges())
-			{
-				MessageBox.Show("Error in trying to save prior to deleting current transaction!");
-				return deletionSuccessful;
-			}
-			
+            if (!newRecord && !((TFrmGLBatch) this.ParentForm).SaveChanges())
+            {
+                MessageBox.Show("Error in trying to save prior to deleting current transaction!");
+                return deletionSuccessful;
+            }
+
             //Backup the Dataset for reversion purposes
             GLBatchTDS FTempDS = (GLBatchTDS)FMainDS.Copy();
 
@@ -964,7 +965,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 //Bubble the transaction to delete to the top
                 SetTransactionDefaultView();
-                
+
                 DataView transView = new DataView(FMainDS.ATransaction);
                 transView.RowFilter = String.Format("{0}={1} And {2}={3}",
                     ATransactionTable.GetBatchNumberDBName(),
@@ -973,7 +974,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FJournalNumber);
 
                 transView.Sort = String.Format("{0} ASC",
-                                               ATransactionTable.GetTransactionNumberDBName());
+                    ATransactionTable.GetTransactionNumberDBName());
 
                 ATransactionRow transRowToReceive = null;
                 ATransactionRow transRowToCopyDown = null;
@@ -1008,33 +1009,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     //transRowToReceive will become previous row for next recursion
                     transRowToReceive = transRowCurrent;
                 }
-                
-                if (newRecord && transRowCurrent.SubType == MFinanceConstants.MARKED_FOR_DELETION)
+
+                if (newRecord && (transRowCurrent.SubType == MFinanceConstants.MARKED_FOR_DELETION))
                 {
-                	transRowCurrent.Delete();
+                    transRowCurrent.Delete();
                 }
 
                 FPreviouslySelectedDetailRow = null;
 
                 FPetraUtilsObject.SetChangedFlag();
 
-				//Try to save changes
+                //Try to save changes
                 if (!newRecord)
                 {
-					if (((TFrmGLBatch) this.ParentForm).SaveChanges())
-	                {
-	                    //Reload from server
-	                    FMainDS.ATransAnalAttrib.Clear();
-	                    FMainDS.ATransaction.Clear();
-	
-	                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, FBatchNumber, FJournalNumber));
-	                }
-	                else
-	                {
-	                    throw new Exception("Unable to save after deleting a transaction!");
-	                }
+                    if (((TFrmGLBatch) this.ParentForm).SaveChanges())
+                    {
+                        //Reload from server
+                        FMainDS.ATransAnalAttrib.Clear();
+                        FMainDS.ATransaction.Clear();
+
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, FBatchNumber, FJournalNumber));
+                    }
+                    else
+                    {
+                        throw new Exception("Unable to save after deleting a transaction!");
+                    }
                 }
-               
+
                 SetTransactionDefaultView();
 
                 ACompletionMessage = String.Format(Catalog.GetString("Transaction no.: {0} deleted successfully."),

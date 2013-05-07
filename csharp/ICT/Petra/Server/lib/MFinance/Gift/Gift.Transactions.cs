@@ -685,17 +685,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             bool AllValidationsOK = true;
 
-			bool giftBatchTableInDataSet = (AInspectDS.AGiftBatch != null);
+            bool giftBatchTableInDataSet = (AInspectDS.AGiftBatch != null);
             bool giftTableInDataSet = (AInspectDS.AGift != null);
             bool giftDetailTableInDataSet = (AInspectDS.AGiftDetail != null);
-			bool recurrGiftBatchTableInDataSet = (AInspectDS.ARecurringGiftBatch != null);
+            bool recurrGiftBatchTableInDataSet = (AInspectDS.ARecurringGiftBatch != null);
             bool recurrGiftTableInDataSet = (AInspectDS.ARecurringGift != null);
             bool recurrGiftDetailTableInDataSet = (AInspectDS.ARecurringGiftDetail != null);
 
             AVerificationResult = new TVerificationResultCollection();
 
-			if (recurrGiftBatchTableInDataSet || recurrGiftTableInDataSet || recurrGiftDetailTableInDataSet)
-			{
+            if (recurrGiftBatchTableInDataSet || recurrGiftTableInDataSet || recurrGiftDetailTableInDataSet)
+            {
                 if (giftBatchTableInDataSet || giftTableInDataSet || giftDetailTableInDataSet)
                 {
                     throw new Exception(
@@ -703,7 +703,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 return SaveRecurringGiftBatchTDS(ref AInspectDS, out AVerificationResult);
-			}
+            }
 
             if (giftBatchTableInDataSet)
             {
@@ -736,60 +736,60 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (AllValidationsOK)
             {
-            	SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && giftTableInDataSet && AInspectDS.AGift.Count > 0)
+                if ((SubmissionResult == TSubmitChangesResult.scrOK) && giftTableInDataSet && (AInspectDS.AGift.Count > 0))
                 {
-	            	if (giftDetailTableInDataSet)
-	                {
-		            	AInspectDS.AGiftDetail.AcceptChanges();
-	                }
-	
-	                AInspectDS.AGift.AcceptChanges();
-	            	
-	            	AGiftRow tranR = (AGiftRow)AInspectDS.AGift.Rows[0];
-	
-	                Int32 currentLedger = tranR.LedgerNumber;
-	                Int32 currentBatch = tranR.BatchNumber;
-	                Int32 giftToDelete = 0;
-	
-	                try
-	                {
-	                    DataRow[] foundGiftsForDeletion = AInspectDS.AGift.Select(String.Format("{0} = '{1}'",
-	                            AGiftTable.GetGiftStatusDBName(),
-	                            MFinanceConstants.MARKED_FOR_DELETION));
-	
-	                    if (foundGiftsForDeletion.Length > 0)
-	                    {
-	                        AGiftRow giftRowClient = null;
-	                        
-	                        for (int i = 0; i < foundGiftsForDeletion.Length; i++)
-	                        {
-		                    	//A gift has been deleted
-		                        giftRowClient = (AGiftRow)foundGiftsForDeletion[i];
-		                        
-		                        giftToDelete = giftRowClient.GiftTransactionNumber;
-	                            TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
-	                                    giftToDelete,
-	                                    currentBatch));
-		
-		                        giftRowClient.Delete();
-	                        }
-	                    }
-	
-	                    SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-	                }
-	                catch (Exception ex)
-	                {
-	                	TLogging.Log("Saving DataSet: " + ex.Message);
-	                	
-	                	TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
-	                            giftToDelete,
-	                            currentBatch
-	                            ));
-	                	
-	                	SubmissionResult = TSubmitChangesResult.scrError;
-	                }
+                    if (giftDetailTableInDataSet)
+                    {
+                        AInspectDS.AGiftDetail.AcceptChanges();
+                    }
+
+                    AInspectDS.AGift.AcceptChanges();
+
+                    AGiftRow tranR = (AGiftRow)AInspectDS.AGift.Rows[0];
+
+                    Int32 currentLedger = tranR.LedgerNumber;
+                    Int32 currentBatch = tranR.BatchNumber;
+                    Int32 giftToDelete = 0;
+
+                    try
+                    {
+                        DataRow[] foundGiftsForDeletion = AInspectDS.AGift.Select(String.Format("{0} = '{1}'",
+                                AGiftTable.GetGiftStatusDBName(),
+                                MFinanceConstants.MARKED_FOR_DELETION));
+
+                        if (foundGiftsForDeletion.Length > 0)
+                        {
+                            AGiftRow giftRowClient = null;
+
+                            for (int i = 0; i < foundGiftsForDeletion.Length; i++)
+                            {
+                                //A gift has been deleted
+                                giftRowClient = (AGiftRow)foundGiftsForDeletion[i];
+
+                                giftToDelete = giftRowClient.GiftTransactionNumber;
+                                TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
+                                        giftToDelete,
+                                        currentBatch));
+
+                                giftRowClient.Delete();
+                            }
+                        }
+
+                        SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                    }
+                    catch (Exception ex)
+                    {
+                        TLogging.Log("Saving DataSet: " + ex.Message);
+
+                        TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
+                                giftToDelete,
+                                currentBatch
+                                ));
+
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
                 }
             }
 
@@ -813,13 +813,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = new TVerificationResultCollection();
-        	
-        	TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             bool AllValidationsOK = true;
 
-			bool recurrGiftBatchTableInDataSet = (AInspectDS.ARecurringGiftBatch != null);
+            bool recurrGiftBatchTableInDataSet = (AInspectDS.ARecurringGiftBatch != null);
             bool recurrGiftTableInDataSet = (AInspectDS.ARecurringGift != null);
             bool recurrGiftDetailTableInDataSet = (AInspectDS.ARecurringGiftDetail != null);
 
@@ -854,60 +854,60 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (AllValidationsOK)
             {
-            	SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && recurrGiftTableInDataSet && AInspectDS.ARecurringGift.Count > 0)
+                if ((SubmissionResult == TSubmitChangesResult.scrOK) && recurrGiftTableInDataSet && (AInspectDS.ARecurringGift.Count > 0))
                 {
-	            	if (recurrGiftDetailTableInDataSet)
-	                {
-		            	AInspectDS.ARecurringGiftDetail.AcceptChanges();
-	                }
-	
-	                AInspectDS.ARecurringGift.AcceptChanges();
-	            	
-	            	ARecurringGiftRow tranR = (ARecurringGiftRow)AInspectDS.ARecurringGift.Rows[0];
-	
-	                Int32 currentLedger = tranR.LedgerNumber;
-	                Int32 currentBatch = tranR.BatchNumber;
-	                Int32 giftToDelete = 0;
-	
-	                try
-	                {
-	                    DataRow[] foundGiftsForDeletion = AInspectDS.ARecurringGift.Select(String.Format("{0} = '{1}'",
-	                	                                                                                 ARecurringGiftTable.GetChargeStatusDBName(),
-	                	                                                                                 MFinanceConstants.MARKED_FOR_DELETION));
-	
-	                    if (foundGiftsForDeletion.Length > 0)
-	                    {
-	                        ARecurringGiftRow giftRowClient = null;
-	                        
-	                        for (int i = 0; i < foundGiftsForDeletion.Length; i++)
-	                        {
-		                    	//A gift has been deleted
-		                        giftRowClient = (ARecurringGiftRow)foundGiftsForDeletion[i];
-		                        
-		                        giftToDelete = giftRowClient.GiftTransactionNumber;
-	                            TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
-	                                    giftToDelete,
-	                                    currentBatch));
-		
-		                        giftRowClient.Delete();
-	                        }
-	                    }
-	
-	                    SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-	                }
-	                catch (Exception ex)
-	                {
-	                	TLogging.Log("Saving DataSet: " + ex.Message);
-	                	
-	                	TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
-	                            giftToDelete,
-	                            currentBatch
-	                            ));
-	                	
-	                	SubmissionResult = TSubmitChangesResult.scrError;
-	                }
+                    if (recurrGiftDetailTableInDataSet)
+                    {
+                        AInspectDS.ARecurringGiftDetail.AcceptChanges();
+                    }
+
+                    AInspectDS.ARecurringGift.AcceptChanges();
+
+                    ARecurringGiftRow tranR = (ARecurringGiftRow)AInspectDS.ARecurringGift.Rows[0];
+
+                    Int32 currentLedger = tranR.LedgerNumber;
+                    Int32 currentBatch = tranR.BatchNumber;
+                    Int32 giftToDelete = 0;
+
+                    try
+                    {
+                        DataRow[] foundGiftsForDeletion = AInspectDS.ARecurringGift.Select(String.Format("{0} = '{1}'",
+                                ARecurringGiftTable.GetChargeStatusDBName(),
+                                MFinanceConstants.MARKED_FOR_DELETION));
+
+                        if (foundGiftsForDeletion.Length > 0)
+                        {
+                            ARecurringGiftRow giftRowClient = null;
+
+                            for (int i = 0; i < foundGiftsForDeletion.Length; i++)
+                            {
+                                //A gift has been deleted
+                                giftRowClient = (ARecurringGiftRow)foundGiftsForDeletion[i];
+
+                                giftToDelete = giftRowClient.GiftTransactionNumber;
+                                TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
+                                        giftToDelete,
+                                        currentBatch));
+
+                                giftRowClient.Delete();
+                            }
+                        }
+
+                        SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                    }
+                    catch (Exception ex)
+                    {
+                        TLogging.Log("Saving DataSet: " + ex.Message);
+
+                        TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
+                                giftToDelete,
+                                currentBatch
+                                ));
+
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
                 }
             }
 

@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitialiseControls()
         {
-        	//Fix to length of field
+            //Fix to length of field
             txtDetailReference.MaxLength = 20;
 
             //Changing this will stop taborder issues
@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             SetGiftDetailDefaultView();
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
-            
+
             if (AFromTabClick)
             {
                 grdDetails.Focus();
@@ -185,7 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         bool FinRecipientKeyChanging = false;
-        
+
         private void RecipientKeyChanged(Int64 APartnerKey,
             String APartnerShortName,
             bool AValidSelection)
@@ -690,6 +690,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool deletionSuccessful = false;
             string originatingDetailRef = string.Empty;
+
             ACompletionMessage = string.Empty;
 
             if (ARowToDelete == null)
@@ -697,12 +698,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return deletionSuccessful;
             }
 
-			if (ARowToDelete.RowState != DataRowState.Added && !((TFrmGiftBatch) this.ParentForm).SaveChanges())
-			{
-				MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
-				return deletionSuccessful;
-			}
-			
+            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch) this.ParentForm).SaveChanges())
+            {
+                MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
+                return deletionSuccessful;
+            }
+
             //Backup the Dataset for reversion purposes
             GiftBatchTDS FTempDS = (GiftBatchTDS)FMainDS.Copy();
 
@@ -719,7 +720,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     originatingDetailRef = ARowToDelete.ModifiedDetailKey;
                 }
 
-				//If deleting a detail row as opposed to a gift header
+                //If deleting a detail row as opposed to a gift header
                 if (FGiftDetailView.Count > 1)
                 {
                     ARowToDelete.Delete();
@@ -743,7 +744,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     ARowToDelete.Delete();
-                    
+
                     giftToDeleteTransNo = FGift.GiftTransactionNumber;
                     currentBatchNumber = FGift.BatchNumber;
 
@@ -807,8 +808,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         giftRowToReceive = giftRowCurrent;
                     }
 
-	                FPreviouslySelectedDetailRow = null;
-		
+                    FPreviouslySelectedDetailRow = null;
+
                     FPetraUtilsObject.SetChangedFlag();
 
                     FGiftSelectedForDeletion = true;
@@ -824,8 +825,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         throw new Exception("Error in trying to reset Modified Detail field of the originating gift detail.");
                     }
                 }
-                
-				//Try to save changes
+
+                //Try to save changes
                 if (((TFrmGiftBatch) this.ParentForm).SaveChanges())
                 {
                     //Reload from server
@@ -838,9 +839,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     throw new Exception("Unable to save after deleting a gift!");
                 }
-               
+
                 ACompletionMessage = Catalog.GetString("Gift row deleted successfully!");
-                
+
                 deletionSuccessful = true;
             }
             catch (Exception ex)
@@ -869,20 +870,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ADeletionPerformed)
             {
-				if (FGiftSelectedForDeletion)
-				{
-					FGiftSelectedForDeletion = false;
+                if (FGiftSelectedForDeletion)
+                {
+                    FGiftSelectedForDeletion = false;
 
-					SetBatchLastGiftNumber();
+                    SetBatchLastGiftNumber();
 
-	            	UpdateControlsProtection();
-                
-	                if (!pnlDetails.Enabled)
-		            {
-		                ClearControls();
-		            }
-				}
-                
+                    UpdateControlsProtection();
+
+                    if (!pnlDetails.Enabled)
+                    {
+                        ClearControls();
+                    }
+                }
+
                 UpdateTotals();
 
                 ((TFrmGiftBatch) this.ParentForm).SaveChanges();
@@ -891,9 +892,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 MessageBox.Show(ACompletionMessage,
                     "Deletion Successful",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);              
+                    MessageBoxIcon.Information);
             }
-            else if (!AAllowDeletion && ACompletionMessage.Length > 0)
+            else if (!AAllowDeletion && (ACompletionMessage.Length > 0))
             {
                 //message to user
                 MessageBox.Show(ACompletionMessage,
@@ -901,7 +902,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-            else if (!ADeletionPerformed && ACompletionMessage.Length > 0)
+            else if (!ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
                 //message to user
                 MessageBox.Show(ACompletionMessage,
@@ -913,13 +914,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SetBatchLastGiftNumber()
         {
-        	FMainDS.AGift.DefaultView.RowFilter = String.Format("{0}={1}",
-        	                                                    AGiftTable.GetBatchNumberDBName(),
-        	                                                    FBatchNumber);
-            	
-        	FMainDS.AGift.DefaultView.Sort = String.Format("{0} DESC",
-        	                                               AGiftTable.GetGiftTransactionNumberDBName());
-        	if (FMainDS.AGift.DefaultView.Count > 0)
+            FMainDS.AGift.DefaultView.RowFilter = String.Format("{0}={1}",
+                AGiftTable.GetBatchNumberDBName(),
+                FBatchNumber);
+
+            FMainDS.AGift.DefaultView.Sort = String.Format("{0} DESC",
+                AGiftTable.GetGiftTransactionNumberDBName());
+
+            if (FMainDS.AGift.DefaultView.Count > 0)
             {
                 AGiftRow transRow = (AGiftRow)FMainDS.AGift.DefaultView[0].Row;
                 FBatchRow.LastGiftNumber = transRow.GiftTransactionNumber;
@@ -945,12 +947,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AGiftDetailTable.GetBatchNumberDBName(),
                     FBatchNumber);
 
-	            FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1} ASC",
-	                AGiftDetailTable.GetGiftTransactionNumberDBName(),
-	                AGiftDetailTable.GetDetailNumberDBName());
+                FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1} ASC",
+                    AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                    AGiftDetailTable.GetDetailNumberDBName());
             }
         }
-        
+
         private void ClearControls()
         {
             try
@@ -1468,7 +1470,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.Focus();
             }
         }
- 
+
         /// <summary>
         /// Refresh the dataset for this form
         /// </summary>
@@ -1532,7 +1534,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
-            
+
             try
             {
                 ParentForm.ShowInTaskbar = false;
@@ -1581,7 +1583,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ShowRevertAdjustForm("Adjust Gift");
         }
- 
+
         /// <summary>
         /// update the transaction DateEntered from outside
         /// </summary>
@@ -1621,7 +1623,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ShowDetails();
             }
         }
- 
+
         /// <summary>
         /// update the Batch Status from outside
         /// </summary>
@@ -1637,7 +1639,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPetraUtilsObject.DisableSaveButton();
             }
         }
- 
+
         /// <summary>
         /// update the transaction base amount calculation from outside
         /// </summary>
@@ -1707,7 +1709,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 gdr.GiftAmount = gdr.GiftTransactionAmount * FExchangeRateToBase;
             }
         }
- 
+
         private void GiftDateChanged(object sender, EventArgs e)
         {
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
@@ -1732,7 +1734,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-         /// Select a special gift detail number from outside
+        /// Select a special gift detail number from outside
         public void SelectGiftDetailNumber(Int32 AGiftNumber, Int32 AGiftDetailNumber)
         {
             DataView myView = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView;
@@ -1749,6 +1751,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
         }
-       
     }
 }

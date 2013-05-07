@@ -751,7 +751,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             AVerificationResult = new TVerificationResultCollection();
 
-			// make sure that empty tables are removed
+            // make sure that empty tables are removed
             AInspectDS = AInspectDS.GetChangesTyped(true);
 
             bool batchTableInDataSet = (AInspectDS.ABatch != null);
@@ -761,7 +761,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool recurrBatchTableInDataSet = (AInspectDS.ARecurringBatch != null);
             bool recurrJournalTableInDataSet = (AInspectDS.ARecurringJournal != null);
             bool recurrTransTableInDataSet = (AInspectDS.ARecurringTransaction != null);
-            
+
             bool newTransaction = false;
             TDBTransaction Transaction = null;
 
@@ -832,7 +832,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 if (newTransaction)
                 {
                     newTransaction = false;
-                	DBAccess.GDBAccessObj.RollbackTransaction();
+                    DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
 
@@ -939,12 +939,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                     if (transAnalAttrib.RowState != DataRowState.Deleted)
                     {
-	                    BatchNumber = transAnalAttrib.BatchNumber;
-	
-	                    if (!BatchNumbersInvolved.Contains(BatchNumber))
-	                    {
-	                        BatchNumbersInvolved.Add(BatchNumber);
-	                    }
+                        BatchNumber = transAnalAttrib.BatchNumber;
+
+                        if (!BatchNumbersInvolved.Contains(BatchNumber))
+                        {
+                            BatchNumbersInvolved.Add(BatchNumber);
+                        }
                     }
                 }
             }
@@ -974,7 +974,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 //Get new or existing transaction
                 Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out newTransaction);
+                                  (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out newTransaction);
 
                 try
                 {
@@ -985,7 +985,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     if (newTransaction)
                     {
                         newTransaction = false;
-                    	DBAccess.GDBAccessObj.RollbackTransaction();
+                        DBAccess.GDBAccessObj.RollbackTransaction();
                     }
                 }
 
@@ -1007,20 +1007,20 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 return TSubmitChangesResult.scrError;
             }
 
-			//Need to save changes before deleting any transactions
+            //Need to save changes before deleting any transactions
             TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-            
-            if (SubmissionResult == TSubmitChangesResult.scrOK && (transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
+
+            if ((SubmissionResult == TSubmitChangesResult.scrOK) && (transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
             {
-            	//Accept deletion of Attributes to allow deletion of transactions
-	            if (attrTableInDataSet)
-            	{
-            		AInspectDS.ATransAnalAttrib.AcceptChanges();
-            	}
+                //Accept deletion of Attributes to allow deletion of transactions
+                if (attrTableInDataSet)
+                {
+                    AInspectDS.ATransAnalAttrib.AcceptChanges();
+                }
 
-	            AInspectDS.ATransaction.AcceptChanges();
+                AInspectDS.ATransaction.AcceptChanges();
 
-            	ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
+                ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
 
                 Int32 currentLedger = tranR.LedgerNumber;
                 Int32 currentBatch = tranR.BatchNumber;
@@ -1034,7 +1034,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             ATransactionTable.GetSubTypeDBName(),
                             MFinanceConstants.MARKED_FOR_DELETION));
 
-					if (foundTransactionForDeletion.Length > 0)
+                    if (foundTransactionForDeletion.Length > 0)
                     {
                         ATransactionRow transRowClient = null;
 
@@ -1052,23 +1052,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         }
                     }
 
-					//Submit all changes
-		            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                    //Submit all changes
+                    SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
                 }
                 catch (Exception ex)
                 {
-                	TLogging.Log("Saving DataSet: " + ex.Message);
-                	
-                	TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
+                    TLogging.Log("Saving DataSet: " + ex.Message);
+
+                    TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
                             transToDelete,
                             currentJournal,
                             currentBatch
                             ));
-                	
-                	SubmissionResult = TSubmitChangesResult.scrError;
+
+                    SubmissionResult = TSubmitChangesResult.scrError;
                 }
             }
-            
+
             return SubmissionResult;
         }
 
@@ -1614,7 +1614,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 AInspectDS.ARecurringTransaction.AcceptChanges();
 
-				ARecurringTransactionRow tranR = (ARecurringTransactionRow)AInspectDS.ARecurringTransaction.Rows[0];
+                ARecurringTransactionRow tranR = (ARecurringTransactionRow)AInspectDS.ARecurringTransaction.Rows[0];
 
                 Int32 currentLedger = tranR.LedgerNumber;
                 Int32 currentBatch = tranR.BatchNumber;
@@ -1648,24 +1648,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         //save changes
                         SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
                     }
-
                 }
                 catch (Exception ex)
                 {
-                	TLogging.Log("Saving DataSet: " + ex.Message);
-                	
-                	TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
+                    TLogging.Log("Saving DataSet: " + ex.Message);
+
+                    TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
                             transToDelete,
                             currentJournal,
                             currentBatch
                             ));
-                	
-                	SubmissionResult = TSubmitChangesResult.scrError;
+
+                    SubmissionResult = TSubmitChangesResult.scrError;
                 }
             }
 
-			return SubmissionResult;
-    	}
+            return SubmissionResult;
+        }
 
         /// <summary>
         /// post a GL Batch

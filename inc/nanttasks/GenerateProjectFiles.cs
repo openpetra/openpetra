@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -344,10 +344,69 @@ namespace Ict.Tools.NAntTasks
 
                 if (next == null)
                 {
+                    List <string>ProjectsNotPartOfCyclicDep = new List <string>();
+
+                    int CountProjectsChanged = 0;
+
+                    do
+                    {
+                        CountProjectsChanged = ProjectsNotPartOfCyclicDep.Count;
+
+                        foreach (string file in ProjectNames)
+                        {
+                            if (ProjectsNotPartOfCyclicDep.Contains(file))
+                            {
+                                continue;
+                            }
+
+                            // if this file is not in the list of another file, ignore it
+                            bool isReferenced = false;
+
+                            foreach (string file2 in ProjectNames)
+                            {
+                                if (ProjectsNotPartOfCyclicDep.Contains(file2))
+                                {
+                                    continue;
+                                }
+
+                                TDetailsOfDll details2 = AProjects[file2];
+
+                                foreach (string dependency in details2.ReferencedDlls)
+                                {
+                                    if (dependency == file)
+                                    {
+                                        isReferenced = true;
+                                    }
+                                }
+                            }
+
+                            if (!isReferenced)
+                            {
+                                ProjectsNotPartOfCyclicDep.Add(file);
+                            }
+                        }
+                    } while (ProjectsNotPartOfCyclicDep.Count != CountProjectsChanged);
+
                     string problemFiles = string.Empty;
 
                     foreach (string file in ProjectNames)
                     {
+                        if (ProjectsNotPartOfCyclicDep.Contains(file))
+                        {
+                            continue;
+                        }
+
+                        Console.WriteLine(file);
+                        TDetailsOfDll details = AProjects[file];
+
+                        foreach (string dependency in details.ReferencedDlls)
+                        {
+                            if (ProjectNames.Contains(dependency))
+                            {
+                                Console.WriteLine("    => " + dependency);
+                            }
+                        }
+
                         if (problemFiles.Length > 0)
                         {
                             problemFiles += " and ";

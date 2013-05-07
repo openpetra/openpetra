@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -193,7 +193,7 @@ namespace Ict.Tools.GenerateWinForms
                         foreach (string file in yamlFilesSorted)
                         {
                             // only look for main files, not language specific files (*.xy-XY.yaml or *.xy.yaml)
-                            if (((file[file.Length - 11] == '.') && (file[file.Length - 8] == '-')) || (file[file.Length - 8] == '.'))
+                            if (TProcessYAMLForms.IgnoreLanguageSpecificYamlFile(file))
                             {
                                 continue;
                             }

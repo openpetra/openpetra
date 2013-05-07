@@ -74,7 +74,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ValidationControlsDict);
             }
         }
-        
+
         static partial void ValidateRecurringGiftBatchManual(TValidationControlsDict AValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
         {
@@ -108,6 +108,5 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ValidationControlsDict);
             }
         }
-        
     }
 }
