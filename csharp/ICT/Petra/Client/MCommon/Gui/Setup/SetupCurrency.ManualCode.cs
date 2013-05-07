@@ -30,7 +30,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
     public partial class TFrmSetupCurrency
     {
         /// <summary>
-        /// I'm using my own code here because that provided by the auto-generated code 
+        /// I'm using my own code here because that provided by the auto-generated code
         /// causes a NULL value DB error.
         /// </summary>
         /// <param name="sender"></param>

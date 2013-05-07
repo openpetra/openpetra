@@ -339,7 +339,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 out notUsedInt);
 
             int numberFields;
-            
+
             string namesOfThisTableFields;
             string notUsed;
             PrepareCodeletsForeignKey(

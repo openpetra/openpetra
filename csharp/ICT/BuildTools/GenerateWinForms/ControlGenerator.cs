@@ -84,7 +84,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             // TODO this does not work yet. see EventRole Maintain screen
-            if ((!ctrl.HasAttribute("Align")) 
+            if ((!ctrl.HasAttribute("Align"))
                 && (!ctrl.HasAttribute("Width")))
             {
                 ctrl.SetAttribute("Stretch", "horizontally");

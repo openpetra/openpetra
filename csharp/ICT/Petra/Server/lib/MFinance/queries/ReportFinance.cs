@@ -380,7 +380,7 @@ namespace Ict.Petra.Server.MFinance.queries
         /// <summary>
         /// Find recipient Partner Key and name for all partners who received gifts in the timeframe.
         /// NOTE - the user can select the PartnerType of the recipient.
-        /// 
+        ///
         /// With only a little more load on the DB, I can get all the data that the report will need,
         /// and store it in a DataTable local to this class, so that when more detailed data is requested below,
         /// I don't need another DB query.
@@ -402,22 +402,22 @@ namespace Ict.Petra.Server.MFinance.queries
             String period3Start = String.Format("'{0}'", AParameters.Get("param_from_date_3").ToString());
             String period3End = String.Format("'{0}'", AParameters.Get("param_to_date_3").ToString());
             String amountFieldName = (AParameters.Get("param_currency").ToString() == "International") ?
-                "detail.a_gift_amount_intl_n":"detail.a_gift_amount_n";
+                                     "detail.a_gift_amount_intl_n" : "detail.a_gift_amount_n";
 
-            string SqlQuery = "SELECT DISTINCT "
-                + "gift.p_donor_key_n AS DonorKey, "
-                + "donor.p_partner_short_name_c AS DonorName, donor.p_partner_class_c AS DonorClass, "
-                + "recipient.p_partner_key_n AS RecipientKey, "
-                + "recipient.p_partner_short_name_c AS RecipientName, "
-                + "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period0Start + " AND " + period0End + " "
-                + "THEN " + amountFieldName + " ELSE 0 END )as YearTotal0, "
-                + "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period1Start + " AND " + period1End + " "
-                + "THEN " + amountFieldName + " ELSE 0 END )as YearTotal1, "
-                + "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period2Start + " AND " + period2End + " "
-                + "THEN " + amountFieldName + " ELSE 0 END )as YearTotal2, "
-                + "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period3Start + " AND " + period3End + " "
-                + "THEN " + amountFieldName + " ELSE 0 END )as YearTotal3 "
-                + "FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch, PUB_p_partner AS donor, PUB_p_partner AS recipient ";
+            string SqlQuery = "SELECT DISTINCT " +
+                              "gift.p_donor_key_n AS DonorKey, " +
+                              "donor.p_partner_short_name_c AS DonorName, donor.p_partner_class_c AS DonorClass, " +
+                              "recipient.p_partner_key_n AS RecipientKey, " +
+                              "recipient.p_partner_short_name_c AS RecipientName, " +
+                              "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period0Start + " AND " + period0End + " " +
+                              "THEN " + amountFieldName + " ELSE 0 END )as YearTotal0, " +
+                              "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period1Start + " AND " + period1End + " " +
+                              "THEN " + amountFieldName + " ELSE 0 END )as YearTotal1, " +
+                              "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period2Start + " AND " + period2End + " " +
+                              "THEN " + amountFieldName + " ELSE 0 END )as YearTotal2, " +
+                              "SUM(    CASE WHEN gift.a_date_entered_d BETWEEN " + period3Start + " AND " + period3End + " " +
+                              "THEN " + amountFieldName + " ELSE 0 END )as YearTotal3 " +
+                              "FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch, PUB_p_partner AS donor, PUB_p_partner AS recipient ";
 
             if (onlySelectedTypes)
             {
@@ -427,30 +427,30 @@ namespace Ict.Petra.Server.MFinance.queries
             if (fromExtract)
             {
                 String extractName = AParameters.Get("param_extract_name").ToString();
-                SqlQuery += (", PUB_m_extract, PUB_m_extract_master "
-                    + "WHERE "
-                    + "partner.p_partner_key_n = PUB_m_extract.p_partner_key_n "
-                    + "AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i "
-                    + "AND PUB_m_extract_master.m_extract_name_c = '" + extractName +"' "
-                    + "AND "
-                    );
+                SqlQuery += (", PUB_m_extract, PUB_m_extract_master " +
+                             "WHERE " +
+                             "partner.p_partner_key_n = PUB_m_extract.p_partner_key_n " +
+                             "AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i " +
+                             "AND PUB_m_extract_master.m_extract_name_c = '" + extractName + "' " +
+                             "AND "
+                             );
             }
             else
             {
                 SqlQuery += "WHERE ";
             }
 
-            SqlQuery += ("detail.a_ledger_number_i = " + LedgerNum + " "
-                + "AND detail.p_recipient_key_n = recipient.p_partner_key_n "
-                + "AND gift.p_donor_key_n = donor.p_partner_key_n "
-                + "AND detail.a_batch_number_i = gift.a_batch_number_i "
-                + "AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i "
-                + "AND gift.a_date_entered_d BETWEEN " + period3Start + " AND " + period0End + " "
-                + "AND gift.a_ledger_number_i = " + LedgerNum + " "
-                + "AND PUB_a_gift_batch.a_batch_status_c = 'Posted' "
-                + "AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i "
-                + "AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNum + " "
-                );
+            SqlQuery += ("detail.a_ledger_number_i = " + LedgerNum + " " +
+                         "AND detail.p_recipient_key_n = recipient.p_partner_key_n " +
+                         "AND gift.p_donor_key_n = donor.p_partner_key_n " +
+                         "AND detail.a_batch_number_i = gift.a_batch_number_i " +
+                         "AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i " +
+                         "AND gift.a_date_entered_d BETWEEN " + period3Start + " AND " + period0End + " " +
+                         "AND gift.a_ledger_number_i = " + LedgerNum + " " +
+                         "AND PUB_a_gift_batch.a_batch_status_c = 'Posted' " +
+                         "AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i " +
+                         "AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNum + " "
+                         );
 
             if (oneRecipient)
             {
@@ -460,21 +460,24 @@ namespace Ict.Petra.Server.MFinance.queries
 
             if (onlySelectedFields)
             {
-                String selectedFieldList = AParameters.Get ("param_clbFields").ToString();
+                String selectedFieldList = AParameters.Get("param_clbFields").ToString();
                 SqlQuery += ("AND detail.a_recipient_ledger_number_n IN (" + selectedFieldList + ") ");
             }
 
             if (onlySelectedTypes)
             {
-                String selectedTypeList = "'" + AParameters.Get ("param_clbTypes").ToString() + "'";
+                String selectedTypeList = "'" + AParameters.Get("param_clbTypes").ToString() + "'";
                 selectedTypeList = selectedTypeList.Replace(",", "','");
 
-                SqlQuery += ("AND PUB_p_partner_type.p_partner_key_n = detail.p_recipient_key_n "
-                    + "AND PUB_p_partner_type.p_type_code_c IN (" + selectedTypeList + ") ");
+                SqlQuery += ("AND PUB_p_partner_type.p_partner_key_n = detail.p_recipient_key_n " +
+                             "AND PUB_p_partner_type.p_type_code_c IN (" + selectedTypeList + ") ");
             }
 
-            SqlQuery += ("GROUP by gift.p_donor_key_n, donor.p_partner_short_name_c, donor.p_partner_class_c, recipient.p_partner_key_n, recipient.p_partner_short_name_c "
-                + "ORDER BY recipient.p_partner_short_name_c");
+            SqlQuery +=
+                (
+                    "GROUP by gift.p_donor_key_n, donor.p_partner_short_name_c, donor.p_partner_class_c, recipient.p_partner_key_n, recipient.p_partner_short_name_c "
+                    +
+                    "ORDER BY recipient.p_partner_short_name_c");
 
             Boolean newTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
@@ -494,9 +497,11 @@ namespace Ict.Petra.Server.MFinance.queries
             resultTable.Columns.Add("RecipientName", typeof(String));       // returned by this calculation.
 
             Int64 previousPartner = -1;
+
             foreach (DataRow Row in TotalGiftsPerRecipient.Rows)
             {
                 Int64 partnerKey = Convert.ToInt64(Row["RecipientKey"]);
+
                 if (partnerKey != previousPartner)
                 {
                     previousPartner = partnerKey;
@@ -506,13 +511,14 @@ namespace Ict.Petra.Server.MFinance.queries
                     resultTable.Rows.Add(NewRow);
                 }
             }
+
             return resultTable;
         }
 
         /// <summary>
         /// Find all the gifts for a worker, presenting the results in four year columns.
         /// NOTE - the user can select the field of the donor.
-        /// 
+        ///
         /// All the DB work was previously done by the SelectGiftRecipients function above.
         /// I only need to filter the table by recipientKey.
         /// </summary>
@@ -522,7 +528,7 @@ namespace Ict.Petra.Server.MFinance.queries
             Int64 recipientKey = AParameters.Get("RecipientKey").ToInt64();
 
             TotalGiftsPerRecipient.DefaultView.RowFilter = "RecipientKey = " + recipientKey.ToString();
-            DataTable resultTable = TotalGiftsPerRecipient.DefaultView.ToTable(true, 
+            DataTable resultTable = TotalGiftsPerRecipient.DefaultView.ToTable(true,
                 new String[] { "DonorKey", "DonorName", "DonorClass", "YearTotal0", "YearTotal1", "YearTotal2", "YearTotal3" });
             return resultTable;
         }
