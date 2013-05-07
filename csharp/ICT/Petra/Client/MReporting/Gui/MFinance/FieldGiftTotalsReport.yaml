@@ -32,7 +32,7 @@ RootNode:
             Controls: [cmbCurrency]
         cmbCurrency:
             ParameterName: param_currency
-            OptionalValues: [Base, International]
+            OptionalValues: [=Base, International]
         grpDateSelection:
             Label: Select Report Range
             Controls: [txtYears]

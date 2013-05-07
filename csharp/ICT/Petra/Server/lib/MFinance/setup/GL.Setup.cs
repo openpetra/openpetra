@@ -895,7 +895,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ref GLSetupTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
             Boolean NewTransaction;
             ALedgerTable LedgerTable;
             ALedgerRow LedgerRow;
@@ -921,243 +921,245 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             DateTime CurrentCalendarStartDate;
             Boolean CreateDefaultCalendar = false;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
             AVerificationResult = new TVerificationResultCollection();
 
             if (AInspectDS == null)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
                 return TSubmitChangesResult.scrNothingToBeSaved;
             }
 
-            // load ledger row currently saved in database so it can be used for comparison with modified data
-            LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            // retrieve currently saved calendar start date (start date of financial year)
-            AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
-            CurrentCalendarStartDate = DateTime.MinValue;
-
-            if (CalendarTable.Count > 0)
+            try
             {
-                CurrentCalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
-            }
+                // load ledger row currently saved in database so it can be used for comparison with modified data
+                LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
 
-            // update accounting periods (calendar): this only needs to be done if the calendar mode is changed
-            // or if calendar mode is monthly and the start date has changed
-            if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode != LedgerRow.CalendarMode)
-            {
-                if (!((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode)
+                // retrieve currently saved calendar start date (start date of financial year)
+                AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+                CurrentCalendarStartDate = DateTime.MinValue;
+
+                if (CalendarTable.Count > 0)
                 {
-                    // non-monthly: no need to modify accounting periods as they can be used as basis for calendar
-                    // however, if no accounting periods exist yet then make sure they are created based on month initially
-                    if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) == 0)
+                    CurrentCalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
+                }
+
+                // update accounting periods (calendar): this only needs to be done if the calendar mode is changed
+                // or if calendar mode is monthly and the start date has changed
+                if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode != LedgerRow.CalendarMode)
+                {
+                    if (!((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode)
+                    {
+                        // non-monthly: no need to modify accounting periods as they can be used as basis for calendar
+                        // however, if no accounting periods exist yet then make sure they are created based on month initially
+                        if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) == 0)
+                        {
+                            CreateDefaultCalendar = true;
+                        }
+                    }
+                    else
                     {
                         CreateDefaultCalendar = true;
                     }
                 }
-                else
+                else if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
+                         && (ACalendarStartDate != CurrentCalendarStartDate))
                 {
                     CreateDefaultCalendar = true;
                 }
-            }
-            else if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
-                     && (ACalendarStartDate != CurrentCalendarStartDate))
-            {
-                CreateDefaultCalendar = true;
-            }
 
-            // now perform the actual update of accounting periods (calendar)
-            if (CreateDefaultCalendar)
-            {
-                // first make sure all accounting period records are deleted
-                if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                // now perform the actual update of accounting periods (calendar)
+                if (CreateDefaultCalendar)
                 {
-                    AAccountingPeriodTable TemplateTable = new AAccountingPeriodTable();
-                    AAccountingPeriodRow TemplateRow = TemplateTable.NewRowTyped(false);
-                    TemplateRow.LedgerNumber = ALedgerNumber;
-                    AAccountingPeriodAccess.DeleteUsingTemplate(TemplateRow, null, Transaction);
-                }
-
-                // now create all accounting period records according to monthly calendar mode
-                // (at the same time create forwarding periods. If number of forwarding periods also
-                // changes with this saving method then this will be dealt with further down in the code)
-                NewAccountingPeriodTable = new AAccountingPeriodTable();
-
-                PeriodStartDate = ACalendarStartDate;
-
-                for (Period = 1; Period <= 12 + LedgerRow.NumberFwdPostingPeriods; Period++)
-                {
-                    NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
-                    NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
-                    NewAccountingPeriodRow.AccountingPeriodNumber = Period;
-                    NewAccountingPeriodRow.PeriodStartDate = PeriodStartDate;
-                    NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-1);
-                    NewAccountingPeriodRow.AccountingPeriodDesc = PeriodStartDate.ToString("MMMM");
-                    NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
-                    PeriodStartDate = PeriodStartDate.AddMonths(1);
-                }
-
-                AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction, out AVerificationResult);
-
-                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                    TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
-            }
-
-            // check if any new forwarding periods need to be created
-            CurrentNumberFwdPostingPeriods = LedgerRow.NumberFwdPostingPeriods;
-            NewNumberFwdPostingPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
-
-            if (NewNumberFwdPostingPeriods > CurrentNumberFwdPostingPeriods)
-            {
-                // now create new forwarding posting periods (if at all needed)
-                NewAccountingPeriodTable = new AAccountingPeriodTable();
-
-                Period = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods + 1;
-
-                while (Period <= LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods)
-                {
-                    AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                        Period - LedgerRow.NumberOfAccountingPeriods,
-                        Transaction);
-                    AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-
-                    NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
-                    NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
-                    NewAccountingPeriodRow.AccountingPeriodNumber = Period;
-                    NewAccountingPeriodRow.AccountingPeriodDesc = AccountingPeriodRow.AccountingPeriodDesc;
-                    NewAccountingPeriodRow.PeriodStartDate = AccountingPeriodRow.PeriodStartDate.AddYears(1);
-                    NewAccountingPeriodRow.PeriodEndDate = AccountingPeriodRow.PeriodEndDate.AddYears(1);
-
-                    NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
-
-                    Period++;
-                }
-
-                AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction, out AVerificationResult);
-
-                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                    TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
-
-                // also create new general ledger master periods with balances
-                CurrentLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods;
-                NewLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods;
-                // TODO: the following 2 lines would need to replace the 2 lines above if not all possible forward periods are created initially
-                //CurrentLastFwdPeriod = LedgerRow.CurrentPeriod + CurrentNumberFwdPostingPeriods;
-                //NewLastFwdPeriod = LedgerRow.CurrentPeriod + NewNumberFwdPostingPeriods;
-
-                GLMTable = new AGeneralLedgerMasterTable();
-                AGeneralLedgerMasterRow template = GLMTable.NewRowTyped(false);
-
-                template.LedgerNumber = ALedgerNumber;
-                template.Year = LedgerRow.CurrentFinancialYear;
-
-                // find all general ledger master records of the current financial year for given ledger
-                GLMTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(template, Transaction);
-
-                NewGLMPeriodTable = new AGeneralLedgerMasterPeriodTable();
-
-                foreach (DataRow Row in GLMTable.Rows)
-                {
-                    // for each of the general ledger master records of the current financial year set the
-                    // new, extended forwarding glm period records (most likely they will not exist yet
-                    // but if they do then update values)
-                    GLMRow = (AGeneralLedgerMasterRow)Row;
-                    GLMPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(GLMRow.GlmSequence, CurrentLastFwdPeriod, Transaction);
-
-                    if (GLMPeriodTable.Count > 0)
+                    // first make sure all accounting period records are deleted
+                    if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
                     {
-                        GLMPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodTable.Rows[0];
+                        AAccountingPeriodTable TemplateTable = new AAccountingPeriodTable();
+                        AAccountingPeriodRow TemplateRow = TemplateTable.NewRowTyped(false);
+                        TemplateRow.LedgerNumber = ALedgerNumber;
+                        AAccountingPeriodAccess.DeleteUsingTemplate(TemplateRow, null, Transaction);
+                    }
 
-                        for (Period = CurrentLastFwdPeriod + 1; Period <= NewLastFwdPeriod; Period++)
+                    // now create all accounting period records according to monthly calendar mode
+                    // (at the same time create forwarding periods. If number of forwarding periods also
+                    // changes with this saving method then this will be dealt with further down in the code)
+                    NewAccountingPeriodTable = new AAccountingPeriodTable();
+
+                    PeriodStartDate = ACalendarStartDate;
+
+                    for (Period = 1; Period <= 12 + LedgerRow.NumberFwdPostingPeriods; Period++)
+                    {
+                        NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
+                        NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
+                        NewAccountingPeriodRow.AccountingPeriodNumber = Period;
+                        NewAccountingPeriodRow.PeriodStartDate = PeriodStartDate;
+                        NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-1);
+                        NewAccountingPeriodRow.AccountingPeriodDesc = PeriodStartDate.ToString("MMMM");
+                        NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
+                        PeriodStartDate = PeriodStartDate.AddMonths(1);
+                    }
+
+                    AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction, out AVerificationResult);
+
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+                }
+
+                // check if any new forwarding periods need to be created
+                CurrentNumberFwdPostingPeriods = LedgerRow.NumberFwdPostingPeriods;
+                NewNumberFwdPostingPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
+
+                if (NewNumberFwdPostingPeriods > CurrentNumberFwdPostingPeriods)
+                {
+                    // now create new forwarding posting periods (if at all needed)
+                    NewAccountingPeriodTable = new AAccountingPeriodTable();
+
+                    Period = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods + 1;
+
+                    while (Period <= LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods)
+                    {
+                        AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                            Period - LedgerRow.NumberOfAccountingPeriods,
+                            Transaction);
+                        AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
+
+                        NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
+                        NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
+                        NewAccountingPeriodRow.AccountingPeriodNumber = Period;
+                        NewAccountingPeriodRow.AccountingPeriodDesc = AccountingPeriodRow.AccountingPeriodDesc;
+                        NewAccountingPeriodRow.PeriodStartDate = AccountingPeriodRow.PeriodStartDate.AddYears(1);
+                        NewAccountingPeriodRow.PeriodEndDate = AccountingPeriodRow.PeriodEndDate.AddYears(1);
+
+                        NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
+
+                        Period++;
+                    }
+
+                    AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction, out AVerificationResult);
+
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+
+                    // also create new general ledger master periods with balances
+                    CurrentLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods;
+                    NewLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods;
+                    // TODO: the following 2 lines would need to replace the 2 lines above if not all possible forward periods are created initially
+                    //CurrentLastFwdPeriod = LedgerRow.CurrentPeriod + CurrentNumberFwdPostingPeriods;
+                    //NewLastFwdPeriod = LedgerRow.CurrentPeriod + NewNumberFwdPostingPeriods;
+
+                    GLMTable = new AGeneralLedgerMasterTable();
+                    AGeneralLedgerMasterRow template = GLMTable.NewRowTyped(false);
+
+                    template.LedgerNumber = ALedgerNumber;
+                    template.Year = LedgerRow.CurrentFinancialYear;
+
+                    // find all general ledger master records of the current financial year for given ledger
+                    GLMTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(template, Transaction);
+
+                    NewGLMPeriodTable = new AGeneralLedgerMasterPeriodTable();
+
+                    foreach (DataRow Row in GLMTable.Rows)
+                    {
+                        // for each of the general ledger master records of the current financial year set the
+                        // new, extended forwarding glm period records (most likely they will not exist yet
+                        // but if they do then update values)
+                        GLMRow = (AGeneralLedgerMasterRow)Row;
+                        GLMPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(GLMRow.GlmSequence, CurrentLastFwdPeriod, Transaction);
+
+                        if (GLMPeriodTable.Count > 0)
                         {
-                            if (AGeneralLedgerMasterPeriodAccess.Exists(GLMPeriodRow.GlmSequence, Period, Transaction))
-                            {
-                                // if the record already exists then just change values
-                                TempGLMPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(GLMPeriodRow.GlmSequence, Period, Transaction);
-                                TempGLMPeriodRow = (AGeneralLedgerMasterPeriodRow)TempGLMPeriodTable.Rows[0];
-                                TempGLMPeriodRow.ActualBase = GLMPeriodRow.ActualBase;
-                                TempGLMPeriodRow.ActualIntl = GLMPeriodRow.ActualIntl;
+                            GLMPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodTable.Rows[0];
 
-                                if (!GLMPeriodRow.IsActualForeignNull())
+                            for (Period = CurrentLastFwdPeriod + 1; Period <= NewLastFwdPeriod; Period++)
+                            {
+                                if (AGeneralLedgerMasterPeriodAccess.Exists(GLMPeriodRow.GlmSequence, Period, Transaction))
                                 {
-                                    TempGLMPeriodRow.ActualForeign = GLMPeriodRow.ActualForeign;
+                                    // if the record already exists then just change values
+                                    TempGLMPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(GLMPeriodRow.GlmSequence,
+                                        Period,
+                                        Transaction);
+                                    TempGLMPeriodRow = (AGeneralLedgerMasterPeriodRow)TempGLMPeriodTable.Rows[0];
+                                    TempGLMPeriodRow.ActualBase = GLMPeriodRow.ActualBase;
+                                    TempGLMPeriodRow.ActualIntl = GLMPeriodRow.ActualIntl;
+
+                                    if (!GLMPeriodRow.IsActualForeignNull())
+                                    {
+                                        TempGLMPeriodRow.ActualForeign = GLMPeriodRow.ActualForeign;
+                                    }
+                                    else
+                                    {
+                                        TempGLMPeriodRow.SetActualForeignNull();
+                                    }
+
+                                    NewGLMPeriodTable.Merge(TempGLMPeriodTable, true);
                                 }
                                 else
                                 {
-                                    TempGLMPeriodRow.SetActualForeignNull();
-                                }
+                                    // add new row since it does not exist yet
+                                    NewGLMPeriodRow = NewGLMPeriodTable.NewRowTyped();
+                                    NewGLMPeriodRow.GlmSequence = GLMPeriodRow.GlmSequence;
+                                    NewGLMPeriodRow.PeriodNumber = Period;
+                                    NewGLMPeriodRow.ActualBase = GLMPeriodRow.ActualBase;
+                                    NewGLMPeriodRow.ActualIntl = GLMPeriodRow.ActualIntl;
 
-                                NewGLMPeriodTable.Merge(TempGLMPeriodTable, true);
-                            }
-                            else
-                            {
-                                // add new row since it does not exist yet
-                                NewGLMPeriodRow = NewGLMPeriodTable.NewRowTyped();
-                                NewGLMPeriodRow.GlmSequence = GLMPeriodRow.GlmSequence;
-                                NewGLMPeriodRow.PeriodNumber = Period;
-                                NewGLMPeriodRow.ActualBase = GLMPeriodRow.ActualBase;
-                                NewGLMPeriodRow.ActualIntl = GLMPeriodRow.ActualIntl;
+                                    if (!GLMPeriodRow.IsActualForeignNull())
+                                    {
+                                        NewGLMPeriodRow.ActualForeign = GLMPeriodRow.ActualForeign;
+                                    }
+                                    else
+                                    {
+                                        NewGLMPeriodRow.SetActualForeignNull();
+                                    }
 
-                                if (!GLMPeriodRow.IsActualForeignNull())
-                                {
-                                    NewGLMPeriodRow.ActualForeign = GLMPeriodRow.ActualForeign;
+                                    NewGLMPeriodTable.Rows.Add(NewGLMPeriodRow);
                                 }
-                                else
-                                {
-                                    NewGLMPeriodRow.SetActualForeignNull();
-                                }
-
-                                NewGLMPeriodTable.Rows.Add(NewGLMPeriodRow);
                             }
                         }
                     }
+
+                    // just one SubmitChanges for all records needed
+                    AGeneralLedgerMasterPeriodAccess.SubmitChanges(NewGLMPeriodTable, Transaction, out AVerificationResult);
                 }
 
-                // just one SubmitChanges for all records needed
-                AGeneralLedgerMasterPeriodAccess.SubmitChanges(NewGLMPeriodTable, Transaction, out AVerificationResult);
-            }
+                // update a_ledger_init_flag records for:
+                // suspense account flag: "SUSP-ACCT"
+                // budget flag: "BUDGET"
+                // branch processing: "BRANCH-PROCESS" (this is a new flag for OpenPetra)
+                // base currency: "CURRENCY"
+                // international currency: "INTL-CURRENCY" (this is a new flag for OpenPetra)
+                // current period (start of ledger date): CURRENT-PERIOD
+                // calendar settings: CAL
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "SUSP-ACCT", LedgerRow.SuspenseAccountFlag, Transaction, ref AVerificationResult);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "BUDGET", LedgerRow.BudgetControlFlag, Transaction, ref AVerificationResult);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "BRANCH-PROCESS", LedgerRow.BranchProcessing, Transaction, ref AVerificationResult);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENCY", !LedgerRow.IsBaseCurrencyNull(), Transaction, ref AVerificationResult);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "INTL-CURRENCY", !LedgerRow.IsIntlCurrencyNull(), Transaction, ref AVerificationResult);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENT-PERIOD", !LedgerRow.IsCurrentPeriodNull(), Transaction, ref AVerificationResult);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "CAL", !LedgerRow.IsNumberOfAccountingPeriodsNull(), Transaction, ref AVerificationResult);
 
-            // update a_ledger_init_flag records for:
-            // suspense account flag: "SUSP-ACCT"
-            // budget flag: "BUDGET"
-            // branch processing: "BRANCH-PROCESS" (this is a new flag for OpenPetra)
-            // base currency: "CURRENCY"
-            // international currency: "INTL-CURRENCY" (this is a new flag for OpenPetra)
-            // current period (start of ledger date): CURRENT-PERIOD
-            // calendar settings: CAL
-            AddOrRemoveLedgerInitFlag(ALedgerNumber, "SUSP-ACCT", LedgerRow.SuspenseAccountFlag, Transaction, ref AVerificationResult);
-            AddOrRemoveLedgerInitFlag(ALedgerNumber, "BUDGET", LedgerRow.BudgetControlFlag, Transaction, ref AVerificationResult);
-            AddOrRemoveLedgerInitFlag(ALedgerNumber, "BRANCH-PROCESS", LedgerRow.BranchProcessing, Transaction, ref AVerificationResult);
-            AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENCY", !LedgerRow.IsBaseCurrencyNull(), Transaction, ref AVerificationResult);
-            AddOrRemoveLedgerInitFlag(ALedgerNumber, "INTL-CURRENCY", !LedgerRow.IsIntlCurrencyNull(), Transaction, ref AVerificationResult);
-            AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENT-PERIOD", !LedgerRow.IsCurrentPeriodNull(), Transaction, ref AVerificationResult);
-            AddOrRemoveLedgerInitFlag(ALedgerNumber, "CAL", !LedgerRow.IsNumberOfAccountingPeriodsNull(), Transaction, ref AVerificationResult);
-
-            if (ReturnValue != TSubmitChangesResult.scrError)
-            {
                 ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-            }
 
-            if (AVerificationResult.Count > 0)
-            {
-                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
-                // Serialisation (needed for .NET Remoting).
-                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+                if (AVerificationResult.Count > 0)
+                {
+                    // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                    // Serialisation (needed for .NET Remoting).
+                    TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+                }
             }
-
-            if ((ReturnValue == TSubmitChangesResult.scrOK)
-                && NewTransaction)
+            finally
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
+                if ((ReturnValue == TSubmitChangesResult.scrOK)
+                    && NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
-            else if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
             return ReturnValue;
         }
 
@@ -1701,27 +1703,24 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 if ((accountRow.RowState != DataRowState.Deleted) && !ImportedAccountNames.Contains(accountRow.AccountCode))
                 {
-                    // TODO: delete accounts that don't exist anymore in the new hierarchy, or deactivate them?
-                    //       but need to raise a failure because they are missing in the account hierarchy
-                    // (check if their balance is empty and no transactions exist, or catch database constraint violation)
-                    // TODO: what about system accounts? probably alright to ignore here
+                    // if there are any existing posted transactions that reference this account, it can't be deleted.
+                    ATransactionTable TransTbl = ATransactionAccess.LoadViaAAccount(ALedgerNumber, accountRow.AccountCode, null);
 
-                    accountRow.Delete();
-                }
-            }
+                    if (TransTbl.Rows.Count == 0) // No-one's used this account, so I can delete it.
+                    {
+                        //
+                        // If the deleted account included Analysis types I need to unlink them from the Account first.
 
-            //
-            // The imported hierarchy did not include Analysis types, but previously there may have been
-            // AnalysisTypes assigned to accounts, which have now been deleted, or have a different meaning
-            // in the newly imported hierarchy.
-            //
-            // I'll keep any AnalysisAttribute types that are defined, but unlink them from Accounts.
+                        foreach (AAnalysisAttributeRow Row in MainDS.AAnalysisAttribute.Rows)
+                        {
+                            if ((Row.LedgerNumber == ALedgerNumber) && (Row.AccountCode == accountRow.AccountCode))
+                            {
+                                Row.Delete();
+                            }
+                        }
 
-            foreach (AAnalysisAttributeRow Row in MainDS.AAnalysisAttribute.Rows)
-            {
-                if (Row.LedgerNumber == ALedgerNumber)
-                {
-                    Row.AccountCode = "";
+                        accountRow.Delete();
+                    }
                 }
             }
 
