@@ -900,8 +900,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return deletionSuccessful;
             }
+            
+            bool newRecord = (ARowToDelete.RowState == DataRowState.Added);
 
-			if (ARowToDelete.RowState != DataRowState.Added && !((TFrmGLBatch) this.ParentForm).SaveChanges())
+			if (!newRecord && !((TFrmGLBatch) this.ParentForm).SaveChanges())
 			{
 				MessageBox.Show("Error in trying to save prior to deleting current transaction!");
 				return deletionSuccessful;
@@ -1006,23 +1008,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     //transRowToReceive will become previous row for next recursion
                     transRowToReceive = transRowCurrent;
                 }
+                
+                if (newRecord && transRowCurrent.SubType == MFinanceConstants.MARKED_FOR_DELETION)
+                {
+                	transRowCurrent.Delete();
+                }
 
                 FPreviouslySelectedDetailRow = null;
 
                 FPetraUtilsObject.SetChangedFlag();
 
 				//Try to save changes
-                if (((TFrmGLBatch) this.ParentForm).SaveChanges())
+                if (!newRecord)
                 {
-                    //Reload from server
-                    FMainDS.ATransAnalAttrib.Clear();
-                    FMainDS.ATransaction.Clear();
-
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, FBatchNumber, FJournalNumber));
-                }
-                else
-                {
-                    throw new Exception("Unable to save after deleting a transaction!");
+					if (((TFrmGLBatch) this.ParentForm).SaveChanges())
+	                {
+	                    //Reload from server
+	                    FMainDS.ATransAnalAttrib.Clear();
+	                    FMainDS.ATransaction.Clear();
+	
+	                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, FBatchNumber, FJournalNumber));
+	                }
+	                else
+	                {
+	                    throw new Exception("Unable to save after deleting a transaction!");
+	                }
                 }
                
                 SetTransactionDefaultView();

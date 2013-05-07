@@ -812,7 +812,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static TSubmitChangesResult SaveRecurringGiftBatchTDS(ref GiftBatchTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            AVerificationResult = null;
+            AVerificationResult = new TVerificationResultCollection();
         	
         	TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
@@ -856,8 +856,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
             	SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && recurrGiftBatchTableInDataSet
-                    && recurrGiftTableInDataSet && AInspectDS.ARecurringGift.Count > 0)
+                if ((SubmissionResult == TSubmitChangesResult.scrOK) && recurrGiftTableInDataSet && AInspectDS.ARecurringGift.Count > 0)
                 {
 	            	if (recurrGiftDetailTableInDataSet)
 	                {
