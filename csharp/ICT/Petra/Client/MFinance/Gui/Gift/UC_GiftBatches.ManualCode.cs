@@ -884,6 +884,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
+            Boolean batchIsEmpty = true;
+            ((TFrmGiftBatch)ParentForm).LoadTransactions(FPreviouslySelectedDetailRow.LedgerNumber,
+                FPreviouslySelectedDetailRow.BatchNumber,
+                FPreviouslySelectedDetailRow.BatchStatus, false);
+
+            if (FMainDS.AGift != null)
+            {
+                FMainDS.AGift.DefaultView.RowFilter = "a_batch_number_i = " + FPreviouslySelectedDetailRow.BatchNumber;
+                batchIsEmpty = (FMainDS.AGift.DefaultView.Count == 0);
+            }
+
+            if (batchIsEmpty)  // there are no gifts in this batch!
+            {
+                MessageBox.Show(Catalog.GetString("Batch is empty!"), Catalog.GetString("Posting failed"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
             TVerificationResultCollection Verifications;
 
             if (FPetraUtilsObject.HasChanges)
