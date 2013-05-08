@@ -153,31 +153,44 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
         }
 
-        private void DeleteRow(Object sender, EventArgs e)
+        /// <summary>
+        /// Performs checks to determine whether a deletion of the current
+        ///  row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(PContactAttributeDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            if (grdDetails.Rows.Count <= 2)
             {
-                return;
+                MessageBox.Show(
+                    Catalog.GetString("You cannot delete the final row in this table.  Every Contact Attribute must have at least one Detail Attribute.  You can delete the Contact Attribute itself.  Then all the corresponding detail attributes will also be deleted."),
+                    Catalog.GetString("Deletion Error"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return false;
             }
 
-            if (MessageBox.Show(Catalog.GetString("Are you sure that you want to delete the current Contact Detail Attribute?"),
-                    Catalog.GetString("Delete Row"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == DialogResult.No)
+            return true;
+        }
+
+        /// <summary>
+        /// Code to be run after the deletion process
+        /// </summary>
+        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
+        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
+        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        private void PostDeleteManual(PContactAttributeDetailRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            if (ADeletionPerformed)
             {
-                return;
+                OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
             }
-
-            // Get the selected grid row
-            int nSelectedRow = grdDetails.SelectedRowIndex();
-            // Delete the current row
-            FPreviouslySelectedDetailRow.Delete();
-            FPetraUtilsObject.SetChangedFlag();
-
-            // Select the next row to show
-            SelectRowInGrid(nSelectedRow);
-
-            OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
         }
 
         private void ShowDetailsManual(PContactAttributeDetailRow ARow)
@@ -286,7 +299,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
 
             // we go round a loop where, as we change the column value, the number of rows in the dataview becomes zero
-            int curRow = grdDetails.SelectedRowIndex();
+            int curRow = GetSelectedRowIndex();
 
             while (dv.Count > 0)
             {
