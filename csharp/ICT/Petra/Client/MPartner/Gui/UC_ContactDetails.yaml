@@ -62,17 +62,24 @@ RootNode:
             
         grdDetails:
             Dock: Fill
-            Columns: [PPartnerAttribute.AttributeType, PPartnerAttribute.Value, PPartnerAttribute.Comment, PPartnerAttribute.Sensitive]
+            TableName: PPartnerAttributeType
+            Columns: [AttributeType, Value, Comment, Sensitive]
+            CustomColumns:
+                AttributeType: {Label=Contact Type}
+                Value: {Label=Value}
+                Comment: {Label=Comments}
+                Sensitive: {Label=Current?, Type=Boolean}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [cmbContactCategory, cmbContactType, chkWork]
+                Row0: [cmbContactCategory, cmbContactType, chkSpecialised]
                 Row1: [txtValue, txtComment]
 #                Row2: [chkCurrent, dtpInvalidFrom, chkSensitive]
         cmbContactCategory: {List=PartnerAttributeCategoryList, ComboBoxWidth=200, Width=200, Validation=true}
         cmbContactType: {List=PartnerAttributeTypeList, ComboBoxWidth=204, Width=204, DataField=PPartnerAttribute.AttributeType, Validation=true}
-        chkWork: 
+        chkSpecialised: 
+           Label: Business
            Validation: true   # only to cause data to be updated on-the-fly...
         txtValue:
             Label: Value

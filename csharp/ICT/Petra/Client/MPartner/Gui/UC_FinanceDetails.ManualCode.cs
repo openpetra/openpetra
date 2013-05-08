@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// load the data for this control
         /// </summary>
-        public void SpecialInitUserControl(PartnerEditTDS AMainDS)
+        public void PreInitUserControl(PartnerEditTDS AMainDS)
         {
             FMainDS = AMainDS;
 

@@ -106,6 +106,14 @@
         parentTable="PPartnerLocation" parentFields="SiteKey,LocationKey"
         childTable="PLocation" childFields="SiteKey,LocationKey"
         createConstraints="false"/>
+    <CustomRelation name="ContactDetails1"
+        parentTable="PPartnerAttributeCategory" parentFields="CategoryCode"
+        childTable="PPartnerAttributeType" childFields="AttributeCategory"
+        createConstraints="false"/>        
+    <CustomRelation name="ContactDetails2"
+        parentTable="PPartnerAttributeType" parentFields="Code"
+        childTable="PPartnerAttribute" childFields="AttributeType"
+        createConstraints="false"/>                
     <CustomRelation name="PartnerInterestCategory"
             childTable="PPartnerInterest" childFields="Interest"
             parentTable="PInterest" parentFields="Interest"

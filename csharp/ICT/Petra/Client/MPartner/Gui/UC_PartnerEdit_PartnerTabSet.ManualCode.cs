@@ -917,12 +917,34 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FUcoFinanceDetails.PartnerEditUIConnector = FPartnerEditUIConnector;
 
-                FUcoFinanceDetails.SpecialInitUserControl(FMainDS);
+                FUcoFinanceDetails.PreInitUserControl(FMainDS);
+
+                CorrectDataGridWidthsAfterDataChange();
+            }
+            else if (AUserControl is TUC_ContactDetails)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContactDetails;
+
+                FUcoContactDetails.PartnerEditUIConnector = FPartnerEditUIConnector;
 
                 CorrectDataGridWidthsAfterDataChange();
             }
         }
 
+        /// <summary>
+        /// This Method *CAN* be implemented in ManualCode to perform special initialisations *before*
+        /// InitUserControl() gets called.
+        /// </summary>
+        partial void PostInitUserControl(UserControl AUserControl)
+        {
+            if (AUserControl is TUC_ContactDetails)
+            {
+                FUcoContactDetails.PostInitUserControl(FMainDS);
+
+                CorrectDataGridWidthsAfterDataChange();
+            }
+        }
+        
         private void RecalculateTabHeaderCounters(System.Object sender, TRecalculateScreenPartsEventArgs e)
         {
             // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet2.RecalculateTabHeaderCounters');
@@ -1130,6 +1152,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (FUcoAddresses != null)
                 {
                     FUcoAddresses.AdjustAfterResizing();
+                }
+
+                if (FUcoContactDetails != null)
+                {
+                    FUcoContactDetails.AdjustAfterResizing();
                 }
 
                 if (FUcoSubscriptions != null)

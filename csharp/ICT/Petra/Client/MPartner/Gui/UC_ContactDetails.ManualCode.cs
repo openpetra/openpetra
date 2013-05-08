@@ -31,6 +31,7 @@ using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MPartner.Validation;
@@ -106,18 +107,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>todoComment</summary>
-        public void SpecialInitUserControl()
+        public void PostInitUserControl(PartnerEditTDS AMainDS)
         {
+            FMainDS = AMainDS;
+            
             // disable change event while controls are being initialized as otherwise save button might get enabled
             FPetraUtilsObject.DisableDataChangedEvent();
-
-
-
-            
-            // Set up screen logic
-//            FLogic.MultiTableDS = (PartnerEditTDS)FMainDS;
-//            FLogic.PartnerEditUIConnector = FPartnerEditUIConnector;
-//            FLogic.LoadDataOnDemand();
 
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpContactDetails));
 
@@ -127,19 +122,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
 
-
-
             /* Check if data needs to be retrieved from the PetraServer */
             if (FMainDS.PPartnerAttribute == null)
             {
                 FPartnerAttributesExist = LoadDataOnDemand();
             }
-            else
-            {
-                FMainDS.InitVars();
-                FPartnerAttributesExist = FMainDS.FamilyMembers.Rows.Count > 0;
-            }
 
+            FMainDS.Tables.Add(new PPartnerAttributeCategoryTable(PPartnerAttributeCategoryTable.GetTableName()));
+            FMainDS.Tables.Add(new PPartnerAttributeTypeTable(PPartnerAttributeTypeTable.GetTableName()));
+            FMainDS.InitVars();
+            FMainDS.Merge((PPartnerAttributeCategoryTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.PartnerAttributeCategoryList, PPartnerAttributeCategoryTable.GetTableName()));
+            FMainDS.Merge((PPartnerAttributeTypeTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.PartnerAttributeTypeList, PPartnerAttributeTypeTable.GetTableName()));
+            
+            FPartnerAttributesExist = FMainDS.PPartnerAttribute.Rows.Count > 0;
+            
+            // Need to enable Relations as the PPartnerAttributeCategoryTable and PPartnerAttributeTypeTable have not been part of the PartnerEditTDS when transferred from the OpenPetra Server!
+            // These Relations are needed in Method 'CreateCustomDataColumns'.
+            FMainDS.EnableRelation("ContactDetails1");
+            FMainDS.EnableRelation("ContactDetails2");
+            
+            // Create custom data columns on-the-fly
+            CreateCustomDataColumns();
+            
             
             /* Create SourceDataGrid columns */
             CreateGridColumns();
@@ -169,11 +173,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* this.btnAddNewPersonThisFamily.enabled := false; */
             }
 
-
-
-            
-            
-            
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
@@ -235,7 +234,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 FMainDS.PPartnerAttribute.Rows.Clear();
-                FMainDS.Merge(FPartnerEditUIConnector.GetDataPartnerAttributes());
+                FMainDS.Merge(FPartnerEditUIConnector.GetDataContactDetails());
                 FMainDS.PPartnerAttribute.AcceptChanges();
 
                 if (FMainDS.PPartnerAttribute.Rows.Count > 0)
@@ -332,13 +331,64 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARow"></param>
         private void NewRowManual(ref PPartnerAttributeRow ARow)
         {
-            // TODO?
+            int LeastSequence = 0;
+            int HighestIndex = 0;
+            int ThisRow_Sequence = 0;
+            int ThisRow_Index = 0;
+            PPartnerAttributeTable ThisDT = (PPartnerAttributeTable)ARow.Table;
+            
+            ARow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
+            ARow.AttributeType = "Phone";
+            
+            for (int Counter = 0; Counter < ThisDT.Rows.Count; Counter++) 
+            {
+                ThisRow_Sequence = Convert.ToInt32(ThisDT.Rows[Counter][PPartnerAttributeTable.GetSequenceDBName(), DataRowVersion.Original]);
+                if (ThisRow_Sequence < LeastSequence)
+                {
+                    LeastSequence = ThisRow_Sequence;
+                }
+            }
+            
+            ARow.Sequence = LeastSequence  - 1;
+         
+            for (int Counter = 0; Counter < ThisDT.Rows.Count; Counter++) 
+            {
+                ThisRow_Index = Convert.ToInt32(ThisDT.Rows[Counter][PPartnerAttributeTable.GetIndexDBName(), DataRowVersion.Original]);
+                
+                if (ThisRow_Index > HighestIndex) 
+                {
+                    HighestIndex = ThisRow_Index;
+                }
+            }
+            
+            ARow.Index = HighestIndex + 1;            
+            
+            ARow.Value = "NEWVALUE" + ARow.Sequence.ToString();
+            ARow.Primary = false;
+            ARow.WithinOrgansiation = false;
+            ARow.Specialised = false;
+            ARow.Sensitive = false;
+            ARow.Current = true;
         }
 
         private void DeleteRecord(Object sender, EventArgs e)
         {
-            // TODO?
-//            this.DeletePPartnerAttribute();
+            // Before the auto-generated Method for deletion can be called we need to set the Expressions that refer to 'Parent.*' to "", 
+            // otherwise we get a 'System.IndexOutOfRangeException: Cannot find relation 0.' Exception when the DataTable gets deserialised 
+            // on the server side in the call to Method 'GetNonCacheableRecordReferenceCount'!
+            foreach (DataColumn RemoveExpressionsColumn in FMainDS.PPartnerAttribute.Columns)
+            {
+                if (RemoveExpressionsColumn.Expression.Length != 0)
+                {
+                    // TLogging.Log(RemoveExpressionsColumn.Expression, [ToLogFile]);
+                    RemoveExpressionsColumn.Expression = "";
+                }
+            }
+            
+            this.DeletePPartnerAttribute();
+            
+            // Restore Column Expressions again!
+            SetColumnExpressions();
         }
 
         /// <summary>
@@ -362,7 +412,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(PPartnerAttributeRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(PPartnerAttributeRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 
@@ -436,14 +486,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             ForeignTableColumn = new DataColumn();
             ForeignTableColumn.DataType = System.Type.GetType("System.String");
             ForeignTableColumn.ColumnName = "Parent_" + PPartnerAttributeTypeTable.GetCodeDBName();
-            ForeignTableColumn.Expression = "Parent." + PPartnerAttributeTypeTable.GetCodeDBName();
+            ForeignTableColumn.Expression = "";  // The real expression will be set in Method 'SetColumnExpressions'!
             FMainDS.PPartnerAttribute.Columns.Add(ForeignTableColumn);
             
             ForeignTableColumn = new DataColumn();
             ForeignTableColumn.DataType = System.Type.GetType("System.String");
             ForeignTableColumn.ColumnName = "ContactType";
-            ForeignTableColumn.Expression = "IIF(Specialised, Parent." + PPartnerAttributeTypeTable.GetSpecialLabelDBName() + ", Parent." + PPartnerAttributeTypeTable.GetCodeDBName() + ")";
+            ForeignTableColumn.Expression = "";  // The real expression will be set in Method 'SetColumnExpressions'!
             FMainDS.PPartnerAttribute.Columns.Add(ForeignTableColumn);
+            
+            SetColumnExpressions();
+        }
+        
+        /// <summary>
+        /// Sets the Column Expressions for the calculated DataColumns
+        /// </summary>
+        private void SetColumnExpressions()
+        {
+            FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerAttributeTypeTable.GetCodeDBName()].Expression =
+                "Parent." + PPartnerAttributeTypeTable.GetCodeDBName();
+            
+            FMainDS.PPartnerAttribute.Columns["ContactType"].Expression =
+                "IIF(" + PPartnerAttributeTable.GetSpecialisedDBName() + " = true, Parent." + PPartnerAttributeTypeTable.GetSpecialLabelDBName() + ", Parent." + PPartnerAttributeTypeTable.GetCodeDBName() + ")";            
         }
         
         /// <summary>
@@ -452,6 +516,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         public void CreateGridColumns()
         {
+            // Get rid of the Columns as added per YAML file as we need to show calculated Columns!
+            grdDetails.Columns.Clear();
 // TODO           FDataGrid.AddImageColumn(@GetAddressKindIconForGridRow);
 
             //
@@ -474,15 +540,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Confidential
             grdDetails.AddCheckBoxColumn("Confidential", FMainDS.PPartnerAttribute.ColumnSensitive);
             
-            // p_location_key_i (for testing purposes only...)
-            // grdDetails.AddTextColumn("Location Key", FMainDS.PPartnerAttribute.ColumnLocationKey);
-
-            // p_location_key_i (for testing purposes only...)
-            // grdDetails.AddTextColumn("PartnerLocation Key", FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerLocationTable.GetLocationKeyDBName()]);
-
-            // Location Type
-            grdDetails.AddTextColumn("Location Type", FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerLocationTable.GetLocationTypeDBName()]);
-
             // Modification TimeStamp (for testing purposes only...)
             // grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
         }

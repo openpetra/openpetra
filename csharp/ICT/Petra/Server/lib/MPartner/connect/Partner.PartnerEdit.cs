@@ -1516,67 +1516,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             return GetPartnerTypesInternal(out ACount, false);
         }
-
-        
-        
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public PPartnerAttributeTable GetDataPartnerAttributes()
-        {
-            Int32 PartnerAttributesCount;
-
-            return GetPartnerAttributesInternal(out PartnerAttributesCount, false);
-        }
-
-        private PPartnerAttributeTable GetPartnerAttributesInternal(out Int32 ACount, Boolean ACountOnly)
-        {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
-            PPartnerAttributeTable PartnerAttributeDT = new PPartnerAttributeTable();
-
-            try
-            {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
-                if (ACountOnly)
-                {
-                    ACount = PPartnerAttributeAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
-                }
-                else
-                {
-//                  TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataPartnerTypesInternal: loading Partner Types for Partner " + FPartnerKey.ToString() + "...");
-                    try
-                    {
-                        PartnerAttributeDT = PPartnerAttributeAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-                    
-                    ACount = PartnerAttributeDT.Rows.Count;
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetPartnerAttributesInternal: committed own transaction.");
-                }
-            }
-            
-            return PartnerAttributeDT;
-        }
-
-        
-        
-        
-        
         
         /// <summary>
         /// todoComment
@@ -2795,6 +2734,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return GetSubscriptionsInternal(out ACount, false);
         }
 
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
+        public PPartnerAttributeTable GetDataContactDetails()
+        {
+            int ContactDetailsCount;
+
+            return GetContactDetailsInternal(out ContactDetailsCount, false);
+        }
+        
         private PPartnerAttributeTable GetContactDetailsInternal(out Int32 ACount, Boolean ACountOnly)
         {
             TDBTransaction ReadTransaction;
