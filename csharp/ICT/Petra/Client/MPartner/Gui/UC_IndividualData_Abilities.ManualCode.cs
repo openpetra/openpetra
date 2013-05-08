@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(PmPersonAbilityRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(PmPersonAbilityRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 

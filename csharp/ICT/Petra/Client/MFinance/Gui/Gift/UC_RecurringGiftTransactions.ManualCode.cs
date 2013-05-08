@@ -618,7 +618,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return allowDeletion;
         }
 
-        private bool DeleteRowManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deleteSuccessful = false;
 

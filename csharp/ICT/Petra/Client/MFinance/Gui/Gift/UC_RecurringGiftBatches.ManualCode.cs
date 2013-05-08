@@ -244,7 +244,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ARecurringGiftBatchRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(ARecurringGiftBatchRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 
