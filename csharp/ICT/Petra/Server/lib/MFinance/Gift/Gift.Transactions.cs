@@ -680,6 +680,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
+            AVerificationResult = new TVerificationResultCollection();
+
             // make sure that empty tables are removed
             AInspectDS = AInspectDS.GetChangesTyped(true);
 
@@ -692,8 +694,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool recurrGiftTableInDataSet = (AInspectDS.ARecurringGift != null);
             bool recurrGiftDetailTableInDataSet = (AInspectDS.ARecurringGiftDetail != null);
 
-            AVerificationResult = new TVerificationResultCollection();
-
             if (recurrGiftBatchTableInDataSet || recurrGiftTableInDataSet || recurrGiftDetailTableInDataSet)
             {
                 if (giftBatchTableInDataSet || giftTableInDataSet || giftDetailTableInDataSet)
@@ -702,7 +702,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         "SaveGiftBatchTDS: need to call GetChangesTyped before saving, otherwise confusion about recurring or normal gl batch");
                 }
 
-                return SaveRecurringGiftBatchTDS(ref AInspectDS, out AVerificationResult);
+                return SaveRecurringGiftBatchTDS(ref AInspectDS, ref AVerificationResult);
             }
 
             if (giftBatchTableInDataSet)
@@ -809,11 +809,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static TSubmitChangesResult SaveRecurringGiftBatchTDS(ref GiftBatchTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+        private static TSubmitChangesResult SaveRecurringGiftBatchTDS(ref GiftBatchTDS AInspectDS,
+            ref TVerificationResultCollection AVerificationResult)
         {
-            AVerificationResult = new TVerificationResultCollection();
-
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
@@ -1642,6 +1640,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static bool PostGiftBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
         {
             AVerifications = new TVerificationResultCollection();
+            TVerificationResultCollection SingleVerificationResultCollection;
 
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
@@ -1661,7 +1660,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         Catalog.GetString("Posting gift batches"),
                         ABatchNumbers.IndexOf(BatchNumber) * 3);
 
-                    GiftBatchTDS MainDS = PrepareGiftBatchForPosting(ALedgerNumber, BatchNumber, out AVerifications);
+                    GiftBatchTDS MainDS = PrepareGiftBatchForPosting(ALedgerNumber, BatchNumber, out SingleVerificationResultCollection);
+
+                    AVerifications.AddCollection(SingleVerificationResultCollection);
 
                     if (MainDS == null)
                     {
@@ -1679,8 +1680,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     // save the batch
                     if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                            out AVerifications) == TSubmitChangesResult.scrOK)
+                            out SingleVerificationResultCollection) == TSubmitChangesResult.scrOK)
                     {
+                        AVerifications.AddCollection(SingleVerificationResultCollection);
+
                         GLBatchNumbers.Add(batch.BatchNumber);
 
                         //
@@ -1700,13 +1703,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         MainDS.ThrowAwayAfterSubmitChanges = true;
 
-                        if (GiftBatchTDSAccess.SubmitChanges(MainDS, out AVerifications) != TSubmitChangesResult.scrOK)
+                        if (GiftBatchTDSAccess.SubmitChanges(MainDS, out SingleVerificationResultCollection) != TSubmitChangesResult.scrOK)
                         {
+                            AVerifications.AddCollection(SingleVerificationResultCollection);
                             return false;
                         }
                     }
                     else
                     {
+                        AVerifications.AddCollection(SingleVerificationResultCollection);
                         return false;
                     }
                 }
@@ -1717,13 +1722,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 // now post the GL batches
                 if (!TGLPosting.PostGLBatches(ALedgerNumber, GLBatchNumbers,
-                        out AVerifications))
+                        out SingleVerificationResultCollection))
                 {
+                    AVerifications.AddCollection(SingleVerificationResultCollection);
                     // Transaction will be rolled back, no open GL batch flying around
                     return false;
                 }
                 else
                 {
+                    AVerifications.AddCollection(SingleVerificationResultCollection);
+
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();

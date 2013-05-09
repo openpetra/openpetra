@@ -913,7 +913,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Backup the Dataset for reversion purposes
             GLBatchTDS FTempDS = (GLBatchTDS)FMainDS.Copy();
 
-            int selectedRowNo = grdDetails.SelectedRowIndex();
             int transactionNumberToDelete = ARowToDelete.TransactionNumber;
             int lastTransactionNumber = FJournalRow.LastTransactionNumber;
 

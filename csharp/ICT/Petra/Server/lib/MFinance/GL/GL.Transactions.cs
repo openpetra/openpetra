@@ -783,7 +783,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         "SaveGLBatchTDS: need to call GetChangesTyped before saving, otherwise confusion about recurring or normal gl batch");
                 }
 
-                return SaveRecurringGLBatchTDS(ref AInspectDS, out AVerificationResult);
+                return SaveRecurringGLBatchTDS(ref AInspectDS, ref AVerificationResult);
             }
 
             if (batchTableInDataSet)
@@ -1436,7 +1436,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         private static TSubmitChangesResult SaveRecurringGLBatchTDS(ref GLBatchTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+            ref TVerificationResultCollection AVerificationResult)
         {
             bool NewTransaction = false;
             Int32 LedgerNumber;
@@ -1451,14 +1451,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool recurrTransAnalTableInDataSet = (AInspectDS.ARecurringTransAnalAttrib != null);
 
             TSubmitChangesResult SubmissionResult = new TSubmitChangesResult();
-
-//            //Error handling
-//            string ErrorContext = "Save a recurring batch";
-//            string ErrorMessage = String.Empty;
-//            //Set default type as non-critical
-//            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-
-            AVerificationResult = new TVerificationResultCollection();
 
             ARecurringJournalTable JournalTable = new ARecurringJournalTable();
             ARecurringJournalRow TemplateJournalRow = JournalTable.NewRowTyped(false);

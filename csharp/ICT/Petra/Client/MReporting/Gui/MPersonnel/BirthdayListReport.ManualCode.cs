@@ -200,14 +200,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
-                else
                 // validation: start date should be less than end date.
-                if (dtpFromDate.Date.Value > dtpToDate.Date.Value)
+                else if (dtpFromDate.Date.Value > dtpToDate.Date.Value)
                 {
                     TVerificationResult VerificationResult = new TVerificationResult(
                         Catalog.GetString("Invalid date range"),
                         Catalog.GetString("The end date must be after the start date."),
                         TResultSeverity.Resv_Critical);
+
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
             }
 
