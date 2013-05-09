@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+  <title>Annual Receipt</title>
+  <!-- todo: CSS for position of address label, font sizes, etc? -->
+</head>
+<body>
+<table>
+  <colgroup>
+    <col width="340"/>
+    <col width="260"/>
+  </colgroup>
+<tr>
+<td><br/><b>INVALID, JUST FOR DEMO PURPOSES</b></td>
+<td><!-- <img src="logo.png"/> --> </td>
+</tr>
+</table>
+<table>
+  <colgroup>
+    <col width="400"/>
+    <col width="200"/>
+  </colgroup>
+<tr>
+<td>
+<br/><br/>
+<font size="-2">My Charity, Sample Way 14, 23232 London</font><br/>
+Mr<br/>
+Test Donor<br/>
+Somewhere 5<br/><br/>
+<b>12311 Anywhere</b><br/>
+BAD COUNTRY CODE<br/>
+</td>
+<td>
+<font size="-2">My Charity<br/>
+Sample Way 14<br/>
+23232 London<br/>
+<table>
+  <colgroup>
+    <col width="40"/>
+    <col width="150"/>
+  </colgroup>
+<tr><td>Tel</td><td>+49 (0) 234 456789</td></tr>
+<tr><td>Email</td><td>info@example.org</td></tr>
+<tr><td>Web</td><td>www.example.org</td></tr>
+</table>
+</font>
+</td>
+</tr>
+</table>
+<br/>
+<font size="-1">
+<b>Sammelbestätigung für das Jahr ....</b><br/>
+<br/>
+über Zuwendungen im Sinne des § 10 b des Einkommensteuergesetzes an eine der in § 5 Abs. 1 Nr. 9 <br/>
+des Körperschaftsteuergesetzes bezeichneten Körperschaften, Personenvereinigungen oder Vermögensmassen.<br/><br/>
+Art der Zuwendung: Geldzuwendung<br/>
+<table border="1">
+<tr><td>
+Name und Anschrift des Zuwendenden:<br/>
+Test Donor, Somewhere 5, 12311 Anywhere</td>
+</tr>
+<tr>
+<td><br/>Gesamtsumme in Euro der Zuwendungen im Jahr ....<br/>
+<table border="1">
+<tr><td>in Ziffern</td><td>in Buchstaben</td></tr>
+<tr><td>20,00</td><td>Zwanzig Euro</td></tr></table>
+</td></tr></table>
+<br/>
+Es handelt sich nicht um den Verzicht auf die Erstattung von Aufwendungen. Es wird bestätigt, dass über die in der Gesamtsumme enthaltenen Zuwendungen keine weiteren Bestätigungen, weder formelle Zuwendungsbestätigungen noch Beitragsquittungen o.ä., ausgestellt wurden und werden.<br/>
+<br/>
+Wir sind wegen Förderung von ... durch Bescheinigung des Finanzamtes ... als gemeinnützig anerkannt.<br/>
+Es wird bestätigt, dass es sich nicht um Mitgliedsbeiträge, sonstige Mitgliedsumlagen oder Aufnahmegebühren handelt und die Zuwendungen nur zur Förderung oben genannter Zwecke im Ausland verwendet werden.<br/>
+<table>
+<tr>
+<td>London, den 9. Mai 2013</td>
+<td>
+.....................................................
+<br/>
+My Charity
+</td>
+</tr>
+</table>
+</font>
+<font size="-8"><br/></font>
+<font size="-3">
+Hinweis: <br/>
+Wer vorsätzlich oder grob fahrlässig eine unrichtige Zuwendungsbestätigung erstellt oder wer veranlasst, dass Zuwendungen nicht zu den in der Zuwendungsbestätigung angegebenen steuerbegünstigten Zwecken verwendet werden, haftet für die Steuer, die dem Fiskus durch einen etwaigen Abzug der Zuwendungen beim Zuwendenden entgeht (§ 10 b Abs. 4 EStG, § 9 Abs. 3 KStG, § 9 Nr. 5 GewStG).<br/>
+Diese Bestätigung wird nicht als Nachweis für die steuerliche Berücksichtigung der Zuwendung anerkannt, wenn das Datum des Freistellungsbescheides länger als 5 Jahre bzw. das Datum der vorläufigen Bescheinigung länger als 3 Jahre seit Ausstellung der Bestätigung zurückliegt (BMF vom 15.12.1994 – BStBl I S. 884).
+</font>
+<font size="-4">
+<p align="center">
+Vereinssitz: London; Vorstand: Someone<br/>
+Registernummer beim Vereinsgericht <br/>
+Steuernummer beim Finanzamt <br/>
+Bankverbindung: 
+</p>
+</font>
+<pagebreak>
+<br/><br/><br/>
+<font size="-1">
+Anlage zur Sammelzuwendungsbestätigung vom 9. Mai 2013 My Charity<br/>
+für den Zuwendenden Test Donor.</font><br/>
+
+<font size="-2">
+<table border="0">
+  <colgroup>
+    <col width="90"/>
+    <col width="100"/>
+    <col width="100"/>
+    <col width="100"/>
+    <col width="100"/>
+  </colgroup>
+  <tbody>
+    <tr>
+    <th>Datum</th>
+    <th>Betrag EUR</th>
+    <th>Förderzweck</th>
+    <th>Zuwendungsart</th>
+    <th>Verwendung</th>
+    </tr>
+    <tr><td>01.01.2013</td><td align="right">20,00&nbsp;&nbsp;&nbsp;&nbsp;</td><td align="center">gemeinnützig</td><td align="center"><div class="Gift">Geldzuwendung</div></td><td align="center">Ausland</td></tr>
+  </tbody>
+</table>
+<table>
+  <colgroup>
+    <col width="90"/>
+    <col width="100"/>
+    <col width="100"/>
+    <col width="100"/>
+    <col width="100"/>
+  </colgroup>
+  <tbody>
+    <tr>
+    <td><b>Summe EUR:</b></td>
+    <td align="right">20,00&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    </tr>
+  </tbody>
+</table>
+</font>
+<br/><br/><br/><br/><br/>
+<font size="-3">Dieses Dokument wurde mit OpenPetra erstellt, einem frei verfügbaren Computerprogramm für gemeinnützige Vereine und Organisationen.<br/>
+Mehr Infos unter http://www.openpetra.org</font>
+
+</body>
+</html>
+
