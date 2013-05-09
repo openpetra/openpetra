@@ -199,11 +199,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-        	if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
-        	{
-        		return;
-        	}
-        	
+            if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+            {
+                return;
+            }
+
             this.CreateNewARecurringGiftBatch();
             txtDetailBatchDescription.Focus();
         }

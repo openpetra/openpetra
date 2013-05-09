@@ -1640,9 +1640,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static bool PostGiftBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
         {
             AVerifications = new TVerificationResultCollection();
-			TVerificationResultCollection SingleVerificationResultCollection;
+            TVerificationResultCollection SingleVerificationResultCollection;
 
-			bool NewTransaction;
+            bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
@@ -1660,10 +1660,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         Catalog.GetString("Posting gift batches"),
                         ABatchNumbers.IndexOf(BatchNumber) * 3);
 
-                	GiftBatchTDS MainDS = PrepareGiftBatchForPosting(ALedgerNumber, BatchNumber, out SingleVerificationResultCollection);
+                    GiftBatchTDS MainDS = PrepareGiftBatchForPosting(ALedgerNumber, BatchNumber, out SingleVerificationResultCollection);
 
                     AVerifications.AddCollection(SingleVerificationResultCollection);
-                    
+
                     if (MainDS == null)
                     {
                         return false;
@@ -1682,9 +1682,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
                             out SingleVerificationResultCollection) == TSubmitChangesResult.scrOK)
                     {
-	                    AVerifications.AddCollection(SingleVerificationResultCollection);
-                        
-                    	GLBatchNumbers.Add(batch.BatchNumber);
+                        AVerifications.AddCollection(SingleVerificationResultCollection);
+
+                        GLBatchNumbers.Add(batch.BatchNumber);
 
                         //
                         //                     Assign ReceiptNumbers to Gifts
@@ -1705,13 +1705,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         if (GiftBatchTDSAccess.SubmitChanges(MainDS, out SingleVerificationResultCollection) != TSubmitChangesResult.scrOK)
                         {
-                        	AVerifications.AddCollection(SingleVerificationResultCollection);
+                            AVerifications.AddCollection(SingleVerificationResultCollection);
                             return false;
                         }
                     }
                     else
                     {
-	                    AVerifications.AddCollection(SingleVerificationResultCollection);
+                        AVerifications.AddCollection(SingleVerificationResultCollection);
                         return false;
                     }
                 }
@@ -1725,7 +1725,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         out SingleVerificationResultCollection))
                 {
                     AVerifications.AddCollection(SingleVerificationResultCollection);
-                	// Transaction will be rolled back, no open GL batch flying around
+                    // Transaction will be rolled back, no open GL batch flying around
                     return false;
                 }
                 else
