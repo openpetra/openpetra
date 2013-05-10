@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
-        actRemove: {Label=&Delete, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetailsSection]
@@ -34,7 +34,7 @@ RootNode:
             Dock: Right
             Controls: [btnNew, btnDelete]
         btnNew: {Action=actNew, Stretch=horizontally}
-        btnDelete: {Action=actRemove, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
 
         pnlTransAnalysisAttributes:
             Dock: Right

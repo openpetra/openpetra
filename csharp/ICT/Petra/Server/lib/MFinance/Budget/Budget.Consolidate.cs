@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <summary>
         /// Main Budget tables dataset
         /// </summary>
-        public static BudgetTDS FBudgetTDS = null;
+        private static BudgetTDS FBudgetTDS = null;
         private static GLPostingTDS GLPostingDS = null;
 
         /// <summary>
@@ -158,9 +158,9 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         {
             bool retVal = true;
 
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
+            bool newTransaction; // If I create a transaction here, then I need to rollback when I'm done.
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                out IsMyOwnTransaction);
+                out newTransaction);
 
             AVerificationResult = null;
 
@@ -231,7 +231,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 }
             }
 
-            if (IsMyOwnTransaction)
+            if (newTransaction)
             {
                 if (retVal)
                 {

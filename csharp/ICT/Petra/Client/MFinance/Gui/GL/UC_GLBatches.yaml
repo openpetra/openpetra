@@ -49,7 +49,7 @@ RootNode:
             CustomColumns:
                 BatchNumber: {Label=Batch, Type=Integer}
                 BatchStatus: {Label=Status}
-                DateEffective: {Label=Status, Type=DateTime}
+                DateEffective: {Label=Effective Date, Type=DateTime}
                 BatchDebitTotal: {Label=Debit Total, Type=Currency}
                 BatchCreditTotal: {Label=Credit Total, Type=Currency}
                 BatchControlTotal: {Label=Hash Total, Type=Currency}
