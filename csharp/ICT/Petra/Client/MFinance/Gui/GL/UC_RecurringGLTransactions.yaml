@@ -4,13 +4,12 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     DetailTable: ARecurringTransaction
-    ReferenceCheckOnDelete: False
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Account.Validation, Ict.Petra.Shared.MFinance.GL.Data]
     FormType: edit
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetailsSection]
