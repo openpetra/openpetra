@@ -149,15 +149,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             if (ARow == null)
             {
-                pnlDetails.Enabled = false;
                 ucoContactDetail.Enabled = false;
-                btnDelete.Enabled = false;
             }
             else
             {
-                pnlDetails.Enabled = true;
                 ucoContactDetail.Enabled = true;
-                btnDelete.Enabled = grdDetails.Rows.Count > 1 && !txtDetailContactAttributeCode.ReadOnly;
 
                 // Pass the contact attribute to the user control - it will then update itself
                 ucoContactDetail.SetContactAttribute(ARow.ContactAttributeCode);
