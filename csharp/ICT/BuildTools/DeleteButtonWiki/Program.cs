@@ -226,7 +226,7 @@ namespace Ict.Tools.DeleteButtonWiki
 
                         if (bHasDelete && !generated.Contains("CacheableRecordReferenceCount"))
                         {
-                            if (yml.Contains("ReferenceCheckOnDelete: False"))
+                            if (yml.Contains("SkipReferenceCheck=true"))
                             {
                                 FLogFile.WriteLine("|style=\"background:LightSkyBlue\" |Disabled");
                                 bRefCountingEnabled = false;
@@ -258,8 +258,8 @@ namespace Ict.Tools.DeleteButtonWiki
                         // Col8: Has Enable Delete
                         if (bHasDeletable)
                         {
-                            if (generated.Contains("\"actDelete\", ((grdDetails.")
-                                || generated.Contains("\"actDelete\", pnlDetails.Enabled"))
+                            if (generated.Contains("btnDelete.Enabled = ((grdDetails.")
+                                || generated.Contains("btnDelete.Enabled = pnlDetails.Enabled;"))
                             {
                                 FLogFile.WriteLine("|Yes");
                             }
@@ -275,7 +275,7 @@ namespace Ict.Tools.DeleteButtonWiki
                             {
                                 FLogFile.WriteLine("|style=\"background:LightSkyBlue\" |n/a");
                             }
-                            else if (generated.Contains("\"actDelete\", pnlDetails."))
+                            else if (generated.Contains("btnDelete.Enabled = pnlDetails.Enabled;"))
                             {
                                 FLogFile.WriteLine("|Yes");
                             }
