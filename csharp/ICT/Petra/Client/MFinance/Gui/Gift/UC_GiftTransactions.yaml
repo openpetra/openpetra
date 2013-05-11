@@ -46,10 +46,10 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnNewGift, btnNewDetail, btnDeleteDetail]
+            Controls: [btnNewGift, btnNewDetail, btnDelete]
         btnNewGift: {Action=actNewGift}
         btnNewDetail: {Action=actNewDetail}
-        btnDeleteDetail: {Action=actDelete}
+        btnDelete: {Action=actDelete}
         grdDetails:
             TableName: AGiftDetail
             Dock: Fill

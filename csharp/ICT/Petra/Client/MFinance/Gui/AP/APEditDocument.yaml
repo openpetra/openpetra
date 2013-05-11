@@ -73,7 +73,7 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnAddDetail, btnRemoveDetail]
+            Controls: [btnAddDetail, btnDelete]
         grdDetails:
             Dock: Fill
             TableName:AApDocumentDetail
@@ -121,11 +121,11 @@ RootNode:
         btnAddDetail:
             Width: 100
             Action: actNewDetail
-        btnRemoveDetail:
+        btnDelete:
             Enabled: false
             Label: &Remove Detail
             Width: 100
-            Action: actRemoveDetail
+            Action: actDelete
 # TODO: Approval completely disabled for the moment
 #        btnApproveDetail:
 #            Label: A&pprove Detail

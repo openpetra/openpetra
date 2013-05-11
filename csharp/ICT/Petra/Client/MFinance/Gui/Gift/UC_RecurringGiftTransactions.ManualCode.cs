@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Enable buttons accordingly
-            btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            btnDelete.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode;
 

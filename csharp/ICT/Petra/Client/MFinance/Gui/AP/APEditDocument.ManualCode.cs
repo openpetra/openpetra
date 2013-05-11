@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void EnableControls()
         {
-            btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
+            btnDelete.Enabled = (GetSelectedDetailRow() != null);
 
             // I need to make everything read-only if this document was already posted.
             if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0)
@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 txtExchangeRateToBase.Enabled = false;
 
                 btnAddDetail.Enabled = false;
-                btnRemoveDetail.Enabled = false;
+                btnDelete.Enabled = false;
                 btnLookupExchangeRate.Enabled = false;
                 btnAnalysisAttributes.Enabled = false;
 
