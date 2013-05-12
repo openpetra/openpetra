@@ -32,9 +32,9 @@ RootNode:
         pnlDetailButtons:
             Dock: Right
             Controls: [btnNewGift, btnNewDetail, btnDelete]
-        btnNewGift: {Action=actNewGift}
-        btnNewDetail: {Action=actNewDetail}
-        btnDelete: {Action=actDelete}
+        btnNewGift: {Action=actNewGift, Stretch=horizontally}
+        btnNewDetail: {Action=actNewDetail, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
         grdDetails:
             TableName: ARecurringGiftDetail
             Dock: Fill

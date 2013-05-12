@@ -743,6 +743,7 @@ namespace Ict.Petra.Server.MReporting
             int counter;
             f = f.ToLower();
             TLogging.SetContext("call to function " + f);
+            TParameterList myParams = GetParameters();
 
             if ((f == "eq") || (f == "ne"))
             {
@@ -909,9 +910,9 @@ namespace Ict.Petra.Server.MReporting
                 }
                 else
                 {
-                    if (GetParameters().Exists(ops[1].ToString()))
+                    if (myParams.Exists(ops[1].ToString()))
                     {
-                        GetParameters().Debug(ops[1].ToString());
+                        myParams.Debug(ops[1].ToString());
                         ReturnValue = new TVariant();
                     }
                     else
@@ -1069,29 +1070,30 @@ namespace Ict.Petra.Server.MReporting
                 }
 
                 ops[2] = EvaluateOperand(ops[2]);
-                int targetLevel = -1;
-                int targetColumn = -1;
 
-                if (GetParameters().Exists(targetVariableName))
+                if (myParams.Exists(targetVariableName))
                 {
                     // we should overwrite the existing variable, not add on another level
-                    TParameter origParameter = GetParameters().GetParameter(targetVariableName);
-                    targetLevel = origParameter.level;
-                    targetColumn = origParameter.column;
+                    TParameter origParameter = myParams.GetParameter(targetVariableName);
+                    origParameter.value = ops[2];
+                }
+                else
+                {
+                    myParams.Add(targetVariableName, ops[2], -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                 }
 
-                GetParameters().Add(targetVariableName, ops[2], targetColumn, targetLevel, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+//              TLogging.Log("Assign: " + targetVariableName + "=" + ops[2].ToString());
                 ReturnValue = ops[2];
             }
             else if (f == "exists")
             {
-                ReturnValue = new TVariant(GetParameters().Exists(ops[1].ToString(), column, Depth));
+                ReturnValue = new TVariant(myParams.Exists(ops[1].ToString(), column, Depth));
             }
             else if (f == "isnull")
             {
                 ReturnValue =
-                    new TVariant((!GetParameters().Exists(ops[1].ToString(), column,
-                                      Depth) || GetParameters().Get(ops[1].ToString(), column, Depth).IsZeroOrNull()));
+                    new TVariant((!myParams.Exists(ops[1].ToString(), column,
+                                      Depth) || myParams.Get(ops[1].ToString(), column, Depth).IsZeroOrNull()));
             }
             else if (f == "template")
             {
@@ -1104,7 +1106,7 @@ namespace Ict.Petra.Server.MReporting
                 String ColumnID = ops[1].ToString();
                 bool ColumnExist = false;
 
-                System.Data.DataTable TempTable = GetParameters().ToDataTable();
+                System.Data.DataTable TempTable = myParams.ToDataTable();
                 int numColumns = TempTable.Columns.Count;
 
                 foreach (System.Data.DataRow Row in TempTable.Rows)
@@ -1134,11 +1136,11 @@ namespace Ict.Petra.Server.MReporting
                 {
                     // clear this row, we don't want to display it
                     // set all parameters of this row to NULL
-                    GetParameters().Add("DONTDISPLAYROW", new TVariant(true));
+                    myParams.Add("DONTDISPLAYROW", new TVariant(true));
                 }
                 else
                 {
-                    GetParameters().Add("DONTDISPLAYROW", new TVariant(false), -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                    myParams.Add("DONTDISPLAYROW", new TVariant(false), -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                 }
             }
             else if (f == "column")

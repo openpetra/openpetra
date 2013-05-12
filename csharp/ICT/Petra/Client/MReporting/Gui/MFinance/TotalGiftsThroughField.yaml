@@ -29,7 +29,7 @@ RootNode:
             Controls: [cmbCurrency, txtYears]
         cmbCurrency:
             ParameterName: param_currency
-            OptionalValues: [Base, International]
+            OptionalValues: [=Base, International]
         txtYears:
             Label: For last years (1-4)
             Format: Integer

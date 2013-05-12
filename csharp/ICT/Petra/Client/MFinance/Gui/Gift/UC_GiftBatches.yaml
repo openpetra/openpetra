@@ -8,8 +8,8 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
-        actDelete: {Label=&Cancel, ActionClick=DeleteRecord}
+        actNew: {Label=&Add Batch, ActionClick=NewRow}
+        actDelete: {Label=&Cancel Batch, ActionClick=DeleteRecord}
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
