@@ -283,10 +283,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
             ADeletionQuestion += String.Format(Catalog.GetString("{0}{0}({1} to {2} effective from {3})"),
-               Environment.NewLine,
-               ARowToDelete.FromCurrencyCode,
-               ARowToDelete.ToCurrencyCode,
-               ARowToDelete.DateEffectiveFrom.ToString("dd-MMM-yyyy"));
+                Environment.NewLine,
+                ARowToDelete.FromCurrencyCode,
+                ARowToDelete.ToCurrencyCode,
+                ARowToDelete.DateEffectiveFrom.ToString("dd-MMM-yyyy"));
             return true;
         }
 

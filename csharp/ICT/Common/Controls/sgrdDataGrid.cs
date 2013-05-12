@@ -1681,6 +1681,7 @@ namespace Ict.Common.Controls
 
                 //If a New button exists call its code.
                 Control insertButton = this.FindNearestControl("btnNew");
+
                 if (insertButton != null)
                 {
                     ((System.Windows.Forms.Button)insertButton).PerformClick();
@@ -1704,6 +1705,7 @@ namespace Ict.Common.Controls
 
                 //If a Delete button exists call its code.
                 Control deleteButton = this.FindNearestControl("btnDelete");
+
                 if (deleteButton != null)
                 {
                     ((System.Windows.Forms.Button)deleteButton).PerformClick();
@@ -1733,6 +1735,7 @@ namespace Ict.Common.Controls
             while (TryParent != null)
             {
                 Control[] TryButtons = TryParent.Controls.Find(AControlName, true);
+
                 if (TryButtons.Length > 0)
                 {
                     return TryButtons[0];

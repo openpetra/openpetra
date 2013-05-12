@@ -226,6 +226,7 @@ namespace Ict.Petra.Client.CommonControls
                     // Call ourself recursively to see if the desired control is on a sub-panel
                     Label subLabelControl = null;
                     Control subDataControl = null;
+
                     if (GetControlsForPrimaryKey(APrimaryKey, AHostControl.Controls[i], out subLabelControl, out subDataControl))
                     {
                         ALabelControl = subLabelControl;

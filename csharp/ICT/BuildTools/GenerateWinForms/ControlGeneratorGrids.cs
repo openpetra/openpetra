@@ -376,7 +376,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ctrl.HasAttribute("EnableMultiSelection"))
             {
                 writer.Template.SetCodelet("GRIDMULTISELECTION",
-                    String.Format("grdDetails.Selection.EnableMultiSelection = {0};{1}", ctrl.GetAttribute("EnableMultiSelection"), Environment.NewLine));
+                    String.Format("grdDetails.Selection.EnableMultiSelection = {0};{1}", ctrl.GetAttribute("EnableMultiSelection"),
+                        Environment.NewLine));
             }
             else if (FCodeStorage.FControlList.ContainsKey("btnDelete"))
             {

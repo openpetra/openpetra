@@ -126,7 +126,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private bool PreDeleteManual(PContactAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
             ADeletionQuestion += String.Format(Catalog.GetString(
-                "{0}{0}If you choose 'Yes', all the detail attributes for this Contact Attribute will be deleted as well."), Environment.NewLine);
+                    "{0}{0}If you choose 'Yes', all the detail attributes for this Contact Attribute will be deleted as well."), Environment.NewLine);
             return true;
         }
 
