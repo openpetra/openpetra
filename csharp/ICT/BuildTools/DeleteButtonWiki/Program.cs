@@ -79,7 +79,7 @@ namespace Ict.Tools.DeleteButtonWiki
             FLogFile.WriteLine("=== Screens Based on Template: {0} ({1} files use this template. The following have Add/Delete functionality) ===",
                 ATitle,
                 AListToCheck.Count);
-            FLogFile.WriteLine("{| border=\"1\" cellpadding=\"5\" cellspacing=\"0\"");
+            FLogFile.WriteLine("{| border=\"1\" cellpadding=\"5\" cellspacing=\"0\" style=\"font-size:x-small\"");
 
             FLogFile.Write("!Filename !! DetailTable !! ");
             bool AIsCacheable = ATitle.Contains("Cacheable") || ATitle.Contains("Cachable");
