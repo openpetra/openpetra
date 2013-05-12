@@ -56,10 +56,5 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 txtDetailCurrencyCode.Focus();
             }
         }
-
-        private void DeleteRow(System.Object sender, EventArgs e)
-        {
-            DeleteACurrency();
-        }
     }
 }
