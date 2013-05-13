@@ -2577,12 +2577,12 @@
                 columnlabel="Specialised?"
                 initial="No"
                 notnull="yes"/>
-    <tablefield descr="Flag to indicate whether this Partner Attribute is sensitive."
+    <tablefield descr="Flag to indicate whether this Partner Attribute is confidential."
                 format="Yes/No"
-                name="p_sensitive_l"
+                name="p_confidential_l"
                 type="bit"
-                label="Is Sensitive"
-                columnlabel="Sensitive?"
+                label="Is Confidential"
+                columnlabel="Confidential?"
                 initial="No"
                 notnull="yes"/>
     <tablefield descr="Flag to indicate whether this Partner Attribute is current."

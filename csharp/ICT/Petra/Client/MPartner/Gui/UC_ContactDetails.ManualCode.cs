@@ -128,11 +128,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPartnerAttributesExist = LoadDataOnDemand();
             }
 
-            FMainDS.Tables.Add(new PPartnerAttributeCategoryTable(PPartnerAttributeCategoryTable.GetTableName()));
-            FMainDS.Tables.Add(new PPartnerAttributeTypeTable(PPartnerAttributeTypeTable.GetTableName()));
-            FMainDS.InitVars();
-            FMainDS.Merge((PPartnerAttributeCategoryTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.PartnerAttributeCategoryList, PPartnerAttributeCategoryTable.GetTableName()));
-            FMainDS.Merge((PPartnerAttributeTypeTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.PartnerAttributeTypeList, PPartnerAttributeTypeTable.GetTableName()));
+            if (!FMainDS.Tables.Contains(PPartnerAttributeCategoryTable.GetTableName()) 
+                && (!FMainDS.Tables.Contains(PPartnerAttributeTypeTable.GetTableName())))
+            {
+                FMainDS.Tables.Add(new PPartnerAttributeCategoryTable(PPartnerAttributeCategoryTable.GetTableName()));
+                FMainDS.Tables.Add(new PPartnerAttributeTypeTable(PPartnerAttributeTypeTable.GetTableName()));
+                FMainDS.InitVars();
+                FMainDS.Merge((PPartnerAttributeCategoryTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.PartnerAttributeCategoryList, PPartnerAttributeCategoryTable.GetTableName()));
+                FMainDS.Merge((PPartnerAttributeTypeTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.PartnerAttributeTypeList, PPartnerAttributeTypeTable.GetTableName()));                
+            }
             
             FPartnerAttributesExist = FMainDS.PPartnerAttribute.Rows.Count > 0;
             
@@ -204,14 +208,53 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void InitializeManualCode()
         {
-//            FLogic = new TUCPartnerRelationshipsLogic();
-//
-//            if (!FMainDS.Tables.Contains(PartnerEditTDSPPartnerRelationshipTable.GetTableName()))
-//            {
-//                FMainDS.Tables.Add(new PartnerEditTDSPPartnerRelationshipTable());
-//            }
+            if (!FMainDS.Tables.Contains(PPartnerAttributeTable.GetTableName()))
+            {
+                FMainDS.Tables.Add(new PPartnerAttributeTable());
+                FMainDS.InitVars();
+            }
 
-            FMainDS.InitVars();
+            // Show the 'Within The Organisation' GroupBox only if the Partner is of Partner Class PERSON
+            if (FMainDS.PPartner[0].PartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
+            {
+                grpWithinTheOrganisation.Visible = false;
+            }           
+            
+            
+            // Move the 'Within the Organsiation' GroupBox a bit up from it's automatically assigned position
+            grpWithinTheOrganisation.Top = 16;
+            
+            // Move the Panel that groups the 'Current' Controls for layout purposes a bit up from it's automatically assigned position
+            pnlCurrentGrouping.Top = 53;
+            chkCurrent.Top = 6;
+            dtpNoLongerCurrentFrom.Top = 4;
+            
+            // Set up status bar texts for unbound controls and for bound controls whose auto-assigned texts don't match the use here on this screen (these talk about 'Partner Attributes')
+            FPetraUtilsObject.SetStatusBarText(cmbPrimaryWayOfContacting, Catalog.GetString("Select the primary method by which the Partner should be contacted. Purely for information."));
+            FPetraUtilsObject.SetStatusBarText(cmbPrimaryPhoneForContacting, Catalog.GetString("Select one of the Partner's telephone numbers. Purely for information."));
+            FPetraUtilsObject.SetStatusBarText(cmbPrimaryEMail, Catalog.GetString("Select one of the Partner's e-mail addresses. This will be used whenever an automated e-mail is to be sent to this Partner."));
+            FPetraUtilsObject.SetStatusBarText(btnLaunchHyperlinkPrefEMail, Catalog.GetString("Click this button to send an email to the Partner's Primary E-mail address."));
+            FPetraUtilsObject.SetStatusBarText(cmbPhoneWithinTheOrganisation, Catalog.GetString("Select one of the Partner's telephone numbers to designate it as her/his telephone number within The Organisation."));
+            FPetraUtilsObject.SetStatusBarText(cmbEMailWithinTheOrganisation, Catalog.GetString("Select one of the Partner's e-mail addresses to designate it as her/his e-mail address within The Organisation."));
+            FPetraUtilsObject.SetStatusBarText(btnLaunchHyperlinkEMailWithinOrg, Catalog.GetString("Click this button to send an email to the Partner's Office E-mail address."));
+            
+            FPetraUtilsObject.SetStatusBarText(chkValidContactDetailsOnly, Catalog.GetString("Only currently valid Contact Details are shown if this is ticked."));
+            
+            FPetraUtilsObject.SetStatusBarText(btnPromote, Catalog.GetString("Click this button to re-arrange a contact detail record within records of the same Contact Type."));
+            FPetraUtilsObject.SetStatusBarText(btnDemote, Catalog.GetString("Click this button to re-arrange a contact detail record within records of the same Contact Type."));
+            
+            FPetraUtilsObject.SetStatusBarText(cmbContactCategory, Catalog.GetString("Contact Category to which the Contact Type belongs to (narrows down available Contact Types)."));
+            FPetraUtilsObject.SetStatusBarText(cmbContactType, Catalog.GetString("Contact Type of this record. Describes what the Value is (e.g. Phone Number, E-Mail Address, etc)."));
+            FPetraUtilsObject.SetStatusBarText(chkSpecialised, Catalog.GetString("Tick this if the Value designates a business-related Contact Detail (e.g. business telephone number)."));
+            FPetraUtilsObject.SetStatusBarText(txtValue, Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about."));
+            FPetraUtilsObject.SetStatusBarText(txtComment, Catalog.GetString("Comment for this Contact Detail record."));
+            FPetraUtilsObject.SetStatusBarText(chkCurrent, Catalog.GetString("Untick this if the Contact Detail record is no longer current."));
+            FPetraUtilsObject.SetStatusBarText(dtpNoLongerCurrentFrom, Catalog.GetString("Date from which the Contact Detail record is no longer current."));
+           
+            FPetraUtilsObject.SetStatusBarText(chkConfidential, Catalog.GetString("Tick this if the Contact Detail record is confidential."));
+            
+            // By default only valid Contact Details should be shown
+//            chkValidContactDetailsOnly.Checked = true;  // TODO - work on Action, then uncomment this line
         }
 
         /// <summary>
@@ -367,7 +410,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.Primary = false;
             ARow.WithinOrgansiation = false;
             ARow.Specialised = false;
-            ARow.Sensitive = false;
+            ARow.Confidential = false;
             ARow.Current = true;
         }
 
@@ -538,7 +581,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddCheckBoxColumn("Current", FMainDS.PPartnerAttribute.ColumnCurrent);
 
             // Confidential
-            grdDetails.AddCheckBoxColumn("Confidential", FMainDS.PPartnerAttribute.ColumnSensitive);
+            grdDetails.AddCheckBoxColumn("Confidential", FMainDS.PPartnerAttribute.ColumnConfidential);
             
             // Modification TimeStamp (for testing purposes only...)
             // grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
@@ -583,9 +626,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             throw new NotImplementedException("Filtering is not implemented yet!");
         }
         
-        private void ValidChanged(object sender, EventArgs e)
+        private void EnableDisableNoLongerCurrentFromDate(Object sender, EventArgs e)
         {
-            // TODO
+            dtpNoLongerCurrentFrom.Enabled = !chkCurrent.Checked;
+
+            if (!chkCurrent.Checked)
+            {
+                dtpNoLongerCurrentFrom.Date = DateTime.Now.Date;
+                dtpNoLongerCurrentFrom.Focus();
+            }
+            else
+            {
+                dtpNoLongerCurrentFrom.Date = null;
+            }
         }
         
         #endregion

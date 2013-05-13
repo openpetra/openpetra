@@ -19,33 +19,52 @@ RootNode:
         pnlContent:
             Controls: [grpOverallContactSettings, grpContactDetails]
             Dock: Fill
+
         grpOverallContactSettings:
-            Controls: 
-                Row0: [cmbPreferredWayOfContacting]
-                Row1: [cmbPreferredPhoneForContacting, cmbPhoneWithinTheOrganisation]
-                Row2: [cmbPreferredEMail, btnLaunchHyperlinkPrefEMail, cmbEMailWithinTheOrganisation, btnLaunchHyperlinkEMailWithinOrg]
+            Controls: [pnlOverallLeft, pnlOverallRight]        
+            ControlsOrientation: horizontal
             Dock: Top
-        cmbPreferredWayOfContacting: {OptionalValues=Phone, E-Mail, Letter, Skype, SocialNetwork, Width=147, Validation=true}
-        cmbPreferredPhoneForContacting: {List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
-        cmbPhoneWithinTheOrganisation: {List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
-        cmbPreferredEMail: {Label=Preferred E-Mail, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
-        cmbEMailWithinTheOrganisation: {Label=E-Mail Within The Organisation, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
+        pnlOverallLeft:
+            Controls:
+                Row0: [cmbPrimaryWayOfContacting]
+                Row1: [cmbPrimaryPhoneForContacting]
+                Row2: [cmbPrimaryEMail, btnLaunchHyperlinkPrefEMail]
+        pnlOverallRight:
+            Controls: [grpWithinTheOrganisation]
+            Height: 90
+        grpWithinTheOrganisation:
+            Controls:
+                Row1: [cmbPhoneWithinTheOrganisation]
+                Row2: [cmbEMailWithinTheOrganisation, btnLaunchHyperlinkEMailWithinOrg]
+            Margin: 0,16,0,0
+            Height: 70
+        cmbPrimaryWayOfContacting: {Label=Primary Contact Method, OptionalValues=Phone, E-Mail, Letter, Skype, SocialNetwork, Width=147, Validation=true}
+        cmbPrimaryPhoneForContacting: {Label=Primary Phone, List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
+        cmbPhoneWithinTheOrganisation: {Label=Office Phone, List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
+        cmbPrimaryEMail: {Label=Primary E-Mail, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
+        cmbEMailWithinTheOrganisation: {Label=Office E-Mail, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
         btnLaunchHyperlinkPrefEMail: {NoLabel=true, Width=15}
         btnLaunchHyperlinkEMailWithinOrg: {NoLabel=true, Width=15}
-            
+       
         grpContactDetails:
             Controls: [grpFilter, pnlEditing]
             Dock: Fill
+
         grpFilter:
             Controls: [chkValidContactDetailsOnly]
             Dock: Top
+
+        chkValidContactDetailsOnly: {CheckBoxAttachedLabel=Left, OnChange=FilterCriteriaChanged}
+
         pnlEditing:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
-        chkValidContactDetailsOnly: {CheckBoxAttachedLabel=Left, OnChange=FilterCriteriaChanged}
+            Padding: 0,5,0,0
+        
         pnlGrid:
             Dock: Fill
             Controls: [grdDetails, pnlButtons]
+
         pnlButtons:
             Dock: Right
             Controls: [btnNew, btnDelete, pnlPromoteDemote]
@@ -56,43 +75,51 @@ RootNode:
         pnlPromoteDemote:
             Controls: [btnDemote, btnPromote]
             Margin: 0,0,0,0
-            Padding: 0,40,0,0
+            Padding: 0,5,0,0
         btnPromote: {NoLabel=true, Width=15}
         btnDemote: {NoLabel=true, Width=15}
             
         grdDetails:
             Dock: Fill
             TableName: PPartnerAttributeType
-            Columns: [AttributeType, Value, Comment, Sensitive]
+            Columns: [AttributeType, Value, Comment, Current, Confidential]
             CustomColumns:
                 AttributeType: {Label=Contact Type}
                 Value: {Label=Value}
                 Comment: {Label=Comments}
-                Sensitive: {Label=Current?, Type=Boolean}
+                Current: {Label=Current?, Type=Boolean}
+                Confidential: {Label=Confidential?, Type=Boolean}
+            # NOTE: These columns get discarded and replaced with more and 'calculated' Columns in ManualCode (Method 'CreateGridColumns')!
             ActionFocusRow: FocusedRowChanged
+
         pnlDetails:
             Dock: Bottom
             Controls:
                 Row0: [cmbContactCategory, cmbContactType, chkSpecialised]
                 Row1: [txtValue, txtComment]
-#                Row2: [chkCurrent, dtpInvalidFrom, chkSensitive]
-        cmbContactCategory: {List=PartnerAttributeCategoryList, ComboBoxWidth=200, Width=200, Validation=true}
-        cmbContactType: {List=PartnerAttributeTypeList, ComboBoxWidth=204, Width=204, DataField=PPartnerAttribute.AttributeType, Validation=true}
+                Row2: [pnlCurrentGrouping, chkConfidential]
+            Height: 87
+
+        cmbContactCategory: {List=PartnerAttributeCategoryList, ComboBoxWidth=290, Width=290, Validation=true}
+        cmbContactType: {List=PartnerAttributeTypeList, ComboBoxWidth=150, Width=150, DataField=PPartnerAttribute.AttributeType, Validation=true}
         chkSpecialised: 
            Label: Business
            Validation: true   # only to cause data to be updated on-the-fly...
         txtValue:
             Label: Value
-            Width: 200
+            Width: 290
             Type: Hyperlink
             LinkType: http
-#            ColSpan: 2
-        txtComment: {Label=Comment, Width=276, ColSpan=2, DataField=PPartnerAttribute.Comment}
-        Empty:
-        Empty2:
+        txtComment: {Label=Comment, Width=245, ColSpan=2, DataField=PPartnerAttribute.Comment}
+
+        pnlCurrentGrouping:
+            ControlsOrientation: horizontal
+            Controls: [chkCurrent, dtpNoLongerCurrentFrom]
+            Padding: 52,0,0,0
         chkCurrent:
-            OnChange: ValidChanged
-        dtpInvalidFrom:
+            OnChange: EnableDisableNoLongerCurrentFromDate
+        dtpNoLongerCurrentFrom:
             Validation: true
-#            ColSpan: 2
-        chkSensitive:
+            Enabled: false
+
+        chkConfidential:
