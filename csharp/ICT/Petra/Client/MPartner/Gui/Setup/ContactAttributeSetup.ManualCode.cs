@@ -207,36 +207,5 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // something has changed in our user control (add/delete rows)
             FPreviouslySelectedDetailRow[NumDetailCodesColumnOrdinal] = e.NewCount;
         }
-
-        private void ValidateDataDetailsManual(PContactAttributeRow ARow)
-        {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-            DataColumn ValidationColumn;
-            TVerificationResult VerificationResult = null;
-
-            // The added column at the end of the table, which is the number of detail codes for this attribute, must not be zero
-            // Our problem is that the control that is really the correct one to verify is the details grid of the user control.
-            // This control is not one that can be verified.
-            // We can do the verification here - either by using the Active checkbox as a proxy (the nearest control) in which case we get a tooltip
-            // but when we tab away from the checkbox, which is not quite right...
-            // or we can just use this code without the Validation=true in the YAML - in which case we just get the validation dialog
-            ValidationColumn = ARow.Table.Columns[PContactAttributeTable.ColumnActiveId];
-
-            if (ARow[NumDetailCodesColumnOrdinal] != System.DBNull.Value)
-            {
-                VerificationResult = TNumericalChecks.IsPositiveInteger(Convert.ToInt32(ARow[NumDetailCodesColumnOrdinal]),
-                    "Contact Detail",
-                    this, ValidationColumn, null);
-
-                if (VerificationResult != null)
-                {
-                    VerificationResult.OverrideResultText(Catalog.GetString(
-                            "You must create at least one 'Attribute Detail Code' for each 'Contact Attribute'."));
-                }
-
-                // Handle addition to/removal from TVerificationResultCollection.
-                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, false);
-            }
-        }
     }
 }
