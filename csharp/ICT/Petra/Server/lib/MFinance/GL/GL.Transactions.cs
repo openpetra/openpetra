@@ -1051,8 +1051,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             transRowClient.Delete();
                         }
 
-	                    //Submit all changes
-	                    SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                        //Submit all changes
+                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
                     }
                 }
                 catch (Exception ex)

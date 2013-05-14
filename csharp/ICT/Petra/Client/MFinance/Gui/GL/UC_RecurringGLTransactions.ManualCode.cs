@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FJournalRow = GetJournalRow();
 
                 //Same as previously selected
-                if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
+                if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (GetSelectedRowIndex() > 0))
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
                 }
@@ -510,10 +510,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FAttributesGridEntered = true;
             }
 
-            if (grdAnalAttributes.SelectedRowIndex() > 0)
+            if (grdAnalAttributes.GetFirstHighlightedRowIndex() > 0)
             {
                 //Ensures that when the user first enters the grid, the combo appears.
-                grdAnalAttributes.Selection.Focus(new Position(grdAnalAttributes.SelectedRowIndex(), 1), true);
+                grdAnalAttributes.Selection.Focus(new Position(grdAnalAttributes.GetFirstHighlightedRowIndex(), 1), true);
             }
             else if (grdAnalAttributes.Rows.Count > 1)
             {
@@ -540,10 +540,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if (grdAnalAttributes.SelectedRowIndex() > 0)
+            if (grdAnalAttributes.GetFirstHighlightedRowIndex() > 0)
             {
                 //Ensures that when the user first enters the grid, the combo appears.
-                grdAnalAttributes.Selection.Focus(new Position(grdAnalAttributes.SelectedRowIndex(), 1), true);
+                grdAnalAttributes.Selection.Focus(new Position(grdAnalAttributes.GetFirstHighlightedRowIndex(), 1), true);
             }
             else if (grdAnalAttributes.Rows.Count > 1)
             {
@@ -588,7 +588,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FAnalAttribTypeVal.StandardValues = analTypeValues;
             Int32 RowNumber;
 
-            RowNumber = grdAnalAttributes.SelectedRowIndex();
+            RowNumber = grdAnalAttributes.GetFirstHighlightedRowIndex();
             FAnalAttribTypeVal.EnableEdit = true;
             FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
             grdAnalAttributes.Selection.Focus(new Position(RowNumber, grdAnalAttributes.Columns.Count - 1), true);
@@ -788,35 +788,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             lblAnalAttributes.Enabled = (changeable && grdDetails.Rows.Count > 1);
         }
 
-        private void DeleteRecord(System.Object sender, EventArgs e)
-        {
-            this.DeleteARecurringTransaction();
-        }
-
-        /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(ARecurringTransactionRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
-            {
-                MessageBox.Show(Catalog.GetString("No Recurring GL Transaction is selected to delete."),
-                    Catalog.GetString("Deleting Recurring GL Transaction"));
-                return false;
-            }
-            else
-            {
-                // ask if the user really wants to cancel the transaction
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring GL Transaction no: {0} ?"),
-                    ARowToDelete.TransactionNumber);
-                return true;
-            }
-        }
-
         /// <summary>
         /// Code to be run after the deletion process
         /// </summary>
@@ -874,7 +845,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ARecurringTransactionRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(ARecurringTransactionRow ARowToDelete, ref string ACompletionMessage)
         {
             //Assign a default values
             bool deletionSuccessful = false;

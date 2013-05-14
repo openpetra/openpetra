@@ -85,7 +85,7 @@ namespace Ict.Testing.NUnitForms
         /// </summary>
         public void SelectRow(int ARowNumber)
         {
-            Properties.Selection.SelectRow(ARowNumber, true);
+            Properties.SelectRowInGrid(ARowNumber);
             System.Console.WriteLine(Properties.Selection.GetSelectionRegion().ToString());
 
             if (Properties.SelectedDataRowsAsDataRowView.Length == 0)
@@ -97,9 +97,9 @@ namespace Ict.Testing.NUnitForms
 //                       new RangeRegionChangedEventArgs(new RangeRegion(
 //                              new Position(ARowNumber, 0)),
 //                              new RangeRegion(new Position(FOldSelectedRow,0))));
+//            FOldSelectedRow = ARowNumber;
             FireEvent("FocusRowEntered",
                 new RowEventArgs(ARowNumber));
-//            FOldSelectedRow = ARowNumber;
         }
     }
 }

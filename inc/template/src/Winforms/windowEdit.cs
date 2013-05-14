@@ -13,6 +13,7 @@ using System.Data;
 using SourceGrid;
 using Ict.Petra.Shared;
 using System.Resources;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
@@ -43,6 +44,7 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}       
     private DataColumn FPrimaryKeyColumn = null;
     private Control FPrimaryKeyControl = null;
+    private Label FPrimaryKeyLabel = null;
     private string FDefaultDuplicateRecordHint = String.Empty;
 {#ENDIF SHOWDETAILS}
 
@@ -69,6 +71,7 @@ namespace {#NAMESPACE}
 {#IFDEF SAVEDETAILS}
       grdDetails.Enter += new EventHandler(grdDetails_Enter);
       grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+      {#GRIDMULTISELECTION}
 {#ENDIF SAVEDETAILS}
       
 {#IFDEF DETAILTABLE}
@@ -219,7 +222,7 @@ namespace {#NAMESPACE}
         {
             // No row change occurred, so we still need to show details, because the data may be different
             //Console.WriteLine("{0}:  SRIG: ShowDetails for {1}", DateTime.Now.Millisecond, ARowIndex);
-            ShowDetails();
+            ShowDetails(ARowIndex);
         }
     }
 
@@ -262,11 +265,8 @@ namespace {#NAMESPACE}
     {
         Int32 RowNumberInData = -1;
         
-        int gridRowIndex = grdDetails.SelectedRowIndex();
-        
-        if (gridRowIndex > 0 && FPreviouslySelectedDetailRow != null)
+        if (FPrevRowChangedRow > 0 && FPreviouslySelectedDetailRow != null)
         {
-                
             int dataRowIndex = 0;
             
             foreach ({#DETAILTABLETYPE}Row myRow in FMainDS.{#DETAILTABLETYPE}.Rows)
@@ -277,7 +277,7 @@ namespace {#NAMESPACE}
                     if (myRow.RowState != DataRowState.Deleted)
                     {
                         string value1 = myRow[myColumn].ToString();
-                        string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[gridRowIndex - 1][myColumn.Ordinal].ToString();
+                        string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[FPrevRowChangedRow - 1][myColumn.Ordinal].ToString();
                         if (value1 != value2)
                         {
                             found = false;
@@ -305,12 +305,21 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
     /// <summary>
-    /// Gets the highlighted Data Row as a {#DETAILTABLE} record from the grid 
+    /// Gets the selected Data Row as a PBusiness record from the grid
     /// </summary>
     /// <returns>The selected row - or null if no row is selected</returns>
     public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
     {
-        {#GETSELECTEDDETAILROW}
+        return FPreviouslySelectedDetailRow;
+    }
+
+    /// <summary>
+    /// Gets the selected Data Row index in the grid.  The first data row is 1.
+    /// </summary>
+    /// <returns>The selected row - or -1 if no row is selected</returns>
+    public Int32 GetSelectedRowIndex()
+    {
+        return FPrevRowChangedRow;
     }
 {#ENDIF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
@@ -324,28 +333,69 @@ namespace {#NAMESPACE}
 {#ENDIF PRIMARYKEYCONTROLSREADONLY}
 
 {#IFDEF SHOWDETAILS}
+
     /// <summary>
-    /// This overload shows the details for the currently highlighted row.
+    /// Use this override to Show the Details for a specified row in the grid.
+    /// This override is safe to use in  manual code because it will update the FPreviouslySelectedDetailRow and FPrevRowChangedRow internal variables.
+    /// </summary>
+    /// <param name="ARowNumberInGrid">The grid row.  Valid rows start at 1.</param>
+    private void ShowDetails(Int32 ARowNumberInGrid)
+    {
+        FPreviouslySelectedDetailRow = null;
+        int GridRowCount = grdDetails.Rows.Count;
+
+        if (ARowNumberInGrid >= GridRowCount)
+        {
+            ARowNumberInGrid = GridRowCount - 1;
+        }
+
+        if ((ARowNumberInGrid < 1) && (GridRowCount > 1))
+        {
+            ARowNumberInGrid = 1;
+        }
+
+        if (ARowNumberInGrid > 0)
+        {
+            DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(ARowNumberInGrid);
+
+            if (rowView != null)
+            {
+                FPreviouslySelectedDetailRow = ({#DETAILTABLE}Row)(rowView.Row);
+            }
+
+            FPrevRowChangedRow = ARowNumberInGrid;
+        }
+        else
+        {
+            FPrevRowChangedRow = -1;
+        }
+
+        ShowDetails(FPreviouslySelectedDetailRow);
+    }
+
+    /// <summary>
+    /// This overload shows the details for the currently selected row.
     /// The method still works when the grid is empty and no row can be selected.
+    /// This method is safe to use in manual code although it should be rarely necessary because the standard 
+    /// code should always be showing the correct details.
     /// The Details panel is disabled when the grid is empty, or when in Detail Protected Mode
     /// The variable FPreviouslySelectedDetailRow is set by this call.
     /// </summary>
     private void ShowDetails()
     {
-        ShowDetails(GetSelectedDetailRow());
+        ShowDetails(FPrevRowChangedRow);
     }
 
     /// <summary>
     /// This overload shows the details for the specified row, which can be null.
     /// The Details panel is disabled when the row is Null, or when in Detail Protected Mode
-    /// The variable FPreviouslySelectedDetailRow is set by this call.
+    /// IMPORTANT: Do not call this method from manual code because the internal variables will no longer match.
     /// </summary>
     /// <param name="ARow">The row for which details will be shown</param>
     private void ShowDetails({#DETAILTABLE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
 
-        FPreviouslySelectedDetailRow = ARow;
         if (ARow == null)
         {
             pnlDetails.Enabled = false;
@@ -354,7 +404,7 @@ namespace {#NAMESPACE}
         else
         {
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
-        {#SHOWDETAILS}
+            {#SHOWDETAILS}
         }
         
         {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
@@ -375,11 +425,10 @@ namespace {#NAMESPACE}
 {#IFDEF SAVEDETAILS}
     private void grdDetails_Enter(object sender, EventArgs e)
     {
-        int nRow = grdDetails.SelectedRowIndex();       // should be the same as FPrevRowChangedRow
-        if (nRow > 0 && FPetraUtilsObject.VerificationResultCollection.Count > 0)
+        if (FPetraUtilsObject.VerificationResultCollection.Count > 0)
         {
-            grdDetails.Selection.Focus(new SourceGrid.Position(nRow, 0), false);
-            //Console.WriteLine("{0}: GridFocus - setting Selection.Focus to {1},0", DateTime.Now.Millisecond, nRow);
+            grdDetails.Selection.Focus(new SourceGrid.Position(FPrevRowChangedRow, 0), false);
+            //Console.WriteLine("{0}: GridFocus - setting Selection.Focus to {1},0", DateTime.Now.Millisecond, FPrevRowChangedRow);
         }
     }
 
@@ -436,82 +485,361 @@ namespace {#NAMESPACE}
         if (!grdDetails.Sorting && e.Row != FPrevRowChangedRow)
         {
             //Console.WriteLine("{0}:   FRC ShowDetails for {1}", DateTime.Now.Millisecond, e.Row);
-            ShowDetails();
+            ShowDetails(e.Row);
         }
         FPrevRowChangedRow = e.Row;
 	}
 {#DELETERECORD}
     /// <summary>
     /// Standard method to delete the Data Row whose Details are currently displayed.
-    /// Optional manual code can be included to take action prior, during or after deletion.
-    /// When the row has been deleted the highlighted row index stays the same unless the deleted row was the last one.
+    /// There is full support for multi-row deletion.
+    /// Optional manual code can be included to take action prior, during or after each deletion.
+    /// When the row(s) have been deleted the highlighted row index stays the same unless the deleted row was the last one.
     /// The Details for the newly highlighted row are automatically displayed - or not, if the grid has now become empty.
     /// </summary>
     private void Delete{#DETAILTABLE}()
     {
-		bool AllowDeletion = true;
-		bool DeletionPerformed = false;
-		string DeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
-		string CompletionMessage = string.Empty;
-        TVerificationResultCollection VerificationResults = null;
-		
-		if (FPreviouslySelectedDetailRow == null)
-		{
-			return;
-		}
-
-        {#DELETEREFERENCECOUNT}
-
-        if ((VerificationResults != null)
-            && (VerificationResults.Count > 0))
+        string CompletionMessage = String.Empty;
+        
+        if ((FPreviouslySelectedDetailRow == null) || (FPrevRowChangedRow == -1))
         {
-            MessageBox.Show(Messages.BuildMessageFromVerificationResult(
-                    Catalog.GetString("Record cannot be deleted!") +
-                    Environment.NewLine +
-                    Catalog.GetPluralString("Reason:", "Reasons:", VerificationResults.Count),
-                    VerificationResults),
-                    Catalog.GetString("Record Deletion"));
             return;
         }
 
-		{#PREDELETEMANUAL}
-		if(AllowDeletion)
-		{
-        	if ((MessageBox.Show(DeletionQuestion,
-					 Catalog.GetString("Confirm Delete"),
-                     MessageBoxButtons.YesNo,
-                     MessageBoxIcon.Question,
-                     MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
-			{
-                int SelectedRow = grdDetails.SelectedRowIndex();
+        DataRowView[] HighlightedRows = grdDetails.SelectedDataRowsAsDataRowView;
+
+        if (HighlightedRows.Length == 1)
+        {
+            TVerificationResultCollection VerificationResults = null;
+
+            {#DELETEREFERENCECOUNT}
+
+            if ((VerificationResults != null)
+                && (VerificationResults.Count > 0))
+            {
+                MessageBox.Show(Messages.BuildMessageFromVerificationResult(
+                        Catalog.GetString("Record cannot be deleted!") +
+                        Environment.NewLine +
+                        Catalog.GetPluralString("Reason:", "Reasons:", VerificationResults.Count),
+                        VerificationResults),
+                        Catalog.GetString("Record Deletion"));
+                return;
+            }
+
+            string DeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            if ((FPrimaryKeyControl != null) && (FPrimaryKeyLabel != null))
+            {
+                DeletionQuestion += String.Format("{0}{0}({1} {2})",
+                    Environment.NewLine,
+                    FPrimaryKeyLabel.Text.Replace("&", ""),
+                    TControlExtensions.GetDisplayTextForControl(FPrimaryKeyControl));
+            }
+
+            bool AllowDeletion = true;
+            bool DeletionPerformed = false;
+
+            {#PREDELETEMANUAL}
+            if(AllowDeletion)
+            {
+                if ((MessageBox.Show(DeletionQuestion,
+                         Catalog.GetString("Confirm Delete"),
+                         MessageBoxButtons.YesNo,
+                         MessageBoxIcon.Question,
+                         MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
+                {
 {#IFDEF DELETEROWMANUAL}
-				{#DELETEROWMANUAL}
+                    try
+                    {
+                        {#DELETEROWMANUAL}
 {#ENDIF DELETEROWMANUAL}
-{#IFNDEF DELETEROWMANUAL}				
-				FPreviouslySelectedDetailRow.Delete();
-				DeletionPerformed = true;
-{#ENDIFN DELETEROWMANUAL}				
-			
-				if (DeletionPerformed)
-				{
-					FPetraUtilsObject.SetChangedFlag();
+{#IFNDEF DELETEROWMANUAL}               
+                    try
+                    {
+                        FPreviouslySelectedDetailRow.Delete();
+                        DeletionPerformed = true;
+{#ENDIFN DELETEROWMANUAL}               
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString("An error occurred while deleting this record.{0}{0}{1}"),
+                            Environment.NewLine, ex.Message),
+                            Catalog.GetString("Error"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                    }
+            
+                    if (DeletionPerformed)
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+            
                     // Select and display the details of the nearest row to the one previously selected
-                    SelectRowInGrid(SelectedRow);
-				}
-			}
-		}
+                    SelectRowInGrid(FPrevRowChangedRow);
+                    // Clear any errors left over from  the deleted row
+                    FPetraUtilsObject.VerificationResultCollection.Clear();
+                }
+            }
 
 {#IFDEF POSTDELETEMANUAL}
-		{#POSTDELETEMANUAL}
+            {#POSTDELETEMANUAL}
 {#ENDIF POSTDELETEMANUAL}
 {#IFNDEF POSTDELETEMANUAL}
-		if(DeletionPerformed && CompletionMessage.Length > 0)
-		{
-			MessageBox.Show(CompletionMessage,
-							 Catalog.GetString("Deletion Completed"));
-		}
+            if(DeletionPerformed && CompletionMessage.Length > 0)
+            {
+                MessageBox.Show(CompletionMessage,
+                                 Catalog.GetString("Deletion Completed"));
+            }
 {#ENDIFN POSTDELETEMANUAL}
+        }
+        else
+        {
+            string DeletionQuestion = String.Format(Catalog.GetString("Do you want to delete the {0} highlighted rows?{1}{1}"), HighlightedRows.Length, Environment.NewLine);
+            DeletionQuestion += Catalog.GetString("Each record will be checked to confirm that it can be deleted.");
+            if (MessageBox.Show(DeletionQuestion,
+                    Catalog.GetString("Confirm Delete"),
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
+            {
+                int recordsDeleted = 0;
+                int recordsUndeletable = 0;
+                int recordsDeleteDisallowed = 0;
+                List<TMultiDeleteResult> listConflicts = new List<TMultiDeleteResult>();
+                List<TMultiDeleteResult> listExceptions = new List<TMultiDeleteResult>();
 
+                this.Cursor = Cursors.WaitCursor;
+
+                foreach (DataRowView drv in HighlightedRows)
+                {
+                    {#DETAILTABLE}Row rowToDelete = ({#DETAILTABLE}Row)(drv.Row);
+                    string rowDetails = MakePKValuesString(rowToDelete);
+
+                    {#MULTIDELETEDELETABLE}
+
+                    TVerificationResultCollection VerificationResults = null;
+                    {#MULTIDELETEREFERENCECOUNT}
+
+                    if ((VerificationResults != null) && (VerificationResults.Count > 0))
+                    {
+                        TMultiDeleteResult result = new TMultiDeleteResult(rowDetails,
+                            Messages.BuildMessageFromVerificationResult(String.Empty, VerificationResults));
+                        listConflicts.Add(result);
+                        continue;
+                    }
+
+                    bool AllowDeletion = true;
+                    bool DeletionPerformed = false;
+
+                    {#PREMULTIDELETEMANUAL}
+{#IFDEF DELETEROWMANUAL}
+                    if (!AllowDeletion)
+                    {
+                        recordsDeleteDisallowed++;
+                    }
+
+                    try
+                    {
+                        {#DELETEMULTIROWMANUAL}
+                    }
+                    catch (Exception ex)
+                    {
+                        TMultiDeleteResult result = new TMultiDeleteResult(rowDetails, ex.Message);
+                        listExceptions.Add(result);
+                    }
+{#ENDIF DELETEROWMANUAL}
+{#IFNDEF DELETEROWMANUAL}               
+
+                    if (AllowDeletion)
+                    {
+                        try
+                        {
+                            rowToDelete.Delete();
+                            DeletionPerformed = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            TMultiDeleteResult result = new TMultiDeleteResult(rowDetails, ex.Message);
+                            listExceptions.Add(result);
+                        }
+                    }
+                    else
+                    {
+                        recordsDeleteDisallowed++;
+                    }
+{#ENDIFN DELETEROWMANUAL}               
+
+                    if (DeletionPerformed)
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                        recordsDeleted++;
+                    }
+
+                    {#POSTMULTIDELETEMANUAL}
+                }
+
+                this.Cursor = Cursors.Default;
+                SelectRowInGrid(FPrevRowChangedRow);
+
+                if (recordsDeleted > 0 && CompletionMessage.Length > 0)
+                {
+                    MessageBox.Show(CompletionMessage,
+                                     Catalog.GetString("Deletion Completed"));
+                }
+
+                //  Show the results of the multi-deletion
+                string results = null;
+                
+                if (recordsDeleted > 0)
+                {
+                    string s1 = Catalog.GetPluralString("record", "records", recordsDeleted);
+                    string s2 = Catalog.GetPluralString("was", "were", recordsDeleted);
+                    results = String.Format(Catalog.GetString("{0} {1} {2} successfully deleted."), recordsDeleted, s1, s2);
+                }
+                else
+                {
+                    results = "No records were deleted.";
+                }
+                
+                if (recordsUndeletable > 0)
+                {
+                    string s1 = Catalog.GetPluralString("record", "records", recordsUndeletable);
+                    string s2 = Catalog.GetPluralString("it is marked", "they are marked", recordsUndeletable);
+                    results += String.Format(Catalog.GetString("{0}{1} {2} could not be deleted because {3} as non-deletable."),
+                        Environment.NewLine,
+                        recordsUndeletable,
+                        s1, s2);
+                }
+
+                if (recordsDeleteDisallowed > 0)
+                {
+                    string s1 = Catalog.GetPluralString("record was not be deleted", "records were not be deleted", recordsUndeletable);
+                    results += String.Format(Catalog.GetString("{0}{1} {2} because deletion was not allowed."),
+                        Environment.NewLine,
+                        recordsDeleteDisallowed,
+                        s1);
+                }
+
+                bool showCancel = false;
+                
+                if (listConflicts.Count > 0)
+                {
+                    showCancel = true;
+                    string s1 = Catalog.GetPluralString("record", "records", listConflicts.Count);
+                    string s2 = Catalog.GetPluralString("it is referenced", "they are referenced", listConflicts.Count);
+                    results += String.Format(Catalog.GetString("{0}{1} {2} could not be deleted because {3} by at least one other table."),
+                        Environment.NewLine,
+                        listConflicts.Count,
+                        s1, s2);
+                }
+                
+                if (listExceptions.Count > 0)
+                {
+                    showCancel = true;
+                    string s1 = Catalog.GetPluralString("record", "records", listExceptions.Count);
+                    results += String.Format(Catalog.GetString("{0}{1} {2} could not be deleted because the delete action failed unexpectedly."),
+                        Environment.NewLine,
+                        listExceptions.Count);
+                }
+                
+                if (showCancel)
+                {
+                    results += String.Format(Catalog.GetString("{0}{0}Click OK to review the details, or Cancel to return direct to the data screen"),
+                        Environment.NewLine);
+
+                    if (MessageBox.Show(results,
+                            Catalog.GetString("Delete Action Summary"),
+                            MessageBoxButtons.OKCancel,
+                            MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.OK)
+                    {
+                        ReviewMultiDeleteResults(listConflicts, Catalog.GetString("Foreign Key Conflicts"));
+                        ReviewMultiDeleteResults(listExceptions, Catalog.GetString("Exceptions"));
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(results,
+                        Catalog.GetString("Delete Action Summary"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+            }
+        }
+    }
+
+    private string MakePKValuesString({#DETAILTABLE}Row ARow)
+    {
+        string ReturnValue = String.Empty;
+        object[] items = DataUtilities.GetPKValuesFromDataRow(ARow);
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (i > 0)
+            {
+                ReturnValue += ", ";
+            }
+
+            ReturnValue += items[i].ToString();
+        }
+
+        return ReturnValue;
+    }
+
+    private class TMultiDeleteResult
+    {
+        private string FRecordID;
+        private string FResult;
+
+        public TMultiDeleteResult(string ARecordID, string AResult)
+        {
+            FRecordID = ARecordID;
+            FResult = AResult;
+        }
+
+        public string RecordID
+        {
+            get
+            {
+                return FRecordID;
+            }
+        }
+
+        public string Result
+        {
+            get
+            {
+                return FResult;
+            }
+        }
+
+    }
+
+    private void ReviewMultiDeleteResults(List<TMultiDeleteResult> AList, string ATitle)
+    {
+        int allItemsCount = AList.Count;
+        int item = 0;
+
+        foreach (TMultiDeleteResult result in AList)
+        {
+            item++;
+            string s1 = result.RecordID;
+            string s2 = result.Result;
+
+            string details = String.Format(Catalog.GetString("{0}: {1} of {2}{3}Record: {4}{3}{5}"),
+                ATitle, item, allItemsCount, Environment.NewLine, s1, s2);
+
+            if (item < allItemsCount)
+            {
+                details += String.Format(Catalog.GetString("{0}{0}Click OK to review the next detail or Cancel to finish."), Environment.NewLine);
+                if (MessageBox.Show(details, Catalog.GetString("Deletion Error Details"), MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                MessageBox.Show(details, Catalog.GetString("Deletion Error Details"), MessageBoxButtons.OK);
+            }
+        }
     }
 {#ENDIF SHOWDETAILS}
 
@@ -1031,14 +1359,15 @@ namespace {#NAMESPACE}
             if (FDefaultDuplicateRecordHint.Length > 0) FDefaultDuplicateRecordHint += ", ";
             FDefaultDuplicateRecordHint += TControlExtensions.DataColumnNameToFriendlyName(column, true);
             
-            Label dummy;
+            Label label;
             Control control;
-            if (TControlExtensions.GetControlsForPrimaryKey(column, this, out dummy, out control))
+            if (TControlExtensions.GetControlsForPrimaryKey(column, this, out label, out control))
             {
                 if (control.TabIndex > lastTabIndex)
                 {
                     FPrimaryKeyColumn = column;
                     FPrimaryKeyControl = control;
+                    FPrimaryKeyLabel = label;
                     lastTabIndex = control.TabIndex;
                 }
             }
@@ -1054,9 +1383,25 @@ namespace {#NAMESPACE}
 {#INCLUDE validationcontrolsdict.cs}
 
 {##SNIPDELETEREFERENCECOUNT}
-this.Cursor = Cursors.WaitCursor;
+if (!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
+{
+    this.Cursor = Cursors.WaitCursor;
+    TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
+        FMainDS.{#NONCACHEABLETABLENAME},
+        DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow),
+        out VerificationResults);
+    this.Cursor = Cursors.Default;
+}
+
+{##SNIPMULTIDELETEREFERENCECOUNT}
 TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
     FMainDS.{#NONCACHEABLETABLENAME},
-    DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow),
+    DataUtilities.GetPKValuesFromDataRow(rowToDelete),
     out VerificationResults);
-this.Cursor = Cursors.Default;
+
+{##SNIPMULTIDELETEDELETABLE}
+if (!rowToDelete.{#DELETEABLEFLAG})
+{
+    recordsUndeletable++;
+    continue;
+}

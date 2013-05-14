@@ -119,24 +119,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void DeleteRow(System.Object sender, EventArgs e)
+        /// <summary>
+        /// Performs checks to determine whether a deletion of the current
+        ///  row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(PmStaffDataRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
-
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have chosen to delete this entry with start of commitment date ({0:d}).\n\nDo you really want to delete it?"),
-                            FPreviouslySelectedDetailRow.StartOfCommitment), Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
-            {
-                int rowIndex = CurrentRowIndex();
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
-                SelectByIndex(rowIndex);
-            }
+            /*Code to execute before the delete can take place*/
+            ADeletionQuestion = String.Format(
+                Catalog.GetString("You have chosen to delete this entry with start of commitment date ({0:d}).{1}{1}Do you really want to delete it?"),
+                ARowToDelete.StartOfCommitment,
+                Environment.NewLine);
+            return true;
         }
 
         private TSubmitChangesResult StoreManualCode(ref PersonnelTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)

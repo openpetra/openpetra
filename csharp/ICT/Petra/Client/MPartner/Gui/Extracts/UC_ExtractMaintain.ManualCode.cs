@@ -579,38 +579,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // delete single selected record from extract
             if (CountRowsToDelete == 1)
             {
-                if (FPreviouslySelectedDetailRow == null)
-                {
-                    return;
-                }
-
-                if (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have choosen to delete this partner record from the Extract ({0}).\n\nDo you really want to delete it?"),
-                            FPreviouslySelectedDetailRow.PartnerKey.ToString()), Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-                {
-                    int rowIndex = grdDetails.SelectedRowIndex();
-                    FPreviouslySelectedDetailRow.Delete();
-                    FPetraUtilsObject.SetChangedFlag();
-
-                    // temporarily reset selected row to avoid interference with validation
-                    FPreviouslySelectedDetailRow = null;
-                    grdDetails.SelectRowInGrid(rowIndex, true);
-                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                    ShowDetails(FPreviouslySelectedDetailRow);
-                }
+                DeleteMExtract();
             }
-            // delete single selected record from extract
             else if (CountRowsToDelete > 1)
             {
+                // delete multiple selected records from extract
                 if (MessageBox.Show(Catalog.GetString("Do you want to delete the selected partner records from this extract?"),
                         Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                        MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
                 {
                     DataRowView RowView;
-                    int rowIndex = grdDetails.SelectedRowIndex();
+                    int rowIndex = GetSelectedRowIndex();
 
                     // build a collection of objects to be deleted before actually deleting them (as otherwise
                     // indexes may not be valid any longer)
@@ -630,12 +611,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     }
 
                     FPetraUtilsObject.SetChangedFlag();
-
-                    // temporarily reset selected row to avoid interference with validation
-                    FPreviouslySelectedDetailRow = null;
-                    grdDetails.SelectRowInGrid(rowIndex, true);
-                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                    ShowDetails(FPreviouslySelectedDetailRow);
+                    SelectRowInGrid(rowIndex);
                 }
             }
 
@@ -643,9 +619,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 // hide details part and disable buttons if no record in grid (first row for headings)
                 btnEdit.Enabled = false;
-                btnDelete.Enabled = false;
-                pnlDetails.Visible = false;
             }
+        }
+
+        private bool PreDeleteManual(ExtractTDSMExtractRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            ADeletionQuestion = String.Format(
+                Catalog.GetString("You have choosen to delete this partner record from the Extract ({0}).{1}{1}Do you really want to delete it?"),
+                FPreviouslySelectedDetailRow.PartnerKey.ToString(),
+                Environment.NewLine);
+            return true;
         }
 
         private void SelectByPartnerKey(Int64 APartnerKey, Int64 ASiteKey)

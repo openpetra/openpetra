@@ -10,7 +10,7 @@ RootNode:
     Actions:
         actNewGift: {Label=&Add Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail}
-        actDeleteDetail: {Label=&Delete Detail, ActionClick=DeleteDetail}
+        actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
@@ -31,10 +31,10 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnNewGift, btnNewDetail, btnDeleteDetail]
+            Controls: [btnNewGift, btnNewDetail, btnDelete]
         btnNewGift: {Action=actNewGift, Stretch=horizontally}
         btnNewDetail: {Action=actNewDetail, Stretch=horizontally}
-        btnDeleteDetail: {Action=actDeleteDetail, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
         grdDetails:
             TableName: ARecurringGiftDetail
             Dock: Fill
