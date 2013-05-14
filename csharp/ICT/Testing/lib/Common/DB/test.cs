@@ -161,8 +161,10 @@ namespace Ict.Common.DB.Testing
             try
             {
                 t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                sql = "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i) " +
-                      "VALUES (43, 990),(43, 991)";
+                sql =
+                    "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_batch_description_c, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c) "
+                    +
+                    "VALUES (43, 990, 'TEST', '6000', 1, 'EUR', '4300'),(43, 991, 'TEST', '6000', 1, 'EUR', '4300')";
                 DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
