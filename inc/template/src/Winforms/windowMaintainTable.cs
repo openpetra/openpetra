@@ -220,7 +220,7 @@ namespace {#NAMESPACE}
                 Control keyControl = null;
                 foreach (Control detailsCtrl in pnl[0].Controls)
                 {
-                    if (keyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
+                    if (keyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox || detailsCtrl is TCmbAutoPopulated))
                     {
                         keyControl = detailsCtrl;
                     }

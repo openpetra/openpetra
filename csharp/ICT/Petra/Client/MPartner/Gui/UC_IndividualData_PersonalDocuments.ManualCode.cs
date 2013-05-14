@@ -100,10 +100,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
-            if (this.CreateNewPmDocument())
-            {
-                cmbDocumentCode.Focus();
-            }
+            this.CreateNewPmDocument();
         }
 
         private void NewRowManual(ref PmDocumentRow ARow)

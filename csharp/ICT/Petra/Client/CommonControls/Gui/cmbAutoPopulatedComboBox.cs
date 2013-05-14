@@ -168,9 +168,6 @@ namespace Ict.Petra.Client.CommonControls
             LanguageLevelList,
 
             /// <summary>todoComment</summary>
-            LeavingCodeList,
-
-            /// <summary>todoComment</summary>
             LedgerNameList,
 
             /// <summary>todoComment</summary>
@@ -678,15 +675,6 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.LanguageLevelList),
                     PtLanguageLevelTable.GetLanguageLevelDBName(),
                     PtLanguageLevelTable.GetLanguageLevelDescrDBName(),
-                    null);
-                    break;
-
-                case TListTableEnum.LeavingCodeList:
-
-                    InitialiseUserControl(
-                    TDataCache.TMPersonnel.GetCacheableUnitsTable(TCacheableUnitTablesEnum.LeavingCodeList),
-                    "pt_leaving_code_ind_c",
-                    "pt_leaving_code_descr_c",
                     null);
                     break;
 
@@ -1282,11 +1270,6 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.LanguageLevelList:
                     this.ColumnWidthCol1 = 57;
                     this.ColumnWidthCol2 = 130;
-                    break;
-
-                case TListTableEnum.LeavingCodeList:
-                    this.ColumnWidthCol1 = 40;
-                    this.ColumnWidthCol2 = 200;
                     break;
 
                 case TListTableEnum.LedgerNameList:
