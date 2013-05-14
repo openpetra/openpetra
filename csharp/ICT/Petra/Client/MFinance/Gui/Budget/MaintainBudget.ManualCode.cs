@@ -546,7 +546,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 BudgetPeriodRow = null;
             }
 
-            lblAdhocTotalAmount.Text = "    Total: " + TotalAmount.ToString();
+            txtTotalAdhocAmount.NumberValueDecimal = TotalAmount;
             grdDetails.Refresh();
         }
 
@@ -718,7 +718,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 BudgetPeriodRow = null;
             }
 
-            lblInflateBaseTotalAmount.Text = "    Total: " + TotalAmount.ToString("C");
+			txtInflateBaseTotalAmount.NumberValueDecimal = TotalAmount;
         }
 
         private void DisplayBudgetTypeAdhoc()
@@ -728,7 +728,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             string textboxName;
 
             ABudgetPeriodRow BudgetPeriodRow;
-            TTxtNumericTextBox txt = null;
+            TTxtCurrencyTextBox txt = null;
 
             for (int i = 1; i <= 12; i++)
             {
@@ -736,11 +736,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 textboxName = "txtPeriod" + i.ToString("00") + "Amount";
 
-                foreach (Control ctrl in pnlBudgetTypeAdhoc.Controls[0].Controls)
+                foreach (Control ctrl in pnlBudgetTypeAdhoc.Controls)
                 {
-                    if (ctrl is TTxtNumericTextBox && (ctrl.Name == textboxName))
+                	if (ctrl is TTxtCurrencyTextBox && (ctrl.Name == textboxName))
                     {
-                        txt = (TTxtNumericTextBox)ctrl;
+                        txt = (TTxtCurrencyTextBox)ctrl;
                         break;
                     }
                 }
@@ -760,7 +760,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 txt = null;
             }
 
-            this.lblAdhocTotalAmount.Text = "Total Amount: " + totalAmount.ToString("C");
+            txtTotalAdhocAmount.NumberValueDecimal = totalAmount;
         }
 
         private void DisplayBudgetTypeSame()
@@ -911,7 +911,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtPeriod11Index.NumberValueDecimal = PeriodValues[10];
             txtPeriod12Index.NumberValueDecimal = PeriodValues[11];
 
-            lblInflateBaseTotalAmount.Text = "    Total: " + totalAmount.ToString("C");
+            txtInflateBaseTotalAmount.NumberValueDecimal = totalAmount;
         }
 
         private void ClearBudgetPeriodTextboxes()
@@ -929,7 +929,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtPeriod10Amount.NumberValueDecimal = 0;
             txtPeriod11Amount.NumberValueDecimal = 0;
             txtPeriod12Amount.NumberValueDecimal = 0;
-            this.lblAdhocTotalAmount.Text = "    Total: 0";
+            txtTotalAdhocAmount.NumberValueDecimal = 0;
             //Same controls
             txtAmount.NumberValueDecimal = 0;
             lblSameTotalAmount.Text = "    Total: 0";
@@ -955,7 +955,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtPeriod10Index.NumberValueDecimal = 0;
             txtPeriod11Index.NumberValueDecimal = 0;
             txtPeriod12Index.NumberValueDecimal = 0;
-            lblInflateBaseTotalAmount.Text = "    Total: 0";
+            txtInflateBaseTotalAmount.NumberValueDecimal = 0;
         }
 
         private void ClearBudgetTextboxCurrencyFormat()

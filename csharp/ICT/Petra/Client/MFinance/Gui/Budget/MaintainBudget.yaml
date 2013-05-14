@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowEdit
     #Template: windowEditUIConnector
-    WindowWidth: 858
+    WindowWidth: 575
     #WindowHeight: 900
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
@@ -28,8 +28,9 @@ RootNode:
         pnlFilter:
             Dock: Bottom
             Controls:
-                Row0: [pnlDetails, rgrSelectBudgetType]
-                Row1: [grpBudgetDetails]
+                Row0: [pnlDetails]
+                Row1: [rgrSelectBudgetType]
+                Row2: [grpBudgetDetails]
         rgrSelectBudgetType:
             OptionalValues: [Split, Ad hoc, Same, Inflate Base, Inflate n]
             ControlsOrientation: horizontal
@@ -37,12 +38,9 @@ RootNode:
             NoLabel: true
             Enabled: false
             OnChange: NewBudgetType
-        btnNew:
-            Action: actNew
-        btnDelete:
-            Action: actDelete
-        btnImport:
-            Action: actImport
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
+        btnImport: {Action=actImport, Stretch=horizontally}
         grdDetails:
             Dock: Fill
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]
@@ -56,12 +54,14 @@ RootNode:
             Dock: Fill
             Visible: false
             Controls:
+                TabOrder: Horizontal
                 Row0: [txtPeriod01Amount, txtPeriod07Amount]
                 Row1: [txtPeriod02Amount, txtPeriod08Amount]
                 Row2: [txtPeriod03Amount, txtPeriod09Amount]
                 Row3: [txtPeriod04Amount, txtPeriod10Amount]
                 Row4: [txtPeriod05Amount, txtPeriod11Amount]
-                Row5: [txtPeriod06Amount, txtPeriod12Amount, lblAdhocTotalAmount]
+                Row5: [txtPeriod06Amount, txtPeriod12Amount]
+                Row6: [txtEmptyColumn, txtTotalAdhocAmount]
         pnlBudgetTypeSame:
             Dock: Fill
             Visible: false
@@ -85,13 +85,15 @@ RootNode:
             Dock: Fill
             Visible: false
             Controls:
+                TabOrder: Horizontal
                 Row0: [txtPeriod1Amount, txtPeriod07Index]
                 Row1: [txtPeriod02Index, txtPeriod08Index]
                 Row2: [txtPeriod03Index, txtPeriod09Index]
                 Row3: [txtPeriod04Index, txtPeriod10Index]
                 Row4: [txtPeriod05Index, txtPeriod11Index]
-                Row5: [txtPeriod06Index, txtPeriod12Index, lblInflateBaseTotalAmount]
-        grpBudgetDetails: {ColSpan=2, Width:775, Height: 190}
+                Row5: [txtPeriod06Index, txtPeriod12Index]
+                Row6: [txtEmptyIndexColumn, txtInflateBaseTotalAmount]
+        grpBudgetDetails: {ColSpan=1, Width:535, Height: 210}
             Align: top-left
             Controls: 
                 Row0: [pnlBudgetTypeAdhoc]
@@ -115,7 +117,8 @@ RootNode:
         txtPeriod10Amount: {Label=Period 10, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtPeriod11Amount: {Label=Period 11, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtPeriod12Amount: {Label=Period 12, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
-        lblAdhocTotalAmount: {Text=Total}
+        txtTotalAdhocAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=150}
+        txtEmptyColumn: {NoLabel=true, Visible=false}
         #Same controls
         txtAmount: {Label = Amount, Format=Currency, OnLeave=ProcessBudgetTypeSame}
         lblSameTotalAmount: {Text=Total}
@@ -129,7 +132,7 @@ RootNode:
         txtInflationRate: {Label = Inflation Rate, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateN}
         lblInflateNTotalAmount: {Text=Total}
         #Inflate Base controls
-        txtPeriod1Amount: {Label=Period 1 Amount, Format=Currency, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod1Amount: {Label=Period 1 Amount, Format=Currency, OnLeave=ProcessBudgetTypeInflateBase, Width=140}
         txtPeriod02Index: {Label=Period 2 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         txtPeriod03Index: {Label=Period 3 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         txtPeriod04Index: {Label=Period 4 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
@@ -141,8 +144,8 @@ RootNode:
         txtPeriod10Index: {Label=Period 10 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         txtPeriod11Index: {Label=Period 11 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         txtPeriod12Index: {Label=Period 12 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
-        lblInflateBaseTotalAmount: {Text=Total}
-        #TODO: radio buttons for selection of budget type, display different user controls depending on selection, similar to bankimport screen
+        txtEmptyIndexColumn: {NoLabel=true, Visible=false}
+        txtInflateBaseTotalAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=140}
     Menu:
     Toolbar:
         cmbSelectBudgetYear: {List=UserDefinedList, OnChange=SelectBudgetYear, Width=250, SuppressChangeDetection=true}
