@@ -881,7 +881,8 @@ namespace {#NAMESPACE}
                     string s1 = Catalog.GetPluralString("record", "records", listExceptions.Count);
                     results += String.Format(Catalog.GetString("{0}{1} {2} could not be deleted because the delete action failed unexpectedly."),
                         Environment.NewLine,
-                        listExceptions.Count);
+                        listExceptions.Count,
+                        s1);
                 }
                 
                 if (showCancel)

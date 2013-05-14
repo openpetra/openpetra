@@ -47,9 +47,9 @@ namespace Ict.Tools.DeleteButtonWiki
         private static List <string>FListWindowMaintainCacheableTable = new List <string>();
         private static List <string>FListControlMaintainTable = new List <string>();
         private static List <string>FListControlMaintainCacheableTable = new List <string>();
-        private static List <string>FListWindowSingleTable = new List <string>();
-        private static List <string>FListControlMaintainTableWithDataViewGrid = new List <string>();
-        private static List <string>FListWindowBrowsePrint = new List <string>();
+        //private static List <string>FListWindowSingleTable = new List <string>();
+        //private static List <string>FListControlMaintainTableWithDataViewGrid = new List <string>();
+        //private static List<string> FListWindowBrowsePrint = new List<string>();
         private static List <string>FListMasterAndDetails = new List <string>();
 
         // Content of the auto-generated -ReferenceCount.cs files
@@ -118,8 +118,8 @@ namespace Ict.Tools.DeleteButtonWiki
                         string manual = srManual.ReadToEnd();
                         string generated = srGenerated.ReadToEnd();
 
-                        string shortManualPath = manualPath.Substring(FBaseClientPath.Length + 1);
-                        string shortGeneratedPath = generatedPath.Substring(FBaseClientPath.Length + 1);
+                        //string shortManualPath = manualPath.Substring(FBaseClientPath.Length + 1);
+                        //string shortGeneratedPath = generatedPath.Substring(FBaseClientPath.Length + 1);
                         string shortYAMLPath = AYAMLPath.Substring(FBaseClientPath.Length + 1);
                         int startCount = FIssueCount;
 
