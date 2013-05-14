@@ -1500,7 +1500,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             /* Child3CostsPeriodIntl */ ReadDecimal();
         }
 
-        private void ImportJob(TDBTransaction ATransaction)
+        private void ImportJob(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
             PmJobAssignmentRow JobAssignmentRow = FMainDS.PmJobAssignment.NewRowTyped();
 
@@ -1516,8 +1516,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             JobAssignmentRow.UnitKey = ReadInt64();
             JobAssignmentRow.AssignmentTypeCode = CheckJobAssignmentTypeCode(ReadString(), ATransaction);
-            JobAssignmentRow.LeavingCode = ReadString();
-            JobAssignmentRow.LeavingCodeUpdatedDate = ReadNullableDate();
+
+            if (APetraVersion.Compare(new TFileVersionInfo("3.0.0")) < 0)
+            {
+                ReadString();       // used to be JobAssignmentRow.LeavingCode
+                ReadNullableDate(); // used to be JobAssignmentRow.LeavingCodeUpdatedDate
+            }
             
             if (!FIgnorePartner)
             {
@@ -1770,7 +1774,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
                 else if (KeyWord == "JOB")
                 {
-                    ImportJob(ATransaction);
+                    ImportJob(APetraVersion, ATransaction);
                 }
                 else if (KeyWord == "LANGUAGE")
                 {

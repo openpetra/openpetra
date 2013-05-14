@@ -169,7 +169,6 @@ namespace Ict.Petra.Shared
             list.Add("pm_commitment_status");
             list.Add("pt_position");
             list.Add("pt_assignment_type");
-            list.Add("pt_leaving_code");
             list.Add("pc_cost_type");
             list.Add("pc_conference_option_type");
             list.Add("pc_discount_criteria");

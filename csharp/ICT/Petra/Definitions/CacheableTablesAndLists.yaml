@@ -63,7 +63,6 @@ CachedTables:
             DatabaseTables:
                 PtPosition: {Comment="Contains the different position which exist within our organisation, e.g. Field Leader, Book Keeper, Computer support"}
                 PtAssignmentType: {Enum=JobAssignmentTypeList, Comment="Describes whether a person is full-time, part-time, etc"}
-                PtLeavingCode: {Comment=Describes the reason a person left a particular position}                
             CalculatedLists:
                 OutreachList: {Comment=List of all outreaches}
                 ConferenceList: {Comment=List of all conferences}

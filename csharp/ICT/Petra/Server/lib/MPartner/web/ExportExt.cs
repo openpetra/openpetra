@@ -575,8 +575,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 WriteLine();
                 Write(JobAssignmentRow.IsUnitKeyNull()? 0 : JobAssignmentRow.UnitKey);
                 Write(JobAssignmentRow.IsAssignmentTypeCodeNull()? "" : JobAssignmentRow.AssignmentTypeCode);
-                Write(JobAssignmentRow.IsLeavingCodeNull()? "" : JobAssignmentRow.LeavingCode);
-                Write(JobAssignmentRow.IsLeavingCodeUpdatedDateNull()? "?" : JobAssignmentRow.LeavingCodeUpdatedDate.Value.ToString(DATEFORMAT));
+                // Write(JobAssignmentRow.IsLeavingCodeNull()? "" : JobAssignmentRow.LeavingCode);
+                // Write(JobAssignmentRow.IsLeavingCodeUpdatedDateNull()? "?" : JobAssignmentRow.LeavingCodeUpdatedDate.Value.ToString(DATEFORMAT));
                 WriteLine();
             }
             
