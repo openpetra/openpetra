@@ -147,6 +147,39 @@ namespace Ict.Common.DB.Testing
             }
         }
 
+        /// <summary>
+        /// insert multiple rows in one statement.
+        /// works fine with postgresql.
+        /// for sqlite, you need version 3.7.11 at least; http://www.sqlite.org/releaselog/3_7_11.html
+        /// </summary>
+        [Test]
+        public void TestInsertMultipleRows()
+        {
+            TDBTransaction t;
+            string sql;
+
+            try
+            {
+                t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                sql = "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i) " +
+                      "VALUES (43, 990),(43, 991)";
+                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw;
+            }
+
+            // UNDO the test
+            t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            sql = "DELETE FROM a_gift_batch" +
+                  " WHERE a_ledger_number_i = 43 AND (a_batch_number_i = 990 or a_batch_number_i = 991)";
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
         /// test sequences
         [Test]
         public void TestSequence()

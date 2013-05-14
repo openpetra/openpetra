@@ -93,6 +93,13 @@ namespace Ict.Common.DB
                 }
             }
 
+            if (new TFileVersionInfo(SqliteConnection.SQLiteVersion).Compare(new TFileVersionInfo("3.7.11")) < 0)
+            {
+                // for insert statements with multiple rows. see http://www.sqlite.org/releaselog/3_7_11.html
+                TLogging.Log("OpenPetra requires SQLite >= 3.7.11");
+                return null;
+            }
+
             try
             {
                 // Now try to connect to the DB
