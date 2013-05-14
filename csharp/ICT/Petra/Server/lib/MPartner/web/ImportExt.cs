@@ -244,7 +244,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             Row.UnitKey = DomainManager.GSiteKey;
                         }
                     }
-                    
+
                     foreach (PPartnerInterestRow Row in FMainDS.PPartnerInterest.Rows)
                     {
                         if (!Row.IsFieldKeyNull() && (Row.FieldKey == OfficeCode))
@@ -1522,7 +1522,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ReadString();       // used to be JobAssignmentRow.LeavingCode
                 ReadNullableDate(); // used to be JobAssignmentRow.LeavingCodeUpdatedDate
             }
-            
+
             if (!FIgnorePartner)
             {
                 // find job assignment (ignoring job key and job assignment key)
@@ -1531,9 +1531,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 TmpJobAssignmentRow.UnitKey = JobAssignmentRow.UnitKey;
                 TmpJobAssignmentRow.PositionName = JobAssignmentRow.PositionName;
                 TmpJobAssignmentRow.PositionScope = JobAssignmentRow.PositionScope;
-                   
+
                 PmJobAssignmentTable ExistingJobAssignmentTable = PmJobAssignmentAccess.LoadUsingTemplate(TmpJobAssignmentRow, null, ATransaction);
-                
+
                 if (ExistingJobAssignmentTable.Count == 0)
                 {
                     // if job assignment does not exist: find job
@@ -1543,6 +1543,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     TmpJobRow.PositionScope = JobAssignmentRow.PositionScope;
 
                     UmJobTable ExistingJobTable = UmJobAccess.LoadUsingTemplate(TmpJobRow, null, ATransaction);
+
                     if (ExistingJobTable.Count == 0)
                     {
                         // if job does not exist: create job with default values
@@ -1557,24 +1558,25 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         JobRow.CommitmentPeriod = "None";
                         JobRow.TrainingPeriod = "None";
                         JobRow.Present = 1;
-                        
+
                         UmJobAccess.AddOrModifyRecord(JobRow.UnitKey,
-                                                      JobRow.PositionName,
-                                                      JobRow.PositionScope,
-                                                      JobRow.JobKey,
-                                                      FMainDS.UmJob,
-                                                      JobRow, 
-                                                      FDoNotOverwrite,
-                                                      ATransaction);
+                            JobRow.PositionName,
+                            JobRow.PositionScope,
+                            JobRow.JobKey,
+                            FMainDS.UmJob,
+                            JobRow,
+                            FDoNotOverwrite,
+                            ATransaction);
 
                         JobAssignmentRow.JobKey = JobRow.JobKey;
                     }
                     else
                     {
-                        JobAssignmentRow.JobKey = ((UmJobRow)ExistingJobTable.Rows[0]).JobKey;                        
+                        JobAssignmentRow.JobKey = ((UmJobRow)ExistingJobTable.Rows[0]).JobKey;
                     }
-                    
-                    JobAssignmentRow.JobAssignmentKey = (Int32)MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_job_assignment);
+
+                    JobAssignmentRow.JobAssignmentKey = (Int32)MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(
+                        TSequenceNames.seq_job_assignment);
                 }
                 else
                 {
@@ -1583,19 +1585,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     JobAssignmentRow.JobAssignmentKey = ((PmJobAssignmentRow)ExistingJobAssignmentTable.Rows[0]).JobAssignmentKey;
                 }
 
-                // now add or modify job assignment record                
+                // now add or modify job assignment record
                 PmJobAssignmentAccess.AddOrModifyRecord(JobAssignmentRow.PartnerKey,
-                                                        JobAssignmentRow.UnitKey,
-                                                        JobAssignmentRow.PositionName,
-                                                        JobAssignmentRow.PositionScope,
-                                                        JobAssignmentRow.JobKey,
-                                                        JobAssignmentRow.JobAssignmentKey,
-                                                        FMainDS.PmJobAssignment,
-                                                        JobAssignmentRow, 
-                                                        FDoNotOverwrite,
-                                                        ATransaction);
+                    JobAssignmentRow.UnitKey,
+                    JobAssignmentRow.PositionName,
+                    JobAssignmentRow.PositionScope,
+                    JobAssignmentRow.JobKey,
+                    JobAssignmentRow.JobAssignmentKey,
+                    FMainDS.PmJobAssignment,
+                    JobAssignmentRow,
+                    FDoNotOverwrite,
+                    ATransaction);
             }
-            
         }
 
         private void ImportUnitJob()

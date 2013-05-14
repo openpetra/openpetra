@@ -775,27 +775,27 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void AddJobAssignment(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
             PmJobAssignmentRow JobAssignmentRow;
-            
+
             // add all jobs that exist for any job assignments for this partner
             FMainDS.PmJobAssignment.DefaultView.RowFilter = String.Format("{0}={1}", PmJobAssignmentTable.GetPartnerKeyDBName(), AOrigPartnerKey);
 
             foreach (DataRowView rv in FMainDS.PmJobAssignment.DefaultView)
             {
                 JobAssignmentRow = (PmJobAssignmentRow)rv.Row;
-                
+
                 // find the job that exists for the current job assignment for this partner
                 FMainDS.UmJob.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}={7}",
-                                                                    UmJobTable.GetUnitKeyDBName(), JobAssignmentRow.UnitKey,
-                                                                    UmJobTable.GetPositionNameDBName(), JobAssignmentRow.PositionName,
-                                                                    UmJobTable.GetPositionScopeDBName(), JobAssignmentRow.PositionScope,
-                                                                    UmJobTable.GetJobKeyDBName(), JobAssignmentRow.JobKey);
+                    UmJobTable.GetUnitKeyDBName(), JobAssignmentRow.UnitKey,
+                    UmJobTable.GetPositionNameDBName(), JobAssignmentRow.PositionName,
+                    UmJobTable.GetPositionScopeDBName(), JobAssignmentRow.PositionScope,
+                    UmJobTable.GetJobKeyDBName(), JobAssignmentRow.JobKey);
 
                 foreach (DataRowView rv2 in FMainDS.UmJob.DefaultView)
                 {
                     ANewPartnerDS.UmJob.ImportRow(rv2.Row);
                 }
             }
-            
+
             ImportRecordsByPartnerKey(ANewPartnerDS.PmJobAssignment, FMainDS.PmJobAssignment,
                 PmJobAssignmentTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
