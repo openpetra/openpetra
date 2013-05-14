@@ -66,7 +66,8 @@ RootNode:
             Dock: Fill
             Visible: false
             Controls:
-                Row0: [txtAmount, lblSameTotalAmount]
+                Row0: [txtAmount]
+                Row1: [txtSameTotalAmount]
         pnlBudgetTypeSplit:
             Dock: Fill
             Visible: false
@@ -80,7 +81,8 @@ RootNode:
             Controls:
                 Row0: [txtFirstPeriodAmount]
                 Row1: [txtInflateAfterPeriod]
-                Row2: [txtInflationRate, lblInflateNTotalAmount]
+                Row2: [txtInflationRate]
+                Row3: [txtInflateNTotalAmount]
         pnlBudgetTypeInflateBase:
             Dock: Fill
             Visible: false
@@ -92,7 +94,7 @@ RootNode:
                 Row3: [txtPeriod04Index, txtPeriod10Index]
                 Row4: [txtPeriod05Index, txtPeriod11Index]
                 Row5: [txtPeriod06Index, txtPeriod12Index]
-                Row6: [txtEmptyIndexColumn, txtInflateBaseTotalAmount]
+                Row6: [txtEmptyColumn3, txtInflateBaseTotalAmount]
         grpBudgetDetails: {ColSpan=1, Width:535, Height: 210}
             Align: top-left
             Controls: 
@@ -121,7 +123,7 @@ RootNode:
         txtEmptyColumn: {NoLabel=true, Visible=false}
         #Same controls
         txtAmount: {Label = Amount, Format=Currency, OnLeave=ProcessBudgetTypeSame}
-        lblSameTotalAmount: {Text=Total}
+        txtSameTotalAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=150}
         #Split controls
         txtTotalSplitAmount: {Label = Total Amount, Format=Currency, OnLeave=ProcessBudgetTypeSplit}
         txtPerPeriodAmount: {Label = Amount for periods 1 to 11, Format=Currency, ReadOnly=true}
@@ -130,7 +132,7 @@ RootNode:
         txtFirstPeriodAmount: {Label = First Period Amount, Format=Currency, OnLeave=ProcessBudgetTypeInflateN}
         txtInflateAfterPeriod: {Label = Inflate after period, Format=Integer, OnLeave=ProcessBudgetTypeInflateN}
         txtInflationRate: {Label = Inflation Rate, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateN}
-        lblInflateNTotalAmount: {Text=Total}
+        txtInflateNTotalAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=150}
         #Inflate Base controls
         txtPeriod1Amount: {Label=Period 1 Amount, Format=Currency, OnLeave=ProcessBudgetTypeInflateBase, Width=140}
         txtPeriod02Index: {Label=Period 2 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
@@ -144,7 +146,7 @@ RootNode:
         txtPeriod10Index: {Label=Period 10 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         txtPeriod11Index: {Label=Period 11 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         txtPeriod12Index: {Label=Period 12 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
-        txtEmptyIndexColumn: {NoLabel=true, Visible=false}
+        txtEmptyColumn3: {NoLabel=true, Visible=false}
         txtInflateBaseTotalAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=140}
     Menu:
     Toolbar:
